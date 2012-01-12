@@ -9,13 +9,15 @@ from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
+from payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
-from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from captcha.fields import CaptchaField
 from user_groups.models import Group
+
+from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -23,7 +25,7 @@ class FormForForm(forms.ModelForm):
 
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing")
     
     def __init__(self, form, user, *args, **kwargs):
         """
@@ -64,6 +66,22 @@ class FormForForm(forms.ModelForm):
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
             
+        # include pricing options if any
+        if self.form.custom_payment and self.form.pricing_set.all():
+            self.fields['pricing-option'] = forms.ModelChoiceField(
+                    label=_('Pricing'),
+                    empty_label=None,
+                    queryset=self.form.pricing_set.all(),
+                    widget=forms.RadioSelect,
+                )
+            self.fields['payment-option'] = forms.ModelChoiceField(
+                    label=_('Payment Method'),
+                    empty_label=None,
+                    queryset=self.form.payment_methods.all(),
+                    widget=forms.RadioSelect,
+                    initial=1,
+                )
+            
         if not self.user.is_authenticated(): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
@@ -90,6 +108,13 @@ class FormForForm(forms.ModelForm):
                 field_entry.save(user = self.user)
             else:
                 field_entry.save()
+                
+        # save selected pricing and payment method if any
+        if self.form.custom_payment and self.form.pricing_set.all():
+            entry.payment_method = self.cleaned_data['payment-option']
+            entry.pricing = self.cleaned_data['pricing-option']
+            entry.save()
+            
         return entry
         
     def email_to(self):
@@ -156,7 +181,14 @@ class FormAdminForm(TendenciBaseForm):
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
-
+    custom_payment = forms.BooleanField(label=_('Is Custom Payment'), required=False)
+    payment_methods = forms.ModelMultipleChoiceField(
+            queryset=PaymentMethod.objects.all(),
+            widget=forms.CheckboxSelectMultiple,
+            required=False,
+            initial=[1,2,3]
+        )
+    
     class Meta:
         model = Form
         fields = ('title',
@@ -169,6 +201,8 @@ class FormForm(TendenciBaseForm):
                   'subject_template',
                   'email_from',
                   'email_copies',
+                  'custom_payment',
+                  'payment_methods',
                   'user_perms',
                   'member_perms',
                   'group_perms',
@@ -202,7 +236,11 @@ class FormForm(TendenciBaseForm):
                         'fields': ['status',
                                     'status_detail'], 
                         'classes': ['admin-only'],
-                    })]
+                    }),
+                    ('Payments', {
+                        'fields':['custom_payment', 'payment_methods'],
+                        'legend':''
+                    }),]
                 
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
@@ -225,7 +263,7 @@ class FormForm(TendenciBaseForm):
                 break
             i += 1
         return slug
-            
+
 class FormForField(forms.ModelForm):
     class Meta:
         model = Field
@@ -268,3 +306,19 @@ class FormForField(forms.ModelForm):
             cleaned_data['required'] = False
             
         return cleaned_data
+
+class PricingForm(forms.ModelForm):
+    class Meta:
+        model = Pricing
+        
+class BillingForm(forms.Form):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    company = forms.CharField(required=False)
+    address = forms.CharField(required=False)
+    city = forms.CharField(required=False)
+    state = forms.CharField(required=False)
+    zip_code = forms.CharField(required=False)
+    country = forms.CharField(required=False)
+    phone = forms.CharField(required=False)
+    email = forms.CharField(required=False)

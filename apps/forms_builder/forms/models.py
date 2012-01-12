@@ -69,6 +69,10 @@ class Form(TendenciBaseModel):
         max_length=200)
     completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
         help_text=_("Redirect to this page after form completion."))
+        
+    # payments
+    custom_payment = models.BooleanField(_("Is Custom Payment"), default=False)
+    payment_methods = models.ManyToManyField("payments.PaymentMethod")
     
     objects = FormManager()
 
@@ -169,6 +173,8 @@ class FormEntry(models.Model):
     form = models.ForeignKey("Form", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
     entry_path = models.CharField(max_length=200, blank=True, default="")
+    payment_method = models.ForeignKey('payments.PaymentMethod', null=True)
+    pricing = models.ForeignKey('Pricing', null=True)
     
     class Meta:
         verbose_name = _("Form entry")
@@ -302,3 +308,13 @@ class FieldEntry(models.Model):
         super(FieldEntry, self).save(*args, **kwargs)
         self.field.execute_function(self.entry, self.value, user=user)
     
+class Pricing(models.Model):
+    """
+    Pricing options for custom payment forms.
+    """
+    form = models.ForeignKey('Form')
+    label = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __unicode__(self):
+        return "%s %s" % (self.price, self.label)

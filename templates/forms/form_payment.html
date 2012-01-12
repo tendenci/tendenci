@@ -1,4 +1,5 @@
 {% extends "forms/base.html" %}
+{% load i18n %}
 {% load styled_forms %}
 {% load forms_tags %}
 
@@ -28,8 +29,7 @@
     {% endif %}
     
     <div class="form-wrap">
-        <h1>{{ form.title }}</h1>
-        <p>{{ form.intro|safe|urlize|linebreaks }}</p>
+        <h1>{% trans "Billing Information" %}</h1>
     
     	<div class="form-builder-wrap">
         	<form method="post" enctype="multipart/form-data">{% csrf_token %}
@@ -37,7 +37,7 @@
                 <input type="hidden" name="entry_path" value="{{ request.path }}">
             </div>
         	<div class="forms">
-                {{ form_for_form|styled_form }}
+                {{ payment_form|styled_form }}
             	<input type="submit" value="Submit" />
     		</div>
             </form>

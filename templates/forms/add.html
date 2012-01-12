@@ -15,7 +15,12 @@
     	<form action="." method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Add {% firstof MODULE_FORMS_LABEL 'Form' %}" />
+            <fieldset id='pricing-options'>
+                <legend>Pricing Options</legend>
+                {{ formset.management_form }}
+                {{ formset|styled_form_set }}
+            </fieldset>
+            <input type="submit" value="Add {% firstof MODULE_FORMS_LABEL 'Form' %}" />
 		</div>
         </form>
     </div>
@@ -27,6 +32,20 @@
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
 <script type="text/javascript">
+    $(document).ready(function(){
+        $('#pricing-options').hide();
+        $('.id_payment_methods').hide();
+        $('#id_custom_payment').change(function(){
+            pricings = $(this).attr('checked')
+            if(pricings=='checked'){
+                $('#pricing-options').show();
+                $('.id_payment_methods').show();
+            }else{
+                $('#pricing-options').hide();
+                $('.id_payment_methods').hide();
+            }
+        });
+    });
     var slugit = new Slugify({
         input_element : 'input#id_title',
         slug_element : 'input#id_slug',
