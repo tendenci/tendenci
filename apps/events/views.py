@@ -239,7 +239,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
         form=Reg8nConfPricingForm,
-        extra=0,
+        extra=1,
         can_delete=True
     )
 
@@ -395,7 +395,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     status=True,
                 ),
                 prefix='regconfpricing',
-                auto_id='regconfpricing_formset'
+                auto_id='regconfpricing_formset',
             )
 
             # label the form sets
