@@ -261,7 +261,7 @@ class MembershipType(TendenciBaseModel):
 class Membership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     member_number = models.CharField(_("Member Number"), max_length=50)
-    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"), null=True)
+    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     user = models.ForeignKey(User, related_name="memberships")
     directory = models.ForeignKey(Directory, blank=True, null=True) 
     renewal = models.BooleanField(default=False)
