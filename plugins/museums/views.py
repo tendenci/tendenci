@@ -18,9 +18,9 @@ except:
 def index(request, template_name="museums/detail.html"):
     return HttpResponseRedirect(reverse('museums.search'))
 
-def detail(request, pk=None, template_name="museums/detail.html"):
-    if not pk: return HttpResponseRedirect(reverse('museums.search'))
-    museum = get_object_or_404(Museum, pk=pk)
+def detail(request, slug=None, template_name="museums/detail.html"):
+    if not slug: return HttpResponseRedirect(reverse('museums.search'))
+    museum = get_object_or_404(Museum, slug=slug)
     
     if has_perm(request.user, 'museum.view_museum', museum):
         log_defaults = {
@@ -40,7 +40,7 @@ def detail(request, pk=None, template_name="museums/detail.html"):
 def search(request, template_name="museums/search.html"):
     query = request.GET.get('q', None)
     museums = Museum.objects.search(query, user=request.user)
-    museums = museums.order_by('-create_dt')
+    museums = museums.order_by('ordering','-create_dt')
 
     log_defaults = {
         'event_id' : 1140400,

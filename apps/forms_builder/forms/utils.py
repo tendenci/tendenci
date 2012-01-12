@@ -1,8 +1,11 @@
 import re
+from datetime import datetime
 from os.path import basename
 from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
+from django.contrib.contenttypes.models import ContentType
+from invoices.models import Invoice
 from site_settings.utils import get_setting
 
 def generate_admin_email_body(entry):
@@ -80,4 +83,43 @@ def generate_email_subject(form, form_entry):
         
     return subject
     
+
+def make_invoice_for_entry(entry):
+    """
+    Create an invoice for a Form Entry.
+    """
+    inv = Invoice()
+    inv.title = "%s Invoice" % (entry.form.title)
+    inv.object_type = ContentType.objects.get(app_label=entry._meta.app_label, model=entry._meta.module_name)
+    inv.object_id = entry.id
+    inv.subtotal = entry.pricing.price
+    inv.total = entry.pricing.price
+    inv.balance = entry.pricing.price
+    inv.due_date = datetime.now()
+    inv.ship_date = datetime.now()
+    inv.save()
     
+    return inv
+
+def update_invoice_for_entry(invoice, form):
+    """
+    Update invoice for an entry based on a form.
+    """
+    inv = invoice
+    # field to be populated to invoice
+    inv.bill_to =  form.cleaned_data['first_name'] + ' ' + form.cleaned_data['last_name']
+    inv.bill_to_first_name = form.cleaned_data['first_name']
+    inv.bill_to_last_name = form.cleaned_data['last_name']
+    inv.bill_to_company = form.cleaned_data['company']
+    inv.bill_to_address = form.cleaned_data['address']
+    inv.bill_to_city = form.cleaned_data['city']
+    inv.bill_to_state =  form.cleaned_data['state']
+    inv.bill_to_zip_code = form.cleaned_data['zip_code']
+    inv.bill_to_country = form.cleaned_data['country']
+    inv.bill_to_phone = form.cleaned_data['phone']
+    inv.bill_to_email = form.cleaned_data['email']
+    inv.message = 'Thank You.'
+    inv.status = True
+    inv.estimate = True
+    inv.status_detail = 'tendered'
+    inv.save()
