@@ -20,7 +20,7 @@ class Museum(TendenciBaseModel):
     city = models.CharField(_(u'City'), max_length=200)
     state = models.CharField(_(u'State'), max_length=200)
     zip = models.CharField(_(u'Zip'), max_length=200)
-    website = models.URLField(_(u'Website'), max_length=200)
+    website = models.CharField(_(u'Website'), max_length=200)
     building_photo = models.ImageField(_(u'Building Photo'), upload_to=file_directory)
     about = models.TextField(_(u'About'))
     
@@ -39,22 +39,39 @@ class Museum(TendenciBaseModel):
     special_offers = models.TextField(_(u'Special Offers'), blank=True)
     
     ## Stay Connected
-    facebook = models.URLField(_(u'Facebook'), max_length=200, blank=True)
+    facebook = models.CharField(_(u'Facebook'), max_length=200, blank=True)
     twitter = models.CharField(_(u'Twitter'), max_length=200, blank=True)
     flickr = models.CharField(_(u'Flickr'), max_length=200, blank=True)
-    youtube = models.URLField(_(u'YouTube'), max_length=200, blank=True)
+    youtube = models.CharField(_(u'YouTube'), max_length=200, blank=True)
+    
+    slug = models.SlugField(max_length=200, unique=True, default="")
+    ordering = models.IntegerField(blank=True, null=True)
     
     objects = MuseumManager()
     
     def __unicode__(self):
         return unicode(self.name)
     
+    def save(self, *args, **kwargs):
+        model = self.__class__
+
+        if self.ordering is None:
+            # Append
+            try:
+                last = model.objects.order_by('-ordering')[0]
+                self.ordering = last.ordering + 1
+            except IndexError:
+                # First row
+                self.ordering = 0
+
+        return super(Museum, self).save(*args, **kwargs)
+    
     class Meta:
         permissions = (("view_museum","Can view museum"),)
     
     @models.permalink
     def get_absolute_url(self):
-        return ("museums.detail", [self.pk])
+        return ("museums.detail", [self.slug])
         
     @property
     def content_type(self):

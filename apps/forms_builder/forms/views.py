@@ -11,45 +11,61 @@ from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 
 from base.http import Http403
-from forms_builder.forms.forms import FormForForm, FormForm, FormForField
-from forms_builder.forms.models import Form, Field, FormEntry
-from forms_builder.forms.utils import (generate_admin_email_body, 
-    generate_submitter_email_body, generate_email_subject)
-from forms_builder.forms.formsets import BaseFieldFormSet
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
+from invoices.models import Invoice
 
+from forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
+    PricingForm, BillingForm)
+from forms_builder.forms.models import Form, Field, FormEntry, Pricing
+from forms_builder.forms.utils import (generate_admin_email_body, 
+    generate_submitter_email_body, generate_email_subject,
+    make_invoice_for_entry, update_invoice_for_entry)
+from forms_builder.forms.formsets import BaseFieldFormSet
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
     if not has_perm(request.user,'forms.add_form'):
         raise Http403
+        
+    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2, can_delete=False)
     
+    formset = PricingFormSet()
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
-        if form.is_valid():           
+        if form.is_valid():
             form_instance = form.save(commit=False)
-            
-            form_instance = update_perms_and_save(request, form, form_instance)
-            
-            log_defaults = {
-                'event_id' : 587100,
-                'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-                'description': '%s added' % form_instance._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': form_instance,
-            }
-            EventLog.objects.log(**log_defaults)
-                                    
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % form_instance)
-            return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
+            formset = PricingFormSet(request.POST, instance=form_instance)
+            if formset.is_valid():
+                # save form and associated pricings
+                form_instance = update_perms_and_save(request, form, form_instance)
+                
+                # update_perms_and_save does not appear to consider ManyToManyFields
+                for method in form.cleaned_data['payment_methods']:
+                    form_instance.payment_methods.add(method)
+                
+                formset.save()
+                
+                log_defaults = {
+                    'event_id' : 587100,
+                    'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
+                    'description': '%s added' % form_instance._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': form_instance,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                messages.add_message(request, messages.INFO, 'Successfully added %s' % form_instance)
+                return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(user=request.user)
-       
-    return render_to_response(template_name, {'form':form}, 
-        context_instance=RequestContext(request))
+        
+    return render_to_response(template_name, {
+        'form':form,
+        'formset':formset,
+    }, context_instance=RequestContext(request))
 
 
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
@@ -57,13 +73,25 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     
     if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403
-
+    
+    PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2)
+    
     if request.method == "POST":
         form = form_class(request.POST, instance=form_instance, user=request.user)
-        if form.is_valid():           
+        formset = PricingFormSet(request.POST, instance=form_instance)
+        if form.is_valid() and formset.is_valid():
             form_instance = form.save(commit=False)
-            
             form_instance = update_perms_and_save(request, form, form_instance)
+            
+            # update_perms_and_save does not appear to consider ManyToManyFields
+            for method in form.cleaned_data['payment_methods']:
+                form_instance.payment_methods.add(method)
+            
+            formset.save()
+            
+            # remove all pricings if no custom_payment form
+            if not form.cleaned_data['custom_payment']:
+                form_instance.pricing_set.all().delete()
 
             log_defaults = {
                 'event_id' : 587200,
@@ -79,9 +107,12 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(instance=form_instance, user=request.user)
-       
-    return render_to_response(template_name, {'form':form, 'form_instance':form_instance}, 
-        context_instance=RequestContext(request))
+        formset = PricingFormSet(instance=form_instance)
+    return render_to_response(template_name, {
+        'form':form,
+        'formset':formset,
+        'form_instance':form_instance,
+        },context_instance=RequestContext(request))
 
 
 @login_required
@@ -100,7 +131,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
             form.save()
         
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % form_instance)
-            return HttpResponseRedirect(reverse('forms'))
+            return redirect('form_detail', form_instance.slug)
     else:
         form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
        
@@ -353,7 +384,7 @@ def entries_export(request, id):
 
 def search(request, template_name="forms/search.html"):
     query = request.GET.get('q', None)
-    forms = Form.objects.search(query, user=request.user)
+    forms = Form.objects.search(query, user=request.user).order_by('-primary_key')
     
     return render_to_response(template_name, {'forms':forms}, 
         context_instance=RequestContext(request))
@@ -416,9 +447,29 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     f.seek(0)
                     msg.attach(f.name, f.read())
                 msg.send()
+            
+            # payment redirect
+            if form.custom_payment:
+                # create the invoice
+                invoice = make_invoice_for_entry(entry)
+                # log an event for invoice add
+                log_defaults = {
+                    'event_id' : 311000,
+                    'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+                    'description': '%s added' % invoice._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': invoice,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                # redirect to billing form
+                return redirect('form_entry_payment', invoice.id, invoice.guid)
+                
+            # default redirect
             if form.completion_url:
                 return redirect(form.completion_url)
-            return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
+            return redirect("form_sent", form.slug)
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template, context, RequestContext(request))
 
@@ -430,3 +481,38 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     form = get_object_or_404(published, slug=slug)
     context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
+
+def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
+    """
+    Show billing form, update the invoice then proceed to external payment.
+    """
+    invoice = get_object_or_404(Invoice, pk=invoice_id)
+
+    if not invoice.allow_view_by(request.user, invoice_guid):
+        raise Http403
+        
+    entry = FormEntry.objects.get(id=invoice.object_id)
+        
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            update_invoice_for_entry(invoice, form)
+            # redirect to online payment
+            if (entry.payment_method.machine_name).lower() == 'credit-card':
+                return redirect('payments.views.pay_online', invoice.id, invoice.guid)
+            # redirect to invoice page
+            return redirect('invoice.view', invoice.id, invoice.guid)
+    else:
+        if request.user.is_authenticated():
+            form = form_class(initial={
+                        'first_name':request.user.first_name,
+                        'last_name':request.user.last_name,
+                        'email':request.user.email})
+        else:
+            form = form_class()
+    
+    return render_to_response(template, {
+            'payment_form':form,
+            'form':entry.form,
+        }, context_instance=RequestContext(request))
+        

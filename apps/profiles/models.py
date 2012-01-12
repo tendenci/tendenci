@@ -141,3 +141,31 @@ class Profile(TendenciBaseModel):
     def get_groups(self):
         memberships = self.user.group_member.all()
         return [membership.group for membership in memberships]
+
+    def roles(self):
+        from perms.utils import is_developer, is_admin, is_member
+        role_set = []
+
+        if is_developer(self.user):
+            role_set.append('developer')
+
+        if is_admin(self.user):
+            role_set.append('admin')
+        
+        if is_member(self.user):
+            role_set.append('member')
+        
+        if self.user.is_active:
+            role_set.append('user')
+
+        return role_set or ['disabled']
+
+    def highest_role(self):
+        """
+        The highest role will be returned.
+        """
+        roles = ['developer', 'admin', 'member', 'user', 'disabled']
+        for role in roles:
+            if role in self.roles():
+                return role
+

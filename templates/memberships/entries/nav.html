@@ -22,7 +22,7 @@
     {% endif %}
 
 	<li>
-		<span>{% trans "Membership Entries" %}</span>
+		<span>{% trans "Entries" %}</span>
 		<ul id="secondary">
 			<li><a href="{% url membership.application_entries %}">{% trans "Entries:" %}</a></li>
 
@@ -44,8 +44,6 @@
 		</ul>
 
 	</li>
-	{% if MODULE_NEWS_ENABLED %}
-	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
-	{% endif %}
+	<li><a href="{% url corp_memb.index %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL "Corp. Mem." %}</a></li>
 	</ul>
 </div>
