@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from events.models import CustomRegForm, CustomRegField
 from events.forms import CustomRegFormAdminForm, CustomRegFormForField 
@@ -36,7 +37,7 @@ class CustomRegFieldAdmin(admin.TabularInline):
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
-    list_display = ("name", "notes", "status",)
+    list_display = ("name", "preview_link", "notes", "status",)
     search_fields = ("name", "notes", "status",)
 #    radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = (
@@ -49,10 +50,18 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         js = (
             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
+            #'%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
+            '%sjs/admin/custom_reg_form_inline_ordering.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
+        
+    def preview_link(self, obj):
+
+        return """<a href="%s">preview</a>
+            """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
+    preview_link.allow_tags = True
+    preview_link.short_description = 'Preview Link'
         
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
@@ -63,8 +72,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             
         instance.owner = request.user
         instance.owner_username = request.user.username
-        print instance.creator
-        print instance.owner
+
         # save the object
         instance.save()
         

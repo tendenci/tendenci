@@ -254,6 +254,9 @@ class RegConfPricing(models.Model):
     
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+                                 verbose_name=_("Custom Registration Form"))
+    
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now()+timedelta(hours=6))
     
@@ -768,16 +771,19 @@ class CustomRegForm(models.Model):
     class Meta:
         verbose_name = _("Custom Registration Form")
         verbose_name_plural = _("Custom Registration Forms")
+        
+    def __unicode__(self):
+        return self.name
     
     
 
 class CustomRegField(models.Model):
-    form = models.ForeignKey("CustomRegForm", related_name="custom_reg_fields")
+    form = models.ForeignKey("CustomRegForm", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_TYPE_CHOICES,
         max_length=64)
     field_tied_to = models.CharField(_("Tie to User Field"), choices=USER_FIELD_CHOICES,
-        max_length=64)
+        max_length=64, blank=True, null=True)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
@@ -789,13 +795,14 @@ class CustomRegField(models.Model):
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
+        ordering = ('position',)
         
 class CustomRegFormEntry(models.Model):
-    form = models.ForeignKey("CustomRegForm", related_name="custom_reg_entries")
+    form = models.ForeignKey("CustomRegForm", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
 
 
 class CustomRegFieldEntry(models.Model):
-    entry = models.ForeignKey("CustomRegFormEntry", related_name="custom_reg_fields")
-    field = models.ForeignKey("CustomRegField", related_name="custom_reg_field")
+    entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")
+    field = models.ForeignKey("CustomRegField", related_name="entries")
     value = models.CharField(max_length=FIELD_MAX_LENGTH)

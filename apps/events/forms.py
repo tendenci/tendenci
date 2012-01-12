@@ -8,12 +8,13 @@ from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import BaseFormSet
 from django.forms.util import ErrorList
+from django.utils.importlib import import_module
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
     TypeColorSet, Registrant, RegConfPricing, CustomRegForm, \
-    CustomRegField
+    CustomRegField, CustomRegFormEntry
 
 from payments.models import PaymentMethod
 from perms.utils import is_admin
@@ -23,6 +24,7 @@ from base.fields import SplitDateTimeField
 from emails.models import Email
 from form_utils.forms import BetterModelForm
 from discounts.models import Discount
+from events.settings import FIELD_MAX_LENGTH
 
 from fields import Reg8nDtField, Reg8nDtWidget
 
@@ -48,8 +50,54 @@ class CustomRegFormAdminForm(forms.ModelForm):
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
-        exclude = ["position"]       
-           
+        exclude = ["position"] 
+        
+class FormForCustomRegForm(forms.ModelForm):
+
+    class Meta:
+        model = CustomRegFormEntry
+        exclude = ("form", "entry_time")
+    
+    def __init__(self, form, user, *args, **kwargs):
+        """
+        Dynamically add each of the form fields for the given form model 
+        instance and its related field model instances.
+        """
+        self.user = user
+        self.form = form
+        self.form_fields = form.fields.filter(visible=True).order_by('position')
+        super(FormForCustomRegForm, self).__init__(*args, **kwargs)
+        for field in self.form_fields:
+            field_key = "field_%s" % field.id
+            if "/" in field.field_type:
+                field_class, field_widget = field.field_type.split("/")
+            else:
+                field_class, field_widget = field.field_type, None
+            field_class = getattr(forms, field_class)
+            field_args = {"label": field.label, "required": field.required}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                choices = field.choices.split(",")
+                field_args["choices"] = zip(choices, choices)
+            if "initial" in arg_names:
+                default = field.default.lower()
+                if field_class == "BooleanField":
+                    if default == "checked" or default == "true" or \
+                        default == "on" or default == "1":
+                            default = True
+                    else:
+                        default = False
+                field_args["initial"] = field.default
+            #if "queryset" in arg_names:
+            #    field_args["queryset"] = field.queryset()
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+            self.fields[field_key] = field_class(**field_args)
+            
+       
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -317,6 +365,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'start_dt',
             'end_dt',
             'group',
+            'reg_form',
             'allow_anonymous',
             'allow_user',
             'allow_member'
@@ -328,6 +377,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'price',
                     'dates',
                     'group',
+                    'reg_form',
                     'allow_anonymous',
                     'allow_user',
                     'allow_member'
