@@ -144,14 +144,14 @@ def create_registrant(form, event, reg8n):
     registrant.phone = form.cleaned_data.get('phone', '')
     registrant.company_name = form.cleaned_data.get('company_name', '')
     
-    # associate the registrant with a user of the same email
-    users = User.objects.filter(email=registrant.email)
-    if users:
-        registrant.user = users[0]
+    # associate the registrant with a user of the form
+    user = form.get_user()
+    if not user.is_anonymous():
+        registrant.user = user
         try:
             user_profile = registrant.user.get_profile()
         except:
-             user_profile = None
+            user_profile = None
         if user_profile:
             registrant.mail_name = user_profile.display_name
             registrant.address = user_profile.address
