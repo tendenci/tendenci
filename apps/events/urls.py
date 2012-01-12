@@ -108,6 +108,10 @@ urlpatterns = patterns('events',
     # email registrants
     url(r'^message/(?P<event_id>\d+)/$', 'views.message_add', name='event.message'),
     
+    # custom registration form preview
+    url(r'^custom_reg_form/preview/(?P<id>\d+)/$', 'views.custom_reg_form_preview', 
+        name='event.custom_reg_form_preview'),
+    
     # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
 )

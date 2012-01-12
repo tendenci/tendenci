@@ -25,11 +25,11 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    RegConfPricing
+    RegConfPricing, CustomRegForm
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    Reg8nConfPricingForm, PendingEventForm
+    Reg8nConfPricingForm, PendingEventForm, FormForCustomRegForm
 from events.search_indexes import EventIndex
 from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
@@ -48,6 +48,23 @@ try:
     from notification import models as notification
 except:
     notification = None
+    
+def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
+    """
+    Preview a built form.
+    """    
+    form = get_object_or_404(CustomRegForm, id=id)
+    
+    form_for_form = FormForCustomRegForm(form, request.user, request.POST or None, request.FILES or None)
+
+    for field in form_for_form.fields:
+        try:
+            form_for_form.fields[field].initial = request.GET.get(field, '')
+        except:
+            pass
+        
+    context = {"form": form, "form_for_form": form_for_form}
+    return render_to_response(template_name, context, RequestContext(request))
 
 
 def index(request, id=None, template_name="events/view.html"):
@@ -1838,3 +1855,17 @@ def approve(request, event_id, template_name="events/approve.html"):
     return render_to_response(template_name, {
         'event': event,
         }, context_instance=RequestContext(request))
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
