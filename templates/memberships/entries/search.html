@@ -19,11 +19,20 @@
 <div class="t">
     {% entry_nav request.user %}
 
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% trans "Membership Entry Search" %}</h1>
+    <h1>{% trans "Membership Entry Search" %}</h1>
 
 	{% entry_search %}
 
     {% autopaginate entries 10 %}
+
+<style type="text/css">
+    .membership-side-panel > div {
+        margin-bottom: 20px;
+    }
+    .membership-side-panel ul {
+        margin-left: 0;   
+    }
+</style>
 
 	<div class="memberships-wrap">
 

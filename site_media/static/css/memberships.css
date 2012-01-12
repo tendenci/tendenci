@@ -123,6 +123,10 @@
 	border-top: none;
 }
 
+.t .memberships-wrap .membership-wrap-search:last-child {
+	margin-bottom: 0;
+}
+
 .result-head {
 	padding: 10px;
 	/*margin: 7px 7px 0 7px;*/
@@ -447,7 +451,11 @@ form.connect-with li {
 .membership-side-panel div {
     margin: 5px 0;
 }
+.membership-side-panel > div {
+	margin-bottom: 20px;
+}
 .membership-side-panel ul {
+	margin-left: 0;
 
 }
 .membership-side-panel li {
