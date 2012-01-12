@@ -432,7 +432,6 @@ def get_color(event_id):
     """Gets the hex color of an event log based on the event id
     get_color('id')
     """
-    apps = 
     if event_id in colors:
         return colors[event_id]
     else:
