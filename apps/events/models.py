@@ -114,6 +114,10 @@ class Registrant(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     
+    custom_reg_form_entry = models.ForeignKey("CustomRegFormEntry", 
+                                              related_name="registrants", 
+                                              null=True)
+    
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)

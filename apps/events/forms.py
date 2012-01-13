@@ -14,7 +14,7 @@ from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
     TypeColorSet, Registrant, RegConfPricing, CustomRegForm, \
-    CustomRegField, CustomRegFormEntry
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry
 
 from payments.models import PaymentMethod
 from perms.utils import is_admin
@@ -58,14 +58,16 @@ class FormForCustomRegForm(forms.ModelForm):
         model = CustomRegFormEntry
         exclude = ("form", "entry_time")
     
-    def __init__(self, form, user, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Dynamically add each of the form fields for the given form model 
         instance and its related field model instances.
         """
-        self.user = user
-        self.form = form
-        self.form_fields = form.fields.filter(visible=True).order_by('position')
+        self.user = kwargs.pop('user', None)
+        self.custom_reg_form = kwargs.pop('custom_reg_form', None)
+        self.event = kwargs.pop('event', None)
+        self.form_index = kwargs.pop('form_index', None)
+        self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -96,6 +98,35 @@ class FormForCustomRegForm(forms.ModelForm):
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
+            
+        # make the fields in the subsequent forms as not required
+        if self.form_index and self.form_index > 0:
+            for key in self.fields.keys():
+                self.fields[key].required = False
+                
+    def save(self, event, **kwargs):
+        """
+        Create a FormEntry instance and related FieldEntry instances for each 
+        form field.
+        """
+        if event:
+            entry = super(FormForCustomRegForm, self).save(commit=False)
+            entry.form = self.custom_reg_form
+            entry.entry_time = datetime.now()
+            entry.save()
+            for field in self.form_fields:
+                field_key = "field_%s" % field.id
+                value = self.cleaned_data[field_key]
+                if isinstance(value,list):
+                    value = ','.join(value)
+                if not value: value=''
+                field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
+                if self.user and self.user.is_authenticated():
+                    field_entry.save(user=self.user)
+                else:
+                    field_entry.save()
+            return entry
+        return
             
        
 
@@ -341,6 +372,13 @@ class Reg8nConfPricingForm(BetterModelForm):
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
+        
+        # skip the field if there is no custom registration forms
+        custom_reg_forms = CustomRegForm.objects.filter(status='active')
+        if not custom_reg_forms:
+            del self.fields['reg_form']
+        else:
+            self.fields['reg_form'].queryset = custom_reg_forms
         
     def clean_quantity(self):
         # make sure that quantity is always a positive number
@@ -588,6 +626,9 @@ class RegistrantBaseFormSet(BaseFormSet):
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event', None)
+        custom_reg_form = kwargs.pop('custom_reg_form', None)
+        if custom_reg_form:
+            self.custom_reg_form = custom_reg_form
         super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
         
@@ -599,6 +640,8 @@ class RegistrantBaseFormSet(BaseFormSet):
         
         defaults['event'] = self.event
         defaults['form_index'] = i
+        if hasattr(self, 'custom_reg_form'):
+            defaults['custom_reg_form'] = self.custom_reg_form
         
         if self.data or self.files:
             defaults['data'] = self.data
