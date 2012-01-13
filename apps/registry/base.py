@@ -49,7 +49,6 @@ class DeclarativeMetaclass(type):
                         ))
                     field = attrs.pop(field_name)
                     attrs['fields'][field_name] = field
-                    print field
 
         return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
 
