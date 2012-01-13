@@ -18,7 +18,7 @@ class PageRegistry(CoreRegistry):
             'delete':('583000','00CC00'),
             'search':('584000','00FF00'),
             'view':('585000','00FF33'),
-            'print_view':('585001':'00FF33')
+            'print_view':('585001','00FF33')
         }
     }
     url = {
