@@ -55,7 +55,7 @@ def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_p
     """    
     form = get_object_or_404(CustomRegForm, id=id)
     
-    form_for_form = FormForCustomRegForm(form, request.user, request.POST or None, request.FILES or None)
+    form_for_form = FormForCustomRegForm(request.POST or None, request.FILES or None, custom_reg_form=form, user=request.user)
 
     for field in form_for_form.fields:
         try:
@@ -744,9 +744,15 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     # check is this person is qualified to see this pricing and event_price
     qualified_pricing = get_pricing(request.user, event, pricing=pricing)
     qualifies = False
+    # custom registration form
+    # use the custom registration form if pricing is associated with a custom reg form
+    custom_reg_form = None
+
     for q_price in qualified_pricing:
         if price.pk == q_price['price'].pk:
             qualifies = True
+            if price.reg_form and price.reg_form.status:
+                custom_reg_form = price.reg_form
     if not qualifies:
         return multi_register_redirect(request, event, _('Please choose a price.'))
 
@@ -771,10 +777,15 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         spots_taken = get_event_spots_taken(event)
         if spots_taken > limit:
             return multi_register_redirect(request, event, _('Registration is full.'))
-
+    if custom_reg_form:
+        RF = FormForCustomRegForm
+    else:
+        RF = RegistrantForm
+    #RF = RegistrantForm
+    
     # start the form set factory    
     RegistrantFormSet = formset_factory(
-        RegistrantForm, 
+        RF, 
         formset=RegistrantBaseFormSet,
         can_delete=True,
         max_num=price.quantity,
@@ -801,13 +812,23 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             if profile:
                 initial.update({'company_name': profile.company,
                                 'phone':profile.phone,})
-        registrant = RegistrantFormSet(prefix='registrant',
-                                       initial=[initial], event=event)
+        params = {'prefix': 'registrant',
+                  'initial': [initial],
+                  'event': event}
+        if custom_reg_form:
+            params.update({"custom_reg_form": custom_reg_form})
+
+        registrant = RegistrantFormSet(**params)
     else: 
         if post_data and 'add_registrant' in request.POST:
             post_data = request.POST.copy()
-            post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1  
-        registrant = RegistrantFormSet(post_data, prefix='registrant', event=event)
+            post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1 
+            
+        params = {'prefix': 'registrant',
+                  'event': event}
+        if custom_reg_form:
+            params.update({"custom_reg_form": custom_reg_form}) 
+        registrant = RegistrantFormSet(post_data, **params)
 
     # REGISTRATION form
     if request.method == 'POST' and 'submit' in request.POST:
@@ -960,14 +981,14 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 break
         if has_registrant_form_errors:
             break
-
     return render_to_response(template_name, {'event':event,
                                               'event_price': event_price,
                                               'free_event': free_event,
-                                              'price_list':price_list,
-                                              'total_price':total_price,
+                                              'price_list': price_list,
+                                              'total_price': total_price,
                                               'price': price,
-                                              'reg_form':reg_form,
+                                              'reg_form': reg_form,
+                                              'custom_reg_form': custom_reg_form,
                                               'registrant': registrant,
                                               'total_regt_forms': total_regt_forms,
                                               'has_registrant_form_errors': has_registrant_form_errors,
