@@ -282,7 +282,9 @@
 					<div class="contribution">
 						<div class="content-type">{{ contribution.content_type.name|capfirst }}</div>
 						<div class="contrib-title">
-							<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.title }}</a>
+							{% if contribution.object.get_absolute_url %}<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.title }}</a>
+							{% else %}{{ contribution.title }}
+							{% endif %}
 						</div>
 						<div class="contrib-create-dt">{{ contribution.create_dt|date:"long" }}</div>
 						<div style="clear:both;"></div>
