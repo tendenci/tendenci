@@ -162,10 +162,12 @@ class MemberApproveForm(forms.Form):
 
         sqs = SearchQuerySet()
 
-        email_q = Q(content=mentioned_em)
-        sqs = sqs.filter(email_q)
-
-        sqs_users = [sq.object.user for sq in sqs]
+        if mentioned_em:
+            email_q = Q(content=mentioned_em)
+            sqs = sqs.filter(email_q)
+            sqs_users = [sq.object.user for sq in sqs]
+        else:
+            sqs_users = []
 
         for u in sqs_users:
             user_set[u.pk] = '%s %s %s %s' % (u.first_name, u.last_name, u.username, u.email)
