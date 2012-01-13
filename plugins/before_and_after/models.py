@@ -53,9 +53,24 @@ class BeforeAndAfter(TendenciBaseModel):
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
     admin_notes = models.TextField(_('admin notes'), blank=True)
     meta = models.OneToOneField(MetaTags, null=True, blank=True)
+    ordering = models.IntegerField(blank=True, null=True)
     
     objects = BeforeAndAfterManager()
-    
+
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.ordering is None:
+            # Append
+            try:
+                last = model.objects.order_by('-ordering')[0]
+                self.ordering = last.ordering + 1
+            except IndexError:
+                # First row
+                self.ordering = 0
+
+        return super(BeforeAndAfter, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Before & After')
         verbose_name_plural = _('Before & Afters')
@@ -81,7 +96,7 @@ class BeforeAndAfter(TendenciBaseModel):
         if self.subcategory:
             bnas = bnas.filter(subcategory=self.subcategory.pk)
         
-        bnas = bnas.order_by('-primary_key')
+        bnas = bnas.order_by('-ordering','-primary_key')
         
         # since bnas is a generator we have no choice but to iterate.
         # we'll avoid calling .object so we won't hit the database
@@ -104,7 +119,7 @@ class BeforeAndAfter(TendenciBaseModel):
         if self.subcategory:
             bnas = bnas.filter(subcategory=self.subcategory.pk)
         
-        bnas = bnas.order_by('-primary_key')
+        bnas = bnas.order_by('-ordering','-primary_key')
         
         # since bnas is a generator we have no choice but to iterate.
         # we'll avoid calling .object so we won't hit the database

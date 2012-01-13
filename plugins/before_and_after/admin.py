@@ -21,9 +21,11 @@ class SubcategoryAdmin(admin.ModelAdmin):
     list_filter = ["category", "warning"]
 
 class BnAAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', "title", "category", "subcategory", 'admin_notes']
+    list_display = ['view_on_site', 'edit_link', "title", "category", "subcategory", 'admin_notes','ordering']
     list_filter = ["category", "subcategory"]
     form = BnAForm
+    ordering = ['-ordering']
+    list_editable = ['ordering']
     inlines = [PhotoSetAdmin,]
     
     fieldsets = (
@@ -53,6 +55,9 @@ class BnAAdmin(admin.ModelAdmin):
             '%sjs/admin/sortable_inline/jquery-ui-1.8.13.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/sortable_inline/stacked-sort.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
     
     def view_on_site(self, obj):
