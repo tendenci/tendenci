@@ -1,5 +1,5 @@
 
-colors = {
+base_colors = {
     # login
     '125200':'66CCFF',
     
@@ -123,12 +123,23 @@ def generate_colors():
                     d[log_id] = color
     return d
 
-#colors = generate_colors()
+def cache_colors(colors):
+    key = 'event_log_colors'
+    is_set = cache.add(key, colors)
+    if not is_set:
+        cache.set(key, colors)
 
 def get_color(event_id):
     """Gets the hex color of an event log based on the event id
     get_color('id')
     """
+    key = 'event_log_colors'
+    colors = cache.get(key)
+    if not colors:
+        colors = generate_colors()
+        colors.update(base_colors)
+        cache_colors(colors)
+    
     if event_id in colors:
         return colors[event_id]
     else:
