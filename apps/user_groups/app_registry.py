@@ -22,10 +22,10 @@ class GroupRegistry(PeopleRegistry):
         'groupmembership':{
             'base':('220000','00CCFF'),
             'add':('221000','00CCFF'),
-            'edit':('222000':'00CCFF'),
-            'delete':('223000':'00CCFF'),
-            'search':('224000':'00CCFF'),
-            'view':('225000':'00CCFF'),
+            'edit':('222000','00CCFF'),
+            'delete':('223000','00CCFF'),
+            'search':('224000','00CCFF'),
+            'view':('225000','00CCFF'),
         }
     }
     

@@ -20,7 +20,7 @@ class ProfileRegistry(PeopleRegistry):
             'view':('125000', '3399FF'),
         },
         'login':{
-            'login':('125200':'66CCFF'),
+            'login':('125200','66CCFF'),
         },
     }
     
