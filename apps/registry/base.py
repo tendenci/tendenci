@@ -33,7 +33,8 @@ class DeclarativeMetaclass(type):
             'description',
             'icon',
             'url',
-            'packages'
+            'packages',
+            'event_logs'
         ]
 
         if 'app_registry' in attrs['__module__']:
@@ -48,6 +49,7 @@ class DeclarativeMetaclass(type):
                         ))
                     field = attrs.pop(field_name)
                     attrs['fields'][field_name] = field
+                    print field
 
         return super(DeclarativeMetaclass, cls).__new__(cls, name, bases, attrs)
 
