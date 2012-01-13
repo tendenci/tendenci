@@ -115,11 +115,13 @@ def generate_colors():
     d = {}
     apps = site.get_registered_apps().all_apps
     for app in apps:
-        d[app.base_id] = app.base_color
-        d[app.add_id] = app.add_color
-        d[app.edit_id] = app.edit_color
-        d[app.search_id] = app.search_color
-        d[app.detail_id] = app.detail_color
+        if 'event_logs' in app:
+            for model in app['event_logs'].keys():
+                for event in app['event_logs'][model].keys():
+                    log_id = app['event_logs'][model][event][0]
+                    color = app['event_logs'][model][event][1]
+                    d[log_id] = color
+    return d
 
 #colors = generate_colors()
 
