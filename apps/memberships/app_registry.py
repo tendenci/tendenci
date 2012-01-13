@@ -44,7 +44,7 @@ class MembershipRegistry(PeopleRegistry):
             'view':('665000','FF9966'),
         },
         'membership_entries':{
-            'base'('1080000','FF6633'),
+            'base':('1080000','FF6633'),
             'add':('1081000','FF6633'),
             'search':('1084000','FF6633'),
             'view':('1085000','FF6633'),
@@ -60,6 +60,7 @@ class MembershipRegistry(PeopleRegistry):
             'view':('905000','FF4900'),
             'print_view':('906000','FF2400'),
         }
+    }
         
     url = {
         'search': lazy_reverse('membership.search'),
