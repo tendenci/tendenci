@@ -104,6 +104,22 @@ base_colors = {
     '630560':'33FF99', # pages rss feed
     '630525':'00FF99', # jobs rss feed 
     
+    # recurring payments - green
+    '1120000':'1A7731', #base
+    '1120100':'14A037', # add
+    '1120200':'478256', # edit
+    '1120300':'8FBA9A', # delete
+    '1120400':'14E548', # search
+    '1120500':'339B41', # disable
+
+    # tendenci_guide
+    '1002000':'A20900', # base
+    '1002100':'119933', # add
+    '1002200':'EEDD55', # edit
+    '1002300':'AA2222', # delete
+    '1002400':'CC55EE', # search
+    '1002500':'55AACC', # detail
+    
 }
 
 def generate_colors():
