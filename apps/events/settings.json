@@ -66,5 +66,22 @@
         "scope_category": "events", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "false", 
+        "description": "If true and anonymous member pricing is enabled, Users will also be able to validate pricings based on memberid.",
+        "data_type": "boolean",
+        "update_dt": "2010-08-12 17:19:11",
+        "input_type": "select",
+        "client_editable": true,
+        "name": "memberidpricing",
+        "value": "true", 
+        "label": "Member ID Pricing", 
+        "input_value": "true,false", 
+        "parent_id": 0,
+        "scope": "module", 
+        "scope_category": "events", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
