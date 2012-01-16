@@ -12,7 +12,7 @@ class CoordinateInline(admin.TabularInline):
     model = Coordinate
 
 class LotAdmin(admin.ModelAdmin):
-    list_display = [u'name', 'view_on_site', 'edit_link', 'tags']
+    list_display = ['name', 'view_on_site', 'edit_link', 'tags']
     list_filter = []
     search_fields = []
     actions = []
@@ -25,6 +25,7 @@ class LotAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, 
             {'fields': (
+                'map',
                 'name',
                 'tags',
             )}
