@@ -1,0 +1,29 @@
+{% extends "lots/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load lot_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Lots' %}" href="{% url lots.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate lots 10 %}
+<div class="t">
+<h1>{% trans 'Lot List' %}</h1>
+{% lot_search %}
+<div class="lots-wrap clearfix">
+{% for lot in lots %}
+{% search_result lot %}
+{% empty %}
+<p>{% trans '0 lots found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock body %}
