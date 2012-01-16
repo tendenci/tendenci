@@ -23,29 +23,59 @@ class Location(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-    
-    # TODO - figure out if these stay
+
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
-
     hq = models.BooleanField(_('Headquarters'))
-    
     entity = models.ForeignKey(Entity,null=True, blank=True)
-        
+
     objects = LocationManager()
 
     class Meta:
         permissions = (("view_location","Can view location"),)
 
+    def __unicode__(self):
+        return self.description
+
     @models.permalink
     def get_absolute_url(self):
         return ("location", [self.pk])
-    
+
+    def get_address(self):
+        return "%s %s %s, %s %s" % (
+            self.address, 
+            self.address2, 
+            self.city, 
+            self.state, 
+            self.zipcode
+        )
+
+    def get_coordinates(self):
+        import simplejson, urllib
+        GEOCODE_BASE_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
+        kwargs.update({'address':self.get_address(),'sensor':'false'})
+        url = '%s?%s' % (GEOCODE_BASE_URL, urllib.urlencode(kwargs))
+        result = simplejson.load(urllib.urlopen(url))
+
+        if result['status'] == 'OK':
+            return result['results'][0]['geometry']['location'].values()
+        
+        return (None, None)
+
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
-            
+        self.guid = self.guid or unicode(uuid.uuid1())
+
+        # update latitude and longitude
+        if not all((self.latitude, self.longitude)):
+            self.latitude, self.longitude = self.get_coordinates()
+
         super(Location, self).save(*args, **kwargs)
 
-    def __unicode__(self):
-        return self.description
+class Distance(models.Model):
+    """Holds distance information between zip codes and locations"""
+    zip_code = models.CharField(max_length=7)
+    location = models.ForeignKey(Location)
+    distance = models.PositiveSmallIntegerField()
+
+    def get_locations(zip_code):
+        return Distance.objects.filter(zip_code=zip_code).order_by('distance')
