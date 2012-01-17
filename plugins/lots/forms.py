@@ -5,7 +5,7 @@ from perms.forms import TendenciBaseForm
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
 
-from lots.models import Lot, Map
+from lots.models import Lot, Map, Coordinate
 
 class MapForm(TendenciBaseForm):
     name = forms.CharField()
@@ -58,6 +58,7 @@ class LotForm(TendenciBaseForm):
         fields = (
             'name',
             'map',
+            'description',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -70,6 +71,7 @@ class LotForm(TendenciBaseForm):
         fieldsets = [('Map Information', {
                       'fields': ['name',
                                  'map',
+                                 'description',
                                  'tags',
                                  ],
                       'legend': ''
@@ -87,3 +89,8 @@ class LotForm(TendenciBaseForm):
                                  'status_detail'], 
                       'classes': ['admin-only'],
                     })]
+
+class CoordinateForm(forms.ModelForm):
+    class Meta:
+        model = Coordinate
+        exclude = ('lot',)

@@ -15,15 +15,16 @@
 {% block body %}
 {% autopaginate lots 10 %}
 <div class="t">
-<h1>{% trans 'Lot List' %}</h1>
-{% lot_search %}
-<div class="lots-wrap clearfix">
-{% for lot in lots %}
-{% search_result lot %}
-{% empty %}
-<p>{% trans '0 lots found' %}</p>
-{% endfor %}
-</div>
-{% paginate %}
+    {% lot_nav request.user %}
+    <h1>{% trans 'Lot List' %}</h1>
+    {% lot_search %}
+    <div class="lots-wrap clearfix">
+        {% for lot in lots %}
+            {% search_result lot %}
+        {% empty %}
+        <p>{% trans '0 lots found' %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
 </div>
 {% endblock body %}

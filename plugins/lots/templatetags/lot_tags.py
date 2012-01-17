@@ -5,10 +5,8 @@ from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 
-
 class ListLotsNode(ListNode):
     model = Lot
-
 
 @register.tag
 def list_lots(parser, token):
@@ -38,6 +36,14 @@ def list_lots(parser, token):
         kwargs['order'] = '-create_dt'
 
     return ListLotsNode(context_var, *args, **kwargs)
+
+@register.inclusion_tag("lots/nav.html", takes_context=True)
+def lot_nav(context, user, job=None):
+    context.update({
+        'nav_object': job,
+        "user": user
+    })
+    return context
 
 @register.inclusion_tag("lots/search-form.html", takes_context=True)
 def lot_search(context):

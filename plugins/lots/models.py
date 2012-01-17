@@ -29,6 +29,7 @@ class Lot(TendenciBaseModel):
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     map = models.ForeignKey(Map)
     name = models.CharField(_(u'Name'), max_length=200,)
+    description = models.TextField(_('Description'), blank=True)
     objects = LotManager()
     
     class Meta:

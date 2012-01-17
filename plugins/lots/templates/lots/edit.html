@@ -4,9 +4,9 @@
 
 {% block body %}
 <div class="t">
-    {% lot_nav request.user %}
+    {% lot_nav request.user lot %}
     <div class="lot-wrap">
-        <h1>Add Lot</h1>
+        <h1>Edit {{ lot.name }}</h1>
         <form method="post" action="">{% csrf_token %}
             {{ formset.management_form }}
             <div class="forms">

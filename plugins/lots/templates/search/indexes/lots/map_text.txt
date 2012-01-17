@@ -7,3 +7,4 @@
 
 {{ object.pk }}
 {{ object.name }}
+{{ object.description }}
