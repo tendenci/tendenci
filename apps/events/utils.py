@@ -952,3 +952,15 @@ def get_active_days(event):
         day_list.append((start_dt, next_dt))
     
     return day_list
+
+def get_custom_registrants_initials(entries, **kwargs):
+    initials = []
+    for entry in entries:
+        fields_d = {}
+        field_entries = entry.field_entries.all()
+        for field_entry in field_entries:
+            fields_d['field_%d' % field_entry.field.id] = field_entry.value
+        initials.append(fields_d)
+    return initials
+                        
+        

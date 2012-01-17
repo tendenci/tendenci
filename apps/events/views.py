@@ -25,7 +25,7 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    RegConfPricing, CustomRegForm
+    RegConfPricing, CustomRegForm, CustomRegFormEntry
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
@@ -35,6 +35,7 @@ from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.utils import get_ievent, copy_event, email_admins, get_active_days
+from events.utils import get_custom_registrants_initials
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -1006,11 +1007,32 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
 
     if not any(perms):
         raise Http403
-
-    RegistrantFormSet = modelformset_factory(Registrant, extra=0,
-                                fields=('first_name', 'last_name', 'email', 'phone', 'company_name'))
-    formset = RegistrantFormSet(request.POST or None,
-                                queryset=Registrant.objects.filter(registration=reg8n).order_by('id'))
+    
+    custom_reg_form = reg8n.reg_conf_price.reg_form
+    if custom_reg_form:
+        # use formset_factory for custom registration form
+        RegistrantFormSet = formset_factory(
+            FormForCustomRegForm, 
+            formset=RegistrantBaseFormSet,
+            max_num=reg8n.registrant_set.filter(registration=reg8n).count(),
+            extra=0
+        )
+        entry_ids = reg8n.registrant_set.values_list('custom_reg_form_entry', flat=True).order_by('id')
+        entries = [CustomRegFormEntry.objects.get(id=id) for id in entry_ids]
+        params = {'prefix': 'registrant',
+                  'custom_reg_form': custom_reg_form,
+                  'entries': entries,
+                  'event': reg8n.event}
+        if request.method != 'POST':
+            # build initial
+            params.update({'initial': get_custom_registrants_initials(entries),})
+        formset = RegistrantFormSet(request.POST or None, **params)
+    else:
+        # use modelformset_factory for regular registration form
+        RegistrantFormSet = modelformset_factory(Registrant, extra=0,
+                                    fields=('first_name', 'last_name', 'email', 'phone', 'company_name'))
+        formset = RegistrantFormSet(request.POST or None,
+                                    queryset=Registrant.objects.filter(registration=reg8n).order_by('id'))
     
     # required fields only stay on the first form
     for i, form in enumerate(formset.forms):
@@ -1024,14 +1046,21 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
     
     if request.method == 'POST':
         if formset.is_valid():
-            instances = formset.save()
+            updated = False
+            if custom_reg_form:
+                for form in formset.forms:
+                    form.save(reg8n.event)
+                updated = True
+            else:
+                instances = formset.save()
+                if instances: updated = True
             
             reg8n_conf_url = reverse( 
                                     'event.registration_confirmation',
                                     args=(reg8n.event.id, reg8n.registrant.hash)
                                     )
         
-            if instances:
+            if updated:
             
                 # log an event
                 log_defaults = {
@@ -1530,6 +1559,13 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     registrants = registration.registrant_set.all().order_by('id')
     registrants_count = registration.registrant_set.count()
+    
+    for registrant in registrants:
+        #registrant.assign_mapped_fields()
+        if registrant.custom_reg_form_entry:
+            registrant.name = registrant.custom_reg_form_entry.get_name()
+        else:
+            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
     return render_to_response(template_name, {
         'event':event,
