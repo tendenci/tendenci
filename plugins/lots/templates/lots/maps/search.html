@@ -1,0 +1,28 @@
+{% extends "lots/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load lot_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+{% endblock %}
+
+{% block body %}
+{% autopaginate maps 10 %}
+<div class="t">
+<h1>{% trans 'Map List' %}</h1>
+{% map_search %}
+<div class="maps-wrap clearfix">
+{% for map in maps %}
+    {% with map.object as map %}
+        {% include 'lots/maps/search-result.html' %}
+    {% endwith %}
+{% empty %}
+<p>{% trans '0 maps found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock body %}

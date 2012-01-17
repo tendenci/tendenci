@@ -1,13 +1,25 @@
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from files.models import file_directory, File
-from lots.managers import LotManager
+from lots.managers import LotManager, MapManager
 
 class Map(File):
     """This is an image where users will place lot coordinates on
-    """
+    """    
+    objects = MapManager()
+    
+    class Meta:
+        permissions = (("view_map","Can view map"),)
+        
+    def __unicode__(self):
+        return self.name
+        
+    @property
+    def content_type(self):
+        return 'lots'
     
 class Lot(TendenciBaseModel):
     """A Lot is a set of coordinates.
@@ -19,11 +31,11 @@ class Lot(TendenciBaseModel):
     name = models.CharField(_(u'Name'), max_length=200,)
     objects = LotManager()
     
-    def __unicode__(self):
-        return unicode(self.id)
-    
     class Meta:
         permissions = (("view_lot","Can view lot"),)
+        
+    def __unicode__(self):
+        return self.name
     
     @models.permalink
     def get_absolute_url(self):

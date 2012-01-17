@@ -1,0 +1,16 @@
+{% extends "lots/base.html" %}
+{% load styled_forms %}
+
+{% block body %}
+<div class="lot-wrap">
+<h1>Add Lot</h1>
+<form method="post" action="">{% csrf_token %}
+    <div class="forms">
+    {{ form|styled_form }}
+    <h2>Coordinates</h2>
+    {{ formset|styled_form_set }}
+    <input type="submit" value="Submit">
+    </div>
+</form>
+</div>
+{% endblock body %}
