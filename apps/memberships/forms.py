@@ -672,9 +672,6 @@ class AppEntryForm(forms.ModelForm):
 
         for field in self.form_fields:
 
-            print 'field', field
-
-
             if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
                 continue  # on to the next one
 
