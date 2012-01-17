@@ -212,6 +212,17 @@ class Registrant(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
+        
+    def assign_mapped_fields(self):
+        """
+        Assign the value of the mapped fields from custom registration form to this registrant
+        """
+        if self.custom_reg_form_entry:
+            user_fields = [item[0] for item in USER_FIELD_CHOICES]
+            for field in user_fields:
+                exec('self.%s=self.custom_reg_form_entry.get_value_of_mapped_field("%s")' % (field, field))
+                
+            self.name = '%s %s' % (self.first_name, self.last_name)
 
 
 class RegistrationConfiguration(models.Model):
@@ -784,10 +795,10 @@ class CustomRegForm(models.Model):
 class CustomRegField(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
+    map_to_field = models.CharField(_("Map to User Field"), choices=USER_FIELD_CHOICES,
+        max_length=64, blank=True, null=True)
     field_type = models.CharField(_("Type"), choices=FIELD_TYPE_CHOICES,
         max_length=64)
-    field_tied_to = models.CharField(_("Tie to User Field"), choices=USER_FIELD_CHOICES,
-        max_length=64, blank=True, null=True)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
@@ -795,6 +806,7 @@ class CustomRegField(models.Model):
     position = models.PositiveIntegerField(_('position'), default=0)
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text="Default value of the field")
+    display_on_roster = models.BooleanField(_("Show on Roster"), default=False)
     
     class Meta:
         verbose_name = _("Field")
@@ -804,6 +816,39 @@ class CustomRegField(models.Model):
 class CustomRegFormEntry(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
+    
+    def __unicode__(self):
+        name = self.get_name()
+        if name:
+            return name
+        
+        # top 2 fields
+        values = []
+        top_fields = CustomRegField.objects.filter(form=self.form,
+                                                   field_type='CharField'
+                                                   ).order_by('position')[0:3]
+        for field in top_fields:
+            field_entries = field.entries.filter(entry=self)
+            if field_entries:
+                values.append(field_entries[0].value)
+        return ' '.join(values)
+    
+    def get_value_of_mapped_field(self, map_to_field):
+        mapped_field = CustomRegField.objects.filter(form=self.form,
+                                map_to_field=map_to_field)
+        if mapped_field:
+            #field_entries = CustomRegFieldEntry.objects.filter(entry=self, field=mapped_field[0])
+            field_entries = mapped_field[0].entries.filter(entry=self)
+            if field_entries:
+                return field_entries[0].value
+        return ''
+
+    
+    def get_name(self):
+        name = ' '.join([self.get_value_of_mapped_field('first_name'), 
+                         self.get_value_of_mapped_field('last_name')])
+        return name.strip()
+    
 
 
 class CustomRegFieldEntry(models.Model):
