@@ -1,6 +1,7 @@
 {% extends "events/base-wide.html" %}
 {% load pagination_tags %}
 {% load event_tags %}
+{% load event_filters %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -134,11 +135,11 @@
 			
 			<div class="events-wrap">
 		    {% for registrant in registrants %}
-				{% with registrant|get_object as registrant %}
+				{% with registrant|get_object|assign_mapped_fields as registrant %}
 		    	{# has_perm user events.view_event event as can_view #}
 		    	{# if can_view #}
 				<div class="event-wrap-search">
-		
+					
 					<div class="options">
 		                <div class="quick-options">
 							{% registrant_options request.user registrant %} 	       

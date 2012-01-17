@@ -66,6 +66,7 @@ class FormForCustomRegForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         self.custom_reg_form = kwargs.pop('custom_reg_form', None)
         self.event = kwargs.pop('event', None)
+        self.entry = kwargs.pop('entry', None)
         self.form_index = kwargs.pop('form_index', None)
         self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
@@ -110,17 +111,30 @@ class FormForCustomRegForm(forms.ModelForm):
         form field.
         """
         if event:
-            entry = super(FormForCustomRegForm, self).save(commit=False)
-            entry.form = self.custom_reg_form
-            entry.entry_time = datetime.now()
-            entry.save()
+            if not self.entry:
+                entry = super(FormForCustomRegForm, self).save(commit=False)
+                entry.form = self.custom_reg_form
+                entry.entry_time = datetime.now()
+                entry.save()
+            else:
+                entry = self.entry
             for field in self.form_fields:
                 field_key = "field_%s" % field.id
-                value = self.cleaned_data[field_key]
+                value = self.cleaned_data.get(field_key, '')
                 if isinstance(value,list):
                     value = ','.join(value)
                 if not value: value=''
-                field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
+                
+                field_entry = None
+                if self.entry:
+                    field_entries = self.entry.field_entries.filter(field=field)
+                    if field_entries:
+                        # field_entry exists, just do update
+                        field_entry = field_entries[0]
+                        field_entry.value = value
+                if not field_entry:
+                    field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
+                    
                 if self.user and self.user.is_authenticated():
                     field_entry.save(user=self.user)
                 else:
@@ -629,6 +643,9 @@ class RegistrantBaseFormSet(BaseFormSet):
         custom_reg_form = kwargs.pop('custom_reg_form', None)
         if custom_reg_form:
             self.custom_reg_form = custom_reg_form
+        entries = kwargs.pop('entries', None)
+        if entries:
+            self.entries = entries
         super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
         
@@ -642,6 +659,9 @@ class RegistrantBaseFormSet(BaseFormSet):
         defaults['form_index'] = i
         if hasattr(self, 'custom_reg_form'):
             defaults['custom_reg_form'] = self.custom_reg_form
+        if hasattr(self, 'entries'):
+            defaults['entry'] = self.entries[i]
+            
         
         if self.data or self.files:
             defaults['data'] = self.data
