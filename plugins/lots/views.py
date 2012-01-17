@@ -1,9 +1,10 @@
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, inlineformset_factory
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from base.http import Http403
 from perms.utils import update_perms_and_save, has_perm
@@ -11,7 +12,7 @@ from event_logs.models import EventLog
 from perms.utils import is_admin
 
 from lots.models import Lot, Map, Coordinate
-from lots.forms import LotForm, MapForm
+from lots.forms import LotForm, MapForm, CoordinateForm
 
 try:
     from notification import models as notification
@@ -39,7 +40,8 @@ def map_selection(request, template_name="lots/maps/search.html"):
     return render_to_response(template_name, {
         'maps':maps
     }, context_instance=RequestContext(request))
-    
+
+@login_required
 def map_add(request, template_name="lots/maps/add.html"):
     if not has_perm(request.user, 'lots.add_map'):
         return Http403
@@ -67,32 +69,63 @@ def map_add(request, template_name="lots/maps/add.html"):
     return render_to_response(template_name, {
         'form':form,
     }, context_instance=RequestContext(request))
-    
+
+@login_required    
 def add(request, map_id, template_name="lots/add.html"):
     if not has_perm(request.user, 'lots.add_lot'):
         return Http403
         
     map_instance = Map.objects.get(pk=map_id)
-    CoordinateFormSet = modelformset_factory(Coordinate)
+    CoordinateFormSet = modelformset_factory(Coordinate, form=CoordinateForm)
     
     if request.method == "POST":
         form = LotForm(request.POST)
-        formset = CoordinateFormSet(request.POST, prefix="coordinates")
-        if False not in (forms.is_valid(), forset.is_valid()):
+        formset = CoordinateFormSet(request.POST, queryset=Coordinate.objects.none(), prefix="coordinates")
+        if False not in (form.is_valid(), formset.is_valid()):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
             points = formset.save(commit=False)
             for point in points:
                 point.lot = lot
                 point.save()
+            messages.add_message(request, messages.INFO, 'Successfully added %s' % lot)
+            return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(initial={"map":map_instance})
-        formset = CoordinateFormSet(prefix="coordinates")
+        formset = CoordinateFormSet(queryset=Coordinate.objects.none(), prefix="coordinates")
         
     return render_to_response(template_name, {
         'map': map_instance,
         'formset':formset,
         'form':form,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def edit(request, pk, template_name="lots/edit.html"):
+    if not has_perm(request.user, 'lots.change_lot'):
+        return Http403
+        
+    lot = get_object_or_404(Lot, pk=pk)
+    
+    CoordinateFormSet = inlineformset_factory(Lot, Coordinate)
+    
+    if request.method == "POST":
+        form = LotForm(request.POST, instance=lot)
+        formset = CoordinateFormSet(request.POST, instance=lot, prefix="coordinates")
+        if False not in (form.is_valid(), formset.is_valid()):
+            lot = form.save(commit=False)
+            lot = update_perms_and_save(request, form, lot)
+            points = formset.save()
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % lot)
+            return redirect('lots.detail', lot.pk)
+    else:
+        form = LotForm(instance=lot)
+        formset = CoordinateFormSet(instance=lot, prefix="coordinates")
+    
+    return render_to_response(template_name, {
+        'formset':formset,
+        'form':form,
+        'lot':lot,
     }, context_instance=RequestContext(request))
 
 def detail(request, pk=None, template_name="lots/detail.html"):

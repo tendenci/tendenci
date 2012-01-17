@@ -1,8 +1,8 @@
 {% load base_tags %}
 <div class="wrap-search-item">
-<div class="search-item lots-search-item">
-<div>{{ lot.name }}</div>
-
-</div>
-    {% include "lots/meta.html" %}
+    <div class="search-item lots-search-item">
+        <h3><a href="{{ lot.get_absolute_url }}">{{ lot.name }}</a></h3>
+        <p>{{ lot.description }}</p>
+    </div>
+{% include "lots/meta.html" %}
 </div>

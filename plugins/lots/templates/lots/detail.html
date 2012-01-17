@@ -1,8 +1,23 @@
 {% extends "lots/base.html" %}
+{% load lot_tags %}
+{% load base_filters %}
 
 {% block body %}
-<div class="lot-wrap">
-<div>{{ lot.name }}</div>
-{% include "lots/meta.html" %} 
+{% lot_nav request.user lot %}
+<div class="t">
+    <div class="lot-wrap">
+    <h1>{{ lot.name }}</h1>
+    <p>{{ lot.description }}</p>
+    {% if lot.map %}
+        <div class="lot-image">
+            <img src="{{ lot.map.file|thumbnail:'1000x1000' }}" alt="{{ lot.map.file.description }}">
+        </div>
+    {% endif %}
+    <h2>Coordinates</h2>
+    {% for c in lot.coordinate_set.all %}
+        ({{ c.x }} {{ c.y }})<br>
+    {% endfor %}
+    {% include "lots/meta.html" %} 
+    </div>
 </div>
 {% endblock body %}
