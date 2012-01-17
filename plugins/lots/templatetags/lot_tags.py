@@ -42,3 +42,7 @@ def list_lots(parser, token):
 @register.inclusion_tag("lots/search-form.html", takes_context=True)
 def lot_search(context):
     return context
+    
+@register.inclusion_tag("lots/maps/search-form.html", takes_context=True)
+def map_search(context):
+    return context
