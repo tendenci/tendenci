@@ -1175,6 +1175,17 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
             args=[event.pk, registrant.hash])
         )
         
+    for regt in registrants:
+        if regt.custom_reg_form_entry:
+            regt.assign_mapped_fields()
+            if not regt.name:
+                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+    for c_regt in cancelled_registrants:
+        if c_regt.custom_reg_form_entry:
+            c_regt.assign_mapped_fields()
+            if not regt.name:
+                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+        
     return render_to_response(template_name, {
         'event': event,
         'registration': registration,
@@ -1227,6 +1238,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
     if registrant.cancel_dt:
         raise Http404
 
+
     if request.method == "POST":
         # check if already canceled. if so, do nothing
         if not registrant.cancel_dt:
@@ -1273,6 +1285,11 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
         
+    if registrant.custom_reg_form_entry:
+        registrant.assign_mapped_fields()
+        if not registrant.name:
+            registrant.last_name = registrant.name = registrant.custom_reg_form_entry.__unicode__()
+           
     return render_to_response(template_name, {
         'event': event,
         'registrant':registrant,
@@ -1431,6 +1448,25 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     
         canceled_registrants = Registrant.objects.search(
             "is:canceled", user=request.user, event=event).order_by("-update_dt")
+            
+    for reg in registrants:
+        if reg.custom_reg_form_entry:
+            reg.assign_mapped_fields()
+            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
+            if not reg.name:
+                reg.name = reg.custom_reg_form_entry.__unicode__()
+    for reg in active_registrants:
+        if reg.custom_reg_form_entry:
+            reg.assign_mapped_fields()
+            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
+            if not reg.name:
+                reg.name = reg.custom_reg_form_entry.__unicode__()
+    for reg in canceled_registrants:
+        if reg.custom_reg_form_entry:
+            reg.assign_mapped_fields()
+            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
+            if not reg.name:
+                reg.name = reg.custom_reg_form_entry.__unicode__()
 
     return render_to_response(template_name, {
         'event':event, 
@@ -1465,12 +1501,23 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         regs = registration.registrant_set.filter(cancel_dt = None).order_by("pk")
         if regs:
             primary_registrants.append(regs[0])
+    for registrant in primary_registrants:
+        if registrant.custom_reg_form_entry:
+            registrant.assign_mapped_fields()
+            registrant.roster_field_list =registrant.custom_reg_form_entry.roster_field_entry_list()
+            if not registrant.name:
+                registrant.last_name = registrant.__unicode__()
     primary_registrants = sorted(primary_registrants, key=lambda reg: reg.last_name)
     
     registrants = []
     for primary_reg in primary_registrants:
         registrants.append(primary_reg)
         for reg in primary_reg.additional_registrants:
+            if reg.custom_reg_form_entry:
+                reg.assign_mapped_fields()
+                reg.roster_field_list =reg.custom_reg_form_entry.roster_field_entry_list()
+                if not reg.name:
+                    reg.last_name = reg.__unicode__()
             registrants.append(reg)
 
     total_sum = float(0)
@@ -1563,7 +1610,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     for registrant in registrants:
         #registrant.assign_mapped_fields()
         if registrant.custom_reg_form_entry:
-            registrant.name = registrant.custom_reg_form_entry.get_name()
+            registrant.name = registrant.custom_reg_form_entry.__unicode__()
         else:
             registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 

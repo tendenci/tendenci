@@ -40,9 +40,9 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     list_display = ("name", "preview_link", "notes", "status",)
     search_fields = ("name", "notes", "status",)
 #    radio_fields = {"status": admin.HORIZONTAL}
-    fieldsets = (
-        (None, {"fields": ("name", "notes", 'status')}),
-    )
+#    fieldsets = (
+#        (None, {"fields": ("name", "notes", 'status', 'used')}),
+#    )
     
     form = CustomRegFormAdminForm
     
@@ -62,6 +62,21 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
     preview_link.allow_tags = True
     preview_link.short_description = 'Preview Link'
+    
+    def get_fieldsets(self, request, instance=None):
+        """
+        Dynamically generate the fieldset
+        """
+        fields = ['name', 'notes', 'status']
+#        if instance and instance.entries.count():
+#            
+#            # used - indicate the form has been used or is being used
+#            fields.append('used')
+
+        field_list = ((None, {'fields': tuple(fields)}),)
+
+        return field_list
+
         
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)

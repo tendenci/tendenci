@@ -39,12 +39,14 @@ ALLOWED_LOGO_EXT = (
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
         choices=(('draft','Draft'),('active','Active'),('inactive', 'Inactive'),))
+    #used = forms.BooleanField(initial=True, required=False)
 
     class Meta:
         model = CustomRegForm
         fields = ('name',
                   'notes',
-                  'status'
+                  'status',
+                  #'used',
                  )
         
 class CustomRegFormForField(forms.ModelForm):
