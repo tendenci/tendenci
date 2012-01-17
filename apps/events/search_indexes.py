@@ -90,6 +90,13 @@ class RegistrantIndex(indexes.SearchIndex):
 
     def prepare_groups_can_view(self, obj):
         return ObjectPermission.objects.groups_with_perms('registrants.view_registrant', obj)
+    
+    def prepare_last_name(self, obj):
+        if obj.custom_reg_form_entry:
+            obj.last_name = obj.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            if not obj.last_name:
+                obj.last_name = obj.custom_reg_form_entry.__unicode__()
+        return obj.last_name
 
 site.register(Event, EventIndex)
 site.register(EventType, EventTypeIndex)

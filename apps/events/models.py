@@ -222,7 +222,7 @@ class Registrant(models.Model):
             for field in user_fields:
                 exec('self.%s=self.custom_reg_form_entry.get_value_of_mapped_field("%s")' % (field, field))
                 
-            self.name = '%s %s' % (self.first_name, self.last_name)
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
 
 class RegistrationConfiguration(models.Model):
@@ -826,12 +826,12 @@ class CustomRegFormEntry(models.Model):
         values = []
         top_fields = CustomRegField.objects.filter(form=self.form,
                                                    field_type='CharField'
-                                                   ).order_by('position')[0:3]
+                                                   ).order_by('position')[0:2]
         for field in top_fields:
             field_entries = field.entries.filter(entry=self)
             if field_entries:
                 values.append(field_entries[0].value)
-        return ' '.join(values)
+        return (' '.join(values)).strip()
     
     def get_value_of_mapped_field(self, map_to_field):
         mapped_field = CustomRegField.objects.filter(form=self.form,
@@ -840,7 +840,7 @@ class CustomRegFormEntry(models.Model):
             #field_entries = CustomRegFieldEntry.objects.filter(entry=self, field=mapped_field[0])
             field_entries = mapped_field[0].entries.filter(entry=self)
             if field_entries:
-                return field_entries[0].value
+                return (field_entries[0].value).strip()
         return ''
 
     
@@ -849,7 +849,35 @@ class CustomRegFormEntry(models.Model):
                          self.get_value_of_mapped_field('last_name')])
         return name.strip()
     
-
+    def get_field_entry_list(self):
+        field_entries = self.field_entries.order_by('field')
+        entry_list = []
+        for field_entry in field_entries:
+            entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
+        return entry_list
+    
+    def get_non_mapped_field_entry_list(self):
+        field_entries = self.field_entries
+        mapped_fields = [item[0] for item in USER_FIELD_CHOICES]
+        field_entries = field_entries.exclude(field__map_to_field__in=mapped_fields).order_by('field')
+        entry_list = []
+        for field_entry in field_entries:
+            entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
+        return entry_list
+            
+    
+    def roster_field_entry_list(self):
+        list_on_roster = []
+        field_entries = self.field_entries.exclude(field__map_to_field__in=[
+                                    'first_name', 
+                                    'last_name', 
+                                    'position_title', 
+                                    'company_name'
+                                    ]).filter(field__display_on_roster=1).order_by('field')
+        for field_entry in field_entries:
+            list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
+        return list_on_roster
+        
 
 class CustomRegFieldEntry(models.Model):
     entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")

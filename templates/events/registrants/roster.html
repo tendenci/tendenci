@@ -229,7 +229,7 @@
 	</td>
 
 	<td> <!-- title & company -->
-	<div>{{ registrant.title }}</div>
+	<div>{{ registrant.position_title }}</div>
 	<div>{{ registrant.company_name }}</div>
 	</td>
 
@@ -241,6 +241,7 @@
 	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
 </tr>
 
+
 {% with registrant.additional_registrants as additionals %}
 
 {% if registrant.registration.invoice.balance > 0 %}
@@ -250,6 +251,14 @@
 {% endif %}
     <td colspan="2"></td>
     <td colspan="2">
+    	
+    {% if registrant.custom_reg_form_entry  and registrant.roster_field_list %}
+	{% for field in registrant.roster_field_list %}
+	<div>{{ field.label }}: {{ field.value }}</div>
+	{% endfor %}
+	{% endif %}	
+  	
+    	
     {% if additionals %}
         <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "additional registrants:" %}</a> 
 	    {% for reg in additionals %}
