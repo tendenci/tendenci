@@ -1,3 +1,4 @@
+{% load theme_tags %}
 {% load news_tags %}
 {% list_news as featured_news limit=8 %}
 <section id="news-featured">
@@ -26,4 +27,4 @@
         {% endif %}
     </ul>
 </section>
-{% include "theme_includes/space_edit.html" %}
+{% theme_setting setting_name %}

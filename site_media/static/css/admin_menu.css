@@ -362,6 +362,23 @@ nav:hover div.admin-inline {
 	display:block;
 }
 
+/* Logo Admin CSS */
+#logo div.view {
+    position:static;
+}
+
+#logo:hover div.admin-inline {
+    display:block;
+}
+
+#logo div.admin-links {
+    bottom: 0px; 
+    left: 0px;
+    top: auto;
+}
+
+#logo .admin-edit-setting { top: auto; bottom: 0; }
+
 /* Edit Setting Forms */
 a.edit-setting-link { cursor: pointer; text-decoration: underline; }
 

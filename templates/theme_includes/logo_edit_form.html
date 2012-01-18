@@ -1,0 +1,16 @@
+{% load base_filters %}
+{% load i18n %}
+{% if admin %}
+<div class="admin-inline">
+    <div class="admin-links clear-block"><a id="admin_link_{{ setting_name }}" title="Change Logo" class="edit-setting-link">{% trans "Upload Logo" %}</a></div>
+</div>
+<div id="form_{{ setting_name }}" class="admin-edit-setting">
+    <div class="setting-header">{% trans "Upload Logo" %} <a>x</a></div>
+    <div class="form-content">
+        <form class="settings-form" action="/settings/module/theme/logo/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <p><strong>{% trans "Logo" %}</strong>: <input type="file" name="logo" id="id_logo"></p>
+        <input type="submit" value="{% trans "Upload Logo" %}" name="submit" />
+        </form>
+    </div>
+</div>
+{% endif %}
