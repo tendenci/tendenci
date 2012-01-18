@@ -1,4 +1,10 @@
-{% extends "site_base.html" %}
+{% extends "base-wide.html" %}
 
 {% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Lots, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Lots{% endblock %}
 
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "lots/media/css/lots.css" %}
+    </style>
+{% endblock %}

@@ -4,6 +4,7 @@
 
 {% is_admin user as user_is_admin %}
 {% has_perm user lots.add_lot as can_add_lot %}
+{% has_perm user lots.add_map as can_add_map %}
 
 {% if nav_object %}
 	{% has_perm user lots.view_lot nav_object as can_view_lot %}
@@ -30,7 +31,6 @@
 			<li><a href="{% url lots %}">{% firstof MODULE_LOTS_LABEL 'Lots' %}:</a></li>
 			<li><a href="{% url lots.search %}">{% trans "Search" %}</a></li>
             <li><a href="{% url lots.map_selection %}">{% trans "Maps" %}</a></li>
-			<li><a href="{% url lots.map_add %}">{% trans "Add Map" %}</a></li>
             {% if nav_object %}
 				{% if can_view_lot %}
 				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
@@ -40,6 +40,10 @@
 				{% endif %}
 			{% endif %}
 			{% if user.is_authenticated %}
+                {% if can_add_map %}
+                    <li><a href="{% url lots.map_add %}">{% trans "Add Map" %}</a></li>
+                    <li><a href="{% url lots.add %}">{% trans "Add Lot" %}</a></li>
+                {% endif %}
                 <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
 			{% endif %}
 		</ul>

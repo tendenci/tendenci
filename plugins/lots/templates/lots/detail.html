@@ -10,7 +10,7 @@
     <p>{{ lot.description }}</p>
     {% if lot.map %}
         <div class="lot-image">
-            <img src="{{ lot.map.file|thumbnail:'1000x1000' }}" alt="{{ lot.map.file.description }}">
+            <img src="{{ lot.map.file.url }}" alt="{{ lot.map.description }}">
         </div>
     {% endif %}
     <h2>Coordinates</h2>

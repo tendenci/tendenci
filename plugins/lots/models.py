@@ -21,6 +21,11 @@ class Map(File):
     def content_type(self):
         return 'lots'
     
+    def height_for_900(self):
+        width, height = self.image_dimensions()
+        new_height = height*900/width
+        return new_height
+    
 class Lot(TendenciBaseModel):
     """A Lot is a set of coordinates.
     Coordinates are integer 2-tuples that describe a point on an uploaded image.
