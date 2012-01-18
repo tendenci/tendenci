@@ -11,8 +11,8 @@ from perms.utils import update_perms_and_save, has_perm
 from event_logs.models import EventLog
 from perms.utils import is_admin
 
-from lots.models import Lot, Map, Coordinate
-from lots.forms import LotForm, MapForm, CoordinateForm
+from lots.models import Lot, Map, Line
+from lots.forms import LotForm, MapForm, LineForm
 
 try:
     from notification import models as notification
@@ -80,11 +80,11 @@ def add(request, map_id=None, template_name="lots/add.html"):
     else:
         map_instance = None
         
-    CoordinateFormSet = modelformset_factory(Coordinate, form=CoordinateForm)
+    LineFormSet = modelformset_factory(Line, form=LineForm)
     
     if request.method == "POST":
         form = LotForm(request.POST)
-        formset = CoordinateFormSet(request.POST, queryset=Coordinate.objects.none(), prefix="coordinates")
+        formset = LineFormSet(request.POST, queryset=Line.objects.none(), prefix="lines")
         if False not in (form.is_valid(), formset.is_valid()):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
@@ -96,7 +96,7 @@ def add(request, map_id=None, template_name="lots/add.html"):
             return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(initial={"map":map_instance})
-        formset = CoordinateFormSet(queryset=Coordinate.objects.none(), prefix="coordinates")
+        formset = LineFormSet(queryset=Line.objects.none(), prefix="lines")
         
     return render_to_response(template_name, {
         'map': map_instance,
@@ -111,11 +111,11 @@ def edit(request, pk, template_name="lots/edit.html"):
         
     lot = get_object_or_404(Lot, pk=pk)
     
-    CoordinateFormSet = inlineformset_factory(Lot, Coordinate)
+    LineFormSet = inlineformset_factory(Lot, Line)
     
     if request.method == "POST":
         form = LotForm(request.POST, instance=lot)
-        formset = CoordinateFormSet(request.POST, instance=lot, prefix="coordinates")
+        formset = LineFormSet(request.POST, instance=lot, prefix="lines")
         if False not in (form.is_valid(), formset.is_valid()):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
@@ -124,7 +124,7 @@ def edit(request, pk, template_name="lots/edit.html"):
             return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(instance=lot)
-        formset = CoordinateFormSet(instance=lot, prefix="coordinates")
+        formset = LineFormSet(instance=lot, prefix="lines")
     
     return render_to_response(template_name, {
         'formset':formset,

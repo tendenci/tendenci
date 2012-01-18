@@ -47,9 +47,11 @@ class Lot(TendenciBaseModel):
     def get_absolute_url(self):
         return ("lots.detail", [self.pk])
 
-class Coordinate(models.Model):
-    """Point coordinate for a lot.
+class Line(models.Model):
+    """Line coordinates for a lot.
     """
     lot = models.ForeignKey('Lot')
-    x = models.IntegerField()
-    y = models.IntegerField()
+    x1 = models.FloatField()
+    y1 = models.FloatField()
+    x2 = models.FloatField()
+    y2 = models.FloatField()

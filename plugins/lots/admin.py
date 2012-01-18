@@ -5,11 +5,11 @@ from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
-from lots.models import Lot, Map, Coordinate
+from lots.models import Lot, Map, Line
 from lots.forms import LotForm, MapForm
 
-class CoordinateInline(admin.TabularInline):
-    model = Coordinate
+class LineInline(admin.TabularInline):
+    model = Line
 
 class LotAdmin(admin.ModelAdmin):
     list_display = ['name', 'view_on_site', 'edit_link', 'tags']
@@ -17,7 +17,7 @@ class LotAdmin(admin.ModelAdmin):
     search_fields = []
     actions = []
     inlines = [
-        CoordinateInline,
+        LineInline,
     ]
     
     form = LotForm
