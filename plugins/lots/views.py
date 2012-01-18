@@ -71,11 +71,15 @@ def map_add(request, template_name="lots/maps/add.html"):
     }, context_instance=RequestContext(request))
 
 @login_required    
-def add(request, map_id, template_name="lots/add.html"):
+def add(request, map_id=None, template_name="lots/add.html"):
     if not has_perm(request.user, 'lots.add_lot'):
         return Http403
+    
+    if map_id:
+        map_instance = Map.objects.get(pk=map_id)
+    else:
+        map_instance = None
         
-    map_instance = Map.objects.get(pk=map_id)
     CoordinateFormSet = modelformset_factory(Coordinate, form=CoordinateForm)
     
     if request.method == "POST":
@@ -126,6 +130,7 @@ def edit(request, pk, template_name="lots/edit.html"):
         'formset':formset,
         'form':form,
         'lot':lot,
+        'map':lot.map,
     }, context_instance=RequestContext(request))
 
 def detail(request, pk=None, template_name="lots/detail.html"):

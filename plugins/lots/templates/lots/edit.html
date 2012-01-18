@@ -1,21 +1,43 @@
 {% extends "lots/base.html" %}
+{% load i18n %}
 {% load styled_forms %}
 {% load lot_tags %}
 
 {% block body %}
 <div class="t">
-    {% lot_nav request.user lot %}
+    {% lot_nav request.user %}
     <div class="lot-wrap">
-        <h1>Edit {{ lot.name }}</h1>
+        <h1>Edit Lot</h1>
         <form method="post" action="">{% csrf_token %}
-            {{ formset.management_form }}
-            <div class="forms">
-            {{ form|styled_form }}
-            <h2>Coordinates</h2>
-            {{ formset|styled_form_set }}
-            <input type="submit" value="Submit">
+        <div class="map-wrap">
+            <div class="map-photo">
+                <canvas height="{{ map.height_for_900 }}" width="900" >
+                </canvas>
             </div>
+            <p class="map-title">{{ map.name }}</p>
+        </div>
+        <div class="forms">
+            <div class="coordinates">
+                {{ formset.management_form }}
+                {{ formset|styled_form_set }}
+            </div>
+            {{ form|styled_form }}
+            <input type="submit" value="Submit">
+        </div>
         </form>
     </div>
 </div>
 {% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
+<script type="text/javascript">
+$("canvas").drawImage({
+  source: "{{ map.file.url }}",
+  x: 0, y: 0,
+  width: 900,
+  fromCenter: false,
+});
+</script>
+{% endblock %}
