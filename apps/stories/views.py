@@ -86,7 +86,11 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 pprint(form.errors.items())
         else:
             form = form_class(user=request.user)
-    
+
+            tags = request.GET.get('tags', '')
+            if tags:
+                form.fields['tags'].initial = tags
+
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
     
