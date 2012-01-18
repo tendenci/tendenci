@@ -5,7 +5,7 @@ from perms.forms import TendenciBaseForm
 from base.fields import SplitDateTimeField
 from perms.utils import is_admin
 
-from lots.models import Lot, Map, Coordinate
+from lots.models import Lot, Map, Line
 
 class MapForm(TendenciBaseForm):
     name = forms.CharField()
@@ -90,7 +90,7 @@ class LotForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
 
-class CoordinateForm(forms.ModelForm):
+class LineForm(forms.ModelForm):
     class Meta:
-        model = Coordinate
+        model = Line
         exclude = ('lot',)

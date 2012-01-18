@@ -13,10 +13,6 @@
             <img src="{{ lot.map.file.url }}" alt="{{ lot.map.description }}">
         </div>
     {% endif %}
-    <h2>Coordinates</h2>
-    {% for c in lot.coordinate_set.all %}
-        ({{ c.x }} {{ c.y }})<br>
-    {% endfor %}
     {% include "lots/meta.html" %} 
     </div>
 </div>
