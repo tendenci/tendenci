@@ -33,7 +33,7 @@
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
 <script type="text/javascript">
-
+// initialize map image
 $("canvas").drawImage({
   source: "{{ map.file.url }}",
   x: 0, y: 0,
@@ -41,6 +41,11 @@ $("canvas").drawImage({
   fromCenter: false,
 });
 
+//state variables for plotting
+prev_x = null;
+prev_y = null;
+new_line = true;
+//line plotting
 $("canvas").click(function(e){
     var position = $(this).position();
     var offset = $(this).offset();
@@ -51,6 +56,25 @@ $("canvas").click(function(e){
         x: x, y: y,
         radius: 10
     });
+    if (prev_x){
+        $(this).drawLine({
+            strokeStyle: "#000",
+            strokeWidth: 10,
+            strokeCap: "round",
+            strokeJoin: "miter",
+            x1: x, y1: y,
+            x2: prev_x, y2: prev_y,
+        });
+        if(new_line){
+            //intialine a line form here
+            new_line = false;
+        }else{
+            new_line = true;
+        }
+    }
+    prev_x = x;
+    prev_y = y;
 });
+
 </script>
 {% endblock %}
