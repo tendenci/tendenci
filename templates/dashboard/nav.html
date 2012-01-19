@@ -7,42 +7,36 @@
 {% has_perm user profiles.change_profile as can_edit_user %}
 {% has_perm user profiles.add_profile as can_add_user %}
 
-<div id="showh">
-		<ul id="primary">
-		
-        {% if user.is_authenticated %}
-        <li>
-            <a href="{% url dashboard %}" title="Tendenci Home Page">
-            <img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
-            alt="Tendenci User Home" align="top" width="34" height="15"></a>
-        </li>
-        {% endif %}
 
-		<li>
-			<span>Users</span>
-			<ul id="secondary">
-				<li><a href="{% url profile.search %}">{{ MODULE_USERS_LABEL }}:</a></li> 
-				{% if can_edit_setting %}
-					<li><a href="{% url settings.index "module" "users" %}">{% trans "Settings" %}</a></li>
-				{% endif %}
-				<li><a href="{% url profile.index %}">{% trans "My Profile" %} ({{ user.username }})</a></li>
-				<li><a href="{% url profile.edit user.pk %}">{% trans "Edit" %}</a></li>
-				<li><a href="{% url profile.search %}">{% trans "Search" %}</a></li>
-				{% if can_add_user %}
-				<li><a href="{% url profile.add %}">{% trans "Add" %}</a></li>
-				{% endif %}
-				{% if user.is_authenticated %}
-				<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
-				{% endif %}
-			</ul>
-			
-		</li>
-		<li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
-		{% if MODULE_ARTICLES_ENABLED %}
-		<li><a href="{% url article.search %}">{{ MODULE_ARTICLES_LABEL }}</a></li>
-		{% endif %}
-		{% if MODULE_PAGES_ENABLED %}
-		<li><a href="{% url page.search %}">{{ MODULE_PAGES_LABEL }}</a></li>	
-		{% endif %}	
-		</ul>
-	</div>
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_USERS_LABEL 'Users' %}</a>
+            <div>
+            <ul class="dropdown-menu">
+            {% if can_edit_setting %}
+                <li><a href="{% url settings.index "module" "users" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url profile.search %}">{% trans "Search Users" %}</a></li>
+            {% if can_add_user %}
+                <li><a href="{% url profile.add %}">{% trans "Add User" %}</a></li>
+            {% endif %}
+            {% if admin %}
+            <li class="divider"></li>
+            <li><a href="{% url import.user_upload_add %}">{% trans "Import" %}</a></li>
+
+            {% endif %}
+        </ul>
+        </div>
+    </li>
+    <li><a href="{% url groups %}">{% trans "Groups" %}</a></li>
+</ul>
