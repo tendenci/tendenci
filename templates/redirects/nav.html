@@ -2,34 +2,63 @@
 {% load perm_tags %}
 {% load i18n %}
 
+{% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user redirects.add_redirect as can_add_redirect %}
-{% has_perm user redirects.change_redirect as can_edit_redirect %}
 
-<div id="showh">
-	<ul id="primary">
-	
+{% if nav_object %}
+    {% has_perm user redirects.view_redirect nav_object as can_view_redirect %}
+    {% has_perm user redirects.change_redirect nav_object as can_edit_redirect %}
+    {% has_perm user redirects.delete_redirect nav_object as can_delete_redirect %}
+{% else %}
+    {% has_perm user redirects.view_redirect as can_view_redirect %}
+    {% has_perm user redirects.change_redirect as can_edit_redirect %}
+{% endif %}
+
+<ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}
-	<li>
-	    <a href="{% url dashboard %}" title="Tendenci Home Page">
-		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
-		alt="Tendenci User Home" align="top" width="34" height="15"></a>
-	</li>
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
     {% endif %}
-
-	<li>
-		<span>{% trans "Redirects" %}</span>
-		<ul id="secondary">
-			<li><a href="{% url redirects %}">{% trans "Redirects:" %}</a></li> 
-			{% if nav_object %}
-				{% if can_edit_redirect %}
-				<li><a href="{% url redirect.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
-				{% endif %}
-			{% endif %}
-			{% if can_add_redirect %}
-			<li><a href="{% url redirect.add %}">{% trans "Add" %}</a></li>
-			{% endif %}
-			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
-			{% endif %}
-		</ul>
-</div>
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans 'Redirects' %}</a>
+        {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All Redirects" %}</li>
+            <li class="divider"></li>
+        {% else %}
+            <div>
+            <ul class="dropdown-menu">
+        {% endif %}
+            {% if can_edit_setting %}
+                <li><a href="{% url settings.index "module" "redirects" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url redirects %}">{% trans "Search Redirects" %}</a></li>
+            {% if can_add_redirect %}
+                <li><a href="{% url redirect.add %}">{% trans "Add a Redirect" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_redirect or can_edit_redirect %}
+            <ul>
+                <li class="heading">{% trans "This Redirect" %}</li>
+                <li class="divider"></li>
+                {% if can_edit_redirect %}
+                    <li><a href="{% url redirect.edit nav_object.pk %}">{% trans "Edit Redirect" %}</a></li>
+                {% endif %}
+                {% if can_delete_redirect %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url redirect.delete nav_object.pk %}">{% trans "Delete Redirect" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+</ul>
