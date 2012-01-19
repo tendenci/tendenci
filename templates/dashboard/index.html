@@ -45,7 +45,14 @@
 
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         {% if admin %}
-        <div style="padding: 10px 10px 0 10px; font-size: 16px; background-color: #efe; border: solid 2px #aca; "><p>Check out the <a href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Tendenci Guide</a> to get started.</p></div>
+        <div class="alert-message block-message fade in success" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p><strong>Welcome to the Tendenci Dashboard!</strong></p>
+        <p>Your Tendenci site comes with a built-in guide to get you started. In includes basic concepts like adding pages and other content, editing your navigation, uploading photos, and other general topics.</p>
+        <div class="alert-actions">
+            <a class="btn" href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Go to the Guide</a>
+        </div>
+    </div>
         {% endif %}
     {% endif %}
 
@@ -103,10 +110,6 @@
 
 		{% if MODULE_PAGES_ENABLED %}
     	<li class="pages"><a href="{% url page.search %}"><span>{% trans "Pages" %}</span></a></li>
-		{% endif %}
-
-		{% if MODULE_ENTITIES_ENABLED %}
-     	<li class="entities"><a href="{% url entity.search %}"><span>{%  trans "Entities" %}</span></a></li>
 		{% endif %}
 
 		{% if MODULE_FILES_ENABLED %}

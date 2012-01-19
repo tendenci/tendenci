@@ -50,9 +50,12 @@ def parse_subs_from_csv(group, file_path):
         # assumption: 1 email per subscriber
         sub_email = None
         for datum in sub_data:
-            if email_re.match(datum.value):
-                sub_email = datum.value
-                break
+            try:
+                if email_re.match(datum.value):
+                    sub_email = datum.value
+                    break
+            except:
+                pass
         
         # skip subscription entry if no email
         if sub_email:

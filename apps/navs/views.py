@@ -82,7 +82,7 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
                     'instance': nav,
                 }
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % nav)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % nav)
             return redirect('navs.edit_items', id=nav.id)
     else:
         form = form_class(user=request.user)
@@ -114,7 +114,7 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
                     'instance': nav,
                 }
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
             return redirect('navs.edit_items', id=nav.id)
     else:
         form = form_class(user=request.user, instance=nav)
@@ -148,7 +148,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
                 item.nav = nav
                 item.save()
             cache_nav(nav)
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % nav)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
             
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:
@@ -179,7 +179,7 @@ def delete(request, id, template_name="navs/delete.html"):
 #                 'instance': nav,
 #             }
 #             EventLog.objects.log(**log_defaults)
-#             messages.add_message(request, messages.INFO, 'Successfully deleted %s' % nav)
+#             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % nav)
             
             nav.delete()
             return HttpResponseRedirect(reverse('navs.search'))

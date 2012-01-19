@@ -29,7 +29,7 @@
 
 <div class="t">
     <div class="group-view">
-    	{% user_group_nav request.user %}
+    	{% user_group_nav request.user group %}
     
     	<div class="quick-options">
     		{% user_group_options request.user group %}
@@ -79,9 +79,10 @@
         {% if not groupmemberships %}
         <p>{% trans "This group has no members" %}</p>
         {% else %}
-        {% autopaginate groupmemberships 150 %}
+        {% autopaginate groupmemberships 100 %}
         {% paginate %}
         <div class="group-member-list">
+        <p>Group members in sets of 100</p>
         {% for gm in groupmemberships %}
             <div class="group-member {% cycle 'gray' '' %}">
              <a href="{{ gm.member.get_absolute_url }}">{{ gm.member.get_full_name }} ({{ gm.member.username }}) - {{ gm.role }}</a>
@@ -99,13 +100,15 @@
         {% endif %}
         
         <h2>{% trans "Group Subscribers" %}</h2>
-        {% if not group.groupsubscription_set.all %}
+        {% with group.groupsubscription_set.all as groupsubscribers %}
+        {% if not groupsubscribers %}
         <p>{% trans "This group has no subscribers" %}</p>
         {% else %}
-        {% autopaginate group.groupsubscription_set.all 150 %}
+        {% autopaginate groupsubscribers 50 %}
         {% paginate %}
         <div class="group-member-list">
-        {% for gs in group.groupsubscription_set.all %}
+        <p>Subscribers in sets of 50</p>
+        {% for gs in groupsubscribers %}
             <div class="group-member {% cycle 'gray' '' %}">
                 {% if gs.subscriber %}
                     <a href="{{ gs.subscriber.get_absolute_url }}">{{ gs.name }} ({{ gs.email }})</a>
@@ -120,6 +123,7 @@
         </div>
         {% paginate %}
         {% endif %}
+        {% endwith %}
         {% include "user_groups/meta.html" %}
     </div>
 </div>
