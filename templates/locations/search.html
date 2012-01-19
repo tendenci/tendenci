@@ -36,7 +36,7 @@
             <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
 
             <div class="image">
-                <a title="Google Directions" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
+                <a title="Google Directions" href="http://maps.google.com/maps?q={{ location.get_address }}">
                 <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false"></a>
             </div>
 
