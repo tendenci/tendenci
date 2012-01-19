@@ -3,7 +3,6 @@
 {% load corporate_memberships_tags %}
 {% load i18n %}
 
- {% is_admin request.user as is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {#{% has_perm user corporate_memberships.add_corporatemembership as can_add_corpmemb %}#}
 
@@ -30,8 +29,11 @@
         </ul>
     </li>
     {% endif %}
+    {% if MODULE_MEMBERSHIPS_ENABLED %}
+    <li><a href="{% url membership.search %}">{% firstof MODULE_MEMBERSHIPS_LABEL 'Memberships' %}</a></li>
+    {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a>
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corporate Memberships' %}</a>
         {% if nav_object %}
         <div class="dropdown-menu">
         <ul class="first">
@@ -50,7 +52,7 @@
             {% endif %}
 
             <li><a href="{% url corp_memb.search %}">{% trans "Search All" %}</a></li> 
-            {% if is_admin %}
+            {% if admin %}
             <li><a href="{% url corp_memb.search %}?q=is_pending:true">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
             <li><a href="{% url admin:corporate_memberships_corpapp_changelist %}">{% trans "Corp. Membership Applications" %}</a></li>
@@ -81,7 +83,4 @@
         {% endif %}
         </div>
     </li>
-    {% if MODULE_MEMBERSHIPS_ENABLED %}
-    <li><a href="{% url membership.search %}">{% firstof MODULE_MEMBERSHIPS_LABEL 'Memberships' %}</a></li>
-    {% endif %}
 </ul>
