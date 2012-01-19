@@ -69,9 +69,10 @@
         </div>
     </li>
     {% if can_edit_directory %}
-    <li><a href="{% url directory_pricing.search %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directories' %}&nbsp;{% trans "Pricing" %}</a></li>
-    {% endif %}
+    <li><a href="{% url directory_pricing.search %}">{% trans "Pricing" %}</a></li>
+    {% else %}
     {% if MODULE_NEWS_ENABLED %}
     <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+    {% endif %}
     {% endif %}
 </ul>
