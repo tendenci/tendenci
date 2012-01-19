@@ -184,7 +184,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % article)
                 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
