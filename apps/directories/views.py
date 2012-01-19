@@ -144,7 +144,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % directory)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % directory)
                                                                          
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
         else:
@@ -189,7 +189,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
             directory.meta = form.save() # save meta
             directory.save() # save relationship
             
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % directory)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % directory)
              
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
     else:
@@ -255,7 +255,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % directory)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
             
             # send notification to administrators
             # get admin notice recipients
@@ -306,7 +306,7 @@ def delete(request, id, template_name="directories/delete.html"):
             
             EventLog.objects.log(**log_defaults)
 
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % directory)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
@@ -413,7 +413,7 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
         }
         
         EventLog.objects.log(**log_defaults)
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % directory_pricing)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory_pricing)
         
         directory_pricing.delete()
             

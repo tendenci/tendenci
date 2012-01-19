@@ -121,7 +121,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % article)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % article)
                                                                              
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))             
         else:
@@ -154,7 +154,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
             article.meta = form.save() # save meta
             article.save() # save relationship
             
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % article)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % article)
              
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
     else:
@@ -184,7 +184,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % article)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % article)
                 
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
@@ -220,7 +220,7 @@ def delete(request, id, template_name="articles/delete.html"):
             
             EventLog.objects.log(**log_defaults)
 
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % article)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % article)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
