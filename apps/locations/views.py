@@ -51,32 +51,33 @@ def search(request, template_name="locations/search.html"):
         context_instance=RequestContext(request))
 
 def nearest(request, template_name="locations/nearest.html"):
-    query = request.GET.get('q')
-    lat, lng = get_coordinates(address=query)
-
     locations = []
-    for location in Location.objects.search(user=request.user).load_all()[:15]:
-        location = location.object
-        location.distance = location.get_distance2(lat, lng)
-        locations.append(location)
+    lat, lng = None, None
+    query = request.GET.get('q')
 
-    locations.sort(key=lambda x: x.distance)
+    if query:
+        lat, lng = get_coordinates(address=query)
 
-    # log_defaults = {
-    #     'event_id' : 834000,
-    #     'event_data': '%s searched by %s' % ('Location', request.user),
-    #     'description': '%s searched' % 'Location',
-    #     'user': request.user,
-    #     'request': request,
-    #     'source': 'locations'
-    # }
-    # EventLog.objects.log(**log_defaults)
+    if all((lat,lng)):
+        for location in Location.objects.search(user=request.user).load_all():
+            location.object.distance = location.object.get_distance2(lat, lng)
+            locations.append(location.object)
+            locations.sort(key=lambda x: x.distance)
+
+    log_defaults = {
+        'event_id' : 834100,
+        'event_data': '%s nearest to %s' % ('Location', request.user),
+        'description': '%s nearest' % 'Location',
+        'user': request.user,
+        'request': request,
+        'source': 'locations'
+    }
+    EventLog.objects.log(**log_defaults)
 
     return render_to_response(template_name, {
         'locations':locations,
         'origin': {'lat':lat,'lng':lng},
-        }, 
-        context_instance=RequestContext(request))
+        }, context_instance=RequestContext(request))
 
 def print_view(request, id, template_name="locations/print-view.html"):
     location = get_object_or_404(Location, pk=id)    
