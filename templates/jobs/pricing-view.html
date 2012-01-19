@@ -14,7 +14,7 @@
 {% block body %}
 <div class="t">
 
-    {% job_pricing_nav request.user %}
+    {% job_pricing_nav request.user job_pricing %}
 
     <h1>{% blocktrans %}View Price Details:{% endblocktrans %}{% firstof MODULE_JOBS_LABEL 'Job' %} </h1>
     
