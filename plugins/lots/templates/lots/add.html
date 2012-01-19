@@ -7,7 +7,7 @@
 <div class="t">
     {% lot_nav request.user %}
     <div class="lot-wrap">
-        <h1>Add Lot</h1>
+        <h1>{% trans "Add Lot" %}</h1>
         <form method="post" action="">{% csrf_token %}
         <div class="map-wrap">
             <div class="map-photo">

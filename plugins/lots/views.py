@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory, inlineformset_factory
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.translation import ugettext_lazy as _
 
 from base.http import Http403
 from perms.utils import update_perms_and_save, has_perm
@@ -62,7 +63,8 @@ def map_add(request, template_name="lots/maps/add.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % map)
+            messages.add_message(request, messages.INFO, _('Successfully added %s' % map))
+            return redirect('lots.map_selection')
     else:
         form = MapForm(user=request.user)
         
@@ -78,7 +80,7 @@ def add(request, map_id=None, template_name="lots/add.html"):
     if map_id:
         map_instance = Map.objects.get(pk=map_id)
     else:
-        messages.add_message(request, messages.INFO, 'Please select a Map.')
+        messages.add_message(request, messages.INFO, _('Please select a Map.'))
         return redirect('lots.map_selection')
         
     LineFormSet = modelformset_factory(Line, form=LineForm, extra=0)
@@ -93,6 +95,7 @@ def add(request, map_id=None, template_name="lots/add.html"):
             for point in points:
                 point.lot = lot
                 point.save()
+                
             messages.add_message(request, messages.INFO, 'Successfully added %s' % lot)
             return redirect('lots.detail', lot.pk)
     else:
@@ -124,7 +127,7 @@ def edit(request, pk, template_name="lots/edit.html"):
             lot.line_set.all().delete()
             # save new points
             formset.save()
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % lot)
+            messages.add_message(request, messages.INFO, _('Successfully updated %s' % lot))
             return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(instance=lot)
