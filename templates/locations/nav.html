@@ -39,6 +39,7 @@
                 <li><a href="{% url settings.index "module" "locations" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url locations %}">{% trans "Search Locations" %}</a></li>
+            <li><a href="{% url location.nearest %}">{% trans "Nearest Locations" %}</a></li>
             {% if can_add_location %}
                 <li><a href="{% url location.add %}">{% trans "Add Location" %}</a></li>
             {% endif %}
