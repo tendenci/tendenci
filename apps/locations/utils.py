@@ -7,7 +7,7 @@ def geocode_api(**kwargs):
     url = '%s?%s' % (GEOCODE_BASE_URL, urllib.urlencode(kwargs))
     return simplejson.load(urllib.urlopen(url))
 
-def get_coordinates(address=''):
+def get_coordinates(address):
     """
     Get the latitude and longitude for the address parameter.
     Return a 2-tuple with latitude and longitude.
