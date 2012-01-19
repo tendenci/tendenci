@@ -1,0 +1,83 @@
+/*!
+ * Bootstrap @VERSION
+ *
+ * Copyright 2011 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ * Date: @DATE
+ */
+
+/*!
+ * Tendenci Edit
+ *
+ * Originally from:
+ */
+
+// Tabs
+.tabs {
+  > li {
+    &.dropdown:hover .dropdown-menu {
+      display: block;
+    }
+    &.active > a {
+      color: @grayDark;
+    }
+    > a {
+      color: @blueDark;
+      text-decoration: none;
+      background-color: #f3f3f3;
+      border-color: #f3f3f3 #f3f3f3 #ddd;
+      &:hover {
+        background-color: #e4e4e4;
+        border-color: #e4e4e4 #e4e4e4 #ddd;
+      }
+    }
+  }
+}
+
+// Dropdowns in tabs
+
+.dropdown-menu {
+  a {
+    text-decoration: none;
+    color: @tenMain;
+    &:visited {
+      color: @tenMain;
+    }
+    &:hover {
+      color: @grayDark;
+    }
+    &.delete {
+     color: @red !important;
+    }
+  }
+}
+
+// Mega Menu Dropdown
+div.dropdown-menu { 
+  min-width: 320px;
+  width: 320px;
+  li.heading {
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 110%;
+  }
+  ul {
+    float: left;
+    margin: 0;
+    display: block;
+    min-width: 160px;
+    width: 160px;
+  }
+}
+
+// Alerts
+.alert-message a.close, .btn {
+  text-decoration: none;
+}
+.alert-message {
+  a, a:visited { color: @grayDark; }
+  a:hover { color: #333; }
+}
