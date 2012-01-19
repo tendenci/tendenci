@@ -1,5 +1,6 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load i18n %}
 {% has_perm request.user stories.change_story story as can_edit %}
         <div class="wrap-search-item">
             <div class="search-item story-search-item">
@@ -10,8 +11,9 @@
                     </div>
                     {% endif %}
                     <div class="search-text">
-                        <h2><a href="{{ story.full_story_link }}">{% firstof story.title 'Untitled'%}</a> {% if can_edit %}<small>({{ story.full_story_link }})</small>{% endif %}</h2>
-                        {{ story.content|striptags|truncatewords:20|safe }}
+                        <h2><a href="{% if can_edit %}{% url story story.pk %}{% else %}{{ story.full_story_link }}{% endif %}">{% firstof story.title 'Untitled'%}</a></h2>
+                        {{ story.content|striptags|truncatewords:20|safe }}<br />
+                        {% if can_edit %}<strong>{% trans "Links to: " %}</strong><a href="{{ story.full_story_link }}">{{ story.full_story_link }}</a>{% endif %}
                     </div>
                     <div class="clear"></div>
                 </div>
