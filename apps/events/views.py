@@ -371,7 +371,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     instance = event,
                 )
 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % event)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:
             # single forms
@@ -400,7 +400,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     status=True,
                 ),
                 prefix='regconfpricing',
-                auto_id='regconfpricing_formset'
+                auto_id='regconfpricing_formset',
             )
 
             # label the form sets
@@ -445,7 +445,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
             event.meta = form.save() # save meta
             event.save() # save relationship
             
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % event)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % event)
              
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
     else:
@@ -559,7 +559,7 @@ def add(request, year=None, month=None, day=None, \
                     instance = event
                 )
 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % event)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % event)
                 # notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                 if recipients and notification:
@@ -656,7 +656,7 @@ def delete(request, id, template_name="events/delete.html"):
                 instance = event
             )
 
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % event)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
@@ -1565,7 +1565,7 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
                 'instance': email,
             })
             
-            messages.add_message(request, messages.INFO, 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title))
+            messages.add_message(request, messages.SUCCESS, 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title))
             
             return HttpResponseRedirect(reverse('event', args=([event_id])))
         
@@ -1701,7 +1701,7 @@ def delete_speaker(request, id):
     speaker = get_object_or_404(Speaker, id = id)
     event = speaker.event.all()[0]
     
-    messages.add_message(request, messages.INFO, 'Successfully deleted %s' % speaker)
+    messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % speaker)
     
     speaker.delete()
     
@@ -1715,7 +1715,7 @@ def delete_group_pricing(request, id):
     gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
     event = Event.objects.get(registration_configuration=gp.config)
     
-    messages.add_message(request, messages.INFO, 'Successfully deleted Group Pricing for %s' % gp)
+    messages.add_message(request, messages.SUCCESS, 'Successfully deleted Group Pricing for %s' % gp)
     
     gp.delete()
     
@@ -1729,7 +1729,7 @@ def delete_special_pricing(request, id):
     s = get_object_or_404(SpecialPricing, id = id)
     event = Event.objects.get(registration_configuration=s.config)
     
-    messages.add_message(request, messages.INFO, 'Successfully deleted Special Pricing for %s' % s)
+    messages.add_message(request, messages.SUCCESS, 'Successfully deleted Special Pricing for %s' % s)
     
     s.delete()
     
@@ -1836,7 +1836,7 @@ def approve(request, event_id, template_name="events/approve.html"):
         event.status_detail = 'active'
         event.save()
         
-        messages.add_message(request, messages.INFO, 'Successfully approved %s' % event)
+        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % event)
         
         return redirect('event', id=event_id)
     

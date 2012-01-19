@@ -59,7 +59,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
                 call_command('touch_settings')
                 #setattr(django_settings, 'LANGUAGE_CODE', lang)
 
-            messages.add_message(request, messages.INFO, 'Successfully saved %s settings' % scope_category.replace('_',' ').title())
+            messages.add_message(request, messages.SUCCESS, 'Successfully saved %s settings' % scope_category.replace('_',' ').title())
 
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:
@@ -99,7 +99,7 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
             except:
                 pass
 
-            messages.add_message(request, messages.INFO, 'Successfully saved %s settings' % name.replace('_',' ').title())
+            messages.add_message(request, messages.SUCCESS, 'Successfully saved %s settings' % name.replace('_',' ').title())
 
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:

@@ -108,3 +108,25 @@ div.forms fieldset.contact {
 div.forms fieldset.contact legend {
 	padding: 5px;
 }
+
+div.image a {
+    width: 200px;
+    height: 200px;
+    background-color: #DDD;
+    float: left;
+}
+
+div.details {
+    float: left;
+    margin-left: 10px;
+}
+
+div.location-wrap-search .content {
+    margin: 0;
+}
+
+#container .t div.details p {
+    font-size: 1.2em;
+    line-height: 1em;
+    margin-bottom: 2px;
+}

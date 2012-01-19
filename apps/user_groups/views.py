@@ -231,7 +231,7 @@ def group_membership_self_add(request, slug, user_id):
         }
         EventLog.objects.log(**log_defaults)     
         
-        messages.add_message(request, messages.INFO, 'Successfully added yourself to group %s' % group)
+        messages.add_message(request, messages.SUCCESS, 'Successfully added yourself to group %s' % group)
     else:
         messages.add_message(request, messages.INFO, 'You are already in the group %s' % group)
         
@@ -260,7 +260,7 @@ def group_membership_self_remove(request, slug, user_id):
             }
             EventLog.objects.log(**log_defaults)
             group_membership.delete()
-            messages.add_message(request, messages.INFO, 'Successfully removed yourself from group %s' % group)
+            messages.add_message(request, messages.SUCCESS, 'Successfully removed yourself from group %s' % group)
     else:
         messages.add_message(request, messages.INFO, 'You are not in the group %s' % group)
                     
@@ -416,7 +416,7 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         }
         EventLog.objects.log(**log_defaults)
         group_membership.delete()
-        messages.add_message(request, messages.INFO, 'Successfully removed %s from group %s' % (user.get_full_name(), group))
+        messages.add_message(request, messages.SUCCESS, 'Successfully removed %s from group %s' % (user.get_full_name(), group))
         return HttpResponseRedirect(group.get_absolute_url())
     
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
