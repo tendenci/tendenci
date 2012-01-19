@@ -18,6 +18,7 @@
     {% location_nav request.user %}
 
     <h1>{{ MODULE_LOCATIONS_LABEL }} {% trans "Search" %}</h1>
+    {% location_search %}
 
     {% autopaginate locations 10 %}
 	
