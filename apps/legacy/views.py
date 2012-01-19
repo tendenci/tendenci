@@ -169,3 +169,14 @@ def redirect(request, content_type=None, view=None, id=None):
 
     # no criteria matched, 404 them
     raise Http404
+
+
+def querystring_redirect(request):
+    """
+    Generic redirect to catch querystrings and redirect to those pages
+    """
+    query_string = request.GET
+    if query_string:
+        return HttpResponsePermanentRedirect(query_string.keys()[0])
+
+    raise Http404

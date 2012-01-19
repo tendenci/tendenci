@@ -78,7 +78,7 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % story) 
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % story) 
                 
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
             else:
@@ -86,7 +86,11 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                 pprint(form.errors.items())
         else:
             form = form_class(user=request.user)
-    
+
+            tags = request.GET.get('tags', '')
+            if tags:
+                form.fields['tags'].initial = tags
+
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
     
@@ -117,7 +121,7 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % story)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % story)
                 
                 redirect_to = request.REQUEST.get('next', '')
                 if redirect_to:
@@ -146,7 +150,7 @@ def delete(request, id, template_name="stories/delete.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % story)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % story)
             story.delete()
             
             return HttpResponseRedirect(reverse('story.search'))

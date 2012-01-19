@@ -19,7 +19,7 @@
         {% for news_item in featured_news %}
             {% if forloop.first %}
             {% else %}
-            <li><a href="{% url news.view news_item.slug %}">{{ news_item.headline|truncatewords:4|safe }}</a></li>
+            <li><a href="{{ news_item.get_absolute_url }}">{{ news_item.headline|truncatewords:4|safe }}</a></li>
             {% endif %}
         {% endfor %}
         {% else %}

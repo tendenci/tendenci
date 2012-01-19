@@ -10,7 +10,6 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/contribution.css">
-<link rel="alternate" type="application/rss+xml" title="Latest Contributions" href="{% url contribution.feed %}" />
 {% endblock %}
 
 {% block body %}
@@ -31,7 +30,7 @@
 		<div class="contribution-wrap">
             <h2>
             	{{ contribution.content_type }}: 
-				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title trans"Untitled" %}</a>
+				<a href="{{ contribution.object.get_absolute_url }}">{% firstof contribution.title "Untitled" %}</a>
 			</h2>
 			<div class="meta">
             	<div class="submitted">{% blocktrans with contribution.update_dt|date:"D d M Y P" as contrib_date and contribution.creator as contrib_creator %}Updated on {{ contrib_date }} 

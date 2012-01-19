@@ -48,7 +48,7 @@ def subscriber_delete(request, id, template_name="subscribers/delete.html"):
             'instance': grp_sub,
         }
         EventLog.objects.log(**log_defaults)
-        messages.add_message(request, messages.INFO, 'Successfully removed subscriber %s (%s) from group %s' % (grp_sub.name, grp_sub.email, grp_sub.group))
+        messages.add_message(request, messages.SUCCESS, 'Successfully removed subscriber %s (%s) from group %s' % (grp_sub.name, grp_sub.email, grp_sub.group))
         grp_sub.delete()
         return HttpResponseRedirect(grp_sub.group.get_absolute_url())
     return render_to_response(template_name, {

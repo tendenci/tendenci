@@ -110,7 +110,7 @@ def add(request, form_class=CourseForm, template_name="courses/add.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully created %s' % course)
+            messages.add_message(request, messages.SUCCESS, 'Successfully created %s' % course)
             return redirect('courses.edit_questions', course.pk)
     else:
         form = form_class(user=request.user)
@@ -147,7 +147,7 @@ def edit(request, pk, form_class=CourseForm, template_name="courses/edit.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % course)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % course)
             return redirect('courses.edit_questions', course.pk)
     else:
         form = form_class(instance=course, user=request.user)
@@ -176,7 +176,7 @@ def edit_questions(request, pk, template_name="courses/edit_questions.html"):
             questions = form.save(commit=False)
             for question in questions:
                 question.save()
-            messages.add_message(request, messages.INFO, 'Successfully updated questions for %s' % course)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated questions for %s' % course)
             return redirect('courses.detail', course.pk)
     else:
         form = form_class(instance=course)
@@ -195,7 +195,7 @@ def delete(request, pk, template_name="courses/delete.html"):
         
     if request.method == "POST":
         course.delete()
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % course)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % course)
         return redirect("courses.search")
     
     return render_to_response(template_name, {
@@ -397,7 +397,7 @@ def clone(request, pk, form_class=CourseForm, template_name="courses/add.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully created %s' % clone)
+            messages.add_message(request, messages.SUCCESS, 'Successfully created %s' % clone)
             return redirect('courses.edit_questions', clone.pk)
     else:
         form = form_class(instance=course, user=request.user)

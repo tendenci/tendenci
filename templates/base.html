@@ -27,6 +27,9 @@
 </body>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-dropdown.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-alerts.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-modal.js"></script>
 {% if admin %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
 {% if user.is_authenticated %}<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>{% endif %}
 {% block extra_body %}{% endblock %}

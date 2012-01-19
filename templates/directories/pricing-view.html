@@ -14,7 +14,7 @@
 {% block body %}
 <div class="t">
 
-    {% directory_pricing_nav request.user %}
+    {% directory_pricing_nav request.user directory_pricing %}
 
     <h1>{% trans "View Price Details:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} </h1>
     

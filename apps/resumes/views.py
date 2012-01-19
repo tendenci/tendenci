@@ -110,7 +110,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
             EventLog.objects.log(**log_defaults)
 
             if request.user.is_authenticated():
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % resume)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % resume)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'resumes', 'resumerecipients')
@@ -153,7 +153,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
                 }
                 EventLog.objects.log(**log_defaults) 
                 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % resume)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % resume)
                                                               
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))             
         else:
@@ -187,7 +187,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
             resume.meta = form.save() # save meta
             resume.save() # save relationship
 
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % resume)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % resume)
             
             return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
     else:
@@ -212,7 +212,7 @@ def delete(request, id, template_name="resumes/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % resume)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % resume)
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'resumes', 'resumerecipients')
@@ -263,7 +263,7 @@ def approve(request, id, template_name="resumes/approve.html"):
 
         resume.save()
 
-        messages.add_message(request, messages.INFO, 'Successfully approved %s' % resume)
+        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % resume)
 
         return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
 

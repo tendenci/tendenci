@@ -199,7 +199,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             }
             EventLog.objects.log(**log_defaults)
 
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % job)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % job)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
@@ -331,7 +331,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
             }
             EventLog.objects.log(**log_defaults)
 
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % job)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % job)
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
 
@@ -363,7 +363,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
             job.meta = form.save()  # save meta
             job.save()  # save relationship
 
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % job)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % job)
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
@@ -389,7 +389,7 @@ def delete(request, id, template_name="jobs/delete.html"):
             }
 
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % job)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
@@ -515,7 +515,7 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
         }
 
         EventLog.objects.log(**log_defaults)
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % job_pricing)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job_pricing)
 
         job_pricing.delete()
 
@@ -561,7 +561,7 @@ def approve(request, id, template_name="jobs/approve.html"):
 
         job.save()
 
-        messages.add_message(request, messages.INFO, 'Successfully approved %s' % job)
+        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % job)
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
 

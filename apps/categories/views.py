@@ -61,7 +61,7 @@ def update(request, app_label, model, pk, form_class=CategoryForm, template_name
             # TODO: find a better way to update the index if a category has been changed
             object.save()
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s categories.' % model)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s categories.' % model)
             return HttpResponseRedirect(reverse('category.update', 
                                          args=[form.cleaned_data['app_label'],
                                                form.cleaned_data['model'],
