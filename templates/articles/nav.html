@@ -6,13 +6,12 @@
 {% has_perm user articles.add_article as can_add_article %}
 
 {% if nav_object %}
-	{% has_perm user articles.view_article nav_object as can_view_article %}
-	{% has_perm user articles.change_article nav_object as can_edit_article %}
-	{% has_perm user articles.delete_article nav_object as can_delete_article %}
+    {% has_perm user articles.view_article nav_object as can_view_article %}
+    {% has_perm user articles.change_article nav_object as can_edit_article %}
+    {% has_perm user articles.delete_article nav_object as can_delete_article %}
 {% else %}
-	{% has_perm user articles.view_article as can_view_article %}
-	{% has_perm user articles.change_article as can_edit_article %}
-	{% has_perm user articles.delete_article as can_delete_article %}
+    {% has_perm user articles.view_article as can_view_article %}
+    {% has_perm user articles.change_article as can_edit_article %}
 {% endif %}
 
 <ul id="module-tabs" class="tabs">
@@ -40,7 +39,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "articles" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url articles %}">{% trans "Search Articles" %}</a></li>
+            <li><a href="{% url article.search %}">{% trans "Search Articles" %}</a></li>
             {% if can_add_article %}
                 <li><a href="{% url article.add %}">{% trans "Add Article" %}</a></li>
             {% endif %}

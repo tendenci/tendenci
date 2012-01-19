@@ -26,8 +26,9 @@
         </ul>
     </li>
     {% endif %}
+    <li><a href="{% url directory.search %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directories' %}</a></li>
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_DIRECTORIES_LABEL 'Directories' %}&nbsp;{% trans "Pricing" %}</a>
+        <a href="#" class="dropdown-toggle">{% trans "Pricing" %}</a>
         {% if nav_object %}
         <div class="dropdown-menu">
         <ul class="first">
@@ -62,7 +63,4 @@
         {% endif %}
         </div>
     </li>
-    {% if can_edit_directory_pricing %}
-    <li><a href="{% url directory.search %}">{% firstof MODULE_DIRECTORIES_LABEL 'Directories' %}</a></li>
-    {% endif %}
 </ul>
