@@ -658,7 +658,7 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % corp_memb)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % corp_memb)
             
 #            # send notification to administrators
 #            recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
@@ -742,7 +742,7 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
     if has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
         if request.method == "POST":
             
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % rep)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % rep)
             
             rep.delete()
             corp_memb_update_perms(corp_memb)

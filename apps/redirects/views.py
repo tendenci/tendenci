@@ -37,7 +37,7 @@ def add(request, form_class=RedirectForm, template_name="redirects/add.html"):
             redirect = form.save(commit=False)     
             redirect.save() # get pk
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % redirect)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % redirect)
             
             # reload the urls
             reload(dynamic_urls)
@@ -64,7 +64,7 @@ def edit(request, id, form_class=RedirectForm, template_name="redirects/edit.htm
             redirect = form.save(commit=False)     
             redirect.save() # get pk
             
-            messages.add_message(request, messages.INFO, 'Successfully edited %s' % redirect)
+            messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % redirect)
  
             # reload the urls
             reload(dynamic_urls)
@@ -82,7 +82,7 @@ def delete(request, id, template_name="redirects/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % redirect)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % redirect)
         redirect.delete()
         return HttpResponseRedirect(reverse('redirects'))
 
