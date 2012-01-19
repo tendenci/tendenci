@@ -45,7 +45,7 @@ class Form(TendenciBaseModel):
     A user-built form.
     """
 
-    title = models.CharField(_("Title"), max_length=50)
+    title = models.CharField(_("Title"), max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000, blank=True)
     response = models.TextField(_("Confirmation Text"), max_length=2000, blank=True)

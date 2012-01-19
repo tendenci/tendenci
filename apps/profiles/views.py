@@ -688,7 +688,7 @@ def user_groups_edit(request, username, form_class=UserGroupsForm, template_name
         form = form_class(user, request.user, request, request.POST)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.INFO, 'Successfully edited groups for %s' % user.get_full_name())
+            messages.add_message(request, messages.SUCCESS, 'Successfully edited groups for %s' % user.get_full_name())
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(user, request.user, request)
@@ -718,7 +718,7 @@ def user_role_edit(request, username, membership_id, form_class=GroupMembershipE
         form = form_class(request.POST, instance=membership)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.INFO, 'Successfully edited membership for %s' % membership.group)
+            messages.add_message(request, messages.SUCCESS, 'Successfully edited membership for %s' % membership.group)
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-groups'))
     else:
         form = form_class(instance=membership)
@@ -745,7 +745,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
         if form.is_valid():
             membership = form.save(commit=False)
             membership = update_perms_and_save(request, form, membership)
-            messages.add_message(request, messages.INFO, 'Successfully updated memberships for %s' % user.get_full_name())
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated memberships for %s' % user.get_full_name())
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
     else:
         form = form_class(initial={'user':user})

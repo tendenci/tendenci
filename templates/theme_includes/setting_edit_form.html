@@ -1,34 +1,44 @@
 {% load base_filters %}
+{% load i18n %}
 {% if admin %}
 <div class="admin-inline">
     <div class="admin-border admin-border-top"></div>
     <div class="admin-border admin-border-right"></div>
     <div class="admin-border admin-border-bottom"></div>
     <div class="admin-border admin-border-left"></div>
-    <div class="admin-links clear-block"><a id="admin_link_{{ setting_name }}" title="Change {{ setting_name|underscore_space|title }} Content" class="edit-setting-link">Edit {{ setting_name|underscore_space|title }}</a></div>
+    <div class="admin-links clear-block">
+    <a href="#" data-controls-modal="modal_{{ setting_name }}" data-backdrop="true">{% trans "Edit" %} {{ setting_name|underscore_space|title }}</a>
+    </div>
 </div>
-<div id="form_{{ setting_name }}" class="admin-edit-setting">
-    <div class="setting-header">Change {{ setting_name|underscore_space|title }} Content <a>x</a></div>
-    <div class="form-content">
-        <form class="settings-form" action="/settings/module/{{ scope_category }}/{{ setting_name }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+
+<div id="modal_{{ setting_name }}" class="modal hide fade">
+    <div class="modal-header">
+        <a href="#" class="close">&times;</a>
+        <h3>Change {{ setting_name|underscore_space|title }} Content </h3>
+    </div>
+    <div class="modal-body">
+        <form id="change_form_{{ setting_name }}" class="settings-form" action="/settings/module/{{ scope_category }}/{{ setting_name }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
         {% for field in setting_form %}
             {{ field }}
         {% endfor %}
         <p>You can change this space's content by choosing one of the content options or any <a href="/boxes/add/?next={{ request.path }}">boxes</a> you have added.</p>
-        <input type="submit" value="Update {{ setting_name|underscore_space|title }}" name="submit" />
         </form>
+        <a href="{{ request.path }}" class="btn secondary">Cancel</a>
+        <a href="javascript:document.getElementById('change_form_{{ setting_name }}').submit();" class="btn success">Update {{ setting_name|underscore_space|title }}</a>
     </div>
-    
-    {% if settings_value_list %}
-    <div class="setting-header">Configure {{ setting_value|underscore_space|title }}</div>
-    <div class="form-content">
-        <form class="settings-form" action="/settings/template/{{ setting_value }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="modal-header modal-middle-header">
+        <h3>Configure {{ setting_value|underscore_space|title }}</h3>
+    </div>
+    <div class="modal-body">
+        <form id="config_form_{{ setting_name }}" class="settings-form" action="/settings/template/{{ setting_value }}/?next={{ request.path }}" method="post" enctype="multipart/form-data">{% csrf_token %}
         {% for field in setting_value_form %}
             <p><strong>{{ field.label }}</strong>: {{ field }}</p>
         {% endfor %}
-        <input type="submit" value="Update {{ setting_value|underscore_space|title }}" name="submit" />
         </form>
+        <a href="{{ request.path }}" class="btn secondary">Cancel</a>
+        <a href="javascript:document.getElementById('config_form_{{ setting_name }}').submit();" class="btn success">Update {{ setting_value|underscore_space|title }}</a>
     </div>
-    {% endif %}
+    <div class="modal-footer"></div>
 </div>
+
 {% endif %}

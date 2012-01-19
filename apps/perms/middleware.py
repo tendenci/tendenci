@@ -40,9 +40,9 @@ def get_imp_message(request, user):
                     stop_path,
                     user,)
     
-    message = '<p>You are currently impersonating <a href="%s">%s</a>.</p>' + \
+    message = '<p><strong>Admin Impersonation:</strong><br />You are currently impersonating <a href="%s">%s</a>.</p>' + \
               '<p>Share this link with another administrator:<br /><em>%s</em></p>' + \
-              '<p><a href="%s">Stop impersonating %s</a></p>'
+              '<div class="alert-actions"><a class="btn" href="%s">Stop impersonating %s</a></div>'
     
     return message % message_repl
 

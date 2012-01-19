@@ -1,8 +1,11 @@
 import os, mimetypes, uuid, Image, re
+from slate import PDF
+
 from django.db import models
 from django.conf import settings
-from perms.models import TendenciBaseModel
 from django.contrib.contenttypes.models import ContentType
+
+from perms.models import TendenciBaseModel
 from files.managers import FileManager
 
 
@@ -19,6 +22,11 @@ class File(TendenciBaseModel):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
+    
+    objects = FileManager()
+    
+    class Meta:
+        permissions = (("view_file","Can view file"),)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -89,17 +97,21 @@ class File(TendenciBaseModel):
         # return image path
         return icons_dir + '/' + icons[self.type()]
 
-    objects = FileManager()
-
     def image_dimensions(self):
         try:
             im = Image.open(self.file.path)
             return im.size
         except Exception, e:
             return (0,0)
-
-    class Meta:
-        permissions = (("view_file","Can view file"),)
+            
+    def pdf_text(self):
+        """Returns a file's pdf text data
+        If the file is not a pdf this will return and empty string.
+        """
+        if self.type() == 'pdf' and os.path.exists(self.file.path):
+            doc = PDF(self.file.file)
+            return doc.text()
+        return ""
 
     @models.permalink
     def get_absolute_url(self):

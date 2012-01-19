@@ -50,7 +50,8 @@ colors = {
     '831000':'669966', # add
     '832000':'66CC66', # edit
     '833000':'66CC00', # delete
-    '834000':'66CC33', # search 
+    '834000':'66CC33', # search
+    '834100':'3C7A1D', # nearest
     '835000':'66CC99', # view
 
     # files - NAVY base - complement is ????

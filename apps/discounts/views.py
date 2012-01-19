@@ -79,7 +79,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
                     'instance': discount,
                 }
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % discount)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(user=request.user)
@@ -110,7 +110,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
                     'instance': discount,
                 }
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % discount)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(instance=discount, user=request.user)
@@ -142,7 +142,7 @@ def delete(request, id, template_name="discounts/delete.html"):
         }
         EventLog.objects.log(**log_defaults)
         
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % discount)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
         discount.delete()
         
         return redirect('discount.search')
