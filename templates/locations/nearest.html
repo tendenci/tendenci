@@ -10,7 +10,6 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
-<link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
 {% endblock %}
 
 {% block body %}
@@ -23,32 +22,8 @@
 
 	<form class="search-form" action="{% url location.nearest %}" method="get">
 	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-	<input class="btn" type="submit" value="Find Nearest Location" />
+	<input style="vertical-align:top;" class="btn" type="submit" value="Find Nearest Location" />
 	</form>
-
-<style type="text/css">
-div.image a {
-    width: 200px;
-    height: 200px;
-    background-color: #DDD;
-    float: left;
-}
-
-div.details {
-    float: left;
-    margin-left: 10px;
-}
-
-div.location-wrap-search .content {
-    margin: 0;
-}
-
-#container .t div.details p {
-    font-size: 1.2em;
-    line-height: 1em;
-    margin-bottom: 2px;
-}
-</style>
 
     {% autopaginate locations 10 %}
 	
@@ -63,7 +38,6 @@ div.location-wrap-search .content {
 			</div>
 
             <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
-            {% location_search %}
 
             <div class="image">
                 <a title="Google Directions" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
@@ -87,7 +61,11 @@ div.location-wrap-search .content {
 		</div>
 
 	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        {% if request.GET.q %}
+    		<div>{% trans "0 Results Found" %}</div>
+        {% else %}
+            <div style="color:#666; font-size:.9em">{% trans "Please enter your location; address, city, state, or zipcode."%}</div>
+        {% endif %}
     {% endfor %}
 	</div>
 
@@ -108,8 +86,6 @@ div.location-wrap-search .content {
 			});
 		});
     </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap-buttons.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap-dropdown.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({
