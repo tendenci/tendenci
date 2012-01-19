@@ -11,8 +11,9 @@ def user_group_options(context, user, group):
     return context
 
 @register.inclusion_tag("user_groups/nav.html", takes_context=True)
-def user_group_nav(context, user):
+def user_group_nav(context, user, group=None):
     context.update({
+        "nav_object": group,
         "user": user
     })
     return context
