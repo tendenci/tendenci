@@ -72,7 +72,9 @@
         {% endif %}
         </div>
     </li>
+    {% if can_edit_job %}
     <li><a href="{% url job_pricing.search %}">{% trans "Pricing" %}</a></li>
+    {% endif %}
     {% if MODULE_RESUMES_ENABLED %}
     <li><a href="{% url resumes %}">{% firstof MODULE_RESUME_LABEL trans 'Resumes' %}</a></li>
     {% endif %}
