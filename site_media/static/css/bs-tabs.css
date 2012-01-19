@@ -95,3 +95,7 @@ div.dropdown-menu ul{float:left;margin:0;display:block;min-width:160px;width:160
 .alert-message a.close,.btn{text-decoration:none;}
 .alert-message a,.alert-message a:visited{color:#404040;}
 .alert-message a:hover{color:#333;}
+.modal{width:460px;margin:-150px 0 0 -230px;}
+.modal-header{background-color:#f5f5f5;}.modal-header h3{color:#404040;border:none;margin:0;padding:4px 0;font-size:24px;font-family:Helvetica,Arial,"sans-serif";text-transform:none;}
+.modal-header a{text-decoration:none;}
+.modal-middle-header{border-top:solid 1px #bfbfbf;}
