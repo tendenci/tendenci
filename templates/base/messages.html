@@ -1,20 +1,29 @@
 {% block messages %}
     {% if request.impersonation_message %}
-    <ul class="messages">
-        <li>{{ request.impersonation_message|safe }}</li>
-    </ul>
+    <div class="alert-message block-message fade in warning" data-alert="alert">
+        <a class="close" href="#">×</a>
+        {{ request.impersonation_message|safe }}
+    </div>
     {% endif %}
+
     {% if request.session.theme %}
-    <ul class="messages">
-        <li>You are previewing the {{ request.session.theme }} theme.</li>
-        <li><a href="{{ request.path }}?theme=">Stop previewing</a></li>
-    </ul>
+    <div class="alert-message block-message fade in info" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p><strong>Admin Theme Preview:</strong><br />
+        You are previewing the {{ request.session.theme }} theme.</p>
+        <div class="alert-actions">
+            <a class="btn" href="{{ request.path }}?theme=">Stop previewing</a> <a class="btn" href="{% url theme_editor %}?theme_edit={{ request.session.theme }}">Edit this theme</a>
+        </div>
+    </div>
     {% endif %}
-     {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-        {% endfor %}
-    </ul>
+
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert-message fade in{% if message.tags %} {{ message.tags }}{% endif %}" data-alert="alert">
+            <a class="close" href="#">×</a>
+            <p>{{ message|safe }}</p>
+        </div>
+    {% endfor %}
+
   {% endif %}
 {% endblock %}
