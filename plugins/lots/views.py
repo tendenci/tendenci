@@ -78,9 +78,10 @@ def add(request, map_id=None, template_name="lots/add.html"):
     if map_id:
         map_instance = Map.objects.get(pk=map_id)
     else:
-        map_instance = None
+        messages.add_message(request, messages.INFO, 'Please select a Map.')
+        return redirect('lots.map_selection')
         
-    LineFormSet = modelformset_factory(Line, form=LineForm)
+    LineFormSet = modelformset_factory(Line, form=LineForm, extra=0)
     
     if request.method == "POST":
         form = LotForm(request.POST)
@@ -111,20 +112,23 @@ def edit(request, pk, template_name="lots/edit.html"):
         
     lot = get_object_or_404(Lot, pk=pk)
     
-    LineFormSet = inlineformset_factory(Lot, Line)
+    LineFormSet = inlineformset_factory(Lot, Line, extra=0)
     
     if request.method == "POST":
         form = LotForm(request.POST, instance=lot)
-        formset = LineFormSet(request.POST, instance=lot, prefix="lines")
+        formset = LineFormSet(request.POST, instance=lot, queryset=Line.objects.none(), prefix="lines")
         if False not in (form.is_valid(), formset.is_valid()):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
-            points = formset.save()
+            # delete old points
+            lot.line_set.all().delete()
+            # save new points
+            formset.save()
             messages.add_message(request, messages.INFO, 'Successfully updated %s' % lot)
             return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(instance=lot)
-        formset = LineFormSet(instance=lot, prefix="lines")
+        formset = LineFormSet(instance=lot, queryset=Line.objects.none(), prefix="lines")
     
     return render_to_response(template_name, {
         'formset':formset,
