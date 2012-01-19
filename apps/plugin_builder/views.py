@@ -18,7 +18,7 @@ def build(request, id):
     plugin = get_object_or_404(Plugin, id=id)
 
     build_plugin(plugin)
-    messages.add_message(request, messages.INFO, 'Successfully built %s' % plugin)
+    messages.add_message(request, messages.SUCCESS, 'Successfully built %s' % plugin)
     
     return redirect("admin:plugin_builder_plugin_change",plugin.pk)
     

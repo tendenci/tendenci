@@ -109,7 +109,7 @@ def completion_add(request, training_pk=None, form_class=CompletionForm, templat
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully completed %s' % training)
+            messages.add_message(request, messages.SUCCESS, 'Successfully completed %s' % training)
 
             return HttpResponseRedirect(reverse('trainings.detail', args=[training.pk]))
     else:
@@ -146,7 +146,7 @@ def completion_edit(request, completion_pk=None, form_class=CompletionForm, temp
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully edited completion for %s' % training)
+            messages.add_message(request, messages.SUCCESS, 'Successfully edited completion for %s' % training)
 
             return HttpResponseRedirect(reverse('trainings.detail', args=[training.pk]))
     else:
@@ -173,7 +173,7 @@ def completion_delete(request, completion_pk=None, template_name="trainings/comp
             
             EventLog.objects.log(**log_defaults)
 
-            messages.add_message(request, messages.INFO, 'Successfully deleted completion for %s' % training)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted completion for %s' % training)
 
             completion.delete()
                                     

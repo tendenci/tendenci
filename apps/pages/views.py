@@ -164,7 +164,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
             }
             EventLog.objects.log(**log_defaults)               
 
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % page)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % page)
             
             if not is_admin(request.user):
                 # send notification to administrators
@@ -214,7 +214,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
             page.meta = form.save() # save meta
             page.save() # save relationship
 
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % page)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % page)
             
             return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
@@ -280,7 +280,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % page)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % page)
             
             if not is_admin(request.user):
                 # send notification to administrators
@@ -326,7 +326,7 @@ def delete(request, id, template_name="pages/delete.html"):
                 'instance': page,
             }
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % page)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % page)
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
