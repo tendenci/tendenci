@@ -2,38 +2,28 @@
 {% load perm_tags %}
 {% load i18n %}
 
-<div id="showh">
-	<ul id="primary">
-	
-    {% if user.is_authenticated %}
-	<li>
-	    <a href="{% url dashboard %}" title="Tendenci Home Page">
-		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
-		alt="Tendenci User Home" align="top" width="34" height="15"></a>
-	</li>
-    {% endif %}
 
-	<li>
-		<span>{% firstof MODULE_CONTRIBUTIONS_LABEL trans 'Contributions' %}</span>
-		<ul id="secondary">
-			<li><a href="{% url articles %}">{% firstof MODULE_CONTRIBUTIONS_LABEL trans 'Contributions' %}:</a></li> 
-			{% if nav_object %}
-				{% if can_view_article %}
-				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
-				{% endif %}
-			{% endif %}
-			<li><a href="{% url article.search %}">{% trans "Search" %}</a></li>
-			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
-			{% endif %}
-		</ul>
-		
-	</li>
-	{% if MODULE_USERS_ENABLED %}
-	<li><a href="{% url profile.search %}">{% firstof MODULE_USERS_LABEL 'Users' %}</a></li>
-	{% endif %}
-	{% if MODULE_EVENT_LOGS_ENABLED %}
-	<li><a href="{% url event_logs %}">{% firstof MODULE_EVENT_LOGS 'Event Logs' %}</a></li>
-	{% endif %}
-	</ul>
-</div>
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_CONTRIBUTIONS_LABEL 'Contributions' %}</a>
+        <div>
+        <ul class="dropdown-menu">
+            <li><a href="{% url contribution.search %}">{% trans "All Contributions" %}</a></li>
+            <li><a href="{% url profile.index %}#userview-contributions">{% trans "My Contributions" %}</a></li>
+        </ul>
+        </div>
+    </li>
+    {% if MODULE_USERS_ENABLED %}
+    <li><a href="{% url profile.search %}">{% firstof MODULE_USERS_LABEL 'Users' %}</a></li>
+    {% endif %}
+</ul>
