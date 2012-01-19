@@ -57,7 +57,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % form_instance)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % form_instance)
                 return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(user=request.user)
@@ -103,7 +103,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             }
             EventLog.objects.log(**log_defaults)
                         
-            messages.add_message(request, messages.INFO, 'Successfully edited %s' % form_instance)
+            messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % form_instance)
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(instance=form_instance, user=request.user)
@@ -130,7 +130,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         if form.is_valid():           
             form.save()
         
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % form_instance)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % form_instance)
             return redirect('form_detail', form_instance.slug)
     else:
         form = form_class(instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
@@ -148,7 +148,7 @@ def delete(request, id, template_name="forms/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % form_instance)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % form_instance)
 
         log_defaults = {
             'event_id' : 587300,
@@ -244,7 +244,7 @@ def copy(request, id):
     }
     EventLog.objects.log(**log_defaults)
     
-    messages.add_message(request, messages.INFO, 'Successfully added %s' % new_form)
+    messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
     return redirect('form_edit', new_form.pk)
 
 @login_required
@@ -269,7 +269,7 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.INFO, 'Successfully deleted entry %s' % entry)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted entry %s' % entry)
         entry.delete()
         return HttpResponseRedirect(reverse('forms'))
 

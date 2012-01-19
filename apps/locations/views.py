@@ -91,7 +91,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                 }
                 EventLog.objects.log(**log_defaults)               
                 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % location)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
                                                               
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))             
         else:
@@ -123,7 +123,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % location)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
                 
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
@@ -150,7 +150,7 @@ def delete(request, id, template_name="locations/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % location)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % location)
             location.delete()
                 
             return HttpResponseRedirect(reverse('location.search'))

@@ -89,7 +89,7 @@ def add(request, form_class=EntityForm, template_name="entities/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % entity)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % entity)
                 
                 return HttpResponseRedirect(reverse('entity', args=[entity.pk]))
         else:
@@ -147,7 +147,7 @@ def delete(request, id, template_name="entities/delete.html"):
                 'instance': entity,
             }
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % entity)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % entity)
             entity.delete()
             return HttpResponseRedirect(reverse('entity.search'))
     

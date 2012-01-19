@@ -113,7 +113,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % news)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
             return HttpResponseRedirect(reverse('news.view', args=[news.slug])) 
 
@@ -142,7 +142,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
             news.meta = form.save() # save meta
             news.save() # save relationship
             
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % news)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % news)
             
             return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
     else:
@@ -176,7 +176,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % news)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % news)
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'news', 'newsrecipients')
@@ -213,7 +213,7 @@ def delete(request, id, template_name="news/delete.html"):
             'instance': news,
         }
         EventLog.objects.log(**log_defaults)
-        messages.add_message(request, messages.INFO, 'Successfully deleted %s' % news)
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % news)
         
         # send notification to administrators
         recipients = get_notice_recipients('module', 'news', 'newsrecipients')

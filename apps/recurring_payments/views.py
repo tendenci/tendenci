@@ -317,7 +317,7 @@ def disable_account(request, rp_id,
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully disabled %s' % rp)
+            messages.add_message(request, messages.SUCCESS, 'Successfully disabled %s' % rp)
                                                                          
             return HttpResponseRedirect(reverse('recurring_payment.view_account', args=[rp.id]))
         

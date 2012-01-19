@@ -277,7 +277,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             #extract and serve files in zip
             extract_files(template)
             
-            messages.add_message(request, messages.INFO, 'Successfully created Template : %s' % t_id)
+            messages.add_message(request, messages.SUCCESS, 'Successfully created Template : %s' % t_id)
             
             return redirect(template)
                     
@@ -333,7 +333,7 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             #extract and serve files in zip
             extract_files(template)
                     
-            messages.add_message(request, messages.INFO, 'Successfully updated Template : %s' % template.template_id)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated Template : %s' % template.template_id)
             
             return redirect(template)
                     
@@ -381,7 +381,7 @@ def template_update(request, template_id):
     template.cm_screenshot_url = t.ScreenshotURL
     template.save()
     
-    messages.add_message(request, messages.INFO, 'Successfully updated Template : %s' % template.template_id)
+    messages.add_message(request, messages.SUCCESS, 'Successfully updated Template : %s' % template.template_id)
     
     return redirect(template)
     
@@ -404,7 +404,7 @@ def template_delete(request, template_id):
         return redirect(template)
     
     template.delete()
-    messages.add_message(request, messages.INFO, 'Successfully deleted Template : %s' % t_id)
+    messages.add_message(request, messages.SUCCESS, 'Successfully deleted Template : %s' % t_id)
     
     return redirect("campaign_monitor.template_index")
     
@@ -415,7 +415,7 @@ def template_sync(request):
     
     sync_templates()
     
-    messages.add_message(request, messages.INFO, 'Successfully synced with Campaign Monitor')
+    messages.add_message(request, messages.SUCCESS, 'Successfully synced with Campaign Monitor')
     return redirect("campaign_monitor.template_index")
 
 @login_required
@@ -445,7 +445,7 @@ def campaign_sync(request):
     
     sync_campaigns()
     
-    messages.add_message(request, messages.INFO, 'Successfully synced with Campaign Monitor')
+    messages.add_message(request, messages.SUCCESS, 'Successfully synced with Campaign Monitor')
     return redirect("campaign_monitor.campaign_index")
 
 #@login_required
@@ -483,7 +483,7 @@ def campaign_sync(request):
 #            
 #            campaign.campaign_id = c_id
 #            campaign.save()
-#            messages.add_message(request, messages.INFO, 'Successfully created Campaign: %s' % c_id)
+#            messages.add_message(request, messages.SUCCESS, 'Successfully created Campaign: %s' % c_id)
 #            return redirect(campaign)
 #    else:
 #        copy_id = request.GET.get('copy', None)
