@@ -8,6 +8,7 @@ from django.contrib import messages
 from base.http import Http403
 from locations.models import Location
 from locations.forms import LocationForm
+from locations.utils import get_coordinates
 from perms.utils import is_admin
 from event_logs.models import EventLog
 from perms.utils import has_perm, update_perms_and_save
@@ -48,6 +49,35 @@ def search(request, template_name="locations/search.html"):
     
     return render_to_response(template_name, {'locations':locations}, 
         context_instance=RequestContext(request))
+
+def nearest(request, template_name="locations/nearest.html"):
+    locations = []
+    lat, lng = None, None
+    query = request.GET.get('q')
+
+    if query:
+        lat, lng = get_coordinates(address=query)
+
+    if all((lat,lng)):
+        for location in Location.objects.search(user=request.user).load_all():
+            location.object.distance = location.object.get_distance2(lat, lng)
+            locations.append(location.object)
+            locations.sort(key=lambda x: x.distance)
+
+    log_defaults = {
+        'event_id' : 834100,
+        'event_data': '%s nearest to %s' % ('Location', request.user),
+        'description': '%s nearest' % 'Location',
+        'user': request.user,
+        'request': request,
+        'source': 'locations'
+    }
+    EventLog.objects.log(**log_defaults)
+
+    return render_to_response(template_name, {
+        'locations':locations,
+        'origin': {'lat':lat,'lng':lng},
+        }, context_instance=RequestContext(request))
 
 def print_view(request, id, template_name="locations/print-view.html"):
     location = get_object_or_404(Location, pk=id)    
@@ -91,7 +121,7 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                 }
                 EventLog.objects.log(**log_defaults)               
                 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % location)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
                                                               
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))             
         else:
@@ -123,7 +153,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
                 }
                 EventLog.objects.log(**log_defaults)
                 
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % location)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
                 
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
         else:
@@ -150,7 +180,7 @@ def delete(request, id, template_name="locations/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % location)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % location)
             location.delete()
                 
             return HttpResponseRedirect(reverse('location.search'))

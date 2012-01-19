@@ -130,7 +130,7 @@ def add(request, form_class=ServiceForm, template_name="services/add.html"):
             #EventLog.objects.log(**log_defaults)
 
             if request.user.is_authenticated():
-                messages.add_message(request, messages.INFO, 'Successfully added %s' % service)
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % service)
 
             # send notification to administrators
             recipients = get_notice_recipients('module', 'services', 'servicerecipients')
@@ -182,7 +182,7 @@ def edit(request, id, form_class=ServiceForm, template_name="services/edit.html"
                 }
                 EventLog.objects.log(**log_defaults) 
                 
-                messages.add_message(request, messages.INFO, 'Successfully updated %s' % service)
+                messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % service)
                                                               
                 return HttpResponseRedirect(reverse('service', args=[service.slug]))             
         else:
@@ -216,7 +216,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="services/edit-met
             service.meta = form.save() # save meta
             service.save() # save relationship
 
-            messages.add_message(request, messages.INFO, 'Successfully updated meta for %s' % service)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % service)
             
             return HttpResponseRedirect(reverse('service', args=[service.slug]))
     else:
@@ -241,7 +241,7 @@ def delete(request, id, template_name="services/delete.html"):
             }
             
             EventLog.objects.log(**log_defaults)
-            messages.add_message(request, messages.INFO, 'Successfully deleted %s' % service)
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % service)
             
             # send notification to administrators
             recipients = get_notice_recipients('module', 'services', 'servicerecipients')
@@ -290,7 +290,7 @@ def approve(request, id, template_name="services/approve.html"):
 
         service.save()
 
-        messages.add_message(request, messages.INFO, 'Successfully approved %s' % service)
+        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % service)
 
         return HttpResponseRedirect(reverse('service', args=[service.slug]))
 

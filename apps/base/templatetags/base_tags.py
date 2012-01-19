@@ -431,6 +431,9 @@ class PhotoImageURL(Node):
 @register.tag
 def photo_image_url(parser, token):
     """
+    Creates a url for a photo that can be resized, cropped, and have quality reduced.
+    Used specifically for photos.
+    
     Example:
         {% list_photos as photos user=user limit=3 %}
         {% for photo in photos %}
@@ -482,6 +485,8 @@ class ImageURL(Node):
 @register.tag
 def image_url(parser, token):
     """
+    Creates a url for a photo that can be resized, cropped, and have quality reduced.
+    
     Example:
         <img src="{% image_url file size=100x100 crop=True quality=90 %}" />
     """

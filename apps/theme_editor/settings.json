@@ -44,6 +44,34 @@
     "scope": "template",
     "scope_category": "news_list"
   },
+  {
+    "name": "limit",
+    "label": "Number",
+    "description": "The number of article entries to include, including the first (featured) one.",
+    "data_type": "string",
+    "default_value": "8",
+    "input_type": "select",
+    "value": "8",
+    "input_value": "1,2,3,4,5,6,7,8,9,10",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "template",
+    "scope_category": "articles_list"
+  },
+    {
+    "name": "title",
+    "label": "Title",
+    "description": "The title of the space.",
+    "data_type": "string",
+    "default_value": "Articles",
+    "input_type": "text",
+    "value": "Articles",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "template",
+    "scope_category": "articles_list"
+  },
     {
     "name": "limit",
     "label": "Number",
@@ -85,6 +113,34 @@
     "store": "true",
     "scope": "template",
     "scope_category": "stories_sponsors"
+  },
+    {
+    "name": "limit",
+    "label": "Number",
+    "description": "The number of stories to include.",
+    "data_type": "string",
+    "default_value": "4",
+    "input_type": "select",
+    "value": "3",
+    "input_value": "1,2,3,4,5,6",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "template",
+    "scope_category": "stories_headlines"
+  },
+    {
+    "name": "tag",
+    "label": "Tag",
+    "description": "The tag for the stories to appear in this space.",
+    "data_type": "string",
+    "default_value": "headline",
+    "input_type": "text",
+    "value": "headline",
+    "input_value": "",
+    "client_editable": "true",
+    "store": "true",
+    "scope": "template",
+    "scope_category": "stories_headlines"
   },
   {
     "name": "limit",

@@ -1,0 +1,31 @@
+{% load theme_tags %}
+{% load articles_tags %}
+{% list_articles as featured_articles limit=TEMPLATE_ARTICLES_LIST_LIMIT %}
+<section id="articles-list-featured">
+    <h3>{% firstof TEMPLATE_ARTICLES_LIST_TITLE 'Articles' %}</h3>
+    
+    {% if featured_articles %}
+    {% for article in featured_articles|slice:":1" %}
+        <h4><a href="{{ article.get_absolute_url }}">{{ article.headline }}</a></h4>
+        <p>{{ article.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url articles.view article.slug %}">Read more</a>
+    {% endfor %}
+    {% else %}
+        <p>Tendenci supports great articles updates for your members and website visitors. You can pull extra details from the latest articles, while showing other articles items to the side. {% if request.user.is_authenticated %}<a href="/articles/add/">Add your first articles item</a> to take the place of these examples.{% endif %}</p> <a class="readmore" href="/">Read more</a>
+    {% endif %}
+</section>
+<section id="articles-list-others">
+    <ul id="articles-items">
+        {% if featured_articles|length > 1 %}
+        {% for article in featured_articles %}
+            {% if forloop.first %}
+            {% else %}
+            <li><a href="{{ article.get_absolute_url }}">{{ articles_item.headline|truncatewords:4|safe }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+        <li>Another top story in the articles</li>
+        <li>Even more great article updates</li>
+        {% endif %}
+    </ul>
+</section>
+{% theme_setting setting_name %}

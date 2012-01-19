@@ -27,7 +27,6 @@ class LocationForm(TendenciBaseForm):
         'latitude',
         'longitude',
         'hq',
-        'entity',
         'allow_anonymous_view',
         'user_perms',
         'member_perms',
@@ -39,7 +38,6 @@ class LocationForm(TendenciBaseForm):
         fieldsets = [('Location Information', {
                       'fields': ['location_name',
                                  'description',
-                                 'entity',
                                  'latitude',
                                  'longitude',
                                  'hq',

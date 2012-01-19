@@ -1,23 +1,23 @@
-{% extends "jobs/base.html" %}
-{% load job_tags %}
+{% extends "directories/base.html" %}
+{% load directory_tags %}
 {% load perm_tags %}
 {% load i18n %}
 
-{% block title %}{% trans "Edit Price:" %} {% firstof MODULE_JOBS_LABEL 'Job' %} {% endblock %}
+{% block title %}{% trans "Edit Price:" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directories' %} {% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
 
-    {% job_pricing_nav request.user %}
+    {% directory_pricing_nav request.user %}
 
-    <h1>{% trans "Edit Price:" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</h1>
+    <h1>{% trans "Edit Price:" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directories' %}</h1>
     
-    <p>{% trans "To edit the job price, complete the fields below and press Submit." %}</p>
+    <p>{% trans "To edit the directory price, complete the fields below and press Submit." %}</p>
     
 	<div class="jobpricing">
 	

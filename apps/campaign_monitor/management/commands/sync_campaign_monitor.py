@@ -10,7 +10,8 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         from user_groups.models import Group
-        from subscribers.models import GroupSubscription as GS
+        from subscribers.models import GroupSubscription as GS, SubscriberData as SD
+        from subscribers.utils import get_subscriber_name_email
         from campaign_monitor.models import ListMap, Campaign, Template
         from campaign_monitor.utils import sync_campaigns, sync_templates
         from createsend import CreateSend, Client, List, Subscriber, \
@@ -105,10 +106,15 @@ class Command(BaseCommand):
             # sync subscribers in this group's subscription
             gss = GS.objects.filter(group=group)
             for gs in gss:
-                form_entry = gs.subscriber
-                (name, email) = form_entry.get_name_email()
+                if gs.subscriber:
+                    form_entry = gs.subscriber
+                    (name, email) = form_entry.get_name_email()
+                else:
+                    gs_data = SD.objects.filter(subscription=gs)
+                    (name, email) = get_subscriber_name_email(gs_data)
                 
-                subscribe_to_list(subscriber_obj, list_id, name, email)
+                if email:
+                    subscribe_to_list(subscriber_obj, list_id, name, email)
                     
         print 'Done'
         

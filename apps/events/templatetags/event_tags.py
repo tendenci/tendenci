@@ -8,11 +8,13 @@ from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser
 
+from base.template_tags import ListNode, parse_tag_kwargs
+from site_settings.utils import get_setting
+
 from events.models import Event, Registrant, Type, RegConfPricing
 from events.utils import get_pricing, registration_earliest_time
 from events.utils import registration_has_started, get_event_spots_taken
 from events.utils import registration_has_ended
-from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 
@@ -67,29 +69,33 @@ def registration_pricing_and_button(context, event, user):
     spots_taken = 0
     spots_left = limit - spots_taken
     registration = event.registration_configuration
-
+    
     pricing = RegConfPricing.objects.filter(
         reg_conf=event.registration_configuration,
         status=True,
     )
+    
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
-
+    
+    # setting for allowing anonymous members to choose prices
+    anonpricing = get_setting('module', 'events', 'anonymousmemberpricing')
+    
     # dictionary with helpers, not a queryset
     # see get_pricing
     q_pricing = get_pricing(user, event, pricing=pricing)
-
+    
     # spots taken
     if limit > 0:
         spots_taken = get_event_spots_taken(event)
-
+    
     is_registrant = False
-    # check if user has already registere
+    # check if user has already registered
     if hasattr(user, 'registrant_set'):
         is_registrant = user.registrant_set.filter(
             registration__event=event).exists()
-  
+    
     context.update({
         'now': datetime.now(),
         'event': event,
@@ -102,6 +108,7 @@ def registration_pricing_and_button(context, event, user):
         'pricing': q_pricing,
         'user': user,
         'is_registrant': is_registrant,
+        'anonpricing': anonpricing,
     })
 
     return context
