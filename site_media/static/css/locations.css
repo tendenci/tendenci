@@ -19,9 +19,16 @@
 }
 
 .t .location-wrap {
-	padding: 10px;
+	padding: 0 10px 10px 10px;
 	margin-bottom: 20px;
 	position: relative;
+}
+.t .location-wrap h1 {
+	margin-bottom: 10px;
+}
+.t .location-wrap div.image a {
+	/*border: 1px solid silver;*/
+	box-shadow: 0 0 5px #AAA;
 }
 
 .t .locations-wrap .location-wrap-search {
@@ -40,14 +47,12 @@
 }
 .t .options {
 	text-align: right;
-	position: absolute;
-	top: 0; right: 0;
-	padding: 5px;
-	white-space: nowrap;
-}
+	/*margin-bottom: 10px;*/
+	width: 100%;
 
+}
 .t .quick-options {
-	float: right;
+	/*float: right;*/
 	margin-right: 5px;
 }
 .t .quick-options ul {
