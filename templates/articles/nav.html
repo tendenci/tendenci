@@ -68,6 +68,6 @@
         </div>
     </li>
     {% if MODULE_NEWS_ENABLED %}
-    <li><a href="{% url news %}">{{ MODULE_NEWS_LABEL }}</a></li>
+    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
     {% endif %}
 </ul>

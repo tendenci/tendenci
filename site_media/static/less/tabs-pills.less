@@ -25,14 +25,8 @@
       color: @grayDark;
     }
     > a {
-      color: @blueDark;
+      color: #555;
       text-decoration: none;
-      background-color: #f3f3f3;
-      border-color: #f3f3f3 #f3f3f3 #ddd;
-      &:hover {
-        background-color: #e4e4e4;
-        border-color: #e4e4e4 #e4e4e4 #ddd;
-      }
     }
   }
 }
@@ -42,12 +36,12 @@
 .dropdown-menu {
   a {
     text-decoration: none;
-    color: @tenMain;
+    color: @grayDark;
     &:visited {
-      color: @tenMain;
+      color: @grayDark;
     }
     &:hover {
-      color: @grayDark;
+      color: #333;
     }
     &.delete {
      color: @red !important;
@@ -103,4 +97,9 @@ div.dropdown-menu {
 }
 .modal-middle-header {
   border-top: solid 1px @grayLight;
+}
+
+// Buttons
+.btn {
+  &.secondary { color: @grayDark; }
 }

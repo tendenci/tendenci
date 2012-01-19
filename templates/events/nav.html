@@ -96,11 +96,15 @@
         {% endif %}
         </div>
     </li>
+    {% if admin %}
+    <li><a href="{% url discount.search %}">{% firstof MODULE_DISCOUNTS_LABEL 'Discounts' %}</a></li>
+    {% else %}
     {% if MODULE_NEWS_ENABLED %}
     <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
     {% endif %}
     {% if MODULE_ARTICLES_ENABLED %}
     <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL 'Articles' %}</a></li>
+    {% endif %}
     {% endif %}
 </ul>
 
