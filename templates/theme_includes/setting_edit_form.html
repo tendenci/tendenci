@@ -24,7 +24,7 @@
         <p>You can change this space's content by choosing one of the content options or any <a href="/boxes/add/?next={{ request.path }}">boxes</a> you have added.</p>
         </form>
         <a href="{{ request.path }}" class="btn secondary">Cancel</a>
-        <a href="javascript:document.getElementById('change_form_{{ setting_name }}').submit();" class="btn primary">Update {{ setting_name|underscore_space|title }}</a>
+        <a href="javascript:document.getElementById('change_form_{{ setting_name }}').submit();" class="btn success">Update {{ setting_name|underscore_space|title }}</a>
     </div>
     <div class="modal-header modal-middle-header">
         <h3>Configure {{ setting_value|underscore_space|title }}</h3>
@@ -36,7 +36,7 @@
         {% endfor %}
         </form>
         <a href="{{ request.path }}" class="btn secondary">Cancel</a>
-        <a href="javascript:document.getElementById('config_form_{{ setting_name }}').submit();" class="btn primary">Update {{ setting_value|underscore_space|title }}</a>
+        <a href="javascript:document.getElementById('config_form_{{ setting_name }}').submit();" class="btn success">Update {{ setting_value|underscore_space|title }}</a>
     </div>
     <div class="modal-footer"></div>
 </div>
