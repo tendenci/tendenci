@@ -17,7 +17,7 @@
 
     {% location_nav request.user %}
 
-    <h1>{{ MODULE_LOCATIONS_LABEL }} {% trans "Search" %}</h1>
+    <h1>{% trans "Search" %} {{ MODULE_LOCATIONS_LABEL }}</h1>
     {% location_search %}
 
     {% autopaginate locations 10 %}
@@ -26,21 +26,35 @@
     {% for location in locations %}
 		{% with location.object as location %}
 		<div class="location-wrap-search">
+
 			<div class="options">
                 <div class="quick-options">
 					{% location_options request.user location %} 	       
                 </div>
 			</div>
+
             <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
-            <div class="content">{{ location.description|striptags|truncatewords:20|safe }}</div>
-			<div class="meta">
-            	<div class="submitted">{% blocktrans with location.release_dt|date:"D d M Y P" as release_date and location.creator as location_creator %}Released on {{ release_date }} by {{ location_creator }}{% endblocktrans %}</div>
+
+            <div class="image">
+                <a title="Google Directions" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false"></a>
             </div>
+
+            <div class="details">
+                <p>{{ location.address }} <br />{{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
+                <p>{{ location.phone }}</p>
+                <p>{{ location.email }}</p>
+            </div>
+
+            <div style="clear:both;"><!--ie-bug--></div>
+            <div class="content">{{ location.description|striptags|truncatewords:20|safe }}</div>
+
 
             <!-- delete-location form -->
             <form name="location-delete" method="POST" action="{% url location.delete location.pk %}">{% csrf_token %}
                 <input type="hidden" name="action" value="delete">
             </form>
+
 		</div>
 		{% endwith %}
 	{% empty %}
