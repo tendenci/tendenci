@@ -78,6 +78,10 @@
     font-style: italic;
 }
 
-.coordinates {
-    
+#line-hidden {
+    display: none;
+}
+
+#lines-formset {
+    display: none;
 }

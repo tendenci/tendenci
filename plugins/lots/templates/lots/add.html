@@ -17,15 +17,21 @@
             <p class="map-title">{{ map.name }}</p>
         </div>
         <div class="forms">
-            <div class="lines">
-                {{ formset.management_form }}
-                {{ formset|styled_form_set }}
+            {{ formset.management_form }}
+            <div id="lines-formset">
             </div>
             {{ form|styled_form }}
             <input type="submit" value="Submit">
         </div>
         </form>
     </div>
+    <div id="line-hidden">
+        <input type="text" name="lines-0-x1" id="id_lines-0-x1" />
+        <input type="text" name="lines-0-y1" id="id_lines-0-y1" />
+        <input type="text" name="lines-0-x2" id="id_lines-0-x2" />
+        <input type="text" name="lines-0-y2" id="id_lines-0-y2" />
+	    <input type="hidden" name="lines-0-id" id="id_lines-0-id" />
+	</div>
 </div>
 {% endblock body %}
 
@@ -40,6 +46,48 @@ $("canvas").drawImage({
   width: 900,
   fromCenter: false,
 });
+
+//dynamic line form creation
+function updateIndex(e, prefix, idx){
+    var id_regex = new RegExp('('+ prefix +'-\\d+)');
+    var replacement = prefix + '-' + idx
+    if ($(e).attr("for")) 
+        {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
+    if (e.id) {e.id = e.id.replace(id_regex, replacement);}
+    if (e.name){ e.name = e.name.replace(id_regex, replacement);}
+}
+
+function addLine(prefix, data){
+    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    var row = $('#line-hidden').clone(true).get(0);
+    
+    // place proper class
+    $(row).addClass('line-form');
+    
+    // update id attr
+    var replacement = prefix + '_' + formCount
+    $(row).attr('id',replacement);
+    
+    $(row).find("input").each(function() {
+        updateIndex(this, prefix, formCount);
+        if($(this).attr("name")==(prefix+"-"+formCount+"-x1")){
+            $(this).val(data['x1']);
+        } else if($(this).attr("name")==(prefix+"-"+formCount+"-y1")){
+            $(this).val(data['y1']);
+        } else if($(this).attr("name")==(prefix+"-"+formCount+"-x2")){
+            $(this).val(data['x2']);
+        } else if($(this).attr("name")==(prefix+"-"+formCount+"-y2")){
+            $(this).val(data['y2']);
+        }
+    });
+    
+    // insert as last element into form list
+    $('#lines-formset').append(row);
+    
+    $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+    
+    return false;
+}
 
 //state variables for plotting
 prev_x = null;
@@ -62,15 +110,17 @@ $("canvas").click(function(e){
             strokeWidth: 10,
             strokeCap: "round",
             strokeJoin: "miter",
-            x1: x, y1: y,
-            x2: prev_x, y2: prev_y,
+            x1: prev_x, y1: prev_y,
+            x2: x, y2: y,
         });
-        if(new_line){
-            //intialine a line form here
-            new_line = false;
-        }else{
-            new_line = true;
+        //intialine a line form here
+        var data = {
+            'x1':prev_x,
+            'y1':prev_y,
+            'x2':x,
+            'y2':y,
         }
+        addLine('lines', data);
     }
     prev_x = x;
     prev_y = y;

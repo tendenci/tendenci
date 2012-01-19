@@ -9,11 +9,47 @@
     <h1>{{ lot.name }}</h1>
     <p>{{ lot.description }}</p>
     {% if lot.map %}
-        <div class="lot-image">
-            <img src="{{ lot.map.file.url }}" alt="{{ lot.map.description }}">
+        <div class="map-wrap">
+            <div class="map-photo">
+                <canvas height="{{ lot.map.height_for_900 }}" width="900" >
+                </canvas>
+            </div>
+            <p class="map-title">{{ lot.map.name }}</p>
         </div>
     {% endif %}
     {% include "lots/meta.html" %} 
     </div>
 </div>
 {% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
+<script type="text/javascript">
+// initialize map image
+$(document).ready(function(){
+    $("canvas").drawImage({
+      source: "{{ lot.map.file.url }}",
+      x: 0, y: 0,
+      width: 900,
+      fromCenter: false,
+      load: displayLines,
+    });
+});
+
+function displayLines(){
+    //plot lines
+    {% for line in lot.line_set.all %}
+    $("canvas").drawLine({
+        strokeStyle: "#000",
+        strokeWidth: 10,
+        strokeCap: "round",
+        strokeJoin: "miter",
+        x1: {{ line.x1 }}, y1: {{ line.y1 }},
+        x2: {{ line.x2 }}, y2: {{ line.y2 }},
+    });
+    {% endfor %}
+}
+
+</script>
+{% endblock %}
