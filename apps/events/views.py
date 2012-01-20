@@ -333,7 +333,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 photo = form_event.cleaned_data['photo_upload']
                 if photo:
                     event.save(photo=photo)
-                print event.photo
 
                 # make dict (i.e. speaker_bind); bind speaker with speaker image
                 pattern = re.compile('speaker-\d+-name')
@@ -365,6 +364,13 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
+                    
+                    # if a custom registration form template is selected, clone the form
+                    # and tie the cloned form to this regconf
+                    if event.use_custom_reg_form and not event.reg_form_bind_to_event:
+                        if regconf_price.reg_form and regconf_price.reg_form.is_template:
+                            regconf_price.reg_form = regconf_price.reg_form.clone()
+                    
                     regconf_price.save()
                     
                 organizer.event = [event]
@@ -553,6 +559,13 @@ def add(request, year=None, month=None, day=None, \
                     
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
+                    
+                    # if a custom registration form template is selected, clone the form
+                    # and tie the cloned form to this regconf
+                    if event.use_custom_reg_form and not event.reg_form_bind_to_event:
+                        if regconf_price.reg_form and regconf_price.reg_form.is_template:
+                            regconf_price.reg_form = regconf_price.reg_form.clone()
+                        
                     regconf_price.save()
                     
                 organizer.event = [event]
