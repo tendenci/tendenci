@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.fields import AutoField
 
 from timezones.fields import TimeZoneField
 from entities.models import Entity
@@ -240,6 +241,15 @@ class RegistrationConfiguration(models.Model):
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
+    
+    # custom reg form
+    use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+                                 verbose_name=_("Custom Registration Form"),
+                                 related_name='events',
+                                 help_text="You'll have the chance to edit the selected form")
+    # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
+    bind_reg_form_to_conf_only = models.BooleanField(_(''), default=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -270,7 +280,9 @@ class RegConfPricing(models.Model):
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
-                                 verbose_name=_("Custom Registration Form"))
+                                 verbose_name=_("Custom Registration Form"),
+                                 related_name='regconfpricings',
+                                 help_text="You'll have the chance to edit the selected form")
     
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now()+timedelta(hours=6))
@@ -790,6 +802,31 @@ class CustomRegForm(models.Model):
     def __unicode__(self):
         return self.name
     
+    @property
+    def is_template(self):
+        """
+        A custom registration form is a template when it is not associated with any event
+        and any event pricing. 
+        A form template can be re-used and will be cloned if it is selected by an event
+        or an event pricing.
+        """
+        if self.events.count() > 0 or self.regconfpricings.count() > 0:
+            return True
+        return False
+    
+    def clone(self):
+        """
+        Clone this custom registration formm and associate it with the event if provided.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        cloned_obj = self.__class__.objects.create(**params)
+        # clone fiellds
+        fields = self.fields.all()
+        for field in fields:
+            field.clone(form=cloned_obj)
+            
+        return cloned_obj
     
 
 class CustomRegField(models.Model):
@@ -813,6 +850,20 @@ class CustomRegField(models.Model):
         verbose_name_plural = _("Fields")
         ordering = ('position',)
         
+    def clone(self, form=None):
+        """
+        Clone this custom registration field, and associate it with the form if provided.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        cloned_field = self.__class__.objects.create(**params)
+        
+        if form:
+            cloned_field.form = form
+            cloned_field.save()
+        return cloned_field
+        
+                
 class CustomRegFormEntry(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))

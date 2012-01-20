@@ -962,5 +962,7 @@ def get_custom_registrants_initials(entries, **kwargs):
             fields_d['field_%d' % field_entry.field.id] = field_entry.value
         initials.append(fields_d)
     return initials
+
+
                         
         
