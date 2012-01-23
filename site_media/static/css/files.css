@@ -30,6 +30,7 @@
 
 .t .files-wrap .file-wrap h2 {
 	width: 85%;
+	margin-bottom: 6px;
 }
 .t .files-wrap .file-wrap .content {
 	margin-bottom: 10px;
@@ -43,6 +44,17 @@
 	margin-bottom: 20px;
 	position: relative;
 	background-color: white;
+}
+
+.t .file-wrap .icon {
+	float: left;
+	margin-right: 10px;
+}
+.t .file-wrap .meta {
+	margin-top: 20px;
+}
+.t .file-wrap h2 a.broken {
+	text-decoration: line-through;
 }
 
 .t .files-wrap-search .file-wrap h2 {
