@@ -1,0 +1,18 @@
+{% extends "lots/base.html" %}
+{% load lot_tags %}
+{% load styled_forms %}
+
+{% block body %}
+<div class="t">
+    {% lot_nav request.user %}
+    <h1>Add Map</h1>
+    <div class="map-wrap">
+        <form method="post" action="" enctype="multipart/form-data">{% csrf_token %}
+        <div class="forms">
+            {{ form|styled_form }}
+            <input type="submit" value="Submit">
+        </div>
+        </form>
+    </div>
+</div>
+{% endblock body %}
