@@ -5,6 +5,7 @@ from django.forms.formsets import BaseFormSet
 from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
+from site_settings.utils import get_setting
 from events.registration.utils import can_use_pricing
 
 class RegistrantBaseFormSet(BaseFormSet):
@@ -22,6 +23,7 @@ class RegistrantBaseFormSet(BaseFormSet):
                  
         # initialize internal variables
         self.pricings = {}
+        self.enabled_pricings = []
         self.sets = []
         self.total_price = Decimal('0.00')
         
@@ -107,9 +109,22 @@ class RegistrantBaseFormSet(BaseFormSet):
             if len(self.pricings[pricing]) % pricing.quantity != 0:
                 raise forms.ValidationError(_("Please enter a valid number of registrants."))
         
-        # if all quantities are valid, update each form's corresponding price
+        
         errors = []
         users = []
+        
+        # mark all validated prices is shared pricing
+        shared_pricing = get_setting('module', 'events', 'sharedpricing')
+        if shared_pricing:
+            for pricing in self.pricings.keys():
+                for i in range(0, len(self.pricings[pricing])):
+                    form = self.pricings[pricing][i]
+                    if i % pricing.quantity == 0:
+                        user = form.get_user()
+                        if can_use_pricing(self.event, user, pricing):
+                            self.enabled_pricings.append(pricing)
+                        
+        # if all quantities are valid, update each form's corresponding price
         for pricing in self.pricings.keys():
             for i in range(0, len(self.pricings[pricing])):
                 form = self.pricings[pricing][i]
@@ -119,8 +134,13 @@ class RegistrantBaseFormSet(BaseFormSet):
                     # first form of each set must be authorized for the pricing
                     user = form.get_user()
                     # take note of each invalid price but continue setting prices
-                    if not can_use_pricing(self.event, user, pricing):
-                        errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
+                    
+                    if shared_pricing:
+                        if pricing not in self.enabled_pricings:
+                            errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
+                    else:
+                        if not can_use_pricing(self.event, user, pricing):
+                            errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
                     
                     if not user.is_anonymous():
                         # check if this user has already been used before
