@@ -49,7 +49,7 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
     if download:
         attachment = 'attachment;'
         log_defaults = {
-            'event_id' : 836000,
+            'event_id' : 185000,
             'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
             'description': '%s downloaded' % file._meta.object_name,
             'user': request.user,
@@ -61,7 +61,7 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         attachment = ''
         if file.type() != 'image':
             log_defaults = {
-                'event_id' : 835000,
+                'event_id' : 186000,
                 'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
                 'description': '%s viewed' % file._meta.object_name,
                 'user': request.user,
