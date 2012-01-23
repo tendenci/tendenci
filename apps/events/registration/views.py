@@ -22,6 +22,7 @@ from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.registration.utils import get_available_pricings, reg_status
 from events.registration.utils import can_use_pricing, get_active_pricings 
 from events.registration.utils import process_registration, send_registrant_email
+from events.registration.utils import get_pricings_for_list
 from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
 
@@ -46,9 +47,9 @@ def ajax_user(request, event_id):
     
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     if memberid and allow_memberid:# memberid takes priority over email
-        membership = Membership.objects.filter(member_number=memberid)
-        if membership:
-            user = membership[0].user
+        memberships = Membership.objects.filter(member_number=memberid)
+        if memberships:
+            user = memberships[0].user
     elif email:
         users = User.objects.filter(email=email)
         if users:
@@ -57,7 +58,10 @@ def ajax_user(request, event_id):
     #check if can use
     can_use = can_use_pricing(event, user, pricing)
     if not can_use:
-        data = json.dumps({"error":"INVALID"})
+        if not get_setting('module', 'events', 'sharedpricing'):
+            data = json.dumps({"error":"INVALID"})
+        else:
+            data = json.dumps({"error":"SHARED"})
         return HttpResponse(data, mimetype="text/plain")
     
     data = json.dumps(None)
@@ -79,7 +83,9 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     The parameters are email and memberid.
     Both are not unique to a user but are assumed to be unique.
     On cases that there are multiple matches,
-    the first match will be the basis of the pricing list
+    the first match will be the basis of the pricing list.
+    If the setting "sharedpricing" is enabled this ajax check will consider
+    the emails associated with the session.
     """
     event = get_object_or_404(Event, pk=event_id)
     
@@ -91,17 +97,28 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     
     user = AnonymousUser()
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
+    shared_pricing = get_setting('module', 'events', 'sharedpricing')
+    
     if memberid and allow_memberid:# memberid takes priority over email
-        membership = Membership.objects.filter(member_number=memberid)
-        if membership:
-            user = membership[0].user
+        memberships = Membership.objects.filter(member_number=memberid)
+        if memberships:
+            user = memberships[0].user
     elif email:
-        user = User.objects.filter(email=email)
-        if user:
-            user = user[0]
+        users = User.objects.filter(email=email)
+        if users:
+            user = users[0]
     
     all_pricings = get_active_pricings(event)
-    available_pricings = get_available_pricings(event, user)
+    
+    if shared_pricing:
+        user_pks = request.session.get('user_list', [])
+        if not user.is_anonymous():
+            user_pks.append(user.pk)
+        request.session['user_list'] = user_pks
+        users = User.objects.filter(pk__in=user_pks)
+        available_pricings = get_pricings_for_list(event, users)
+    else:
+        available_pricings = get_available_pricings(event, user)
     
     pricing_list = []
     for pricing in all_pricings:
@@ -236,4 +253,5 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'sets': sets,
             'pricings':active_pricings,
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
+            'shared_pricing':get_setting('module', 'events', 'sharedpricing'),
             }, context_instance=RequestContext(request))
