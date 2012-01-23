@@ -15,10 +15,10 @@ class LatestEntriesFeed(SubFeed):
         return [sq.object for sq in sqs]
 
     def item_title(self, item):
-        return item.author
+        return item.name
 
     def item_description(self, item):
-        return item.museum
+        return item.about
 
     def item_link(self, item):
         return item.get_absolute_url()
