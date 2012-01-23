@@ -527,6 +527,9 @@
                     }else if(data['error']=='REG'){
                         var msg = "<div class='error'>User already registered.</div>"
                         notice.html(msg);
+                    }else if(data['error']=='SHARED'){
+                        var msg = "<div class='notice'>Access to this pricing is shared.</div>"
+                        notice.html(msg);
                     }else{
                         var msg = "<div class='notice'>User already registered but can still register more people.</div>"
                         notice.html(msg);
@@ -738,7 +741,9 @@
                 init_d['memberid'] = $('#pricing-memberid').val();
                 $('#pricing-memberid').val('');
                 addRegistrantSet('registrant', price_d, init_d);
-                $('#pricing-choices').html(default_pricings);
+                {% if not shared_pricing %}
+                    $('#pricing-choices').html(default_pricings);
+                {% endif %}
             } else {
                 alert("Please select a pricing first.");
             }
