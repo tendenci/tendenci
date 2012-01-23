@@ -74,7 +74,7 @@ def get_available_pricings(event, user):
         exclude_list = []
         # user permitted pricings
         for price in pricings:
-            # shown to all
+            # shown to all users
             if price.allow_anonymous or price.allow_user:
                 continue
             
@@ -90,6 +90,18 @@ def get_available_pricings(event, user):
             exclude_list.append(price.pk)
         # exclude pricings user failed permission checks with
         pricings = pricings.exclude(pk__in=exclude_list)
+    
+    # return the QUERYSET
+    return pricings
+    
+def get_pricings_for_list(event, users):
+    """
+    Returns the available pricings of an event for a given list of users.
+    """
+    pricings = RegConfPricing.objects.none()
+    
+    for user in users:
+        pricings = pricings | get_available_pricings(event, user)
     
     # return the QUERYSET
     return pricings
