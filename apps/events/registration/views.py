@@ -55,15 +55,6 @@ def ajax_user(request, event_id):
         if users:
             user = users[0]
     
-    #check if can use
-    can_use = can_use_pricing(event, user, pricing)
-    if not can_use:
-        if not get_setting('module', 'events', 'sharedpricing'):
-            data = json.dumps({"error":"INVALID"})
-        else:
-            data = json.dumps({"error":"SHARED"})
-        return HttpResponse(data, mimetype="text/plain")
-    
     data = json.dumps(None)
     #check if already registered
     if not (user.is_anonymous() or pricing.allow_anonymous):
@@ -73,6 +64,14 @@ def ajax_user(request, event_id):
                 data = json.dumps({"error":"REG"})
             else:
                 data = json.dumps({"message":"REG"})
+    
+    #check if can use
+    can_use = can_use_pricing(event, user, pricing)
+    if not can_use:
+        if not get_setting('module', 'events', 'sharedpricing'):
+            data = json.dumps({"error":"INVALID"})
+        else:
+            data = json.dumps({"error":"SHARED"})
     
     return HttpResponse(data, mimetype="text/plain")
         
