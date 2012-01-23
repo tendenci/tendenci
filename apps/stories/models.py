@@ -16,6 +16,20 @@ from entities.models import Entity
 
 # Create your models here.
 class Story(TendenciBaseModel):
+    """
+    A Story is used across a site to add linked image content to a specific design area.
+    The basic features of a Story include:
+    
+    - Title
+    - Description (accepts HTML)
+    - Image
+    - Link
+    
+    Stories also include tags and a start and end time for automatic expiration.
+    
+    Stories use the Tendenci Base Model.
+    """
+
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)

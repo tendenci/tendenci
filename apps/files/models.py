@@ -104,9 +104,10 @@ class File(TendenciBaseModel):
         except Exception, e:
             return (0,0)
             
-    def pdf_text(self):
-        """Returns a file's pdf text data
-        If the file is not a pdf this will return and empty string.
+    def read(self):
+        """Returns a file's text data
+        For now this only considers pdf files.
+        if the file cannot be read this will return an empty string.
         """
         if self.type() == 'pdf' and os.path.exists(self.file.path):
             doc = PDF(self.file.file)
