@@ -45,6 +45,7 @@ class EventLogSearchForm(BetterForm):
     )
     event_id = forms.IntegerField(required=False)
     source = forms.CharField(required=False)
+    object_id = forms.CharField(required=False)
     user_ip_address = forms.CharField(required=False)
     user_id = forms.IntegerField(required=False)
     user_name = forms.CharField(required=False)
@@ -57,6 +58,7 @@ class EventLogSearchForm(BetterForm):
             'request_method',
             'event_id',
             'source',
+            'object_id'
             'user_ip_address',
             'user_id',
             'user_name',
@@ -78,7 +80,8 @@ class EventLogSearchForm(BetterForm):
                          'user_name',
                          'user_ip_address',
                          'session_id',
-                         'source'
+                         'source',
+                         'object_id'
                          ],
               'legend': 'Advanced Options'
               }),

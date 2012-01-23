@@ -69,6 +69,9 @@ class EventLogManager(Manager):
         if f_data['source']:
             qs.append(Q(source=f_data['source']))
 
+        if f_data['object_id']:
+            qs.append(Q(object_id=f_data['object_id']))
+
         event_logs = self.model.objects.filter(
             reduce(and_, qs)
         )
