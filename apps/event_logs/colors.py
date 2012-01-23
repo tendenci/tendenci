@@ -21,15 +21,6 @@ base_colors = {
     '294000':'66FFCC', # search 
     '295000':'99FFCC', # view
 
-    # locations
-    '830000':'669933', # base
-    '831000':'669966', # add
-    '832000':'66CC66', # edit
-    '833000':'66CC00', # delete
-    '834000':'66CC33', # search
-    '834100':'3C7A1D', # nearest
-    '835000':'66CC99', # view
-
     # accounting
     '310000':'006666', # base
     '311000':'006666', # add
