@@ -755,7 +755,7 @@ class EventPhoto(File):
 
 class Addon(models.Model):
     event = models.ForeignKey(Event)
-    title = models.CharField(max_length=50, blank=True)
+    title = models.CharField(max_length=50)
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
     # permission fields
@@ -776,9 +776,7 @@ class Addon(models.Model):
         self.save(*args, **kwargs)
     
     def __unicode__(self):
-        if self.title:
-            return '%s' % self.title
-        return '%s' % self.pk
+        return self.title
 
     def available(self):
         if not self.reg_conf.enabled or not self.status:
@@ -790,7 +788,7 @@ class Addon(models.Model):
     
     
 class AddonOption(models.Model):
-    addon = models.ForeignKey(Addon)
+    addon = models.ForeignKey(Addon, related_name="options")
     title = models.CharField(max_length=100)
     choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
     
