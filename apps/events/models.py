@@ -107,6 +107,8 @@ class Registrant(models.Model):
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
+    # this is a field used for dynamic pricing registrations only
+    pricing = models.ForeignKey('RegConfPricing', null=True)
     
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
@@ -311,7 +313,11 @@ class Registration(models.Model):
     note = models.TextField(blank=True)
     event = models.ForeignKey('Event')
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    
+    # This field will not be used if dynamic pricings are enabled for registration
+    # The pricings should then be found in the Registrant instances
     reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
+    
     reminder = models.BooleanField(default=False)
     
     # TODO: Payment-Method must be soft-deleted
