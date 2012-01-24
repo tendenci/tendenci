@@ -12,7 +12,7 @@ from django.forms.util import ErrorList
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, RegConfPricing
+    TypeColorSet, Registrant, RegConfPricing, Addon, AddonOption
 
 from payments.models import PaymentMethod
 from perms.utils import is_admin
@@ -611,3 +611,19 @@ class PendingEventForm(EventForm):
             
         if 'status_detail' in self.fields:
             self.fields.pop('status_detail')
+
+class AddonForm(forms.ModelForm):
+    class Meta:
+        model = Addon
+        fields = ('title',
+            'price', 
+            'group',
+            'allow_anonymous',
+            'allow_user',
+            'allow_member',
+            'status')
+        
+class AddonOptionForm(forms.ModelForm):
+    class Meta:
+        model = AddonOption
+        fields = ('title', 'choices')
