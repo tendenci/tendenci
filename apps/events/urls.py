@@ -103,6 +103,10 @@ urlpatterns = patterns('events',
     url(r'^(?P<event_id>\d+)/register/pricing/$', 'registration.views.ajax_pricing', name='event.reg_pricing'),
     url(r'^(?P<event_id>\d+)/register/user_status/$', 'registration.views.ajax_user', name='event.reg_user_status'),
     
+    # addons
+    url(r'^(?P<event_id>\d+)/addons/add/$', 'views.add_addon', name='event.add_addon'),
+    url(r'^(?P<event_id>\d+)/addons/(?P<_id>\d+)/edit/$', 'views.edit_addon', name='event.edit_addon'),
+    
     # pending events
     url(r'^minimal_add/$', 'views.minimal_add', name='event.minimal_add'),
     url(r'^pending/$', 'views.pending', name='event.pending'),
