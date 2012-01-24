@@ -752,3 +752,47 @@ class EventPhoto(File):
     @property
     def content_type(self):
         return 'events'
+
+class Addon(models.Model):
+    event = models.ForeignKey(Event)
+    title = models.CharField(max_length=50, blank=True)
+    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
+    
+    # permission fields
+    group = models.ForeignKey(Group, blank=True, null=True)
+    allow_anonymous = models.BooleanField(_("Public can use"))
+    allow_user = models.BooleanField(_("Signed in user can use"))
+    allow_member = models.BooleanField(_("All members can use"))
+    
+    status = models.BooleanField(default=True)
+    
+    def delete(self, *args, **kwargs):
+        """
+        Note that the delete() method for an object is not necessarily
+        called when deleting objects in bulk using a QuerySet.
+        """
+        #print "%s, %s" % (self, "status set to false" )
+        self.status = False
+        self.save(*args, **kwargs)
+    
+    def __unicode__(self):
+        if self.title:
+            return '%s' % self.title
+        return '%s' % self.pk
+
+    def available(self):
+        if not self.reg_conf.enabled or not self.status:
+            return False
+        if hasattr(self, 'event'):
+            if datetime.now() > self.event.end_dt:
+                return False
+        return True
+    
+    
+class AddonOption(models.Model):
+    addon = models.ForeignKey(Addon)
+    title = models.CharField(max_length=100)
+    choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
+    
+    def __unicode__(self):
+        return self.addon.title + ": " + self.title

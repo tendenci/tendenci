@@ -167,6 +167,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.messages',
     'django.contrib.formtools',
+    'django.contrib.admindocs',
 
     # applications
     'registry',
