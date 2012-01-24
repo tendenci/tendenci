@@ -19,13 +19,12 @@ try:
 except:
     notification = None
 
-def index(request, template_name="lots/detail.html"):
+def index(request):
     return HttpResponseRedirect(reverse('lots.search'))
     
 def map_selection(request, template_name="lots/maps/search.html"):
-    query = request.GET.get('q', None)
+    query = request.GET.get('q')
     maps = Map.objects.search(query, user=request.user)
-    maps = maps.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 9999400,
@@ -62,7 +61,7 @@ def map_add(request, template_name="lots/maps/add.html"):
             }
             EventLog.objects.log(**log_defaults)
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % map)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % map)
     else:
         form = MapForm(user=request.user)
         
@@ -86,14 +85,14 @@ def add(request, map_id=None, template_name="lots/add.html"):
     if request.method == "POST":
         form = LotForm(request.POST)
         formset = LineFormSet(request.POST, queryset=Line.objects.none(), prefix="lines")
-        if False not in (form.is_valid(), formset.is_valid()):
+        if all((form.is_valid(), formset.is_valid())):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
             points = formset.save(commit=False)
             for point in points:
                 point.lot = lot
                 point.save()
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % lot)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % lot)
             return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(initial={"map":map_instance})
@@ -117,14 +116,14 @@ def edit(request, pk, template_name="lots/edit.html"):
     if request.method == "POST":
         form = LotForm(request.POST, instance=lot)
         formset = LineFormSet(request.POST, instance=lot, queryset=Line.objects.none(), prefix="lines")
-        if False not in (form.is_valid(), formset.is_valid()):
+        if all((form.is_valid(), formset.is_valid())):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
             # delete old points
-            lot.line_set.all().delete()
+            lot.line_set.delete()
             # save new points
             formset.save()
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % lot)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % lot)
             return redirect('lots.detail', lot.pk)
     else:
         form = LotForm(instance=lot)
