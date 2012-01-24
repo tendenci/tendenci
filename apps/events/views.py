@@ -400,7 +400,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     status=True,
                 ),
                 prefix='regconfpricing',
-                auto_id='regconfpricing_formset'
+                auto_id='regconfpricing_formset',
             )
 
             # label the form sets
