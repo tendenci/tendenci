@@ -1843,3 +1843,12 @@ def approve(request, event_id, template_name="events/approve.html"):
     return render_to_response(template_name, {
         'event': event,
         }, context_instance=RequestContext(request))
+
+@login_required
+def add_addon(request, event_id, template_name="events/addons/add_addon.html"):
+    """Add an addon for an event"""
+    pass
+    
+def edit_addon(request, event_id, addon_id, template_name="events/addons/edit_addon.html"):
+    """Edit addon for an event"""
+    pass

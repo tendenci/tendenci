@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     url(r'^articles/reports/rank/$', 'articles.views.articles_report', name='reports-articles'),
 
     (r'^notifications/', include('notification.urls')),
+    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
     (r'^avatar/', include('avatar.urls')),
