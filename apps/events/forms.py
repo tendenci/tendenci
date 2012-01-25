@@ -524,11 +524,11 @@ class Reg8nEditForm(BetterModelForm):
         
         
         # get initial for the field use_custom_reg
-        if self.instance:
+        if self.instance.id:
             if self.instance.use_custom_reg_form:
                 self.instance.use_custom_reg_form = 1
             else:
-                self.instance.use_custom_reg_form = 0
+                self.instance.use_custom_reg_form = ''
             if self.instance.reg_form:
                 reg_form_id = self.instance.reg_form.id
             else:
@@ -537,17 +537,22 @@ class Reg8nEditForm(BetterModelForm):
                 self.instance.bind_reg_form_to_conf_only = 1
             else:
                 self.instance.bind_reg_form_to_conf_only = 0
-            self.fields['use_custom_reg'].initial = '%d,%d,%d' % \
-                                         (self.instance.use_custom_reg_form, 
-                                          reg_form_id,
-                                          self.instance.bind_reg_form_to_conf_only
+            self.fields['use_custom_reg'].initial = '%s,%s,%s' % \
+                                         (str(self.instance.use_custom_reg_form), 
+                                          str(reg_form_id),
+                                          str(self.instance.bind_reg_form_to_conf_only)
                                           )
         else:
-            self.fields['use_custom_reg'].initial ='1,5,1'
+            self.fields['use_custom_reg'].initial ='on,0,1'
             
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
         data_list = value.split(',')
+        if data_list[0] == 'on':
+            data_list[0] = '1'
+        else:
+            data_list[0] = '0'
+
         d = {'use_custom_reg_form': data_list[0],
              'reg_form_id': data_list[1],
              'bind_reg_form_to_conf_only': data_list[2]
@@ -555,13 +560,14 @@ class Reg8nEditForm(BetterModelForm):
         if d['use_custom_reg_form'] == '1' and d['bind_reg_form_to_conf_only'] == '1':
             if d['reg_form_id'] == '0':
                 raise forms.ValidationError(_('Please choose a custom registration form'))          
-        return value
+        return ','.join(data_list)
                      
                      
     def save(self, *args, **kwargs):
         # handle three fields here - use_custom_reg_form, reg_form,
         # and bind_reg_form_to_conf_only
         # split the value from use_custom_reg and assign to the 3 fields
+        print 'cleaned=', self.cleaned_data['use_custom_reg']
         use_custom_reg_data_list = (self.cleaned_data['use_custom_reg']).split(',')
         try:
             self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
