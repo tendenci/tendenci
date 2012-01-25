@@ -612,7 +612,7 @@ class PendingEventForm(EventForm):
         if 'status_detail' in self.fields:
             self.fields.pop('status_detail')
 
-class AddonForm(forms.ModelForm):
+class AddonForm(BetterModelForm):
     class Meta:
         model = Addon
         fields = ('title',
@@ -622,6 +622,25 @@ class AddonForm(forms.ModelForm):
             'allow_user',
             'allow_member',
             'status')
+        fieldsets = [
+            ('Addon Information', {
+                'fields': [
+                    'title',
+                    'price',
+                ],'legend': ''
+            }),
+            ('Permissions', {
+                'fields': [
+                    'allow_anonymous',
+                    'allow_user',
+                    'allow_member',
+                ], 'classes': ['permissions'],
+            }),('Administrator Only', {
+                'fields': [
+                    'status',
+                ],'classes': ['admin-only'],
+            }),
+        ]
         
 class AddonOptionForm(forms.ModelForm):
     class Meta:
