@@ -388,7 +388,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
-        reg_form_required = kwargs.pop('reg_form_required', False)
+        self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
@@ -398,7 +398,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             del self.fields['reg_form']
         else:
             self.fields['reg_form'].queryset = reg_form_queryset
-            if reg_form_required:
+            if self.reg_form_required:
                 self.fields['reg_form'].required = True
         
     def clean_quantity(self):
@@ -446,6 +446,23 @@ class Reg8nConfPricingForm(BetterModelForm):
           'classes': ['boxy-grey'],
           })
         ]
+        
+    def save(self, *args, **kwargs):
+        """
+        Save a pricing and handle the reg_form
+        """ 
+        if not self.reg_form_required:
+            self.cleaned_data['reg_form'] = None
+        else:
+            # To clone or not to clone? - 
+            # clone the custom registration form only if it's a template.
+            # in other words, it's not associated with any pricing or regconf
+            reg_form = self.cleaned_data['reg_form']
+            if reg_form.is_template:
+                self.cleaned_data['reg_form'] = reg_form.clone()
+            
+        return super(Reg8nConfPricingForm, self).save(*args, **kwargs)
+
 
 class Reg8nEditForm(BetterModelForm):
     label = 'Registration'
@@ -542,30 +559,37 @@ class Reg8nEditForm(BetterModelForm):
                      
                      
     def save(self, *args, **kwargs):
-        super(Reg8nEditForm, self).save(*args, **kwargs) 
-        
+        # handle three fields here - use_custom_reg_form, reg_form,
+        # and bind_reg_form_to_conf_only
         # split the value from use_custom_reg and assign to the 3 fields
         use_custom_reg_data_list = (self.cleaned_data['use_custom_reg']).split(',')
         try:
             self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
         except:
             self.instance.use_custom_reg_form = 0
-        
-        try:
-            reg_form_id = int(use_custom_reg_data_list[1])
-        except:
-            reg_form_id = 0
-        if reg_form_id:
-            self.instance.reg_form = CustomRegForm.objects.get(id=reg_form_id)
             
         try:
             self.instance.bind_reg_form_to_conf_only = int(use_custom_reg_data_list[2])
         except:
             self.instance.bind_reg_form_to_conf_only = 0
-            
-        self.instance.save()
         
-        return self.instance              
+        try:
+            reg_form_id = int(use_custom_reg_data_list[1])
+        except:
+            reg_form_id = 0
+            
+        if reg_form_id:
+            if self.instance.use_custom_reg_form and self.instance.bind_reg_form_to_conf_only:
+                reg_form = CustomRegForm.objects.get(id=reg_form_id)
+                if reg_form.is_template:
+                    reg_form = reg_form.clone()
+                self.instance.reg_form = reg_form
+            else:
+                self.instance.reg_form = None 
+            
+        return super(Reg8nEditForm, self).save(*args, **kwargs)
+            
+             
 
     # def clean(self):
     #     from django.db.models import Sum
