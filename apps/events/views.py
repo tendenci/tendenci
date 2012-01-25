@@ -510,6 +510,10 @@ def add(request, year=None, month=None, day=None, \
     Add event page.  You can preset the start date of
     the event by traveling to the appropriate URL.
     """
+    # custom reg_form queryset
+    reg_form_queryset = get_ACRF_queryset()
+    regconfpricing_params = {'reg_form_queryset': reg_form_queryset}
+    
     SpeakerFormSet = modelformset_factory(
         Speaker, 
         form=SpeakerForm, 
@@ -517,6 +521,7 @@ def add(request, year=None, month=None, day=None, \
     )
     RegConfPricingSet = modelformset_factory(
         RegConfPricing, 
+        formset=RegConfPricingBaseModelFormSet,
         form=Reg8nConfPricingForm, 
         extra=1
     )
@@ -528,7 +533,8 @@ def add(request, year=None, month=None, day=None, \
             form_event = form_class(request.POST, request.FILES, user=request.user)
             form_place = PlaceForm(request.POST, prefix='place')
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
-            form_regconf = Reg8nEditForm(request.POST, prefix='regconf')
+            form_regconf = Reg8nEditForm(request.POST, prefix='regconf', 
+                                         reg_form_queryset=reg_form_queryset,)
 
             # form sets
             form_speaker = SpeakerFormSet(
@@ -537,11 +543,26 @@ def add(request, year=None, month=None, day=None, \
                 queryset=Speaker.objects.none(),
                 prefix='speaker'
             )
+            
+            conf_reg_form_required = False      # if reg_form is required on regconf
+            pricing_reg_form_required = False  # if reg_form is required on regconfpricing
+            if form_regconf.is_valid():
+                (use_custom_reg_form, 
+                 reg_form_id, 
+                 bind_reg_form_to_conf_only
+                 ) = form_regconf.cleaned_data['use_custom_reg'].split(',')
+                if use_custom_reg_form == '1':
+                    if bind_reg_form_to_conf_only == '1':
+                        conf_reg_form_required = True
+                    else:
+                        pricing_reg_form_required = True
+                    regconfpricing_params.update({'reg_form_required': pricing_reg_form_required})
 
             form_regconfpricing = RegConfPricingSet(
                 request.POST,
                 queryset=RegConfPricing.objects.none(),
-                prefix='regconfpricing'
+                prefix='regconfpricing',
+                **regconfpricing_params
             )
                 
             # label the form sets
@@ -586,16 +607,17 @@ def add(request, year=None, month=None, day=None, \
                         f.allow_user_view = event.allow_user_view
                         f.allow_member_view = event.allow_member_view
                         f.save()
+                        
+                if not conf_reg_form_required and regconf.reg_form:
+                    regconf.reg_form = None
+                    regconf.save()
                     
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
                     
-                    # if a custom registration form template is selected, clone the form
-                    # and tie the cloned form to this regconf
-                    if event.use_custom_reg_form and not event.reg_form_bind_to_event:
-                        if regconf_price.reg_form and regconf_price.reg_form.is_template:
-                            regconf_price.reg_form = regconf_price.reg_form.clone()
-                        
+                    if not pricing_reg_form_required:
+                        regconf_price.reg_form = None
+                    
                     regconf_price.save()
                     
                 organizer.event = [event]
@@ -662,7 +684,8 @@ def add(request, year=None, month=None, day=None, \
             form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
             form_organizer = OrganizerForm(prefix='organizer')
-            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf')
+            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf', 
+                                         reg_form_queryset=reg_form_queryset,)
             
             # form sets
             form_speaker = SpeakerFormSet(
@@ -674,7 +697,8 @@ def add(request, year=None, month=None, day=None, \
             form_regconfpricing = RegConfPricingSet(
                 queryset=RegConfPricing.objects.none(),
                 prefix='regconfpricing',
-                auto_id='regconfpricing_formset'
+                auto_id='regconfpricing_formset',
+                **regconfpricing_params
             )
 
             # label the form sets
