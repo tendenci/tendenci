@@ -127,6 +127,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
             'price':str(pricing.price),
             'pk':pricing.pk,
             'enabled':True,
+            'is_public':pricing.allow_anonymous,
         }
         
         if pricing not in available_pricings:
