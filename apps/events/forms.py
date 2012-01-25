@@ -7,6 +7,7 @@ from django import forms
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext_lazy as _
 from django.forms.formsets import BaseFormSet
+from django.forms.models import BaseModelFormSet
 from django.forms.util import ErrorList
 from django.utils.importlib import import_module
 
@@ -26,7 +27,8 @@ from form_utils.forms import BetterModelForm
 from discounts.models import Discount
 from events.settings import FIELD_MAX_LENGTH
 
-from fields import Reg8nDtField, Reg8nDtWidget
+from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
+from widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -385,16 +387,19 @@ class Reg8nConfPricingForm(BetterModelForm):
     dates = Reg8nDtField(label=_("Start and End"), required=False)
     
     def __init__(self, *args, **kwargs):
+        reg_form_queryset = kwargs.pop('reg_form_queryset', None)
+        reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
         # skip the field if there is no custom registration forms
-        custom_reg_forms = CustomRegForm.objects.filter(status='active')
-        if not custom_reg_forms:
+        if not reg_form_queryset:
             del self.fields['reg_form']
         else:
-            self.fields['reg_form'].queryset = custom_reg_forms
+            self.fields['reg_form'].queryset = reg_form_queryset
+            if reg_form_required:
+                self.fields['reg_form'].required = True
         
     def clean_quantity(self):
         # make sure that quantity is always a positive number
@@ -402,7 +407,8 @@ class Reg8nConfPricingForm(BetterModelForm):
         if quantity <= 0:
             quantity = 1
         return quantity
-        
+    
+
     def clean(self):
         data = self.cleaned_data
         if data['start_dt'] > data['end_dt']:
@@ -453,6 +459,8 @@ class Reg8nEditForm(BetterModelForm):
         widget=forms.CheckboxSelectMultiple(),
         required=False,
         initial=[1,2,3]) # first three items (inserted via fixture)
+    use_custom_reg = UseCustomRegField(label="Custom Registration Form")
+    
 
     class Meta:
         model = RegistrationConfiguration
@@ -462,6 +470,10 @@ class Reg8nEditForm(BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
+            'use_custom_reg',
+            #'use_custom_reg_form',
+            #'bind_reg_form_to_conf_only',
+            #'reg_form',
         )
 
         fieldsets = [('Registration Configuration', {
@@ -469,14 +481,91 @@ class Reg8nEditForm(BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
+                    'use_custom_reg'
+                    #'use_custom_reg_form',
+                    #'bind_reg_form_to_conf_only',
+                    #'reg_form'
                     ],
           'legend': ''
           })
         ]
+        widgets = {
+            'bind_reg_form_to_conf_only': forms.RadioSelect
+        }
+
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
+        
+        #custom_reg_form = CustomRegForm.objects.all()
+        reg_form_choices = [('0', '---------')]
+        if reg_form_queryset:
+            reg_form_choices += [(c.id, c.name) for c in reg_form_queryset]
+        self.fields['use_custom_reg'].widget = UseCustomRegWidget(reg_form_choices=reg_form_choices)
+        
+        
+        # get initial for the field use_custom_reg
+        if self.instance:
+            if self.instance.use_custom_reg_form:
+                self.instance.use_custom_reg_form = 1
+            else:
+                self.instance.use_custom_reg_form = 0
+            if self.instance.reg_form:
+                reg_form_id = self.instance.reg_form.id
+            else:
+                reg_form_id = 0
+            if self.instance.bind_reg_form_to_conf_only:
+                self.instance.bind_reg_form_to_conf_only = 1
+            else:
+                self.instance.bind_reg_form_to_conf_only = 0
+            self.fields['use_custom_reg'].initial = '%d,%d,%d' % \
+                                         (self.instance.use_custom_reg_form, 
+                                          reg_form_id,
+                                          self.instance.bind_reg_form_to_conf_only
+                                          )
+        else:
+            self.fields['use_custom_reg'].initial ='1,5,1'
+            
+    def clean_use_custom_reg(self):
+        value = self.cleaned_data['use_custom_reg']
+        data_list = value.split(',')
+        d = {'use_custom_reg_form': data_list[0],
+             'reg_form_id': data_list[1],
+             'bind_reg_form_to_conf_only': data_list[2]
+             }
+        if d['use_custom_reg_form'] == '1' and d['bind_reg_form_to_conf_only'] == '1':
+            if d['reg_form_id'] == '0':
+                raise forms.ValidationError(_('Please choose a custom registration form'))          
+        return value
+                     
+                     
+    def save(self, *args, **kwargs):
+        super(Reg8nEditForm, self).save(*args, **kwargs) 
+        
+        # split the value from use_custom_reg and assign to the 3 fields
+        use_custom_reg_data_list = (self.cleaned_data['use_custom_reg']).split(',')
+        try:
+            self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
+        except:
+            self.instance.use_custom_reg_form = 0
+        
+        try:
+            reg_form_id = int(use_custom_reg_data_list[1])
+        except:
+            reg_form_id = 0
+        if reg_form_id:
+            self.instance.reg_form = CustomRegForm.objects.get(id=reg_form_id)
+            
+        try:
+            self.instance.bind_reg_form_to_conf_only = int(use_custom_reg_data_list[2])
+        except:
+            self.instance.bind_reg_form_to_conf_only = 0
+            
+        self.instance.save()
+        
+        return self.instance              
 
     # def clean(self):
     #     from django.db.models import Sum
@@ -681,7 +770,68 @@ class RegistrantBaseFormSet(BaseFormSet):
         self.add_fields(form, i)
         return form
 
-    
+  
+class RegConfPricingBaseFormSet(BaseFormSet):
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 initial=None, error_class=ErrorList, **kwargs):
+        reg_form_queryset = kwargs.pop('reg_form_queryset', None)
+        reg_form_required = kwargs.pop('reg_form_required', None)
+        if reg_form_queryset:
+            self.reg_form_queryset = reg_form_queryset
+        if reg_form_required:
+            self.reg_form_required = reg_form_required
+
+        super(RegConfPricingBaseFormSet, self).__init__(data, files, auto_id, prefix,
+                 initial, error_class)
+        
+    def _construct_form(self, i, **kwargs):
+        """
+        Instantiates and returns the i-th form instance in a formset.
+        """
+        defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
+
+        #defaults['form_index'] = i
+        if hasattr(self, 'reg_form_queryset'):
+            defaults['reg_form_queryset'] = self.reg_form_queryset
+        if hasattr(self, 'reg_form_required'):
+            defaults['reg_form_required'] = self.reg_form_required
+        
+        if self.data or self.files:
+            defaults['data'] = self.data
+            defaults['files'] = self.files
+        if self.initial:
+            try:
+                defaults['initial'] = self.initial[i]
+            except IndexError:
+                pass
+        # Allow extra forms to be empty.
+        if i >= self.initial_form_count():
+            defaults['empty_permitted'] = True
+        defaults.update(kwargs)
+        form = self.form(**defaults)
+        self.add_fields(form, i)
+        return form
+
+ 
+class RegConfPricingBaseModelFormSet(BaseModelFormSet):
+
+    def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
+                 queryset=None, **kwargs):
+        # this is nasty, but i need to pass a parameter to our pricing form but
+        # the BaseFormSet (which is inherited by the BaseModelFormSet) does not 
+        # accept any extra parameter.
+        # and we don't want to rewrite the entire BaseModelFormSet class
+        # so, here is what we do:
+        # 1)  create a class RegConfPricingBaseFormSet - a subclass of BaseFormSet
+        # 2)  change the base class of BaseModelFormSet to
+        #     RegConfPricingBaseFormSet instead of BaseFormSet
+        self.__class__.__bases__[0].__bases__[0].__bases__ = (RegConfPricingBaseFormSet,)
+        super(RegConfPricingBaseModelFormSet, self).__init__(data, files, auto_id, prefix,
+                 queryset, **kwargs)
+
+
+        
+        
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 

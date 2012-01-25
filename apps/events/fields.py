@@ -2,12 +2,13 @@ from ordereddict import OrderedDict
 
 from datetime import datetime, timedelta
 from django.http import QueryDict
-from django.forms import ChoiceField
+from django.forms import ChoiceField, MultiValueField
 from django.forms.widgets import Widget, TextInput
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import date as date_filter
 
 from base.widgets import SplitDateTimeWidget
+from widgets import UseCustomRegWidget
 
 
 class Reg8nDtWidget(Widget):
@@ -95,3 +96,28 @@ class Reg8nDtField(ChoiceField):
         
         self.widget.reg8n_dict = reg8n_dict
         return reg8n_dict
+    
+    
+class UseCustomRegField(MultiValueField):
+    def __init__(self, required=True, widget=UseCustomRegWidget(attrs=None),
+                label=None, initial=None, help_text=None):
+        myfields = ()
+        super(UseCustomRegField, self).__init__(myfields, required, widget,
+                                          label, initial, help_text)
+        
+    def clean(self, value):
+        return self.compress(value) 
+        
+    def compress(self, data_list):
+        for i in range(0, len(data_list)):
+            if type(data_list[i]) is bool:
+                if data_list[i] == False:
+                    data_list[i] = ''
+                else:
+                    data_list[i] = '1'
+            if data_list[i] == None:
+                data_list[i] = ''
+        
+        if data_list:
+            return ','.join(data_list)
+        return None
