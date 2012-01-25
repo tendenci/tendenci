@@ -2,13 +2,14 @@ import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
+from django.db import connection
 from datetime import datetime, timedelta
 from decimal import Decimal
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import Registration, Event, RegistrationConfiguration
-from events.models import Registrant, RegConfPricing
+from events.models import Registrant, RegConfPricing, CustomRegForm
 from events.forms import FormForCustomRegForm
 from user_groups.models import Group
 from perms.utils import is_member, is_admin
@@ -18,6 +19,50 @@ try:
     from notification import models as notification
 except:
     notification = None
+    
+def get_ACRF_queryset(event=None):
+    """Get the queryset for the available custom registration forms to use for this event
+        (include all custom reg forms that are not used by any other events)
+    """
+    rc_reg_form_ids = []
+    rcp_reg_form_ids = []
+    if event:
+        reg_conf = event.registration_configuration
+        regconfpricings = event.registration_configuration.regconfpricing_set.all()
+        if reg_conf and reg_conf.reg_form:
+            rc_reg_form_ids.append(str(reg_conf.reg_form.id))
+        if regconfpricings:
+            for conf_pricing in regconfpricings:
+                if conf_pricing.reg_form:
+                    rcp_reg_form_ids.append(str(conf_pricing.reg_form.id))
+    
+    sql = """SELECT id 
+            FROM events_customregform 
+            WHERE id not in (SELECT reg_form_id 
+                        FROM events_registrationconfiguration WHERE reg_form_id>0 %s) 
+            AND id not in (SELECT reg_form_id From events_regconfpricing WHERE reg_form_id>0 %s)
+        """
+    if rc_reg_form_ids:
+        rc = "AND reg_form_id NOT IN (%s)" % ', '.join(rc_reg_form_ids)
+    else:
+        rc = ''
+    if rcp_reg_form_ids:
+        rcp = "AND reg_form_id NOT IN (%s)" % ', '.join(rcp_reg_form_ids)
+    else:
+        rcp = ''
+    sql = sql % (rc, rcp)
+    
+    # need to return a queryset not raw queryset
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    ids_list = [row[0] for row in rows]
+    
+    queryset = CustomRegForm.objects.filter(id__in=ids_list)
+
+    return queryset
+
+
 
 def get_ievent(request, d, event_id):
     from django.conf import settings

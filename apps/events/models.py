@@ -246,10 +246,13 @@ class RegistrationConfiguration(models.Model):
     use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
     reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
                                  verbose_name=_("Custom Registration Form"),
-                                 related_name='events',
+                                 related_name='regconfs',
                                  help_text="You'll have the chance to edit the selected form")
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
-    bind_reg_form_to_conf_only = models.BooleanField(_(''), default=True)
+    bind_reg_form_to_conf_only = models.BooleanField(_(' '),
+                                 choices=((True, 'Use one form for all pricings'), 
+                                          (False, 'Use separate form for each pricing')),
+                                 default=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -805,14 +808,14 @@ class CustomRegForm(models.Model):
     @property
     def is_template(self):
         """
-        A custom registration form is a template when it is not associated with any event
-        and any event pricing. 
-        A form template can be re-used and will be cloned if it is selected by an event
-        or an event pricing.
+        A custom registration form is a template when it is not associated with
+        registration configuration and any event registration conf pricing. 
+        A form template can be re-used and will be cloned if it is selected by
+        a regconf or an regconfpricing.
         """
-        if self.events.count() > 0 or self.regconfpricings.count() > 0:
-            return True
-        return False
+        if self.regconfs.count() > 0 or self.regconfpricings.count() > 0:
+            return False
+        return True
     
     def clone(self):
         """

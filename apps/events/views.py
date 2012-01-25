@@ -18,6 +18,7 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
+from django.forms.models import BaseModelFormSet
 
 from haystack.query import SearchQuerySet
 
@@ -35,7 +36,7 @@ from events.utils import save_registration, email_registrants, add_registration
 from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.utils import get_ievent, copy_event, email_admins, get_active_days
-from events.utils import get_custom_registrants_initials
+from events.utils import get_custom_registrants_initials, get_ACRF_queryset
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -245,20 +246,28 @@ def handle_uploaded_file(f, instance):
     # relative path
     return os.path.join(relative_directory, file_name)
 
+from events.forms import RegConfPricingBaseModelFormSet
+
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
+    # custom reg_form queryset
+    reg_form_queryset = get_ACRF_queryset(event)
+    regconfpricing_params = {'reg_form_queryset': reg_form_queryset}
+    
     SpeakerFormSet = modelformset_factory(
         Speaker, 
         form=SpeakerForm,
         extra=1,
         can_delete=True
     )
+    
     RegConfPricingSet = modelformset_factory(
-        RegConfPricing, 
+        RegConfPricing,
+        formset=RegConfPricingBaseModelFormSet,
         form=Reg8nConfPricingForm,
         extra=0,
-        can_delete=True
+        can_delete=True,
     )
 
     # tried get_or_create(); but get a keyword argument :(
@@ -280,9 +289,11 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 instance=organizer, 
                 prefix='organizer'
             )
+            
             form_regconf = Reg8nEditForm(
                 request.POST,
                 instance=event.registration_configuration, 
+                reg_form_queryset=reg_form_queryset,
                 prefix='regconf'
             )
 
@@ -293,14 +304,28 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 queryset=event.speaker_set.all(),
                 prefix='speaker'
             )
-
+            
+            conf_reg_form_required = False      # if reg_form is required on regconf
+            pricing_reg_form_required = False  # if reg_form is required on regconfpricing
+            if form_regconf.is_valid():
+                (use_custom_reg_form, 
+                 reg_form_id, 
+                 bind_reg_form_to_conf_only
+                 ) = form_regconf.cleaned_data['use_custom_reg'].split(',')
+                if use_custom_reg_form == '1':
+                    if bind_reg_form_to_conf_only == '1':
+                        conf_reg_form_required = True
+                    else:
+                        pricing_reg_form_required = True
+                    regconfpricing_params.update({'reg_form_required': pricing_reg_form_required})
             form_regconfpricing = RegConfPricingSet(
                 request.POST,
                 queryset=RegConfPricing.objects.filter(
                     reg_conf=event.registration_configuration,
                     status=True,
                 ),
-                prefix='regconfpricing'
+                prefix='regconfpricing',
+                **regconfpricing_params
             )
                 
             # label the form sets
@@ -362,14 +387,21 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                         f.allow_member_view = event.allow_member_view
                         f.save()
 
+                if not conf_reg_form_required and regconf.reg_form:
+                    regconf.reg_form = None
+                    regconf.save()
+                    
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
                     
-                    # if a custom registration form template is selected, clone the form
-                    # and tie the cloned form to this regconf
-                    if event.use_custom_reg_form and not event.reg_form_bind_to_event:
-                        if regconf_price.reg_form and regconf_price.reg_form.is_template:
-                            regconf_price.reg_form = regconf_price.reg_form.clone()
+                    if not pricing_reg_form_required:
+                        regconf_price.reg_form = None
+                    else:
+                        # If a custom reg_form template is selected, clone it
+                        # To clone or not to clone? - it's too late to decide at here
+                        # So forget about it. We'll add the clone feature in admin
+                        # or a post_save signal on regconf and regconfpricing
+                        pass
                     
                     regconf_price.save()
                     
@@ -402,7 +434,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 prefix='organizer'
             )
             form_regconf = Reg8nEditForm(
-                instance=event.registration_configuration, 
+                instance=event.registration_configuration,
+                reg_form_queryset=reg_form_queryset, 
                 prefix='regconf'
             )
 
@@ -413,13 +446,15 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 auto_id='speaker_formset'
             )
 
+            
             form_regconfpricing = RegConfPricingSet(
                 queryset=RegConfPricing.objects.filter(
                     reg_conf=event.registration_configuration,
                     status=True,
                 ),
                 prefix='regconfpricing',
-                auto_id='regconfpricing_formset'
+                auto_id='regconfpricing_formset',
+                **regconfpricing_params
             )
 
             # label the form sets
