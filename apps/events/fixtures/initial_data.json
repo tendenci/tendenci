@@ -452,6 +452,14 @@
             "border_color": "272727", 
             "fg_color": "FFF"
         }
+    },
+    {
+        "pk": 49, 
+        "model": "events.typecolorset", 
+        "fields": {
+            "bg_color": "00ADEF", 
+            "border_color": "272727", 
+            "fg_color": "FFF"
+        }
     }
-
 ]
