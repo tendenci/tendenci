@@ -318,6 +318,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     else:
                         pricing_reg_form_required = True
                     regconfpricing_params.update({'reg_form_required': pricing_reg_form_required})
+                    
             form_regconfpricing = RegConfPricingSet(
                 request.POST,
                 queryset=RegConfPricing.objects.filter(
@@ -396,12 +397,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     
                     if not pricing_reg_form_required:
                         regconf_price.reg_form = None
-                    else:
-                        # If a custom reg_form template is selected, clone it
-                        # To clone or not to clone? - it's too late to decide at here
-                        # So forget about it. We'll add the clone feature in admin
-                        # or a post_save signal on regconf and regconfpricing
-                        pass
                     
                     regconf_price.save()
                     
