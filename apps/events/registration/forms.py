@@ -160,7 +160,7 @@ class RegistrantForm(forms.Form):
         return data
         
     def clean_last_name(self):
-        data = self.cleaned_data['first_name']
+        data = self.cleaned_data['last_name']
         
         # detect markup
         markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
