@@ -23,7 +23,6 @@ class UseCustomRegWidget(forms.MultiWidget):
             
         final_attrs = self.build_attrs(attrs)
         id_ = final_attrs.get('id', None)
-        
         use_custom_reg_form_widget = self.widgets[0]
         rendered_use_custom_reg_form = self.render_widget(
                                     use_custom_reg_form_widget,
@@ -51,7 +50,7 @@ class UseCustomRegWidget(forms.MultiWidget):
                                                                                           )
         output_html = """
                       <div id="use-custom_reg-box">
-                          <div>%s <label for="id_%s_%s">Use Custom Registration Form</label></div>
+                          <div id="use-custom-reg-checkbox">%s <label for="id_%s_%s">Use Custom Registration Form</label></div>
                           
                           <div>%s</div>
                       
@@ -80,6 +79,9 @@ class UseCustomRegWidget(forms.MultiWidget):
     
     def decompress(self, value):
         if value:
-            return value.split(",")
+            data_list = value.split(',')
+            if data_list[0] == '1':
+                data_list[0] = 'on'
+            return data_list
         return None
         

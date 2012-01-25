@@ -112,7 +112,7 @@ class UseCustomRegField(MultiValueField):
         for i in range(0, len(data_list)):
             if type(data_list[i]) is bool:
                 if data_list[i] == False:
-                    data_list[i] = ''
+                    data_list[i] = '0'
                 else:
                     data_list[i] = '1'
             if data_list[i] == None:
