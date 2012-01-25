@@ -271,6 +271,7 @@ class Membership(TendenciBaseModel):
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App", null=True)
+    send_notice = models.BooleanField(default=True)
     objects = MembershipManager()
 
     class Meta:
