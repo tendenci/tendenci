@@ -37,7 +37,7 @@ class CustomRegFieldAdmin(admin.TabularInline):
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
-    list_display = ("name", "preview_link", "notes", "status",)
+    list_display = ("name", "preview_link", "for_event", "notes", "status",)
     search_fields = ("name", "notes", "status",)
     fieldsets = (
         (None, {"fields": ("name", "notes", 'status')}),
@@ -62,6 +62,22 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             """ % (reverse('event.custom_reg_form_preview', args=[obj.id]))
     preview_link.allow_tags = True
     preview_link.short_description = 'Preview Link'
+    
+    def for_event(self, obj):
+        event = None
+        regconf = obj.regconfs.all()[:1]
+        if regconf:
+            event = regconf[0].event
+        regconfpricing = obj.regconfpricings.all()[:1]
+        if regconfpricing:
+            event = regconfpricing[0].reg_conf.event
+        if event:
+            return """<a href="%s">%s</a>
+            """ % (reverse('event', args=[event.id]), event.title)
+        return ''
+        
+    for_event.allow_tags = True
+    for_event.short_description = 'For Event'
     
 #    def get_fieldsets(self, request, instance=None):
 #        """

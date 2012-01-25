@@ -813,13 +813,13 @@ class CustomRegForm(models.Model):
         A form template can be re-used and will be cloned if it is selected by
         a regconf or an regconfpricing.
         """
-        if self.regconfs.count() > 0 or self.regconfpricings.count() > 0:
+        if self.regconfs.exists() or self.regconfpricings.exists():
             return False
         return True
     
     def clone(self):
         """
-        Clone this custom registration formm and associate it with the event if provided.
+        Clone this custom registration form and associate it with the event if provided.
         """
         params = dict([(field.name, getattr(self, field.name)) \
                        for field in self._meta.fields if not field.__class__==AutoField])
