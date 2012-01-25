@@ -61,7 +61,8 @@ def nearest(request, template_name="locations/nearest.html"):
     if all((lat,lng)):
         for location in Location.objects.search(user=request.user).load_all():
             location.object.distance = location.object.get_distance2(lat, lng)
-            locations.append(location.object)
+            if location.object.distance != None:
+                locations.append(location.object)
             locations.sort(key=lambda x: x.distance)
 
     log_defaults = {
