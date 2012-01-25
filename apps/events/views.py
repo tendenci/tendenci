@@ -1873,8 +1873,8 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
         formset = OptionFormSet(queryset=Addon.objects.none(), prefix="options")
         
     return render_to_response(template_name, {
-        'formset':formset,
-        'form':form,
+        'form': form,
+        'formset': formset,
         'event':event,
     }, context_instance=RequestContext(request))    
     
@@ -1887,7 +1887,7 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
     
     addon = get_object_or_404(Addon, pk=addon_id)
     
-    OptionFormSet = inlineformset_factory(AddonOption, form=AddonOptionForm, extra=3)
+    OptionFormSet = inlineformset_factory(Addon, AddonOption, form=AddonOptionForm, extra=3)
     
     if request.method == "POST":
         form = AddonForm(request.POST, instance=addon)
@@ -1896,10 +1896,10 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
             addon = form.save()
             options = formset.save()
             
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % addon)
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % addon)
             return redirect('event', event.pk)
     else:
-        form = AddonForm(intance=addon)
+        form = AddonForm(instance=addon)
         formset = OptionFormSet(instance=addon, prefix="options")
         
     return render_to_response(template_name, {

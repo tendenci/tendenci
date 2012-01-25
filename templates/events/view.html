@@ -92,6 +92,25 @@
                 {% endif %}
             </div>
             {% endif %}
+            
+            {% if event.addon_set.all %}
+                <hr/>
+                <div class="addons-wrap">
+                {% for addon in event.addon_set.all %}
+                    <div class="addon">
+                    <strong>{% trans "Addon" %}</strong> {{ addon.title }}
+                        {% if can_edit %}<a href="{% url event.edit_addon event.pk addon.pk %}">Edit</a>{% endif %}
+                        <br/>Price: {{ addon.price }}
+                        {% if addon.options.all %}
+                            {% for op in addon.options.all %}
+                                <br/>{{ op.title }}: {{ op.choices }}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            
 		</div> <!-- end info -->
 
 		<div class="vitals">
@@ -157,6 +176,7 @@
 <iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
             </div>
             {% endif %}
+            
             {% url event event.pk as the_url %}
             <p>{% fb_like_button_iframe the_url %}</p>
 		</div> <!-- end vitals -->
