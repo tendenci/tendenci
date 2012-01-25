@@ -5,28 +5,14 @@
 {% load perm_tags %}
 {% load i18n %}
 
+{% is_admin user as admin %}
+
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
 <style type="text/css">
-	.t .file-wrap .icon {
-		float: left;
-		margin-right: 10px;
-	}
-	.t .file-wrap h2 {
-		margin-bottom: 0;
-	}
-	.t .file-wrap .meta {
-		margin-top: 20px;
-	}
-	.t .file-wrap .meta .submitted {
-		padding: 5px;
-	}
-	.t .file-wrap h2 a.broken {
-		text-decoration: line-through;
-	}
 </style>
 {% endblock %}
 
@@ -42,13 +28,13 @@
 	<div class="files-wrap">
     {% for file in files %}
     {% with file.object as file %}
+
 		<div class="file-wrap">
 			<div class="options">
                 <div class="quick-options">
 					{% file_options request.user file %} 	       
                 </div>
 			</div>
-
 
 			{% if file.icon %}
             <div class="icon"><img src="{{ file.icon }}" /></div>
@@ -69,7 +55,7 @@
             {% endif %}
 
 			<div class="meta">
-                <div class="submitted">{% blocktrans with file.update_dt|date:"D d M Y P" as file_update and file.creator as file_creator %}Updated {{ file_update }} by {{ file_creator }}{% endblocktrans%}</div>
+                <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</a></div>
             </div>
 
             <!-- delete-file form -->
@@ -79,7 +65,17 @@
 		</div>
 	{% endwith %}
 	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+		{% if admin %}
+			{% if request.GET.q %}
+				<div>{% trans "0 Results Found" %}</div>
+			{% else %}
+				<div style="color:#666; font-size:.9em">
+					{% trans "No files in here at all."%}  <a href="{% url file.add %}">{% trans "Add a file."%}</a>
+				</div>
+			{% endif %}
+		{% else %}
+			<div>{% trans "0 Results Found" %}</div>
+		{% endif %}
     {% endfor %}
 	</div>
 
