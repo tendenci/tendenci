@@ -202,7 +202,8 @@ function addRegistrant(prefix, pricing, initial_data, set_container, hide_form){
     return false;
 }
 
-function addRegistrantSet(prefix, pricing, initial_data){
+function addRegistrantSet(prefix, pricing_data, initial_data){
+    var pricing = $.extend(pricing_data);
     extra_count = pricing['quantity'];
     container = $('<div class="registrant-set"></div>');
     container.append("<h2>"+pricing['title']+"</h2>");
@@ -244,12 +245,19 @@ $(document).ready(function(){
                 }
             {% endif %}
             var init_d = {};
+            var blank_d = {};
             init_d['email'] = $('#pricing-email').val();
+            blank_d['email'] = '';
             $('#pricing-email').val('');
             init_d['memberid'] = $('#pricing-memberid').val();
+            blank_d['memberid'] = '';
             $('#pricing-memberid').val('');
             for(var i=0; i<reg_num; i++){
-                addRegistrantSet('registrant', price_d, init_d);
+                if(i==0){//only the first set will have email and memberid data
+                    addRegistrantSet('registrant', price_d, init_d);
+                }else{
+                    addRegistrantSet('registrant', price_d, blank_d);
+                }
             }
             {% if not shared_pricing %}
                 $('#pricing-choices').html(default_pricings);
