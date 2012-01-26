@@ -161,7 +161,16 @@ class FormAdminForm(TendenciBaseForm):
                   'status',
                   'status_detail',
                  )
-    
+
+    def __init__(self, *args, **kwargs): 
+        super(FormAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['intro'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            self.fields['response'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
+
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])
         i = 0
