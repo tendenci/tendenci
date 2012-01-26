@@ -12,6 +12,9 @@ Version: 1.0
 // ------------------------------
 //  LESS CSS Styles
 // ------------------------------
+
+@import '/site_media/static/css/template-includes.less';
+
 @primary: #ddd;
 @secondary: #102133;
 @complimentary: #96A518;
@@ -28,7 +31,15 @@ Version: 1.0
 @column: 60px;
 @base-width: (@column + 20)*12;
 
-.grid(@count: 1){ margin: 0 10px 0 10px; width: @count*(@column+20)-20; float: left; /*background-color: #aaa;*/ }
+.base-font() {
+    font-family: Helvetica, Arial, "sans-serif"; 
+    font:13px/1.231 sans-serif; 
+    *font-size:small;
+}
+.header-font(@size: 30px){
+    font-size: @size;
+}
+.grid(@count: 1){ margin: 0 10px 0 10px; width: @count*(@column+20)-20; float: left; }
 .inner(@wide: 50%){ float: left; width: @wide; }
 .center() { width: @base-width; margin: 0 auto;}
 .gradient-bg(@color, @alpha: 10) {
@@ -110,7 +121,8 @@ blockquote { margin: 0 0 10px 20px; }
 header { position: relative; margin: 10px 0;
     #logo { .grid(4);
         img { background-color: #ccc; width: 215px; height: 100px; float: left; }
-        h1 { text-indent: -9999px; }
+        h1 { text-indent: -9999px; height: 100px; margin: 0; padding: 0;}
+        div.admin-links { left: 10px; }
     }
     #login { .grid(8); margin-bottom: 44px; height: 28px; padding: 0; text-align: right;
         form {display: block;}

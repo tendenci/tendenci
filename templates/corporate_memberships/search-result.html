@@ -1,6 +1,7 @@
 {% load corporate_memberships_tags %}
 {% load i18n %}
 <div class="wrap-search-item">
+    {% if corporate_membership %}
     <div class="corpmember-box">
         <div class="corpmember-box-header"><a href="{% url corp_memb.view corporate_membership.pk %}">{{ corporate_membership.name }}</a></div>
         <div class="corpmember-box-body">
@@ -70,4 +71,5 @@
         </form>
     </div>
     {% include 'corporate_memberships/meta.html' %}
+    {% endif %}
 </div>
