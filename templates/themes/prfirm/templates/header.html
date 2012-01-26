@@ -10,6 +10,9 @@ PR Firm Theme - header.html
             <div id="logo">
                 <a href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/215x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
                 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
+                {% if not MODULE_THEME_LOGO %}
+                {% theme_include 'theme_includes/logo_edit_form.html' %}
+                {% endif %}
             </div>
             <div id="login">
                 {% if request.user.is_authenticated %}
