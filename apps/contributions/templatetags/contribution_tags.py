@@ -38,8 +38,10 @@ class LatestContributionsNode(Node):
 @register.tag
 def latest_contributions(parser, token):
     """
-    Retrieves a list of the users newest contributions
-    Usage:
+    Retrieves a list of the users newest contributions.
+
+    Usage::
+
         {% latest_contributions [user] as [contributions] %}
         {% latest_contributions [user] [limit] as [contributions] %}
     """
