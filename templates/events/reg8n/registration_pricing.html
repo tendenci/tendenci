@@ -32,11 +32,15 @@
                     <input type="hidden" name="from_price_form" value="1" />       
                     {% if pricing|length == 1 and pricing.0.amount == 0 and pricing.0.qualifies == True %}
                         <input type="hidden" name="price" value="{{ pricing.0.price.pk }}-{{ pricing.0.amount }}" />
+                        {% if anonpricing %}
+                         <input class="registration-green-button" type="button" value="{% trans 'Register' %}" onClick="location.href='{% url event.anon_multi_register event.pk %}'" />
+                        {% else %}
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register for Free' %}" />
+                        {% endif %}
                     {% else %}
                         <table class="pricing-list" border="0" cellspacing="0" cellpadding="0">
                         {% for price in pricing %}
-                            {% if price.qualifies %}
+                            {% if price.qualifies and not anonpricing %}
                                 <tr>
                                     <td>
                                         <input id="label-{{ price.price.pk }}" type="radio" name="price" value="{{ price.price.pk }}-{{ price.amount }}" 
@@ -73,7 +77,11 @@
                             {% endif %}
                         {% endfor %}
                         </table>
+                        {% if anonpricing %}
+                        <input class="registration-green-button" type="button" value="{% trans 'Register' %}" onClick="location.href='{% url event.anon_multi_register event.pk %}'" />
+                        {% else %}
                         <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                        {% endif %}
                     {% endif %}
                     </form>
 

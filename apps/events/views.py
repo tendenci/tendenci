@@ -17,24 +17,11 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, inlineformset_factory
 
 from haystack.query import SearchQuerySet
-
 from base.http import Http403
 from site_settings.utils import get_setting
-from events.models import Event, RegistrationConfiguration, \
-    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    RegConfPricing
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
-    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
-    RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    Reg8nConfPricingForm, PendingEventForm
-from events.search_indexes import EventIndex
-from events.utils import save_registration, email_registrants, add_registration
-from events.utils import registration_has_started, get_pricing, clean_price
-from events.utils import get_event_spots_taken, update_event_spots_taken
-from events.utils import get_ievent, copy_event, email_admins, get_active_days
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -43,6 +30,18 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
 
+from events.models import Event, RegistrationConfiguration, \
+    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
+    RegConfPricing, Addon, AddonOption
+from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
+    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
+    RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
+    Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm
+from events.search_indexes import EventIndex
+from events.utils import save_registration, email_registrants, add_registration
+from events.utils import registration_has_started, get_pricing, clean_price
+from events.utils import get_event_spots_taken, update_event_spots_taken
+from events.utils import get_ievent, copy_event, email_admins, get_active_days
 
 try:
     from notification import models as notification
@@ -400,7 +399,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     status=True,
                 ),
                 prefix='regconfpricing',
-                auto_id='regconfpricing_formset'
+                auto_id='regconfpricing_formset',
             )
 
             # label the form sets
@@ -1843,3 +1842,70 @@ def approve(request, event_id, template_name="events/approve.html"):
     return render_to_response(template_name, {
         'event': event,
         }, context_instance=RequestContext(request))
+
+@login_required
+def add_addon(request, event_id, template_name="events/addons/add.html"):
+    """Add an addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+        
+    OptionFormSet = modelformset_factory(AddonOption, form=AddonOptionForm, extra=3)
+    
+    if request.method == "POST":
+        form = AddonForm(request.POST)
+        formset = OptionFormSet(request.POST, queryset=AddonOption.objects.none(), prefix="options")
+        if False not in (form.is_valid(), formset.is_valid()):
+            addon = form.save(commit=False)
+            addon.event = event
+            addon.save()
+            
+            options = formset.save(commit=False)
+            for option in options:
+                option.addon = addon
+                option.save()
+                
+            messages.add_message(request, messages.INFO, 'Successfully added %s' % addon)
+            return redirect('event', event.pk)
+    else:
+        form = AddonForm()
+        formset = OptionFormSet(queryset=Addon.objects.none(), prefix="options")
+        
+    return render_to_response(template_name, {
+        'form': form,
+        'formset': formset,
+        'event':event,
+    }, context_instance=RequestContext(request))    
+    
+def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.html"):
+    """Edit addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+    
+    addon = get_object_or_404(Addon, pk=addon_id)
+    
+    OptionFormSet = inlineformset_factory(Addon, AddonOption, form=AddonOptionForm, extra=3)
+    
+    if request.method == "POST":
+        form = AddonForm(request.POST, instance=addon)
+        formset = OptionFormSet(request.POST, instance=addon, prefix="options")
+        if False not in (form.is_valid(), formset.is_valid()):
+            addon = form.save()
+            options = formset.save()
+            
+            messages.add_message(request, messages.INFO, 'Successfully updated %s' % addon)
+            return redirect('event', event.pk)
+    else:
+        form = AddonForm(instance=addon)
+        formset = OptionFormSet(instance=addon, prefix="options")
+        
+    return render_to_response(template_name, {
+        'formset':formset,
+        'form':form,
+        'event':event,
+    }, context_instance=RequestContext(request))
+    
+    

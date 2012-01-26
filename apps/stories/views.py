@@ -34,6 +34,23 @@ def index(request, id=None, template_name="stories/view.html"):
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
     
+def print_details(request, id, template_name="stories/print_details.html"):
+    story = get_object_or_404(Story, pk=id)
+    if not has_perm(request.user,'stories.view_story', story):
+        raise Http403
+
+    log_defaults = {
+        'event_id' : 1060501,
+        'event_data': '%s (%d) print viewed by %s' % (story._meta.object_name, story.pk, request.user),
+        'description': '%s print viewed' % story._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': story,
+    }
+    EventLog.objects.log(**log_defaults)
+
+    return render_to_response(template_name, {'story': story}, 
+        context_instance=RequestContext(request))
     
 def search(request, template_name="stories/search.html"):
     query = request.GET.get('q', None)
