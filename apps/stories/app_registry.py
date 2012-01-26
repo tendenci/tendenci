@@ -19,6 +19,7 @@ class StoryRegistry(CoreRegistry):
             'delete':('1060300','CC9980'),
             'search':('1060400','AADD2B'),
             'view':('1060500','99FF00'),
+            'print_view':('1060501', '99FF00'),
         },
     }
     
