@@ -794,3 +794,34 @@ class AddonOption(models.Model):
     
     def __unicode__(self):
         return self.addon.title + ": " + self.title
+        
+class RegAddon(models.Model):
+    """Event registration addon.
+    An event registration can avail multiple addons.
+    This stores the addon's price at the time of registration.
+    This stores the user's selected options for the addon.
+    """
+    registration = models.ForeignKey('Registration')
+    addon = models.ForeignKey('Addon')
+    
+    # price at the moment of registration
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, default=0)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return "%s: %S" % (self.registration.pk, self.addon.title)
+    
+class RegAddonOption(models.Model):
+    """Selected event registration addon option.
+    """
+    regaddon = models.ForeignKey(RegAddon)
+    option = models.ForeignKey(AddonOption)
+    selected_option = models.CharField(max_length=50)
+    
+    class Meta:
+        unique_together = (('regaddon', 'option'),)
+        
+    def __unicode__(self):
+        return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
