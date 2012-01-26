@@ -52,7 +52,7 @@ class UseCustomRegWidget(forms.MultiWidget):
                       <div id="use-custom_reg-box">
                           <div id="use-custom-reg-checkbox">%s <label for="id_%s_%s">Use Custom Registration Form</label></div>
                           
-                          <div>%s</div>
+                          <div id="one-or-separate-form">%s</div>
                       
                       </div>
                     """ % (
