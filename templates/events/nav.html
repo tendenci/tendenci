@@ -18,7 +18,6 @@
     {% has_perm user events.delete_event as can_delete_event %}
 {% endif %}
 
-
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -74,6 +73,7 @@
                 {% if can_edit_event %}
                     <li><a href="{% url event.edit nav_object.pk %}">{% trans "Edit Event" %}</a></li>
                     <li><a href="{% url event.edit.meta nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url event.add_addon nav_object.pk %}">{% trans "Add Addon" %}</a></li>
                 {% endif %}
                 {% if admin and event.status == 0 %}
                     <li><a href="{% url event.approve nav_object.pk %}">{% trans "Approve" %}</a></li>

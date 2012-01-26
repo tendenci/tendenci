@@ -171,7 +171,7 @@
 </style>
 
 <div class="t">    
-    {% event_nav user %}
+    {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
     <div class="event-info">
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
