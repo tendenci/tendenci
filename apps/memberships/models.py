@@ -229,8 +229,8 @@ class MembershipType(TendenciBaseModel):
                 if not self.fixed_option1_year:
                     self.fixed_option1_year = now.year
                     
-                self.fixed_option1_day = day_validate(datetime(self.fixed_expiration_year, 
-                                                                  self.fixed_expiration_month, 1), 
+                self.fixed_option1_day = day_validate(datetime(self.fixed_option1_year, 
+                                                                  self.fixed_option1_month, 1), 
                                                                     self.fixed_option1_day)
                     
                 return datetime(self.fixed_option1_year, self.fixed_option1_month, 
@@ -244,7 +244,7 @@ class MembershipType(TendenciBaseModel):
                 if self.fixed_option2_month > 12:
                     self.fixed_option2_month = 12
                 
-                self.fixed_expiration_day2 = day_validate(datetime(now.year, 
+                self.fixed_option2_day = day_validate(datetime(now.year, 
                                                                   self.fixed_option2_month, 1), 
                                                                     self.fixed_option2_day)
                 
