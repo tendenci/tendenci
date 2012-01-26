@@ -58,5 +58,71 @@
               step: 15
             });
         });
+        
+      
 	</script>
+	
+	 <script type="text/javascript">
+    	$(document).ready(function() {
+    		
+	    	// for custom registration form options
+	    	
+	    	if ($('input#id_regconf-enabled').is(':checked')){
+	    		$('.id_regconf-use_custom_reg').show();
+	    	}else{
+	    		$('#use-custom-reg-checkbox input[type=checkbox]').attr('checked', false);
+	    		$('.id_regconf-use_custom_reg').hide();
+	    		$(".regconfpricing_formset div[class$='reg_form']").hide();
+	    	}
+	        if ($('#use-custom-reg-checkbox input[type=checkbox]').is(':checked')){
+	        	$('#one-or-separate-form').show();
+	        	if ($('#one-or-separate-form input[type="radio"]').filter(':checked').val() == '1'){
+	        		$(".regconfpricing_formset div[class$='reg_form']").hide();
+	        	}else{
+	        		$(".regconfpricing_formset div[class$='reg_form']").show();
+	        	}
+	        }else{
+	        	$('#one-or-separate-form').hide();
+	        	$(".regconfpricing_formset div[class$='reg_form']").hide();
+	        }
+	        
+	        $('input#id_regconf-enabled').click(function () {
+		      	if ($('input#id_regconf-enabled').is(':checked')){
+		    		$('.id_regconf-use_custom_reg').show();
+		    		if ($('#one-or-separate-form input[type="radio"]').filter(':checked').val() == '1'){
+		        		$(".regconfpricing_formset div[class$='reg_form']").hide();
+		        	}else{
+		        		$(".regconfpricing_formset div[class$='reg_form']").show();
+		        	}
+		    	}else{
+		    		$('#use-custom-reg-checkbox input[type=checkbox]').attr('checked', false);
+		    		$('.id_regconf-use_custom_reg').hide();
+		    		$(".regconfpricing_formset div[class$='reg_form']").hide();
+		    	}
+		    });
+	        
+	        $('#use-custom-reg-checkbox input[type=checkbox]').click(function () {
+		      	if ($('#use-custom-reg-checkbox input[type=checkbox]').is(':checked')){
+		        	$('#one-or-separate-form').show();
+		        	if ($('#one-or-separate-form input[type="radio"]').filter(':checked').val() == '1'){
+		        		$(".regconfpricing_formset div[class$='reg_form']").hide();
+		        	}else{
+		        		$(".regconfpricing_formset div[class$='reg_form']").show();
+		        	}
+		        }else{
+		        	$('#one-or-separate-form').hide();
+		        	$(".regconfpricing_formset div[class$='reg_form']").hide();
+		        }
+		    });
+		    $('#one-or-separate-form input[type="radio"]').click(function () {
+		      	if ($(this).filter(':checked').val() == '1'){
+	        		$(".regconfpricing_formset div[class$='reg_form']").hide();
+	        	}else{
+	        		$(".regconfpricing_formset div[class$='reg_form']").show();
+	        	}
+		    });
+		    
+	    });
+	    
+    </script>
 {% endblock %}
