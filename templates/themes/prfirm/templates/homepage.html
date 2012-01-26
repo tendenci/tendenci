@@ -30,11 +30,11 @@ PR Firm Theme - homepage.html
         <section id="rotator" class="clearfix">
             {% theme_include "base/messages.html" %}
             <div id="stories">
-                {% list_stories as featured_stories limit=4 %}
+                {% list_stories as featured_stories limit=4 tags="rotator" %}
                 {% if featured_stories %}
                 {% for story in featured_stories %}
                 <div class="story story-{{ forloop.counter }}">
-                    <img src="{% image_url story.image size=940x540 crop=true quality=90 %}" />
+                    {% if story.image %}<img src="{% image_url story.image size=940x540 crop=true quality=90 %}" />{% endif %}
                     <div class="blurb">
                         <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
                         <p>{{ story.content|striptags|truncatewords:"16"|safe }} <a class="readmore" href="{{ story.full_story_link }}">Read more</a></p>
@@ -48,39 +48,17 @@ PR Firm Theme - homepage.html
                 </div><!-- /.story-{{ forloop.counter }} -->
                 {% endfor %}
                 {% else %}
+                {% for item in 4|make_range %}
                 <div class="story">
                     <img src="http://media.tendenciapp.com/images/rotator.jpg" />
                     <div class="blurb">
-                        <h2><a href="/">Sample Story</a></h2>
-                        <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
-                        <span id="story-label-0" class="story-label">Network</span>
+                        <h2><a href="/">Sample Story {{ forloop.counter }}</a></h2>
+                        <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/?tags=rotator">Add your first story</a> to take the place of this photo. Be sure to <strong>rotator</strong> so that it shows up in this area.{% endif %}</p>
+                        <span id="story-label-{{ forloop.counter0 }}" class="story-label">Sample {{ forloop.counter }}</span>
                     </div>
                 </div>
-                <div class="story">
-                    <img src="http://media.tendenciapp.com/images/rotator.jpg" />
-                    <div class="blurb">
-                        <h2><a href="/">Story number 2</a></h2>
-                        <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
-                        <span id="story-label-1" class="story-label">Join</span>
-                    </div>
-                </div>
-                <div class="story">
-                    <img src="http://media.tendenciapp.com/images/rotator.jpg" />
-                    <div class="blurb">
-                        <h2><a href="/">Sample Story</a></h2>
-                        <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
-                        <span id="story-label-2" class="story-label">Jobs</span>
-                    </div>
-                </div>
-                <div class="story">
-                    <img src="http://media.tendenciapp.com/images/rotator.jpg" />
-                    <div class="blurb">
-                        <h2><a href="/">Story number 4</a></h2>
-                        <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
-                        <span id="story-label-3" class="story-label">Events</span>
-                    </div>
-                </div>
-                    {% endif %}
+                {% endfor %}
+                {% endif %}
             </div>
             <div id="stories-pager" class="clearfix"></div>
        </section><!-- /#rotator -->
