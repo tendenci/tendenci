@@ -183,6 +183,9 @@
         color: #992;
         padding: 5px;
     }
+    .addon-forms {
+        width: 70%;
+    }
 </style>
 
 <div class="t">    
@@ -424,11 +427,18 @@
                 <input id="pricing-check" type="button" value="Get More Pricings">
             </div>
             
+            {% if addons %}
+                <div class="addon-forms">
+                    {% include 'events/addons/formset.html' %}
+                </div>
+            {% endif %}
+            
             <div class="clear"></div>
             <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register & Pay' %}" />
             
             <div class="clear"></div>
         </div>
+        
         </form>
         <div style="display: none;">
             <table>

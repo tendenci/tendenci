@@ -25,6 +25,9 @@ from events.registration.utils import process_registration, send_registrant_emai
 from events.registration.utils import get_pricings_for_list
 from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
+from events.addons.forms import RegAddonForm
+from events.addons.formsets import RegAddonBaseFormSet
+from events.addons.utils import get_active_addons, get_available_addons
 
 def ajax_user(request, event_id):
     """Ajax query for user validation
@@ -178,6 +181,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     active_pricings = get_active_pricings(event)
     event_pricings = event.registration_configuration.regconfpricing_set.all()
     
+    # get available addons
+    active_addons = get_active_addons(event)
+    
     # start the form set factory    
     RegistrantFormSet = formset_factory(
         RegistrantForm,
@@ -186,16 +192,29 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         extra=0,
     )
     
+    RegAddonFormSet = formset_factory(
+        RegAddonForm,
+        formset=RegAddonBaseFormSet,
+        extra=1,
+    )
+    
     if request.method == "POST":
         # process the submitted forms
         reg_formset = RegistrantFormSet(request.POST,
-                            prefix='registrant',
-                            event = event,
-                            extra_params={
-                                'pricings':event_pricings,
-                            })
+                        prefix='registrant',
+                        event = event,
+                        extra_params={
+                            'pricings':event_pricings,
+                        })
         reg_form = RegistrationForm(event, request.user, request.POST,
-                            reg_count = len(reg_formset.forms))
+                    reg_count = len(reg_formset.forms))
+        addon_formset = RegAddonFormSet(request.POST,
+                            prefix='addons',
+                            event=event,
+                            extra_params={
+                                'addons':active_addons,
+                            })
+        
         # validate the form and formset
         if False not in (reg_form.is_valid(), reg_formset.is_valid()):
             
@@ -243,6 +262,12 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                                 'pricings':event_pricings
                             })
         reg_form = RegistrationForm(event, request.user)
+        addon_formset = RegAddonFormSet(
+                            prefix='addons',
+                            event=event,
+                            extra_params={
+                                'addons':active_addons,
+                            })
     
     sets = reg_formset.get_sets()
     
@@ -250,7 +275,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'event':event,
             'reg_form':reg_form,
             'registrant': reg_formset,
+            'addon_formset': addon_formset,
             'sets': sets,
+            'addons':active_addons,
             'pricings':active_pricings,
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             'shared_pricing':get_setting('module', 'events', 'sharedpricing'),
