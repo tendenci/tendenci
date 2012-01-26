@@ -179,7 +179,9 @@ def theme_include(parser, token):
     """
     Loads a template and renders it with the current context.
     context['THEME'] is used to specify a selected theme for the templates
-    Example:
+
+    Example::
+
         {% theme_include "foo/some_include" %}
     """
     bits = token.split_contents()
@@ -194,7 +196,9 @@ def space_include(parser, token):
     """
     Loads a a box or a template and renders it with the current context.
     context['THEME'] is used to specify a selected theme for the templates
-    Example:
+
+    Example::
+
         {% space_include MODULE_THEME_SPACE_1 %}
     """
     bits = token.split_contents()
@@ -207,7 +211,9 @@ def theme_setting(parser, token):
     """
     Loads a single setting form to edit the setting that is passed in.
     The setting must be of scope 'module' and scope_category 'theme'.
-    Example:
+
+    Example::
+
         {% theme_setting space_1 %}
     """
     bits = token.split_contents()

@@ -7,9 +7,12 @@ Bulletpoints Theme - header.html
     <div class="container topborder">
         <section id="header" class="center">
             <header>
-                <div id="logo">
+                <div id="logo" class="clearfix">
                     <a class="clearfix" href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/100x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
                     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
+                    {% if not MODULE_THEME_LOGO %}
+                    {% theme_include 'theme_includes/logo_edit_form.html' %}
+                    {% endif %}
                 </div>
                 <div id="login">
                     {% if request.user.is_authenticated %}

@@ -27,12 +27,35 @@ class ListStaffNode(ListNode):
 @register.tag
 def list_staff(parser, token):
     """
-    Example:
+    Used to pull a list of :model:`staff.Staff` items.
 
-    {% list_staff as the_staff user=user limit=3 %}
-    {% for staff_member in the_staff %}
-        {{ staff_member.name }}
-    {% endfor %}
+    Usage::
+
+        {% list_staff as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``staff_sidebar`` or 
+    ``staff_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Newest Added**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_staff as staff_list limit=5 tags="cool" %}
+        {% for staff_person in staff_list %}
+            {{ staff_person.name }}
+        {% endfor %}
     """
     args, kwargs = [], {}
     bits = token.split_contents()
