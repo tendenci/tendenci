@@ -1,4 +1,5 @@
 from django import forms
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
 class UseCustomRegWidget(forms.MultiWidget):
@@ -7,9 +8,10 @@ class UseCustomRegWidget(forms.MultiWidget):
             reg_form
             bind_reg_form_to_conf_only
     """
-    def __init__(self, attrs=None, reg_form_choices=None):
+    def __init__(self, attrs=None, reg_form_choices=None, event_id=None):
         self.attrs = attrs
         self.reg_form_choices = reg_form_choices
+        self.event_id = event_id
         if not self.attrs:
             self.attrs = {'id':'use_custom_reg'}
         self.widgets = (forms.CheckboxInput(),
@@ -39,7 +41,7 @@ class UseCustomRegWidget(forms.MultiWidget):
         bind_reg_form_to_conf_only_widget = self.widgets[2]
         choices=(('1', mark_safe('Use one form for all pricing %s' \
                                  % rendered_reg_form)), 
-                 ('0', 'Use separate form for each pricing'), )
+                 ('0', 'Use separate form for each pricing (if checked, select a form for each pricing below)'), )
         bind_reg_form_to_conf_only_widget.choices = choices
         rendered_bind_reg_form_to_conf_only = self.render_widget(
                                     bind_reg_form_to_conf_only_widget,
@@ -48,16 +50,24 @@ class UseCustomRegWidget(forms.MultiWidget):
         rendered_bind_reg_form_to_conf_only = rendered_bind_reg_form_to_conf_only.replace(
                                '%s</label>' % rendered_reg_form, "</label>%s" % rendered_reg_form           
                                                                                           )
+        if self.event_id:
+            manage_custom_reg_link = """
+                            <div style="margin: 1em 0 0 2em;"><a href="%s" target="_blank">Manage Custom Registration Form</a></div>
+                                    """ % reverse('event.event_custom_reg_form_list', args=[self.event_id])
+        else:
+            manage_custom_reg_link = ''
+            
         output_html = """
                       <div id="use-custom_reg-box">
                           <div id="use-custom-reg-checkbox">%s <label for="id_%s_%s">Use Custom Registration Form</label></div>
                           
                           <div id="one-or-separate-form">%s</div>
-                      
+                          %s
                       </div>
                     """ % (
                            rendered_use_custom_reg_form, name, '0', 
-                           rendered_bind_reg_form_to_conf_only
+                           rendered_bind_reg_form_to_conf_only,
+                           manage_custom_reg_link
                            )
         return mark_safe(output_html)
     
