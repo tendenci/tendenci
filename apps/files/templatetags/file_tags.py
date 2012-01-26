@@ -45,7 +45,10 @@ class FilesForModelNode(Node):
 @register.tag
 def files_for_model(parser, token):
     """
-    Example:
+    Pull a list of :model:`File` objects based on another model.
+
+    Example::
+
         {% files_for_model speaker as speaker_files %}
         {% for file in speaker_files %}
             {{ file.file }}
