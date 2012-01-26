@@ -8,7 +8,7 @@
     width: 160px !important;
 }
 </style>
-    <h4>{{ form.title }}</h4>
+    <h1>{{ form.title }}</h1>
     <p>{{ form.intro|safe }}</p>
 
     <div class="form-builder-wrap">
@@ -19,3 +19,6 @@
         </div>
         </form>
     </div>
+    {% if can_edit %}
+    <a href="{% url admin:forms_form_change form.pk %}?next={{ request.path }}">Edit this form</a>
+    {% endif %}
