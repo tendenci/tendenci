@@ -32,11 +32,6 @@
 
     <div class="clear-left" style="clear: left;"></div>
 
-    <!-- delete-profile form -->
-    <form name="profile-delete" method="POST" action="{% url profile.delete profile.user.pk %}">{% csrf_token %}
-        <input type="hidden" name="action" value="delete">
-    </form>
-
 </div>
 {% include 'profiles/meta.html' %}
 {% endif %}
