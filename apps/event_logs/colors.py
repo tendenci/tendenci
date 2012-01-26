@@ -1,3 +1,4 @@
+from django.core.cache import cache
 
 base_colors = {
     # login
