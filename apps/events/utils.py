@@ -52,6 +52,7 @@ def get_ACRF_queryset(event=None):
         rcp = ''
     sql = sql % (rc, rcp)
     
+    
     # need to return a queryset not raw queryset
     cursor = connection.cursor()
     cursor.execute(sql)

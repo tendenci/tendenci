@@ -53,7 +53,7 @@ except:
     
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """
-    Preview a built form.
+    Preview a custom registration form.
     """    
     form = get_object_or_404(CustomRegForm, id=id)
     
@@ -68,7 +68,27 @@ def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_p
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template_name, context, RequestContext(request))
 
-
+@login_required
+def event_custom_reg_form_list(request, event_id, 
+                               template_name="events/event_custom_reg_form_list.html"):
+    """
+    List custom registration forms for this event.
+    """
+    event = get_object_or_404(Event, pk=event_id)
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http403
+    
+    reg_conf = event.registration_configuration
+    regconfpricings = reg_conf.regconfpricing_set.all()
+    
+    print reg_conf.use_custom_reg_form
+    
+    context = {'event': event,
+               'reg_conf': reg_conf,
+               'regconfpricings': regconfpricings}
+    return render_to_response(template_name, context, RequestContext(request))
+    
+    
 def index(request, id=None, template_name="events/view.html"):
 
     if not id:
