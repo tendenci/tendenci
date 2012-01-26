@@ -25,7 +25,7 @@
 <div id="t-profile"><div id="t-view">
 	{% users_nav request.user user_this %}
 	
-    <h1>{{ user_this.get_full_name }}({{ user_this.username }})</h1>
+    <h1>{{ user_this.get_full_name }} ({{ user_this.username }})</h1>
     {% users_options request.user user_this %}
     <div class="clear-right"></div>
 	  

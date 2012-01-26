@@ -64,12 +64,35 @@ class ListDirectoriesNode(ListNode):
 @register.tag
 def list_directories(parser, token):
     """
-    Example:
-        {% list_directories as directories_list [user=user limit=3 tags=bloop bleep] %}
+    Used to pull a list of :model:`directories.Directory` items.
+
+    Usage::
+
+        {% list_directories as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``directories_sidebar`` or 
+    ``directories_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Headline A-Z**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_directories as directories_list limit=5 tags="cool" %}
         {% for directory in directories_list %}
             {{ directory.headline }}
         {% endfor %}
-
     """
     args, kwargs = [], {}
     bits = token.split_contents()

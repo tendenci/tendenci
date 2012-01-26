@@ -42,7 +42,8 @@ class GetFormNode(Node):
 
     def render(self, context):
         pk = 0
-        
+        template_name = 'forms/embed_form.html'
+
         if 'pk' in self.kwargs:
             try:
                 pk = Variable(self.kwargs['pk'])
@@ -50,11 +51,20 @@ class GetFormNode(Node):
             except:
                 pk = self.kwargs['pk'] # context string
 
+        if 'template_name' in self.kwargs:
+            try:
+                template_name = Variable(self.kwargs['template_name'])
+                template_name = pk.resolve(context)
+            except:
+                template_name = self.kwargs['template_name'] # context string
+        
+            template_name = template_name.replace('"', '')
+
         try:
             form = Form.objects.get(pk=pk)
             context['form'] = form.object
             context['form_for_form'] = FormForForm(form.object, AnonymousUser())
-            template = get_template('forms/embed_form.html')
+            template = get_template(template_name)
             output = '<div class="embed-form">%s</div>' % template.render(context)
             return output
         except:
@@ -62,7 +72,7 @@ class GetFormNode(Node):
                 form = Form.objects.get(pk=pk)
                 context['form'] = form
                 context['form_for_form'] = FormForForm(form, AnonymousUser())
-                template = get_template('forms/embed_form.html')
+                template = get_template(template_name)
                 output = '<div class="embed-form">%s</div>' % template.render(context)
                 return output
             except:
@@ -72,15 +82,19 @@ class GetFormNode(Node):
 def embed_form(parser, token):
     """
     Example:
-        {% embed_form 123 %}
+        {% embed_form 123 [template] %}
     """
     
     kwargs = {}
     bits = token.split_contents()
       
     try:
-        kwargs["pk"] = bits[1]  
+        kwargs["pk"] = bits[1]
     except:
         message = "Form tag must include an ID of a form."
         raise TemplateSyntaxError(message)
+    try:
+        kwargs["template_name"] = bits[2]
+    except:
+        pass
     return GetFormNode(**kwargs) 

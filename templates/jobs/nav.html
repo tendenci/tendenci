@@ -43,7 +43,7 @@
                 <li><a href="{% url settings.index "module" "jobs" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url jobs %}">{% trans "Search Jobs" %}</a></li>
-            {% if can_add_job %}
+            {% if user.is_authenticated %}
                 <li><a href="{% url job.add %}">{% trans "Add Job" %}</a></li>
             {% endif %}
             {% if admin %}

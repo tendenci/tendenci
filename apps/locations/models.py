@@ -85,6 +85,11 @@ class Location(TendenciBaseModel):
         import math
         from time import clock, time
 
+        # if we don't have latitude or longitude
+        # we return a none type object instead of int
+        if not all((self.latitude, self.longitude)):
+            return None
+
         # Convert latitude and longitude to 
         # spherical coordinates in radians.
         degrees_to_radians = math.pi/180.0

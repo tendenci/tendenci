@@ -5,6 +5,8 @@
 {% load humanize %}
 {% load i18n %}
 
+{% if image %}
+
 {% has_perm user photos.change_image image as can_edit %}
 {% has_perm user photos.delete_image image as can_delete %}
 
@@ -59,4 +61,6 @@
     </ul>
     </div>
 </div> 
+{% endif %}
+
 {% endif %}
