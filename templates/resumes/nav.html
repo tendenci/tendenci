@@ -41,7 +41,7 @@
                 <li><a href="{% url settings.index "module" "resumes" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url resume.search %}">{% trans "Search Resumes" %}</a></li>
-            {% if can_add_resume %}
+            {% if user.is_authenticated %}
                 <li><a href="{% url resume.add %}">{% trans "Add Resume" %}</a></li>
             {% endif %}
             {% if admin %}

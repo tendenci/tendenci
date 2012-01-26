@@ -33,7 +33,8 @@ class DeclarativeMetaclass(type):
             'description',
             'icon',
             'url',
-            'packages'
+            'packages',
+            'event_logs'
         ]
 
         if 'app_registry' in attrs['__module__']:

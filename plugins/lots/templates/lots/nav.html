@@ -1,0 +1,53 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% is_admin user as user_is_admin %}
+{% has_perm user lots.add_lot as can_add_lot %}
+{% has_perm user lots.add_map as can_add_map %}
+
+{% if nav_object %}
+	{% has_perm user lots.view_lot nav_object as can_view_lot %}
+	{% has_perm user lots.change_lot nav_object as can_edit_lot %}
+{% else %}
+	{% has_perm user lots.view_lot as can_view_lot %}
+	{% has_perm user lots.change_lot as can_edit_lot %}
+{% endif %}
+
+<div id="showh">
+	<ul id="primary">
+	
+    {% if user.is_authenticated %}
+	<li>
+	    <a href="{% url dashboard %}" title="Tendenci Home Page">
+		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
+		alt="Tendenci User Home" align="top" width="34" height="15"></a>
+	</li>
+    {% endif %}
+
+	<li>
+		<span>{% firstof MODULE_LOTS_LABEL 'Lots' %}</span>
+		<ul id="secondary">
+			<li><a href="{% url lots %}">{% firstof MODULE_LOTS_LABEL 'Lots' %}:</a></li>
+			<li><a href="{% url lots.search %}">{% trans "Search" %}</a></li>
+            <li><a href="{% url lots.map_selection %}">{% trans "Maps" %}</a></li>
+            {% if nav_object %}
+				{% if can_view_lot %}
+				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
+				{% endif %}
+				{% if can_edit_lot %}
+				<li><a href="{% url lots.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
+				{% endif %}
+			{% endif %}
+			{% if user.is_authenticated %}
+                {% if can_add_map %}
+                    <li><a href="{% url lots.map_add %}">{% trans "Add Map" %}</a></li>
+                    <li><a href="{% url lots.add %}">{% trans "Add Lot" %}</a></li>
+                {% endif %}
+                <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
+			{% endif %}
+		</ul>
+		
+	</li>
+	</ul>
+</div>

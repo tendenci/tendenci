@@ -3,3 +3,7 @@ hash:{{ object.hash }}
 application:{{ object.app.name }}
 type:{{ object.membership_type }}
 status:{{ object.status_msg }}
+
+{% for field in object.fields.all %}
+{{ field.field.label }}:{{ field.value }}
+{% endfor %}

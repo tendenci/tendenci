@@ -385,8 +385,11 @@ def entries_export(request, id):
 def search(request, template_name="forms/search.html"):
     query = request.GET.get('q', None)
     forms = Form.objects.search(query, user=request.user)
-    forms = forms.order_by('-primary_key')
-    
+    try:
+        forms = forms.order_by('-primary_key')
+    except:
+        pass
+
     return render_to_response(template_name, {'forms':forms}, 
         context_instance=RequestContext(request))
 

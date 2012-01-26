@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from django.middleware.csrf import get_token as csrf_get_token
 
 import simplejson as json
@@ -29,9 +30,6 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
     if not has_perm(request.user, 'files.view_file', file):
         raise Http403
 
-    if download: attachment = 'attachment;'
-    else: attachment = ''
-
     # check 'if public'
     if not file.is_public:
         if not request.user.is_authenticated():
@@ -47,6 +45,30 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         data = file.file.read()
         file.file.close()
     except: raise Http404
+
+    if download:
+        attachment = 'attachment;'
+        log_defaults = {
+            'event_id' : 185000,
+            'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
+            'description': '%s downloaded' % file._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': file,
+        }
+        EventLog.objects.log(**log_defaults)
+    else:
+        attachment = ''
+        if file.type() != 'image':
+            log_defaults = {
+                'event_id' : 186000,
+                'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
+                'description': '%s viewed' % file._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': file,
+            }
+            EventLog.objects.log(**log_defaults)
 
     # if image size specified
     if file.type()=='image' and size: # if size specified
