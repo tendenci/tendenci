@@ -15,6 +15,14 @@
     margin-bottom: 10px;
     position: relative;
 }
+.preview-reminder{
+	background-color: #FEFBF3; 
+	color: #666;
+	margin: 1em 0;
+	padding: 1em;
+	width: 90%;
+	border: 1px solid #ee5;
+}
 </style>
 
 {% endblock extra_head %}
@@ -24,7 +32,12 @@
 <div class="t">
 	{% event_nav user %}
     <div class="form-wrap">
-        <h1>Preview: {{ form.name }}</h1>
+        
+        <h1>{{ form.name }}</h1>
+        
+        <p class="preview-reminder">This is just the <span style="color:#000;">preview</span>. The real look can only be viewed through the event registration
+        	 after it is 
+        	associated with an event.</p>
     
     	<div class="form-builder-wrap">
         	<form method="post">{% csrf_token %}

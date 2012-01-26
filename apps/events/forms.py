@@ -520,9 +520,12 @@ class Reg8nEditForm(BetterModelForm):
         reg_form_choices = [('0', '---------')]
         if reg_form_queryset:
             reg_form_choices += [(c.id, c.name) for c in reg_form_queryset]
-        self.fields['use_custom_reg'].widget = UseCustomRegWidget(reg_form_choices=reg_form_choices)
-        
-        
+        if self.instance.id and self.instance.event:
+            event_id = self.instance.event.id
+        else:
+            event_id = None
+        self.fields['use_custom_reg'].widget = UseCustomRegWidget(reg_form_choices=reg_form_choices, 
+                                                                  event_id=event_id)        
         # get initial for the field use_custom_reg
         if self.instance.id:
             if self.instance.use_custom_reg_form:
@@ -847,11 +850,10 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  queryset=None, **kwargs):
-        # this is nasty, but i need to pass a parameter to our pricing form but
-        # the BaseFormSet (which is inherited by the BaseModelFormSet) does not 
-        # accept any extra parameter.
-        # and we don't want to rewrite the entire BaseModelFormSet class
-        # so, here is what we do:
+        # This is nasty, but i only need to replace the BaseFormSet so that we 
+        # can pass a parameter to our pricing form. 
+        # Apparently, we don't want to rewrite the entire BaseModelFormSet class.
+        # So, here is what we do:
         # 1)  create a class RegConfPricingBaseFormSet - a subclass of BaseFormSet
         # 2)  change the base class of BaseModelFormSet to
         #     RegConfPricingBaseFormSet instead of BaseFormSet
