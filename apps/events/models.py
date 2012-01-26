@@ -38,7 +38,7 @@ class TypeColorSet(models.Model):
 
 
 class Type(models.Model):
-    
+
     """
     Types is a way of grouping events
     An event can only be one type
@@ -53,9 +53,11 @@ class Type(models.Model):
     @property
     def fg_color(self):
         return '#%s' % self.color_set.fg_color
+
     @property
     def bg_color(self):
         return '#%s' % self.color_set.bg_color
+
     @property
     def border_color(self):
         return '#%s' % self.color_set.border_color
@@ -66,6 +68,7 @@ class Type(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Type, self).save(*args, **kwargs)
+
 
 class Place(models.Model):
     """
@@ -109,7 +112,7 @@ class Registrant(models.Model):
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     # this is a field used for dynamic pricing registrations only
     pricing = models.ForeignKey('RegConfPricing', null=True)
-    
+
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -131,11 +134,11 @@ class Registrant(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    
+
     objects = RegistrantManager()
 
     class Meta:
-        permissions = (("view_registrant","Can view registrant"),)
+        permissions = (("view_registrant", "Can view registrant"),)
 
     @property
     def lastname_firstname(self):
@@ -150,14 +153,14 @@ class Registrant(models.Model):
     def event_registrants(cls, event=None):
 
         return cls.objects.filter(
-            registration__event = event,
-            cancel_dt = None,
+            registration__event=event,
+            cancel_dt=None,
         )
         
     @property
     def additional_registrants(self):
         # additional registrants on the same invoice
-        return self.registration.registrant_set.filter(cancel_dt = None).exclude(id=self.id).order_by('id')
+        return self.registration.registrant_set.filter(cancel_dt=None).exclude(id=self.id).order_by('id')
 
     @property
     def hash(self):
@@ -214,7 +217,7 @@ class RegistrationConfiguration(models.Model):
     # TODO: use shorter name
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
-    payment_method = models.ManyToManyField(GlobalPaymentMethod)    
+    payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
     
     limit = models.IntegerField(_('Registration Limit'), default=0)
@@ -251,7 +254,7 @@ class RegConfPricing(models.Model):
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
-    end_dt = models.DateTimeField(_('End Date'), default=datetime.now()+timedelta(hours=6))
+    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(hours=6))
     
     allow_anonymous = models.BooleanField(_("Public can use"))
     allow_user = models.BooleanField(_("Signed in user can use"))
@@ -675,7 +678,8 @@ class Event(TendenciBaseModel):
             image.file.save(photo_upload.name, photo_upload)  # save file row
             image.save()  # save image row
 
-            if self.image: self.image.delete()  # delete image and file row
+            if self.image:
+                self.image.delete()  # delete image and file row
             self.image = image  # set image
 
             self.save()
