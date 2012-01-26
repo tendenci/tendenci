@@ -61,17 +61,6 @@
 
 {% block extra_body %}
 {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_news = confirm("Permenantly delete {% firstof MODULE_NEWS_LABEL 'News' %}?");	// confirm
-				if(delete_news) $(this).parents('.news-wrap').find('form[name="news-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({
