@@ -409,7 +409,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         profile = Profile.objects.create_profile(user=user_edit)
    
     # for now, only admin can grant/remove permissions
-    if not request.user.is_superuser: raise Http403
+    if not is_admin(request.user): raise Http403
     
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
