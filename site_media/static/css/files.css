@@ -114,5 +114,6 @@
 .t form.search-form input[type="submit"] {
 	padding: 5px;	
 	cursor: pointer;
+	vertical-align: top;
 }
 
