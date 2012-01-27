@@ -229,35 +229,52 @@
                 </div>
 				{% endfor %}
 			</div>
-			
-            <div class="add-registrants-box">
-                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
-                <div id="pricing-choices">
-                    {% for pricing in pricings %}
-                    <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
-                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" is_public="{{ pricing.allow_anonymous }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>{{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
-                    </div>
-                    {% empty %}
-                    No pricings are publicly available.<br>
-                    {% endfor %}
-                </div>
-                <div>
-                    Number of Sets:<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
-                </div>
-                <h3>...or enable more pricings:</h3>
-                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="" />
-                {% if allow_memberid_pricing %}
-                    <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="" />
-                {% endif %}
-                <br/>
-                <input id="pricing-check" type="button" value="Get More Pricings">
-            </div>
             
             {% if addons %}
                 <div class="addon-forms">
                     {% include 'events/addons/formset.html' %}
                 </div>
             {% endif %}
+			
+            <div class="add-registrants-box">
+                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}:</h3>
+                <div id="pricing-choices">
+                    {% for pricing in pricings %}
+                    <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
+                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" 
+                        is_public="{{ pricing.allow_anonymous }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>
+                        {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
+                    </div>
+                    {% empty %}
+                        No pricings available.<br />
+                    {% endfor %}
+                </div>
+                <div>
+                    {% trans 'How many?' %}<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
+                </div>
+                <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
+                <div id="addon-choices">
+                    {% for addon in addons %}
+                    <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
+                    <input type="radio" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}"
+                        is_public="{{ addon.allow_anonymous }}" {% if not addon.allow_anonymous %}DISABLED{% endif %}>
+                        {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
+                    </div>
+                    {% empty %}
+                        No addons available.<br />
+                    {% endfor %}
+                </div>
+                <div>
+                    {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
+                </div>
+                <h3>{% trans 'Enable more pricings and addons' %}:</h3>
+                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="" />
+                {% if allow_memberid_pricing %}
+                    <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="" />
+                {% endif %}
+                <br/>
+                <input id="pricing-check" type="button" value="Get More">
+            </div>
             
             <div class="clear"></div>
             <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register & Pay' %}" />
@@ -266,7 +283,7 @@
         </div>
         
         </form>
-        <div style="display: none;">
+        <div style="">
             {% include 'events/registration/base_forms.html' %}
         </div>
     </div>
@@ -276,6 +293,8 @@
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript">
-    {% include 'events/registration/registration.js' %}
+    {% include 'events/registration/register-registrant.js' %}
+    {% include 'events/registration/register-addon.js' %}
+    {% include 'events/registration/register.js' %}
 </script>
 {% endblock %}

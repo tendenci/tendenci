@@ -28,17 +28,16 @@ class RegAddonForm(forms.Form):
         super(RegAddonForm, self).__init__(*args, **kwargs)
         
         # initialize addon options and reg_set field
-        self.fields['addon'] = forms.ModelChoiceField(queryset=self.addons)
+        self.fields['addon'] = forms.ModelChoiceField(
+            queryset=self.addons,
+            widget=forms.Select(attrs={'class': 'addon-input'}))
         
         # dynamically create a field for all the possible options
         for option in AddonOption.objects.filter(addon__in=self.addons):
             field_name = '%s_%s'%(option.addon.pk, option.title.replace(' ', ''))
-            choices = [('', '---------'),]
-            for op in option.choices.split(','):
-                if op:
-                    choices.append((op, op))
+            choices = [(op, op) for op in option.choice_list()]
             self.fields[field_name] = forms.ChoiceField(
-                choices=choices, required=False)
+                choices=choices, label=_(option.title), required=False)
                 
         print self.fields
         
