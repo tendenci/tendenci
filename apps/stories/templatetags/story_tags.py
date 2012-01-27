@@ -159,8 +159,9 @@ def list_stories(parser, token):
 
         {% list_stories as [varname] [options] %}
 
-    Options can be used as [option]=[value]. Wrap text values in quotes like
-    ``tags="cool"``. Options include:
+    Be sure the [varname] has a specific name like ``stories_sidebar`` or 
+    ``stories_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
     
         ``limit``
            The number of items that are shown. **Default: 3**
@@ -177,8 +178,8 @@ def list_stories(parser, token):
 
     Example::
 
-        {% list_stories as stories user=user limit=3 tags="cool" %}
-        {% for story in stories %}
+        {% list_stories as stories_list limit=5 tags="cool" %}
+        {% for story in stories_list %}
             {{ story.title }}
         {% endfor %}
     """

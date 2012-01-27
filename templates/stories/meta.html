@@ -68,5 +68,10 @@
                     </li>
                 </ul>
                 </div>
-            </div> 
+            </div>
+
+            {% else %}
+            <div class="meta">
+                <a class="print-link" href="{% url story.print_details story.pk %}">{% trans "Print" %}</a>
+            </div>
             {% endif %}

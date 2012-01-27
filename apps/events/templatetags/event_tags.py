@@ -334,12 +334,35 @@ class ListEventsNode(ListNode):
 @register.tag
 def list_events(parser, token):
     """
-    Example:
-        {% list_events as events [user=user limit=3] %}
-        {% for event in events %}
+    Used to pull a list of :model:`events.Event` items.
+
+    Usage::
+
+        {% list_events as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``events_sidebar`` or 
+    ``events_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Next Upcoming by date**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_events as events_list limit=5 tags="cool" %}
+        {% for event in events_list %}
             {{ event.title }}
         {% endfor %}
-
     """
     args, kwargs = [], {}
     bits = token.split_contents()

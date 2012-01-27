@@ -85,27 +85,11 @@
         <div class="fb-connect">{% fb_like_button_iframe the_url %}</div>
 
     </div>
-
-    <!-- delete-directory form -->
-    <form name="directory-delete" method="POST" action="{% url directory.delete directory.pk %}">{% csrf_token %}
-        <input type="hidden" name="action" value="delete">
-    </form>
-
 </div>
 {% endblock %}
 
 {% block extra_body %}
 {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_directory = confirm('Permenantly delete {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}?');	// confirm
-				if(delete_directory) $('.t').find('form[name="directory-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 	<script type="text/javascript">
 	var iconrow = new dropdown({
