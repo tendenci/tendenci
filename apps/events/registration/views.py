@@ -195,7 +195,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     RegAddonFormSet = formset_factory(
         RegAddonForm,
         formset=RegAddonBaseFormSet,
-        extra=1,
+        extra=0,
     )
     
     if request.method == "POST":
@@ -209,7 +209,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         reg_form = RegistrationForm(event, request.user, request.POST,
                     reg_count = len(reg_formset.forms))
         addon_formset = RegAddonFormSet(request.POST,
-                            prefix='addons',
+                            prefix='addon',
                             event=event,
                             extra_params={
                                 'addons':active_addons,
@@ -263,7 +263,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                             })
         reg_form = RegistrationForm(event, request.user)
         addon_formset = RegAddonFormSet(
-                            prefix='addons',
+                            prefix='addon',
                             event=event,
                             extra_params={
                                 'addons':active_addons,

@@ -71,3 +71,37 @@
         </div>
     </div>
 </div>
+<div id="addon-hidden">
+    <div class="form-field">
+        <div class="id_addon-0-addon"> 
+            <div class="label required">
+                <label for="id_addon-0-addon">Addon</label> 
+            </div>
+            <div class="field"> 
+                <select class="addon-input" name="addon-0-addon" id="id_addon-0-addon"> 
+                {% for addon in addons %}
+                    <option value="{{ addon.pk }}">{{ addon.title }}</option>
+                {% endfor %}
+                </select> 
+            </div>
+        </div>
+    </div>
+    {% for addon in addons %}
+    {% for option in addon.options.all %}
+    <div class="form-field">
+        <div class="id_addon-0-{{ option.field_name }}"> 
+            <div class="label">
+                <label for="id_addon-0-{{ option.field_name }}">{{ option.title }}</label> 
+            </div>
+            <div class="field"> 
+                <select name="addon-0-{{ option.field_name }}" id="id_addon-0-{{ option.field_name }}"> 
+                {% for choice in option.choice_list %}
+                    <option value="{{ choice }}">{{ choice }}</option>
+                {% endfor %}
+                </select> 
+            </div>
+        </div>       
+    </div> 
+    {% endfor %}
+    {% endfor %}
+</div>

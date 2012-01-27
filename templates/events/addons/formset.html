@@ -1,4 +1,9 @@
 {% load i18n %}
 {% load styled_forms %}
 
-{{ addon_formset|styled_form_set }}
+{{ addon_formset.management_form }}
+{% for form in addon_formset.forms %}
+    <div class="addon-form">
+    {{ form|styled_form }}
+    </div>
+{% endfor %}
