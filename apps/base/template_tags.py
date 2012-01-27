@@ -3,7 +3,7 @@ import random
 from django.template import Node, Variable, Context, loader
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 
 
 def parse_tag_kwargs(bits):
@@ -78,8 +78,12 @@ class ListNode(Node):
                 user = self.kwargs['user']
         else:
             # check the context for an already existing user
+            # and see if it is really a user object
             if 'user' in context:
-                user = context['user']
+                try:
+                    user = User.objects.get(pk=context['user'])
+                except:
+                    pass
 
         if 'limit' in self.kwargs:
             try:

@@ -151,15 +151,10 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             # semi-anon job posts don't get a slug field on the form
             # see __init__ method in JobForm
             if not job.slug:
-                job.slug = get_job_unique_slug(slugify(job.title))
+                #job.slug = get_job_unique_slug(slugify(job.title))
+                job.slug = '%s-%s' % (slugify(job.title), Job.objects.count())
 
             job = update_perms_and_save(request, form, job)
-
-#            # semi-anon job posts don't get a slug field on the form
-#            # see __init__ method in JobForm
-#            if not job.slug:
-#                job.slug = '%s-%s' % (slugify(job.title), job.pk)
-#                job.save()
 
             # create invoice
             job_set_inv_payment(request.user, job, pricing)
@@ -377,7 +372,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
 def delete(request, id, template_name="jobs/delete.html"):
     job = get_object_or_404(Job, pk=id)
 
-    if has_perm(request.user, 'jobs.delete_job'):
+    if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
             log_defaults = {
                 'event_id': 433000,

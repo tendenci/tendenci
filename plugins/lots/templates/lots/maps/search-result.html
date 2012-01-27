@@ -1,0 +1,15 @@
+{% load base_tags %}
+{% load base_filters %}
+
+<div class="wrap-search-item">
+    <div class="search-item lots-search-item">
+        <h2><a href="{{map.get_absolute_url }}">{{ map.name }}</a></h2>
+        <div class="map-wrap">
+            <p>{{ map.description }}</p>
+            {% if map.file %}
+                <img src="{{ map.file|thumbnail:'200x200'}}" alt="{{ map.description }}">
+            {% endif %}
+        </div>
+    </div>
+    {% include "lots/maps/meta.html" %}
+</div>

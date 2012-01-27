@@ -126,4 +126,4 @@ class PageAdmin(admin.ModelAdmin):
 
         return instance
 
-admin.site.register(Page, PageAdmin)
+# admin.site.register(Page, PageAdmin)

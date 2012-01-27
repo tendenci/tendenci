@@ -74,12 +74,35 @@ class ListJobNode(ListNode):
 @register.tag
 def list_jobs(parser, token):
     """
-    Example:
-        {% list_jobs as jobs_list [user=user limit=3 order"title" q="engineering"] %}
+    Used to pull a list of :model:`jobs.Job` items.
+
+    Usage::
+
+        {% list_jobs as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``jobs_sidebar`` or 
+    ``jobs_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Newest Approved**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_jobs as jobs_list limit=5 tags="cool" %}
         {% for job in jobs_list %}
             {{ job.title }}
         {% endfor %}
-
     """
     args, kwargs = [], {}
     bits = token.split_contents()

@@ -45,9 +45,9 @@ Bulletpoints Theme - homepage.html
                 {% if rotator_list %}
                     {% for story in rotator_list %}
                     <div class="story story-{% cycle "even" "odd" %}">
-                      <div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 618px;" src="{% image_url story.image size=618x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
+                      {% if story.image %}<div class="story-image"><a href="{{ story.full_story_link }}"><img style="height: 324px; width: 618px;" src="{% image_url story.image size=618x324 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>{% endif %}
                         <div class="story-text">
-                            <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+                            <h2 class="headline"><a href="{{ story.full_story_link }}">{{ story.title|safe }}</a></h2>
                             <div class="story-summary">
                                 <p>{{ story.content|striptags|truncatewords_html:"12" }}</p> 
                                 <span class="readmore"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span>
@@ -61,26 +61,18 @@ Bulletpoints Theme - homepage.html
                     </div><!-- /.story {{ forloop.counter }} -->
                     {% endfor %}
                 {% else %}
-                <div class="story story-even">
+                {% for item in 4|make_range %}
+                <div class="story story-{% cycle "even" "odd" %}">
                   <div class="story-image"><a href="#"><img style="height: 324px; width: 618px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
                     <div class="story-text">
-                        <h2 class="headline"><a href="#">Sample Story</a></h2>
+                        <h2 class="headline"><a href="#">Sample Story {{ forloop.counter }}</a></h2>
                         <div class="story-summary">
-                            <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
+                            <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/?tags=rotator">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
                             <span><a class="readmore" href="#">Read More</a></span>
                         </div>
                     </div>
                 </div>
-                <div class="story story-odd">
-                  <div class="story-image"><a href="#"><img style="height: 324px; width: 618px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
-                    <div class="story-text">
-                        <h2 class="headline"><a href="#">Second Story</a></h2>
-                        <div class="story-summary">
-                            <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %}</p>
-                            <span><a class="readmore" href="#">Read More</a></span>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
                 {% endif %}
                 </div>
                 <div id="stories-pager"></div>
@@ -92,7 +84,7 @@ Bulletpoints Theme - homepage.html
         <section id="home-content" class="center">
             <div class="space" id="space_2">{% space_include MODULE_THEME_SPACE_2 %}</div>
             <div id="newsletter-form" class="clearfix">
-                <h3>{% trans 'Newsletter' %}</h3>
+                <h3>{% trans 'Get in Touch' %}</h3>
                 {# embed_form 1 #}
                 <form action="/forms/contact-us/" method="post">{% csrf_token %}
                     <div class="forms">

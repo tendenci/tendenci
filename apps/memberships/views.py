@@ -93,8 +93,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         context_instance=RequestContext(request))
 
 
-def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", 
-                        membership_id=0, template_name="memberships/applications/details.html"):
+def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", membership_id=0, template_name="memberships/applications/details.html"):
     """
     Display a built membership application and handle submission.
     """
@@ -233,6 +232,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             if not entry.approval_required():
 
                 entry.approve()
+
+                # silence old memberships within renewal period
+                Membership.objects.silence_old_memberships(entry.user)
+
                 # get user from the membership since it's null in the entry
                 entry.user = entry.membership.user
 
@@ -511,7 +514,10 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                 # update application, user, 
                 # group, membership, and archive
                 entry.approve()
-                
+
+                # silence old memberships within renewal period
+                Membership.objects.silence_old_memberships(entry.user)
+
                 # execute field functions (group subscriptions)
                 entry.execute_field_functions()
 
