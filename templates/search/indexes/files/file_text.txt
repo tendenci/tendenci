@@ -4,4 +4,4 @@ by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.description }}
 {{ object.update_dt }}
-
+{{ object.read }}
