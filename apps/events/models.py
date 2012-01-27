@@ -794,7 +794,18 @@ class AddonOption(models.Model):
     
     def __unicode__(self):
         return self.addon.title + ": " + self.title
+    
+    def field_name(self):
+        return "%s_%s" % (self.addon.pk, self.title.lower())
+    
+    def choice_list(self):
+        choices = []
+        for op in self.choices.split(','):
+            if op:
+                choices.append(op)
+        return choices
         
+            
 class RegAddon(models.Model):
     """Event registration addon.
     An event registration can avail multiple addons.
@@ -825,3 +836,4 @@ class RegAddonOption(models.Model):
         
     def __unicode__(self):
         return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
+    
