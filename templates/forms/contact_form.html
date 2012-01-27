@@ -1,0 +1,24 @@
+{% load styled_forms %}
+{% load perm_tags %}
+
+{% has_perm user forms.change_form form as can_edit %}
+
+<style>
+.id_captcha input[type="text"]{
+    width: 160px !important;
+}
+</style>
+    <h1>{{ form.title }}</h1>
+    <p>{{ form.intro|safe }}</p>
+
+    <div class="form-builder-wrap">
+        <form method="post" enctype="multipart/form-data" action="{{ form.get_absolute_url }}">{% csrf_token %}
+        <div class="forms">
+            {{ form_for_form|styled_form }}
+            <input type="submit" value="Submit" />
+        </div>
+        </form>
+    </div>
+    {% if can_edit %}
+    <a href="{% url admin:forms_form_change form.pk %}?next={{ request.path }}">Edit this form</a>
+    {% endif %}

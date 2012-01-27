@@ -74,7 +74,7 @@
 			// delete confirmation
 			$('.delete').click(function(){
 				var delete_location = confirm("Permenantly delete {% firstof MODULE_LOCATIONS_LABEL 'Location' %}?");	// confirm
-				if(delete_location) $(this).parents('.location-wrap').find('form[name="location-delete"]').submit() // delete: if OK
+				if(delete_location) $(this).parents('.location-wrap-search').find('form[name="location-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});
 		});

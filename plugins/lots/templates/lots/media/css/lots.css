@@ -1,0 +1,87 @@
+.t {
+	width: 96%;
+}
+
+/* general */
+.t h1 {
+	margin: 0 auto 10px 0;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+/* options */
+.t div.quick-options {
+    position: absolute;
+	margin-right: 5px;
+    right: 0;
+    top: 15px;
+}
+
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+/* Index page */
+.t .lots {width: 45%; float: left; margin-bottom: 20px;}
+.t .lots h2 {font-weight: bold;}
+
+.t .lot-item { position: relative; }
+.t .lot-item .photo {position: absolute; left: 200px;top: -50px;}
+
+/* search form */
+.t form.search-form input[type="text"] lot-wrap
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;
+    margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.t .lots-wrap {
+	margin-bottom: 20px;
+}
+
+.t .lot-search-item {
+    padding: 10px 0 10px 0;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.map-wrap {
+    margin-bottom: 10px;
+}
+
+.map-photo {
+    text-align:center;
+}
+
+.map-photo img {
+    height:auto;
+    width:100%;
+}
+
+.map-title {
+    font-style: italic;
+}
+
+#line-hidden {
+    display: none;
+}
+
+#lines-formset {
+    display: none;
+}

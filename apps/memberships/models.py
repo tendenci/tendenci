@@ -229,8 +229,8 @@ class MembershipType(TendenciBaseModel):
                 if not self.fixed_option1_year:
                     self.fixed_option1_year = now.year
                     
-                self.fixed_option1_day = day_validate(datetime(self.fixed_expiration_year, 
-                                                                  self.fixed_expiration_month, 1), 
+                self.fixed_option1_day = day_validate(datetime(self.fixed_option1_year, 
+                                                                  self.fixed_option1_month, 1), 
                                                                     self.fixed_option1_day)
                     
                 return datetime(self.fixed_option1_year, self.fixed_option1_month, 
@@ -244,7 +244,7 @@ class MembershipType(TendenciBaseModel):
                 if self.fixed_option2_month > 12:
                     self.fixed_option2_month = 12
                 
-                self.fixed_expiration_day2 = day_validate(datetime(now.year, 
+                self.fixed_option2_day = day_validate(datetime(now.year, 
                                                                   self.fixed_option2_month, 1), 
                                                                     self.fixed_option2_day)
                 
@@ -271,6 +271,7 @@ class Membership(TendenciBaseModel):
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App", null=True)
+    send_notice = models.BooleanField(default=True)
     objects = MembershipManager()
 
     class Meta:
@@ -898,6 +899,10 @@ class AppEntry(TendenciBaseModel):
         return self.get_field_value('email')
 
     def approval_required(self):
+        """
+        Returns a boolean value on whether approval is required
+        This is dependent on whether membership is a join or renewal.
+        """
         if self.is_renewal:
             return self.membership_type.renewal_require_approval
         else:
@@ -1029,10 +1034,10 @@ class AppEntry(TendenciBaseModel):
     def approve(self):
         """
         # Create membership/archive membership
-        # Bind user and membership
+        # Bind membership with user
         # Place user in membership group
         # Update user profile with membership data (fn,ln,email)
-        # Update application as approved, bind to membership, update decision_dt
+        # Update entry; mark as approved, bind to membership, update decision_dt
 
         order of candidates (for user-binding)
             authenticated user
@@ -1057,9 +1062,9 @@ class AppEntry(TendenciBaseModel):
         if self.judge and self.judge.is_authenticated():
             judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
         else:
-            judge, judge_pk, judge_username = None, 0, ''
+            judge, judge_pk, judge_username = None, int(), unicode()
 
-        # if renewal; create archive
+        # if membership; then renewal; create archive
         membership = user.memberships.get_membership()
         if membership:
             archive = MembershipArchive.objects.create(**{
@@ -1087,7 +1092,7 @@ class AppEntry(TendenciBaseModel):
             membership.renewal = self.membership_type.renewal
             membership.subscribe_dt = datetime.now()
             membership.expire_dt = self.get_expire_dt()
-            membership.payment_method = None
+            membership.payment_method = self.payment_method
             membership.ma = self.app
             membership.corporate_membership_id = self.corporate_membership_id
             membership.creator = user
@@ -1112,7 +1117,7 @@ class AppEntry(TendenciBaseModel):
                 'renewal': self.membership_type.renewal,
                 'subscribe_dt':datetime.now(),
                 'expire_dt': self.get_expire_dt(),
-                'payment_method': None,
+                'payment_method': self.payment_method,
                 'ma':self.app,
                 'corporate_membership_id': self.corporate_membership_id,
                 'creator':user,
