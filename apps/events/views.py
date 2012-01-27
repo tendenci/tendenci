@@ -834,15 +834,24 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     qualifies = False
     # custom registration form
     # use the custom registration form if pricing is associated with a custom reg form
-    custom_reg_form = None
+    
+    reg_conf=event.registration_configuration
 
     for q_price in qualified_pricing:
         if price.pk == q_price['price'].pk:
             qualifies = True
-            if price.reg_form and price.reg_form.status:
-                custom_reg_form = price.reg_form
+            
     if not qualifies:
         return multi_register_redirect(request, event, _('Please choose a price.'))
+    
+    # check if use a custom reg form
+    custom_reg_form = None
+    if reg_conf.use_custom_reg_form:
+        if reg_conf.bind_reg_form_to_conf_only:
+            custom_reg_form = reg_conf.reg_form
+        else:
+            custom_reg_form = price.reg_form
+    
 
     # check if this post came from the pricing form
     # and modify the request method

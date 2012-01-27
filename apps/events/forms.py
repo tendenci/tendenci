@@ -570,7 +570,6 @@ class Reg8nEditForm(BetterModelForm):
         # handle three fields here - use_custom_reg_form, reg_form,
         # and bind_reg_form_to_conf_only
         # split the value from use_custom_reg and assign to the 3 fields
-        print 'cleaned=', self.cleaned_data['use_custom_reg']
         use_custom_reg_data_list = (self.cleaned_data['use_custom_reg']).split(',')
         try:
             self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
