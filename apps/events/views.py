@@ -26,7 +26,8 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from events.models import Event, RegistrationConfiguration, \
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    RegConfPricing, CustomRegForm, CustomRegFormEntry
+    RegConfPricing, CustomRegForm, CustomRegFormEntry, CustomRegField, \
+    CustomRegFieldEntry
 from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
@@ -37,6 +38,7 @@ from events.utils import registration_has_started, get_pricing, clean_price
 from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.utils import get_ievent, copy_event, email_admins, get_active_days
 from events.utils import get_custom_registrants_initials, get_ACRF_queryset
+from events.utils import render_registrant_excel
 from perms.utils import has_perm, get_notice_recipients, \
     update_perms_and_save, get_administrators, is_admin
 from event_logs.models import EventLog
@@ -1899,6 +1901,181 @@ def registrant_export(request, event_id, roster_view=''):
     response['Content-Disposition'] = 'attachment; filename=%s' % file_name
     book.save(response)
     return response
+
+
+def registrant_export_with_custom(request, event_id, roster_view=''):
+    """
+    Export all registration for a specific event with or without custom registration forms
+    """
+    from django.db import connection
+    event = get_object_or_404(Event, pk=event_id)
+
+    # if they can edit it, they can export it
+    if not has_perm(request.user,'events.change_event',event):
+        raise Http403
+
+    import xlwt
+    from ordereddict import OrderedDict
+    from decimal import Decimal
+
+    # create the excel book and sheet
+    book = xlwt.Workbook(encoding='utf8')
+    sheet = book.add_sheet('Registrants')
+    
+        # excel date styles
+    styles = {
+        'balance_owed_style': xlwt.easyxf('font: color-index red, bold on'),
+        'default_style': xlwt.Style.default_style,
+        'datetime_style': xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm'),
+        'date_style': xlwt.easyxf(num_format_str='mm/dd/yyyy')
+    }
+
+    if roster_view == 'non-paid':
+        registrants = event.registrants(with_balance=True)
+        file_name = event.title.strip().replace(' ','-')
+        file_name = 'Event-%s-Non-Paid.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
+    elif roster_view == 'paid':
+        registrants = event.registrants(with_balance=False)
+        file_name = event.title.strip().replace(' ','-')
+        file_name = 'Event-%s-Paid.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
+    else:
+        registrants = event.registrants()
+        file_name = event.title.strip().replace(' ','-')
+        file_name = 'Event-%s-Total.xls' % re.sub(r'[^a-zA-Z0-9._]+', '', file_name)
+
+    # the key is what the column will be in the
+    # excel sheet. the value is the database lookup
+    # Used OrderedDict to maintain the column order
+    registrant_mappings = OrderedDict([
+        ('first_name', 'first_name'),
+        ('last_name', 'last_name'),
+        ('phone', 'phone'),
+        ('email', 'email'),
+        ('company', 'company_name'),
+        ('address', 'address'),
+        ('city', 'city'),
+        ('state', 'state'),
+        ('zip', 'zip'),
+        ('country', 'country'),
+        ('date', 'create_dt'),
+        ('registration_id', 'registration__pk'),
+        ('price type', 'registration__reg_conf_price__title'),
+        ('invoice_id', 'registration__invoice__pk'),
+        ('registration price', 'registration__amount_paid'),
+        ('payment method', 'registration__payment_method__machine_name'),
+        ('balance', 'registration__invoice__balance'),
+    ])
+    registrant_lookups = registrant_mappings.values()
+
+    # Append the heading to the list of values that will
+    # go into the excel sheet
+    values_list = []
+
+    # registrants with regular reg form
+    non_custom_registrants = registrants.filter(custom_reg_form_entry=None)
+    non_custom_registrants = non_custom_registrants.values_list(*registrant_lookups)
+    if non_custom_registrants:
+        values_list.insert(0, registrant_mappings.keys())
+        for registrant in non_custom_registrants:
+            values_list.append(registrant)
+        values_list.append(['\n'])
+
+    # Write the data enumerated to the excel sheet
+    balance_index = 16
+    render_registrant_excel(sheet, values_list, balance_index, styles)
+            
+    # ***now check for the custom registration forms***
+    custom_reg_exists = Registrant.objects.filter(
+                                    registration__event=event
+                                    ).exclude(custom_reg_form_entry=None
+                                              ).exists()
+
+    if custom_reg_exists:
+        # get a list of custom registration forms
+        sql = """
+            SELECT form_id 
+            FROM events_customregformentry 
+            WHERE id IN ( 
+                SELECT custom_reg_form_entry_id 
+                FROM events_registrant 
+                WHERE (custom_reg_form_entry_id is not NULL) 
+                AND registration_id IN ( 
+                    SELECT id FROM events_registration 
+                    WHERE event_id=%d))
+            ORDER BY id
+        """  % event.id
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        # list of form ids
+        form_ids = list(set([row[0] for row in rows]))
+        
+        # remove some fields from registrant_mappings because they are
+        # stored in the field entries
+        fields_to_remove = ['first_name', 'last_name', 'phone', 
+                            'email', 'company', 'address', 'city', 
+                            'state', 'zip', 'country']
+        for field in fields_to_remove:
+            del registrant_mappings[field]
+        
+       
+        registrant_lookups = registrant_mappings.values()
+        registrant_lookups.append('custom_reg_form_entry')
+        
+        # loop through all custom registration forms
+        for form_id in form_ids:
+            rows_list = []
+            custom_reg_form = CustomRegForm.objects.get(id=form_id)
+            
+            # get a list of fields in the type (id, label) and store in 
+            # an ordered dict
+            fields = CustomRegField.objects.filter(form=custom_reg_form
+                                                   ).order_by(
+                                                    'position'
+                                                    ).values_list('id', 'label')
+            fields_dict = OrderedDict(fields)
+            field_ids = fields_dict.keys()
+            # field header row - all the field labels in the form + registrant_mappings.keys
+            labels = fields_dict.values()
+            labels.extend(registrant_mappings.keys())
+            
+            rows_list.append([custom_reg_form.name])
+            rows_list.append(labels)
+            
+            # get the registrants for this form
+            custom_registrants = registrants.filter(custom_reg_form_entry__form=custom_reg_form)
+            custom_registrants = custom_registrants.values_list(*registrant_lookups)
+            for registrant in custom_registrants:
+                entry_id = registrant[-1]
+                sql = """
+                        SELECT field_id, value
+                        FROM events_customregfieldentry
+                        WHERE field_id IN (%s)
+                        AND entry_id=%d
+                    """ % (','.join([str(id) for id in field_ids]), entry_id)
+                cursor.execute(sql)
+                entry_rows = cursor.fetchall()
+                values_dict = dict(entry_rows)
+                
+                custom_values_list = []
+                for field_id in field_ids:
+                    custom_values_list.append(values_dict.get(field_id, ''))
+                custom_values_list.extend(list(registrant[:-1]))
+                
+                rows_list.append(custom_values_list)
+            rows_list.append(['\n'])
+            
+            balance_index =  len(field_ids) + len(registrant_lookups) - 1
+            
+            # write to spread sheet
+            render_registrant_excel(sheet, rows_list, balance_index, styles)
+             
+
+    response = HttpResponse(mimetype='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+    book.save(response)
+    return response        
+        
 
 @login_required
 def delete_speaker(request, id):
