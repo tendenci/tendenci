@@ -35,10 +35,9 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         if not request.user.is_authenticated():
             raise Http403
 
-    if file.name:
-        file_name = file.name
-    else:
-        file_name = file.file.name
+    # we either have the name in our database
+    # or we pull the name straight off of the file
+    file_name = file.name or file.file.name
 
     # get image binary
     try:
