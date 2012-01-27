@@ -64,7 +64,7 @@ def get_ACRF_queryset(event=None):
 
     return queryset
 
-def render_registrant_excel(sheet, rows_list, balance_index, styles):
+def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
     for row, row_data in enumerate(rows_list):
         for col, val in enumerate(row_data):
             # styles the date/time fields
@@ -83,7 +83,7 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles):
                 if isinstance(balance,Decimal) and balance > 0:
                     style = ['stylesbalance_owed_style']
 
-            sheet.write(row, col, val, style=style) 
+            sheet.write(row+start, col, val, style=style) 
 
 
 
