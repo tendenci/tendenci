@@ -79,21 +79,21 @@ urlpatterns = patterns('events',
 
     # registrant export
     url(r'^(?P<event_id>\d+)/registrants/export/$',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         name="event.registrant.export"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/paid$',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'paid'},
         name="event.registrant.export.paid"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/non-paid',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'non-paid'},
         name="event.registrant.export.non_paid"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/total',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'total'},
         name="event.registrant.export.total"
     ),
