@@ -4,6 +4,7 @@ from django.utils.html import strip_tags
 from django.contrib.auth.models import User
 from django.db import connection
 from datetime import datetime, timedelta
+from datetime import date
 from decimal import Decimal
 
 from profiles.models import Profile
@@ -62,6 +63,27 @@ def get_ACRF_queryset(event=None):
     queryset = CustomRegForm.objects.filter(id__in=ids_list)
 
     return queryset
+
+def render_registrant_excel(sheet, rows_list, balance_index, styles):
+    for row, row_data in enumerate(rows_list):
+        for col, val in enumerate(row_data):
+            # styles the date/time fields
+            if isinstance(val, datetime):
+                style = styles['datetime_style']
+            elif isinstance(val, date):
+                style = styles['date_style']
+            else:
+                style = styles['default_style']
+                
+            # style the invoice balance column
+            if col == balance_index:
+                balance = val
+                if not val:
+                    balance = 0
+                if isinstance(balance,Decimal) and balance > 0:
+                    style = ['stylesbalance_owed_style']
+
+            sheet.write(row, col, val, style=style) 
 
 
 
