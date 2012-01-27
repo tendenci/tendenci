@@ -1982,7 +1982,9 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     # Write the data enumerated to the excel sheet
     balance_index = 16
-    render_registrant_excel(sheet, values_list, balance_index, styles)
+    start_row = 0
+    render_registrant_excel(sheet, values_list, balance_index, styles, start=start_row)
+    start_row += len(values_list)
             
     # ***now check for the custom registration forms***
     custom_reg_exists = Registrant.objects.filter(
@@ -2068,7 +2070,8 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
             balance_index =  len(field_ids) + len(registrant_lookups) - 1
             
             # write to spread sheet
-            render_registrant_excel(sheet, rows_list, balance_index, styles)
+            render_registrant_excel(sheet, rows_list, balance_index, styles, start=start_row)
+            start_row += len(rows_list)
              
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
