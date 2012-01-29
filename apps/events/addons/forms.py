@@ -18,12 +18,14 @@ class RegAddonForm(forms.Form):
     The choices for the addon will depend on the registrants.
     Before this form can be validated the registrant formset must to be
     validated first.
+    The valid_addons kwarg is the list of addons that the registrants are allowed to use.
     A RegAddonForm will dynamically add choice fields depending on the
     number of options it has.
     """
     
     def __init__(self, *args, **kwargs):
         self.addons = kwargs.pop('addons')
+        self.valid_addons = kwargs.pop('valid_addons', None)
         self.form_index = kwargs.pop('form_index', None)
         super(RegAddonForm, self).__init__(*args, **kwargs)
         
@@ -38,8 +40,11 @@ class RegAddonForm(forms.Form):
             choices = [(op, op) for op in option.choice_list()]
             self.fields[field_name] = forms.ChoiceField(
                 choices=choices, label=_(option.title), required=False)
-                
-        print self.fields
         
     def get_form_label(self):
         return self.form_index + 1
+        
+    def clean_addon(self):
+        addon = self.cleaned_data['addon']
+        if addon not in self.valid_addons:
+            raise forms.ValidationError(_('Addon is invalid for current set of registrants'))

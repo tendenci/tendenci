@@ -241,42 +241,51 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         
         # validate the form and formset
         if False not in (reg_form.is_valid(), reg_formset.is_valid()):
-            
-            # process the registration
-            # this will create the registrants and apply the discount
-            reg8n = process_registration(reg_form, reg_formset)
-            
-            self_reg8n = get_setting('module', 'users', 'selfregistration')
-            is_credit_card_payment = (reg8n.payment_method and 
-                (reg8n.payment_method.machine_name).lower() == 'credit-card'
-                and reg8n.amount_paid > 0)
-            
-            if is_credit_card_payment: # online payment
-                # email the admins as well
-                email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
-                # get invoice; redirect to online pay
-                return redirect('payments.views.pay_online',
-                    reg8n.invoice.id, reg8n.invoice.guid)
-            else:
-                # offline payment
-                # email the registrant
-                send_registrant_email(reg8n, self_reg8n)
-                # email the admins as well
-                email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+            valid_addons = get_addons_for_list(event, reg_formset.get_user_list())
+            # validate the addons
+            addon_formset = RegAddonFormSet(request.POST,
+                            prefix='addon',
+                            event=event,
+                            extra_params={
+                                'addons':active_addons,
+                                'valid_addons':valid_addons,
+                            })
+            if addon_formset.is_valid():
+                # process the registration
+                # this will create the registrants and apply the discount
+                reg8n = process_registration(reg_form, reg_formset)
                 
-            # log an event
-            log_defaults = {
-                'event_id' : 431000,
-                'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                'user': request.user,
-                'request': request,
-                'instance': event,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            # redirect to confirmation
-            return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
+                self_reg8n = get_setting('module', 'users', 'selfregistration')
+                is_credit_card_payment = (reg8n.payment_method and 
+                    (reg8n.payment_method.machine_name).lower() == 'credit-card'
+                    and reg8n.amount_paid > 0)
+                
+                if is_credit_card_payment: # online payment
+                    # email the admins as well
+                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+                    # get invoice; redirect to online pay
+                    return redirect('payments.views.pay_online',
+                        reg8n.invoice.id, reg8n.invoice.guid)
+                else:
+                    # offline payment
+                    # email the registrant
+                    send_registrant_email(reg8n, self_reg8n)
+                    # email the admins as well
+                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+                    
+                # log an event
+                log_defaults = {
+                    'event_id' : 431000,
+                    'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                    'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
+                    'user': request.user,
+                    'request': request,
+                    'instance': event,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                # redirect to confirmation
+                return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
     else:
         # intialize empty forms
         reg_formset = RegistrantFormSet(
