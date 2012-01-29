@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
@@ -60,6 +60,7 @@ def get_addons_for_list(event, users):
     
     for user in users:
         addons = addons | get_available_addons(event, user)
+    addons = addons | get_available_addons(event, AnonymousUser())
     
     # return the QUERYSET
     return addons

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
@@ -102,6 +102,7 @@ def get_pricings_for_list(event, users):
     
     for user in users:
         pricings = pricings | get_available_pricings(event, user)
+    pricings = pricings | get_available_pricings(event, AnonymousUser())
     
     # return the QUERYSET
     return pricings
