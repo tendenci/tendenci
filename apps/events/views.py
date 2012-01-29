@@ -429,6 +429,13 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 event.place = place
                 event.registration_configuration = regconf
                 event.save()
+                
+                # un-tie the reg_form from the pricing
+                if not pricing_reg_form_required:
+                    for price in regconf.regconfpricing_set.all():
+                        if price.reg_form:
+                            price.reg_form = None
+                            price.save()
 
                 EventLog.objects.log(
                     event_id =  172000, # edit event

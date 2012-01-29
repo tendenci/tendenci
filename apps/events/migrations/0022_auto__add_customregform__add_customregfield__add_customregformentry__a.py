@@ -28,8 +28,8 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fields', to=orm['events.CustomRegForm'])),
             ('label', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('field_type', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('map_to_field', self.gf('django.db.models.fields.CharField')(max_length=64, null=True, blank=True)),
+            ('field_type', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('required', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('visible', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('choices', self.gf('django.db.models.fields.CharField')(max_length=1000, blank=True)),
@@ -57,7 +57,16 @@ class Migration(SchemaMigration):
         db.send_create_signal('events', ['CustomRegFieldEntry'])
 
         # Adding field 'RegConfPricing.reg_form'
-        db.add_column('events_regconfpricing', 'reg_form', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['events.CustomRegForm'], null=True, blank=True), keep_default=False)
+        db.add_column('events_regconfpricing', 'reg_form', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='regconfpricings', null=True, to=orm['events.CustomRegForm']), keep_default=False)
+
+        # Adding field 'RegistrationConfiguration.use_custom_reg_form'
+        db.add_column('events_registrationconfiguration', 'use_custom_reg_form', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
+        # Adding field 'RegistrationConfiguration.reg_form'
+        db.add_column('events_registrationconfiguration', 'reg_form', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='regconfs', null=True, to=orm['events.CustomRegForm']), keep_default=False)
+
+        # Adding field 'RegistrationConfiguration.bind_reg_form_to_conf_only'
+        db.add_column('events_registrationconfiguration', 'bind_reg_form_to_conf_only', self.gf('django.db.models.fields.BooleanField')(default=True), keep_default=False)
 
         # Adding field 'Registrant.custom_reg_form_entry'
         db.add_column('events_registrant', 'custom_reg_form_entry', self.gf('django.db.models.fields.related.ForeignKey')(related_name='registrants', null=True, to=orm['events.CustomRegFormEntry']), keep_default=False)
@@ -79,6 +88,15 @@ class Migration(SchemaMigration):
 
         # Deleting field 'RegConfPricing.reg_form'
         db.delete_column('events_regconfpricing', 'reg_form_id')
+
+        # Deleting field 'RegistrationConfiguration.use_custom_reg_form'
+        db.delete_column('events_registrationconfiguration', 'use_custom_reg_form')
+
+        # Deleting field 'RegistrationConfiguration.reg_form'
+        db.delete_column('events_registrationconfiguration', 'reg_form_id')
+
+        # Deleting field 'RegistrationConfiguration.bind_reg_form_to_conf_only'
+        db.delete_column('events_registrationconfiguration', 'bind_reg_form_to_conf_only')
 
         # Deleting field 'Registrant.custom_reg_form_entry'
         db.delete_column('events_registrant', 'custom_reg_form_entry_id')
@@ -211,7 +229,7 @@ class Migration(SchemaMigration):
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'event_creator'", 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 16, 14, 9, 25, 495353)'}),
+            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 27, 23, 54, 53, 884281)'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True', 'blank': 'True'}),
             'external_url': ('django.db.models.fields.URLField', [], {'default': "u''", 'max_length': '200', 'blank': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
@@ -225,7 +243,7 @@ class Migration(SchemaMigration):
             'place': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.Place']", 'null': 'True'}),
             'private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'registration_configuration': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['events.RegistrationConfiguration']", 'unique': 'True', 'null': 'True'}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 16, 12, 9, 25, 495320)'}),
+            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 27, 21, 54, 53, 884250)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'timezone': ('timezones.fields.TimeZoneField', [], {'default': "'US/Central'", 'max_length': '100'}),
@@ -272,14 +290,14 @@ class Migration(SchemaMigration):
             'allow_anonymous': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 16, 18, 9, 25, 486706)'}),
+            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 28, 3, 54, 53, 875673)'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '21', 'decimal_places': '2'}),
             'quantity': ('django.db.models.fields.IntegerField', [], {'default': '1', 'blank': 'True'}),
             'reg_conf': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.RegistrationConfiguration']", 'null': 'True', 'blank': 'True'}),
-            'reg_form': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.CustomRegForm']", 'null': 'True', 'blank': 'True'}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 16, 12, 9, 25, 486673)'}),
+            'reg_form': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'regconfpricings'", 'null': 'True', 'to': "orm['events.CustomRegForm']"}),
+            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 1, 27, 21, 54, 53, 875641)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
         },
@@ -326,6 +344,7 @@ class Migration(SchemaMigration):
         },
         'events.registrationconfiguration': {
             'Meta': {'object_name': 'RegistrationConfiguration'},
+            'bind_reg_form_to_conf_only': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'enabled': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -333,7 +352,9 @@ class Migration(SchemaMigration):
             'limit': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'payment_method': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['payments.PaymentMethod']", 'symmetrical': 'False'}),
             'payment_required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
+            'reg_form': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'regconfs'", 'null': 'True', 'to': "orm['events.CustomRegForm']"}),
+            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'use_custom_reg_form': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
         },
         'events.speaker': {
             'Meta': {'object_name': 'Speaker'},
