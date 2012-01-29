@@ -40,6 +40,14 @@ function addAddon(prefix, addon, container){
         if($(this).attr("name")==(prefix+"-"+formCount+"-addon")){
             // assign addon selected
             $(this).val(addon['pk'])
+        }else{
+            var field_name = $(this).attr("name");
+            if(field_name){
+                var option_name = field_name.split(prefix+"-"+formCount+"-")[1]
+                if(!(option_name[0] == addon['pk'])){
+                    $(this).parent().parent().hide();
+                }
+            }
         }
     });
     

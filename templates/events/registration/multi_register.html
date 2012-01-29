@@ -33,8 +33,9 @@
         </div>
     </div>
         
-    {% if reg_form.errors or reg_form.non_field_errors or registrant.errors or registrant.non_form_errors %}
+    {% if reg_form.errors or registrant.errors or registrant.non_form_errors %}
         <div class="errors-box">
+            {% trans "There were some problems in the forms. Please review. Thanks!" %}
             <ul>
                 {% for error in reg_form.non_field_errors %}
                     <li><a href="javascript:;">{{ error }}</a></li>
