@@ -800,7 +800,7 @@ class AddonOption(models.Model):
         return self.addon.title + ": " + self.title
     
     def field_name(self):
-        return "%s_%s" % (self.addon.pk, self.title.lower())
+        return "%s_%s" % (self.addon.pk, self.title.lower().replace(' ', ''))
     
     def choice_list(self):
         choices = []
@@ -826,7 +826,7 @@ class RegAddon(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     
     def __unicode__(self):
-        return "%s: %S" % (self.registration.pk, self.addon.title)
+        return "%s: %s" % (self.registration.pk, self.addon.title)
     
 class RegAddonOption(models.Model):
     """Selected event registration addon option.

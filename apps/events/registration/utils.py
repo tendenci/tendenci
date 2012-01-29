@@ -179,7 +179,7 @@ def create_registrant(form, event, reg8n):
     
     return registrant
     
-def process_registration(reg_form, reg_formset):
+def process_registration(reg_form, reg_formset, addon_formset):
     """
     Create the registrants and the invoice for payment.
     reg_form and reg_formset MUST be validated first
@@ -187,7 +187,9 @@ def process_registration(reg_form, reg_formset):
     # init variables
     user = reg_form.get_user()
     event = reg_form.get_event()
-    total_price = reg_formset.get_total_price()
+    registrants_price = reg_formset.get_total_price()
+    addons_price = addon_formset.get_total_price()
+    total_price = registrants_price + addons_price
     admin_notes = ''
     
     # get the discount, apply if available
@@ -226,6 +228,10 @@ def process_registration(reg_form, reg_formset):
             reg8n,
         ]
         registrant = create_registrant(*registrant_args)
+        
+    # create each regaddon
+    for form in addon_formset.forms:
+        form.save(reg8n)
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
