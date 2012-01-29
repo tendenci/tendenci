@@ -780,11 +780,6 @@ class Event(TendenciBaseModel):
         if self.image:
             return self.image.file
         return None
-
-class EventPhoto(File):
-    @property
-    def content_type(self):
-        return 'events'
     
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
@@ -937,3 +932,10 @@ class CustomRegFieldEntry(models.Model):
     entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")
     field = models.ForeignKey("CustomRegField", related_name="entries")
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
+
+class EventPhoto(File):
+    @property
+    def content_type(self):
+        return 'events'
+    
+
