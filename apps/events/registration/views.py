@@ -16,7 +16,7 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from memberships.models import Membership
 
-from events.models import Event, RegConfPricing, Registrant
+from events.models import Event, RegConfPricing, Registrant, Addon
 from events.utils import email_admins
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.registration.utils import get_available_pricings, reg_status
@@ -27,7 +27,7 @@ from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
 from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
-from events.addons.utils import get_active_addons, get_available_addons
+from events.addons.utils import get_active_addons, get_available_addons, get_addons_for_list
 
 def ajax_user(request, event_id):
     """Ajax query for user validation
@@ -88,6 +88,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     the first match will be the basis of the pricing list.
     If the setting "sharedpricing" is enabled this ajax check will consider
     the emails associated with the session.
+    ** This now also returns ADDON info in the same format.
     """
     event = get_object_or_404(Event, pk=event_id)
     
@@ -110,18 +111,20 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         if users:
             user = users[0]
     
+    # register user in user list
+    user_pks = request.session.get('user_list', [])
+    if not user.is_anonymous():
+        user_pks.append(user.pk)
+    request.session['user_list'] = user_pks
+
+    # Set up available pricings
     all_pricings = get_active_pricings(event)
-    
     if shared_pricing:
-        user_pks = request.session.get('user_list', [])
-        if not user.is_anonymous():
-            user_pks.append(user.pk)
-        request.session['user_list'] = user_pks
+        # use entire user list
         users = User.objects.filter(pk__in=user_pks)
         available_pricings = get_pricings_for_list(event, users)
     else:
         available_pricings = get_available_pricings(event, user)
-    
     pricing_list = []
     for pricing in all_pricings:
         p_dict = {
@@ -137,8 +140,26 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
             p_dict['enabled'] = False
         
         pricing_list.append(p_dict)
+        
+    all_addons = get_active_addons(event)
+    available_addons = get_addons_for_list(event, users)
     
-    data = json.dumps(pricing_list)
+    addon_list = []
+    for addon in all_addons:
+        a_dict = {
+            'title':addon.title,
+            'price':str(addon.price),
+            'pk':addon.pk,
+            'enabled':True,
+            'is_public':addon.allow_anonymous,
+        }
+        
+        if addon not in available_addons:
+            a_dict['enabled'] = False
+        
+        addon_list.append(a_dict)
+    
+    data = json.dumps({'pricings':pricing_list, 'addons':addon_list})
     return HttpResponse(data, mimetype="text/plain")
 
 def multi_register(request, event_id, template_name="events/registration/multi_register.html"):
@@ -159,6 +180,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     # redirect to default registration if anonymousmemberpricing not enabled
     if not get_setting('module', 'events', 'anonymousmemberpricing'):
         return redirect('event.multi_register')
+        
+    # clear user list session
+    request.session['user_list'] = []
     
     event = get_object_or_404(Event, pk=event_id)
     

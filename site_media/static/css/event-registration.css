@@ -169,3 +169,8 @@ div.delete-button-wrap{
 .addon-forms {
     width: 70%;
 }
+
+.addon-forms .addon-form{
+    padding-top: 10px;
+    border-top: 1px dotted #CCC;
+}
