@@ -1,18 +1,18 @@
 $(document).ready(function() {
     // Set this to the name of the column holding the ordering
-    pos_field = 'ordering';
+    var pos_field = 'ordering';
     
     // Determine the column number of the ordering field
-    pos_col = null;
+    var pos_col = null;
     
-    cols = $('#result_list tbody tr:first').children()
+    var cols = $('#result_list tbody tr:first').children()
     
     for (i = 0; i < cols.length; i++) {
-        inputs = $(cols[i]).find('input[name*=' + pos_field + ']')
+        var inputs = $(cols[i]).find('input[name*=' + pos_field + ']')
         
         if (inputs.length > 0) {
             // Found!
-            pos_col = i;
+            var pos_col = i;
             break;
         }
     }
@@ -22,25 +22,25 @@ $(document).ready(function() {
     }
     
     // Some visual enhancements
-    header = $('#result_list thead tr').children()[pos_col]
+    var header = $('#result_list thead tr').children()[pos_col]
     $(header).css('width', '1em')
     $(header).children('a').text('Move')
     
     // Hide ordering field
     $('#result_list tbody tr').each(function(index) {
-        pos_td = $(this).children()[pos_col]
-        input = $(pos_td).children('input').first()
+        var pos_td = $(this).children()[pos_col]
+        var input = $(pos_td).children('input').first()
         //input.attr('type', 'hidden')
         input.hide()
         
-        label = $('<span><img src="/site_media/static/images/icons/drag_icon_16x16.png" /></span>')
+        var label = $('<span><img src="/site_media/static/images/icons/drag_icon_16x16.png" /></span>')
         $(pos_td).append(label)
     });
     
     // Determine sorted column and order
-    sorted = $('#result_list thead th.sorted')
-    sorted_col = $('#result_list thead th').index(sorted)
-    sort_order = sorted.hasClass('descending') ? 'desc' : 'asc';
+    var sorted = $('#result_list thead th.sorted')
+    var sorted_col = $('#result_list thead th').index(sorted)
+    var sort_order = sorted.hasClass('descending') ? 'desc' : 'asc';
     
     if (sorted_col != pos_col) {
         // Sorted column is not ordering column, bail out
@@ -56,8 +56,8 @@ $(document).ready(function() {
         items: 'tr',
         cursor: 'move',
         update: function(event, ui) {
-            item = ui.item
-            items = $(this).find('tr').get()
+            var item = ui.item
+            var items = $(this).find('tr').get()
             
             if (sort_order == 'desc') {
                 // Reverse order
@@ -65,9 +65,9 @@ $(document).ready(function() {
             }
             
             $(items).each(function(index) {
-                pos_td = $(this).children()[pos_col]
-                input = $(pos_td).children('input').first()
-                label = $(pos_td).children('span').first()
+                var pos_td = $(this).children()[pos_col]
+                var input = $(pos_td).children('input').first()
+                var label = $(pos_td).children('span').first()
                 
                 input.attr('value', index)
                 label.html('<img src="/site_media/static/images/icons/drag_icon_16x16.png" />')
