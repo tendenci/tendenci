@@ -1,6 +1,7 @@
 {% extends "events/base-wide.html" %}
 {% load pagination_tags %}
 {% load event_tags %}
+{% load event_filters %}
 {% load base_tags %}
 {% load base_filters %}
 {% load perm_tags %}
@@ -138,7 +139,7 @@
 		    	{# has_perm user events.view_event event as can_view #}
 		    	{# if can_view #}
 				<div class="event-wrap-search">
-		
+					
 					<div class="options">
 		                <div class="quick-options">
 							{% registrant_options request.user registrant %} 	       
@@ -164,16 +165,23 @@
 							{% endif %}
 						{% endif %}
 		
-						{% if registrant.title and registrant.company %}
-						<div>{% blocktrans with registrant.company_name as regcomp %}Web Developer at {{ regcomp }}{% endblocktrans %}</div>
+						{% if registrant.position_title and registrant.company_name %}
+						<div>{% blocktrans with registrant.position_title as postitle %}{{ postitle }}{% endblocktrans %}
+							{% blocktrans with registrant.company_name as regcomp %} at {{ regcomp }}{% endblocktrans %}</div>
 						{% else %}
-							{% if registrant.title %}
-							<div>{% trans "Web Developer" %}</div>
+							{% if registrant.position_title %}
+							<div>{% blocktrans with registrant.position_title as postitle %}{{ postitle }}{% endblocktrans %}</div>
 							{% else %}
 								{% if registrant.company_name %}
-								<div>{% blocktrans with registrant.company_name as regcomp %}Works at {{ regcomp }} {% endblocktrans %}</div>
+								<div>{% blocktrans with registrant.company_name as regcomp %}Works at {{ regcomp }}{% endblocktrans %}</div>
 								{% endif %}
 							{% endif %}
+						{% endif %}
+						
+						{% if registrant.custom_reg_form_entry and registrant.non_mapped_field_entries %}
+							{% for entry in registrant.non_mapped_field_entries %}
+							<div>{{ entry.label }}: {{ entry.value }}</div>
+							{% endfor %}
 						{% endif %}
 		
 					</div>

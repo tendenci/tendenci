@@ -42,12 +42,7 @@
         <div class="event-title">{{ event.title }}</div>
         <div class="event-cancel-amount">
                 {% if registrant.first_name or registrant.last_name %}
-                    {% if registrant.first_name %}
-                        {% blocktrans with registrant.first_name as first_name %} Cancelling registration for {{ first_name }}{% endblocktrans %} 
-                    {% endif %}
-                    {%  if registrant.last_name %}
-                        {% blocktrans with registrant.last_name as last_name %} Cancelling registration for {{ last_name }}{% endblocktrans %} 
-                    {% endif %}
+                    {% blocktrans %} Cancelling registration for{% endblocktrans %} {{ registrant.first_name }}  {{ registrant.last_name }}                    
                 {% else %}
                     {% blocktrans %} Cancelling registration for Guest #: {% endblocktrans %}{{ forloop.counter0 }} 
                 {% endif %}

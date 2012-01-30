@@ -2,13 +2,16 @@ import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
+from django.db import connection
 from datetime import datetime, timedelta
+from datetime import date
 from decimal import Decimal
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import Registration, Event, RegistrationConfiguration
-from events.models import Registrant, RegConfPricing
+from events.models import Registrant, RegConfPricing, CustomRegForm
+from events.forms import FormForCustomRegForm
 from user_groups.models import Group
 from perms.utils import is_member, is_admin
 from discounts.models import Discount, DiscountUse
@@ -17,6 +20,72 @@ try:
     from notification import models as notification
 except:
     notification = None
+    
+def get_ACRF_queryset(event=None):
+    """Get the queryset for the available custom registration forms to use for this event
+        (include all custom reg forms that are not used by any other events)
+    """
+    rc_reg_form_ids = []
+    rcp_reg_form_ids = []
+    if event:
+        reg_conf = event.registration_configuration
+        regconfpricings = event.registration_configuration.regconfpricing_set.all()
+        if reg_conf and reg_conf.reg_form:
+            rc_reg_form_ids.append(str(reg_conf.reg_form.id))
+        if regconfpricings:
+            for conf_pricing in regconfpricings:
+                if conf_pricing.reg_form:
+                    rcp_reg_form_ids.append(str(conf_pricing.reg_form.id))
+    
+    sql = """SELECT id 
+            FROM events_customregform 
+            WHERE id not in (SELECT reg_form_id 
+                        FROM events_registrationconfiguration WHERE reg_form_id>0 %s) 
+            AND id not in (SELECT reg_form_id From events_regconfpricing WHERE reg_form_id>0 %s)
+        """
+    if rc_reg_form_ids:
+        rc = "AND reg_form_id NOT IN (%s)" % ', '.join(rc_reg_form_ids)
+    else:
+        rc = ''
+    if rcp_reg_form_ids:
+        rcp = "AND reg_form_id NOT IN (%s)" % ', '.join(rcp_reg_form_ids)
+    else:
+        rcp = ''
+    sql = sql % (rc, rcp)
+    
+    
+    # need to return a queryset not raw queryset
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    ids_list = [row[0] for row in rows]
+    
+    queryset = CustomRegForm.objects.filter(id__in=ids_list)
+
+    return queryset
+
+def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
+    for row, row_data in enumerate(rows_list):
+        for col, val in enumerate(row_data):
+            # styles the date/time fields
+            if isinstance(val, datetime):
+                style = styles['datetime_style']
+            elif isinstance(val, date):
+                style = styles['date_style']
+            else:
+                style = styles['default_style']
+                
+            # style the invoice balance column
+            if col == balance_index:
+                balance = val
+                if not val:
+                    balance = 0
+                if isinstance(balance,Decimal) and balance > 0:
+                    style = ['stylesbalance_owed_style']
+
+            sheet.write(row+start, col, val, style=style) 
+
+
 
 def get_ievent(request, d, event_id):
     from django.conf import settings
@@ -480,6 +549,7 @@ def add_registration(*args, **kwargs):
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
     discount = kwargs.get('discount', None)
+    custom_reg_form = kwargs.get('custom_reg_form', None)
 
     reg8n_attrs = {
         "event": event,
@@ -506,7 +576,8 @@ def add_registration(*args, **kwargs):
                 price,
                 amount
             ]
-            registrant = create_registrant_from_form(*registrant_args)
+            registrant = create_registrant_from_form(*registrant_args, 
+                                                     custom_reg_form=custom_reg_form)
             total_amount += registrant.amount 
             
             count += 1
@@ -542,30 +613,36 @@ def create_registrant_from_form(*args, **kwargs):
     registrant = Registrant()
     registrant.registration = reg8n
     registrant.amount = amount
-
-    registrant.first_name = form.cleaned_data.get('first_name', '')
-    registrant.last_name = form.cleaned_data.get('last_name', '')
-    registrant.email = form.cleaned_data.get('email', '')
-    registrant.phone = form.cleaned_data.get('phone', '')
-    registrant.company_name = form.cleaned_data.get('company_name', '')
-
     
-    users = User.objects.filter(email=registrant.email)
-    if users:
-        registrant.user = users[0]
-        try:
-            user_profile = registrant.user.get_profile()
-        except:
-             user_profile = None
-        if user_profile:
-            registrant.mail_name = user_profile.display_name
-            registrant.address = user_profile.address
-            registrant.city = user_profile.city
-            registrant.state = user_profile.state
-            registrant.zip = user_profile.zipcode
-            registrant.country = user_profile.country
-            registrant.company_name = user_profile.company
-            registrant.position_title = user_profile.position_title
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+    
+    if custom_reg_form and isinstance(form, FormForCustomRegForm):
+        entry = form.save(event)
+        registrant.custom_reg_form_entry = entry
+    else:
+        registrant.first_name = form.cleaned_data.get('first_name', '')
+        registrant.last_name = form.cleaned_data.get('last_name', '')
+        registrant.email = form.cleaned_data.get('email', '')
+        registrant.phone = form.cleaned_data.get('phone', '')
+        registrant.company_name = form.cleaned_data.get('company_name', '')
+    
+        
+        users = User.objects.filter(email=registrant.email)
+        if users:
+            registrant.user = users[0]
+            try:
+                user_profile = registrant.user.get_profile()
+            except:
+                user_profile = None
+            if user_profile:
+                registrant.mail_name = user_profile.display_name
+                registrant.address = user_profile.address
+                registrant.city = user_profile.city
+                registrant.state = user_profile.state
+                registrant.zip = user_profile.zipcode
+                registrant.country = user_profile.country
+                registrant.company_name = user_profile.company
+                registrant.position_title = user_profile.position_title
             
     registrant.save()
     return registrant
@@ -947,3 +1024,17 @@ def get_active_days(event):
         day_list.append((start_dt, next_dt))
     
     return day_list
+
+def get_custom_registrants_initials(entries, **kwargs):
+    initials = []
+    for entry in entries:
+        fields_d = {}
+        field_entries = entry.field_entries.all()
+        for field_entry in field_entries:
+            fields_d['field_%d' % field_entry.field.id] = field_entry.value
+        initials.append(fields_d)
+    return initials
+
+
+                        
+        
