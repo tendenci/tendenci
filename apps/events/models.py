@@ -800,7 +800,7 @@ class AddonOption(models.Model):
         return self.addon.title + ": " + self.title
     
     def field_name(self):
-        return "%s_%s" % (self.addon.pk, self.title.lower().replace(' ', ''))
+        return "%s_%s" % (self.addon.pk, self.title.lower().replace(' ', '').replace('-', ''))
     
     def choice_list(self):
         choices = []
