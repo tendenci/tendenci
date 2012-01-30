@@ -62,6 +62,21 @@ function addAddon(prefix, addon, container){
 //ADDON CONTROLS
 $(document).ready(function(){
     var container = $('.addon-forms')
+    container.find('.addon-form').each(function(){
+        var addon_pk = $(this).find('.addon-input').val()
+        $(this).find(".form-field").children().children().children().each(function() {
+            if(!$(this).hasClass('addon-input')){
+                var field_name = $(this).attr("name");
+                if(field_name){
+                    var option_name = field_name.split("-")[2]
+                    if(!(option_name[0] == addon_pk)){
+                        $(this).parent().parent().hide();
+                    }
+                }
+            }
+        });
+    });
+    
     $("#add-addons-button").click(function(){
         var addon = $('input:radio[name=add-addons]:checked');
         var addon_d = {};
