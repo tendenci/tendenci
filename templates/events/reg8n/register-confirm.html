@@ -167,13 +167,8 @@
     		<tr>
     			<td>
     				<span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-					{% if registrant.first_name or registrant.last_name %}
-		                {% if registrant.first_name %}
-		                    {{ registrant.first_name }}
-		                {% endif %}
-		                {%  if registrant.last_name %}
-		                    {{ registrant.last_name }}
-		                {% endif %}
+					{% if registrant.name %}
+		                    {{ registrant.name }}
 		            {% else %}
 		            	{% trans "Guest #" %}{{ forloop.counter0 }}
 		            {% endif %}
