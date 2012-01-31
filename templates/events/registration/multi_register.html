@@ -272,24 +272,7 @@
                             </div>
                         {% endif %}
                         
-                        {% if reg_form.free_event %}
-                            {{ reg_form.payment_method }}
-                        {% else %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.payment_method.errors }}</div>
-                                <div class="required">{% trans "Payment Method" %}</div>
-                                <div class="field">{{ reg_form.payment_method }}</div>
-                            </div>
-                        {% endif %}
                         
-                        {% if reg_form.captcha %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.captcha.errors }}</div>
-                                <div class="required">{% trans "Type the Code Below" %}</div>
-                                <div class="field">{{ reg_form.captcha }}</div>
-                            </div>
-                        {% endif %}
-                        <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
                     </div>
 
     				{# price list #}
@@ -425,7 +408,23 @@
             </div>
             
             <div class="clear"></div>
-            <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register & Pay' %}" />
+            {% if reg_form.free_event %}
+                {{ reg_form.payment_method }}
+            {% else %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.payment_method.errors }}</div>
+                    <div class="required">{% trans "Payment Method" %}</div>
+                    <div class="field">{{ reg_form.payment_method }}</div>
+                </div>
+            {% endif %}
+            {% if reg_form.captcha %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.captcha.errors }}</div>
+                    <div class="required">{% trans "Type the Code Below" %}</div>
+                    <div class="field">{{ reg_form.captcha }}</div>
+                </div>
+            {% endif %}
+            <input type="submit" name="submit" class="register-submit registration-green-button" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
             
             <div class="clear"></div>
         </div>
