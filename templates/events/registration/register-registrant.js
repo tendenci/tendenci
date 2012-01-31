@@ -12,19 +12,10 @@ function deleteRegistrant(ele, prefix) {
     
     // update the total amount and remove the reg price entry
     var reg_id = attr_id.split('_')[1];
-    var registrant_summary_entry = $("tr[id=price_registrant_" + reg_id + "]");
+    var registrant_summary_entry = $("tr[id=summary-item_" + reg_id + "]");
     var registrant_price = $(registrant_summary_entry).find(".reg-price").html();
     
-    var total_amount = $("#total-amount").html();
-    total_amount = (parseFloat(total_amount) - parseFloat(registrant_price)).toFixed(2);
-    
-    $(registrant_summary_entry).remove();
-    
-    $("#total-amount").html(total_amount);
-    $("span.summary-total-amount").html(total_amount);
-    $("#original-price").html(total_amount);
-    $('#discount-amount').html(0);
-    $('#final-amount').html(total_amount);
+    removeSummaryEntry(prefix, reg_id);
 }
 
 
@@ -59,40 +50,6 @@ function updateFormHeader(this_form, prefix, idx, hide_form){
         }
     };
     
-}
-
-function updateSummary(this_form, prefix, idx){
-    // change the serial number in the summary
-    var price_item = $('#summary-price').find('tr')[idx];
-    if (price_item){
-        if (price_item.id){
-            price_item.id = 'price_registrant_' + idx;
-            var item_counter = $(price_item).find('.item-counter');
-            if (item_counter) {$(item_counter).html(idx+1);}
-        }
-    }   
-}
-
-function addSummaryEntry(this_form, prefix, idx, price){
-    var row = $('#price_registrant-hidden').clone(true);
-    $(row).attr('style', '');
-    $(row).find('.item-counter').html(idx+1);
-    $(row).find('.reg-price').html(price);
-    
-    var replacement = 'price_registrant_' + idx;
-    $(row).attr('id', replacement);
-    
-    // append entry to summary box
-    $('#summary-price').append(row);
-    
-    // update the total
-    var total_amount = $("#total-amount").html();
-    total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
-    $("#total-amount").html(total_amount);
-    $("span.summary-total-amount").html(total_amount);
-    $("#original-price").html(total_amount);
-    $('#discount-amount').html(0);
-    $('#final-amount').html(total_amount);
 }
 
 function addRegistrant(prefix, pricing, initial_data, set_container, hide_form){
@@ -140,7 +97,7 @@ function addRegistrant(prefix, pricing, initial_data, set_container, hide_form){
     
     updateFormHeader(row, prefix, formCount, hide_form);
     
-    addSummaryEntry(row, prefix, formCount, pricing['price']);
+    updateSummaryEntry(prefix, formCount, pricing['price']);
     
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     
