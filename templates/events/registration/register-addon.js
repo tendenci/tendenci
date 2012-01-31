@@ -56,6 +56,8 @@ function addAddon(prefix, addon, container){
     
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     
+    updateSummaryEntry(prefix, formCount, addon['price']);
+    
     return false;
 }
 
@@ -95,3 +97,5 @@ $(document).ready(function(){
         }
     });
 });
+
+

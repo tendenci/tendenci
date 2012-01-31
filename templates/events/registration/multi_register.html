@@ -125,11 +125,20 @@
     				{# price list #}
     				<table id="summary-price">
     					{% for form in registrant.forms %}
-                        <tr id="price_registrant_{{ forloop.counter0 }}">
-                            <td width="50%">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                        <tr id="summary-registrant-{{ forloop.counter0 }}">
+                            <td width="50%" class="item-label">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="reg-price">{{ form.get_price }}</span>
+                                <span class="item-price">{{ form.get_price }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% for form in addon.forms %}
+                        <tr id="summary-addon-{{ forloop.counter0 }}">
+                            <td width="50%">{% trans "Addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                            <td width="50%" align="right">
+                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                <span class="price"></span>
                             </td>
                         </tr>
                         {% endfor %}
