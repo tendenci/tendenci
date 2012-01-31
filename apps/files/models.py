@@ -1,5 +1,5 @@
 import os
-import mimetype
+import mimetypes
 import uuid
 import Image
 import re
