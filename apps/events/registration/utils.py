@@ -8,6 +8,7 @@ from site_settings.utils import get_setting
 from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.models import Event, RegConfPricing, Registration, Registrant
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+from events.forms import FormForCustomRegForm
 
 try:
     from notification import models as notification
@@ -137,12 +138,14 @@ def send_registrant_email(reg8n, self_reg8n):
             True, # save notice in db
         )
         
-def create_registrant(form, event, reg8n):
+def create_registrant(form, event, reg8n, **kwargs):
     """
     Create the registrant.
     form is a RegistrantForm where the registrant's data is.
     reg8n is the Registration instance to associate the registrant with.
     """
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+    
     price = form.get_price()
     
     # initialize the registrant instance and data
@@ -150,39 +153,46 @@ def create_registrant(form, event, reg8n):
     registrant.registration = reg8n
     registrant.amount = price
     registrant.pricing = form.cleaned_data['pricing']
-    registrant.first_name = form.cleaned_data.get('first_name', '')
-    registrant.last_name = form.cleaned_data.get('last_name', '')
-    registrant.email = form.cleaned_data.get('email', '')
-    registrant.phone = form.cleaned_data.get('phone', '')
-    registrant.company_name = form.cleaned_data.get('company_name', '')
     
-    # associate the registrant with a user of the form
-    user = form.get_user()
-    if not user.is_anonymous():
-        registrant.user = user
-        try:
-            user_profile = registrant.user.get_profile()
-        except:
-            user_profile = None
-        if user_profile:
-            registrant.mail_name = user_profile.display_name
-            registrant.address = user_profile.address
-            registrant.city = user_profile.city
-            registrant.state = user_profile.state
-            registrant.zip = user_profile.zipcode
-            registrant.country = user_profile.country
-            registrant.company_name = user_profile.company
-            registrant.position_title = user_profile.position_title
-            
+    if custom_reg_form and isinstance(form, FormForCustomRegForm):
+        entry = form.save(event)
+        registrant.custom_reg_form_entry = entry
+    else:
+        registrant.first_name = form.cleaned_data.get('first_name', '')
+        registrant.last_name = form.cleaned_data.get('last_name', '')
+        registrant.email = form.cleaned_data.get('email', '')
+        registrant.phone = form.cleaned_data.get('phone', '')
+        registrant.company_name = form.cleaned_data.get('company_name', '')
+        
+        # associate the registrant with a user of the form
+        user = form.get_user()
+        if not user.is_anonymous():
+            registrant.user = user
+            try:
+                user_profile = registrant.user.get_profile()
+            except:
+                user_profile = None
+            if user_profile:
+                registrant.mail_name = user_profile.display_name
+                registrant.address = user_profile.address
+                registrant.city = user_profile.city
+                registrant.state = user_profile.state
+                registrant.zip = user_profile.zipcode
+                registrant.country = user_profile.country
+                registrant.company_name = user_profile.company
+                registrant.position_title = user_profile.position_title
+                
     registrant.save()
     
     return registrant
     
-def process_registration(reg_form, reg_formset):
+def process_registration(reg_form, reg_formset, **kwargs):
     """
     Create the registrants and the invoice for payment.
     reg_form and reg_formset MUST be validated first
     """
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+    
     # init variables
     user = reg_form.get_user()
     event = reg_form.get_event()
@@ -224,7 +234,7 @@ def process_registration(reg_form, reg_formset):
             event,
             reg8n,
         ]
-        registrant = create_registrant(*registrant_args)
+        registrant = create_registrant(*registrant_args, custom_reg_form=custom_reg_form)
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)

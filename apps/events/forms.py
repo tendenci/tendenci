@@ -2,6 +2,7 @@ import re
 import imghdr
 from os.path import splitext
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django import forms
 from django.forms.widgets import RadioSelect
@@ -10,6 +11,7 @@ from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseModelFormSet
 from django.forms.util import ErrorList
 from django.utils.importlib import import_module
+from django.contrib.auth.models import User, AnonymousUser
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
@@ -27,6 +29,8 @@ from emails.models import Email
 from form_utils.forms import BetterModelForm
 from discounts.models import Discount
 from events.settings import FIELD_MAX_LENGTH
+from site_settings.utils import get_setting
+from memberships.models import Membership
 
 from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
 from widgets import UseCustomRegWidget
@@ -74,6 +78,9 @@ class FormForCustomRegForm(forms.ModelForm):
         self.entry = kwargs.pop('entry', None)
         self.form_index = kwargs.pop('form_index', None)
         self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
+        
+        # for anonymousmemberpricing
+        self.pricings = kwargs.pop('pricings', None)
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -109,6 +116,114 @@ class FormForCustomRegForm(forms.ModelForm):
         if self.form_index and self.form_index > 0:
             for key in self.fields.keys():
                 self.fields[key].required = False
+                
+        # for anonymousmemberpricing
+        # --------------------------
+        if self.pricings:   
+            # initialize pricing options and reg_set field
+            self.fields['pricing'] = forms.ModelChoiceField(
+                                                            widget=forms.HiddenInput(
+                                                        attrs={'class': 'registrant-pricing'}), 
+                                                            queryset=self.pricings)
+            
+        allow_memberid = get_setting('module', 'events', 'memberidpricing')
+        if allow_memberid:
+            # add the memberid field
+            self.fields['memberid'] = forms.CharField(label=_("Member ID"), 
+                                                      max_length=50, required=False
+                                                      )
+            self.fields['memberid'].widget = forms.TextInput(
+                                                attrs={'class': 'registrant-memberid'}
+                                                             )
+            # add class attr registrant-email to the email field
+            for field in self.form_fields:
+                if field.map_to_field == "email":
+                    self.email_key = "field_%s" % field.id
+                    self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
+                    break 
+                
+        
+        # initialize internal variables
+        self.price = Decimal('0.00')
+        self.saved_data = {}     
+        # -------------------------
+     
+    # for anonymousmemberpricing   
+    def set_price(self, price):
+        self.price = price
+    
+    # for anonymousmemberpricing    
+    def get_price(self):
+        return self.price
+    
+    # for anonymousmemberpricing    
+    def get_form_label(self):
+        return self.form_index + 1 
+    
+    # for anonymousmemberpricing
+    def get_user(self):
+        """
+        Gets the user from memberid or email.
+        Return AnonymousUser if both are unavailable.
+        """
+        user = AnonymousUser()
+        memberid = self.saved_data.get('memberid', None)
+        if hasattr(self, 'email_key'):
+            email = self.saved_data.get(self.email_key, None)
+        else:
+            email = None
+        
+        if memberid:# memberid takes priority over email
+            memberships = Membership.objects.filter(member_number=memberid)
+            if memberships:
+                user = memberships[0].user
+        elif email:
+            users = User.objects.filter(email=email)
+            if users:
+                user = users[0]
+                
+        return user
+    
+    # for anonymousmemberpricing
+    def _clean_fields(self):
+        for name, field in self.fields.items():
+            # value_from_datadict() gets the data from the data dictionaries.
+            # Each widget type knows how to retrieve its own data, because some
+            # widgets split data over several HTML fields.
+            value = field.widget.value_from_datadict(self.data, self.files, self.add_prefix(name))
+            try:
+                if isinstance(field, forms.FileField):
+                    initial = self.initial.get(name, field.initial)
+                    value = field.clean(value, initial)
+                else:
+                    value = field.clean(value)
+                self.cleaned_data[name] = value
+                if hasattr(self, 'clean_%s' % name):
+                    value = getattr(self, 'clean_%s' % name)()
+                    self.cleaned_data[name] = value
+            except forms.ValidationError, e:
+                self._errors[name] = self.error_class(e.messages)
+                if name in self.cleaned_data:
+                    del self.cleaned_data[name]
+            # save invalid or valid data into saved_data
+            self.saved_data[name] = value
+            
+    def clean(self):
+        self._clean_fields()
+        data = self.cleaned_data
+    
+        if self.pricings:  
+            pricing = self.cleaned_data['pricing']
+            user = self.get_user()
+            if not (user.is_anonymous() or pricing.allow_anonymous):
+                already_registered = Registrant.objects.filter(user=user)
+                if already_registered:
+                    if not is_admin(user):
+                        raise forms.ValidationError('%s is already registered for this event' % user)
+            
+        return data
+    
+        
                 
     def save(self, event, **kwargs):
         """
