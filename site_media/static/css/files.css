@@ -117,3 +117,55 @@
 	vertical-align: top;
 }
 
+/* Most Viewed */
+.t.most-viewed table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.t.most-viewed th {
+	text-align: left;
+	font-weight: normal;
+	padding-bottom: 3px;
+	border-bottom: 1px solid silver;
+}
+
+.t.most-viewed td {
+	vertical-align: middle;
+}
+
+.t.most-viewed .files-wrap .file-wrap {
+	border: none;
+	border-bottom: 1px solid #EEE;
+}
+
+.t.most-viewed td.clicks {
+	text-align: center;
+}
+.t.most-viewed td.clicks,
+.t.most-viewed td.change,
+.t.most-viewed td.delete {
+	padding: 5px;
+}
+.t.most-viewed td.file-type {
+	padding: 5px 0;
+}
+.t.most-viewed td.file-name {
+	
+}
+.t.most-viewed td.change,
+.t.most-viewed td.delete {
+	font-size: .8em;
+}
+
+.t.most-viewed td a {
+	display: block;
+}
+.t.most-viewed td .create-dt {
+	margin-top: 3px;
+	font-size: .8em;
+}
+
+.t.most-viewed #results {
+	font-size: .9em;
+	margin-bottom: 20px;
+}
