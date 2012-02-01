@@ -11,7 +11,7 @@
 		background-color: #FEFBF3;
 		margin: 1em 0;
 		padding: 1em;
-		width: 90%;	
+		/*width: 90%;	*/
 	}
 	.reg-form-list-links{
 		padding-left: 1em;
@@ -76,7 +76,7 @@
     		
     		{% if reg_conf.use_custom_reg_form %}
     			{% if reg_conf.bind_reg_form_to_conf_only  %}
-    				<p class="reg-form-list-notes">This event uses one custom registration form.</p>
+    				<div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">This event uses one custom registration form.</div>
     				<div class="reg-form-list-links">
     					<div class="reg-form-title">{{ reg_conf.reg_form.name }} </div>
     					<div class="reg-form-btns">
@@ -84,10 +84,16 @@
     					<a href="{% url admin:events_customregform_change reg_conf.reg_form.id %}" target="_blank" class="edit-btn">Edit</a></div>
     					</div>	
     			{% else %}
-    				<p class="reg-form-list-notes">This event uses a separate custom registrations form for each pricing.</p>
+    				<div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
+    					This event uses a separate custom registrations form for each pricing.
+    					<div class="alert-actions">
+							<a class="btn small" href="{% url event event.id %}">View Event</a>
+							<a class="btn small" href="{% url event event.id %}">Edit Event</a>
+						</div>
+    					</div>
     				{% for price in regconfpricings %}
     				<div class="reg-form-list-links">
-    					<div class="reg-form-title">{{ price.reg_form.name }} (ID: {{ price.reg_form.id }}) </div>
+    					<div class="reg-form-title">Pricing #{{ forloop.counter }}: {{ price.reg_form.name }} (ID: {{ price.reg_form.id }}) </div>
     					<div class="reg-price">(For <strong>{{ price.price|format_currency }}</strong> {{ price.title }})</div>
     					<div class="reg-form-btns">
     					<a href="{% url event.custom_reg_form_preview price.reg_form.id %}" target="_blank" class="preview-btn">Preview</a> 

@@ -25,6 +25,7 @@ from events.registration.utils import process_registration, send_registrant_emai
 from events.registration.utils import get_pricings_for_list
 from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
+from events.forms import FormForCustomRegForm
 
 def ajax_user(request, event_id):
     """Ajax query for user validation
@@ -178,9 +179,23 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     active_pricings = get_active_pricings(event)
     event_pricings = event.registration_configuration.regconfpricing_set.all()
     
+    # check if use a custom reg form
+    custom_reg_form = None
+    reg_conf = event.registration_configuration
+    if reg_conf.use_custom_reg_form:
+        if reg_conf.bind_reg_form_to_conf_only:
+            custom_reg_form = reg_conf.reg_form
+            
+    #custom_reg_form = None
+                               
+    if custom_reg_form:
+        RF = FormForCustomRegForm
+    else:
+        RF = RegistrantForm
+
     # start the form set factory    
     RegistrantFormSet = formset_factory(
-        RegistrantForm,
+        RF,
         formset=RegistrantBaseFormSet,
         can_delete=True,
         extra=0,
@@ -188,12 +203,17 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     
     if request.method == "POST":
         # process the submitted forms
+        params = {'prefix': 'registrant',
+                 'event': event,
+                 'extra_params': {
+                                  'pricings':event_pricings,
+                                  }
+                  }
+        if custom_reg_form:
+            params['extra_params'].update({"custom_reg_form": custom_reg_form,
+                                           'event': event}) 
         reg_formset = RegistrantFormSet(request.POST,
-                            prefix='registrant',
-                            event = event,
-                            extra_params={
-                                'pricings':event_pricings,
-                            })
+                            **params)
         reg_form = RegistrationForm(event, request.user, request.POST,
                             reg_count = len(reg_formset.forms))
         # validate the form and formset
@@ -201,7 +221,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             
             # process the registration
             # this will create the registrants and apply the discount
-            reg8n = process_registration(reg_form, reg_formset)
+            reg8n = process_registration(reg_form, reg_formset, custom_reg_form=custom_reg_form)
             
             self_reg8n = get_setting('module', 'users', 'selfregistration')
             is_credit_card_payment = (reg8n.payment_method and 
@@ -235,20 +255,47 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             # redirect to confirmation
             return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
     else:
+        params = {'prefix': 'registrant',
+                    'event': event,
+                    'extra_params': {
+                        'pricings':event_pricings,
+                    }
+                  }
+        if custom_reg_form:
+            params['extra_params'].update({"custom_reg_form": custom_reg_form,
+                                           'event': event}) 
         # intialize empty forms
-        reg_formset = RegistrantFormSet(
-                            prefix='registrant',
-                            event = event,
-                            extra_params={
-                                'pricings':event_pricings
-                            })
+        reg_formset = RegistrantFormSet(**params)
         reg_form = RegistrationForm(event, request.user)
     
     sets = reg_formset.get_sets()
     
+    # build our hidden form dynamically
+    hidden_form = None
+    if custom_reg_form:
+        params = {'prefix': 'registrant',
+                  'event': event,
+                  'extra_params': {
+                        'pricings':event_pricings,
+                        'custom_reg_form': custom_reg_form,
+                        'event': event
+                    }
+                  }
+        FormSet = formset_factory(
+            FormForCustomRegForm,
+            formset=RegistrantBaseFormSet,
+            can_delete=True,
+            extra=1,
+        )
+        formset = FormSet(**params)
+        hidden_form = formset.forms[0]
+        
+    
     return render_to_response(template_name, {
             'event':event,
             'reg_form':reg_form,
+            'custom_reg_form': custom_reg_form,
+            'hidden_form': hidden_form,
             'registrant': reg_formset,
             'sets': sets,
             'pricings':active_pricings,
