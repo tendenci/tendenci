@@ -12,6 +12,7 @@ from base.http import Http403
 from files.models import File
 from files.utils import get_image
 from files.forms import FileForm
+from perms.decorators import admin_required
 from perms.object_perms import ObjectPermission
 from perms.utils import update_perms_and_save, has_perm
 from event_logs.models import EventLog
@@ -19,12 +20,12 @@ from files.cache import FILE_IMAGE_PRE_KEY
 
 
 def index(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/view.html"):
+    from files.search_indexes import FileIndex
     if not id: return HttpResponseRedirect(reverse('file.search'))
 
-    try:
-        quality=int(quality)
-    except:
-        pass
+    # if string and digit convert to integer
+    if isinstance(quality, unicode) and quality.isdigit():
+        quality = int(quality)
 
     file = get_object_or_404(File, pk=id)
     if not has_perm(request.user, 'files.view_file', file):
@@ -43,9 +44,12 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
     try:
         data = file.file.read()
         file.file.close()
-    except: raise Http404
+    except:
+        raise Http404
 
+    # log downloads and views
     if download:
+        # if filew download
         attachment = 'attachment;'
         log_defaults = {
             'event_id' : 185000,
@@ -58,20 +62,27 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         EventLog.objects.log(**log_defaults)
     else:
         attachment = ''
+
         if file.type() != 'image':
-            log_defaults = {
+
+            # log file view
+            EventLog.objects.log(**{
                 'event_id' : 186000,
                 'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
                 'description': '%s viewed' % file._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': file,
-            }
-            EventLog.objects.log(**log_defaults)
+            })
+
+    # update index
+    if file.type() != 'image':
+        file_index = FileIndex(File)
+        file_index.update_object(file)
 
     # if image size specified
-    if file.type()=='image' and size: # if size specified
-        size= [int(s) for s in size.split('x')] # convert to list
+    if file.type()=='image' and size:  # if size specified
+        size= [int(s) for s in size.split('x')]  # convert to list
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
@@ -306,3 +317,18 @@ def tinymce_upload_template(request, id, template_name="files/templates/tinymce_
     file = get_object_or_404(File, pk=id)
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
+
+@login_required
+@admin_required
+def report_most_viewed(request, template_name="files/reports/most_viewed.html"):
+    """
+    Displays a table of files sorted by views/downloads.
+    """
+    query = request.GET.get('q')
+    files = File.objects.search(query, user=request.user)
+
+    if not query:
+        files = files.order_by('-clicks')
+
+    return render_to_response(template_name, {'files':files}, context_instance=RequestContext(request))
+
