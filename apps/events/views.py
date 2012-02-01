@@ -1122,7 +1122,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         raise Http403
     
     custom_reg_form = None
-    reg_conf = reg8n.reg_conf_price.reg_conf
+    reg_conf = reg8n.event.registration_configuration
+    #reg_conf = reg8n.reg_conf_price.reg_conf
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form

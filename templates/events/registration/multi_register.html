@@ -325,6 +325,23 @@
 							<span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">{{ form.get_form_label }}</span>:
 						</div>
 						<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+							
+							{% if custom_reg_form %}
+							{% for field in form %}
+							{% if field.label != 'Delete' %}
+								<div class="form-field">
+									<div class="error">{{ field.errors }}</div>
+									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+									<div class="field">{{ field }}</div>
+									{% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>   
+				                    {% endif %}
+								</div>
+							{% endif %}
+							{% endfor %}
+							
+							{% else %}
+							
 							{% if form.first_name %}
 							<div class="form-field">
 								<div class="error">{{ form.first_name.errors }}</div>
@@ -372,6 +389,9 @@
                                 <div class="field">{{ form.pricing }}</div>
                             </div>
                             {% endif %}
+                            
+                            
+                           {% endif %}
 						</div>
 					</div>
 				{% endfor %}
@@ -450,6 +470,30 @@
                 </div>
                 <div class="registrant-notice"></div>
                 <div class="odd-registrant">
+                	
+                	{% if custom_reg_form %}
+					{% for field in hidden_form %}
+					{% if field.label != 'Delete' %}
+						<div class="form-field">
+							{% if field.name != 'pricing' %}
+								<div class="error">{{ field.errors }}</div>
+								<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+								<div class="field">{{ field }}</div>
+								{% if field.help_text %}
+			                    <div class="help-text">{{ field.help_text }}</div>   
+			                    {% endif %}
+		                    {% else %}
+		                    	<div class="field">{{ field }}</div>
+		                    {% endif %}
+						</div>
+					{% endif %}
+					{% endfor %}
+					
+					{% else %}
+        	
+                	
+                	
+                	
                     <div class="form-field">
                         <div class="error"></div>
                         <div class="label required">{% trans "First Name" %}</div>
@@ -499,6 +543,9 @@
                             <input class="registrant-pricing" type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
                         </div>
                     </div>
+                    
+                   {% endif %}
+                    
                 </div>
             </div>
         </div>

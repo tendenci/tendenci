@@ -72,8 +72,8 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         if regconfpricing:
             event = regconfpricing[0].reg_conf.event
         if event:
-            return """<a href="%s">%s</a>
-            """ % (reverse('event', args=[event.id]), event.title)
+            return """<a href="%s">%s(ID:%d)</a>
+            """ % (reverse('event', args=[event.id]), event.title, event.id)
         return ''
         
     for_event.allow_tags = True
