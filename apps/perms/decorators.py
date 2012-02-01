@@ -55,4 +55,18 @@ class PageSecurityCheck(object):
                     return HttpResponseRedirect('%s?%s=%s' % tup)
                     #return f(request, *args, **kwargs)
         return check_security
-    
+
+def admin_required(view_method):
+    """
+    Checks for admin permissions before
+    returning method, else raises 403 exception.
+    """
+    def decorator(request, *args, **kwargs):
+        admin = is_admin(request.user)
+
+        if not admin:
+            raise Http403
+        
+        return view_method(request, *args, **kwargs)
+
+    return decorator
