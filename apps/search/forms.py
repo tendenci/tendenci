@@ -23,7 +23,9 @@ apps_not_to_search = [
     'event_log',
     'invoice',
     'redirect',
+    'user',
 ]
+
 registered_apps = registry_site.get_registered_apps()
 registered_apps_names = [app['model']._meta.module_name for app in registered_apps \
                         if app['verbose_name'].lower() not in apps_not_to_search]
@@ -101,7 +103,7 @@ class SearchForm(forms.Form):
                             'status_detail':'active',
                         })
                         sec2_query = Q(**{
-                            'who_can_view__exact':user.username
+                            'owner__exact':user.username
                         })
                         query = reduce(operator.or_, [anon_query, user_query])
                         query = reduce(operator.and_, [sec1_query, query])
@@ -129,7 +131,7 @@ class SearchForm(forms.Form):
                             'allow_anonymous_view':True,
                         })
                         sec2_query = Q(**{
-                            'who_can_view__exact':user.username
+                            'owner__exact':user.username
                         })
                         query = reduce(operator.or_, [sec1_query, sec2_query])
                         sqs = sqs.filter(query)
@@ -170,6 +172,20 @@ class FacetedSearchForm(SearchForm):
 class ModelSearchForm(SearchForm):
     def __init__(self, *args, **kwargs):
         super(ModelSearchForm, self).__init__(*args, **kwargs)
+
+        # Check to see if users should be included in global search
+        include_users = False
+
+        if is_admin(kwargs['user']) or get_setting('module', 'users', 'allowanonymoususersearchuser') \
+        or (kwargs['user'].is_authenticated() and get_setting('module', 'users', 'allowusersearch')):
+            include_users = True
+
+        if include_users:
+            for app in registered_apps:
+                if app['verbose_name'].lower() == 'user':
+                    registered_apps_models.append(app['model'])
+                    registered_apps_names.append(app['model']._meta.module_name)
+
         self.models = registered_apps_models
         self.fields['models'] = forms.MultipleChoiceField(choices=model_choices(), required=False, label=_('Search In'), widget=forms.CheckboxSelectMultiple)
 
