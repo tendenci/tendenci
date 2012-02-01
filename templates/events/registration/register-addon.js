@@ -1,3 +1,27 @@
+//delete registrant js
+function deleteAddon(ele, prefix) {
+    var form = $(ele);
+    var attr_id = $(form).attr("id");
+    // remove the addon form
+    $(form).remove();
+    // update the TOTAL_FORMS
+    var forms = $(".addon-form");
+    $("#id_" + prefix + "-TOTAL_FORMS").val(forms.length);
+    var reg_id = attr_id.split('_')[1];
+    removeSummaryEntry(prefix, reg_id);
+    
+    for(i=0;i<forms.length;i++){
+        var replacement = prefix + '_' + i
+        $(forms[i]).attr('id',replacement);
+        $(forms[i]).find(".form-field").children().each(function() {
+            updateFormIndex($(this), prefix, i);
+        });
+        $(forms[i]).find(".form-field").children().children().children().each(function() {
+            updateFormIndex($(this), prefix, i);
+        });
+    }
+}
+
 //formset index update
 function updateFormIndex(e, prefix, idx){
     var id_regex = new RegExp('(' + prefix + '-\\d+)');
@@ -51,12 +75,17 @@ function addAddon(prefix, addon, container){
         }
     });
     
+    var addon_choices = $("#addon-choices");
+    var addon = $(row).find('.addon-input');
+    var choice = $("input[value="+addon.val() + ']', addon_choices);
+    addon.parent().parent().find('label').html(choice.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
+    
     // insert as last element into form list
     $(container).append(row);
     
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     
-    updateSummaryEntry(prefix, formCount, addon['price']);
+    updateSummaryEntry(prefix, formCount, choice.attr('price'));
     
     return false;
 }
@@ -95,6 +124,24 @@ $(document).ready(function(){
         } else {
             alert("Please select an addon first.");
         }
+    });
+    
+    var addon_inputs = $(".addon-input");
+    var addon_choices = $("#addon-choices");
+    for(i=0;i<addon_inputs.length;i++){
+        var addon = $(addon_inputs[i]);
+        var choice = $("input[value="+addon.val() + ']', addon_choices);
+        addon.parent().parent().find('label').html(choice.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
+        addon.hide();
+    }
+    
+     $('.delete-addon').click(function(){
+        var delete_confirm = confirm('Are you sure you want to delete this addon?');   // confirm
+        if(delete_confirm) {
+            var form = $(this).parent();
+            deleteAddon(form, 'addon');
+        }
+        return false;   // cancel
     });
 });
 

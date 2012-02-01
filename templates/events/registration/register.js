@@ -93,16 +93,17 @@ function getPricingList(){
 function updateSummaryEntry(prefix, idx, price){
     // update the summary entry in the summary table
     // insert it into the table if it does not exist yet
-    ver = entry_id = '#summary-'+prefix+'-'+idx
+    var entry_id = '#summary-'+prefix+'-'+idx
     var summary_table = $('#summary-price');
     var entry = $(entry_id);
     if(entry.length>0){
         entry.find('.price').html(price);
     }else{
         var row = $('#summary-item-hidden').clone(true);
+        row.addClass('summary-'+prefix);
         row.attr('id', 'summary-'+prefix+'-'+idx);
         row.find('.item-price').html(price);
-        row.find('.item-label').html(prefix + " #" + idx);
+        row.find('.item-label').html(prefix + " #" + (idx+1));
         summary_table.append(row);
     }
     updateSummaryTotal();
@@ -111,6 +112,7 @@ function updateSummaryEntry(prefix, idx, price){
 function removeSummaryEntry(prefix, idx){
     var entry = $('#summary-'+prefix+'-'+idx);
     entry.remove();
+    updateSummaryIndex(prefix);
     updateSummaryTotal();
 }
 
@@ -127,99 +129,17 @@ function updateSummaryTotal(){
     $('#final-amount').html(total_amount.toFixed(2));
 }
 
-$(document).ready(function(){
-    // REGISTRANT CONTROLS
-    default_pricings = $('#pricing-choices').html();
-    // add registrant set button
-    $("#add-registrants-button").click(function(){
-        var pricing = $('input:radio[name=add-registrants-pricing]:checked');
-        var price_d = {};
-        if(pricing.val()){
-            reg_num = parseInt($("#add-registrants-number").val());
-            price_d['quantity'] = pricing.attr('quantity');
-            price_d['price'] = pricing.attr('price');
-            price_d['title'] = pricing.attr('title');
-            price_d['pk'] = pricing.val();
-            price_d['is_public'] = pricing.attr('is_public');
-            {% if not shared_pricing %}
-                if((reg_num > 1)&&(!(price_d['is_public'].toString().toLowerCase()=='true'))){
-                    alert('You cannot add multiple registrants for non public pricings.');
-                    return false;
-                }
-            {% endif %}
-            var init_d = {};
-            var blank_d = {};
-            init_d['email'] = $('#pricing-email').val();
-            blank_d['email'] = '';
-            $('#pricing-email').val('');
-            init_d['memberid'] = $('#pricing-memberid').val();
-            blank_d['memberid'] = '';
-            $('#pricing-memberid').val('');
-            for(var i=0; i<reg_num; i++){
-                if(i==0){//only the first set will have email and memberid data
-                    addRegistrantSet('registrant', price_d, init_d);
-                }else{
-                    addRegistrantSet('registrant', price_d, blank_d);
-                }
-            }
-            {% if not shared_pricing %}
-                $('#pricing-choices').html(default_pricings);
-                $('#add-registrants-number').val(1);
-            {% endif %}
-        } else {
-            alert("Please select a pricing first.");
-        }
-    });
-    
-    // show delete-button-wrap
-    $(".delete-button-wrap").show();
-    // delete registrant set button
-    $('.delete-button').live('click', function(){
-        var delete_confirm = confirm('Are you sure you want to delete this registrant set?');   // confirm
-        if(delete_confirm) {
-            // delete each form in the set
-            var set = $($($($(this).parent()).parent()).parent());
-            var forms = set.find('.registrant-form');
-            for(i=0;i<forms.length;i++){
-                deleteRegistrant(forms[i], 'registrant');
-            }
-            set.remove();
-            
-            // update form index
-            forms = $('.registrant-form');
-            var this_form;
-            for (var i=0, formCount=forms.length; i<formCount; i++){
-                this_form = forms.get(i);
-                $(this_form).find(".form-field").children().children().each(function() {
-                    if (this){
-                        updateIndex(this, 'registrant', i);
-                    }
-                });
-                updateFormHeader(this_form, 'registrant', i, 0);
-                updateSummary(this_form, 'registrant', i);
-            }
-        }
-        return false;   // cancel
-    });
-    
-    $('.first-registrant-email').blur(function(){
-        form = $(this).parent().parent().parent()
-        getUserStatus(form);
-    });
+function updateSummaryIndex(prefix){
+    var summary_table = $('#summary-price');
+    var items = $('.summary-'+prefix);
+    for(i=0;i<items.length;i++){
+        var row = $(items[i]);
+        row.attr('id', 'summary-'+prefix+'-'+i);
+        row.find('.item-label').html(prefix + " #" + (i+1));
+    }
+}
 
-    $('.first-registrant-memberid').blur(function(){
-        form = $(this).parent().parent().parent()
-        getUserStatus(form);
-    });
-    
-    $('.registrant-header').click(function() {
-        $(this).parent().children('div:last').toggle();
-        if ($(this).children('span.showhide').text() == "+ ") {
-            $(this).children('span.showhide').text('- ');
-        } else 
-        {$(this).children('span.showhide').text('+ '); }
-    });
-    
+$(document).ready(function(){
     //MISC CONTROLS
     $('#pricing-check').click(function(){
         getPricingList();

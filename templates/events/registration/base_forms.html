@@ -73,18 +73,14 @@
 </div>
 <div id="addon-hidden">
     <div class="form-field">
-        <div class="id_addon-0-addon"> 
+        <div class="id_addon-0-addon">
             <div class="label required">
-                <label for="id_addon-0-addon">Addon</label> 
+                <label for="id_addon-0-addon"></label>
             </div>
-            <div class="field"> 
-                <select class="addon-input" name="addon-0-addon" id="id_addon-0-addon"> 
-                {% for addon in addons %}
-                    <option value="{{ addon.pk }}">{{ addon.title }}</option>
-                {% endfor %}
-                </select> 
+            <div class="field">
+                <input id="id_addon-0-addon" type="text" class="addon-input" name="addon-0-addon" >
             </div>
-        </div>
+        </div>       
     </div>
     {% for addon in addons %}
     {% for option in addon.options.all %}
@@ -104,4 +100,5 @@
     </div> 
     {% endfor %}
     {% endfor %}
+    <input type="button" class="delete-addon" value="&nbsp;&nbsp;{% trans 'Delete' %}">
 </div>

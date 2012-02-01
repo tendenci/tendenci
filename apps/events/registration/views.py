@@ -232,12 +232,17 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                         })
         reg_form = RegistrationForm(event, request.user, request.POST,
                     reg_count = len(reg_formset.forms))
+                    
+        # This form is just here to preserve the data in case of invalid registrants
+        # The real validation of addons is after validation of registrants
         addon_formset = RegAddonFormSet(request.POST,
                             prefix='addon',
                             event=event,
                             extra_params={
                                 'addons':active_addons,
+                                'valid_addons':active_addons,
                             })
+        addon_formset.is_valid()
         
         # validate the form and formset
         if False not in (reg_form.is_valid(), reg_formset.is_valid()):
