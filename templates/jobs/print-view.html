@@ -94,21 +94,21 @@
 {% if job.experience %}
 		<div class="section-block">
 			<div class="label">{% trans "Experience" %}</div>
-			<div class="value">{{ job.experience }}</div>
+			<div class="value">{{ job.experience|safe }}</div>
 		</div>
 {% endif %}
 
 {% if job.skills %}
 		<div class="section-block">
 			<div class="label">{% trans "Skills" %}</div>
-			<div class="value">{{ job.skills }}</div>
+			<div class="value">{{ job.skills|safe }}</div>
 		</div>
 {% endif %}
 
 {% if job.education %}
 		<div class="section-line">
 			<div class="label">{% trans "Education Required" %}</div>
-			<div class="value">{{ job.education }}</div>
+			<div class="value">{{ job.education|safe }}</div>
 			<div class="clear"></div>
 		</div>
 {% endif %}
