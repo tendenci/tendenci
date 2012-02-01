@@ -119,6 +119,13 @@ div.delete-button-wrap{
     cursor: pointer;
     color: darkred;
 }
+.delete-addon{
+    padding: 6px 10px 6px 15px;
+    background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    color: darkred;
+}
 
 .extra-registrants {
     width: 50px;
