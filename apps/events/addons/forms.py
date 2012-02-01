@@ -25,14 +25,14 @@ class RegAddonForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         self.addons = kwargs.pop('addons')
-        self.valid_addons = kwargs.pop('valid_addons', None)
+        self.valid_addons = kwargs.pop('valid_addons', [])
         self.form_index = kwargs.pop('form_index', None)
         super(RegAddonForm, self).__init__(*args, **kwargs)
         
         # initialize addon options and reg_set field
         self.fields['addon'] = forms.ModelChoiceField(
             queryset=self.addons,
-            widget=forms.Select(attrs={'class': 'addon-input'}))
+            widget=forms.TextInput(attrs={'class': 'addon-input'}))
         
         # dynamically create a field for all the possible options
         for option in AddonOption.objects.filter(addon__in=self.addons):
@@ -53,12 +53,13 @@ class RegAddonForm(forms.Form):
     def clean(self):
         """Validate the option fields for the selected addon only"""
         data = self.cleaned_data
-        addon = data['addon']
-        for option in addon.options.all():
-            try:
-                data[option.field_name()]
-            except KeyError:
-                raise forms.ValidationError(_('%s is a required option for %s' % (option.title, addon.title)))
+        if 'addon' in data:
+            addon = data['addon']
+            for option in addon.options.all():
+                try:
+                    data[option.field_name()]
+                except KeyError:
+                    raise forms.ValidationError(_('%s is a required option for %s' % (option.title, addon.title)))
         return data
     
     def save(self, registration):

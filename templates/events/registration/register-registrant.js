@@ -2,19 +2,13 @@
 function deleteRegistrant(ele, prefix) {
     var registrant_form = $(ele);
     var attr_id = $(registrant_form).attr("id");
-    
     // remove the registrant form
     $(registrant_form).remove();
-    
     // update the TOTAL_FORMS
     var forms = $(".registrant-form");
     $("#id_" + prefix + "-TOTAL_FORMS").val(forms.length);
-    
-    // update the total amount and remove the reg price entry
+    // remove the reg price entry
     var reg_id = attr_id.split('_')[1];
-    var registrant_summary_entry = $("tr[id=summary-item_" + reg_id + "]");
-    var registrant_price = $(registrant_summary_entry).find(".reg-price").html();
-    
     removeSummaryEntry(prefix, reg_id);
 }
 
@@ -26,7 +20,7 @@ function updateIndex(e, prefix, idx){
     if ($(e).attr("for")) 
         {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
     if (e.id) {e.id = e.id.replace(id_regex, replacement);}
-    if (e.name){ e.name = e.name.replace(id_regex, replacement);}
+    if (e.name){e.name = e.name.replace(id_regex, replacement);}
 }
 
 // update the serial number on the form. ex: Registrant #3, Reg #3
@@ -134,3 +128,96 @@ function addRegistrantSet(prefix, pricing_data, initial_data){
     $('#registrant-forms').append(container);
     return false;
 }
+
+$(document).ready(function(){
+    // REGISTRANT CONTROLS
+    default_pricings = $('#pricing-choices').html();
+    // add registrant set button
+    $("#add-registrants-button").click(function(){
+        var pricing = $('input:radio[name=add-registrants-pricing]:checked');
+        var price_d = {};
+        if(pricing.val()){
+            reg_num = parseInt($("#add-registrants-number").val());
+            price_d['quantity'] = pricing.attr('quantity');
+            price_d['price'] = pricing.attr('price');
+            price_d['title'] = pricing.attr('title');
+            price_d['pk'] = pricing.val();
+            price_d['is_public'] = pricing.attr('is_public');
+            {% if not shared_pricing %}
+                if((reg_num > 1)&&(!(price_d['is_public'].toString().toLowerCase()=='true'))){
+                    alert('You cannot add multiple registrants for non public pricings.');
+                    return false;
+                }
+            {% endif %}
+            var init_d = {};
+            var blank_d = {};
+            init_d['email'] = $('#pricing-email').val();
+            blank_d['email'] = '';
+            $('#pricing-email').val('');
+            init_d['memberid'] = $('#pricing-memberid').val();
+            blank_d['memberid'] = '';
+            $('#pricing-memberid').val('');
+            for(var i=0; i<reg_num; i++){
+                if(i==0){//only the first set will have email and memberid data
+                    addRegistrantSet('registrant', price_d, init_d);
+                }else{
+                    addRegistrantSet('registrant', price_d, blank_d);
+                }
+            }
+            {% if not shared_pricing %}
+                $('#pricing-choices').html(default_pricings);
+                $('#add-registrants-number').val(1);
+            {% endif %}
+        } else {
+            alert("Please select a pricing first.");
+        }
+    });
+    
+    // show delete-button-wrap
+    $(".delete-button-wrap").show();
+    // delete registrant set button
+    $('.delete-button').live('click', function(){
+        var delete_confirm = confirm('Are you sure you want to delete this registrant set?');   // confirm
+        if(delete_confirm) {
+            // delete each form in the set
+            var set = $($($($(this).parent()).parent()).parent());
+            var forms = set.find('.registrant-form');
+            for(i=0;i<forms.length;i++){
+                deleteRegistrant(forms[i], 'registrant');
+            }
+            set.remove();
+            
+            // update form index
+            forms = $('.registrant-form');
+            var this_form;
+            for (var i=0, formCount=forms.length; i<formCount; i++){
+                this_form = forms.get(i);
+                $(this_form).find(".form-field").children().children().each(function() {
+                    if (this){
+                        updateIndex(this, 'registrant', i);
+                    }
+                });
+                updateFormHeader(this_form, 'registrant', i, 0);
+            }
+        }
+        return false;   // cancel
+    });
+    
+    $('.first-registrant-email').blur(function(){
+        form = $(this).parent().parent().parent()
+        getUserStatus(form);
+    });
+
+    $('.first-registrant-memberid').blur(function(){
+        form = $(this).parent().parent().parent()
+        getUserStatus(form);
+    });
+    
+    $('.registrant-header').click(function() {
+        $(this).parent().children('div:last').toggle();
+        if ($(this).children('span.showhide').text() == "+ ") {
+            $(this).children('span.showhide').text('- ');
+        } else 
+        {$(this).children('span.showhide').text('+ '); }
+    });
+});
