@@ -4,6 +4,7 @@ function updateSummaryEntry(prefix, idx, price){
     var entry_id = '#summary-'+prefix+'-'+idx
     var summary_table = $('#summary-price');
     var entry = $(entry_id);
+    var price = parseFloat(price);
     if(entry.length>0){
         entry.find('.price').html(price.toFixed(2));
     }else{
