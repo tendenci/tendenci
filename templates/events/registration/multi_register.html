@@ -126,7 +126,7 @@
     				<table id="summary-price">
     					{% for form in registrant.forms %}
                         <tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}">
-                            <td width="50%" class="item-label">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                            <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
                                 <span class="item-price">{{ form.get_price }}</span>
@@ -135,7 +135,7 @@
                         {% endfor %}
                         {% for form in addon_formset.forms %}
                         <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
-                            <td width="50%">{% trans "Addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                            <td width="50%">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
                                 <span class="price">{{ form.cleaned_data.addon.price }}</span>
@@ -304,8 +304,8 @@
 {{ block.super }}
 <script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript">
-    {% include 'events/registration/register-registrant.js' %}
-    {% include 'events/registration/register-addon.js' %}
-    {% include 'events/registration/register.js' %}
+    {% include 'events/registration/include/register-registrant.js' %}
+    {% include 'events/registration/include/register-addon.js' %}
+    {% include 'events/registration/include/register.js' %}
 </script>
 {% endblock %}
