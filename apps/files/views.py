@@ -11,7 +11,8 @@ import simplejson as json
 from base.http import Http403
 from files.models import File
 from files.utils import get_image
-from files.forms import FileForm
+from files.forms import FileForm, MostViewedForm
+from perms.decorators import admin_required
 from perms.object_perms import ObjectPermission
 from perms.utils import update_perms_and_save, has_perm
 from event_logs.models import EventLog
@@ -19,12 +20,12 @@ from files.cache import FILE_IMAGE_PRE_KEY
 
 
 def index(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/view.html"):
+    from files.search_indexes import FileIndex
     if not id: return HttpResponseRedirect(reverse('file.search'))
 
-    try:
-        quality=int(quality)
-    except:
-        pass
+    # if string and digit convert to integer
+    if isinstance(quality, unicode) and quality.isdigit():
+        quality = int(quality)
 
     file = get_object_or_404(File, pk=id)
     if not has_perm(request.user, 'files.view_file', file):
@@ -35,18 +36,20 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         if not request.user.is_authenticated():
             raise Http403
 
-    if file.name:
-        file_name = file.name
-    else:
-        file_name = file.file.name
+    # we either have the name in our database
+    # or we pull the name straight off of the file
+    file_name = file.name or file.file.name
 
     # get image binary
     try:
         data = file.file.read()
         file.file.close()
-    except: raise Http404
+    except:
+        raise Http404
 
+    # log downloads and views
     if download:
+        # if filew download
         attachment = 'attachment;'
         log_defaults = {
             'event_id' : 185000,
@@ -59,20 +62,27 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         EventLog.objects.log(**log_defaults)
     else:
         attachment = ''
+
         if file.type() != 'image':
-            log_defaults = {
+
+            # log file view
+            EventLog.objects.log(**{
                 'event_id' : 186000,
                 'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
                 'description': '%s viewed' % file._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': file,
-            }
-            EventLog.objects.log(**log_defaults)
+            })
+
+    # update index
+    if file.type() != 'image':
+        file_index = FileIndex(File)
+        file_index.update_object(file)
 
     # if image size specified
-    if file.type()=='image' and size: # if size specified
-        size= [int(s) for s in size.split('x')] # convert to list
+    if file.type()=='image' and size:  # if size specified
+        size= [int(s) for s in size.split('x')]  # convert to list
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
@@ -307,3 +317,46 @@ def tinymce_upload_template(request, id, template_name="files/templates/tinymce_
     file = get_object_or_404(File, pk=id)
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
+
+@login_required
+@admin_required
+def report_most_viewed(request, form_class=MostViewedForm, template_name="files/reports/most_viewed.html"):
+    """
+    Displays a table of files sorted by views/downloads.
+    """
+    from django.db.models import Count
+    from datetime import date
+    from datetime import timedelta
+    from dateutil.relativedelta import relativedelta
+
+    start_dt = date.today() + relativedelta(months=-2)
+    end_dt = date.today()
+    file_type = 'all'
+
+    form = form_class(
+        initial={
+            'start_dt': start_dt.strftime('%m/%d/%Y'),
+            'end_dt': end_dt.strftime('%m/%d/%Y'),
+        }
+    )
+
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            start_dt = form.cleaned_data['start_dt']
+            end_dt = form.cleaned_data['end_dt']
+            file_type = form.cleaned_data['file_type']
+
+    event_logs = EventLog.objects.values('object_id').filter(
+        event_id__in=(185000,186000), create_dt__range=(start_dt, end_dt))
+
+    if file_type != 'all':
+        event_logs = event_logs.filter(event_data__icontains=file_type)
+
+    event_logs =event_logs.annotate(count=Count('object_id'))
+
+    return render_to_response(template_name, {
+        'form': form,
+        'event_logs':event_logs
+        }, context_instance=RequestContext(request))
+
