@@ -179,7 +179,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     
     # redirect to default registration if anonymousmemberpricing not enabled
     if not get_setting('module', 'events', 'anonymousmemberpricing'):
-        return redirect('event.multi_register')
+        return redirect('event.multi_register', event_id)
         
     # clear user list session
     request.session['user_list'] = []

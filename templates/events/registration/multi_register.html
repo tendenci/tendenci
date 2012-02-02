@@ -129,7 +129,7 @@
                             <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="item-price">{{ form.get_price }}</span>
+                                <span class="item-price">{{ form.get_price|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -138,7 +138,7 @@
                             <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="item-price">{{ form.cleaned_data.addon.price }}</span>
+                                <span class="item-price">{{ form.cleaned_data.addon.price|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -148,7 +148,7 @@
 							<td><div id="total-label">{% trans "Total" %}</div></td>
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="total-amount">{{ registrant.get_total_price }}</span>
+								<span id="total-amount">{{ registrant.get_total_price|floatformat:2 }}</span>
 							</td>
 						</tr>
                         <tr class="discount-summary">
