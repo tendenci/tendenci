@@ -12,24 +12,40 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
-<style type="text/css">
-</style>
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/base/jquery-ui.css">
 {% endblock %}
 
 {% block body %}
+
+<style type="text/css">
+	#id_start_dt,
+	#id_end_dt {
+		width: 150px;
+	}
+</style>
 
 <div class="t most-viewed">
     {% file_nav request.user %}
 
     <h1>{% trans "Most Viewed Files" %}</h1>
 
-	<form class="search-form" action="{% url file.report_most_viewed %}" method="get">
-	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+	<form class="search-form" action="{% url file.report_most_viewed %}" method="POST">
+
+    {% for field in form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+        </div>
+    {% endfor %}
+
+	{% csrf_token %}
+	{{ form.start_dt }}
+	{{ form.end_dt }}
+	{{ form.file_type }}
 	<input class="btn" type="submit" value="Filter Files" />
-	<div id="results">{{ files|length }} Results</div>
+	<div id="results">{{ event_logs|length }} Results</div>
 	</form>
 
-    {% autopaginate files 40 %}
+    {% autopaginate event_logs 10 %}
 	
 	<div class="files-wrap">
 
@@ -41,33 +57,12 @@
 		<th colspan="2">{% trans "Actions" %}</th>
 	</tr>
 
-    {% for sqs in files %}
-    {% with sqs.object as file %}
-
-    	<tr class="file-wrap">
-    		<td class="clicks"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{{ sqs.clicks }}</a></td>
-    		<td class="file-type"><img src="{{ file.icon }}" /></td>
-    		<td class="file-name"><a href="{% url file file.pk %}">{{ file.basename }}</a>
-    			<div class="create-dt">Created {{ file.create_dt }}</div> </td>
-    		<td class="change"><a href="{% url file.edit file.pk %}">{% trans "Edit" %}</a></td>
-    		<td class="delete"><a href="{% url file.delete file.pk %}">{% trans "Delete" %}</a></td>
-    	</tr>
-
-	{% endwith %}
-	{% empty %}
-		{% if admin %}
-			{% if request.GET.q %}
-				<div>{% trans "0 Results Found" %}</div>
-			{% else %}
-				<div style="color:#666; font-size:.9em">
-					{% trans "No files in here at all."%}  <a href="{% url file.add %}">{% trans "Add a file."%}</a>
-				</div>
-			{% endif %}
-		{% else %}
-			<div>{% trans "0 Results Found" %}</div>
-		{% endif %}
+    {% for event_log in event_logs %}
+		{% most_viewed_result %}
     {% endfor %}
+
     </table>
+
 	</div>
 
     {% paginate %}
@@ -77,6 +72,7 @@
 {% block extra_body %}
     {{ block.super }}
 	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 
@@ -95,11 +91,28 @@
 				return false;	// cancel
 			});
 
-			// loop through files
+			// if url is broken; add 'broken' class
 			$('.t .file-wrap h2 a').each(function(){
 				if(!url_exists(this.href)){
 					$(this).addClass('broken');
 				}
+			});
+
+			$(function() {
+				var dates = $( "#id_start_dt, #id_end_dt" ).datepicker({
+					defaultDate: "-60d",
+					changeMonth: true,
+					numberOfMonths: 3,
+					onSelect: function( selectedDate ) {
+						var option = this.id == "id_start_dt" ? "minDate" : "maxDate",
+							instance = $( this ).data( "datepicker" ),
+							date = $.datepicker.parseDate(
+								instance.settings.dateFormat ||
+								$.datepicker._defaults.dateFormat,
+								selectedDate, instance.settings );
+						dates.not( this ).datepicker( "option", option, date );
+					}
+				});
 			});
 
 		});
@@ -111,5 +124,5 @@
 			trigger:	'more-options-trigger',
 			target:		'more-options-target'
 		});
-	</script>     
+	</script>
 {% endblock %}
