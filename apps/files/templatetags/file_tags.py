@@ -23,6 +23,13 @@ def file_nav(context, user, file=None):
 def file_search(context):
     return context
 
+
+@register.inclusion_tag('files/reports/most-viewed-result.html', takes_context=True)
+def most_viewed_result(context):
+    event_log = context['event_log']
+    context['file'] = File.objects.get(pk=event_log['object_id'])
+    return context
+
 class FilesForModelNode(Node):
 
     def __init__(self, context_var, *args, **kwargs):

@@ -11,7 +11,7 @@ import simplejson as json
 from base.http import Http403
 from files.models import File
 from files.utils import get_image
-from files.forms import FileForm
+from files.forms import FileForm, MostViewedForm
 from perms.decorators import admin_required
 from perms.object_perms import ObjectPermission
 from perms.utils import update_perms_and_save, has_perm
@@ -320,15 +320,43 @@ def tinymce_upload_template(request, id, template_name="files/templates/tinymce_
 
 @login_required
 @admin_required
-def report_most_viewed(request, template_name="files/reports/most_viewed.html"):
+def report_most_viewed(request, form_class=MostViewedForm, template_name="files/reports/most_viewed.html"):
     """
     Displays a table of files sorted by views/downloads.
     """
-    query = request.GET.get('q')
-    files = File.objects.search(query, user=request.user)
+    from django.db.models import Count
+    from datetime import date
+    from datetime import timedelta
+    from dateutil.relativedelta import relativedelta
 
-    if not query:
-        files = files.order_by('-clicks')
+    start_dt = date.today() + relativedelta(months=-2)
+    end_dt = date.today()
+    file_type = 'all'
 
-    return render_to_response(template_name, {'files':files}, context_instance=RequestContext(request))
+    form = form_class(
+        initial={
+            'start_dt': start_dt.strftime('%m/%d/%Y'),
+            'end_dt': end_dt.strftime('%m/%d/%Y'),
+        }
+    )
+
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            start_dt = form.cleaned_data['start_dt']
+            end_dt = form.cleaned_data['end_dt']
+            file_type = form.cleaned_data['file_type']
+
+    event_logs = EventLog.objects.values('object_id').filter(
+        event_id__in=(185000,186000), create_dt__range=(start_dt, end_dt))
+
+    if file_type != 'all':
+        event_logs = event_logs.filter(event_data__icontains=file_type)
+
+    event_logs =event_logs.annotate(count=Count('object_id'))
+
+    return render_to_response(template_name, {
+        'form': form,
+        'event_logs':event_logs
+        }, context_instance=RequestContext(request))
 
