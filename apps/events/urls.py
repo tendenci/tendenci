@@ -79,21 +79,21 @@ urlpatterns = patterns('events',
 
     # registrant export
     url(r'^(?P<event_id>\d+)/registrants/export/$',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         name="event.registrant.export"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/paid$',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'paid'},
         name="event.registrant.export.paid"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/non-paid',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'non-paid'},
         name="event.registrant.export.non_paid"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/total',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'total'},
         name="event.registrant.export.total"
     ),
@@ -116,6 +116,13 @@ urlpatterns = patterns('events',
     
     # email registrants
     url(r'^message/(?P<event_id>\d+)/$', 'views.message_add', name='event.message'),
+    
+    # custom registration form preview
+    url(r'^custom_reg_form/preview/(?P<id>\d+)/$', 'views.custom_reg_form_preview', 
+        name='event.custom_reg_form_preview'),
+    # custom registration form preview
+    url(r'^custom_reg_form/list/(?P<event_id>\d+)/$', 'views.event_custom_reg_form_list', 
+        name='event.event_custom_reg_form_list'),
     
     # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),

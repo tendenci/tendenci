@@ -728,6 +728,12 @@ tr.non-paid-middle {
 
 /* pricing list */
 
+#id_captcha_1 { width: 138px; }
+#register-button {
+    width: 200px;
+    margin-bottom: 10px;
+}
+
 div.pricing-list-wrap {
 	margin: 15px 0 15px 0;
 	text-align: left;
