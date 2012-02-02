@@ -11,7 +11,7 @@ function updateSummaryEntry(prefix, idx, price){
         row.addClass('summary-'+prefix);
         row.attr('id', 'summary-'+prefix+'-'+idx);
         row.find('.item-price').html(price);
-        row.find('.item-label').html(prefix + " #" + (idx+1));
+        row.find('.item-label').html(prefix + "#" + (idx+1));
         summary_table.append(row);
     }
     updateSummaryTotal();
@@ -43,6 +43,6 @@ function updateSummaryIndex(prefix){
     for(i=0;i<items.length;i++){
         var row = $(items[i]);
         row.attr('id', 'summary-'+prefix+'-'+i);
-        row.find('.item-label').html(prefix + " #" + (i+1));
+        row.find('.item-label').html(prefix + "#" + (i+1));
     }
 }
