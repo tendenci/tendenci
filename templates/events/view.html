@@ -42,7 +42,7 @@
                     </div>
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <div class="speaker-desc-short">
-                        {{ speaker.description|striptags|truncatewords:"50" }}
+                        {{ speaker.description|striptags|safe|truncatewords:"50" }}
                     </div>
                     <div class="speaker-desc-long">
                         {{ speaker.description|safe|urlize|linebreaks }}
