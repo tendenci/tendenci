@@ -1529,13 +1529,15 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     registrants = registration.registrant_set.all().order_by('id')
     registrants_count = registration.registrant_set.count()
-
+    addons = registration.regaddon_set.all().order_by('id')
+    
     return render_to_response(template_name, {
         'event':event,
         'registrant':registrant,
         'registration':registration,
         'registrants': registrants,
         'registrants_count': registrants_count,
+        'addons': addons,
         'hash': registrant_hash,
         }, 
         context_instance=RequestContext(request))
