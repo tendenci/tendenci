@@ -76,7 +76,7 @@
                     <div id="original-price" style="display:none;">0.00</div>
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-    					<span class="summary-total-amount" id="summary-total-amount">{{ registrant.get_total_price }}</span>
+    					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
     				</div>
 
                     <div class="summary-payment">

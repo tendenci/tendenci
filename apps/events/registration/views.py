@@ -317,6 +317,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'sets': sets,
             'addons':active_addons,
             'pricings':active_pricings,
+            'total_price':reg_formset.get_total_price()+addon_formset.get_total_price(),
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             'shared_pricing':get_setting('module', 'events', 'sharedpricing'),
             }, context_instance=RequestContext(request))
