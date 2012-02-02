@@ -135,10 +135,10 @@
                         {% endfor %}
                         {% for form in addon_formset.forms %}
                         <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
-                            <td width="50%">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="price">{{ form.cleaned_data.addon.price }}</span>
+                                <span class="item-price">{{ form.cleaned_data.addon.price }}</span>
                             </td>
                         </tr>
                         {% endfor %}
