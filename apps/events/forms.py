@@ -662,7 +662,7 @@ class Reg8nEditForm(BetterModelForm):
                                           str(self.instance.bind_reg_form_to_conf_only)
                                           )
         else:
-            self.fields['use_custom_reg'].initial ='on,0,1'
+            self.fields['use_custom_reg'].initial =',0,1'
             
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
