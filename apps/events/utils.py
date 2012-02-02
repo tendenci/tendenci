@@ -626,24 +626,24 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.phone = form.cleaned_data.get('phone', '')
         registrant.company_name = form.cleaned_data.get('company_name', '')
     
-        
-        users = User.objects.filter(email=registrant.email)
-        if users:
-            registrant.user = users[0]
-            try:
-                user_profile = registrant.user.get_profile()
-            except:
-                user_profile = None
-            if user_profile:
-                registrant.mail_name = user_profile.display_name
-                registrant.address = user_profile.address
-                registrant.city = user_profile.city
-                registrant.state = user_profile.state
-                registrant.zip = user_profile.zipcode
-                registrant.country = user_profile.country
-                registrant.company_name = user_profile.company
-                registrant.position_title = user_profile.position_title
-            
+        if registrant.email:
+            users = User.objects.filter(email=registrant.email)
+            if users:
+                registrant.user = users[0]
+                try:
+                    user_profile = registrant.user.get_profile()
+                except:
+                    user_profile = None
+                if user_profile:
+                    registrant.mail_name = user_profile.display_name
+                    registrant.address = user_profile.address
+                    registrant.city = user_profile.city
+                    registrant.state = user_profile.state
+                    registrant.zip = user_profile.zipcode
+                    registrant.country = user_profile.country
+                    registrant.company_name = user_profile.company
+                    registrant.position_title = user_profile.position_title
+                
     registrant.save()
     return registrant
 
