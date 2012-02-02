@@ -465,22 +465,19 @@ def add_registration(*args, **kwargs):
     Add the registration
     Args are split up below into the appropriate attributes
     """
-    from decimal import Decimal
-    total_amount = 0
-    count = 0
-
     # arguments were getting kinda long
     # moved them to an unpacked version
-    request, event, reg_form, \
-    registrant_formset, price, \
-    event_price = args
+    (request, event, reg_form, registrant_formset, addon_formset,
+    price, event_price) = args
     
+    total_amount = 0
+    count = 0
     event_price = Decimal(str(event_price))
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
     discount = kwargs.get('discount', None)
-
+    
     reg8n_attrs = {
         "event": event,
         "payment_method": reg_form.cleaned_data.get('payment_method'),
@@ -510,6 +507,12 @@ def add_registration(*args, **kwargs):
             total_amount += registrant.amount 
             
             count += 1
+            
+    # create each regaddon
+    for form in addon_formset.forms:
+        form.save(reg8n)
+    addons_price = addon_formset.get_total_price()
+    total_amount += addons_price
     
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
