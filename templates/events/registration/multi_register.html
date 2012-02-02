@@ -9,8 +9,8 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css"/>
-<link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css"/>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-anon-registration.css" />
 {% endblock %}
 
 {% block body %}
@@ -302,6 +302,7 @@
 
 {% block extra_body %}
 {{ block.super }}
+<script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript">
     {% include 'events/registration/register-registrant.js' %}
     {% include 'events/registration/register-addon.js' %}
