@@ -506,12 +506,23 @@ class Registration(models.Model):
         Get first registrant w/ email address
         Order by insertion (primary key)
         """
-
-        try:
-            registrant = self.registrant_set.filter(
-                email__isnull=False).order_by("pk")[0]
-        except:
-            registrant = None
+        registrant = None
+        
+        if self.event.registration_configuration.use_custom_reg_form:
+            registrants = self.registrant_set.all().order_by("pk")
+            for reg in registrants:
+                if reg.custom_reg_form_entry:
+                    email = reg.custom_reg_form_entry.get_email()
+                    if email:
+                        registrant = reg
+                        registrant.email = email
+                        break
+        else:
+            try:
+                registrant = self.registrant_set.filter(
+                    email__isnull=False).order_by("pk")[0]
+            except:
+                pass
 
         return registrant
 
@@ -908,6 +919,9 @@ class CustomRegFormEntry(models.Model):
                          self.get_value_of_mapped_field('last_name')])
         return name.strip()
     
+    def get_email(self):
+        return self.get_value_of_mapped_field('email')
+    
     def get_field_entry_list(self):
         field_entries = self.field_entries.order_by('field')
         entry_list = []
@@ -933,6 +947,7 @@ class CustomRegFormEntry(models.Model):
                                     'position_title', 
                                     'company_name'
                                     ]).filter(field__display_on_roster=1).order_by('field')
+
         for field_entry in field_entries:
             list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
         return list_on_roster
