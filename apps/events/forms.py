@@ -52,6 +52,7 @@ class CustomRegFormAdminForm(forms.ModelForm):
         model = CustomRegForm
         fields = ('name',
                   'notes',
+                  'validate_guest',
                   'status',
                   #'used',
                  )
@@ -113,9 +114,13 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             
         # make the fields in the subsequent forms as not required
-        if self.form_index and self.form_index > 0:
-            for key in self.fields.keys():
-                self.fields[key].required = False
+        if not self.custom_reg_form.validate_guest:
+            if self.form_index and self.form_index > 0:
+                for key in self.fields.keys():
+                    self.fields[key].required = False
+        else:
+            # this attr is required for form validation
+            self.empty_permitted = False
                 
         # for anonymousmemberpricing
         # --------------------------
