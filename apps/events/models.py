@@ -805,6 +805,9 @@ class Event(TendenciBaseModel):
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     notes = models.TextField(_("Notes"), max_length=2000, blank=True)
+    validate_guest = models.BooleanField(_("Validate Guest"), default=False,
+                                         help_text="If checked, required fields for " + \
+                                         "the primary registrant will also be required for the guests")
     
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
