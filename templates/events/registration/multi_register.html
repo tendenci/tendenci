@@ -556,6 +556,10 @@
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript">
+	var validate_guest = false;
+	{% if custom_reg_form.validate_guest %}
+	validate_guest = true;
+	{% endif %}
     {% include 'events/registration/registration.js' %}
 </script>
 {% endblock %}

@@ -873,7 +873,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             custom_reg_form = reg_conf.reg_form
         else:
             custom_reg_form = price.reg_form
-    
 
     # check if this post came from the pricing form
     # and modify the request method
@@ -948,6 +947,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         if custom_reg_form:
             params.update({"custom_reg_form": custom_reg_form}) 
         registrant = RegistrantFormSet(post_data, **params)
+        
 
     # REGISTRATION form
     if request.method == 'POST' and 'submit' in request.POST:
@@ -975,6 +975,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     
     if request.method == 'POST':
         if 'submit' in request.POST:
+            
             if reg_form.is_valid() and registrant.is_valid():
                 
                 # override event_price to price specified by admin
