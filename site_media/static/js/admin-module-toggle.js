@@ -16,7 +16,8 @@ django.jQuery('document').ready(function() {
             'Sites',
             'Tagging',
             'Tastypie',
-            'User_Groups'
+            'User_Groups',
+            'Events'
         ];
         var content_main = django.jQuery('#content-main');
         var modules = content_main.find('div.module');

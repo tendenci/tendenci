@@ -307,6 +307,7 @@ class FieldEntry(models.Model):
         user = kwargs.pop('user', None)
         super(FieldEntry, self).save(*args, **kwargs)
         self.field.execute_function(self.entry, self.value, user=user)
+
     
 class Pricing(models.Model):
     """

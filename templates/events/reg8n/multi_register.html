@@ -93,24 +93,8 @@
                             </div>
                         {% endif %}
                         
-                        {% if reg_form.free_event %}
-                            {{ reg_form.payment_method }}
-                        {% else %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.payment_method.errors }}</div>
-                                <div class="required">{% trans "Payment Method" %}</div>
-                                <div class="field">{{ reg_form.payment_method }}</div>
-                            </div>
-                        {% endif %}
+
                         
-                        {% if reg_form.captcha %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.captcha.errors }}</div>
-                                <div class="required">{% trans "Type the Code Below" %}</div>
-                                <div class="field">{{ reg_form.captcha }}</div>
-                            </div>
-                        {% endif %}
-                        <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
                     </div>
 
     				{# price list #}
@@ -171,6 +155,22 @@
 						</div>
 					
 						<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+							
+							{% if custom_reg_form %}
+							{% for field in form %}
+							{% if field.label != 'Delete' %}
+								<div class="form-field">
+									<div class="error">{{ field.errors }}</div>
+									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+									<div class="field">{{ field }}</div>
+									{% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>   
+				                    {% endif %}
+								</div>
+							{% endif %}
+							{% endfor %}
+							
+							{% else %}
 						
 							{% if form.first_name %}
 							<div class="form-field">
@@ -210,6 +210,9 @@
 								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Email" %}</div>
 								<div class="field">{{ form.email }}</div>
 							</div>
+							{% endif %}	
+							
+							
 							{% endif %}	
 							
 							
@@ -270,7 +273,24 @@
                 </div>
             </div>
             <div class="clear"></div>
-            <input type="submit" name="submit" id="register-button" value="{% if free_event %}Register{%else%}Register & Pay{%endif%}" />
+            {% if reg_form.free_event %}
+                {{ reg_form.payment_method }}
+            {% else %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.payment_method.errors }}</div>
+                    <div class="required">{% trans "Payment Method" %}</div>
+                    <div class="field">{{ reg_form.payment_method }}</div>
+                </div>
+            {% endif %}
+                        
+            {% if reg_form.captcha %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.captcha.errors }}</div>
+                    <div class="required">{% trans "Type the Code Below" %}</div>
+                    <div class="field">{{ reg_form.captcha }}</div>
+                </div>
+            {% endif %}
+            <input type="submit" name="submit" id="register-button" class="registration-green-button" value="{% if free_event %}Register{%else%}Register &amp; Pay{%endif%}" />
             
             <div class="clear"></div>
         </div>
