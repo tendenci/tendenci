@@ -85,8 +85,14 @@ def event_custom_reg_form_list(request, event_id,
     reg_conf = event.registration_configuration
     regconfpricings = reg_conf.regconfpricing_set.all()
     
-    print reg_conf.use_custom_reg_form
-    
+    if reg_conf.use_custom_reg_form:
+        if reg_conf.bind_reg_form_to_conf_only:
+            reg_conf.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=reg_conf.reg_form)
+        else:
+            for price in regconfpricings:
+                price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
+            
+        
     context = {'event': event,
                'reg_conf': reg_conf,
                'regconfpricings': regconfpricings}
@@ -1026,9 +1032,10 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     else:
                         # offline payment:
                         # send email; add message; redirect to confirmation
-                        if reg8n.registrant.email:
+                        primary_registrant = reg8n.registrant
+                        if primary_registrant and  primary_registrant.email:
                             notification.send_emails(
-                                [reg8n.registrant.email],
+                                [primary_registrant.email],
                                 'event_registration_confirmation',
                                 {   
                                     'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
@@ -1638,7 +1645,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                 reg.assign_mapped_fields()
                 reg.roster_field_list =reg.custom_reg_form_entry.roster_field_entry_list()
                 if not reg.name:
-                    reg.last_name = reg.__unicode__()
+                    reg.last_name = reg.custom_reg_form_entry.__unicode__()
             registrants.append(reg)
 
     total_sum = float(0)
