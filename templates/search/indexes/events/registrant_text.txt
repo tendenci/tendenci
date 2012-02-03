@@ -8,6 +8,11 @@
 {{ object.phone }}
 {{ object.email }}
 {{ object.company_name }}
+{% if object.custom_reg_form_entry %}
+{% for entry in object.custom_reg_form_entry.get_field_entry_list %}
+{{ entry.label }}:{{ entry.value }}
+{% endfor %}
+{% endif %}
 
 {% if object.cancel_dt %}
 is:canceled

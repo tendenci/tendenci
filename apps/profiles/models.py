@@ -99,6 +99,13 @@ class Profile(TendenciBaseModel):
             old_email = Profile.objects.get(pk=self.pk).email
         else:
             old_email = ''
+
+        # match allow_anonymous_view with opposite of hide_in_search
+        if self.hide_in_search:
+            self.allow_anonymous_view = False
+        else:
+            self.allow_anonymous_view = True
+
         super(Profile, self).save(*args, **kwargs)
         if old_email and old_email != self.email:
             update_subscription(self, old_email)

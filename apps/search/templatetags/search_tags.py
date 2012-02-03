@@ -22,6 +22,10 @@ class SearchResultNode(IncludeNode):
             except:
                 result_object = result
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
+            if var_name == 'user':
+                # special case for users and profiles
+                var_name = 'profile'
+
             if var_name == 'photo_set':
                 #special case since Image and PhotoSet share the same app.
                 template_name = "photos/photo-set/search-result.html"

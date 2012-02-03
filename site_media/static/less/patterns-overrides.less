@@ -48,6 +48,11 @@
   }
 }
 
+li.dropdown {
+    // Fix for IE7 tabs over lower elements
+    z-index: 999;
+}
+
 // Mega Menu Dropdown
 div.dropdown-menu { 
   min-width: 320px;
@@ -60,6 +65,7 @@ div.dropdown-menu {
   ul {
     float: left;
     margin: 0;
+    padding: 0;
     display: block;
     min-width: 160px;
     width: 160px;
