@@ -277,10 +277,10 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                                 'valid_addons':valid_addons,
                             })
             if addon_formset.is_valid():
-            # process the registration
-            # this will create the registrants and apply the discount
-            reg8n = process_registration(reg_form, reg_formset,  addon_formset, custom_reg_form=custom_reg_form)
-            
+                # process the registration
+                # this will create the registrants and apply the discount
+                reg8n = process_registration(reg_form, reg_formset,  addon_formset, custom_reg_form=custom_reg_form)
+                
                 self_reg8n = get_setting('module', 'users', 'selfregistration')
                 is_credit_card_payment = (reg8n.payment_method and 
                     (reg8n.payment_method.machine_name).lower() == 'credit-card'

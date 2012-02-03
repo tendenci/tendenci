@@ -40,11 +40,11 @@ from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm)
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet)
 from events.utils import (save_registration, email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
     get_event_spots_taken, update_event_spots_taken, get_ievent,
-    copy_event, email_admins, get_active_days, get_ACRF_queryset
+    copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
 from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
@@ -271,8 +271,6 @@ def handle_uploaded_file(f, instance):
     # relative path
     return os.path.join(relative_directory, file_name)
 
-from events.forms import RegConfPricingBaseModelFormSet
-
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
@@ -286,7 +284,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         extra=1,
         can_delete=True
     )
-
+    
     if event.registration_configuration.regconfpricing_set.all():
         extra = 0
     else:
