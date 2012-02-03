@@ -135,12 +135,12 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['memberid'].widget = forms.TextInput(
                                                 attrs={'class': 'registrant-memberid'}
                                                              )
-            # add class attr registrant-email to the email field
-            for field in self.form_fields:
-                if field.map_to_field == "email":
-                    self.email_key = "field_%s" % field.id
-                    self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
-                    break 
+        # add class attr registrant-email to the email field
+        for field in self.form_fields:
+            if field.map_to_field == "email":
+                self.email_key = "field_%s" % field.id
+                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
+                break 
                 
         
         # initialize internal variables
@@ -208,8 +208,9 @@ class FormForCustomRegForm(forms.ModelForm):
             # save invalid or valid data into saved_data
             self.saved_data[name] = value
             
+    # for anonymousmemberpricing         
     def clean(self):
-        self._clean_fields()
+        #self._clean_fields()
         data = self.cleaned_data
     
         if self.pricings:  
