@@ -407,9 +407,9 @@ def email_registrants(event, email, **kwargs):
         
     for registrant in registrants:
         if registrant.custom_reg_form_entry:
-            first_name = registrant.get_value_of_mapped_field('first_name')
-            last_name = registrant.get_value_of_mapped_field('last_name')
-            email.recipient = registrant.get_value_of_mapped_field('email')
+            first_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            last_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            email.recipient = registrant.custom_reg_form_entry.get_value_of_mapped_field('email')
         else:
             first_name = registrant.first_name
             last_name = registrant.last_name

@@ -1578,18 +1578,21 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
             "is:canceled", user=request.user, event=event).order_by("-update_dt")
             
     for reg in registrants:
+        if hasattr(reg, 'object'): reg = reg.object
         if reg.custom_reg_form_entry:
             reg.assign_mapped_fields()
             reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
             if not reg.name:
                 reg.name = reg.custom_reg_form_entry.__unicode__()
     for reg in active_registrants:
+        if hasattr(reg, 'object'): reg = reg.object
         if reg.custom_reg_form_entry:
             reg.assign_mapped_fields()
             reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
             if not reg.name:
                 reg.name = reg.custom_reg_form_entry.__unicode__()
     for reg in canceled_registrants:
+        if hasattr(reg, 'object'): reg = reg.object
         if reg.custom_reg_form_entry:
             reg.assign_mapped_fields()
             reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
