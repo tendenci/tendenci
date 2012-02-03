@@ -65,6 +65,11 @@ def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
     jobs = Job.objects.search(query, user=request.user)
     jobs = jobs.order_by('status_detail','list_type','-post_dt')
+    
+    if len(jobs) <= 0:
+        # try without ordering by status_detail
+        jobs = Job.objects.search(query, user=request.user)
+        jobs = jobs.order_by('list_type','-post_dt')
 
     log_defaults = {
         'event_id': 254000,

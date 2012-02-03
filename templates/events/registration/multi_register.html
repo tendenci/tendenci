@@ -102,24 +102,7 @@
                             </div>
                         {% endif %}
                         
-                        {% if reg_form.free_event %}
-                            {{ reg_form.payment_method }}
-                        {% else %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.payment_method.errors }}</div>
-                                <div class="required">{% trans "Payment Method" %}</div>
-                                <div class="field">{{ reg_form.payment_method }}</div>
-                            </div>
-                        {% endif %}
                         
-                        {% if reg_form.captcha %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.captcha.errors }}</div>
-                                <div class="required">{% trans "Type the Code Below" %}</div>
-                                <div class="field">{{ reg_form.captcha }}</div>
-                            </div>
-                        {% endif %}
-                        <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
                     </div>
 
     				{# price list #}
@@ -181,6 +164,23 @@
 							<span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">{{ form.get_form_label }}</span>:
 						</div>
 						<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+							
+							{% if custom_reg_form %}
+							{% for field in form %}
+							{% if field.label != 'Delete' %}
+								<div class="form-field">
+									<div class="error">{{ field.errors }}</div>
+									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+									<div class="field">{{ field }}</div>
+									{% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>   
+				                    {% endif %}
+								</div>
+							{% endif %}
+							{% endfor %}
+							
+							{% else %}
+							
 							{% if form.first_name %}
 							<div class="form-field">
 								<div class="error">{{ form.first_name.errors }}</div>
@@ -228,6 +228,9 @@
                                 <div class="field">{{ form.pricing }}</div>
                             </div>
                             {% endif %}
+                            
+                            
+                           {% endif %}
 						</div>
 					</div>
 				{% endfor %}
@@ -287,7 +290,23 @@
             </div>
             
             <div class="clear"></div>
-            <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register & Pay' %}" />
+            {% if reg_form.free_event %}
+                {{ reg_form.payment_method }}
+            {% else %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.payment_method.errors }}</div>
+                    <div class="required">{% trans "Payment Method" %}</div>
+                    <div class="field">{{ reg_form.payment_method }}</div>
+                </div>
+            {% endif %}
+            {% if reg_form.captcha %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.captcha.errors }}</div>
+                    <div class="required">{% trans "Type the Code Below" %}</div>
+                    <div class="field">{{ reg_form.captcha }}</div>
+                </div>
+            {% endif %}
+            <input type="submit" name="submit" class="register-submit registration-green-button" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
             
             <div class="clear"></div>
         </div>
@@ -303,7 +322,7 @@
 {% block extra_body %}
 {{ block.super }}
 <script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
-<script type="text/javascript">
+<script type="text/javascript" >
     {% include 'events/registration/include/register-registrant.js' %}
     {% include 'events/registration/include/register-addon.js' %}
     {% include 'events/registration/include/register.js' %}

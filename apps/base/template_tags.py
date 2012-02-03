@@ -80,10 +80,8 @@ class ListNode(Node):
             # check the context for an already existing user
             # and see if it is really a user object
             if 'user' in context:
-                try:
-                    user = User.objects.get(pk=context['user'])
-                except:
-                    pass
+                if isinstance(context['user'], User):
+                    user = context['user']
 
         if 'limit' in self.kwargs:
             try:
