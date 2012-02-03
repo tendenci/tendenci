@@ -1,6 +1,7 @@
 {% extends "events/base.html" %}
 {% load event_tags %}
 {% load base_filters %}
+{% load styled_forms %}
 
 {% block title %}{{ event.title }} - custom registration form(s){% endblock %}
 
@@ -61,6 +62,9 @@
 		margin-left: 1em;
 		color: #666;
 	}
+	.form-wrap{
+		margin: 1em 0 2em 0;
+	}
 </style>
 
 {% endblock extra_head %}
@@ -80,8 +84,19 @@
     				<div class="reg-form-list-links">
     					<div class="reg-form-title">{{ reg_conf.reg_form.name }} </div>
     					<div class="reg-form-btns">
-    					<a href="{% url event.custom_reg_form_preview reg_conf.reg_form.id %}" target="_blank" class="preview-btn">Preview</a> 
-    					<a href="{% url admin:events_customregform_change reg_conf.reg_form.id %}" target="_blank" class="edit-btn">Edit</a></div>
+    					<a href="javascript:;" class="preview-btn">Preview</a> 
+    					<a href="{% url admin:events_customregform_change reg_conf.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
+    					
+    					<div class="form-wrap" style="display: none;">
+    						<div class="form-builder-wrap">      
+					        	<div class="forms">
+					                {{ reg_conf.reg_form.form_for_form|styled_form }}
+					            	<input type="submit" value="Submit" disabled="true" />
+					    		</div>
+    						</div>
+    					</div>
+    					
+    					
     					</div>	
     			{% else %}
     				<div class="reg-form-list-notes alert-message block-message fade in" data-alert="alert">
@@ -96,8 +111,18 @@
     					<div class="reg-form-title">Pricing #{{ forloop.counter }}: {{ price.reg_form.name }} (ID: {{ price.reg_form.id }}) </div>
     					<div class="reg-price">(For <strong>{{ price.price|format_currency }}</strong> {{ price.title }})</div>
     					<div class="reg-form-btns">
-    					<a href="{% url event.custom_reg_form_preview price.reg_form.id %}" target="_blank" class="preview-btn">Preview</a> 
-    					<a href="{% url admin:events_customregform_change price.reg_form.id %}" target="_blank" class="edit-btn">Edit</a></div>
+    					<a href="javascript:;" class="preview-btn">Preview</a> 
+    					<a href="{% url admin:events_customregform_change price.reg_form.id %}?next={% url event.event_custom_reg_form_list event.id %}" class="edit-btn">Edit</a></div>
+    					
+    					<div class="form-wrap" style="display: none;">
+    						<div class="form-builder-wrap">      
+					        	<div class="forms">
+					                {{ price.reg_form.form_for_form|styled_form }}
+					            	<input type="submit" value="Submit" disabled="true" />
+					    		</div>
+    						</div>
+    					</div>
+    					
     					</div>
     				{% endfor %}
     			{% endif %}
@@ -110,4 +135,17 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+     <script type="text/javascript">
+    	$(document).ready(function() {
+    		$('.preview-btn').click(function(){
+    			$(this).closest('.reg-form-list-links').find('.form-wrap').toggle('slow');
+    			
+    		});
+    			
+    	 });
+     </script>
 {% endblock %}
