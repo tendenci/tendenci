@@ -52,6 +52,7 @@ class CustomRegFormAdminForm(forms.ModelForm):
         model = CustomRegForm
         fields = ('name',
                   'notes',
+                  'validate_guest',
                   'status',
                   #'used',
                  )
@@ -113,9 +114,13 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             
         # make the fields in the subsequent forms as not required
-        if self.form_index and self.form_index > 0:
-            for key in self.fields.keys():
-                self.fields[key].required = False
+        if not self.custom_reg_form.validate_guest:
+            if self.form_index and self.form_index > 0:
+                for key in self.fields.keys():
+                    self.fields[key].required = False
+        else:
+            # this attr is required for form validation
+            self.empty_permitted = False
                 
         # for anonymousmemberpricing
         # --------------------------
@@ -135,12 +140,12 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['memberid'].widget = forms.TextInput(
                                                 attrs={'class': 'registrant-memberid'}
                                                              )
-            # add class attr registrant-email to the email field
-            for field in self.form_fields:
-                if field.map_to_field == "email":
-                    self.email_key = "field_%s" % field.id
-                    self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
-                    break 
+        # add class attr registrant-email to the email field
+        for field in self.form_fields:
+            if field.map_to_field == "email":
+                self.email_key = "field_%s" % field.id
+                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
+                break 
                 
         
         # initialize internal variables
@@ -208,8 +213,9 @@ class FormForCustomRegForm(forms.ModelForm):
             # save invalid or valid data into saved_data
             self.saved_data[name] = value
             
+    # for anonymousmemberpricing         
     def clean(self):
-        self._clean_fields()
+        #self._clean_fields()
         data = self.cleaned_data
     
         if self.pricings:  

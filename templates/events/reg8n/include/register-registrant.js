@@ -69,8 +69,10 @@ function addRegistrant(ele, prefix, price) {
     $(row).insertAfter($('.registrant-form:last')).find('.hidden').removeClass('hidden');
     // remove the error
     $(row).find('div.error').remove();
+    {% if not custom_reg_form.validate_guest %}
     // remove required att
     $(row).find('div.label').removeClass("required");
+    {% endif %}
     // update id attr
     var id_regex = new RegExp('(registrant_\\d+)');
     var replacement = prefix + '_' + formCount;

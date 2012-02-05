@@ -123,9 +123,10 @@ def send_registrant_email(reg8n, self_reg8n):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     
-    if reg8n.registrant.email:
+    primary_registrant = reg8n.registrant
+    if primary_registrant and  primary_registrant.email:
         notification.send_emails(
-            [reg8n.registrant.email],
+            [primary_registrant.email],
             'event_registration_confirmation',
             {   
                 'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
@@ -158,6 +159,9 @@ def create_registrant(form, event, reg8n, **kwargs):
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
+        user = form.get_user()
+        if not user.is_anonymous():
+            registrant.user = user
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
