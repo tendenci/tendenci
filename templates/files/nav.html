@@ -22,15 +22,16 @@
             <div>
             <ul class="dropdown-menu">
                 <li><a href="{% url file.search %}">{% trans "Search Files" %}</a></li>
-            {% if can_add_file %}
+                {% if can_add_file %}
                 <li><a href="{% url file.add %}">{% trans "Add a File" %}</a></li>
-            {% endif %}
+                {% endif %}
+                <li class="divider"></li>
+                {% if admin %}
+                <li><a href="{% url file.report_most_viewed %}">{% trans "Most Viewed" %}</a></li>
+                {% endif %}
             </ul>
             </div>
     </li>
-    {% if admin %}
-    <li><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
-    {% endif %}
     {% if MODULE_ARTICLES_ENABLED %}
     <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
     {% endif %}

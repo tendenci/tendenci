@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.encoding import iri_to_uri
 
 from events.models import CustomRegForm, CustomRegField
 from events.forms import CustomRegFormAdminForm, CustomRegFormForField 
@@ -37,10 +38,10 @@ class CustomRegFieldAdmin(admin.TabularInline):
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
-    list_display = ("name", "preview_link", "for_event", "notes", "status",)
+    list_display = ("name", "preview_link", "for_event", "notes", 'validate_guest', "status",)
     search_fields = ("name", "notes", "status",)
     fieldsets = (
-        (None, {"fields": ("name", "notes", 'status')}),
+        (None, {"fields": ("name", "notes", 'validate_guest', 'status')}),
     )
     #readonly_fields = ['event']
     
@@ -92,6 +93,13 @@ class CustomRegFormAdmin(admin.ModelAdmin):
 #        field_list = ((None, {'fields': tuple(fields)}),)
 #
 #        return field_list
+
+    def change_view(self, request, object_id, extra_context=None):
+        result = super(CustomRegFormAdmin, self).change_view(request, object_id, extra_context)
+
+        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
+            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
+        return result
 
         
     def save_model(self, request, object, form, change):

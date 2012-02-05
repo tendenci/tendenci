@@ -1,3 +1,8 @@
+var validate_guest = false;
+{% if custom_reg_form.validate_guest %}
+    validate_guest = true;
+{% endif %}
+
 //delete registrant js
 function deleteRegistrant(ele, prefix) {
     var registrant_form = $(ele);
@@ -51,9 +56,12 @@ function addRegistrant(prefix, pricing, initial_data, set_container, hide_form){
     var row = $('#registrant-hidden').clone(true).get(0);
     // place proper class
     $(row).addClass('registrant-form');
+    
     if(formCount > 0){
-        // remove required att
-        $(row).find('div.label').removeClass("required");
+    	if (validate_guest == false){
+	        // remove required att
+	        $(row).find('div.label').removeClass("required");
+       }
     };
     
     // update id attr
