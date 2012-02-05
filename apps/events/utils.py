@@ -406,14 +406,20 @@ def email_registrants(event, email, **kwargs):
     tmp_body = email.body
         
     for registrant in registrants:
-        first_name = registrant.first_name
-        last_name = registrant.last_name
-
-        email.recipient = registrant.email
+        if registrant.custom_reg_form_entry:
+            first_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            last_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            email.recipient = registrant.custom_reg_form_entry.get_value_of_mapped_field('email')
+        else:
+            first_name = registrant.first_name
+            last_name = registrant.last_name
+    
+            email.recipient = registrant.email
         
-        email.body = email.body.replace('[firstname]', first_name)
-        email.body = email.body.replace('[lastname]', last_name)
-        email.send()
+        if email.recipient:
+            email.body = email.body.replace('[firstname]', first_name)
+            email.body = email.body.replace('[lastname]', last_name)
+            email.send()
         
         email.body = tmp_body  # restore to the original
         
@@ -622,6 +628,9 @@ def create_registrant_from_form(*args, **kwargs):
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
+        user = form.get_user()
+        if not user.is_anonymous():
+            registrant.user = user
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')

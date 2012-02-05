@@ -21,4 +21,7 @@ urlpatterns = patterns('files',
     url(r'^tinymce/$', 'views.tinymce', name="file.tinymce"),
     url(r'^tinymce/template/(?P<id>\d+)/$', 'views.tinymce_upload_template'),
     url(r'^swfupload/$', 'views.swfupload', name="file.swfupload"),
+
+    # url(r'^reports/$', 'views.reports', name="file.reports"),
+    url(r'^reports/most-viewed/$', 'views.report_most_viewed', name="file.report_most_viewed"),
 )
