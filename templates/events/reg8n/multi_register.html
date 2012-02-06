@@ -35,7 +35,7 @@
                 {% for field in reg_form %}
                     {% if field.errors %}
                         {% for error in field.errors %}
-                        <li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+                        <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
                         {% endfor %}
                     {% endif %}
                 {% endfor %}
@@ -45,7 +45,7 @@
                     {% for field in form %}
                         {% if field.errors %}
                             {% for error in field.errors %}
-                            <li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+                            <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
