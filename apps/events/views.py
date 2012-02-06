@@ -2211,7 +2211,7 @@ def copy(request, id):
         instance = new_event
     )
     
-    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
+    messages.add_message(request, messages.SUCCESS, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
     
     return redirect('event.edit', id=new_event.id)
     
@@ -2251,7 +2251,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             photo = form.cleaned_data['photo_upload']
             if photo: event.save(photo=photo)
             
-            messages.add_message(request, messages.INFO,
+            messages.add_message(request, messages.SUCCESS,
                 'Your event submission has been received. It is now subject to approval.')
             return redirect('events')
         print "form", form.errors
@@ -2326,7 +2326,7 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
                 option.addon = addon
                 option.save()
                 
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % addon)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % addon)
             return redirect('event', event.pk)
     else:
         form = AddonForm()
@@ -2356,7 +2356,7 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
             addon = form.save()
             options = formset.save()
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % addon)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % addon)
             return redirect('event', event.pk)
     else:
         form = AddonForm(instance=addon)
