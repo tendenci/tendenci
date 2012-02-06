@@ -136,7 +136,7 @@ div.delete-button-wrap{
 
 .add-registrants-text {
     padding-top: 20px;
-    float: left;
+    padding: 20px 0;
 }
 
 .summary-total {
