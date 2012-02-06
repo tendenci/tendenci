@@ -38,7 +38,7 @@
             {% trans "There were some problems in the forms. Please review. Thanks!" %}
             <ul>
                 {% for error in reg_form.non_field_errors %}
-                    <li><a href="javascript:;">{{ error }}</a></li>
+                    <li>{{ error }}</li>
                 {% endfor %}
                 {% for field in reg_form %}
                     {% if field.errors %}
@@ -48,14 +48,14 @@
                     {% endif %}
                 {% endfor %}
                 {% for error in registrant.non_form_errors %}
-                    <li><a href="javascript:;">{{ error }}</a></li>
+                    <li>{{ error }}</li>
                 {% endfor %}
                 {% for form in registrant.forms %}
                     {{ form.non_field_errors }}
                     {% for field in form %}
                         {% if field.errors %}
                             {% for error in field.errors %}
-                            <li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+                            <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
