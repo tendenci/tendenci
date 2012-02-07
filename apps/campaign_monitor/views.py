@@ -550,7 +550,7 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             except Exception, e:
                 messages.add_message(request, messages.ERROR, 'Error: %s' % e)
                 return redirect('campaign_monitor.campaign_generate')
-            return redirect("%s/createsend/step1.aspx" % settings.CAMPAIGNMONITOR_URL)
+            return redirect("%s/campaign/create/new" % settings.CAMPAIGNMONITOR_URL)
     else:
         form = form_class()
         
