@@ -82,13 +82,10 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         if form.is_valid() and formset.is_valid():
             form_instance = form.save(commit=False)
             form_instance = update_perms_and_save(request, form, form_instance)
-            
-            # update_perms_and_save does not appear to consider ManyToManyFields
-            for method in form.cleaned_data['payment_methods']:
-                form_instance.payment_methods.add(method)
-            
-            formset.save()
-            
+
+            form.save_m2m()  # save payment methods            
+            formset.save()  # save price options
+
             # remove all pricings if no custom_payment form
             if not form.cleaned_data['custom_payment']:
                 form_instance.pricing_set.all().delete()
