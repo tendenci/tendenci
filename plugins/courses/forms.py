@@ -11,7 +11,7 @@ from courses.models import Course, Question, CourseAttempt
 
 class CourseForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
-    content = forms.CharField(required=True,
+    content = forms.CharField(required=False,
                 widget=TinyMCE(attrs={'style':'width:100%'},
                 mce_attrs={'storme_app_label':u'courses',
                 'storme_model':Course._meta.module_name.lower()}))
