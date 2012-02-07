@@ -9,6 +9,7 @@ from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
 from user_groups.models import Group, GroupMembership
+from site_settings.utils import get_setting
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -318,4 +319,6 @@ class Pricing(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __unicode__(self):
-        return "%s %s" % (self.price, self.label)
+        currency_symbol = get_setting("site", "global", "currencysymbol")
+        if not currency_symbol: currency_symbol = '$'
+        return "%s - %s%s" % (self.label, currency_symbol, self.price, )
