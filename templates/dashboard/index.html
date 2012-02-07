@@ -176,7 +176,7 @@
         <div class="rss-feed">
         	<h3>{% trans "Tendenci Help" %}</h3>
 			{% cache 86400 tendenci_help_rss %}
-                {% get_rss "http://support.tendenci.com/en/rss/helpfiles/" as rss %}
+                {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
                     <li>
