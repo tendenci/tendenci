@@ -1,9 +1,8 @@
-# django
 from django.core.cache import cache
 
-# local
 from site_settings.models import Setting
 from site_settings.cache import SETTING_PRE_KEY
+from site_settings.crypt import encrypt, decrypt
 
 def delete_all_settings_cache():
     keys = [SETTING_PRE_KEY, 'all']
@@ -11,9 +10,7 @@ def delete_all_settings_cache():
     cache.delete(key)
     
 def cache_setting(scope, scope_category, name, value):
-    """
-        Caches a single setting within a scope
-        and scope category
+    """Caches a single setting within a scope and scope category
     """
     keys = [SETTING_PRE_KEY, scope, 
             scope_category, 
@@ -24,9 +21,7 @@ def cache_setting(scope, scope_category, name, value):
         cache.set(key, value)
     
 def cache_settings(scope, scope_category):
-    """
-        Caches all settings within a scope
-        and scope category
+    """Caches all settings within a scope and scope category
     """
     filters = {
         'scope': scope,
@@ -39,9 +34,9 @@ def cache_settings(scope, scope_category):
                     setting.scope_category, 
                     setting.name]
             key = '.'.join(keys)
-            is_set = cache.add(key, setting.value)
+            is_set = cache.add(key, setting.get_value())
             if not is_set:
-                cache.set(key, setting.value)
+                cache.set(key, setting.get_value())
 
 def delete_setting_cache(scope, scope_category, name):
     """
@@ -99,7 +94,7 @@ def get_setting(scope, scope_category, name):
     
     #check if the setting has been set and evaluate the value
     if setting:
-        value = setting.value.strip()
+        value = setting.get_value().strip()
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
@@ -126,23 +121,10 @@ def check_setting(scope, scope_category, name):
     setting = cache.get(key)
     if setting:
         return True
-        
-    #check the dne cache
-    #keys.append("DNE")
-    #dne_key = '.'.join(keys)
-    
-    #setting = cache.get(dne_key)
-    #if setting:
-    #    return False
     
     #check the db if it is not in the cache
     exists = Setting.objects.filter(scope=scope, 
         scope_category=scope_category, name=name).exists()
-    
-    #if not exists:
-    #    print keys
-        #cache with the dne_key if the setting doens't exist
-    #    cache.set(dne_key, True)
     
     return exists
 

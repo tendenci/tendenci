@@ -102,6 +102,7 @@ ADMIN_MEDIA_PREFIX = '/site_media/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=m$t0__=51^w@_tbazonjm4+fg@0+ic#bx^3rj)zc$a6i'
+SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TirkVEFplu2sd3DIli6"
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

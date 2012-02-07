@@ -42,7 +42,6 @@ def clean_settings_form(self):
                 self.cleaned_data[setting.name] = field_value
 
     return self.cleaned_data
-
     
 def save_settings_form(self):
     """
@@ -51,6 +50,7 @@ def save_settings_form(self):
         If the field type is 'file' a file entry will be created.
     """
     for setting in self.settings:
+        old_value = setting.get_value()
         try:
             field_value = self.cleaned_data[setting.name]
             if setting.input_type == "file":
@@ -68,23 +68,21 @@ def save_settings_form(self):
                     field_value = uploaded_file.pk
                 else:
                     #retain the old file if no file is set
-                    field_value = setting.value
+                    field_value = setting.get_value()
             
-            if setting.value != field_value:
-                #Setting changed. update the db entry.
-                #Setting model's save will recache.
-                setting.value = field_value
-                setting.save()
-                cache_setting(setting.scope, setting.scope_category, setting.name,
-                  setting)
-
+            # update value if changed and save
+            if old_value != field_value:
+                setting.set_value(field_value)
+                setting.save() # save updates the cash automatically
+            
+            # update the django site value in the contrib backend
             if setting.name == "siteurl" and setting.scope == "site":
                 if field_value:
-                    # Update the django site value in the contrib backend
                     django_site = Site.objects.get(pk=1)
                     django_site.domain = field_value.replace("http://","")
                     django_site.name = field_value.replace("http://","")
                     django_site.save()
+                    
         except KeyError:
             pass
             
@@ -100,7 +98,7 @@ def build_settings_form(user, settings):
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
-                'initial': setting.value,
+                'initial': setting.get_value(),
                 'required': False
             }
             if setting.client_editable:
@@ -135,7 +133,7 @@ def build_settings_form(user, settings):
             options = {
                 'label': setting.label,
                 'help_text': setting.description,
-                'initial': setting.value,
+                'initial': setting.get_value(),
                 'choices': choices,
                 'required': required,
             }
@@ -149,7 +147,7 @@ def build_settings_form(user, settings):
             from files.models import File as TendenciFile
             file_display = ''
             try:
-                try: val = int(setting.value)
+                try: val = int(setting.get_value())
                 except: val = 0
                 
                 try:
