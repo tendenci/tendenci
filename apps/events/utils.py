@@ -74,17 +74,16 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
                 style = styles['date_style']
             else:
                 style = styles['default_style']
-                
+
             # style the invoice balance column
             if col == balance_index:
                 balance = val
                 if not val:
                     balance = 0
-                if isinstance(balance,Decimal) and balance > 0:
-                    style = ['stylesbalance_owed_style']
+                if isinstance(balance, Decimal) and balance > 0:
+                    style = styles['balance_owed_style']
 
-            sheet.write(row+start, col, val, style=style) 
-
+            sheet.write(row+start, col, val, style=style)
 
 
 def get_ievent(request, d, event_id):
