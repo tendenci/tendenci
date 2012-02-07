@@ -196,26 +196,25 @@ def has_app_perm(user, perm, obj=None):
 def get_over_time_stats():
     """
     Returns membership statistics over time.
-    time ranges are:
-    1 month,
-    2 months,
-    3 months,
-    6 months,
-    1 year
+        Last Month 
+        Last 3 Months 
+        Last 6 Months 
+        Last 9 Months 
+        Last 12 Months
+        Year to Date
     """
-    now = datetime.now()
-    this_month = datetime(day=1, month=now.month, year=now.year)
-    this_year = datetime(day=1, month=1, year=now.year)
+    today = date.today()
+    year = datetime(day=1, month=1, year=today.year)
     times = [
-        ("Month", this_month, 0),
-        ("Last Month", last_n_month(1), 1),
-        ("Last 3 Months", last_n_month(2), 2),
-        ("Last 6 Months", last_n_month(5), 3),
-        ("Year", this_year, 4),
+        ("Last Month", months_back(1), 1),
+        ("Last 3 Months", months_back(3), 2),
+        ("Last 6 Months", months_back(6), 3),
+        ("Last 9 Months", months_back(9), 4),
+        ("Last 12 Months", months_back(12), 5),
+        ("Year to Date", year, 5),
     ]
-    
+
     stats = []
-    
     for time in times:
         start_dt = time[1]
         d = {}
@@ -225,17 +224,15 @@ def get_over_time_stats():
         d['active'] = active_mems.count()
         d['time'] = time[0]
         d['start_dt'] = start_dt
-        d['end_dt'] = now
+        d['end_dt'] = today
         d['order'] = time[2]
         stats.append(d)
-    
+
     return sorted(stats, key=lambda x:x['order'])
 
-def last_n_month(n):
-    """
-        Get the first day of the last n months.
-    """
-    now = datetime.now()
-    last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
-    return last
+def months_back(n):
+    """Return datetime minus n months"""
+    from dateutil.relativedelta import relativedelta
+
+    return date.today() + relativedelta(months=-n)
 
