@@ -74,17 +74,16 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
                 style = styles['date_style']
             else:
                 style = styles['default_style']
-                
+
             # style the invoice balance column
             if col == balance_index:
                 balance = val
                 if not val:
                     balance = 0
-                if isinstance(balance,Decimal) and balance > 0:
-                    style = ['stylesbalance_owed_style']
+                if isinstance(balance, Decimal) and balance > 0:
+                    style = styles['balance_owed_style']
 
-            sheet.write(row+start, col, val, style=style) 
-
+            sheet.write(row+start, col, val, style=style)
 
 
 def get_ievent(request, d, event_id):
@@ -540,23 +539,20 @@ def add_registration(*args, **kwargs):
     Add the registration
     Args are split up below into the appropriate attributes
     """
-    from decimal import Decimal
-    total_amount = 0
-    count = 0
-
     # arguments were getting kinda long
     # moved them to an unpacked version
-    request, event, reg_form, \
-    registrant_formset, price, \
-    event_price = args
+    (request, event, reg_form, registrant_formset, addon_formset,
+    price, event_price) = args
     
+    total_amount = 0
+    count = 0
     event_price = Decimal(str(event_price))
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
     discount = kwargs.get('discount', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
-
+    
     reg8n_attrs = {
         "event": event,
         "payment_method": reg_form.cleaned_data.get('payment_method'),
@@ -587,6 +583,12 @@ def add_registration(*args, **kwargs):
             total_amount += registrant.amount 
             
             count += 1
+            
+    # create each regaddon
+    for form in addon_formset.forms:
+        form.save(reg8n)
+    addons_price = addon_formset.get_total_price()
+    total_amount += addons_price
     
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount

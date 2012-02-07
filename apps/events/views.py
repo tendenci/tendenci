@@ -23,32 +23,33 @@ from django.forms.models import BaseModelFormSet
 from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import has_perm, get_notice_recipients, \
-    update_perms_and_save, get_administrators, is_admin
+from perms.utils import (has_perm, get_notice_recipients, is_admin,
+    update_perms_and_save, get_administrators)
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
 
-from events.models import Event, RegistrationConfiguration, \
-    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod, \
-    RegConfPricing, Addon, AddonOption, \
-    CustomRegForm, CustomRegFormEntry, CustomRegField, \
-    CustomRegFieldEntry
-from events.forms import EventForm, Reg8nForm, Reg8nEditForm, \
-    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm, \
-    RegistrationForm, RegistrantForm, RegistrantBaseFormSet, \
-    Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm, \
-    FormForCustomRegForm
-
 from events.search_indexes import EventIndex
-from events.utils import save_registration, email_registrants, add_registration
-from events.utils import registration_has_started, get_pricing, clean_price
-from events.utils import get_event_spots_taken, update_event_spots_taken
-from events.utils import get_ievent, copy_event, email_admins, get_active_days
-from events.utils import get_custom_registrants_initials, get_ACRF_queryset
-from events.utils import render_registrant_excel
+from events.models import (Event, RegistrationConfiguration,
+    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod,
+    RegConfPricing, Addon, AddonOption, CustomRegForm, CustomRegFormEntry,
+    CustomRegField, CustomRegFieldEntry)
+from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
+    PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
+    RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
+    Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet)
+from events.utils import (save_registration, email_registrants, 
+    add_registration, registration_has_started, get_pricing, clean_price,
+    get_event_spots_taken, update_event_spots_taken, get_ievent,
+    copy_event, email_admins, get_active_days, get_ACRF_queryset,
+    get_custom_registrants_initials, render_registrant_excel)
+from events.addons.forms import RegAddonForm
+from events.addons.formsets import RegAddonBaseFormSet
+from events.addons.utils import (get_active_addons, get_available_addons, 
+    get_addons_for_list)
 
 try:
     from notification import models as notification
@@ -276,8 +277,6 @@ def handle_uploaded_file(f, instance):
     # relative path
     return os.path.join(relative_directory, file_name)
 
-from events.forms import RegConfPricingBaseModelFormSet
-
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
@@ -291,7 +290,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         extra=1,
         can_delete=True
     )
-
+    
     if event.registration_configuration.regconfpricing_set.all():
         extra = 0
     else:
@@ -835,13 +834,13 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if not event.registration_configuration and \
        event.registration_configuration.enabled:
         raise Http404
-
+    
     # set up pricing
     try:
         price, price_pk, amount = clean_price(request.POST['price'], request.user)
     except:
         return multi_register_redirect(request, event, _('Please choose a price.'))
-        
+    
     # set the event price that will be used throughout the view
     event_price = amount
     
@@ -895,6 +894,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         spots_taken = get_event_spots_taken(event)
         if spots_taken > limit:
             return multi_register_redirect(request, event, _('Registration is full.'))
+    
     if custom_reg_form:
         RF = FormForCustomRegForm
     else:
@@ -903,19 +903,29 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     
     # start the form set factory    
     RegistrantFormSet = formset_factory(
-        RF, 
+        RF,
         formset=RegistrantBaseFormSet,
         can_delete=True,
         max_num=price.quantity,
         extra=(price.quantity - 1)
     )
-
+    
+    # get available addons
+    addons = get_available_addons(event, request.user)
+    
+    # start addon formset factory
+    RegAddonFormSet = formset_factory(
+        RegAddonForm,
+        formset=RegAddonBaseFormSet,
+        extra=0,
+    )
+    
     # update the amount of forms based on quantity
     total_regt_forms = price.quantity
-
+    
     # REGISTRANT formset
     post_data = request.POST or None
-     
+    
     if request.method != 'POST':
         # set the initial data if logged in
         initial = {}
@@ -930,13 +940,22 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             if profile:
                 initial.update({'company_name': profile.company,
                                 'phone':profile.phone,})
+        
         params = {'prefix': 'registrant',
                   'initial': [initial],
                   'event': event}
         if custom_reg_form:
             params.update({"custom_reg_form": custom_reg_form})
-
+        
         registrant = RegistrantFormSet(**params)
+        
+        addon_formset = RegAddonFormSet(
+                            prefix='addon',
+                            event=event,
+                            extra_params={
+                                'addons':addons,
+                            })
+        
     else: 
         if post_data and 'add_registrant' in request.POST:
             post_data = request.POST.copy()
@@ -947,8 +966,14 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         if custom_reg_form:
             params.update({"custom_reg_form": custom_reg_form}) 
         registrant = RegistrantFormSet(post_data, **params)
-        
-
+        addon_formset = RegAddonFormSet(request.POST,
+                            prefix='addon',
+                            event=event,
+                            extra_params={
+                                'addons':addons,
+                                'valid_addons':addons,
+                            })
+                            
     # REGISTRATION form
     if request.method == 'POST' and 'submit' in request.POST:
         reg_form = RegistrationForm(
@@ -969,14 +994,13 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.user.is_authenticated():
         del reg_form.fields['captcha']
     
-    # total registrant forms    
+    # total registrant forms
     if post_data:
         total_regt_forms = post_data['registrant-TOTAL_FORMS']
     
     if request.method == 'POST':
         if 'submit' in request.POST:
-            
-            if reg_form.is_valid() and registrant.is_valid():
+            if False not in (reg_form.is_valid(), registrant.is_valid(), addon_formset.is_valid()):
                 
                 # override event_price to price specified by admin
                 admin_notes = ''
@@ -1001,6 +1025,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     event, 
                     reg_form, 
                     registrant,
+                    addon_formset,
                     price,
                     event_price,
                     admin_notes=admin_notes,
@@ -1078,7 +1103,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     count = 0
     total_price = Decimal(str(0.00))
     free_event = event_price <= 0
-
+    
+    # total price calculation when invalid
     for form in registrant.forms:
         deleted = False
         if form.data.get('registrant-%d-DELETE' % count, False):
@@ -1093,7 +1119,9 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
             else:
                 total_price += event_price
         count += 1
-        
+    addons_price = addon_formset.get_total_price()
+    total_price += addons_price
+    
     # check if we have any error on registrant formset
     has_registrant_form_errors = False
     for form in registrant.forms:
@@ -1103,19 +1131,22 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 break
         if has_registrant_form_errors:
             break
-    return render_to_response(template_name, {'event':event,
-                                              'event_price': event_price,
-                                              'free_event': free_event,
-                                              'price_list': price_list,
-                                              'total_price': total_price,
-                                              'price': price,
-                                              'reg_form': reg_form,
-                                              'custom_reg_form': custom_reg_form,
-                                              'registrant': registrant,
-                                              'total_regt_forms': total_regt_forms,
-                                              'has_registrant_form_errors': has_registrant_form_errors,
-                                               }, 
-                    context_instance=RequestContext(request))
+    return render_to_response(template_name, {
+        'event':event,
+        'event_price': event_price,
+        'free_event': free_event,
+        'price_list':price_list,
+        'total_price':total_price,
+        'price': price,
+        'reg_form':reg_form,
+        'custom_reg_form': custom_reg_form,
+        'registrant': registrant,
+        'addons':addons,
+        'addon_formset': addon_formset,
+        'total_regt_forms': total_regt_forms,
+        'has_registrant_form_errors': has_registrant_form_errors,
+    }, context_instance=RequestContext(request))
+    
     
 def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/reg8n_edit.html"):
     reg8n = get_object_or_404(Registration, pk=reg8n_id)
@@ -1714,11 +1745,11 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     elif registrant_hash:
         # not real time index, pull directly from db
-#        sqs = SearchQuerySet()
-#        sqs = sqs.models(Registrant)
-#        sqs = sqs.filter(event_pk=event.pk)
+        #sqs = SearchQuerySet()
+        #sqs = sqs.models(Registrant)
+        #sqs = sqs.filter(event_pk=event.pk)
+        #sqs = sqs.auto_query(sqs.query.clean(registrant_hash))
         sqs = Registrant.objects.filter(registration__event=event)
-#        sqs = sqs.auto_query(sqs.query.clean(registrant_hash))
         sqs = sqs.order_by("-update_dt")
         
         # find the match - the for loop might be heavy. maybe add hash field later
@@ -1738,6 +1769,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
     registrants = registration.registrant_set.all().order_by('id')
     registrants_count = registration.registrant_set.count()
+    addons = registration.regaddon_set.all().order_by('id')
     
     for registrant in registrants:
         #registrant.assign_mapped_fields()
@@ -1745,13 +1777,14 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
             registrant.name = registrant.custom_reg_form_entry.__unicode__()
         else:
             registrant.name = ' '.join([registrant.first_name, registrant.last_name])
-
+    
     return render_to_response(template_name, {
         'event':event,
         'registrant':registrant,
         'registration':registration,
         'registrants': registrants,
         'registrants_count': registrants_count,
+        'addons': addons,
         'hash': registrant_hash,
         }, 
         context_instance=RequestContext(request))
@@ -2178,7 +2211,7 @@ def copy(request, id):
         instance = new_event
     )
     
-    messages.add_message(request, messages.INFO, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
+    messages.add_message(request, messages.SUCCESS, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
     
     return redirect('event.edit', id=new_event.id)
     
@@ -2218,7 +2251,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             photo = form.cleaned_data['photo_upload']
             if photo: event.save(photo=photo)
             
-            messages.add_message(request, messages.INFO,
+            messages.add_message(request, messages.SUCCESS,
                 'Your event submission has been received. It is now subject to approval.')
             return redirect('events')
         print "form", form.errors
@@ -2293,7 +2326,7 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
                 option.addon = addon
                 option.save()
                 
-            messages.add_message(request, messages.INFO, 'Successfully added %s' % addon)
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % addon)
             return redirect('event', event.pk)
     else:
         form = AddonForm()
@@ -2323,7 +2356,7 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
             addon = form.save()
             options = formset.save()
             
-            messages.add_message(request, messages.INFO, 'Successfully updated %s' % addon)
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % addon)
             return redirect('event', event.pk)
     else:
         form = AddonForm(instance=addon)

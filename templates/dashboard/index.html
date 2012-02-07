@@ -45,6 +45,17 @@
 
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         {% if admin %}
+	        {% if not has_paid and activate_url %}
+			<div class=" alert-message block-message fade in" data-alert="alert">
+				<a class="close" href="#">×</a>
+				Your free trial period {% if expired %}expired{% else %}expires{% endif %} on {{ expiration_dt }}.
+				<div class="alert-actions">
+		            <a class="btn" href="{{ activate_url }}">Activate Your Account</a>
+		        </div> 
+			</div>
+			{% endif %}
+        
+        
         <div class="alert-message block-message fade in success" data-alert="alert">
         <a class="close" href="#">×</a>
         <p><strong>Welcome to the Tendenci Dashboard!</strong></p>
@@ -53,6 +64,7 @@
             <a class="btn" href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Go to the Guide</a>
         </div>
     </div>
+    
         {% endif %}
     {% endif %}
 
@@ -164,7 +176,7 @@
         <div class="rss-feed">
         	<h3>{% trans "Tendenci Help" %}</h3>
 			{% cache 86400 tendenci_help_rss %}
-                {% get_rss "http://support.tendenci.com/en/rss/helpfiles/" as rss %}
+                {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
                     <li>

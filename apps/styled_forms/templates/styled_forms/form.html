@@ -4,6 +4,9 @@
 {% if form.errors.values %}
 <div class="errors">
 There were some problems in the form. Please review. Thanks!
+{% for error in form.non_field_errors %}
+    <p><a href="#">{{ error }}</a></p>
+{% endfor %}
 {% if form.fieldsets.fieldsets %}
 	{% for fieldset in form.fieldsets %}
 		{% for field in fieldset %}
