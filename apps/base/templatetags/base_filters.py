@@ -383,6 +383,5 @@ def md5_gs(value, arg=None):
     hashdt = ''
     if arg and int(arg):
         timestamp = datetime.now() + timedelta(hours=int(arg))
-        print timestamp.strftime("%Y;%m;%d;%H").replace(';0',';')
         hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0',';')).hexdigest()
     return ''.join([value,hashdt])
