@@ -190,7 +190,7 @@ class FormAdminForm(TendenciBaseForm):
 class FormForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
-    custom_payment = forms.BooleanField(label=_('Is Custom Payment'), required=False)
+    custom_payment = forms.BooleanField(label=_('Take Payment'), required=False)
     payment_methods = forms.ModelMultipleChoiceField(
             queryset=PaymentMethod.objects.all(),
             widget=forms.CheckboxSelectMultiple,
