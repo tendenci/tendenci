@@ -50,7 +50,12 @@
         <p>Events: {{ museum.events }}</p>
     {% endif %}
     {% if museum.special_offers %}
-        <p>Special Offers: {{ museum.special_offers }}</p>
+        <h3>Special Offers</h3>
+        <ul>
+        {% for special_offer in museum.special_offers.all %}
+            <li><a href="{% url story.print_details special_offer.pk %}">{{ special_offer}}</a></li>
+        {% endfor %}
+        </ul>
     {% endif %}
 </div>
 <div class="museum-connect">

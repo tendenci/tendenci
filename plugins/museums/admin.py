@@ -22,6 +22,7 @@ class PhotoAdmin(admin.StackedInline):
 class MuseumAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'edit_link', u'name', 'ordering']
     list_filter = []
+    filter_horizontal = ['special_offers']
     search_fields = ['name', 'about']
     list_editable = ['ordering']
     prepopulated_fields = {'slug': ['name']}

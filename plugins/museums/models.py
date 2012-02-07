@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from stories.models import Story
 from files.models import file_directory, File
 
 from museums.managers import MuseumManager
@@ -36,7 +37,7 @@ class Museum(TendenciBaseModel):
     snacks = models.BooleanField(_(u'Snacks?'), default=False)
     shopping_information = models.TextField(_(u'Shopping Information'), blank=True)
     events = models.CharField(_(u'Events'), max_length=200, blank=True)
-    special_offers = models.TextField(_(u'Special Offers'), blank=True)
+    special_offers = models.ManyToManyField(Story, default=None)
     
     ## Stay Connected
     facebook = models.CharField(_(u'Facebook'), max_length=200, blank=True)
