@@ -1,6 +1,7 @@
 {% extends "museums/base.html" %}
 {% load base_filters %}
 {% load base_tags %}
+{% load i18n %}
 
 {% block body %}
 <div class="museum-wrap">
@@ -49,11 +50,17 @@
     {% if museum.events %}
         <p>Events: {{ museum.events }}</p>
     {% endif %}
-    {% if museum.special_offers %}
+    {% if museum.get_special_offers %}
         <h3>Special Offers</h3>
         <ul>
-        {% for special_offer in museum.special_offers.all %}
-            <li><a href="{% url story.print_details special_offer.pk %}">{{ special_offer}}</a></li>
+        {% for special_offer in museum.get_special_offers %}
+            <li>
+                <a href="{% url story.print_details special_offer.pk %}">{{ special_offer}}</a> 
+                {% if special_offer.expires %}
+                    ({% trans "expires:" %} {{ special_offer.end_dt }})
+                {% endif %}
+
+            </li>
         {% endfor %}
         </ul>
     {% endif %}
