@@ -82,5 +82,15 @@ class Museum(TendenciBaseModel):
     def full_address(self):
         return "%s, %s, %s" % (self.address, self.city, self.state)
 
+    def get_special_offers(self):
+        from datetime import datetime
+        from django.db.models import Q
+        now = datetime.now()
+
+        # Considering special offers that expire
+        return self.special_offers.filter(
+            Q(expires=True, start_dt__lte=now, end_dt__gte=now) | Q(expires=False, start_dt__lte=now)
+        )
+
 class Photo(File):
     museum = models.ForeignKey(Museum, related_name="photos")
