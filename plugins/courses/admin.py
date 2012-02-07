@@ -48,6 +48,11 @@ class CourseAdmin(admin.ModelAdmin):
     form = CourseForm
     actions = []
 
+    class Media:
+        js = (
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:courses_course_change', args=[obj.pk])
         return link

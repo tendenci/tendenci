@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
@@ -103,6 +103,7 @@ def get_pricings_for_list(event, users):
     
     for user in users:
         pricings = pricings | get_available_pricings(event, user)
+    pricings = pricings | get_available_pricings(event, AnonymousUser())
     
     # return the QUERYSET
     return pricings
@@ -190,7 +191,7 @@ def create_registrant(form, event, reg8n, **kwargs):
     
     return registrant
     
-def process_registration(reg_form, reg_formset, **kwargs):
+def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
     """
     Create the registrants and the invoice for payment.
     reg_form and reg_formset MUST be validated first
@@ -200,7 +201,9 @@ def process_registration(reg_form, reg_formset, **kwargs):
     # init variables
     user = reg_form.get_user()
     event = reg_form.get_event()
-    total_price = reg_formset.get_total_price()
+    registrants_price = reg_formset.get_total_price()
+    addons_price = addon_formset.get_total_price()
+    total_price = registrants_price + addons_price
     admin_notes = ''
     
     # get the discount, apply if available
@@ -239,6 +242,10 @@ def process_registration(reg_form, reg_formset, **kwargs):
             reg8n,
         ]
         registrant = create_registrant(*registrant_args, custom_reg_form=custom_reg_form)
+        
+    # create each regaddon
+    for form in addon_formset.forms:
+        form.save(reg8n)
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)

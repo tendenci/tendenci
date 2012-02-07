@@ -73,11 +73,13 @@ class Story(TendenciBaseModel):
         return None
 
     def get_absolute_url(self):
-        url = self.full_story_link
-        parsed_url = ParseUri().parse(url)
-
-        if not parsed_url.protocol:  # if relative URL
-            url = '%s%s' % (get_setting('site','global','siteurl'), url)
+        url = ("story", [self.pk])
+        if self.full_story_link:
+            url = self.full_story_link
+            parsed_url = ParseUri().parse(url)
+    
+            if not parsed_url.protocol:  # if relative URL
+                url = '%s%s' % (get_setting('site','global','siteurl'), url)
 
         return url
 
