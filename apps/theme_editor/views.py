@@ -48,7 +48,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # if the default_file is not a directory or file within
     # the themes folder then return a 404
     if not qstr_is_file(default_file, ROOT_DIR=theme_root) and not qstr_is_dir(default_file, ROOT_DIR=theme_root):
-        raise Http404
+        raise Http404("%s not found in %s" % (default_file,theme_root))
     
     # if default_file is a directory then append the
     # trailing slash so we can get the dirname below
