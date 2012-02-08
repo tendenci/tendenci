@@ -746,7 +746,7 @@ class App(TendenciBaseModel):
 
     class Meta:
         verbose_name = "Membership Application"
-        permissions = (("view_membership_application","Can view membership application"),)
+        permissions = (("view_app","Can view membership application"),)
 
     def __unicode__(self):
         return self.name
