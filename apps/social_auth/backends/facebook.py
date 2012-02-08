@@ -50,8 +50,8 @@ class FacebookAuth(BaseOAuth):
     AUTH_BACKEND = FacebookBackend
     
     def __init__(self, request, redirect):
-        self.FACEBOOK_APP_ID = Setting.objects.get(name='facebook_app_id').get_value()
-        self.FACEBOOK_API_SECRET = Setting.objects.get(name='facebook_api_secret').get_value()
+        self.FACEBOOK_APP_ID = get_setting(scope='module', scope_category='users', name='facebook_app_id')
+        self.FACEBOOK_API_SECRET = get_setting(scope='module', scope_category='users', name='facebook_api_secret')
         super(FacebookAuth, self).__init__(request, redirect)
     
     def auth_url(self):
