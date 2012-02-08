@@ -32,7 +32,24 @@ class GroupSubscription(models.Model):
         else:
             name_data = self.data.filter(field_label__icontains="name")
             if name_data:
-                return name_data[0].value
+                first_name = ""
+                last_name = ""
+                name = ""
+                for obj in name_data:
+                    field = obj.field_label
+                    if 'full' in field.lower():
+                        name = obj.value
+                    if 'first' in field.lower():
+                        first_name = obj.value
+                    if 'last' in field.lower():
+                        last_name = obj.value
+                if not name:
+                    if first_name or last_name:
+                        name = '%s %s' % (first_name, last_name)
+                if name:
+                    return name
+                else:
+                    return name_data[0].value
         return None
         
     @property
