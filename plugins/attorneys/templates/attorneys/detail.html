@@ -65,6 +65,7 @@
                     {% if attorney.phone %}<tr><td>Phone:</td><td>{{ attorney.phone }}</td></tr>{% endif %}
                     {% if attorney.fax %}<tr><td>Fax:</td><td>{{ attorney.fax }}</td></tr>{% endif %}
                     {% if attorney.email %}<tr><td>Email:</td><td><a href="mailto:{{ attorney.email }}">{{ attorney.email }}</a></td></tr>{% endif %}
+                    <tr><td colspan="2"><a href="{% url attorneys.vcard attorney.slug %}">Download vCard</a></td></tr>
                     </table>
                 </div>
             </div>

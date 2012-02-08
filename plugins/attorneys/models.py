@@ -76,6 +76,13 @@ class Attorney(TendenciBaseModel):
             return "%s %s" % (self.first_name, self.last_name)
 
     @property
+    def category_name(self):
+        for cat in CATEGORY_CHOICES:
+            if self.category == cat[0]:
+                return cat[1]
+        return None
+
+    @property
     def photo(self):
         """
         If the need arises we can have multiple photos for attorneys.

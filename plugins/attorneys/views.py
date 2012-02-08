@@ -8,6 +8,7 @@ from site_settings.utils import get_setting
 from perms.utils import has_perm
 from event_logs.models import EventLog
 from attorneys.models import Attorney
+from attorneys.utils import get_vcard_content
 
 def index(request, template_name='attorneys/index.html'):
     attorneys = Attorney.objects.search(query=None, user=request.user)
@@ -76,4 +77,14 @@ def detail(request, slug=None, template_name='attorneys/detail.html'):
             'attorney': attorney,
         },
         context_instance=RequestContext(request))
-        
+
+def vcard(request, slug):
+    """
+    Method for returning single downloadable vcard
+    """
+    attorney = get_object_or_404(Attorney, slug=slug)
+    output = get_vcard_content(attorney)
+    filename = "%s.vcf" % (attorney.slug)
+    response = HttpResponse(output, mimetype="text/x-vCard")
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return response
