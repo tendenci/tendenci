@@ -111,15 +111,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
         'category': getattr(category,'name','0'),
         'sub_category': getattr(sub_category,'name','0')
     }
-        
-    defaults = {
-        'title': page.get_title(),
-        'description': page.get_description(),
-        'keywords': page.get_keywords(),
-        'canonical_url': page.get_canonical_url(),
-    }
-    page.meta = MetaTags(**defaults)
-    
+
     if request.method == "POST":
         form = form_class(request.POST, instance=page, user=request.user)
         metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
