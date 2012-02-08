@@ -11,6 +11,6 @@ class Command(BaseCommand):
         from django.core.cache import cache
 
         setting = Setting.objects.get(scope='module', scope_category='theme_editor')
-        setting.value = settings.SITE_THEME
+        setting.set_value(settings.SITE_THEME)
         setting.save()
         cache.clear()

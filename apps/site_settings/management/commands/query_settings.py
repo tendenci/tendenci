@@ -25,7 +25,7 @@ class Command(BaseCommand):
                     'scope': 'site',
                     'scope_category': 'global'
                 })
-        return_str = site_url_setting.value
+        return_str = site_url_setting.get_value()
         
         for param in params_list:
             return_str += ','
@@ -47,6 +47,6 @@ class Command(BaseCommand):
                 return_str += 'NOT EXIST'
             else:
                 setting = settings[0]
-                return_str += setting.value
+                return_str += setting.get_value()
                 
         print return_str
