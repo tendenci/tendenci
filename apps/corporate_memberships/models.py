@@ -597,7 +597,8 @@ class CorporateMembership(TendenciBaseModel):
         corp_memb_archive.corporate_membership = self
         corp_memb_archive.corp_memb_create_dt = self.create_dt
         corp_memb_archive.corp_memb_update_dt = self.update_dt
-        corp_memb_archive.archive_user = user
+        if user and (not user.is_anonymous()):
+            corp_memb_archive.archive_user = user
         corp_memb_archive.save()
     
     def get_entry(self):
