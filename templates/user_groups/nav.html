@@ -58,7 +58,7 @@
                 {% endif %}
                 {% endif %}
                 {% if can_edit_group %}
-                    <li><a href="{% url group.edit nav_object.pk %}">{% trans "Edit Group" %}</a></li>
+                    <li><a href="{% url group.edit nav_object.slug %}">{% trans "Edit Group" %}</a></li>
                     <a href="{% url group.edit_perms nav_object.id %}">{% trans "Edit Permissions" %}</a></li>
                 {% endif %}
                 {% if group.type != "membership" %}
