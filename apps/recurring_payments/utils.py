@@ -36,7 +36,11 @@ class RecurringPaymentEmailNotices(object):
         self.admin_emails = self.get_admin_emails() 
 
     def get_admin_emails(self):
-        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')
+        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')   
+        payment_admins = get_setting('module', 'payments', 'paymentrecipients')
+        if payment_admins:
+            payment_admins = payment_admins.split(',')
+            admin_emails += payment_admins
             
         if admin_emails:
             admin_emails = ','.join(admin_emails)
