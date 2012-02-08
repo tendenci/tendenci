@@ -23,7 +23,7 @@ def settings(request):
                        setting.name]
         context_key = '_'.join(context_key)
 
-        value = setting.value.strip()
+        value = setting.get_value().strip()
         
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
