@@ -56,7 +56,7 @@ def job_pricing_table(context):
     premium_jp = JobPricing.objects.filter(status=1).filter(premium_price__gt=0)
     if premium_jp:
         show_premium_price = True
-    member_jp = JobPricing.objects.filter(status=1).filter(regular_price_member__gt=0)
+    member_jp = JobPricing.objects.filter(status=1).filter(premium_price_member__gt=0)
     if member_jp:
         show_member_price = True
     context.update({

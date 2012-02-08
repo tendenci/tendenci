@@ -32,7 +32,7 @@
 	{%for jp in job_pricings %}
 		<tr class="{% cycle 'row1' 'row2' %}">
 			<td>{% blocktrans count jp.duration as jp_duration %}{{ jp_duration  }} day{% plural %}{{ jp_duration  }} days{% endblocktrans %}</td>
-			{% if show_member_price %}
+			{% if show_member_price and jp.show_member_pricing %}
 				{% if show_premium_price %}
 					<td>{{ jp.regular_price_member|format_currency }}</td>
 					<td>{{ jp.premium_price_member|format_currency }}</td>
