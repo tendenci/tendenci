@@ -308,6 +308,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         reply_to = extra_context['reply_to']
     else:
         reply_to = None
+    sender_display = extra_context.get('sender_display', '')
         
     if 'recipient_bcc' in extra_context.keys():
         recipient_bcc = extra_context['recipient_bcc']
@@ -328,6 +329,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
         if reply_to:
             headers['Reply-To'] = reply_to
+        if sender_display:
+            headers['From'] = sender_display
+        
         if recipient_bcc:
             email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, 
                                  recipients, recipient_bcc, headers=headers)
