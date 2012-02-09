@@ -184,6 +184,7 @@ class NoticeAdmin(admin.ModelAdmin):
     
     class Media:
         js = (
+            "%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
         
