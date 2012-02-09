@@ -9,182 +9,11 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-anon-registration.css" />
 {% endblock %}
 
 {% block body %}
-
-<style type="text/css"> 
-    .event-info {
-        padding: 10px;
-        background-color: #F5F5F5;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-        text-align: left;   
-        margin-bottom: 10px;
-        width: 61%;
-    }
-    .event-title {
-        font-size: 1.3em;   
-        margin-bottom: 10px;
-    }
-    .event-time {
-        font-size: 1.1em;
-    }
-    .event-price {
-        font-size: 1.5em;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .event-msg {
-        padding: 10px;
-        color: #777;
-    }
-    .hidden {
-        display: none;
-    }
-    .registrant-header{
-        border-bottom: 1px dotted #ccc;
-        margin-top: 5px;
-        padding: 5px 8px;
-        font-weight: bold;
-        font-size: 14px;
-        cursor: pointer;
-    }
-    .even-registrant, .odd-registrant{
-        background-color: #f5f5f5;
-        padding: 10px;
-    }
-    #reg-form-box{
-        border: 1px solid #ccc;
-        background-color: #fff;
-        padding: 1em;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        width: 200px;
-        
-    }
-    #reg-form-box input[type="text"]{
-        width: 150px;
-    }
-    #reg-form-wrap{
-        float: right;
-        width: 200px;
-        margin:2px;
-    }
-    #registrant-forms{
-        width: 70%;
-    }
-    
-    #reg-summary{
-        font-weight: bold;
-        font-size: 1.2em;
-        margin-bottom: 1em;
-        border-bottom: 1px solid silver;
-    }
-    #summary-total-price{
-        border-top: 1px solid #ccc;
-        margin-bottom: 1em;
-    }
-    #total-label,#total-amount{ 
-        font-weight: bold;
-    }
-    #summary-price, #summary-total-price{
-        width: 90%;
-    }
-    #summary-price td, #summary-total-price td{
-        padding: 3px;
-    }
-    #summary-discounted-price{
-        margin-bottom: 1em;
-        width: 90%;
-	}
-    .line-on-top{
-        border-top: 1px solid #ccc;
-    }
-    #register-button {
-        font-size: 1.2em;
-        padding: 5px;
-    }
-    div.delete-button-wrap{
-        display: none;
-    }
-    
-    #update_summary{
-        margin-bottom: 1em;
-        padding: 3px;
-    }
-    
-    .errors-box{
-        background-color: #FFEBE8;
-        border: 2px solid #FF8B78;
-        margin-bottom: 20px;
-        padding: 10px;
-        width: 80%;
-    }
-    .deleted-item td{
-        text-decoration: line-through;
-    }
-    .clear{
-        clear: both;
-    }
-    .delete-button{
-        padding: 6px 10px 6px 15px;
-        background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
-        border: 1px solid #CCC;
-        cursor: pointer;
-        color: darkred;
-    }
-
-    .extra-registrants {
-        width: 50px;
-    }
-    
-    .add-registrants-box {
-        padding-top: 20px;
-    }
-    
-    .add-registrants-box h3 {
-        margin-bottom: 5px;
-    }
-    
-    .add-registrants-box input{
-        margin: 5px;
-    }
-
-    .summary-total {
-        font-weight: bold;
-        font-size: 1.7em;
-        margin-bottom: 10px;
-    }
-
-    .summary-payment {
-        margin-bottom: 15px;
-    }
-    
-    .registrant-set{
-        border:1px solid black;
-        padding: 5px;
-        margin-bottom: 15px;
-    }
-    
-    .admin {color: #800; font-weight: bold;}
-    .discount-summary {display: none;}
-    .showhide {font-size: 18px;}
-    .gray-text {color: #777; }
-    
-    .error {
-        color: #722;
-        padding: 5px;
-    }
-    
-    .notice {
-        color: #992;
-        padding: 5px;
-    }
-</style>
-
 <div class="t">    
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
@@ -204,11 +33,12 @@
         </div>
     </div>
         
-    {% if reg_form.errors or registrant.errors %}
+    {% if reg_form.errors or registrant.errors or registrant.non_form_errors %}
         <div class="errors-box">
+            {% trans "There were some problems in the forms. Please review. Thanks!" %}
             <ul>
                 {% for error in reg_form.non_field_errors %}
-                    <li><a href="javascript:;">{{ error }}</a></li>
+                    <li>{{ error }}</li>
                 {% endfor %}
                 {% for field in reg_form %}
                     {% if field.errors %}
@@ -218,14 +48,14 @@
                     {% endif %}
                 {% endfor %}
                 {% for error in registrant.non_form_errors %}
-                    <li><a href="javascript:;">{{ error }}</a></li>
+                    <li>{{ error }}</li>
                 {% endfor %}
                 {% for form in registrant.forms %}
                     {{ form.non_field_errors }}
                     {% for field in form %}
                         {% if field.errors %}
                             {% for error in field.errors %}
-                            <li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+                            <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
@@ -246,7 +76,7 @@
                     <div id="original-price" style="display:none;">0.00</div>
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-    					<span class="summary-total-amount" id="summary-total-amount">{{ registrant.get_total_price }}</span>
+    					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
     				</div>
 
                     <div class="summary-payment">
@@ -278,11 +108,20 @@
     				{# price list #}
     				<table id="summary-price">
     					{% for form in registrant.forms %}
-                        <tr id="price_registrant_{{ forloop.counter0 }}">
-                            <td width="50%">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                        <tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}">
+                            <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="reg-price">{{ form.get_price }}</span>
+                                <span class="item-price">{{ form.get_price|floatformat:2 }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% for form in addon_formset.forms %}
+                        <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
+                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                            <td width="50%" align="right">
+                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                <span class="item-price">{{ form.cleaned_data.addon.price|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -292,7 +131,7 @@
 							<td><div id="total-label">{% trans "Total" %}</div></td>
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="total-amount">{{ registrant.get_total_price }}</span>
+								<span id="total-amount">{{ registrant.get_total_price|floatformat:2 }}</span>
 							</td>
 						</tr>
                         <tr class="discount-summary">
@@ -403,28 +242,51 @@
                 </div>
 				{% endfor %}
 			</div>
+            
+            {% if addons %}
+                <div class="addon-forms">
+                    {% include 'events/addons/formset.html' %}
+                </div>
+            {% endif %}
 			
             <div class="add-registrants-box">
-                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
+                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}:</h3>
                 <div id="pricing-choices">
                     {% for pricing in pricings %}
                     <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
-                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" is_public="{{ pricing.allow_anonymous }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>{{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
+                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" 
+                        is_public="{{ pricing.allow_anonymous }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>
+                        {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
                     </div>
                     {% empty %}
-                    No pricings are publicly available.<br>
+                        No pricings available.<br />
                     {% endfor %}
                 </div>
                 <div>
-                    Number of Sets:<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
+                    {% trans 'How many?' %}<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
                 </div>
-                <h3>...or enable more pricings:</h3>
+                <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
+                <div id="addon-choices">
+                    {% for addon in addons %}
+                    <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
+                    <input type="radio" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}"
+                        is_public="{{ addon.allow_anonymous }}" {% if not addon.allow_anonymous %}DISABLED{% endif %}>
+                        {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
+                    </div>
+                    {% empty %}
+                        No addons available.<br />
+                    {% endfor %}
+                </div>
+                <div>
+                    {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
+                </div>
+                <h3>{% trans 'Enable more pricings and addons' %}:</h3>
                 <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="" />
                 {% if allow_memberid_pricing %}
                     <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="" />
                 {% endif %}
                 <br/>
-                <input id="pricing-check" type="button" value="Get More Pricings">
+                <input id="pricing-check" type="button" value="Get More">
             </div>
             
             <div class="clear"></div>
@@ -448,106 +310,10 @@
             
             <div class="clear"></div>
         </div>
+        
         </form>
-        <div style="display: none;">
-            <table>
-            <tr id="price_registrant-hidden">
-                <td width="50%">{% trans "Reg" %}#<span class="item-counter"></span></td>
-                <td width="50%" align="right">
-                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                    <span class="reg-price"></span>
-                </td>
-            </tr>
-            </table>
-            <div id="delete-hidden" class="delete">
-                <div class="delete-button-wrap">
-                    <input type="button" class="delete-button" value="&nbsp;&nbsp;{% trans 'Delete' %}">
-                </div>
-            </div>
-            <div id="registrant-hidden">
-                <div class="registrant-header">
-                    <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">1</span>:
-                </div>
-                <div class="registrant-notice"></div>
-                <div class="odd-registrant">
-                	
-                	{% if custom_reg_form %}
-					{% for field in hidden_form %}
-					{% if field.label != 'Delete' %}
-						<div class="form-field">
-							{% if field.name != 'pricing' %}
-								<div class="error">{{ field.errors }}</div>
-								<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
-								<div class="field">{{ field }}</div>
-								{% if field.help_text %}
-			                    <div class="help-text">{{ field.help_text }}</div>   
-			                    {% endif %}
-		                    {% else %}
-		                    	<div class="field">{{ field }}</div>
-		                    {% endif %}
-						</div>
-					{% endif %}
-					{% endfor %}
-					
-					{% else %}
-        	
-                	
-                	
-                	
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label required">{% trans "First Name" %}</div>
-                        <div class="field">
-                            <input value="{{ request.user.first_name }}" id="id_registrant-0-first_name" type="text" name="registrant-0-first_name" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label required">{% trans "Last Name" %}</div>
-                        <div class="field">
-                            <input value="{{ request.user.last_name }}" id="id_registrant-0-last_name" type="text" name="registrant-0-last_name" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label">{% trans "Company" %}</div>
-                        <div class="field">
-                            <input id="id_registrant-0-company_name" type="text" name="registrant-0-company_name" maxlength="100">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label">{% trans "Phone" %}</div>
-                        <div class="field">
-                            <input id="id_registrant-0-phone" type="text" name="registrant-0-phone" maxlength="20">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label required">{% trans "Email" %}</div>
-                        <div class="field">
-                            <input class="registrant-email" value="{{ request.user.email }}" type="text" name="registrant-0-email" id="id_registrant-0-email">
-                        </div>
-                    </div>
-                    {% if allow_memberid_pricing %}
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label">{% trans "Member ID" %}</div>
-                        <div class="field">
-                            <input class="registrant-memberid" value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="form-field">
-                        <div class="field">
-                            <input class="registrant-pricing" type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
-                        </div>
-                    </div>
-                    
-                   {% endif %}
-                    
-                </div>
-            </div>
+        <div style="display:none">
+            {% include 'events/registration/base_forms.html' %}
         </div>
     </div>
 </div>
@@ -555,7 +321,10 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript">
-    {% include 'events/registration/registration.js' %}
+<script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
+<script type="text/javascript" >
+    {% include 'events/registration/include/register-registrant.js' %}
+    {% include 'events/registration/include/register-addon.js' %}
+    {% include 'events/registration/include/register.js' %}
 </script>
 {% endblock %}

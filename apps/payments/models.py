@@ -195,9 +195,9 @@ class PaymentMethod(models.Model):
     admin_only = models.BooleanField(default=0, help_text=_("if checked, it will only show for administrators"))
 
     def __unicode__(self):
-        name = "%s (%s)" % (self.human_name, self.machine_name)
+        name = "%s" % (self.human_name, )
 
         if self.is_online:
-            return "%s Online" % name
-        return "%s Offline" % name
+            return "%s - Online" % name
+        return "%s - Offline" % name
     

@@ -1,5 +1,5 @@
 import imghdr
-from os.path import splitext
+from os.path import splitext, basename
 from datetime import datetime
 from datetime import timedelta
 
@@ -34,6 +34,7 @@ class StoryForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
+    remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
     class Meta:
         model = Story
@@ -101,10 +102,20 @@ class StoryForm(TendenciBaseForm):
                  
     def __init__(self, *args, **kwargs):
         super(StoryForm, self).__init__(*args, **kwargs)
+        if self.instance.image:
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+        else:
+            self.fields.pop('remove_photo')
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-      
+
+    def save(self, *args, **kwargs):
+        story = super(StoryForm, self).save(*args, **kwargs)
+        if self.cleaned_data.get('remove_photo'):
+            story.image = None
+        return story
+
 class UploadStoryImageForm(forms.Form):
     file  = forms.FileField(label=_("File Path"))
 

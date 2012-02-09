@@ -506,12 +506,23 @@ class Registration(models.Model):
         Get first registrant w/ email address
         Order by insertion (primary key)
         """
-
-        try:
-            registrant = self.registrant_set.filter(
-                email__isnull=False).order_by("pk")[0]
-        except:
-            registrant = None
+        registrant = None
+        
+        if self.event.registration_configuration.use_custom_reg_form:
+            registrants = self.registrant_set.all().order_by("pk")
+            for reg in registrants:
+                if reg.custom_reg_form_entry:
+                    email = reg.custom_reg_form_entry.get_email()
+                    if email:
+                        registrant = reg
+                        registrant.email = email
+                        break
+        else:
+            try:
+                registrant = self.registrant_set.filter(
+                    email__isnull=False).order_by("pk")[0]
+            except:
+                pass
 
         return registrant
 
@@ -794,6 +805,9 @@ class Event(TendenciBaseModel):
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     notes = models.TextField(_("Notes"), max_length=2000, blank=True)
+    validate_guest = models.BooleanField(_("Validate Guest"), default=False,
+                                         help_text="If checked, required fields for " + \
+                                         "the primary registrant will also be required for the guests")
     
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -908,6 +922,9 @@ class CustomRegFormEntry(models.Model):
                          self.get_value_of_mapped_field('last_name')])
         return name.strip()
     
+    def get_email(self):
+        return self.get_value_of_mapped_field('email')
+    
     def get_field_entry_list(self):
         field_entries = self.field_entries.order_by('field')
         entry_list = []
@@ -933,6 +950,7 @@ class CustomRegFormEntry(models.Model):
                                     'position_title', 
                                     'company_name'
                                     ]).filter(field__display_on_roster=1).order_by('field')
+
         for field_entry in field_entries:
             list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
         return list_on_roster
@@ -990,4 +1008,46 @@ class AddonOption(models.Model):
     
     def __unicode__(self):
         return self.addon.title + ": " + self.title
-
+    
+    def field_name(self):
+        return "%s_%s" % (self.addon.pk, self.title.lower().replace(' ', '').replace('-', ''))
+    
+    def choice_list(self):
+        choices = []
+        for op in self.choices.split(','):
+            if op:
+                choices.append(op)
+        return choices
+        
+            
+class RegAddon(models.Model):
+    """Event registration addon.
+    An event registration can avail multiple addons.
+    This stores the addon's price at the time of registration.
+    This stores the user's selected options for the addon.
+    """
+    registration = models.ForeignKey('Registration')
+    addon = models.ForeignKey('Addon')
+    
+    # price at the moment of registration
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, default=0)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return "%s: %s" % (self.registration.pk, self.addon.title)
+    
+class RegAddonOption(models.Model):
+    """Selected event registration addon option.
+    """
+    regaddon = models.ForeignKey(RegAddon)
+    option = models.ForeignKey(AddonOption)
+    selected_option = models.CharField(max_length=50)
+    
+    class Meta:
+        unique_together = (('regaddon', 'option'),)
+        
+    def __unicode__(self):
+        return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
+    

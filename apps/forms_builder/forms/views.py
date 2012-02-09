@@ -82,13 +82,10 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         if form.is_valid() and formset.is_valid():
             form_instance = form.save(commit=False)
             form_instance = update_perms_and_save(request, form, form_instance)
-            
-            # update_perms_and_save does not appear to consider ManyToManyFields
-            for method in form.cleaned_data['payment_methods']:
-                form_instance.payment_methods.add(method)
-            
-            formset.save()
-            
+
+            form.save_m2m()  # save payment methods            
+            formset.save()  # save price options
+
             # remove all pricings if no custom_payment form
             if not form.cleaned_data['custom_payment']:
                 form_instance.pricing_set.all().delete()
@@ -407,22 +404,16 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
 
     for field in form_for_form.fields:
-        try:
-            form_for_form.fields[field].initial = request.GET.get(field, '')
-        except:
-            pass
+        form_for_form.fields[field].initial = request.GET.get(field, '')
 
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
             entry.save()
-            #email_headers = {'Content-Type': 'text/html'}
             email_headers = {}  # content type specified below
             if form.email_from:
                 email_headers.update({'Reply-To':form.email_from})
-#            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
-#                for (k, v) in form_for_form.fields.items()]
                 
             subject = generate_email_subject(form, entry)
                 
@@ -451,11 +442,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     f.seek(0)
                     msg.attach(f.name, f.read())
                 msg.send()
-            
+
             # payment redirect
             if form.custom_payment:
                 # create the invoice
-                invoice = make_invoice_for_entry(entry)
+                invoice = make_invoice_for_entry(entry, custom_price=form_for_form.cleaned_data.get('custom_price'))
                 # log an event for invoice add
                 log_defaults = {
                     'event_id' : 311000,

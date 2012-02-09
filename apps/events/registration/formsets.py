@@ -69,9 +69,6 @@ class RegistrantBaseFormSet(BaseFormSet):
                 self.pricings[pricing].append(form)
             else:
                 self.pricings[pricing] = [form,]
-
-    def get_total_price(self):
-        return self.total_price
     
     def set_sets(self):
         """
@@ -94,11 +91,27 @@ class RegistrantBaseFormSet(BaseFormSet):
         if not self.sets:
             self.set_sets()
         return self.sets
+        
+    def get_total_price(self):
+        return self.total_price
+        
+    def get_user_list(self):
+        """returns a list of user registrants"""
+        users = []
+        for i in range(0, self.total_form_count()):
+            form = self.forms[i]
+            user = form.get_user()
+            if not user.is_anonymous():
+                users.append(user)
+        return users
     
     def clean(self):
         """
         Validate the set of registrants for all the pricings used.
         """
+        
+        if self.total_form_count()<1:
+            raise forms.ValidationError(_('You must register at least 1 registrant per registration'))
         
         # organize pricing dict
         self.set_pricing_groups()
