@@ -93,21 +93,21 @@
             </div>
             {% endif %}
             
-            {% if event.addon_set.all %}
+            {% if addons %}
                 <hr/>
+                <h2 class="addons-title">{% trans "Addons" %}</h2>
                 <div class="addons-wrap">
-                {% for addon in event.addon_set.all %}
-                    <div class="addon">
-                    <strong>{% trans "Addon" %}</strong> {{ addon.title }}
-                        {% if can_edit %}<a href="{% url event.edit_addon event.pk addon.pk %}">Edit</a>{% endif %}
-                        <br/>Price: {{ addon.price }}
+                    {% for addon in addons %}
+                        <h2>{{ addon.title }}</h2>
+                        <table class="addon-detail">
+                        <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
                         {% if addon.options.all %}
                             {% for op in addon.options.all %}
-                                <br/>{{ op.title }}: {{ op.choices }}
+                                <tr><td><strong>{{ op.title }} {% trans "options" %}</strong></td><td>{{ op.choices }}</td></tr>
                             {% endfor %}
                         {% endif %}
-                    </div>
-                {% endfor %}
+                        </table>
+                    {% endfor %}
                 </div>
             {% endif %}
             
