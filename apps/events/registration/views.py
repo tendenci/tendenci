@@ -16,7 +16,7 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from memberships.models import Membership
 
-from events.models import Event, RegConfPricing, Registrant
+from events.models import Event, RegConfPricing, Registrant, Addon
 from events.utils import email_admins
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.registration.utils import get_available_pricings, reg_status
@@ -25,6 +25,9 @@ from events.registration.utils import process_registration, send_registrant_emai
 from events.registration.utils import get_pricings_for_list
 from events.registration.forms import RegistrantForm, RegistrationForm
 from events.registration.formsets import RegistrantBaseFormSet
+from events.addons.forms import RegAddonForm
+from events.addons.formsets import RegAddonBaseFormSet
+from events.addons.utils import get_active_addons, get_available_addons, get_addons_for_list
 from events.forms import FormForCustomRegForm
 
 def ajax_user(request, event_id):
@@ -86,6 +89,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     the first match will be the basis of the pricing list.
     If the setting "sharedpricing" is enabled this ajax check will consider
     the emails associated with the session.
+    ** This now also returns ADDON info in the same format.
     """
     event = get_object_or_404(Event, pk=event_id)
     
@@ -108,18 +112,20 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         if users:
             user = users[0]
     
+    # register user in user list
+    user_pks = request.session.get('user_list', [])
+    if not user.is_anonymous():
+        user_pks.append(user.pk)
+    request.session['user_list'] = user_pks
+
+    # Set up available pricings
     all_pricings = get_active_pricings(event)
-    
     if shared_pricing:
-        user_pks = request.session.get('user_list', [])
-        if not user.is_anonymous():
-            user_pks.append(user.pk)
-        request.session['user_list'] = user_pks
+        # use entire user list
         users = User.objects.filter(pk__in=user_pks)
         available_pricings = get_pricings_for_list(event, users)
     else:
         available_pricings = get_available_pricings(event, user)
-    
     pricing_list = []
     for pricing in all_pricings:
         p_dict = {
@@ -135,8 +141,26 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
             p_dict['enabled'] = False
         
         pricing_list.append(p_dict)
+        
+    all_addons = get_active_addons(event)
+    available_addons = get_addons_for_list(event, users)
     
-    data = json.dumps(pricing_list)
+    addon_list = []
+    for addon in all_addons:
+        a_dict = {
+            'title':addon.title,
+            'price':str(addon.price),
+            'pk':addon.pk,
+            'enabled':True,
+            'is_public':addon.allow_anonymous,
+        }
+        
+        if addon not in available_addons:
+            a_dict['enabled'] = False
+        
+        addon_list.append(a_dict)
+    
+    data = json.dumps({'pricings':pricing_list, 'addons':addon_list})
     return HttpResponse(data, mimetype="text/plain")
 
 def multi_register(request, event_id, template_name="events/registration/multi_register.html"):
@@ -156,7 +180,10 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     
     # redirect to default registration if anonymousmemberpricing not enabled
     if not get_setting('module', 'events', 'anonymousmemberpricing'):
-        return redirect('event.multi_register')
+        return redirect('event.multi_register', event_id)
+        
+    # clear user list session
+    request.session['user_list'] = []
     
     event = get_object_or_404(Event, pk=event_id)
     
@@ -179,6 +206,9 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     active_pricings = get_active_pricings(event)
     event_pricings = event.registration_configuration.regconfpricing_set.all()
     
+    # get available addons
+    active_addons = get_active_addons(event)
+
     # check if use a custom reg form
     custom_reg_form = None
     reg_conf = event.registration_configuration
@@ -192,12 +222,18 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         RF = FormForCustomRegForm
     else:
         RF = RegistrantForm
-
+    
     # start the form set factory    
     RegistrantFormSet = formset_factory(
         RF,
         formset=RegistrantBaseFormSet,
         can_delete=True,
+        extra=0,
+    )
+    
+    RegAddonFormSet = formset_factory(
+        RegAddonForm,
+        formset=RegAddonBaseFormSet,
         extra=0,
     )
     
@@ -214,46 +250,68 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                                            'event': event}) 
         reg_formset = RegistrantFormSet(request.POST,
                             **params)
+        
         reg_form = RegistrationForm(event, request.user, request.POST,
-                            reg_count = len(reg_formset.forms))
+                    reg_count = len(reg_formset.forms))
+        
+        # This form is just here to preserve the data in case of invalid registrants
+        # The real validation of addons is after validation of registrants
+        addon_formset = RegAddonFormSet(request.POST,
+                            prefix='addon',
+                            event=event,
+                            extra_params={
+                                'addons':active_addons,
+                                'valid_addons':active_addons,
+                            })
+        addon_formset.is_valid()
+        
         # validate the form and formset
         if False not in (reg_form.is_valid(), reg_formset.is_valid()):
-            
-            # process the registration
-            # this will create the registrants and apply the discount
-            reg8n = process_registration(reg_form, reg_formset, custom_reg_form=custom_reg_form)
-            
-            self_reg8n = get_setting('module', 'users', 'selfregistration')
-            is_credit_card_payment = (reg8n.payment_method and 
-                (reg8n.payment_method.machine_name).lower() == 'credit-card'
-                and reg8n.amount_paid > 0)
-            
-            if is_credit_card_payment: # online payment
-                # email the admins as well
-                email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
-                # get invoice; redirect to online pay
-                return redirect('payments.views.pay_online',
-                    reg8n.invoice.id, reg8n.invoice.guid)
-            else:
-                # offline payment
-                # email the registrant
-                send_registrant_email(reg8n, self_reg8n)
-                # email the admins as well
-                email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+            valid_addons = get_addons_for_list(event, reg_formset.get_user_list())
+            # validate the addons
+            addon_formset = RegAddonFormSet(request.POST,
+                            prefix='addon',
+                            event=event,
+                            extra_params={
+                                'addons':active_addons,
+                                'valid_addons':valid_addons,
+                            })
+            if addon_formset.is_valid():
+                # process the registration
+                # this will create the registrants and apply the discount
+                reg8n = process_registration(reg_form, reg_formset,  addon_formset, custom_reg_form=custom_reg_form)
                 
-            # log an event
-            log_defaults = {
-                'event_id' : 431000,
-                'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                'user': request.user,
-                'request': request,
-                'instance': event,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            # redirect to confirmation
-            return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
+                self_reg8n = get_setting('module', 'users', 'selfregistration')
+                is_credit_card_payment = (reg8n.payment_method and 
+                    (reg8n.payment_method.machine_name).lower() == 'credit-card'
+                    and reg8n.amount_paid > 0)
+                
+                if is_credit_card_payment: # online payment
+                    # email the admins as well
+                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+                    # get invoice; redirect to online pay
+                    return redirect('payments.views.pay_online',
+                        reg8n.invoice.id, reg8n.invoice.guid)
+                else:
+                    # offline payment
+                    # email the registrant
+                    send_registrant_email(reg8n, self_reg8n)
+                    # email the admins as well
+                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+                    
+                # log an event
+                log_defaults = {
+                    'event_id' : 431000,
+                    'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                    'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
+                    'user': request.user,
+                    'request': request,
+                    'instance': event,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                # redirect to confirmation
+                return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
     else:
         params = {'prefix': 'registrant',
                     'event': event,
@@ -267,6 +325,12 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         # intialize empty forms
         reg_formset = RegistrantFormSet(**params)
         reg_form = RegistrationForm(event, request.user)
+        addon_formset = RegAddonFormSet(
+                            prefix='addon',
+                            event=event,
+                            extra_params={
+                                'addons':active_addons,
+                            })
     
     sets = reg_formset.get_sets()
     
@@ -297,8 +361,11 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'custom_reg_form': custom_reg_form,
             'hidden_form': hidden_form,
             'registrant': reg_formset,
+            'addon_formset': addon_formset,
             'sets': sets,
+            'addons':active_addons,
             'pricings':active_pricings,
+            'total_price':reg_formset.get_total_price()+addon_formset.get_total_price(),
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             'shared_pricing':get_setting('module', 'events', 'sharedpricing'),
             }, context_instance=RequestContext(request))

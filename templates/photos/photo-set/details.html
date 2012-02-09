@@ -14,6 +14,15 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="/site_media/static/css/photos.css">
+
+<meta property="og:title" content="{{ photo_set.name }}" />
+<meta property="og:type" content="image/jpeg" />
+<meta property="og:image" content="{{ photo_set.get_cover_photo.get_small_url }}" />
+
+{% if photo_set.description %}
+<meta property="og:description" content="{{ photo_set.description|safe }}" />
+{% endif %}
+
 {% endblock %}
 
 {% block body %}

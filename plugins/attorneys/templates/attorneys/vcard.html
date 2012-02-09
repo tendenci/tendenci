@@ -1,0 +1,14 @@
+BEGIN:VCARD
+VERSION:3.0
+N:{{ attorney.first_name }};{{ attorney.last_name }};{{ attorney.middle_initial }}.
+FN:{{ attorney.name }}
+ORG:{{ SITE_GLOBAL_SITEDISPLAYNAME }}
+COMPANY:{{ SITE_GLOBAL_SITEDISPLAYNAME }}
+TITLE:{{ attorney.category_name }}
+TEL;TYPE=WORK,VOICE:{{ attorney.phone }}
+TEL;TYPE=FAX,VOICE:{{ attorney.fax }}
+ADR;TYPE=WORK:;;{{ attorney.address }} {{ attorney.address2 }};{{ attorney.city }};{{ attorney.state }};{{ attorney.zip }};
+LABEL;TYPE=WORK:{{ attorney.address }} {{ attorney.address2 }}\n{{ attorney.city }}, {{ attorney.state }} {{ attorney.zip }}
+EMAIL;TYPE=PREF,INTERNET:{{ attorney.email }}
+REV:{{ attorney.update_dt|date:"c" }}
+END:VCARD

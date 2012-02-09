@@ -309,6 +309,12 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     else:
         reply_to = None
         
+    sender = extra_context.get('sender', '')
+    if not sender:
+        sender = settings.DEFAULT_FROM_EMAIL
+        
+    sender_display = extra_context.get('sender_display', '')
+        
     if 'recipient_bcc' in extra_context.keys():
         recipient_bcc = extra_context['recipient_bcc']
     else:
@@ -328,11 +334,15 @@ def send_emails(emails, label, extra_context=None, on_site=True):
 
         if reply_to:
             headers['Reply-To'] = reply_to
+        if sender_display:
+            headers['From'] = '%s<%s>' % (sender_display, sender)
+            
+        
         if recipient_bcc:
-            email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, 
+            email = EmailMessage(subject, body, sender, 
                                  recipients, recipient_bcc, headers=headers)
         else: 
-            email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, 
+            email = EmailMessage(subject, body, sender, 
                                  recipients, headers=headers)
         email.content_subtype = content_type
         email.send(fail_silently=True)  # should we raise exception or not?

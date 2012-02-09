@@ -3,23 +3,66 @@
 {% load i18n %}
 
 {% block content %}
+<style type="text/css">
+  table.report {
+    border-collapse: collapse;
+    width: 100%;
+  }
+</style>
+
 <h1>{% trans "New and Renewing Members Over Time" %}</h1>
 <div class="corp-mems-wrap">
-{% for stat in stats %}
-    <h2>{{ stat.time }} to date</h2>
-    <div class="corp-mems-stats">
-        <p>({{ stat.start_dt }} to {{ stat.end_dt }})</p>
-        <p>
-            {% trans "New Members" %}: {{ stat.new }}
-        </p>
-        <p>
-            {% trans "Renewing Members" %}: {{ stat.renewing }}
-        </p>
-        <p>
-            {% trans "Total" %}: {{ stat.new|add:stat.renewing }}
-        </p>
-    </div>
-{% endfor %}
+
+  <table class="report">
+    <tr>
+      <td></td>
+      <td>Since Date</td>
+      <td>New</td>
+      <td>Renewal</td>
+      <td>Totals</td>
+    </tr>
+  {% for stat in stats|slice:":5" reversed %}
+    <tr>
+      <td>{{ stat.time }}</td>
+      <td>{{ stat.start_dt }}</td>
+      <td>{{ stat.new }}</td>
+      <td>{{ stat.renewing }}</td>
+      <td>{{ stat.new|add:stat.renewing }}</td>
+    </tr>  
+  {% endfor %}
+  </tr></table>
+
 </div>
+
 {% endblock content %}
 
+  <div id="chart_div"></div>
+
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Months');
+      data.addColumn('number', 'New');
+      data.addColumn('number', 'Renewing');
+      data.addRows([
+        {% for stat in stats|slice:":5" reversed %}
+          {% if not forloop.last %}
+          ['{{ stat.start_dt }}', {{ stat.new }}, {{ stat.renewing }}],
+          {% else %}
+          ['{{ stat.start_dt }}', {{ stat.new }}, {{ stat.renewing }}]
+          {% endif %}
+        {% endfor %}
+      ]);
+      var options = {
+        width: 1000, height: 500,
+        hAxis: {title: 'Since X Month'},
+        vAxis: {title: 'Members'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+    }
+  </script>
