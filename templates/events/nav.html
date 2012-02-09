@@ -73,6 +73,7 @@
                 {% if can_edit_event %}
                     <li><a href="{% url event.edit nav_object.pk %}">{% trans "Edit Event" %}</a></li>
                     <li><a href="{% url event.edit.meta nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
+                    <li><a href="{% url event.list_addons nav_object.pk %}">{% trans "Edit Addons" %}</a></li>
                     <li><a href="{% url event.add_addon nav_object.pk %}">{% trans "Add Addon" %}</a></li>
                     {% if nav_object.registration_configuration.use_custom_reg_form %}
                     <li><a href="{% url event.event_custom_reg_form_list nav_object.pk %}">{% trans "Manage Custom Registration Form" %}</a></li>
