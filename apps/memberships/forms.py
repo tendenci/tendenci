@@ -1,6 +1,4 @@
-import os
 import sys
-import operator
 from uuid import uuid4
 from captcha.fields import CaptchaField
 from os.path import join
@@ -10,25 +8,16 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.forms.fields import CharField, ChoiceField, BooleanField
 from django.template.defaultfilters import slugify
 from django.forms.widgets import HiddenInput
-from django.http import Http404
 from django import forms
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
 
-from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
-from models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
-from fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
-from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from memberships.utils import csv_to_dict
-
-from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
 
 from corporate_memberships.models import CorporateMembership, AuthorizedDomain
 from user_groups.models import Group
@@ -39,6 +28,8 @@ from memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeFie
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.utils import csv_to_dict, is_import_valid
 from memberships.widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
+
+from memberships.utils import get_notice_token_help_text
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -348,7 +339,7 @@ class NoticeForm(forms.ModelForm):
                                           widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(widget=TinyMCE(attrs={'style':'width:70%'}, 
         mce_attrs={'storme_app_label':Notice._meta.app_label, 
-        'storme_model':Notice._meta.module_name.lower()}))    
+        'storme_model':Notice._meta.module_name.lower()}), help_text="Click here to view available tokens")    
     class Meta:
         model = Notice
         fields = (
@@ -378,6 +369,8 @@ class NoticeForm(forms.ModelForm):
             initial_list.append(str(self.instance.notice_type))
         
         self.fields['notice_time_type'].initial = initial_list
+        
+        self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
         
     def clean_notice_time_type(self):
         value = self.cleaned_data['notice_time_type']
