@@ -8,13 +8,16 @@ from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.utils.safestring import mark_safe
 
+from site_settings.utils import get_setting
 from payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
 from captcha.fields import CaptchaField
 from user_groups.models import Group
+
 
 from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
@@ -36,6 +39,7 @@ class FormForForm(forms.ModelForm):
         self.form = form
         self.form_fields = form.fields.visible().order_by('position')
         super(FormForForm, self).__init__(*args, **kwargs)
+
         for field in self.form_fields:
             field_key = "field_%s" % field.id
             if "/" in field.field_type:
@@ -68,13 +72,30 @@ class FormForForm(forms.ModelForm):
             
         # include pricing options if any
         if self.form.custom_payment and self.form.pricing_set.all():
-            self.fields['pricing-option'] = forms.ModelChoiceField(
-                    label=_('Pricing'),
-                    empty_label=None,
-                    queryset=self.form.pricing_set.all(),
-                    widget=forms.RadioSelect,
-                )
-            self.fields['payment-option'] = forms.ModelChoiceField(
+
+            currency_symbol = get_setting('site', 'global', 'currencysymbol')
+
+            pricing_options = []
+            for pricing in self.form.pricing_set.all():
+
+                if pricing.price == None:
+                    pricing_options.append(
+                        (pricing.pk, mark_safe(
+                            '<input type="text" class="custom-price" name="custom_price_%s" value="%s"/> %s' % 
+                            (pricing.pk, self.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label)))
+                    )
+                else:
+                    pricing_options.append(
+                        (pricing.pk, '%s%s %s' % (currency_symbol, pricing.price, pricing.label))
+                    )
+
+            self.fields['pricing_option'] = forms.ChoiceField(
+                label=_('Pricing'),
+                choices = pricing_options,
+                widget=forms.RadioSelect
+            )
+
+            self.fields['payment_option'] = forms.ModelChoiceField(
                     label=_('Payment Method'),
                     empty_label=None,
                     queryset=self.form.payment_methods.all(),
@@ -84,6 +105,26 @@ class FormForForm(forms.ModelForm):
             
         if not self.user.is_authenticated(): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+
+    def clean_pricing_option(self):
+        pricing_pk = int(self.cleaned_data['pricing_option'])
+        pricing_option = self.form.pricing_set.get(pk=pricing_pk)
+        custom_price = self.data.get('custom_price_%s' % pricing_pk)
+
+        # if not price set
+        if not pricing_option.price:
+            # then price is custom
+
+            if not custom_price:  # custom price has a value
+                raise forms.ValidationError("Please set your price.")
+
+            try:  # custom price is valid amount
+                custom_price = float(custom_price)
+            except ValueError:
+                raise forms.ValidationError("Price must be a valid amount")
+        
+        self.cleaned_data['custom_price'] = custom_price
+        return pricing_option
 
     def save(self, **kwargs):
         """
@@ -108,11 +149,11 @@ class FormForForm(forms.ModelForm):
                 field_entry.save(user = self.user)
             else:
                 field_entry.save()
-                
+
         # save selected pricing and payment method if any
         if self.form.custom_payment and self.form.pricing_set.all():
-            entry.payment_method = self.cleaned_data['payment-option']
-            entry.pricing = self.cleaned_data['pricing-option']
+            entry.payment_method = self.cleaned_data['payment_option']
+            entry.pricing = self.cleaned_data['pricing_option']
             entry.save()
             
         return entry
@@ -188,9 +229,20 @@ class FormAdminForm(TendenciBaseForm):
         return slug
         
 class FormForm(TendenciBaseForm):
+    # from django.utils.safestring import mark_safe
+
     status_detail = forms.ChoiceField(
         choices=(('draft','Draft'),('published','Published'),))
     custom_payment = forms.BooleanField(label=_('Take Payment'), required=False)
+
+    # payment_method_choices = list(PaymentMethod.objects.values_list('id','human_name'))
+    # payment_method_choices.append((0, mark_safe('<input type="text" name="custom-payment-method" />')))
+    # payment_methods = forms.MultipleChoiceField(
+    #     choices=payment_method_choices,
+    #     widget=forms.CheckboxSelectMultiple(),
+    #     required=False
+    # )
+
     payment_methods = forms.ModelMultipleChoiceField(
             queryset=PaymentMethod.objects.all(),
             widget=forms.CheckboxSelectMultiple,
@@ -253,10 +305,14 @@ class FormForm(TendenciBaseForm):
                 
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
+
         if not is_admin(self.user):
-            if 'status' in self.fields: self.fields.pop('status')
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+            if 'status' in self.fields:
+                self.fields.pop('status')
+            if 'status_detail' in self.fields:
+                self.fields.pop('status_detail')
+
+
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])
         i = 0
