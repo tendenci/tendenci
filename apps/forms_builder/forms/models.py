@@ -316,14 +316,15 @@ class Pricing(models.Model):
     """
     form = models.ForeignKey('Form')
     label = models.CharField(max_length=100)
+
     price = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        blank=True, 
-        default=None,
+        blank=True,
+        null=True,
         help_text="Leaving this field blank allows visitors to set their own price"
     )
-    
+
     def __unicode__(self):
         currency_symbol = get_setting("site", "global", "currencysymbol")
         if not currency_symbol: currency_symbol = '$'
