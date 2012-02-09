@@ -61,7 +61,7 @@ There were some problems in the form. Please review. Thanks!
 		                        {{ field.label_tag }}
 		                    </div> 
 		                    {% if field.help_text %}
-		                    <div class="help-text">{{ field.help_text }}</div>   
+		                    <div class="help-text">{{ field.help_text|safe }}</div>   
 		                    {% endif %}
 		                </div>
 		                <div style="clear: both"><!-- IE7 --></div>
@@ -80,7 +80,7 @@ There were some problems in the form. Please review. Thanks!
 		                    {{ field }}
 		                </div>
 		                {% if field.help_text %}
-		                <div class="help-text">{{ field.help_text }}</div>
+		                <div class="help-text">{{ field.help_text|safe }}</div>
 		                {% endif %}
 		            {% endif %}
 		         </div>
@@ -113,7 +113,7 @@ There were some problems in the form. Please review. Thanks!
 	                        {{ field.label_tag }}
 	                    </div> 
 	                    {% if field.help_text %}
-	                    <div class="help-text">{{ field.help_text }}</div>   
+	                    <div class="help-text">{{ field.help_text|safe }}</div>   
 	                    {% endif %}
 	                </div>
 	                <div style="clear: both"><!-- IE7 --></div>
@@ -139,7 +139,7 @@ There were some problems in the form. Please review. Thanks!
                             {{ field }}
                         </div>
                         {% if field.help_text %}
-                        <div class="help-text">{{ field.help_text }}</div>
+                        <div class="help-text">{{ field.help_text|safe }}</div>
                         {% endif %}
                     {% endif %}
 	            {% endif %}
