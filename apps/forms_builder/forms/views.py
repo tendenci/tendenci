@@ -404,22 +404,16 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
 
     for field in form_for_form.fields:
-        try:
-            form_for_form.fields[field].initial = request.GET.get(field, '')
-        except:
-            pass
+        form_for_form.fields[field].initial = request.GET.get(field, '')
 
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
             entry.save()
-            #email_headers = {'Content-Type': 'text/html'}
             email_headers = {}  # content type specified below
             if form.email_from:
                 email_headers.update({'Reply-To':form.email_from})
-#            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
-#                for (k, v) in form_for_form.fields.items()]
                 
             subject = generate_email_subject(form, entry)
                 
@@ -448,11 +442,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     f.seek(0)
                     msg.attach(f.name, f.read())
                 msg.send()
-            
+
             # payment redirect
             if form.custom_payment:
                 # create the invoice
-                invoice = make_invoice_for_entry(entry)
+                invoice = make_invoice_for_entry(entry, custom_price=form_for_form.cleaned_data.get('custom_price'))
                 # log an event for invoice add
                 log_defaults = {
                     'event_id' : 311000,
