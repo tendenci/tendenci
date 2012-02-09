@@ -689,7 +689,8 @@ class Notice(models.Model):
                     'content': notice.get_content(entry=entry, membership=membership),
                     'membership_total': Membership.objects.filter(status=True, status_detail='active').count(),
                     'reply_to': notice.sender,
-                    'sender_display': '%s<%s>' % (notice.sender_display, notice.sender),
+                    'sender': notice.sender,
+                    'sender_display': notice.sender_display,
                 })
 
         # send email to admins
