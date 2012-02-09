@@ -603,7 +603,7 @@ class Notice(models.Model):
             'expirationdatetime': expiration_dt,
             'sitecontactname': global_setting('sitecontactname'),
             'sitecontactemail': global_setting('sitecontactemail'),
-            'sitedisplayname': global_setting('site_displayname'),
+            'sitedisplayname': global_setting('sitedisplayname'),
             'timesubmitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
             'corporatemembernotice': corporate_msg,
         })
