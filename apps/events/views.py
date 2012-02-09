@@ -34,8 +34,8 @@ from files.models import File
 from events.search_indexes import EventIndex
 from events.models import (Event, RegistrationConfiguration,
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod,
-    RegConfPricing, Addon, AddonOption, CustomRegForm, CustomRegFormEntry,
-    CustomRegField, CustomRegFieldEntry)
+    RegConfPricing, Addon, AddonOption, RegAddon, CustomRegForm,
+    CustomRegFormEntry, CustomRegField, CustomRegFieldEntry)
 from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
@@ -136,6 +136,7 @@ def index(request, id=None, template_name="events/view.html"):
             'speakers': speakers,
             'organizer': organizer,
             'now': datetime.now(),
+            'addons': event.addon_set.filter(status=True),
             },
             context_instance=RequestContext(request))
     else:
@@ -2304,6 +2305,20 @@ def approve(request, event_id, template_name="events/approve.html"):
         }, context_instance=RequestContext(request))
 
 @login_required
+def list_addons(request, event_id, template_name="events/addons/list.html"):
+    """List addons of an event"""
+    
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.view_event', event):
+        raise Http404
+    
+    return render_to_response(template_name, {
+        'event':event,
+        'addons':event.addon_set.all(),
+    }, context_instance=RequestContext(request))
+
+@login_required
 def add_addon(request, event_id, template_name="events/addons/add.html"):
     """Add an addon for an event"""
     event = get_object_or_404(Event, pk=event_id)
@@ -2337,7 +2352,8 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
         'formset': formset,
         'event':event,
     }, context_instance=RequestContext(request))    
-    
+
+@login_required
 def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.html"):
     """Edit addon for an event"""
     event = get_object_or_404(Event, pk=event_id)
@@ -2368,4 +2384,31 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
         'event':event,
     }, context_instance=RequestContext(request))
     
+@login_required
+def disable_addon(request, event_id, addon_id):
+    """delete addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+    
+    addon = get_object_or_404(Addon, pk=addon_id)
+    addon.delete() # this just renders it inactive to not cause deletion of already existing regaddons
+    messages.add_message(request, messages.SUCCESS, "Successfully disabled the %s" % addon.title)
+        
+    return redirect('event.list_addons', event.id)
 
+@login_required
+def enable_addon(request, event_id, addon_id):
+    """delete addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+    
+    addon = get_object_or_404(Addon, pk=addon_id)
+    addon.status = True
+    addon.save()
+    messages.add_message(request, messages.SUCCESS, "Successfully enabled the %s" % addon.title)
+        
+    return redirect('event.list_addons', event.id)
