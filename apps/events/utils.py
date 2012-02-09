@@ -405,14 +405,20 @@ def email_registrants(event, email, **kwargs):
     tmp_body = email.body
         
     for registrant in registrants:
-        first_name = registrant.first_name
-        last_name = registrant.last_name
-
-        email.recipient = registrant.email
+        if registrant.custom_reg_form_entry:
+            first_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            last_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            email.recipient = registrant.custom_reg_form_entry.get_value_of_mapped_field('email')
+        else:
+            first_name = registrant.first_name
+            last_name = registrant.last_name
+    
+            email.recipient = registrant.email
         
-        email.body = email.body.replace('[firstname]', first_name)
-        email.body = email.body.replace('[lastname]', last_name)
-        email.send()
+        if email.recipient:
+            email.body = email.body.replace('[firstname]', first_name)
+            email.body = email.body.replace('[lastname]', last_name)
+            email.send()
         
         email.body = tmp_body  # restore to the original
         
@@ -533,23 +539,20 @@ def add_registration(*args, **kwargs):
     Add the registration
     Args are split up below into the appropriate attributes
     """
-    from decimal import Decimal
-    total_amount = 0
-    count = 0
-
     # arguments were getting kinda long
     # moved them to an unpacked version
-    request, event, reg_form, \
-    registrant_formset, price, \
-    event_price = args
+    (request, event, reg_form, registrant_formset, addon_formset,
+    price, event_price) = args
     
+    total_amount = 0
+    count = 0
     event_price = Decimal(str(event_price))
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
     discount = kwargs.get('discount', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
-
+    
     reg8n_attrs = {
         "event": event,
         "payment_method": reg_form.cleaned_data.get('payment_method'),
@@ -580,6 +583,12 @@ def add_registration(*args, **kwargs):
             total_amount += registrant.amount 
             
             count += 1
+            
+    # create each regaddon
+    for form in addon_formset.forms:
+        form.save(reg8n)
+    addons_price = addon_formset.get_total_price()
+    total_amount += addons_price
     
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
@@ -618,6 +627,9 @@ def create_registrant_from_form(*args, **kwargs):
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
+        user = form.get_user()
+        if not user.is_anonymous():
+            registrant.user = user
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')

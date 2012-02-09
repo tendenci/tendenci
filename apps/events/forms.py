@@ -1,6 +1,6 @@
 import re
 import imghdr
-from os.path import splitext
+from os.path import splitext, basename
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -52,6 +52,7 @@ class CustomRegFormAdminForm(forms.ModelForm):
         model = CustomRegForm
         fields = ('name',
                   'notes',
+                  'validate_guest',
                   'status',
                   #'used',
                  )
@@ -113,9 +114,13 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             
         # make the fields in the subsequent forms as not required
-        if self.form_index and self.form_index > 0:
-            for key in self.fields.keys():
-                self.fields[key].required = False
+        if not self.custom_reg_form.validate_guest:
+            if self.form_index and self.form_index > 0:
+                for key in self.fields.keys():
+                    self.fields[key].required = False
+        else:
+            # this attr is required for form validation
+            self.empty_permitted = False
                 
         # for anonymousmemberpricing
         # --------------------------
@@ -135,12 +140,12 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['memberid'].widget = forms.TextInput(
                                                 attrs={'class': 'registrant-memberid'}
                                                              )
-            # add class attr registrant-email to the email field
-            for field in self.form_fields:
-                if field.map_to_field == "email":
-                    self.email_key = "field_%s" % field.id
-                    self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
-                    break 
+        # add class attr registrant-email to the email field
+        for field in self.form_fields:
+            if field.map_to_field == "email":
+                self.email_key = "field_%s" % field.id
+                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
+                break 
                 
         
         # initialize internal variables
@@ -208,8 +213,9 @@ class FormForCustomRegForm(forms.ModelForm):
             # save invalid or valid data into saved_data
             self.saved_data[name] = value
             
+    # for anonymousmemberpricing         
     def clean(self):
-        self._clean_fields()
+        #self._clean_fields()
         data = self.cleaned_data
     
         if self.pricings:  
@@ -307,6 +313,7 @@ class EventForm(TendenciBaseForm):
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
     
     photo_upload = forms.FileField(label=_('Photo'), required=False)
+    remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -366,6 +373,11 @@ class EventForm(TendenciBaseForm):
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
+        if self.instance.image:
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+        else:
+            self.fields.pop('remove_photo')
+
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -399,6 +411,12 @@ class EventForm(TendenciBaseForm):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
+
+    def save(self, *args, **kwargs):
+        event = super(EventForm, self).save(*args, **kwargs)
+        if self.cleaned_data.get('remove_photo'):
+            event.image = None
+        return event
 
 class TypeChoiceField(forms.ModelChoiceField):
 

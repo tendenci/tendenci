@@ -603,7 +603,7 @@ class Notice(models.Model):
             'expirationdatetime': expiration_dt,
             'sitecontactname': global_setting('sitecontactname'),
             'sitecontactemail': global_setting('sitecontactemail'),
-            'sitedisplayname': global_setting('site_displayname'),
+            'sitedisplayname': global_setting('sitedisplayname'),
             'timesubmitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
             'corporatemembernotice': corporate_msg,
         })
@@ -688,6 +688,9 @@ class Notice(models.Model):
                     'subject': notice.get_subject(entry=entry, membership=membership),
                     'content': notice.get_content(entry=entry, membership=membership),
                     'membership_total': Membership.objects.filter(status=True, status_detail='active').count(),
+                    'reply_to': notice.sender,
+                    'sender': notice.sender,
+                    'sender_display': notice.sender_display,
                 })
 
         # send email to admins
@@ -746,7 +749,7 @@ class App(TendenciBaseModel):
 
     class Meta:
         verbose_name = "Membership Application"
-        permissions = (("view_membership_application","Can view membership application"),)
+        permissions = (("view_app","Can view membership application"),)
 
     def __unicode__(self):
         return self.name

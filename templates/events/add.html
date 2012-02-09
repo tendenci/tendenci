@@ -116,14 +116,17 @@
     		
 	    	// for custom registration form options
 	    	
+	    	{% if not MODULE_EVENTS_CUSTOMREGFORMENABLED  %}
+	    		$('.id_regconf-use_custom_reg').hide();
+	    		$(".regconfpricing_formset div[class$='reg_form']").hide();
+	    	{% else %}
+	    	
 	    	{% if MODULE_EVENTS_ANONYMOUSMEMBERPRICING %}
 		    $('#one-or-separate-form input[type="radio"]')[1].disabled=true;
 		    $($('#one-or-separate-form label')[1]).css({'color': '#aaa'});
 		    {% endif %}
 		    
-		    $('.id_regconf-use_custom_reg').hide();
-		    $(".regconfpricing_formset div[class$='reg_form']").hide();
-	  /*  	
+	    	
 	    	if ($('input#id_regconf-enabled').is(':checked')){
 	    		$('.id_regconf-use_custom_reg').show();
 	    	}else{
@@ -178,7 +181,10 @@
 	        		$(".regconfpricing_formset div[class$='reg_form']").show();
 	        	}
 		    });
-		    */
+		    
+		    
+		    {% endif %}
+		    
 	    });
 	    
     </script>

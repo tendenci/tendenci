@@ -597,9 +597,40 @@ class CorporateMembership(TendenciBaseModel):
         corp_memb_archive.corporate_membership = self
         corp_memb_archive.corp_memb_create_dt = self.create_dt
         corp_memb_archive.corp_memb_update_dt = self.update_dt
-        corp_memb_archive.archive_user = user
+        if user and (not user.is_anonymous()):
+            corp_memb_archive.archive_user = user
         corp_memb_archive.save()
+    
+    def get_entry(self):
+        try:  # membership was created when entry was approved
+            #entry = self.entries.get(decision_dt=self.create_dt)
+            entry = self.corpmembrenewentry_set.filter(status_detail='approved').order_by('create_dt')[0]
+        except (ObjectDoesNotExist, MultipleObjectsReturned, IndexError) as e:
+            entry = None
+
+        return entry
+
+    @property
+    def entry_items(self):
+        """
+        Returns a dictionary of entry items.
+        The approved entry that is associated with this membership.
+        """
+        return self.get_entry_items()
         
+    
+    def get_entry_items(self, slugify_label=True):
+        items = {}
+        entry = self.get_entry()
+
+        if entry:
+            for field in entry.fields.all():
+                label = field.field.label
+                if slugify_label:
+                    label = slugify(label).replace('-','_')
+                items[label] = field.value
+
+        return items
         
 class AuthorizedDomain(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="auth_domains")

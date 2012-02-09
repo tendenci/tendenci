@@ -95,7 +95,7 @@
         {% endif %}
 
         {% if registration.status == 'registered-with-balance' %}
-<div class="registered">{% blocktrans with registration.invoice.balance as regbal %}You are registered. Balance is ${{ regbal }}. {% endblocktrans %}
+    <div class="registered">{% blocktrans with registration.invoice.balance as regbal %}You are registered. Balance is ${{ regbal }}. {% endblocktrans %}
 
             {% if event.registration_configuration.can_pay_online and registration.invoice.balance > 0 %}
             <a href="{% url payment.pay_online registration.invoice.pk registration.invoice.guid %}">
@@ -172,6 +172,15 @@
 		            {% else %}
 		            	{% trans "Guest #" %}{{ forloop.counter0 }}
 		            {% endif %}
+		            {% if registrant.custom_reg_form_entry %}
+		            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+					{% for field in roster_field_list %}
+					{% if field.value %}
+					<div>{{ field.label }}: {{ field.value }}</div>
+					{% endif %}
+					{% endfor %}
+					{% endwith %}
+					{% endif %}
 		            </span>
 					{% if registrant.cancel_dt %}
 						<span class="cancel-notice2">
@@ -194,10 +203,30 @@
     			</td>
     		</tr>
     		{% endfor %}
-    	</table>      		            
+    	</table>
+        
 		<div class="register-more">
             <a href="{% url event event.pk %}">{% trans "Register More People" %}</a>
         </div>
+        
+        <div style="font-weight: bold;">{% trans "Addons" %} ... ({{ addons.count }})</div>       
+        <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+    		{% for addon in addons %}
+    		<tr>
+    			<td>
+					{{ addon.addon.title }}
+    			</td>
+                <td>
+    			{% for option in addon.regaddonoption_set.all %}
+                    {{ option.selected_option }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+                </td>
+                <td class="td-right">
+					<span>{{ addon.amount|format_currency }}</span>
+    			</td>
+    		</tr>
+    		{% endfor %}
+    	</table>
 	</div>
 
 	<div class="regconf-section payment">

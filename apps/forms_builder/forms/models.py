@@ -9,6 +9,7 @@ from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
 from user_groups.models import Group, GroupMembership
+from site_settings.utils import get_setting
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -315,7 +316,15 @@ class Pricing(models.Model):
     """
     form = models.ForeignKey('Form')
     label = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        blank=True, 
+        default=None,
+        help_text="Leaving this field blank allows visitors to set their own price"
+    )
     
     def __unicode__(self):
-        return "%s %s" % (self.price, self.label)
+        currency_symbol = get_setting("site", "global", "currencysymbol")
+        if not currency_symbol: currency_symbol = '$'
+        return "%s - %s%s" % (self.label, currency_symbol, self.price, )
