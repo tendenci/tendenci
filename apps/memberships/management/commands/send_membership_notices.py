@@ -90,13 +90,14 @@ class Command(BaseCommand):
             return None
         
         def get_admin_emails():
-            admin_emails = (get_setting('module', 'memberships', 'membershiprecipients')).split(',')
+            admin_emails = get_setting('module', 'memberships', 'membershiprecipients').strip()
+            if admin_emails:
+                admin_emails = admin_emails.split(',')
             if not admin_emails:
-                admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')
+                admin_emails = (get_setting('site', 'global', 'admincontactemail').strip()).split(',')
                 
             if admin_emails:
                 admin_emails = ','.join(admin_emails)
-                
             return admin_emails
             
             
@@ -231,6 +232,12 @@ class Command(BaseCommand):
             email.recipient = user.email
             email.subject = notice.subject.replace('(name)', user.get_full_name())
             email.body = body
+            if notice.sender:
+                email.sender = notice.sender
+                email.reply_to = notice.sender
+            if notice.sender_display:
+                email.sender_display = notice.sender_display
+                
             email.send()
             if verbosity > 1:
                 print 'To ', email.recipient, email.subject
