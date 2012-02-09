@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
 from perms.utils import has_perm, is_admin
-from memberships.models import AppField, Membership, MembershipType
+from memberships.models import App, AppField, Membership, MembershipType
 from corporate_memberships.models import CorporateMembership
 
 
@@ -235,4 +235,100 @@ def months_back(n):
     from dateutil.relativedelta import relativedelta
 
     return date.today() + relativedelta(months=-n)
+
+def get_app_field_labels(app):
+    """Get a list of field labels for this app.
+    """
+    labels_list = []
+    fields = app.fields.all().order_by('position')
+    for field in fields:
+        labels_list.append(field.label)
+        
+    return labels_list
+
+def get_notice_token_help_text(notice=None):
+    """Get the help text for how to add the token in the email content,
+        and display a list of available token.
+    """
+    help_text = ''
+    if notice and notice.membership_type:
+        membership_types = [notice.membership_type]
+    else:
+        membership_types = MembershipType.objects.filter(status=1, status_detail='active')
+    
+    # get a list of apps from membership types
+    apps_list = []    
+    for mt in membership_types:
+        apps = App.objects.filter(membership_types=mt)
+        if apps:
+            apps_list.extend(apps)
+            
+    apps_list = set(apps_list)
+    apps_len = len(apps_list)
+     
+    # render the tokens
+    help_text += '<div style="margin: 1em 10em;">'
+    help_text += """
+                <div style="margin-bottom: 1em;">
+                You can use tokens to display member info or site specific information.
+                A token is composed of a field label or label lower case with underscore (_)
+                instead of spaces, wrapped in 
+                {{ }} or [ ]. <br />
+                For example, token for "First Name" field: {{ first_name }}
+                </div> 
+                """
+                
+    help_text += '<div id="toggle_token_view"><a href="javascript:;">Click to view available tokens</a></div>'
+    help_text += '<div id="notice_token_list">'
+    if apps_list: 
+        for app in apps_list:
+            if apps_len > 1:
+                help_text += '<div style="font-weight: bold;">%s</div>' % app.name
+            labels_list = get_app_field_labels(app)
+            help_text += "<ul>"
+            for label in labels_list:
+                help_text += '<li>{{ %s }}</li>' % slugify(label).replace('-', '_')
+            help_text += "</ul>"
+    else:
+        help_text += '<div>No field tokens because there is no applications.</div>'
+            
+    other_labels = ['membernumber',
+                    'membershiptype',
+                    'membershiplink',
+                    'renewlink',
+                    'expirationdatetime',
+                    'sitecontactname',
+                    'sitecontactemail',
+                    'sitedisplayname',
+                    'timesubmitted'
+                    ]
+    help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
+    help_text += "<ul>"
+    for label in other_labels:
+        help_text += '<li>{{ %s }}</li>' % label
+    help_text += "</ul>"
+        
+    help_text += "</div>"
+         
+        
+    help_text += "</div>"
+    
+    help_text += """
+                <script>
+                    $(document).ready(function() {
+                        $('#notice_token_list').hide();
+                         $('#toggle_token_view').click(function () {
+                        $('#notice_token_list').toggle();
+                         });
+                    });
+                </script>
+                """
+              
+    return help_text
+        
+        
+        
+        
+    
+    
 
