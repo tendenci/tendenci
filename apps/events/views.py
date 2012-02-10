@@ -151,6 +151,8 @@ def search(request, template_name="events/search.html"):
         # load upcoming events only by default
         events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
 
+    types = Type.objects.all().order_by('name')
+
     EventLog.objects.log(
         event_id=174000,  # searched event
         event_data='%s searched by %s' % ('Event', request.user),
@@ -162,7 +164,7 @@ def search(request, template_name="events/search.html"):
 
     return render_to_response(
         template_name,
-        {'events': events, 'now': datetime.now()},
+        {'events': events,'types': types, 'now': datetime.now()},
         context_instance=RequestContext(request)
     )
 
