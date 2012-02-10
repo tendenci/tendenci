@@ -12,7 +12,7 @@ class LatestEntriesFeed(SubFeed):
     description =  "Latest Helpfiles by %s" % get_setting('site','global','sitedisplayname')
 
     def items(self):
-        sqs = SearchQuerySet().filter().models(HelpFile).order_by('-create_dt')[:20]
+        sqs = SearchQuerySet().filter(status=True, status_detail="Active", allow_anonymous_view=True).models(HelpFile).order_by('-create_dt')[:20]
         return [sq.object for sq in sqs]
 
     def item_title(self, item):
