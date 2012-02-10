@@ -7,6 +7,7 @@ from django.utils.importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import slugify
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
 from base.utils import day_validate
@@ -600,28 +601,19 @@ class CorporateMembership(TendenciBaseModel):
         if user and (not user.is_anonymous()):
             corp_memb_archive.archive_user = user
         corp_memb_archive.save()
-    
-    def get_entry(self):
-        try:  # membership was created when entry was approved
-            #entry = self.entries.get(decision_dt=self.create_dt)
-            entry = self.corpmembrenewentry_set.filter(status_detail='approved').order_by('create_dt')[0]
-        except (ObjectDoesNotExist, MultipleObjectsReturned, IndexError) as e:
-            entry = None
-
-        return entry
 
     @property
     def entry_items(self):
         """
-        Returns a dictionary of entry items.
-        The approved entry that is associated with this membership.
+        Returns a dictionary of entry items from
+        the approved entry that is associated with this membership.
         """
         return self.get_entry_items()
         
     
     def get_entry_items(self, slugify_label=True):
         items = {}
-        entry = self.get_entry()
+        entry = self
 
         if entry:
             for field in entry.fields.all():
