@@ -1,7 +1,7 @@
 {% load nav_tags %}
 
 <li>
-    <a {% if item.class %}class="{{ item.class }}" {% endif %}href="{{ item.get_url }}">{{ item.label }}</a>
+    <a {% if item.css %}class="{{ item.css }}" {% endif %}href="{{ item.get_url }}">{{ item.label }}</a>
     {% if item.children %}
         <ul>
         {% for child in item.children %}
