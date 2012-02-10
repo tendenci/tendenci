@@ -14,9 +14,9 @@
     <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ entry.app.name }} {% trans "Membership Approved" %}</div>
 
     {% if entry.membership_type.price %}
-        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type.price as memtype %}Membership Type: {{ memtype }} ${{ memtype }}{% endblocktrans %}</div>
+        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type.name as memtype and entry.membership_type.price as memprice %}Membership Type: {{ memtype }} ${{ memprice }}{% endblocktrans %}</div>
     {% else %}
-        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type.price as memtype %}Membership Type: {{ memtype }} Free{% endblocktrans %}</div>
+        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type.name as memtype %}Membership Type: {{ memtype }} (Free){% endblocktrans %}</div>
     {% endif %}
 
     <div>{{ entry.first_name }} {{ entry.last_name }}</div>
@@ -28,8 +28,8 @@
     <div>========================</div>
 
     <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.app.get_absolute_url }}">
-        {% blocktrans with entry.app.create_dt|date as create_date and entry.app.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
+    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
+        {% blocktrans with entry.create_dt|date as create_date and entry.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
     </a><div>
 
 </body>
