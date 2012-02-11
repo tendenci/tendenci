@@ -274,6 +274,7 @@
                         {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
                     </div>
                     {% empty %}
+                    <input type="hidden" name="addon-TOTAL_FORMS" value="0" id="id_addon-TOTAL_FORMS" /><input type="hidden" name="addon-INITIAL_FORMS" value="0" id="id_addon-INITIAL_FORMS" /><input type="hidden" name="addon-MAX_NUM_FORMS" id="id_addon-MAX_NUM_FORMS" />
                         No addons available.<br />
                     {% endfor %}
                 </div>
