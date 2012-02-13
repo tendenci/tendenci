@@ -19,7 +19,7 @@ def prepare_payflowlink_form(request, payment):
               'login':settings.PAYPAL_MERCHANT_LOGIN,
               'partner': settings.PAYFLOWLINK_PARTNER,
               'amount':amount,
-              'type': 'A',
+              'type': 'S',
               'showconfirm': 'True',
               'disablereceipt': 'False',
               'custid': payment.id,
