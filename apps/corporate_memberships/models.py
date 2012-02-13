@@ -178,9 +178,9 @@ class CorporateMembershipType(TendenciBaseModel):
                 if not mt.fixed_option1_year:
                     mt.fixed_option1_year = now.year
                     
-                mt.fixed_option1_day = day_validate(datetime(mt.fixed_expiration_year,
-                                                                  mt.fixed_expiration_month, 1),
-                                                                    mt.fixed_option1_day)
+                mt.fixed_option1_day = day_validate(datetime(mt.fixed_option1_year,
+                                                                  mt.fixed_option2_month, 1),
+                                                                    mt.fixed_option2_day)
                     
                 return datetime(mt.fixed_option1_year, mt.fixed_option1_month,
                                 mt.fixed_option1_day)
