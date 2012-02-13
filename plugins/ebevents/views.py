@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import urllib2
 import time
+from dateutil import parser as dparser
 
 from BeautifulSoup import BeautifulStoneSoup
 from django.template import RequestContext
@@ -62,7 +63,8 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         event_type = strip_tags(node.event_type.string)
         start_date = node.date_range.start_date.string
         if start_date:
-            start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
+            #start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
+            start_date = dparser.parse(start_date)
         
         events.append({'event_name': event_name, 
                        'event_type': event_type,
