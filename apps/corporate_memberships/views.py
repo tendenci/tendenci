@@ -709,11 +709,20 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
             
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corp_memb.view', args=[corp_memb.id]))
-
+            
+    memberships = Membership.objects.corp_roster_search(None, 
+                                            user=request.user).filter(
+                                        corporate_membership_id=corp_memb.id)
+    try:
+        page = int(request.GET.get('page', 0))
+    except:
+        page = 0
     
     return render_to_response(template_name, {'corp_memb': corp_memb, 
                                               'form': form,
-                                              'reps': reps}, 
+                                              'reps': reps,
+                                              'memberships': memberships,
+                                              'page': page}, 
         context_instance=RequestContext(request))
     
 def reps_lookup(request):
