@@ -117,10 +117,20 @@ def is_import_valid(file_path):
     'username' and 'membership-type' are required fields
     """
     memberships = csv_to_dict(file_path)  # list of membership dicts
-    membership_keys = [slugify(m) for m in memberships[0].keys()]
-    #required = ('username','membership-type')
-    #there is no username in the export at the moment.
-    required = ('membership-type',)
+    required = ('membershiptype',)
+
+    # normalize all keys
+    # Membership Type ->  membershiptype
+    # membership-type ->  membershiptype
+    # membership_type -> membershiptype
+
+    membership_keys = []
+    for m in memberships[0].keys():
+        key = m.replace('-','')
+        key = m.replace('_','')
+        key = slugify(key)
+        membership_keys.append(key)
+
     requirements = [r in membership_keys for r in required]
 
     return all(requirements)
