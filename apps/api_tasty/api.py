@@ -1,4 +1,6 @@
-from django.contrib.auth.models import User
+import random
+
+from django.contrib.auth.models import User, get_hexdigest
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -20,6 +22,7 @@ from site_settings.models import Setting
 from site_settings.utils import delete_setting_cache, cache_setting, delete_all_settings_cache
 from site_settings.cache import SETTING_PRE_KEY
 from discounts.models import Discount
+from profiles.models import Profile
 from api_tasty.resources import BetterModelResource
 from api_tasty.serializers import SafeSerializer
 from api_tasty.forms import SettingForm
@@ -75,10 +78,10 @@ class SettingResource(BetterModelResource):
     To access this resource the username and api_key of a developer
     must be present in request.GET or request.POST
     for example,
-    /api_tasty/v1/setting/1/?format=json&username=user&api_key=1191910191019101
+    /api_tasty/v1/setting/1/?format=json&username=sam&api_key=718bdf03b2fb0f3def6e039db5cfb2a75db05f85
     Note that the specification of 'format' is important.
     curl test example: (assumes you have data.json with correct file contents)
-    curl -H "Content-Type: application/json" -X PUT --data @data.json "http://0.0.0.0:8000/api_tasty/v1/setting/12/?format=json&username=user&api_key=1191910191019101"
+    curl -H "Content-Type: application/json" -X PUT --data @data.json "http://0.0.0.0:8000/api_tasty/v1/setting/12/?format=json&username=sam&api_key=718bdf03b2fb0f3def6e039db5cfb2a75db05f85"
     """
     name = fields.CharField(readonly=True, attribute='name')
     description = fields.CharField(readonly=True, attribute='description')
@@ -97,6 +100,18 @@ class SettingResource(BetterModelResource):
         detail_allowed_methods = ['get', 'put']
         validation = ModelFormValidation(form_class=SettingForm)
         
+    def obj_create(self, bundle, request=None, **kwargs):
+        bundle = super(SettingResource, self).obj_create(bundle, request, **kwargs)
+        bundle.obj.set_value(bundle.data.get('value'))
+        bundle.obj.save() 
+        return bundle
+        
+    def obj_update(self, bundle, request=None, **kwargs):
+        bundle = super(SettingResource, self).obj_update(bundle, request, **kwargs)
+        bundle.obj.set_value(bundle.data.get('value'))
+        bundle.obj.save() 
+        return bundle
+        
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
@@ -104,8 +119,92 @@ class UserResource(ModelResource):
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
-        fields = ['username', 'first_name', 'last_name']
-        allowed_methods = ['get']
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get', 'post', 'put', 'delete']
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
+        ]
+        
+    def obj_create(self, bundle, request=None, **kwargs):
+        bundle = super(UserResource, self).obj_create(bundle, request, **kwargs)
+        bundle.obj.set_password(bundle.data.get('password'))
+        bundle.obj.save() 
+        return bundle
+        
+    def obj_update(self, bundle, request=None, **kwargs):
+        bundle = super(UserResource, self).obj_update(bundle, request, **kwargs)
+        bundle.obj.set_password(bundle.data.get('password'))
+        bundle.obj.save() 
+        return bundle
+        
+class ProfileResource(ModelResource):
+    class Meta:
+        queryset = Profile.objects.all()
+        resource_name = 'profile'
+        serializer = SafeSerializer()
+        authorization = Authorization()
+        authentication = DeveloperApiKeyAuthentication()
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get', 'post', 'put', 'delete']
+        fields = [
+            'user',
+            'guid',
+            'entity',
+            'pl_id',
+            'member_number',
+            'historical_member_number',
+            'time_zone',
+            'language',
+            'salutation',
+            'initials',
+            'display_name',
+            'mailing_name',
+            'company',
+            'position_title',
+            'position_assignment',
+            'sex',
+            'address_type',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'country',
+            'county',
+            'phone',
+            'phone2',
+            'fax',
+            'work_phone',
+            'home_phone',
+            'mobile_phone',
+            'email',
+            'email2'
+            'url',
+            'url2',
+            'dob',
+            'ssn',
+            'spouse',
+            'department',
+            'education',
+            'student',
+            'remember_login',
+            'exported',
+            'direct_mail',
+            'notes',
+            'admin_notes',
+            'referral_source',
+            'hide_in_search',
+            'hide_address',
+            'hide_email',
+            'hide_phone',
+            'first_responder',
+            'agreed_to_tos',
+            'original_username'
+        ]
         
 class DiscountResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner')
