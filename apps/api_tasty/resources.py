@@ -141,5 +141,4 @@ class BetterModelResource(ModelResource):
         m2m_bundle = self.hydrate_m2m(bundle)
         self.save_m2m(m2m_bundle)
         return bundle
-
         
