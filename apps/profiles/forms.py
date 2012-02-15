@@ -288,7 +288,7 @@ class UserPermissionForm(forms.ModelForm):
         # only display the permissions for the apps in APPS
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
-        content_types = ContentType.objects.filter(app_label__in=APPS)
+        content_types = ContentType.objects.exclude(app_label='auth')
         
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
     
