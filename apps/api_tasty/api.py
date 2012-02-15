@@ -25,7 +25,7 @@ from discounts.models import Discount
 from profiles.models import Profile
 from api_tasty.resources import BetterModelResource
 from api_tasty.serializers import SafeSerializer
-from api_tasty.forms import SettingForm
+from api_tasty.forms import SettingForm, ProfileForm, UserForm
 from api_tasty.auth import DeveloperApiKeyAuthentication
 from api_tasty.validation import ModelFormValidation
 
@@ -119,8 +119,9 @@ class UserResource(ModelResource):
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
-        list_allowed_methods = ['get']
-        detail_allowed_methods = ['get', 'post', 'put', 'delete']
+        validation = ModelFormValidation(form_class=UserForm)
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'put', 'delete']
         fields = [
             'username',
             'first_name',
@@ -142,39 +143,21 @@ class UserResource(ModelResource):
         return bundle
         
 class ProfileResource(ModelResource):
+    owner = fields.ForeignKey(UserResource, 'owner')
+    creator = fields.ForeignKey(UserResource, 'creator')
+    user = fields.ForeignKey(UserResource, 'user')
     class Meta:
         queryset = Profile.objects.all()
         resource_name = 'profile'
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
+        validation = ModelFormValidation(form_class=ProfileForm)
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
         fields = [
-            'user',
-            'guid',
-            'entity',
-            'pl_id',
-            'member_number',
-            'historical_member_number',
-            'time_zone',
-            'language',
             'salutation',
-            'initials',
-            'display_name',
-            'mailing_name',
-            'company',
-            'position_title',
-            'position_assignment',
-            'sex',
-            'address_type',
-            'address',
-            'address2',
-            'city',
-            'state',
-            'zipcode',
-            'country',
-            'county',
+            'user',
             'phone',
             'phone2',
             'fax',
@@ -182,28 +165,40 @@ class ProfileResource(ModelResource):
             'home_phone',
             'mobile_phone',
             'email',
-            'email2'
+            'email2',
+            'company',
+            'position_title',
+            'position_assignment',
+            'display_name',
+            'hide_in_search',
+            'hide_phone',
+            'hide_email',
+            'hide_address',
+            'initials',
+            'sex',
+            'mailing_name',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'county',
+            'country',
             'url',
-            'url2',
             'dob',
             'ssn',
             'spouse',
+            'time_zone',
             'department',
             'education',
             'student',
-            'remember_login',
-            'exported',
             'direct_mail',
             'notes',
+            'allow_anonymous_view',
             'admin_notes',
-            'referral_source',
-            'hide_in_search',
-            'hide_address',
-            'hide_email',
-            'hide_phone',
-            'first_responder',
-            'agreed_to_tos',
-            'original_username'
+            'entity',
+            'status',
+            'status_detail',
         ]
         
 class DiscountResource(ModelResource):
