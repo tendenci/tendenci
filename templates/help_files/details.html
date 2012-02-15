@@ -3,7 +3,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}{{ help_file.question|striptags|safe }} - Help File{% endblock %}
+{% block title %}{{ help_file.question|striptags|safe }} - {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}{% endblock %}
 {% block meta_description %}{{ help_file.answer|striptags|safe|truncatewords:40 }}{% endblock %}
 
 {% block extra_head %}
@@ -15,7 +15,7 @@
 <div class="t">
     {% help_file_nav request.user help_file %}
     {% help_file_search %}
-	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All Help Files" %}</a> > {{ help_file.question|striptags|safe }}</p></div>
+	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</a> > {{ help_file.question|striptags|safe }}</p></div>
     <div class="help-file-wrap">
         <h1>{{ help_file.question|striptags|safe }}</h1>
 
