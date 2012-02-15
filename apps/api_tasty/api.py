@@ -22,6 +22,7 @@ from site_settings.models import Setting
 from site_settings.utils import delete_setting_cache, cache_setting, delete_all_settings_cache
 from site_settings.cache import SETTING_PRE_KEY
 from discounts.models import Discount
+from entities.models import Entity
 from profiles.models import Profile
 from api_tasty.resources import BetterModelResource
 from api_tasty.serializers import SafeSerializer
@@ -142,10 +143,21 @@ class UserResource(ModelResource):
         bundle.obj.save() 
         return bundle
         
+class EntityResource(ModelResource):
+    class Meta:
+        queryset = Entity.objects.all()
+        resource_name = 'entity'
+        serializer = SafeSerializer()
+        authorization = Authorization()
+        authentication = DeveloperApiKeyAuthentication()
+        list_allowed_methods = ['get',]
+        detail_allowed_methods = ['get',]
+        
 class ProfileResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner')
     creator = fields.ForeignKey(UserResource, 'creator')
     user = fields.ForeignKey(UserResource, 'user')
+    entity = fields.ForeignKey(EntityResource, 'entity', null=True)
     class Meta:
         queryset = Profile.objects.all()
         resource_name = 'profile'
