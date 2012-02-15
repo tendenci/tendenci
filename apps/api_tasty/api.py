@@ -129,6 +129,8 @@ class UserResource(ModelResource):
             'last_name',
             'email',
             'password',
+            'is_superuser',
+            'is_staff',
         ]
         
     def obj_create(self, bundle, request=None, **kwargs):
