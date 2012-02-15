@@ -96,22 +96,22 @@ class SettingResource(BetterModelResource):
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
-        fields = ['name', 'description', 'value', 'data_type', 'input_value']
+        validation = ModelFormValidation(form_class=SettingForm)
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get', 'put']
-        validation = ModelFormValidation(form_class=SettingForm)
+        fields = ['name', 'description', 'value', 'data_type', 'input_value']
         
-    def obj_create(self, bundle, request=None, **kwargs):
-        bundle = super(SettingResource, self).obj_create(bundle, request, **kwargs)
-        bundle.obj.set_value(bundle.data.get('value'))
-        bundle.obj.save() 
-        return bundle
+    #def obj_create(self, bundle, request=None, **kwargs):
+    #    bundle = super(SettingResource, self).obj_create(bundle, request, **kwargs)
+    #    bundle.obj.set_value(bundle.data.get('value'))
+    #    bundle.obj.save() 
+    #    return bundle
         
-    def obj_update(self, bundle, request=None, **kwargs):
-        bundle = super(SettingResource, self).obj_update(bundle, request, **kwargs)
-        bundle.obj.set_value(bundle.data.get('value'))
-        bundle.obj.save() 
-        return bundle
+    #def obj_update(self, bundle, request=None, **kwargs):
+    #    bundle = super(SettingResource, self).obj_update(bundle, request, **kwargs)
+    #    bundle.obj.set_value(bundle.data.get('value'))
+    #    bundle.obj.save() 
+    #    return bundle
         
 class UserResource(ModelResource):
     class Meta:
