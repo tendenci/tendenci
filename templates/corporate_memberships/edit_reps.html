@@ -1,4 +1,5 @@
 {% extends "corporate_memberships/base.html" %}
+{% load pagination_tags %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
 {% load styled_forms %}
@@ -33,6 +34,7 @@
 {% corpmemb_nav request.user corp_memb %} 
 <div class="corp-reps">
      <h1>{% trans "Corporate Membership Representatives" %}</h1>
+     <div><a href="{% url corp_memb.view corp_memb.id %}">{{ corp_memb.name }}</a></div>
      {% if reps %}
      <table width="90%">
 	     	<tr>
@@ -83,6 +85,31 @@
 	
 	</form>
 	
+	<div id="toggle_members_list"><a href="javascript:;">Click to view members</a></div>
+	<div id="members-list">
+	{% autopaginate memberships 10 %}
+	<ul style="margin: 1em 0;">
+    {% for membership in memberships %}
+	    {% with membership.object as membership %}
+				<li class="member-line">
+						<a href="{% url profiles.views.index membership.user.username %}">
+						{{ membership.user.get_full_name }}
+						{% if membership.user.email %}
+						({{ membership.user.email }})
+						{% endif %}
+						</a>
+				</li>
+				
+	    	
+		{% endwith %}	
+	{% empty %}
+		<div>{% trans "0 Members" %}</div>
+	{% endfor %}
+	</ul>
+	 {% paginate %}
+	</div>
+	
+	
 </div>	
 </div>
 {% endblock %}
@@ -119,5 +146,16 @@
         
 	});
    </script>
+   
+   <script>
+    $(document).ready(function() {
+    	{% if page == 0 %}
+        $('#members-list').hide();
+        {% endif %}
+         $('#toggle_members_list').click(function () {
+        $('#members-list').toggle();
+         });
+    });
+</script>
  {% endblock %}
 

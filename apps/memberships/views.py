@@ -704,9 +704,9 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             csv = File.objects.save_files_for_instance(request, memport)[0]
             
             file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
-            
+
             if not is_import_valid(file_path):
-                messages.add_message(request, messages.ERROR, "Invalid File! Please try again.")
+                messages.add_message(request, messages.ERROR, "Membership Type column required.")
                 memport.delete()
                 return redirect('membership_import_upload_file')
                 
