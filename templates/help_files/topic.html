@@ -3,7 +3,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }}{{ topic }} Topic{% endblock %}
+{% block title %}{{ block.super }}{% firstof MODULE_HELP_FILES_LABEL 'Help Files' %} - {{ topic }} Topic{% endblock %}
 
 {% block meta_description %}{{ topic.content|striptags|safe|truncatewords:40 }}{% endblock %}
 
@@ -16,8 +16,8 @@
 <div class="t">
     {% help_file_nav request.user %}
 	{% help_file_search %}
-	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All Help Files" %}</a> > {% blocktrans %}{{ topic }} help files{% endblocktrans %}</p></div>
-	<h2>{% blocktrans with topic|title as topic_title %}{{ topic_title }} Help Files{% endblocktrans %}</h2>
+	<div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</a> > {% blocktrans %}{{ topic }}{% endblocktrans %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</p></div>
+	<h2>{% blocktrans with topic|title as topic_title %}{{ topic_title }}{% endblocktrans %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</h2>
 	{% if topic.content %}
 		<p>{{ topic.content|safe }}</p>
 	{% endif %}
@@ -26,7 +26,7 @@
 		{% for help_file in help_files %}
 		{% with help_file.object as help_file %}
 		    {% has_perm user help_files.change_helpfile help_file as can_edit %}
-			<li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a>{% if can_edit %} {% obj_perms help_file %}{% endif %}</li>
+			<li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a>{% if admin %} {% obj_perms help_file %}{% endif %}</li>
 		{% endwith %}
 		{% endfor %}
 		</ul>
