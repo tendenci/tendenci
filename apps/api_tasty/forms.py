@@ -8,9 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 
 from tastypie.models import ApiKey
 
+from perms.utils import is_developer
 from site_settings.utils import get_form_list, get_box_list
 from site_settings.models import Setting
-from perms.utils import is_developer
+from profiles.models import Profile
 
 class ApiKeyForm(forms.ModelForm):
     """
@@ -26,6 +27,78 @@ class ApiKeyForm(forms.ModelForm):
         if not is_developer(user):
             raise forms.ValidationError('This user is not a developer.')
         return user
+        
+class UserForm(forms.ModelForm):
+    """UserForm for API validation
+    """
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
+        )
+        
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(UserForm, self).__init__(*args, **kwargs)
+        
+class ProfileForm(forms.ModelForm):
+    """Profile Form
+    """
+    class Meta:
+        model = Profile
+        fields = (
+            'salutation',
+            'user',
+            'phone',
+            'phone2',
+            'fax',
+            'work_phone',
+            'home_phone',
+            'mobile_phone',
+            'email',
+            'email2',
+            'company',
+            'position_title',
+            'position_assignment',
+            'display_name',
+            'hide_in_search',
+            'hide_phone',
+            'hide_email',
+            'hide_address',
+            'initials',
+            'sex',
+            'mailing_name',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'county',
+            'country',
+            'url',
+            'dob',
+            'ssn',
+            'spouse',
+            'time_zone',
+            'department',
+            'education',
+            'student',
+            'direct_mail',
+            'notes',
+            'allow_anonymous_view',
+            'admin_notes',
+            'entity',
+            'status',
+            'status_detail',
+        )
+        
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(ProfileForm, self).__init__(*args, **kwargs)
         
 class SettingForm(forms.ModelForm):
     """
@@ -107,3 +180,4 @@ class SettingForm(forms.ModelForm):
                         raise forms.ValidationError("File entry does not exist.")
                     
         return cleaned_data
+
