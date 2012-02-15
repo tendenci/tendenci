@@ -36,11 +36,13 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
                 
             # update payment status and object
             
+            
             # redirect to thankyou
-            return HttpResponseRedirect(reverse('stripe.thank_you'))
+            return HttpResponseRedirect(reverse('stripe.thank_you', args=[payment.id]))
         
     return render_to_response(template_name, {'form': form, 
-                                              'billing_info_form': billing_info_form},
+                                              'billing_info_form': billing_info_form,
+                                              'payment': payment},
                               context_instance=RequestContext(request))
 
 @csrf_exempt
