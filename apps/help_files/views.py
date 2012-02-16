@@ -102,6 +102,7 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
 
                 # add all permissions and save the model
                 help_file = update_perms_and_save(request, form, help_file)
+                form.save_m2m()
 
                 log_defaults = {
                     'event_id' : 1000100,
@@ -143,6 +144,7 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
 
                 # add all permissions and save the model
                 help_file = update_perms_and_save(request, form, help_file)
+                form.save_m2m()
 
                 log_defaults = {
                     'event_id' : 1000200,
