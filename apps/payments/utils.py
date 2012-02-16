@@ -2,6 +2,9 @@ import os
 from datetime import datetime
 from django.conf import settings
 
+from event_logs.models import EventLog
+from notification.utils import send_notifications
+
 # update the object
 def payment_processing_object_updates(request, payment, **kwargs):
     # they are paid, so update the object
@@ -65,5 +68,32 @@ def log_silent_post(request, payment):
     fd = open(log_path, 'w')
     fd.write(output)
     fd.close()
+    
+def log_payment(request, payment):
+    if payment.response_code == '1':
+        event_id = 282101
+        description = '%s edited - credit card approved ' % payment._meta.object_name
+    else:
+        event_id = 282102
+        description = '%s edited - credit card declined ' % payment._meta.object_name
+        
+    log_defaults = {
+        'event_id' : event_id,
+        'event_data': '%s (%d) edited by %s' % (payment._meta.object_name, payment.pk, request.user),
+        'description': description,
+        'user': request.user,
+        'request': request,
+        'instance': payment,
+    }
+    EventLog.objects.log(**log_defaults)
+    
+def send_payment_notice(request, payment):
+    notif_context = {
+        'request': request,
+        'object': payment,
+        }
+
+    send_notifications('module','payments', 'paymentrecipients',
+            'payment_added', notif_context)
         
         
