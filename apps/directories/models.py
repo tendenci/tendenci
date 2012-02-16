@@ -56,7 +56,7 @@ class Directory(TendenciBaseModel):
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
     payment_method = models.CharField(_('Payment Method'), max_length=50, blank=True)
 
-    syndicate = models.BooleanField(_('Include in RSS feed'),)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
     tags = TagField(blank=True)
