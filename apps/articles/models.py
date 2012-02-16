@@ -28,7 +28,7 @@ class Article(TendenciBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
-    syndicate = models.BooleanField(_('Include in RSS feed'),)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     featured = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
     tags = TagField(blank=True)
