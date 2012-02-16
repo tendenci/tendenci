@@ -33,8 +33,13 @@ def get_imp_message(request, user):
     else:
         imp_path = '%s?_impersonate=%s' % (url, user,)
         stop_path = '%s?_stop_impersonate=%s' % (url, user,)
-        
-    message_repl = (user.get_absolute_url(),
+    
+    if user.is_anonymous():
+        user_url = '#'
+    else:
+        user_url = user.get_absolute_url()
+
+    message_repl = (user_url,
                     user,
                     imp_path,
                     stop_path,
