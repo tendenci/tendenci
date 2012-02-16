@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from profiles.models import Profile
 from perms.object_perms import ObjectPermission
@@ -10,6 +11,8 @@ from perms.object_perms import ObjectPermission
 from haystack.query import SearchQuerySet
 from haystack.backends import SQ
 
+
+PUBLIC_FILTER = {'status':True,'status_detail':"active",'allow_anonymous_view':True}
 
 def set_perm_bits(request, form, instance):
     """
@@ -172,6 +175,65 @@ def is_developer(user):
         else:
             setattr(user, 'is_developer', False)
             return False
+
+
+def has_view_perm(user, perm, obj=None):
+    # impersonation
+    user = getattr(user, 'impersonated_user', user)
+    if obj:
+        if user.is_anonymous() and obj.status and (obj.status_detail).lower() == "active" and obj.allow_anonymous_view:
+            return True
+        elif is_developer(user):
+            return True
+        elif is_admin(user) and obj.status:
+            return True
+        elif obj.creator_id == user.pk or obj.owner_id == user.pk:
+            return True
+        elif is_member(user) and obj.status and obj.status_detail and (obj.allow_anonymous_view or obj.allow_user_view or obj.allow_member_view):
+            return True
+        elif obj.status and obj.status_detail and (obj.allow_anonymous_view or obj.allow_user_view):
+            return True
+        else:
+            return has_perm(request.user, perm, obj)
+    return False
+
+
+def get_query_filters(user, perm):
+    # impersonation
+    user = getattr(user, 'impersonated_user', user)
+
+    if user.is_anonymous():
+        anon_q = Q(allow_anonymous_view=True)
+        status_q = Q(status=True)
+        status_detail_q = Q(status_detail='active')
+        anon_filter = (anon_q & status_q & status_detail_q)
+        return anon_filter
+    else:
+        if is_developer(user):
+            return Q()
+        elif is_admin(user) or has_perm(user, 'jobs.view_job'):
+            return Q(status=True)
+        elif is_member(user):
+            anon_q = Q(allow_anonymous_view=True)
+            user_q = Q(allow_user_view=True)
+            member_q = Q(allow_member_view=True)
+            status_q = Q(status=True)
+            status_detail_q = Q(status_detail='active')
+            creator_perm_q = Q(creator=user)
+            owner_perm_q = Q(owner=user)
+            member_filter = (status_q & (((anon_q | user_q | member_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+
+            return member_filter
+        else:
+            anon_q = Q(allow_anonymous_view=True)
+            user_q = Q(allow_user_view=True)
+            status_q = Q(status=True)
+            status_detail_q = Q(status_detail='active')
+            creator_perm_q = Q(creator=user)
+            owner_perm_q = Q(owner=user)
+            user_filter = (status_q & (((anon_q | user_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+
+            return user_filter
 
 
 def get_administrators():
