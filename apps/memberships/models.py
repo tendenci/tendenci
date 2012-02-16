@@ -926,7 +926,7 @@ class AppEntry(TendenciBaseModel):
             entry_field = self.fields.get(field__field_type=field_type)
             return entry_field.value
         except:
-            return ''
+            return unicode()
 
     @property
     def hash(self):
