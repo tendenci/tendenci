@@ -1,9 +1,7 @@
 {% extends "jobs/base.html" %}
 {% load job_tags %}
-{% load tagging_tags %}
 {% load base_tags %}
 {% load base_filters %}
-{% load category_tags %}
 {% load i18n %}
 
 {% block title %}{{ job.get_title }}{% endblock %}
@@ -17,7 +15,6 @@
 {% endblock %}
 
 {% block body %}
-{% tags_for_object job as tags %}
 
 <div class="t">
     {% job_nav request.user job %}
