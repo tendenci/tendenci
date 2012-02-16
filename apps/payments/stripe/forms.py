@@ -26,8 +26,8 @@ class StripeCardForm(forms.Form):
                 """ % 'https://account.authorize.net/help/Miscellaneous/Pop-up_Terms/hosted/Card_Code.htm'
         self.fields['card_cvc'].widget.attrs.update({'autocomplete': 'off',
                                                      'size': '4'})
-        self.fields['card_expiry_month'].widget.attrs.update({'size': '4'})
-        self.fields['card_expiry_year'].widget.attrs.update({'size': '2'})
+        self.fields['card_expiry_month'].widget.attrs.update({'size': '2'})
+        self.fields['card_expiry_year'].widget.attrs.update({'size': '4'})
         
         
 class BillingInfoForm(forms.ModelForm):

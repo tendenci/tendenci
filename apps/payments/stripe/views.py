@@ -1,15 +1,23 @@
-import os
-from datetime import datetime
+#import os
+import math
+import traceback
+#from datetime import datetime
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponse
+#from django.http import HttpResponse
 from django.conf import settings
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
+
+import simplejson
+
+from payments.utils import payment_processing_object_updates
+from payments.utils import log_payment, send_payment_notice
 from payments.models import Payment
 from forms import StripeCardForm, BillingInfoForm
 import stripe
+from utils import payment_update_stripe
 
 
 @csrf_exempt
@@ -20,22 +28,42 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
     if request.method == "POST":
         if form.is_valid():
             # get stripe token and make a payment immediately
-            stripe.api_key = settings.get('STRIPE_SECRET_KEY', '')
+            stripe.api_key = getattr(settings, 'STRIPE_SECRET_KEY', '')
             token = request.POST.get('stripe_token')
-            
-            # create the charge on Stripe's servers - this will charge the user's card
-            charge = stripe.Charge.create(
-                amount=payment.amount, # amount in cents, again
-                currency="usd",
-                card=token,
-                description=payment.description
-            )
             
             if billing_info_form.is_valid():
                 payment = billing_info_form.save()
-                
-            # update payment status and object
             
+            # create the charge on Stripe's servers - this will charge the user's card
+            params = {
+                       'amount': math.trunc(payment.amount * 100), # amount in cents, again
+                       'currency': "usd", # currently, only 'usd' is supported
+                       'card': token,
+                       'description': payment.description
+                      }
+            
+            try:
+                charge_response = stripe.Charge.create(**params)
+                print type(charge_response)
+                print charge_response
+                # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
+                #charge_response = simplejson.loads(charge)
+                
+            except:
+                charge_response = traceback.format_exc()
+                print 'error=', charge_response
+            
+            
+            # update payment status and object
+            if  payment.invoice.balance > 0:
+                payment_update_stripe(request, charge_response, payment)
+                payment_processing_object_updates(request, payment)
+                
+                # log an event
+                log_payment(request, payment)
+                
+                # send payment recipients notification
+                send_payment_notice(request, payment) 
             
             # redirect to thankyou
             return HttpResponseRedirect(reverse('stripe.thank_you', args=[payment.id]))

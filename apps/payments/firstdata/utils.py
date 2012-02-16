@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from forms import FirstDataPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
+from payments.utils import log_payment, send_payment_notice
 
 from site_settings.utils import get_setting
 
@@ -85,6 +86,14 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
     if payment.invoice.balance > 0:     # if balance==0, it means already processed
         payment_update_firstdata(request, response_d, payment)
         payment_processing_object_updates(request, payment)
+        
+        # log an event
+        log_payment(request, payment)
+        
+        # send payment recipients notification
+        send_payment_notice(request, payment)
+        
+        
     return payment
         
 def payment_update_firstdata(request, response_d, payment, **kwargs):

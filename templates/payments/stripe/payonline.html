@@ -24,6 +24,14 @@
 	.well{
 		width: 90%;
 	}
+	.errors{
+		background-color: #ffebe8;
+		border: 2px solid #ff8b78;
+		margin-bottom: 20px;
+		margin-left: 110px;
+		padding: 10px;
+		width: 75%;
+	}
 </style>
 
 {% endblock %}
@@ -36,10 +44,11 @@
 	<div id="total-amount">Total: {{ payment.amount|format_currency }}</div>
 </div>
 
-<p>Please fill out the fields below</p>
 
+<div class="forms">
+	
 {% if form.errors.values %}
-    <div class="errors-box">
+    <div class="errors">
         <ul>
             {{ form.non_field_errors }}
             {% for field in form %}
@@ -63,7 +72,11 @@
     </div>
 {% endif %}
 
-<div class="forms">
+<div id="card-errors"></div>
+
+<p>Please fill out the fields below</p>
+
+
 <form action="" method="POST" id="payment-form">
 	<h3>Payment Information</h3>
     <p class="form-row">
@@ -142,7 +155,10 @@
 	    if (response.error) {
 	       
 	        //show the errors on the form
-	        $(".payment-errors").html(response.error.message);
+	        $("#card-errors").addClass('errors');
+	        $("#card-errors").html(response.error.message);
+	        $('.submit-button').removeAttr('disabled');
+	        
 	    } else {
 	        var form$ = $("#payment-form");
 	        // token contains id, last4, and card type
