@@ -36,9 +36,9 @@ class HelpFile(TendenciBaseModel):
     is_faq = models.BooleanField()
     is_featured = models.BooleanField()
     is_video = models.BooleanField()
-    syndicate = models.BooleanField(_('Include in RSS feed'),)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     view_totals = models.PositiveIntegerField(default=0)
-    
+
     objects = HelpFileManager()
 
     class Meta:
