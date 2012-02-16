@@ -133,7 +133,6 @@
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Search" %}</h1>  
 
 	{% event_search %}
-    {% autopaginate events 10 %}
 
 	{% if not request.GET.q %}
 	<div class="highlight">
@@ -143,6 +142,8 @@
 	<div class="highlight">
 		{% blocktrans count events|length as events_count %}You found {{ events_count }} event.{% plural %}You found {{ events_count }} events.{% endblocktrans %}</div>
 	{% endif %}
+
+    {% autopaginate events 10 %}
 
 	<div class="events-wrap">
     {% for event in events %}
