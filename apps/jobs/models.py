@@ -4,7 +4,9 @@ from datetime import timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
+from categories.models import CategoryItem
 from tagging.fields import TagField
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
@@ -49,7 +51,7 @@ class Job(TendenciBaseModel):
     start_dt = models.DateTimeField(null=True, blank=True)  # date job starts(defined by job poster)
 
     job_url = models.CharField(max_length=300, blank=True)  # link to other (fuller) job posting
-    syndicate = models.BooleanField(blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True, default=True)
     design_notes = models.TextField(blank=True)
 
     #TODO: foreign
@@ -76,6 +78,10 @@ class Job(TendenciBaseModel):
     member_count = models.IntegerField(blank=True, null=True)
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
+
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = JobManager()
 
@@ -157,6 +163,23 @@ class Job(TendenciBaseModel):
     def opt_module_name(self):
         return self._meta.module_name
 
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category.name
+            elif cat.parent:
+                items["sub_category"] = cat.parent.name
+        return items
+
+    @property
+    def sub_category(self):
+        for cat in self.categories.filter(category__isnull=True).select_related('parent__name'):
+            print cat.pk
+            if cat.parent.name:
+                return cat.parent.name
+        return None
 
 class JobPricing(models.Model):
     title = models.CharField(max_length=40, blank=True, null=True)

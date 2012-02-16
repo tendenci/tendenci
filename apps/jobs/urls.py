@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from jobs.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('',
-    url(r'^$', 'jobs.views.index', name="jobs"),
+    url(r'^$', 'jobs.views.list', name="jobs"),
     url(r'^search/$', 'jobs.views.search', name="job.search"),
     url(r'^print-view/(?P<slug>[\w\-\/]+)/$', 'jobs.views.print_view', name="job.print_view"),
     url(r'^add/$', 'jobs.views.add', name="job.add"),
@@ -18,5 +18,5 @@ urlpatterns = patterns('',
     url(r'^pending/$', 'jobs.views.pending', name="job.pending"),
     url(r'^approve/(?P<id>\d+)/$', 'jobs.views.approve', name="job.approve"),
     url(r'^thank-you/$', 'jobs.views.thank_you', name="job.thank_you"),
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'jobs.views.index', name="job"),
+    url(r'^(?P<slug>[\w\-\/]+)/$', 'jobs.views.details', name="job"),
 )
