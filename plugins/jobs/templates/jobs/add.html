@@ -1,0 +1,113 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% is_admin user as admin %}
+
+{% block title %}Add {% firstof MODULE_JOBS_LABEL 'Job' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
+<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% job_nav request.user %}
+
+    <h1>Add {% firstof MODULE_JOBS_LABEL 'Job' %}</h1>
+
+    <div class="job-wrap">
+    <form action="{% url job.add %}" method="post">{% csrf_token %}
+    	<div class="forms">
+    		{% if MODULE_JOBS_JOBSREQUIRESPAYMENT %}
+	    	 	<div class="pricing-table-block">
+	    	 	<h4>{% trans "Jobs Pricing" %}</h4>
+				{% job_pricing_table %}
+				<a href="{% url job_pricing.add %}">{% trans "Add pricing options" %}</a>
+				</div>
+            {% endif %}
+			{{ form|styled_form }}
+            <fieldset class="boxy-grey" >
+                <legend id="category-title" style="cursor: pointer"><span>+</span> Category</legend>
+                <div id="category-form">
+                    {{ categoryform|styled_form }}
+                </div>
+            </fieldset>
+			<input type="submit" value="Add {% firstof MODULE_JOBS_LABEL 'Job' %}" />
+        </div>        
+    </form>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+	<script type="text/javascript">
+		var slugit = new Slugify({
+			input_element : 'input#id_title',
+			slug_element : 'input#id_slug',
+			submit_element : 'input[type="submit"]',
+			help: false,
+			limit : 150
+		});
+	</script>
+	<script type="text/javascript">
+		$(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+		$('.timepicker').timePicker({
+		  show24Hours: false,
+		  step: 15
+		});
+	</script>
+    {% if admin %}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			// delete confirmation
+			$('.add-category').click(function(){
+				select_box = $(this).parent().prev().find('select');
+				var category = prompt('Category Name?','').toLowerCase();
+				category = category.replace('"','')
+				var option_html = '<option selected="selected" value="' + category + '">' + category + '</option>';
+				if (category) select_box.append(option_html) 
+				return false;
+			});
+			$('.add-sub-category').click(function(){
+				select_box = $(this).parent().prev().find('select');
+				var sub_category = prompt('Category Name?','').toLowerCase();
+				sub_category = sub_category.replace('"','')
+				var option_html = '<option selected="selected" value="' + sub_category + '">' + sub_category + '</option>';
+				if (sub_category) select_box.append(option_html) 
+				return false;
+			});
+		});
+    </script>
+    {% endif %}
+    <script type="text/javascript">
+        $('#meta-form').hide();
+        $('#category-form').hide();
+        $('#meta-title').click(function() {
+            $('#meta-form').slideToggle('fast');
+            if ($('#meta-title span').text() == '+') {
+                $('#meta-title span').text('-');}
+            else {$('#meta-title span').text('+');}
+        });
+        $('#category-title').click(function() {
+            $('#category-form').slideToggle('fast');
+             if ($('#category-title span').text() == '+') {
+                $('#category-title span').text('-');}
+            else {$('#category-title span').text('+');}
+        });
+    </script>
+{% endblock %}

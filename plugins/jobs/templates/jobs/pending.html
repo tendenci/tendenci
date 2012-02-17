@@ -1,0 +1,31 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% job_nav request.user %}
+    <h1>{% trans "Pending Jobs" %}</h1>
+    
+    <div class="job-wrap">
+    <ul class="pending-jobs">
+    {% for job in jobs %}
+        <li>
+            <a href="{{ job.get_absolute_url }}" title="{{ job.title }}">{{ job.title|truncatewords:"10" }}</a>
+            &nbsp;&ndash;&nbsp;
+            {{ job.create_dt|date }}&nbsp;{{ job.create_dt|time }}
+            &nbsp;&ndash;&nbsp;
+            <a href="{% url job.approve job.pk %}">{% trans "Approve" %}</a>
+        </li>
+    {% empty %}
+        <li>{% trans "There are no pending jobs." %}</li>
+    {% endfor %}
+    </div>
+    </ul>
+</div>
+{% endblock %}
