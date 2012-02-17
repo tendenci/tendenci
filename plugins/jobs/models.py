@@ -11,6 +11,7 @@ from categories.models import CategoryItem
 from tagging.fields import TagField
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
@@ -81,6 +82,9 @@ class Job(TendenciBaseModel):
     non_member_count = models.IntegerField(blank=True, null=True)
 
     categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+    perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
 

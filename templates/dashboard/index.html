@@ -90,10 +90,6 @@
 		{% if MODULE_DIRECTORIES_ENABLED %}
     	<li class="directories"><a href="{% url directory.search %}"><span>{% trans "Directories" %}</span></a></li>
 		{% endif %}
-		
-		{% if MODULE_JOBS_ENABLED %}
-    	<li class="jobs"><a href="{% url job.search %}"><span>{%  trans "Jobs" %}</span></a></li>
-		{% endif %}
 
  		{% if MODULE_RESUMES_ENABLED %}
     	<li class="resumes"><a href="{% url resume.search %}"><span>{%  trans "Resumes" %}</span></a></li>
