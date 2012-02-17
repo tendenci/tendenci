@@ -748,7 +748,8 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
     rep = get_object_or_404(CorporateMembershipRep, pk=id)
     corp_memb = rep.corporate_membership
 
-    if has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
+    if corp_memb.allow_edit_by(request.user) or \
+         has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
         if request.method == "POST":
             
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % rep)
