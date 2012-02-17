@@ -1,0 +1,29 @@
+{% load i18n %}
+
+{% load base_filters %}
+{% load invoice_tags %}
+ <table width="100%">
+      {% invoices_search_line_header request invoice '#669900' %}  
+        
+      {# display job info #} 
+      <tr>
+      	<td>{% trans "JobID" %}</td>
+      	<td>{% trans "Contact" %}</td>
+      	<td>{% trans "Title" %}</td>
+      	<td>{% trans "Date" %}</td>
+      	<td>{% trans "Price" %}</td>
+      	<td>{% trans "Balance" %}</td>
+      </tr>
+      
+       {% if obj %}  
+        <tr>
+        	<td><a href="{% url job obj.slug %}">{{obj.id}}</a></td>
+        	<td>{{obj.contact_name}}</td>
+        	<td><a href="{% url job obj.slug %}">{{obj.title|truncatewords:5}}</a></td>
+        	<td>{{obj.activation_dt|date:'long'}}</td>
+        	<td>{{invoice.total|format_currency}}</td>
+        	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+        </tr>  
+    	 {% endif %} 
+    	 
+ </table>
