@@ -164,6 +164,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             is_admin(user) == False,
             is_member(user) == True,
         ]
+        
+        if corporate_membership:
+            # exclude corp. reps, creator and owner - they should be able to add new
+            is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
 
         # deny access to renew memberships
         if all(is_only_a_member):
@@ -221,9 +225,13 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 notice_type='join',
                 membership_type=entry.membership_type,
             )
+            
+            if entry_invoice.total == 0:
+                if not entry_invoice.is_tendered:
+                    entry_invoice.tender(request.user) 
 
             # online payment
-            if entry.payment_method and entry.payment_method.is_online:
+            if entry_invoice.total>0 and entry.payment_method and entry.payment_method.is_online:
                 return HttpResponseRedirect(reverse(
                     'payments.views.pay_online',
                     args=[entry_invoice.pk, entry_invoice.guid]
