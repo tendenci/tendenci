@@ -1,0 +1,47 @@
+{% extends "articles/base.html" %}
+{% load help_file_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_HELP_FILES_LABEL 'Help Files' %} {% trans "Edit" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/helpfiles.css">
+<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% help_file_nav request.user help_file %}
+	
+    <h1>{% firstof MODULE_HELP_FILES_LABEL 'Help Files' %} {% trans "Edit" %}</h1>
+
+    <div class="article-wrap">  
+    	<form action="{% url help_files.edit help_file.pk %}" method="post">{% csrf_token %}
+    	<div class="forms">
+			{{ form|styled_form }}
+        	<input type="submit" value="Save {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}" />
+		</div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/global/tinymce.event_handlers.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+	<script type="text/javascript">
+		var slugit = new Slugify({
+			input_element : 'input#id_question',
+			slug_element : 'input#id_slug',
+			submit_element : 'input[type="submit"]',
+			help: false,
+			limit : 150
+		});
+	</script>
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.template.context import RequestContext
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
@@ -6,10 +7,10 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from event_logs.models import EventLog
-from perms.utils import has_perm, is_admin, get_notice_recipients
+from perms.utils import has_perm, is_admin, update_perms_and_save, get_notice_recipients
 
 from help_files.models import Topic, HelpFile, HelpFileMigration, Request
-from help_files.forms import RequestForm
+from help_files.forms import RequestForm, HelpFileForm
 
 try:
     from notification import models as notification
@@ -60,7 +61,7 @@ def search(request, template_name="help_files/search.html"):
 
 
 def topic(request, id, template_name="help_files/topic.html"):
-    "List of topic help files"
+    """ List of topic help files """
     topic = get_object_or_404(Topic, pk=id)
     query = None
 
@@ -91,6 +92,88 @@ def details(request, slug, template_name="help_files/details.html"):
     else:
         raise Http403
 
+@login_required
+def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
+    if has_perm(request.user,'help_files.add_helpfile'):
+        if request.method == "POST":
+            form = form_class(request.POST, user=request.user)
+            if form.is_valid():           
+                help_file = form.save(commit=False)
+
+                # add all permissions and save the model
+                help_file = update_perms_and_save(request, form, help_file)
+                form.save_m2m()
+
+                log_defaults = {
+                    'event_id' : 1000100,
+                    'event_data': '%s (%d) added by %s' % (help_file._meta.object_name, help_file.pk, request.user),
+                    'description': '%s added' % help_file._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': help_file,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % help_file)
+                
+                # send notification to administrator(s) and module recipient(s)
+                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+                # if recipients and notification: 
+#                     notification.send_emails(recipients,'help_file_added', {
+#                         'object': help_file,
+#                         'request': request,
+#                     })
+
+                return HttpResponseRedirect(reverse('help_file.details', args=[help_file.slug]))
+        else:
+            form = form_class(user=request.user)
+           
+        return render_to_response(template_name, {'form':form}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+
+@login_required
+def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/edit.html"):
+    help_file = get_object_or_404(HelpFile, pk=id)
+    if has_perm(request.user,'help_files.change_helpfile', help_file):
+        if request.method == "POST":
+            form = form_class(request.POST, instance=help_file, user=request.user)
+            if form.is_valid():           
+                help_file = form.save(commit=False)
+
+                # add all permissions and save the model
+                help_file = update_perms_and_save(request, form, help_file)
+                form.save_m2m()
+
+                log_defaults = {
+                    'event_id' : 1000200,
+                    'event_data': '%s (%d) edited by %s' % (help_file._meta.object_name, help_file.pk, request.user),
+                    'description': '%s edited' % help_file._meta.object_name,
+                    'user': request.user,
+                    'request': request,
+                    'instance': help_file,
+                }
+                EventLog.objects.log(**log_defaults)
+                
+                messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % help_file)
+                
+                # send notification to administrator(s) and module recipient(s)
+                recipients = get_notice_recipients('module', 'help_files', 'helpfilerecipients')
+                # if recipients and notification: 
+#                     notification.send_emails(recipients,'help_file_added', {
+#                         'object': help_file,
+#                         'request': request,
+#                     })
+
+                return HttpResponseRedirect(reverse('help_file.details', args=[help_file.slug]))
+        else:
+            form = form_class(instance=help_file, user=request.user)
+           
+        return render_to_response(template_name, {'help_file': help_file, 'form':form}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
 
 def request_new(request, template_name="help_files/request_new.html"):
     "Request new file form"
