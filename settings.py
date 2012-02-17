@@ -217,7 +217,6 @@ INSTALLED_APPS = (
     'categories',
     'contributions',
     'theme_editor',
-    'jobs',
     'styled_forms',
     'form_builder',
     'newsletters',
