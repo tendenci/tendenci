@@ -512,7 +512,7 @@ def approve(request, id, template="corporate_memberships/approve.html"):
                 corporate_membership.approve_renewal(request)
                 # send an email to dues reps
                 recipients = dues_rep_emails_list(corporate_membership)
-                if not recipients:
+                if not recipients and corporate_membership.creator:
                     recipients = [corporate_membership.creator.email]
                 extra_context = {
                     'object': corporate_membership,
