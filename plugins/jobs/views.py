@@ -61,7 +61,7 @@ def details(request, slug=None, template_name="jobs/view.html"):
 
 def list(request, template_name="jobs/list.html"):
     filters = get_query_filters(request.user, 'jobs.view_job')
-    jobs = Job.objects.filter(filters).select_related().order_by('status_detail','list_type','-post_dt')
+    jobs = Job.objects.filter(filters).distinct().select_related().order_by('status_detail','list_type','-post_dt')
 
     log_defaults = {
         'event_id': 254000,
