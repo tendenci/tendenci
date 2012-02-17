@@ -6,7 +6,7 @@ from django.conf import settings
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 from models import Topic, HelpFile, Request
-from forms import HelpFileForm
+from forms import HelpFileAdminForm
 import settings
 
 class HelpFileAdmin(admin.ModelAdmin):
@@ -30,7 +30,7 @@ class HelpFileAdmin(admin.ModelAdmin):
         )}),
     )
     prepopulated_fields = {'slug': ['question']}
-    form = HelpFileForm
+    form = HelpFileAdminForm
 
     class Media:
         js = (
