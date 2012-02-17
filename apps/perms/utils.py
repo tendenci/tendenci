@@ -211,7 +211,7 @@ def get_query_filters(user, perm):
     else:
         if is_developer(user):
             return Q()
-        elif is_admin(user) or has_perm(user, 'jobs.view_job'):
+        elif is_admin(user) or has_perm(user, perm):
             return Q(status=True)
         elif is_member(user):
             anon_q = Q(allow_anonymous_view=True)
@@ -219,9 +219,10 @@ def get_query_filters(user, perm):
             member_q = Q(allow_member_view=True)
             status_q = Q(status=True)
             status_detail_q = Q(status_detail='active')
+            group_q = Q(perms__group__in=user.group_member.select_related('pk'), perms__codename=perm.split(".")[1])
             creator_perm_q = Q(creator=user)
             owner_perm_q = Q(owner=user)
-            member_filter = (status_q & (((anon_q | user_q | member_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+            member_filter = (status_q & (((anon_q | user_q | member_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
 
             return member_filter
         else:
@@ -229,9 +230,10 @@ def get_query_filters(user, perm):
             user_q = Q(allow_user_view=True)
             status_q = Q(status=True)
             status_detail_q = Q(status_detail='active')
+            group_q = Q(perms__group__in=user.group_member.select_related('pk'), perms__codename=perm.split(".")[1])
             creator_perm_q = Q(creator=user)
             owner_perm_q = Q(owner=user)
-            user_filter = (status_q & (((anon_q | user_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+            user_filter = (status_q & (((anon_q | user_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
 
             return user_filter
 
