@@ -164,6 +164,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             is_admin(user) == False,
             is_member(user) == True,
         ]
+        
+        if corporate_membership:
+            # exclude corp. reps, creator and owner - they should be able to add new
+            is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
 
         # deny access to renew memberships
         if all(is_only_a_member):
