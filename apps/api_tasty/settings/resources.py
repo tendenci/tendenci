@@ -2,7 +2,7 @@ from tastypie import fields
 from site_settings.models import Setting
 
 from api_tasty.resources import TendenciResource
-from api_tasty.validation import ModelFormValidation
+from api_tasty.validation import TendenciValidation
 from api_tasty.settings.forms import SettingForm
 
 class SettingResource(TendenciResource):
@@ -22,7 +22,7 @@ class SettingResource(TendenciResource):
     class Meta(TendenciResource.Meta):
         queryset = Setting.objects.all()
         resource_name = 'setting'
-        validation = ModelFormValidation(form_class=SettingForm)
+        validation = TendenciValidation(form_class=SettingForm)
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get', 'put']
         fields = ['name', 'description', 'value', 'data_type', 'input_value']
