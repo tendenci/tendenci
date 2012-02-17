@@ -16,3 +16,4 @@ class TendenciResource(ModelResource):
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
+    
