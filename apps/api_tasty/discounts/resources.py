@@ -5,5 +5,5 @@ class DiscountResource(TendenciResource):
     class Meta(TendenciResource.Meta):
         queryset = Discount.objects.all()
         resource_name = 'discount'
-        list_allowed_methods = ['get']
+        list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
