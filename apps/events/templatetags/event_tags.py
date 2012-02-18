@@ -6,10 +6,11 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 
 from base.template_tags import ListNode, parse_tag_kwargs
 from site_settings.utils import get_setting
+from perms.utils import get_query_filters
 
 from events.models import Event, Registrant, Type, RegConfPricing
 from events.utils import get_pricing, registration_earliest_time
@@ -276,10 +277,14 @@ class ListEventsNode(ListNode):
                 user = user.resolve(context)
             except:
                 user = self.kwargs['user']
+                if user == "anon" or user == "anonymous":
+                    user = AnonymousUser()
         else:
             # check the context for an already existing user
+            # and see if it is really a user object
             if 'user' in context:
-                user = context['user']
+                if isinstance(context['user'], User):
+                    user = context['user']
 
         if 'limit' in self.kwargs:
             try:
@@ -310,7 +315,9 @@ class ListEventsNode(ListNode):
             query = '%s "tag:%s"' % (query, tag)
 
         # get the list of staff
-        items = self.model.objects.search(user=user, query=query)
+        #items = self.model.objects.search(user=user, query=query)
+        filters = get_query_filters(user, 'events.view_event')
+        items = Event.objects.filter(filters)
         objects = []
         # if order is not specified it sorts by relevance
 
@@ -323,9 +330,9 @@ class ListEventsNode(ListNode):
 
         if items:
             if randomize:
-                objects = [item.object for item in random.sample(items, items.count())][:limit]
+                objects = [item for item in random.sample(items, items.count())][:limit]
             else:
-                objects = [item.object for item in items[:limit]]
+                objects = [item for item in items[:limit]]
 
         context[self.context_var] = objects
         return ""
