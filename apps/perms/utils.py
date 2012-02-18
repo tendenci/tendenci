@@ -202,7 +202,7 @@ def get_query_filters(user, perm):
     # impersonation
     user = getattr(user, 'impersonated_user', user)
 
-    if user.is_anonymous():
+    if not isinstance(user, User) or user.is_anonymous():
         anon_q = Q(allow_anonymous_view=True)
         status_q = Q(status=True)
         status_detail_q = Q(status_detail='active')
@@ -213,29 +213,36 @@ def get_query_filters(user, perm):
             return Q()
         elif is_admin(user) or has_perm(user, perm):
             return Q(status=True)
-        elif is_member(user):
-            anon_q = Q(allow_anonymous_view=True)
-            user_q = Q(allow_user_view=True)
-            member_q = Q(allow_member_view=True)
-            status_q = Q(status=True)
-            status_detail_q = Q(status_detail='active')
-            group_q = Q(perms__group__in=user.group_member.select_related('pk'), perms__codename=perm.split(".")[1])
-            creator_perm_q = Q(creator=user)
-            owner_perm_q = Q(owner=user)
-            member_filter = (status_q & (((anon_q | user_q | member_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
-
-            return member_filter
         else:
-            anon_q = Q(allow_anonymous_view=True)
-            user_q = Q(allow_user_view=True)
-            status_q = Q(status=True)
-            status_detail_q = Q(status_detail='active')
-            group_q = Q(perms__group__in=user.group_member.select_related('pk'), perms__codename=perm.split(".")[1])
-            creator_perm_q = Q(creator=user)
-            owner_perm_q = Q(owner=user)
-            user_filter = (status_q & (((anon_q | user_q | group_q) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+            try:
+                group_perm = Q(perms__codename=perm.split(".")[1])
+            except:
+                group_perm = True
 
-            return user_filter
+            if is_member(user):
+                anon_q = Q(allow_anonymous_view=True)
+                user_q = Q(allow_user_view=True)
+                member_q = Q(allow_member_view=True)
+                status_q = Q(status=True)
+                status_detail_q = Q(status_detail='active')
+                group_q = Q(perms__group__in=user.group_member.select_related('pk'))
+                
+                creator_perm_q = Q(creator=user)
+                owner_perm_q = Q(owner=user)
+                member_filter = (status_q & (((anon_q | user_q | member_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+    
+                return member_filter
+            else:
+                anon_q = Q(allow_anonymous_view=True)
+                user_q = Q(allow_user_view=True)
+                status_q = Q(status=True)
+                status_detail_q = Q(status_detail='active')
+                group_q = Q(perms__group__in=user.group_member.select_related('pk'))
+                creator_perm_q = Q(creator=user)
+                owner_perm_q = Q(owner=user)
+                user_filter = (status_q & (((anon_q | user_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
+    
+                return user_filter
 
 
 def get_administrators():
