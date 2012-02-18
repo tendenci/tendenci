@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 
+from perms.utils import get_query_filters
 from base.template_tags import ListNode, parse_tag_kwargs
 from stories.models import Story
 
@@ -56,6 +57,7 @@ def story_expiration(obj):
 
 class ListStoriesNode(ListNode):
     model = Story
+    perms = 'stories.view_story'
 
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
@@ -129,7 +131,13 @@ class ListStoriesNode(ListNode):
             query = '%s "tag:%s"' % (query, tag)
 
         # get the list of staff
-        items = self.model.objects.search(user=user, query=query)
+        # items = self.model.objects.search(user=user, query=query)
+
+        filters = get_query_filters(user, self.perms)
+        items = self.model.objects.filter(filters)
+        
+        if tags:
+            items = items.filter(tags__in=tags)
         objects = []
 
         # Custom filter for stories
@@ -143,9 +151,9 @@ class ListStoriesNode(ListNode):
         # if order is not specified it sorts by relevance
         if items:
             if randomize:
-                objects = [item.object for item in random.sample(items, len(items))][:limit]
+                objects = [item for item in random.sample(items, len(items))][:limit]
             else:
-                objects = [item.object for item in items[:limit]]
+                objects = [item for item in items[:limit]]
 
             context[self.context_var] = objects
         return ""
