@@ -22,12 +22,17 @@ class HasPermNode(Node):
         user = self.user.resolve(context)
 
         if isinstance(user, User):
-            if self.object:
-                object = self.object.resolve(context)
-                has_perm = utils.has_perm(user, self.perm, object)
+
+            # return true for admins
+            if utils.is_admin(user):
+                has_perm = True
             else:
-                has_perm = utils.has_perm(user, self.perm)
-            
+                if self.object:
+                    object = self.object.resolve(context)
+                    has_perm = utils.has_perm(user, self.perm, object)
+                else:
+                    has_perm = utils.has_perm(user, self.perm)
+
         if self.context_var:
             context[self.context_var] = has_perm
             return ''

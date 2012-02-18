@@ -91,6 +91,22 @@ def groups_with_perms(instance):
     return list(set(group_perms))
 
 
+def has_groups_perms(instance):
+    """
+        Return a boolean of whether or not the instance
+        has group permissions
+    """
+    content_type = ContentType.objects.get_for_model(instance)
+    filters = {
+        'group__in': Group.objects.filter(status=1, status_detail='active'),
+        'content_type': content_type,
+        'object_id': instance.pk
+    }
+    object_perms = ObjectPermission.objects.filter(**filters)
+
+    return object_perms
+
+
 class UserPermissionWidget(CheckboxSelectMultiple):
     def render(self, name, value, attrs=None, choices=()):
         if value is None:
