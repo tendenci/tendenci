@@ -69,6 +69,7 @@ def job_pricing_table(context):
 
 class ListJobNode(ListNode):
     model = Job
+    perms = 'jobs.view_job'
 
 
 @register.tag
