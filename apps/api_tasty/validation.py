@@ -20,10 +20,10 @@ class TendenciValidation(CleanedDataFormValidation):
         if request:
             user = User.objects.get(username=request.GET.get('username'))
             if not data.get('creator', None):
-                data['creator'] = user
+                data['creator'] = user.pk
                 data['creator_username'] = user.username
             if not data.get('owner', None):
-                data['owner'] = user
+                data['owner'] = user.pk
                 data['owner_username'] = user.username
         
         form = self.form_class(data, instance=bundle.obj, request=request)

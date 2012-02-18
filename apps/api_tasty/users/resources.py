@@ -2,7 +2,6 @@ import random
 
 from django.contrib.auth.models import User, get_hexdigest
 
-from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 from tastypie.validation import CleanedDataFormValidation
@@ -22,15 +21,11 @@ class UserResource(ModelResource):
         validation = CleanedDataFormValidation(form_class=UserForm)
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'put', 'delete']
-        fields = [
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password',
-            'is_superuser',
-            'is_staff',
-        ]
+        excludes = ['username', 'password']
+        
+    def dehydrate(self, bundle):
+        bundle.data['username'] = bundle.obj.username 
+        return bundle
         
     def obj_create(self, bundle, request=None, **kwargs):
         bundle = super(UserResource, self).obj_create(bundle, request, **kwargs)
