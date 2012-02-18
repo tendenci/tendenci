@@ -23,13 +23,17 @@ class AppResource(TendenciResource):
 
 class MembershipResource(TendenciResource):
     """Membership API
-    list_filters: mem_id, mem_type, mem_app, mem_corp_mem_id, mem_username, mem_userid
     list:
-        http://0.0.0.0:8000/api_tasty/v1/membership/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf
+    *example: http://0.0.0.0:8000/api_tasty/v1/membership/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf
+    *extra GET filters: mem_id, mem_type, mem_app, mem_corp_mem_id, mem_username, mem_userid
     create:
-        curl -H "Content-Type: application/json" -X POST --data @data.json "http://0.0.0.0:8000/api_tasty/v1/membership/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf"
+    *example: curl -H "Content-Type: application/json" -X POST --data @data.json "http://0.0.0.0:8000/api_tasty/v1/membership/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf"
+    *create options: if create_user is set to true the username and password fields are used to create a new user otherwise username is required to associate to an existing user.
     update:
-        curl -H "Content-Type: application/json" -X PUT --data @data.json "http://0.0.0.0:8000/api_tasty/v1/membership/12/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf"
+    curl -H "Content-Type: application/json" -X PUT --data @data.json "http://0.0.0.0:8000/api_tasty/v1/membership/12/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf"
+    *update options: same sa create's options
+    delete:
+    *example: curl -H "Content-Type: application/json" -X DELETE "http://0.0.0.0:8000/api_tasty/v1/membership/12/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf"
     """
     
     user = fields.ForeignKey(UserResource, 'user')
