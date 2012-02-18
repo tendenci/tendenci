@@ -40,6 +40,7 @@ class MembershipResource(TendenciResource):
     membership_type = fields.ForeignKey(MembershipTypeResource, 'membership_type')
     ma = fields.ForeignKey(AppResource, 'ma', null=True)
     payment_method = fields.ForeignKey(PaymentMethodResource, 'payment_method', null=True)
+    
     class Meta(TendenciResource.Meta):
         queryset = Membership.objects.all()
         resource_name = 'membership'
