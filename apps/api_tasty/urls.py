@@ -6,6 +6,7 @@ from api_tasty.users.resources import UserResource
 from api_tasty.profiles.resources import ProfileResource
 from api_tasty.discounts.resources import DiscountResource
 from api_tasty.entities.resources import EntityResource
+from api_tasty.payments.resources import PaymentMethodResource
 from api_tasty.memberships.resources import (MembershipResource, 
     MembershipTypeResource, AppResource)
 
@@ -22,6 +23,8 @@ api.register(AppResource())
 api.register(SettingResource())
 # discounts
 api.register(DiscountResource())
+# payments
+api.register(PaymentMethodResource())
 
 urlpatterns = patterns('',
     (r'^', include(api.urls)),
