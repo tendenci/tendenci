@@ -14,7 +14,7 @@ class CorporateMembershipManager(Manager):
 
         user = kwargs.get('user', None)
         if user.is_anonymous():
-            return None
+            return SearchQuerySet().none()
 
         is_an_admin = is_admin(user)
 
