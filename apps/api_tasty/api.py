@@ -123,15 +123,6 @@ class UserResource(ModelResource):
         validation = ModelFormValidation(form_class=UserForm)
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'put', 'delete']
-        fields = [
-            'username',
-            'first_name',
-            'last_name',
-            'email',
-            'password',
-            'is_superuser',
-            'is_staff',
-        ]
         
     def obj_create(self, bundle, request=None, **kwargs):
         bundle = super(UserResource, self).obj_create(bundle, request, **kwargs)
@@ -167,53 +158,8 @@ class ProfileResource(ModelResource):
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
         validation = ModelFormValidation(form_class=ProfileForm)
-        list_allowed_methods = ['get']
+        list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        fields = [
-            'salutation',
-            'user',
-            'phone',
-            'phone2',
-            'fax',
-            'work_phone',
-            'home_phone',
-            'mobile_phone',
-            'email',
-            'email2',
-            'company',
-            'position_title',
-            'position_assignment',
-            'display_name',
-            'hide_in_search',
-            'hide_phone',
-            'hide_email',
-            'hide_address',
-            'initials',
-            'sex',
-            'mailing_name',
-            'address',
-            'address2',
-            'city',
-            'state',
-            'zipcode',
-            'county',
-            'country',
-            'url',
-            'dob',
-            'ssn',
-            'spouse',
-            'time_zone',
-            'department',
-            'education',
-            'student',
-            'direct_mail',
-            'notes',
-            'allow_anonymous_view',
-            'admin_notes',
-            'entity',
-            'status',
-            'status_detail',
-        ]
         
 class DiscountResource(ModelResource):
     owner = fields.ForeignKey(UserResource, 'owner')
@@ -224,5 +170,5 @@ class DiscountResource(ModelResource):
         serializer = SafeSerializer()
         authorization = Authorization()
         authentication = DeveloperApiKeyAuthentication()
-        list_allowed_methods = ['get']
+        list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
