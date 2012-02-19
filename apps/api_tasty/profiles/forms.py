@@ -7,4 +7,8 @@ class ProfileForm(TendenciForm):
     """
     class Meta:
         model = Profile
+        exclude = ("guid", )
         
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(ProfileForm, self).__init__(*args, **kwargs)
