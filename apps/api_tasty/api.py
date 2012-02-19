@@ -45,5 +45,3 @@ class SafeApi(Api):
         
         serialized = serializer.serialize(available_resources, desired_format, options)
         return HttpResponse(content=serialized, content_type=build_content_type(desired_format))
-
-        

@@ -18,7 +18,7 @@ class ApiKeyForm(forms.ModelForm):
         if not is_developer(user):
             raise forms.ValidationError('This user is not a developer.')
         return user
-        
+
 class TendenciForm(forms.ModelForm):
     """Form that allows owner and creator fields to be editable
     """
