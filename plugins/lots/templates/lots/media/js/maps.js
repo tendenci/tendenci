@@ -43,10 +43,10 @@ function addLine(prefix, data){
 function updateLastLine(data){
     var last_line = $('#lines_0');
     var first_line = $('#lines_1');
-    last_line.find('.x1').val(first_line.find('.x1').val());
-    last_line.find('.y1').val(first_line.find('.y1').val());
-    last_line.find('.x2').val(data['x2']);
-    last_line.find('.y2').val(data['y2']);
+    last_line.find('.x2').val(first_line.find('.x1').val());
+    last_line.find('.y2').val(first_line.find('.y1').val());
+    last_line.find('.x1').val(data['x2']);
+    last_line.find('.y1').val(data['y2']);
 }
 
 // drawing
