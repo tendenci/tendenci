@@ -11,7 +11,7 @@
     {% if lot.map %}
         <div class="map-wrap">
             <div class="map-photo">
-                <canvas height="{{ lot.map.height_for_900 }}" width="900" >
+                <canvas height="{{ lot.map|height_for_width:900 }}" width="900" >
                 </canvas>
             </div>
             <p class="map-title">{{ lot.map.name }}</p>

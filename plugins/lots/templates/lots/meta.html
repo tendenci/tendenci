@@ -49,7 +49,7 @@ by <a href="{{ lot.owner.get_absolute_url }}">
 <div class="edit-links">
 <ul>
 <li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20lots-{{ lot.pk }}">Eventlogs</a></li>
-<li><a class="edit-link" href="{% url admin:lots_lot_change lot.pk %}?next={{ request.path }}">Edit</a></li>
+<li><a class="edit-link" href="{% url lots.edit lot.pk %}">Edit</a></li>
 <li><a class="options-link" href="#">Options <small>&#9650;</small></a>
 <div class="options-list">
 <ul>
