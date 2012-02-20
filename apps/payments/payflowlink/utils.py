@@ -70,6 +70,12 @@ def payflowlink_thankyou_processing(request, response_d, **kwargs):
     return payment, processed
         
 def payment_update_payflowlink(request, response_d, payment, **kwargs):
+    name = response_d.get('name', '')
+    if name:
+        name_list = name.split(' ')
+        if len(name_list) >= 2:
+            payment.first_name = name_list[0]
+            payment.last_name = ' '.join(name_list[1:])
     payment.address = response_d.get('address', '')
     payment.city = response_d.get('city', '')
     payment.state = response_d.get('state', '')

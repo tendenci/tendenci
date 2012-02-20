@@ -97,6 +97,12 @@ def firstdata_thankyou_processing(request, response_d, **kwargs):
     return payment
         
 def payment_update_firstdata(request, response_d, payment, **kwargs):
+    bname = response_d.get('bname', '')
+    if bname:
+        name_list = bname.split(' ')
+        if len(name_list) >= 2:
+            payment.first_name = name_list[0]
+            payment.last_name = ' '.join(name_list[1:])
     payment.company = response_d.get('bcompany', '')
     payment.address = response_d.get('baddr1', '')
     payment.zip = response_d.get('bzip', '')
