@@ -314,16 +314,16 @@ class ListEventsNode(ListNode):
             tag = tag.strip()
             query = '%s "tag:%s"' % (query, tag)
 
-        # get the list of staff
-        #items = self.model.objects.search(user=user, query=query)
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters)
         objects = []
-        # if order is not specified it sorts by relevance
 
+        # if order is not specified it sorts by relevance
         if order:
             if order == "next_upcoming":
-                items = items.filter(start_dt__gt = datetime.now())
+                # Removed seconds so we can cache the query better
+                now = datetime.now().replace(second=0)
+                items = items.filter(start_dt__gt = now)
                 items = items.order_by("start_dt")
             else:
                 items = items.order_by(order)
