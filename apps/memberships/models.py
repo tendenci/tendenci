@@ -1372,6 +1372,11 @@ class AppEntry(TendenciBaseModel):
         invoice.estimate = True
         invoice.status_detail = status_detail
         
+        invoice.bill_to = '%s %s' % (self.first_name, self.last_name)
+        invoice.bill_to_first_name = self.first_name
+        invoice.bill_to_last_name = self.last_name
+        invoice.bill_to_email = self.email
+        
         # if this membership is under a corporate and its corporate membership allows
         # threshold and the threshold is whithin limit, then this membership gets the
         # threshold price.
