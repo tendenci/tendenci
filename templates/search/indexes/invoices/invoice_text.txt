@@ -14,4 +14,10 @@
 {{ object.total }}
 {{ object.balance }}
 {{ object.status_detail }}
-
+{% with object.payment_set.all as payments %}
+{% for payment in payments %}
+{{ payment.first_name }} {{ payment.last_name }}
+{{ payment.email_name }}
+{{ payment.trans_id }}
+{% endfor %}
+{% endwith %}
