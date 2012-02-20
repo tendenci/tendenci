@@ -6,6 +6,7 @@ urlpatterns = patterns('',
     (r'^authorizenet/', include('payments.authorizenet.urls')),
     (r'^firstdata/', include('payments.firstdata.urls')),
     (r'^payflowlink/', include('payments.payflowlink.urls')),
+    (r'^stripe/', include('payments.stripe.urls')),
     url(r'^(?P<id>\d+)/(?P<guid>[\d\w-]+)?$', 'payments.views.view', name="payment.view"), 
     url(r'^receipt/(?P<id>\d+)/(?P<guid>[\d\w-]+)$', 'payments.views.receipt', name="payment.receipt"), 
 )
