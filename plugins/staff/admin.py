@@ -24,7 +24,7 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class StaffAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'name', 'slug', 'department','position', 'start_date', 'years']
+    list_display = ['view_on_site', 'edit_link', 'name', 'slug', 'department','position', 'start_date', 'years', 'phone']
     list_filter = ['start_date']
     search_fields = ['name','biography']
     ordering = ('-start_date',)
