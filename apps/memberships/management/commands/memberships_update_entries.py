@@ -12,22 +12,26 @@ class Command(BaseCommand):
 		except AppField.DoesNotExist:
 			return False
 
-		entries = AppEntry.objects.all()
+		entries = AppEntry.objects.filter(membership__gt=0)
 
-		for entry in entries:
-			corp_id = self.get_field_value('corporate_membership_id')
+		print 'entries', entries.count()
 
-			if corp_id.is_digit():
-				pass  # this one is good; on to the next one
+		for i, entry in enumerate(entries):
+			corp_id = entry.get_field_value('corporate_membership_id')
+
+			if corp_id.isdigit():
+				continue  # this one is good; on to the next one
+
+			if not entry.membership:
+				continue  # on to the next one
 
 			value = entry.membership.corporate_membership_id
 
-			# app_field_entry = AppFieldEntry.objects.create(
-			# 	entry=entry,
-			# 	field=corp_field,
-			# 	value=value,
-			# )
+			app_field_entry = AppFieldEntry.objects.create(
+				entry=entry,
+				field=corp_field,
+				value=value,
+			)
 
-			# print app_field_entry, 'created'
-
-		return True
+			if kwargs['verbosity'] > 0:
+				print entry.pk, app_field_entry, value
