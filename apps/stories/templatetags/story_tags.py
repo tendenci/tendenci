@@ -140,9 +140,12 @@ class ListStoriesNode(ListNode):
             items = items.filter(tags__in=tags)
         objects = []
 
+        # Removed seconds so we can cache the query better
+        now = datetime.now().replace(second=0)
+
         # Custom filter for stories
-        date_query = reduce(or_, [Q(end_dt__gte = datetime.now()), Q(expires=False)])
-        date_query = reduce(and_, [Q(start_dt__lte = datetime.now()), date_query])
+        date_query = reduce(or_, [Q(end_dt__gte = now), Q(expires=False)])
+        date_query = reduce(and_, [Q(start_dt__lte = now), date_query])
         items = items.filter(date_query)
 
         if order:
