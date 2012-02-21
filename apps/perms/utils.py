@@ -178,6 +178,9 @@ def is_developer(user):
 
 
 def has_view_perm(user, perm, obj=None):
+    """
+    Method used in details views to check permissions faster on a single object.
+    """
     # impersonation
     user = getattr(user, 'impersonated_user', user)
     if obj:
@@ -199,6 +202,9 @@ def has_view_perm(user, perm, obj=None):
 
 
 def get_query_filters(user, perm):
+    """
+    Method to generate search query filters for different user types.
+    """
     # impersonation
     user = getattr(user, 'impersonated_user', user)
 
@@ -211,6 +217,7 @@ def get_query_filters(user, perm):
     else:
         if is_developer(user):
             return Q()
+        # Uses has_perm instead of has_view_perm since no object is present
         elif is_admin(user) or has_perm(user, perm):
             return Q(status=True)
         else:
@@ -226,11 +233,10 @@ def get_query_filters(user, perm):
                 status_q = Q(status=True)
                 status_detail_q = Q(status_detail='active')
                 group_q = Q(perms__group__in=user.group_member.select_related('pk'))
-                
                 creator_perm_q = Q(creator=user)
                 owner_perm_q = Q(owner=user)
                 member_filter = (status_q & (((anon_q | user_q | member_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
-    
+
                 return member_filter
             else:
                 anon_q = Q(allow_anonymous_view=True)
@@ -241,7 +247,7 @@ def get_query_filters(user, perm):
                 creator_perm_q = Q(creator=user)
                 owner_perm_q = Q(owner=user)
                 user_filter = (status_q & (((anon_q | user_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
-    
+
                 return user_filter
 
 
