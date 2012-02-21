@@ -21,10 +21,6 @@
 	position: relative;
 }
 
-.t .jobs-wrap .wrap-search-item {
-	border: 1px solid silver;
-}
-
 .t .jobs-wrap .wrap-search-item .job-search-item .job-info {
     padding: 10px;
 }
