@@ -184,13 +184,6 @@ class Job(TendenciBaseModel):
                 items["sub_category"] = cat.parent.name
         return items
 
-    @property
-    def sub_category(self):
-        for cat in self.categories.filter(category__isnull=True).select_related('parent__name'):
-            print cat.pk
-            if cat.parent.name:
-                return cat.parent.name
-        return None
 
 class JobPricing(models.Model):
     title = models.CharField(max_length=40, blank=True, null=True)
