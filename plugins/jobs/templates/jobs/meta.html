@@ -1,19 +1,9 @@
 {% load job_tags %}
-{% load tagging_tags %}
 {% load base_tags %}
 {% load base_filters %}
-{% load category_tags %}
-{% load perm_tags %}
 {% load i18n %}
 
-{% has_perm user jobs.change_job job as can_edit %}
-{% has_perm user jobs.delete_job job as can_delete %}
-{% if job.tags %}
-    {% tags_hash_tags job as hash_tags %}
-    {% tags_strip_hash job as nonhash_tags %}
-{% endif %}
-
-<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+<div class="meta">
     <div class="meta-left">
         {% with job.category_set as job_cat %}
         {% if job_cat.category %}
@@ -28,34 +18,24 @@
 
         {% if job.tags %}
         <div class="tags">
-            {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
-            {% for tag in nonhash_tags %}
+            <strong>Tags: </strong>
+            {% for tag in job.tags|tag_split %}
                 <a href="{% url job.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
-            
-            {% if hash_tags and can_edit %}
-            {% for tag in hash_tags %}
-                {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url job.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            {% endif %}
         </div>
         {% endif %}
         
-        {% if user.is_authenticated %}
-            <div class="submitted">{% blocktrans with job.create_dt|date:"long" as create_date %}Created on {{ create_date }}
-            by:{% endblocktrans %} <a href="{{ job.creator.get_absolute_url }}">
-            {% if job.creator.first_name %}{{ job.creator.first_name }} {{ job.creator.last_name }}
-            {% else %}
-            {{ job.creator }}
-            {% endif %}</a>
-            </div>
-            <div class="submitted">{% blocktrans with job.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
-            by:{% endblocktrans %} <a href="{{ job.owner.get_absolute_url }}">
-            {% if job.owner.first_name %}{{ job.owner.first_name }} {{ job.owner.last_name }}
-            {% else %}
-            {{ job.owner }}
-            {% endif %}</a>
-            </div>
+        {% if not admin %}
+        {% if user == job.creator or user == job.owner %}
+        <div class="categories">
+            <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
+        </div>
+        
+        {% endif %}
+        {% endif %}
+        
+        {% if admin or user == job.creator or user == job.owner %}
+            {% meta_creator_owner job %}
         {% endif %}
     </div>
     
@@ -65,7 +45,7 @@
     </div>
     
 </div>
-{% if can_edit %}
+{% if admin %}
 <div class="editor-bar">
 
     <div class="perm-status">
@@ -76,20 +56,16 @@
     </div>
     <div class="edit-links">
     <ul>
-        {% if admin %}<li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ job.pk }}&source={{ job.opt_app_label }}">{% trans "Eventlogs" %}</a></li>{% endif %}
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ job.pk }}&source={{ job.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
         <li><a class="edit-link" href="{% url job.edit job.pk %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
-                {% if can_delete %}
                 <li>
                     <a class="delete" href="{% url job.delete job.pk %}">{% trans "Delete" %}</a>
                 </li>
-                {% endif %}
-                {% if admin %}
                 <li><a href="{% url job.edit.meta job.pk %}">{% trans "Edit Meta" %}</a></li>
                 <li><a href="{% url category.update job.opt_app_label job.opt_module_name job.pk %}">{% trans "Edit Categories" %}</a></li>
-                {% endif %}
             </ul>
         </div>
         </li>

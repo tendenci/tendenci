@@ -2,7 +2,6 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% is_admin user as user_is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user jobs.add_job as can_add_job %}
 {% has_perm user jobs.add_jobpricing as can_add_jobpricing %}
