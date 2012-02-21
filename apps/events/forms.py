@@ -1076,6 +1076,7 @@ class AddonForm(BetterModelForm):
                 'fields': [
                     'title',
                     'price',
+                    'group',
                 ],'legend': ''
             }),
             ('Permissions', {
