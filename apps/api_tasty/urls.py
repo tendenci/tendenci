@@ -9,6 +9,8 @@ from api_tasty.entities.resources import EntityResource
 from api_tasty.payments.resources import PaymentMethodResource
 from api_tasty.memberships.resources import (MembershipResource, 
     MembershipTypeResource, AppResource)
+from api_tasty.events.resources import (EventResource, TypeResource,
+    PlaceResource)
 
 api = SafeApi(api_name='v1')
 # user profiles
@@ -25,6 +27,10 @@ api.register(SettingResource())
 api.register(DiscountResource())
 # payments
 api.register(PaymentMethodResource())
+# events
+api.register(EventResource())
+api.register(TypeResource())
+api.register(PlaceResource())
 
 urlpatterns = patterns('',
     (r'^', include(api.urls)),
