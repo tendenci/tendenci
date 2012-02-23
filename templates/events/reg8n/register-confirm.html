@@ -215,11 +215,7 @@
     		<tr>
     			<td>
 					{{ addon.addon.title }}
-    			</td>
-                <td>
-    			{% for option in addon.regaddonoption_set.all %}
-                    {{ option.selected_option }}{% if not forloop.last %},{% endif %}
-                {% endfor %}
+                    ({% for option in addon.regaddonoption_set.all %}{{ option.option.title }}{% if not forloop.last %}, {% endif %}{% endfor %})
                 </td>
                 <td class="td-right">
 					<span>{{ addon.amount|format_currency }}</span>
