@@ -1000,25 +1000,18 @@ class Addon(models.Model):
                 return False
         return True
     
+    def field_name(self):
+        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
     
 class AddonOption(models.Model):
     addon = models.ForeignKey(Addon, related_name="options")
     title = models.CharField(max_length=100)
-    choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
+    # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
+    # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
     
     def __unicode__(self):
-        return self.addon.title + ": " + self.title
-    
-    def field_name(self):
-        return "%s_%s" % (self.addon.pk, self.title.lower().replace(' ', '').replace('-', ''))
-    
-    def choice_list(self):
-        choices = []
-        for op in self.choices.split(','):
-            if op:
-                choices.append(op)
-        return choices
-        
+        return self.title
+
             
 class RegAddon(models.Model):
     """Event registration addon.
@@ -1043,7 +1036,8 @@ class RegAddonOption(models.Model):
     """
     regaddon = models.ForeignKey(RegAddon)
     option = models.ForeignKey(AddonOption)
-    selected_option = models.CharField(max_length=50)
+    # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
+    # selected_option = models.CharField(max_length=50)
     
     class Meta:
         unique_together = (('regaddon', 'option'),)

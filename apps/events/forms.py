@@ -1095,4 +1095,4 @@ class AddonForm(BetterModelForm):
 class AddonOptionForm(forms.ModelForm):
     class Meta:
         model = AddonOption
-        fields = ('title', 'choices')
+        fields = ('title',)

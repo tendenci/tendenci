@@ -188,7 +188,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
     event = get_object_or_404(Event, pk=event_id)
     
     # check if event allows registration
-    if (not event.registration_configuration and event.registration_configuration.enabled):
+    if (event.registration_configuration is None or not event.registration_configuration.enabled):
         raise Http404
     
     # check if it is still open, always open for admin users
