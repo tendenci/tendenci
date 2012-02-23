@@ -5,10 +5,10 @@ FN:{{ attorney.name }}
 ORG:{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}
 COMPANY:{{ SITE_GLOBAL_SITEDISPLAYNAME|safe }}
 TITLE:{{ attorney.category_name }}
-TEL:{{ attorney.phone }}
-TEL;TYPE=FAX,VOICE:{{ attorney.fax }}
+TEL;TYPE=VOICE:{{ attorney.phone }}
+TEL;TYPE=FAX:{{ attorney.fax }}
 ADR;TYPE=WORK:;;{{ attorney.address }}, {{ attorney.address2 }};{{ attorney.city }};{{ attorney.state }};{{ attorney.zip }};
 LABEL;TYPE=WORK:{{ attorney.address }}, {{ attorney.address2 }}\n{{ attorney.city }}, {{ attorney.state }} {{ attorney.zip }}
 EMAIL;TYPE=PREF,INTERNET:{{ attorney.email }}
 REV:{{ attorney.update_dt|date:"c" }}
-END:VCARD
+END:VCARD​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​
