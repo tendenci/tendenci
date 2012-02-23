@@ -82,11 +82,16 @@ class RecurringPaymentEmailNotices(object):
         self.email.recipient = self.admin_emails
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_transaction.html"
+            user_in_texas = False
+            if payment_transaction.payment.state:
+                if payment_transaction.payment.state.lower() in ['texas', 'tx']:
+                    user_in_texas = True
             try:
                 email_content = render_to_string(template_name, 
                                                {'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
-                                                'site_url': self.site_url
+                                                'site_url': self.site_url,
+                                                'user_in_texas': user_in_texas
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
