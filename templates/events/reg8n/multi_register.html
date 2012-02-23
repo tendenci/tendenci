@@ -257,6 +257,7 @@
                      <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrant_set(this, 'registrant'); return false;">
                     {% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
                 {% endif %}
+                {% comment %}
                 <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
                 <div id="addon-choices">
                     {% for addon in addons %}
@@ -272,6 +273,7 @@
                 <div>
                     {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
                 </div>
+                {% endcomment %}
             </div>
             <div class="clear"></div>
             {% if reg_form.free_event %}
