@@ -57,7 +57,7 @@
             <div>{% trans "Membership Types" %}</div>
             <ul>
                 {% for type in types %}
-                <li><a href="?q=type:{{ type.name|lower }}">{{ type.name }}</a></li>
+                <li><a href="?q=type:{{ type.name }}">{{ type.name }}</a></li>
                 {% endfor %}
             </ul>
         </div>

@@ -31,15 +31,15 @@ def clean_settings_form(self):
                 if field_value:
                     if not isinstance(field_value, File):
                         raise forms.ValidationError("'%s' must be a file" % setting.label)
+
+            if setting.name == "siteurl" and setting.scope == "site":
+                field_value = self.cleaned_data["siteurl"] 
+                if field_value:
+                    if field_value[-1:] == "/":
+                        field_value = field_value[:-1]
+                    self.cleaned_data[setting.name] = field_value
         except KeyError:
             pass
-
-        if setting.name == "siteurl" and setting.scope == "site":
-            field_value = self.cleaned_data["siteurl"] 
-            if field_value:
-                if field_value[-1:] == "/":
-                    field_value = field_value[:-1]
-                self.cleaned_data[setting.name] = field_value
 
     return self.cleaned_data
 
