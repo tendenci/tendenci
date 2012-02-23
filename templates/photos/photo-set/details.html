@@ -20,7 +20,7 @@
 <meta property="og:image" content="{{ photo_set.get_cover_photo.get_small_url }}" />
 
 {% if photo_set.description %}
-<meta property="og:description" content="{{ photo_set.description|safe }}" />
+<meta property="og:description" content="{{ photo_set.description|striptags }}" />
 {% endif %}
 
 {% endblock %}
