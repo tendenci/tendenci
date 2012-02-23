@@ -103,6 +103,7 @@ html {
 	border-bottom:1px dashed #4B0D09;
 	height:24px;
 	background:none;
+	max-width: 250px;
 }
 
 #admin-bar .app-list ul li,#admin-bar .app-list ul li a {
