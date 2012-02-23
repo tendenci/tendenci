@@ -116,6 +116,7 @@ html {
 #admin-bar .app-list ul li.app {
 	float:left;
 	min-width: 150px;
+	max-width: 200px;
 }
 
 #admin-bar h4 {
