@@ -266,27 +266,13 @@
                 <div>
                     {% trans 'How many?' %}<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
                 </div>
-                {% if addons %}
-                <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
-                <div id="addon-choices">
-                    <table>
-                    {% for addon in addons %}
-                    <tr {% if not addon.allow_anonymous %}class="gray-text"{% endif %}>
-                    <td>
-                        <input type="checkbox" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" {% if not addon.allow_anonymous %}DISABLED{% endif %} />
-                        {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
-                    </td>
-                    <td>
-                        <input id="add-addon-{{ addon.pk }}-count" type="text" value="0" {% if not addon.allow_anonymous %}DISABLED{% endif %} />
-                    </td>
-                    </tr>
-                    {% endfor %}
-                    </table>
+            </div>
+            {% if addons %}
+                <div class="add-addons-box">
+                {% include 'events/addons/addon-add-box.html' %}
                 </div>
-                <div>
-                    <input id="add-addons-button" type="button" value="Add Addons"/>
-                </div>
-                {% endif %}
+            {% endif %}
+            <div id="email-validation">
                 <h3>{% trans 'Enable more pricings' %}{% if addons %} {% trans 'and addons' %}{% endif %}:</h3>
                 <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="" />
                 {% if allow_memberid_pricing %}
@@ -331,7 +317,7 @@
 <script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript" >
     {% include 'events/registration/include/register-registrant.js' %}
-    {% include 'events/registration/include/register-addon.js' %}
+    {% include 'events/addons/register-addon.js' %}
     {% include 'events/registration/include/register.js' %}
 </script>
 {% endblock %}

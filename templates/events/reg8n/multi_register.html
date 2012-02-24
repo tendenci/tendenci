@@ -259,7 +259,11 @@
                     {% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
                 {% endif %}
             </div>
-            {% include 'events/addons/addon-add-box.html' %}
+            {% if addons %}
+                <div class="add-addons-box">
+                {% include 'events/addons/addon-add-box.html' %}
+                </div>
+            {% endif %}
             <div class="clear"></div>
             {% if reg_form.free_event %}
                 {{ reg_form.payment_method }}
