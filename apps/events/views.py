@@ -1580,37 +1580,23 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     event = get_object_or_404(Event, pk=event_id)
     
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http403
+            
     if not query:
         # pull directly from db
         sqs = Registrant.objects.filter(registration__event=event)
-        registrants = Registrant.objects.search(
-                                    user=request.user, 
-                                    sqs=sqs,
-                                    direct_db=1
-                                    ).order_by("-update_dt")
-        sqs_active = sqs.filter(cancel_dt=None)
-        active_registrants = Registrant.objects.search(
-                                    user=request.user, 
-                                    sqs=sqs_active,
-                                    direct_db=1
-                                    ).order_by("-update_dt")
-                                    
-        sqs_canceled = sqs.exclude(cancel_dt=None)
-        canceled_registrants = Registrant.objects.search(
-                                    user=request.user, 
-                                    sqs=sqs_canceled,
-                                    direct_db=1
-                                    ).order_by("-update_dt")
-        
+        registrants = sqs.order_by("-update_dt")
+        active_registrants = sqs.filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = sqs.exclude(cancel_dt=None).order_by("-update_dt")
     else:
-        registrants = Registrant.objects.search(
-            query, user=request.user, event=event).order_by("-update_dt")
-
-        active_registrants = Registrant.objects.search(
-            "is:active", user=request.user, event=event).order_by("-update_dt")
+        sqs = SearchQuerySet().models(Registrant).filter(event_pk=event.id)
+        sqs = sqs.auto_query(sqs.query.clean(query))
+        registrants = sqs.order_by("-update_dt")
+        active_registrants = sqs.auto_query(sqs.query.clean("is:active")).order_by("-update_dt")
+        canceled_registrants = sqs.auto_query(sqs.query.clean("is:canceled")).order_by("-update_dt")
+        
     
-        canceled_registrants = Registrant.objects.search(
-            "is:canceled", user=request.user, event=event).order_by("-update_dt")
             
     for reg in registrants:
         if hasattr(reg, 'object'): reg = reg.object
