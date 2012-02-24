@@ -27,6 +27,7 @@ class RegAddonForm(forms.Form):
         self.addons = kwargs.pop('addons')
         self.valid_addons = kwargs.pop('valid_addons', [])
         self.form_index = kwargs.pop('form_index', None)
+        self.chosen_addon = None
         super(RegAddonForm, self).__init__(*args, **kwargs)
         
         # initialize addon options and reg_set field
@@ -34,18 +35,20 @@ class RegAddonForm(forms.Form):
             queryset=self.addons,
             widget=forms.TextInput(attrs={'class': 'addon-input'}))
         
-        # dynamically create a field for all the possible options
-        for option in AddonOption.objects.filter(addon__in=self.addons):
-            field_name = option.field_name()
-            choices = [(op, op) for op in option.choice_list()]
-            self.fields[field_name] = forms.ChoiceField(
-                choices=choices, label=_(option.title), required=False)
+        # dynamically create an option field for each addon
+        for addon in self.addons:
+            field_name = addon.field_name()
+            self.fields[field_name] = forms.ModelChoiceField(
+                label="Options", required=False, empty_label=None,
+                queryset=addon.options.all(),
+                widget=forms.RadioSelect)
         
     def get_form_label(self):
         return self.form_index + 1
         
     def clean_addon(self):
         addon = self.cleaned_data['addon']
+        self.chosen_addon = addon
         if addon not in self.valid_addons:
             raise forms.ValidationError(_('Addon is invalid for current set of registrants'))
         return addon
@@ -55,11 +58,9 @@ class RegAddonForm(forms.Form):
         data = self.cleaned_data
         if 'addon' in data:
             addon = data['addon']
-            for option in addon.options.all():
-                try:
-                    data[option.field_name()]
-                except KeyError:
-                    raise forms.ValidationError(_('%s is a required option for %s' % (option.title, addon.title)))
+            option = data[addon.field_name()]
+            if not option:
+                raise forms.ValidationError(_('Option required for %s' % (addon.title)))
         return data
     
     def save(self, registration):
@@ -71,11 +72,10 @@ class RegAddonForm(forms.Form):
                 addon=addon,
                 amount=addon.price,
             )
-            for option in addon.options.all():
-                RegAddonOption.objects.create(
-                    selected_option = data[option.field_name()],
-                    option = option,
-                    regaddon = regaddon,
-                )
+            option = data[addon.field_name()]
+            RegAddonOption.objects.create(
+                option = option,
+                regaddon = regaddon,
+            )
             return regaddon
         return None

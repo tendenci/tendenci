@@ -28,3 +28,18 @@
 		{% endfor %}
 	{% endif %}
 {% endwith %}
+{% with obj.regaddon_set.all as regaddons %}
+    {% if regaddons %}
+        {% for regaddon in regaddons %}
+    		<tr>
+    			<td>
+                {{ regaddon.addon.title }}
+                ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                </td>
+                <td class="td-right">
+					<span>{{ regaddon.amount|format_currency }}</span>
+    			</td>
+    		</tr>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
