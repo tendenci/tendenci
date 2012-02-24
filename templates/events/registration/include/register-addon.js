@@ -120,20 +120,26 @@ $(document).ready(function(){
     });
     
     $("#add-addons-button").click(function(){
-        var addon = $('input:radio[name=add-addons]:checked');
-        var addon_d = {};
-        if(addon.val()){
-            addon_num = parseInt($("#add-addons-number").val());
-            addon_d['quantity'] = addon.attr('quantity');
-            addon_d['price'] = addon.attr('price');
-            addon_d['title'] = addon.attr('title');
-            addon_d['pk'] = addon.val();
-            addon_d['is_public'] = addon.attr('is_public');
-            for(var i=0; i<addon_num; i++){
-                addAddon('addon', addon_d, container);
+        var addons = $('input:checkbox[name=add-addons]:checked');
+        if (addons.length > 0){
+            for(var i = 0; i<addons.length; i++){
+                addon = $(addons[i]);
+                if(addon.val()){
+                    var addon_d = {};
+                    addon_d['quantity'] = addon.attr('quantity');
+                    addon_d['price'] = addon.attr('price');
+                    addon_d['title'] = addon.attr('title');
+                    addon_d['pk'] = addon.val();
+                    addon_d['is_public'] = addon.attr('is_public');
+                    var addon_num = parseInt($("#add-addon-"+ addon.val() +"-count").val());
+                    console.log(addon_num);
+                    for(var i=0; i<addon_num; i++){
+                        addAddon('addon', addon_d, container);
+                    }
+                }
             }
         } else {
-            alert("Please select an addon first.");
+            alert("Please select some addons first.");
         }
     });
     

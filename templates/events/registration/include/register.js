@@ -69,13 +69,13 @@ function getPricingList(){
             //reinitialize addons
             var a_html = "";
             for(i=0; i<a_list.length; i++){
-                a_html = a_html + '<div '
+                a_html = a_html + '<tr '
                 if(a_list[i]['enabled']){
                     a_html = a_html + '>'
                 } else {
                     a_html = a_html + "class='gray-text'>"
                 }
-                a_html = a_html + '<input type="radio" name="add-addons" value="' + a_list[i]['pk'] + '"'
+                a_html = a_html + '<td><input type="checkbox" name="add-addons" value="' + a_list[i]['pk'] + '"'
                 a_html = a_html + 'quantity="'+ a_list[i]['quantity'] +'" price="' + a_list[i]['price'] + '"'
                 a_html = a_html + 'title="' + a_list[i]['title'] + '"' + ' is_public="' + a_list[i]['is_public'] + '"'
                 if(a_list[i]['enabled']){
@@ -83,9 +83,10 @@ function getPricingList(){
                 }else{
                     a_html = a_html + ' DISABLED>'
                 }
-                a_html = a_html + ' ' + a_list[i]['title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + a_list[i]['price'] + ')</div>'
+                a_html = a_html + ' ' + a_list[i]['title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + a_list[i]['price'] + ')</td>'
+                a_html = a_html + '<td><input id="add-addon-'+ a_list[i]['pk'] +'-count" type="text" value="0" /></td>' + '</tr>'
             }
-            $('#addon-choices').html(a_html);
+            $('#addon-choices>table').html(a_html);
         }
     });
 };
