@@ -1,36 +1,35 @@
 {% load i18n %}
 
-{% if addons %}
-<div class="add-addons-box">
-    <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
-    <div id="addon-choices">
-        <table>
-        {% for addon in addons %}
-        <tr>
+<h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
+<div id="addon-choices" >
+    <table>
+    {% for addon in addons %}
+    <tr {% if anon_pricing and not addon.allow_anonymous %}gray-text{% endif %}>
+    <td>
+        <input type="checkbox" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" {% if anon_pricing and not addon.allow_anonymous %}DISABLED{% endif %} />
+        {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
+    </td>
+    <td>
+        <strong>Quantity:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="1" {% if anon_pricing and not addon.allow_anonymous %}DISABLED{% endif %} />
+    </td>
+    </tr>
+    <tr {% if anon_pricing and not addon.allow_anonymous %}gray-text{% endif %}>
         <td>
-            <input type="checkbox" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" >
-            {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
+        <ul id="addon-options">
+            {% for option in addon.options.all %}
+                <li>
+                <input {% if forloop.first %}checked="checked"{% endif %} type="radio" name="add-addon-option-{{ addon.pk }}"
+                    value="{{ option.pk }}" title="{{ option.title }}" 
+                    {% if anon_pricing and not addon.allow_anonymous %}DISABLED{% endif %} />
+                {{ option.title }}
+                </li>
+            {% endfor %}
+        </ul>
         </td>
-        <td>
-            <strong>Quantity:</strong> <input id="add-addon-{{ addon.pk }}-count" type="text" value="1" />
-        </td>
-        </tr>
-        <tr>
-            <td>
-            <ul id="addon-options">
-                {% for option in addon.options.all %}
-                    <li>
-                    <input {% if forloop.first %}checked="checked"{% endif %} type="radio" name="add-addon-option-{{ addon.pk }}" value="{{ option.pk }}" title="{{ option.title }}" > {{ option.title }}
-                    </li>
-                {% endfor %}
-            </ul>
-            </td>
-        </tr>
-        {% endfor %}
-        </table>
-    </div>
-    <div>
-        <input id="add-addons-button" type="button" value="Add Addons"/>
-    </div>
+    </tr>
+    {% endfor %}
+    </table>
 </div>
-{% endif %}
+<div>
+    <input id="add-addons-button" type="button" value="Add Addons"/>
+</div>
