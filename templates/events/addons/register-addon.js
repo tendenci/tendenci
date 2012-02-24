@@ -25,7 +25,7 @@ function deleteAddon(ele, prefix) {
 //formset index update
 function updateFormIndex(e, prefix, idx){
     var id_regex = new RegExp('(' + prefix + '-\\d+)');
-    var replacement = prefix + '-' + idx
+    var replacement = prefix + '-' + idx;
     var e = $(e);
     if (e.attr("for")){
         var _for = e.attr('for');
@@ -63,7 +63,7 @@ function addAddon(prefix, addon, container){
     $(row).addClass('addon-form');
     
     // update id attr
-    var replacement = prefix + '_' + formCount
+    var replacement = prefix + '_' + formCount;
     $(row).attr('id',replacement);
     
     $(row).find(".form-field").children().each(function() {
@@ -72,31 +72,27 @@ function addAddon(prefix, addon, container){
     
     $(row).find(".form-field").children().children().children().each(function() {
         updateFormIndex($(this), prefix, formCount);
-        if($(this).attr("name")==(prefix+"-"+formCount+"-addon")){
-            // assign addon selected
-            $(this).val(addon['pk'])
-        }else{
-            var field_name = $(this).attr("for");
-            if(field_name){
-                var option_name = field_name.split(prefix+"-"+formCount+"-")[1]
-                if((option_name != 'addon') && !(option_name[0] == addon['pk'])){
-                    $(this).parent().parent().hide();
-                }
+        var field_name = $(this).attr("name");
+        if(field_name){
+            var option_name = field_name.split(prefix+"-"+formCount+"-")[1];
+            if(option_name=='addon'){
+                // assign addon selected
+                $(this).val(addon['pk']);
+            }else if(option_name[0] == addon['pk']){
+                $(this).val(addon['option']);
             }
         }
     });
     
-    var addon_choices = $("#addon-choices");
-    var addon = $(row).find('.addon-input');
-    var choice = $("input[value="+addon.val() + ']', addon_choices);
-    addon.parent().parent().find('label').html(choice.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
+    var addon_input = $(row).find(".addon-input");
+    addon_input.parent().parent().find('label').html(addon['title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
     
     // insert as last element into form list
     $(container).append(row);
     
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     
-    updateSummaryEntry(prefix, formCount, choice.attr('price'));
+    updateSummaryEntry(prefix, formCount, addon['price']);
     
     return false;
 }
@@ -105,13 +101,13 @@ function addAddon(prefix, addon, container){
 $(document).ready(function(){
     var container = $('.addon-forms');
     container.find('.addon-form').each(function(){
-        var addon_pk = $(this).find('.addon-input').val()
+        var addon_pk = $(this).find('.addon-input').val();
         $(this).find(".form-field").children().children().children().each(function() {
             if(!$(this).hasClass('addon-input')){
-                var field_name = $(this).attr("for");
+                var field_name = $(this).attr("name");
                 if(field_name){
                     var option_name = field_name.split("-")[2]
-                    if((option_name != 'addon') && !(option_name[0] == addon_pk)){
+                    if(!(option_name[0] == addon_pk)){
                         $(this).parent().parent().hide();
                     }
                 }
@@ -123,7 +119,7 @@ $(document).ready(function(){
         var addons = $('input:checkbox[name=add-addons]:checked');
         if (addons.length > 0){
             for(var i = 0; i<addons.length; i++){
-                addon = $(addons[i]);
+                var addon = $(addons[i]);
                 if(addon.val()){
                     var addon_d = {};
                     addon_d['quantity'] = addon.attr('quantity');
@@ -131,9 +127,11 @@ $(document).ready(function(){
                     addon_d['title'] = addon.attr('title');
                     addon_d['pk'] = addon.val();
                     addon_d['is_public'] = addon.attr('is_public');
+                    selected_option = $("input[name=add-addon-option-"+ addon.val()+"]:checked");
+                    addon_d['option'] = parseInt(selected_option.val());
+                    console.log(addon_d);
                     var addon_num = parseInt($("#add-addon-"+ addon.val() +"-count").val());
-                    console.log(addon_num);
-                    for(var i=0; i<addon_num; i++){
+                    for(var j=0; j<addon_num; j++){
                         addAddon('addon', addon_d, container);
                     }
                 }
@@ -161,5 +159,3 @@ $(document).ready(function(){
         return false;   // cancel
     });
 });
-
-

@@ -103,20 +103,9 @@
     </div>
     {% for addon in addons %}
     <div class="form-field">
-        <div class="id_addon-0-{{ addon.field_name }}"> 
-            <div class="label">
-                <label for="id_addon-0-{{ addon.field_name }}">Options</label>
-            </div>
+        <div class="id_addon-0-{{ addon.field_name }}">
             <div class="field">
-                <ul>
-                {% for choice in addon.options.all %}
-                    <li>
-                    <label for="id_addon-0-{{ addon.field_name }}_{{ forloop.counter }}">
-                        <input type="radio" {% if forloop.counter0 == 0 %}checked=true{% endif %} id="id_addon-0-{{ addon.field_name }}_{{ forloop.counter }}" value="{{ choice.pk }}" name="addon-0-{{ addon.field_name }}"> {{ choice.title }}
-                    </label>
-                    </li>
-                {% endfor %}
-                </ul>
+                <input type="hidden" name="addon-0-{{ addon.field_name }}" id="id_addon-0-{{ addon.field_name }}">
             </div>
         </div>
     </div>
