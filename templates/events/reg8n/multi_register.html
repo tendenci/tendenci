@@ -10,6 +10,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
 {% endblock %}
 
 {% block body %}
@@ -257,24 +258,30 @@
                      <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrant_set(this, 'registrant'); return false;">
                     {% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
                 {% endif %}
-                {% if addons %}
+            </div>
+            {% if addons %}
+                <div class="add-addons-box">
                     <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
                     <div id="addon-choices">
+                        <table>
                         {% for addon in addons %}
-                        <div>
-                        <input type="radio" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" >
+                        <tr>
+                        <td>
+                            <input type="checkbox" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" >
                             {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
-                        </div>
-                        {% empty %}
-                            No addons available.<br />
-                            <input type="hidden" name="addon-TOTAL_FORMS" value="0" id="id_addon-TOTAL_FORMS" /><input type="hidden" name="addon-INITIAL_FORMS" value="0" id="id_addon-INITIAL_FORMS" /><input type="hidden" name="addon-MAX_NUM_FORMS" id="id_addon-MAX_NUM_FORMS" />
+                        </td>
+                        <td>
+                            <input id="add-addon-{{ addon.pk }}-count" type="text" value="0" />
+                        </td>
+                        </tr>
                         {% endfor %}
+                        </table>
                     </div>
                     <div>
-                        {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
+                        <input id="add-addons-button" type="button" value="Add Addons"/>
                     </div>
-                {% endif %}
-            </div>
+                </div>
+             {% endif %}
             <div class="clear"></div>
             {% if reg_form.free_event %}
                 {{ reg_form.payment_method }}
