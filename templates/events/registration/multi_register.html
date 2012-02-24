@@ -121,7 +121,7 @@
                             <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="item-price">{{ form.cleaned_data.addon.price|floatformat:2 }}</span>
+                                <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
