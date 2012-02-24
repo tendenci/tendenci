@@ -401,7 +401,7 @@ class TendenciBaseManager(models.Manager):
         """
         Filter the query set for user or members.
         
-        Here we check if the existence of the fields to be tested, 
+        Here we check the existence of the fields to be tested, 
         and handle the queries that need to be directly pulled from db.
 
         (status AND status_detail AND
@@ -522,12 +522,12 @@ class TendenciBaseManager(models.Manager):
         else:
             if user.is_anonymous():
                 sqs = self._anon_sqs(sqs, status=status, status_detail=status_detail)
+            elif is_member(user):
+                sqs = self._member_sqs(sqs, user, status=status,
+                    status_detail=status_detail)
             else:
-                is_member = is_member(user)
-                kwargs['is_member'] = is_member
-            
-                sqs = self._user_or_member_sqs(sqs, user, status=status,
-                    status_detail=status_detail, **kwargs)
+                sqs = self._user_sqs(sqs, user, status=status,
+                    status_detail=status_detail)
            
         return sqs
 
