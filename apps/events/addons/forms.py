@@ -27,6 +27,7 @@ class RegAddonForm(forms.Form):
         self.addons = kwargs.pop('addons')
         self.valid_addons = kwargs.pop('valid_addons', [])
         self.form_index = kwargs.pop('form_index', None)
+        self.chosen_addon = None
         super(RegAddonForm, self).__init__(*args, **kwargs)
         
         # initialize addon options and reg_set field
@@ -47,6 +48,7 @@ class RegAddonForm(forms.Form):
         
     def clean_addon(self):
         addon = self.cleaned_data['addon']
+        self.chosen_addon = addon
         if addon not in self.valid_addons:
             raise forms.ValidationError(_('Addon is invalid for current set of registrants'))
         return addon
