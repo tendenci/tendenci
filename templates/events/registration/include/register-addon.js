@@ -43,6 +43,17 @@ function updateFormIndex(e, prefix, idx){
         var _class = e.attr('class');
         e.attr('class', _class.replace(id_regex, replacement));
     }
+    lists = e.find('li');
+    if(lists){
+        lists.each(function(){
+            $(this).find('input').each(function(){
+                updateFormIndex(this, prefix, idx);
+            });
+            $(this).find('label').each(function(){
+                updateFormIndex(this, prefix, idx);
+            });
+        });
+    }
 }
 
 function addAddon(prefix, addon, container){
@@ -65,10 +76,10 @@ function addAddon(prefix, addon, container){
             // assign addon selected
             $(this).val(addon['pk'])
         }else{
-            var field_name = $(this).attr("name");
+            var field_name = $(this).attr("for");
             if(field_name){
                 var option_name = field_name.split(prefix+"-"+formCount+"-")[1]
-                if(!(option_name[0] == addon['pk'])){
+                if((option_name != 'addon') && !(option_name[0] == addon['pk'])){
                     $(this).parent().parent().hide();
                 }
             }
@@ -92,15 +103,15 @@ function addAddon(prefix, addon, container){
 
 //ADDON CONTROLS
 $(document).ready(function(){
-    var container = $('.addon-forms')
+    var container = $('.addon-forms');
     container.find('.addon-form').each(function(){
         var addon_pk = $(this).find('.addon-input').val()
         $(this).find(".form-field").children().children().children().each(function() {
             if(!$(this).hasClass('addon-input')){
-                var field_name = $(this).attr("name");
+                var field_name = $(this).attr("for");
                 if(field_name){
                     var option_name = field_name.split("-")[2]
-                    if(!(option_name[0] == addon_pk)){
+                    if((option_name != 'addon') && !(option_name[0] == addon_pk)){
                         $(this).parent().parent().hide();
                     }
                 }

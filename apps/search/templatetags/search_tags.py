@@ -25,7 +25,12 @@ class SearchResultNode(IncludeNode):
             if var_name == 'user':
                 # special case for users and profiles
                 var_name = 'profile'
-
+            if var_name == 'member':
+                var_name = 'membership'
+            if var_name == 'corporate_member':
+                var_name = 'corporate_membership'
+            if var_name == 'photo':
+                var_name = 'photo_set'
             if var_name == 'photo_set':
                 #special case since Image and PhotoSet share the same app.
                 template_name = "photos/photo-set/search-result.html"

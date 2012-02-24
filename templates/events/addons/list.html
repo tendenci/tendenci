@@ -35,9 +35,14 @@
             <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
             <tr><td><strong>Enabled</strong></td><td>{{ addon.status }}</td></tr>
             {% if addon.options.all %}
-                {% for op in addon.options.all %}
-                    <tr><td><strong>{{ op.title }} {% trans "options" %}</strong></td><td>{{ op.choices }}</td></tr>
-                {% endfor %}
+                <tr>
+                    <td><strong>Options</strong></td>
+                    <td>
+                    {% for op in addon.options.all %}
+                    {{ op.title }}{% if not forloop.last%}, {% endif %}
+                    {% endfor %}
+                    </td>
+                </tr>
             {% endif %}
             </table>
         {% endfor %}
