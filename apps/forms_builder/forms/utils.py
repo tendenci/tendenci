@@ -90,6 +90,7 @@ def make_invoice_for_entry(entry, **kwargs):
     """
 
     price = entry.pricing.price or kwargs.get('custom_price')
+    price = unicode(price)
     now = datetime.now()
 
     inv = Invoice()
