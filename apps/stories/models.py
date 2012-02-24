@@ -73,7 +73,8 @@ class Story(TendenciBaseModel):
         return None
 
     def get_absolute_url(self):
-        url = ("story", [self.pk])
+        from django.core.urlresolvers import reverse
+        url = reverse("story", args=[self.pk])
         if self.full_story_link:
             url = self.full_story_link
             parsed_url = ParseUri().parse(url)
