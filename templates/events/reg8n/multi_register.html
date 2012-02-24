@@ -257,23 +257,23 @@
                      <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrant_set(this, 'registrant'); return false;">
                     {% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
                 {% endif %}
-                {% comment %}
-                <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
-                <div id="addon-choices">
-                    {% for addon in addons %}
-                    <div>
-                    <input type="radio" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" >
-                        {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
+                {% if addons %}
+                    <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
+                    <div id="addon-choices">
+                        {% for addon in addons %}
+                        <div>
+                        <input type="radio" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" >
+                            {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
+                        </div>
+                        {% empty %}
+                            No addons available.<br />
+                            <input type="hidden" name="addon-TOTAL_FORMS" value="0" id="id_addon-TOTAL_FORMS" /><input type="hidden" name="addon-INITIAL_FORMS" value="0" id="id_addon-INITIAL_FORMS" /><input type="hidden" name="addon-MAX_NUM_FORMS" id="id_addon-MAX_NUM_FORMS" />
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                        No addons available.<br />
-                        <input type="hidden" name="addon-TOTAL_FORMS" value="0" id="id_addon-TOTAL_FORMS" /><input type="hidden" name="addon-INITIAL_FORMS" value="0" id="id_addon-INITIAL_FORMS" /><input type="hidden" name="addon-MAX_NUM_FORMS" id="id_addon-MAX_NUM_FORMS" />
-                    {% endfor %}
-                </div>
-                <div>
-                    {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
-                </div>
-                {% endcomment %}
+                    <div>
+                        {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
+                    </div>
+                {% endif %}
             </div>
             <div class="clear"></div>
             {% if reg_form.free_event %}
