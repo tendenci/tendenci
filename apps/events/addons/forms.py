@@ -41,7 +41,7 @@ class RegAddonForm(forms.Form):
             self.fields[field_name] = forms.ModelChoiceField(
                 label="Options", required=False, empty_label=None,
                 queryset=addon.options.all(),
-                widget=forms.RadioSelect)
+                widget=forms.HiddenInput)
         
     def get_form_label(self):
         return self.form_index + 1
