@@ -371,6 +371,8 @@ class CorporateMembership(TendenciBaseModel):
                 # 1) archive corporate membership
                 self.archive(request.user)
                 
+                user = request.user
+                
                 # 2) update the corporate_membership record with the renewal info from renew_entry
                 self.renewal = True
                 self.corporate_membership_type = renew_entry.corporate_membership_type
@@ -379,7 +381,8 @@ class CorporateMembership(TendenciBaseModel):
                 self.renew_dt = renew_entry.create_dt
                 self.approved = True
                 self.approved_denied_dt = datetime.now()
-                self.approved_denied_user = request.user
+                if user and (not user.is_anonymous()):
+                    self.approved_denied_user = user
                 self.status = 1
                 self.status_detail = 'active'
                 
@@ -393,7 +396,6 @@ class CorporateMembership(TendenciBaseModel):
                 renew_entry.save()
                 
                 # 3) approve the individual memberships
-                user = request.user
                 if user and not user.is_anonymous():
                     user_id = user.id
                     username = user.username
