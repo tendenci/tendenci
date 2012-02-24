@@ -28,6 +28,12 @@ on <a href="{{ site_url }}">{{ site_display_name }}</a>.
 	<tr>
 		<td>Transaction date:</td><td>{{ pt.create_dt|date }}</td>
 	</tr>
+	{% if user_in_texas %}
+	<tr>
+		<td style="color: red;">State:</td><td style="color: red;">{{ pt.payment.state }}</td>
+		
+	</tr>
+	{% endif %}
 </table>
 
 </div>
