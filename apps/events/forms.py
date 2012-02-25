@@ -330,6 +330,7 @@ class EventForm(TendenciBaseForm):
             'type',
             'external_url',
             'photo_upload',
+            'tags',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -347,6 +348,7 @@ class EventForm(TendenciBaseForm):
                                  'type',
                                  'external_url',
                                  'photo_upload',
+                                 'tags',
                                  ],
                       'legend': ''
                       }),
@@ -1033,6 +1035,7 @@ class PendingEventForm(EventForm):
             'type',
             'external_url',
             'photo_upload',
+            'tags',
             )
         
         fieldsets = [('Event Information', {
@@ -1045,6 +1048,7 @@ class PendingEventForm(EventForm):
                                  'type',
                                  'external_url',
                                  'photo_upload',
+                                 'tags',
                                  ],
                       'legend': ''
                       }),
