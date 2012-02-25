@@ -147,9 +147,12 @@ class EventListNode(Node):
             sqs = sqs.filter(on_weekend=True)
         
         if self.ordering:
-            sqs = sqs.order_by(self.ordering)
+            if self.ordering == 'time':
+                sqs = sqs.order_by('hour', 'minute')
+            else:
+                sqs = sqs.order_by(self.ordering)
         else:
-            sqs = sqs.order_by('number_of_days', 'start_dt')
+            sqs = sqs.order_by('-number_of_days', 'start_dt')
             
         #print sqs
         events = [sq.object for sq in sqs]

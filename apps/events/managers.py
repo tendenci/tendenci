@@ -33,9 +33,11 @@ class EventManager(TendenciBaseManager):
                 # this only takes into account events that will end before the given date.
                 sqs = sqs.filter(end_dt__lte=end_dt)
         
-        if not query:
-            # sort based on start_dt by default
-            sqs = sqs.order_by('start_dt')
+        # sorting must be done outside this function
+        # for some reason a 2nd call to order_by fails to sort again
+        # if not query:
+        # sort based on start_dt by default
+        #    sqs = sqs.order_by('start_dt')
         #print sqs #will force the search query to be evaluated
         return sqs
 
