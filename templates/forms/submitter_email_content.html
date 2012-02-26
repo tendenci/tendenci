@@ -1,1 +1,7 @@
 {{ form.email_text|safe }}
+
+{% for field in entry.fields.all %}
+    {% if field.include_in_email %}
+        <p><strong>{{ field.field.label }}</strong>: {{ field.value }}</p>
+    {% endif %}
+{% endfor %}
