@@ -36,7 +36,6 @@ urlpatterns = patterns('',
     (r'^avatar/', include('avatar.urls')),
     (r'^dashboard/', include('dashboard.urls')),
     (r'^categories/', include('categories.urls')),
-    (r'^articles/', include('articles.urls')),
     (r'^memberships/', include('memberships.urls')),
     (r'^corporatememberships/', include('corporate_memberships.urls')),
     (r'^entities/', include('entities.urls')),
@@ -98,6 +97,9 @@ urlpatterns = patterns('',
     
     # other t4 to t5 legacy redirects
     url(r'^en/', include('legacy.urls')),
+
+    url(r'^', include('jobs.urls')),
+    url(r'^', include('articles.urls')),
 )
 
 handler500 = 'base.views.custom_error'

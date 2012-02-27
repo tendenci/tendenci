@@ -51,14 +51,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "Articles", 
-        "description": "The name of the module.", 
+        "default_value": "Article", 
+        "description": "The singular name of the plugin.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:12", 
         "input_type": "text", 
-        "client_editable": false, 
+        "client_editable": true, 
         "name": "label", 
-        "value": "Articles", 
+        "value": "Article", 
         "label": "Label", 
         "input_value": " ", 
         "parent_id": 0, 
@@ -66,5 +66,39 @@
         "scope_category": "articles", 
         "store": false, 
         "updated_by": ""
-    } 
+    }, 
+    {
+        "default_value": "Articles", 
+        "description": "The plural name of the plugin.", 
+        "data_type": "string", 
+        "update_dt": "2010-08-12 17:19:12", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "label_plural", 
+        "value": "Articles", 
+        "label": "Label (Plural)", 
+        "input_value": " ", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "articles", 
+        "store": false, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "articles", 
+        "description": "The root url for the articles plugin. Use letters and dashes only.", 
+        "data_type": "string",
+        "update_dt": "2012-02-16 15:25:04",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "url", 
+        "value": "articles", 
+        "label": "Root URL", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "articles", 
+        "store": true, 
+        "updated_by": ""
+    }
 ]
