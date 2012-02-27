@@ -22,6 +22,12 @@ class SearchResultNode(IncludeNode):
             except:
                 result_object = result
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
+            # class_name is static - it won't be changed by the user
+            class_name = result_object.__class__.__name__.lower()
+            if class_name == 'corporatemembership':
+                var_name = 'corporate_membership'
+                template_name = "corporate_memberships/search-result.html"
+                
             if var_name == 'user':
                 # special case for users and profiles
                 var_name = 'profile'

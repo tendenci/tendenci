@@ -8,12 +8,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.contrib.contenttypes import generic
+
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
 from base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
-
+from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from memberships.models import MembershipType, App, Membership
@@ -23,6 +25,7 @@ from perms.utils import is_admin
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
 from payments.models import PaymentMethod
+from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
 
@@ -239,12 +242,20 @@ class CorporateMembership(TendenciBaseModel):
     
     corp_app = models.ForeignKey("CorpApp")
     
+    perms = generic.GenericRelation(ObjectPermission,
+                                      object_id_field="object_id",
+                                      content_type_field="content_type")
+    
     objects = CorporateMembershipManager()
     
     class Meta:
         permissions = (("view_corporatemembership", "Can view corporate membership"),)
-        verbose_name = _("Corporate Member")
-        verbose_name_plural = _("Corporate Members")
+        if get_setting('module', 'corporate_memberships', 'label'):
+            verbose_name = get_setting('module', 'corporate_memberships', 'label')
+            verbose_name_plural = get_setting('module', 'corporate_memberships', 'label_plural')
+        else:
+            verbose_name = _("Corporate Member")
+            verbose_name_plural = _("Corporate Members")
     
     def __unicode__(self):
         return "%s" % (self.name)

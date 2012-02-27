@@ -20,7 +20,7 @@ from django.utils import simplejson
 from imports.utils import render_excel
 
 from base.http import Http403
-from perms.utils import has_perm, is_admin
+from perms.utils import has_perm, is_admin, get_query_filters
 from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
@@ -628,18 +628,28 @@ def view(request, id, template="corporate_memberships/view.html"):
     return render_to_response(template, context, RequestContext(request))
 
 
-def search(request, template_name="corporate_memberships/search.html"):
+def list(request, template_name="corporate_memberships/search.html"):
     allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoussearchcorporatemember')
-    if request.user.is_anonymous() and not allow_anonymous_search:
+    if not request.user.is_authenticated() and not allow_anonymous_search:
         raise Http403
     
-    query = request.GET.get('q', None)
-    corp_members = CorporateMembership.objects.search(query, user=request.user)
+    filters = get_query_filters(request.user, 'corporate_memberships.view_corporatemembership')
     
-    corp_members = corp_members.order_by('name_exact')
+    corp_members = CorporateMembership.objects.filter(filters).distinct()
+    if not request.user.is_authenticated():
+        corp_members = corp_members.select_related()
+    
+    corp_members = corp_members.order_by('name')
     
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
+
+def search(request):
+    if get_setting('site', 'global', 'searchindex') == 'true':
+        haystack_url = "%s?models=corporate_memberships.corporatemembership&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
+        return HttpResponseRedirect(haystack_url)
+    else:
+        return HttpResponseRedirect(reverse('corp_memb.list'))
     
     
 @login_required
