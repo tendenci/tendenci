@@ -1,0 +1,40 @@
+{% extends "articles/base.html" %}
+{% load pagination_tags %}
+{% load article_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {% trans "List" %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
+<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}" href="{% url article.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+	{% article_nav request.user %}
+    <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "List" %}</h1>  
+
+	{% article_search %}
+    {% autopaginate articles 10 %}
+	
+	<div class="articles-wrap">
+    {% for article in articles %}
+		{% search_result article %}
+	{% empty %}
+		<div><p>{% trans "No" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "posted yet" %}.</p>
+		{% if admin %}
+		<p><a href="{% url article.add %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></p>
+		{% endif %}</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}

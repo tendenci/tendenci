@@ -9,14 +9,14 @@ from django.db.models import Count
 from base.http import Http403
 from articles.models import Article
 from articles.forms import ArticleForm
-from perms.utils import update_perms_and_save, get_notice_recipients, has_perm
+from site_settings.utils import get_setting
+
+from perms.utils import update_perms_and_save, get_notice_recipients, has_perm, is_admin, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
-
-from perms.utils import is_admin
 
 try:
     from notification import models as notification
@@ -24,7 +24,7 @@ except:
     notification = None
 
 def index(request, slug=None, template_name="articles/view.html"):
-    if not slug: return HttpResponseRedirect(reverse('article.search'))
+    if not slug: return HttpResponseRedirect(reverse('articles'))
     article = get_object_or_404(Article, slug=slug)
 
     # non-admin can not view the non-active content
@@ -32,7 +32,7 @@ def index(request, slug=None, template_name="articles/view.html"):
     if (article.status_detail).lower() != 'active' and (not is_admin(request.user)):
         raise Http403
     
-    if has_perm(request.user, 'articles.view_article', article):
+    if has_view_perm(request.user, 'articles.view_article', article):
         log_defaults = {
             'event_id' : 435000,
             'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
@@ -47,25 +47,29 @@ def index(request, slug=None, template_name="articles/view.html"):
     else:
         raise Http403
 
-def search(request, template_name="articles/search.html"):
-    get = dict(request.GET)
-    query = get.pop('q', [''])
-    get.pop('page', None)  # pop page query string out; page ruins pagination
-    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
-    query = '%s %s' % (''.join(query), ' '.join(query_extra))
 
-    articles = Article.objects.search(query, user=request.user)
+def list(request, slug=None, template_name="articles/list.html"):
+    if slug: 
+        return HttpResponseRedirect(reverse('article', args=[slug]))
+
+    filters = get_query_filters(request.user, 'articles.view_article')
+    articles = Article.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        articles = articles.select_related()
+
     articles = articles.order_by('-release_dt')
 
     log_defaults = {
-        'event_id' : 434000,
-        'event_data': '%s searched by %s' % ('Article', request.user),
-        'description': '%s searched' % 'Article',
+        'event_id': 434000,
+        'event_data': '%s listed by %s' % ('Article', request.user),
+        'description': '%s listed' % 'Article',
         'user': request.user,
         'request': request,
         'source': 'articles'
     }
     EventLog.objects.log(**log_defaults)
+
+    # Query list of category and subcategory for dropdown filters
     category = request.GET.get('category')
     try:
         category = int(category)
@@ -73,9 +77,18 @@ def search(request, template_name="articles/search.html"):
         category = 0
     categories, sub_categories = Article.objects.get_categories(category=category)
 
-    return render_to_response(template_name, {'articles':articles,'categories':categories,
-        'sub_categories':sub_categories, 'search_view': True}, 
+    return render_to_response(template_name, {'articles': articles,'categories':categories,
+        'sub_categories':sub_categories},
         context_instance=RequestContext(request))
+
+
+def search(request):
+    if get_setting('site', 'global', 'searchindex') == 'true':
+        haystack_url = "%s?models=articles.article&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
+        return HttpResponseRedirect(haystack_url)
+    else:
+        return HttpResponseRedirect(reverse('articles'))
+
 
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)    
