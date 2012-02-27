@@ -1,10 +1,10 @@
 from registry import site
 from site_settings.utils import get_setting
-from registry.base import PluginRegistry, lazy_reverse
+from registry.base import CoreRegistry, lazy_reverse
 from models import Job
 
 
-class JobRegistry(PluginRegistry):
+class JobRegistry(CoreRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
