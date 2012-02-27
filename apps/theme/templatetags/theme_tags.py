@@ -7,7 +7,7 @@ from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantInclud
 from django.contrib.auth.models import AnonymousUser, User
 
 from boxes.models import Box
-from perms.utils import get_query_filters
+from perms.utils import get_query_filters, is_admin
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 
@@ -118,6 +118,13 @@ class ThemeSettingNode(IncludeNode):
         self.setting_name = setting_name
 
     def render(self, context):
+
+        # If not a user or not an admin, don't return the form.
+        if not isinstance(context['user'], User):
+            return ''
+        if not is_admin(context['user']):
+            return ''
+        
         try:
             setting_name = Variable(self.setting_name)
             setting_name = setting_name.resolve(context)
