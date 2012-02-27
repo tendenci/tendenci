@@ -191,6 +191,7 @@ INSTALLED_APPS = (
     'dashboard',
     'profiles',
     'articles',
+    'jobs',
     'news',
     'stories',
     'pages',
