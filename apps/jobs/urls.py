@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from jobs.feeds import LatestEntriesFeed
 from site_settings.utils import get_setting
 
-urlpath = get_setting('module', 'jobs', 'jobs_url')
+urlpath = get_setting('module', 'jobs', 'url')
 if not urlpath:
     urlpath = "jobs"
 
