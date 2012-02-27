@@ -9,6 +9,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from corporate_memberships.models import (CorpField, AuthorizedDomain, 
@@ -23,11 +24,14 @@ from payments.models import Payment
 
 # get the corpapp default fields list from json
 def get_corpapp_default_fields_list():
-    json_fields_path = os.path.join(settings.PROJECT_ROOT, 
-                                    "templates/corporate_memberships/regular_fields.json")
-    fd = open(json_fields_path, 'r')
-    data = ''.join(fd.read())
-    fd.close()
+#    json_fields_path = os.path.join(settings.PROJECT_ROOT, 
+#                                    "templates/corporate_memberships/regular_fields.json")
+#    fd = open(json_fields_path, 'r')
+#    data = ''.join(fd.read())
+#    fd.close()
+    
+    data = render_to_string('corporate_memberships/regular_fields.json', 
+                               {}, context_instance=None)
     
     if data:
         return simplejson.loads(data)
