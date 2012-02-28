@@ -248,6 +248,8 @@
                 <div class="addon-forms">
                     {% include 'events/addons/formset.html' %}
                 </div>
+            {% else %}
+                {{ addon_formset.management_form }}
             {% endif %}
 			
             <div class="add-registrants-box">
