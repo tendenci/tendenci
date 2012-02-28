@@ -237,6 +237,10 @@ a.nav-item-label:hover span.helpertext {
 	text-decoration:none;
 }
 
+.nav-move-image {
+    margin-top: -3px;
+}
+
 .nav-move-up {
 	float:right;
 }
