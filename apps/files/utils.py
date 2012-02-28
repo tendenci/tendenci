@@ -32,8 +32,10 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         }
         binary = build_image(file, size, pre_key, **kwargs)
 
-    try: return Image.open(StringIO(binary))
-    except: return ''
+    try:
+        return Image.open(StringIO(binary))
+    except:
+        return ''
 
 
 def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
@@ -45,11 +47,12 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         quality = int(quality)
     except:
         quality = 90
-    
-    if hasattr(file,'path'):
+
+
+    if hasattr(file,'path') and exists(file.path):
         image = Image.open(file.path) # get image
     else:
-        image = Image.open(file.name) # get image
+        return None
 
     # handle infamous error
     # IOError: cannot write mode P as JPEG
