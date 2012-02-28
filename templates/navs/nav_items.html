@@ -42,8 +42,8 @@
                     <a href="#" class="nav-item-label">
                         + <span class="linklabel">{{ form.instance.label }}</span>&nbsp;<span class="helpertext">({% trans 'edit' %})</span>
                     </a>
-                    <a href="#" class="nav-move-right">&rarr;</a>
-                    <a href="#" class="nav-move-left">&larr;</a>
+                    <a href="#" class="nav-move-right"><img class="nav-move-image" src="{{ STATIC_URL }}images/arrow-right.jpg" /></a>
+                    <a href="#" class="nav-move-left"><img class="nav-move-image" src="{{ STATIC_URL }}images/arrow-left.jpg" /></a>
                     {% if form.errors %}
                         <div class="errors">{{ form.errors }}</div>
                     {% endif %}
