@@ -162,7 +162,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
     Returns 404 if if image rendering fails
     """
 
-    if isinstance(quality,unicode) and quality.isalnum():
+    if isinstance(quality, unicode) and quality.isdigit():
         quality = int(quality)
 
     photo = get_object_or_404(Image, id=id)
@@ -172,16 +172,16 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
     if not has_perm(request.user,'photologue.view_photo',photo):
         raise Http403
 
+    attachment = ''
     if download: 
         attachment = 'attachment;'
-    else: 
-        attachment = ''
     
     # gets resized image from cache or rebuild
     image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk))
-    
+
     # if image not rendered; quit
-    if not image: raise Http404
+    if not image:
+        raise Http404
 
     response = HttpResponse(mimetype='image/jpeg')
     response['Content-Disposition'] = '%s filename=%s'% (attachment, photo.image.file.name)
