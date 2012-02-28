@@ -37,7 +37,7 @@ class Museum(TendenciBaseModel):
     snacks = models.BooleanField(_(u'Snacks?'), default=False)
     shopping_information = models.TextField(_(u'Shopping Information'), blank=True)
     events = models.CharField(_(u'Events'), max_length=200, blank=True)
-    special_offers = models.ManyToManyField(Story, default=None)
+    special_offers = models.ManyToManyField(Story, default=None, blank=True)
     
     ## Stay Connected
     facebook = models.CharField(_(u'Facebook'), max_length=200, blank=True)
