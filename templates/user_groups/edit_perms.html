@@ -1,4 +1,4 @@
-{% extends "user_groups/base.html" %}
+{% extends "base-wide.html" %}
 {% load user_group_tags %}
 {% load i18n %}
 
@@ -7,9 +7,11 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/iconrow.css">
-<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
 
 <link rel="stylesheet" href="/site_media/static/css/admin/django-admin-widgets.css">
+
+<link rel="stylesheet" href="/site_media/static/css/usergroups.css">
+
 <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="/site_media/static/js/admin/django-admin.multiselect.js"></script>
 <script type="text/javascript">
