@@ -629,7 +629,11 @@ def user_activity_report(request):
 
 @staff_member_required
 def admin_users_report(request):
-    users = User.objects.all().filter(is_superuser=True)
+    filters = {
+        'is_staff': 1,
+        'is_active': 1,
+    }
+    users = User.objects.all().filter(**filters)
     return render_to_response(
                 'reports/admin_users.html', 
                 {'users': users},  
