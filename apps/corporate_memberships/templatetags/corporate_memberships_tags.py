@@ -117,7 +117,7 @@ class AllowEditCorpNode(Node):
 @register.tag
 def allow_edit_corp(parser, token):
     """
-        {% allow_view_corp corp_memb user as allow_view %}
+        {% allow_edit_corp corp_memb user as allow_edit %}
     """
     bits  = token.split_contents()
     

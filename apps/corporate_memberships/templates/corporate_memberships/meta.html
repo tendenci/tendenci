@@ -6,9 +6,7 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% has_perm user corporate_memberships.change_corporatemembership corporate_membership as can_edit %}
-{% has_perm user corporate_memberships.delete_corporatemembership corporate_membership as can_delete %}
-
+{% is_admin user as admin %}
 <div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
     <div class="meta-left">
         
@@ -35,7 +33,10 @@
     </div>
     
 </div>
-{% if can_edit %}
+
+{% allow_edit_corp corporate_membership user as allow_edit %}
+
+{% if allow_edit %}
 <div class="editor-bar">
 
     <div class="perm-status">
@@ -51,12 +52,11 @@
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
-                {% if user.is_authenticated %}
-					<li>
-						<a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{corporate_membership.name|urlencode}}">{% trans "Roster" %}</a>
-					</li>				
-				{% endif %}
-				{% if can_delete %}
+				<li>
+					<a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{corporate_membership.name|urlencode}}">{% trans "Roster" %}</a>
+				</li>				
+				
+				{% if admin %}
 					<li>
 						<a class="option-link delete" href="{% url corp_memb.delete corporate_membership.pk %}">{% trans "Delete" %}</a>
 					</li>				
