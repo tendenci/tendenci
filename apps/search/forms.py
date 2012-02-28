@@ -185,6 +185,16 @@ class ModelSearchForm(SearchForm):
                 if app['verbose_name'].lower() == 'user':
                     registered_apps_models.append(app['model'])
                     registered_apps_names.append(app['model']._meta.module_name)
+        else:
+            for app in registered_apps:
+                if app['verbose_name'].lower() == 'user':
+                    try:
+                        models_index = registered_apps_models.index(app['model')
+                        registered_apps_models.pop(models_index)
+                        names_index = registered_apps_names.index(app['model']._meta.module_name)
+                        registered_apps_names.pop(names_index)
+                    except Exception as e:
+                        pass
 
         self.models = registered_apps_models
         self.fields['models'] = forms.MultipleChoiceField(choices=model_choices(), required=False, label=_('Search In'), widget=forms.CheckboxSelectMultiple)
