@@ -54,7 +54,7 @@
  {% corpmemb_nav request.user %}
  
  {% is_admin request.user as is_admin %}
-<h1>{% trans "Corporate Membership Search" %}</h1>
+<h1>{% trans "Corporate Membership List" %}</h1>
 {% corp_memb_search %}
 {% autopaginate corp_members 10 %}
 <div class="corpmembers-wrap">
