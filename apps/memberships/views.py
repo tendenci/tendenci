@@ -697,7 +697,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
     This will upload the membership import file and then redirect the user
     to the import mapping/preview page of the import file
     """
-    
+
     if not is_admin(request.user):
         raise Http403
         
