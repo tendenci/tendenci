@@ -66,22 +66,5 @@
         "scope_category": "corporate_memberships", 
         "store": false, 
         "updated_by": ""
-    },
-    {
-        "default_value": "corporatememberships", 
-        "description": "The root url for the corporate membership module. Use letters and dashes only.", 
-        "data_type": "string",
-        "update_dt": "2012-02-27 15:25:04",
-        "input_type": "text",
-        "client_editable": true, 
-        "name": "url", 
-        "value": "corporatememberships", 
-        "label": "Root URL", 
-        "input_value": "", 
-        "parent_id": 0,
-        "scope": "module",
-        "scope_category": "corporate_memberships", 
-        "store": true, 
-        "updated_by": ""
     }
 ]

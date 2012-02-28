@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load pagination_tags %}
+{% load base_filters %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
 {% load styled_forms %}
@@ -90,7 +91,7 @@
 	{% autopaginate memberships 10 %}
 	<ul style="margin: 1em 0;">
     {% for membership in memberships %}
-	    {% with membership.object as membership %}
+	    {% with membership|get_object as membership %}
 				<li class="member-line">
 						<a href="{% url profiles.views.index membership.user.username %}">
 						{{ membership.user.get_full_name }}

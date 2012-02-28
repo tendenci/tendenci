@@ -16,6 +16,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 from django.utils import simplejson
+from django.db.models import Q
 
 from imports.utils import render_excel
 
@@ -54,6 +55,12 @@ from perms.utils import get_notice_recipients
 from base.utils import send_email_notification
 from files.models import File
 from profiles.models import Profile
+
+use_search_index = get_setting('site', 'global', 'searchindex')
+if use_search_index in ('true', True):
+    use_search_index = True
+else:
+    use_search_index = False
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -628,7 +635,7 @@ def view(request, id, template="corporate_memberships/view.html"):
     return render_to_response(template, context, RequestContext(request))
 
 
-def list(request, template_name="corporate_memberships/search.html"):
+def list_view(request, template_name="corporate_memberships/search.html"):
     allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoussearchcorporatemember')
     if not request.user.is_authenticated() and not allow_anonymous_search:
         raise Http403
@@ -645,7 +652,7 @@ def list(request, template_name="corporate_memberships/search.html"):
         context_instance=RequestContext(request))
 
 def search(request):
-    if get_setting('site', 'global', 'searchindex') == 'true':
+    if use_search_index:
         haystack_url = "%s?models=corporate_memberships.corporatemembership&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
         return HttpResponseRedirect(haystack_url)
     else:
@@ -719,10 +726,14 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
             
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corp_memb.view', args=[corp_memb.id]))
-            
-    memberships = Membership.objects.corp_roster_search(None, 
-                                            user=request.user).filter(
-                                        corporate_membership_id=corp_memb.id)
+    
+    if use_search_index:        
+        memberships = Membership.objects.corp_roster_search(None, 
+                                                user=request.user).filter(
+                                            corporate_membership_id=corp_memb.id)
+    else:
+        memberships = Membership.objects.filter(
+                                            corporate_membership_id=corp_memb.id)
     try:
         page = int(request.GET.get('page', 0))
     except:
@@ -737,15 +748,28 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
     
 def reps_lookup(request):
     q = request.REQUEST['term']
-    profiles = Profile.objects.search(
-                        q, 
-                        user=request.user
-                        ).order_by('last_name_exact')
+    
+    if use_search_index:
+        profiles = Profile.objects.search(
+                            q, 
+                            user=request.user
+                            ).order_by('last_name_exact')
+    else:
+        # they don't have search index, probably just check username only for performance sake
+        profiles = Profile.objects.filter(Q(user__first_name__istartswith=q) \
+                                       | Q(user__last_name__istartswith=q) \
+                                       | Q(user__username__istartswith=q) \
+                                       | Q(user__email__istartswith=q))
+        profiles  = profiles.order_by('user__last_name')
+        
     if profiles and len(profiles) > 10:
         profiles = profiles[:10]
 
-    users = [p.object.user for p in profiles]
-    #users = User.objects.all()
+    if use_search_index:
+        users = [p.object.user for p in profiles]
+    else:
+        users = [p.user for p in profiles]
+         
     results = []
     for u in users:
         value = '%s, %s (%s) - %s' % (u.last_name, u.first_name, u.username, u.email)
