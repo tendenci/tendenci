@@ -13,14 +13,14 @@
 {% block body %}
 <div class="t">
 
-<h3>{% trans "Request" %} {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}</h3>
+<h3>{% trans "Request" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</h3>
 
 {% trans "Please provide as much detail as possible." %}<br>
 {% trans "If you would like to, also include your name and email: " %}
 <form method="POST">{% csrf_token %}
 	<div class="forms">
 	{{ form|styled_form }}
-	<input type="submit" value="Request Help File">
+	<input type="submit" value="Request {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}">
 	</div>
 </form>
 </div>

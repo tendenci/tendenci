@@ -28,11 +28,11 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</a>
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a>
         {% if nav_object %}
         <div class="dropdown-menu">
         <ul class="first">
-            <li class="heading">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</li>
+            <li class="heading">{% trans "All" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</li>
             <li class="divider"></li>
         {% else %}
             <div>
@@ -41,19 +41,19 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "help_files" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url help_files %}">{% trans "Search" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</a></li>
+            <li><a href="{% url help_files %}">{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans 'Topics' %}</a></li>
             {% if can_add_helpfile %}
-                <li><a href="{% url help_files.add %}">{% trans "Add to" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</a></li>
+                <li><a href="{% url help_files.add %}">{% trans "Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a></li>
             {% endif %}
             {% if admin %}
-                <li><a href="{% url admin:help_files_helpfile_add %}">{% trans "Admin Add to" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</a></li>
+                <li><a href="{% url admin:help_files_helpfile_add %}">{% trans "Admin Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a></li>
                 <li><a href="{% url admin:help_files_request_changelist %}">{% trans "Requests List" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_helpfile or can_edit_helpfile %}
             <ul>
-                <li class="heading">{% trans "This" %} {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</li>
+                <li class="heading">{% trans "This" %} {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}</li>
                 <li class="divider"></li>
                 {% if can_view_helpfile %}
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}</a></li>
