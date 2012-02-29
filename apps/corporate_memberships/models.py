@@ -21,13 +21,14 @@ from invoices.models import Invoice
 from memberships.models import MembershipType, App, Membership
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
-from perms.utils import is_admin
+from perms.utils import is_admin, is_member
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
 from payments.models import PaymentMethod
 from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
+from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
 
 
 FIELD_CHOICES = (
@@ -268,6 +269,31 @@ class CorporateMembership(TendenciBaseModel):
     @property   
     def module_name(self):
         return self._meta.module_name
+    
+    @staticmethod
+    def get_search_filter(user):
+        if is_admin(user): return None, None
+        
+        filter_and, filter_or = None, None
+        
+        if allow_anonymous_search or (allow_member_search and is_member(user)):
+            filter_and =  {'status':1,
+                           'status_detail':'active'}
+        else:
+            if user.is_authenticated():
+                filter_or = {'creator': user,
+                             'owner': user}
+                if use_search_index:
+                    filter_or.update({'reps': user})
+                else:
+                    filter_or.update({'reps__user': user})
+            else:
+                filter_and = {'allow_anonymous_view':True,}
+                
+                
+        return filter_and, filter_or
+        
+        
     
     def assign_secret_code(self):
         if not self.secret_code:

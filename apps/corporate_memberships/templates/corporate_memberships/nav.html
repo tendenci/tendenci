@@ -44,7 +44,7 @@
             <ul class="dropdown-menu">
         {% endif %}
             {% if can_edit_setting %}
-            <li><a href="{% url settings.index "module" "corporatememberships" %}">{% trans "Settings" %}</a></li>
+            <li><a href="{% url settings.index "module" "corporate_memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url corp_memb.index %}">{% trans 'Index Page' %}</a></li>
             {% if user.is_authenticated %}
