@@ -1,4 +1,4 @@
-{% extends "memberships/base.html" %}
+{% extends "memberships/base-wide.html" %}
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -19,7 +19,7 @@
 
     <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
     {{ form.as_p }}
-    <input type='submit' value='Submit'>
+    <input type='submit' value='Import .csv File'>
     </form>
 </div>
 {% endblock %}
