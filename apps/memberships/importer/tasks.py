@@ -15,6 +15,8 @@ from memberships.importer.utils import parse_mems_from_csv, clean_username
 class ImportMembershipsTask(Task):
 
     def run(self, app, file_path, fields, **kwargs):
+        from django.template.defaultfilters import slugify
+
         #get parsed membership dicts
         imported = []
         mems, stats = parse_mems_from_csv(file_path, fields)
@@ -23,34 +25,37 @@ class ImportMembershipsTask(Task):
                 # get membership type.
                 # this should not throw DNE errors
                 # otherwise it should have been marked skipped.
-                membership_type = MembershipType.objects.get(name=m['membership_type'])
+                membership_type = MembershipType.objects.get(name=m['membershiptype'])
                 
                 # initialize dates
-                join_dt = m['join_dt']
-                renew_dt = m['renew_dt']
-                expire_dt = m['expire_dt']
-                subscribe_dt = m['subscribe_dt']
-                
+                join_dt = m['joindt']
+                renew_dt = m['renewdt']
+                expire_dt = m['expiredt']
+                subscribe_dt = m['subscribedt']
+
+                credit_cards = ('cc','credit','creditcard')
+                checks = ('check',)
+                cash = ('cash',)
+
                 # determine payment method id
                 # this assumes that the default payment methods are used.
-                payment_method = m.get('payment_method', '')
-                if 'cc' in payment_method:
+                payment_method = slugify(m.get('paymentmethod', '')).replace('-','')
+                payment_method_id = None
+                if payment_method in credit_cards:
                     payment_method_id = 1
-                elif 'check' in payment_method:
+                elif payment_method in checks:
                     payment_method_id = 2
-                elif 'cash' in payment_method:
+                elif payment_method in cash:
                     payment_method_id = 3
-                else:
-                    payment_method_id = None
 
                 # get or create User
-                username = m['user_name']
+                username = m['username']
                 try:
                     user = User.objects.get(username = username)
                 except User.DoesNotExist:
 
                     # clean username
-                    username = clean_username(m['user_name'])
+                    username = clean_username(m['username'])
 
                     try:
                         user = User.objects.get(username = username)
@@ -59,8 +64,8 @@ class ImportMembershipsTask(Task):
                         user = User(username = username)
 
                 # update user
-                user.first_name = m.get('first_name') or user.first_name
-                user.last_name = m.get('last_name') or user.last_name
+                user.first_name = m.get('firstname') or user.first_name
+                user.last_name = m.get('lastname') or user.last_name
                 user.email = m.get('email') or user.email
                 #save user
                 user.save()
@@ -77,20 +82,20 @@ class ImportMembershipsTask(Task):
                     )
                 # update profile
                 profile.company = m.get('company') or profile.company
-                profile.position_title = m.get('position_title') or profile.position_title
-                profile.address = m.get('mailing_address') or profile.address
-                profile.address2 = m.get('address_2') or profile.address2
+                profile.position_title = m.get('positiontitle') or profile.position_title
+                profile.address = m.get('mailingaddress') or profile.address
+                profile.address2 = m.get('address2') or profile.address2
                 profile.city = m.get('city') or profile.city
                 profile.state = m.get('state') or profile.state
-                profile.zipcode = m.get('zip_code') or profile.zipcode
+                profile.zipcode = m.get('zipcode') or profile.zipcode
                 profile.county = m.get('county') or profile.county
-                profile.address_type = m.get('address_type') or profile.address_type
-                profile.work_phone = m.get('work_phone') or profile.work_phone
-                profile.home_phone = m.get('home_phone') or profile.home_phone
-                profile.mobile_phone = m.get('mobile_phone') or profile.mobile_phone
+                profile.address_type = m.get('addresstype') or profile.address_type
+                profile.work_phone = m.get('workphone') or profile.work_phone
+                profile.home_phone = m.get('homephone') or profile.home_phone
+                profile.mobile_phone = m.get('mobilephone') or profile.mobile_phone
                 profile.email = user.email
-                profile.email2 = m.get('e_mail_2') or m.get('email_2') or profile.email2
-                profile.url = m.get('web_site') or profile.url
+                profile.email2 = m.get('email2') or profile.email2
+                profile.url = m.get('website') or profile.url
                 if m.get('dob'):
                     profile.dob = dt_parse(m.get('dob')) or datetime.now()
                 
@@ -111,20 +116,20 @@ class ImportMembershipsTask(Task):
                     membership.ma = app
                     membership.user = user
                     membership.membership_type = membership_type
-                    membership.member_number = m.get('member_number') or 0
+                    membership.member_number = m.get('membernumber') or 0
                     membership.owner = user
                     membership.creator = user
                     membership.subscribe_dt = subscribe_dt
                     membership.payment_method_id = payment_method_id
                     membership.renewal = m.get('renewal')
                     membership.status = m.get('status') or True
-                    membership.status_detail = m.get('status_detail') or 'Active'
+                    membership.status_detail = m.get('statusdetail') or 'Active'
                     membership.expire_dt = expire_dt
                 # save membership
                 membership.save()
                 
                 # bind corporate membership with membership if it exists
-                corp_memb_name = m.get('corp_membership_name', None)
+                corp_memb_name = m.get('corpmembershipname')
                 if corp_memb_name:
                     try:
                         corp_memb = CorporateMembership.objects.get(name=corp_memb_name)
@@ -175,7 +180,7 @@ class ImportMembershipsTask(Task):
 
                 # add user to group
                 membership.membership_type.group.add_user(membership.user)
-                
+
                 # append to imported list
                 imported.append(membership)
                 
