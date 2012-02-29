@@ -1,0 +1,70 @@
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="meta">
+    <div class="meta-left">    
+        {% if help_file.tags %}
+        <div class="tags">
+            <strong>Tags: </strong>
+            {% for tag in help_file.tags|tag_split %}
+                <a href="{% url help_file.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% with help_file.topics.all as topics %}
+            {% if topics %}
+            <div class="topics"><strong>Topics: </strong>
+            {% for topic in topics %}
+                <a href="{% url help_files.topic topic.pk %}">{{ topic }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}                        
+            </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% if user.is_authenticated %}
+            {% if not admin %}
+            {% if user == help_file.creator or user == help_file.owner %}
+            <div class="categories">
+                <strong>Owned by you</strong>{% if not help_file.status_detail == "active" %} - status: {{ help_file.obj_status }}{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% if admin or user == help_file.creator or user == help_file.owner %}
+                {% meta_creator_owner help_file %}
+            {% endif %}
+        {% endif %}
+        
+    </div>
+    <div class="meta-right">
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+</div>
+{% if admin %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ help_file.obj_perms }}</li>
+        <li>{{ help_file.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ help_file.pk }}&source={{ help_file.opt_app_label }}">Eventlogs</a></li>
+        <li><a class="edit-link" href="{% url help_files.edit help_file.pk %}">Edit</a></li>
+        <li><a class="options-link" href="#">Options <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li>
+                    <a class="delete" href="{% url admin:help_files_helpfile_change help_file.pk %}">Delete</a>
+                </li>               
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}
