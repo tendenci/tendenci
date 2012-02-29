@@ -113,7 +113,8 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
     payment.response_reason_text = response_d.get('x_response_reason_text', '')
     payment.trans_id = response_d.get('x_trans_id', '')
     payment.card_type = response_d.get('x_card_type', '')
-    payment.account_number = response_d.get('x_account_number', '')
+    # last 4 digits only
+    payment.account_number = response_d.get('x_account_number', '')[-4:]
     payment.auth_code = response_d.get('x_auth_code', '')
     payment.avs_code = response_d.get('x_avs_code', '')
     # replace the data captured from authnet in case they changed from there.

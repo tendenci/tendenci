@@ -58,7 +58,7 @@
                     {{ reg8n_number }} {% trans "Registrants:" %}
                 </div>
 
-                <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+                <table class="registrants-table" border="0" cellspacing="0" cellpadding="0">
                     {% for registrant in reg8n.registrant_set.all %}
                     <tr>
                         <td>
@@ -96,7 +96,7 @@
                     {{ reg8n_number }} {% trans "Registrants:" %}
                 </div>
 
-                <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+                <table class="registrants-table" border="0" cellspacing="0" cellpadding="0">
                     {% for registrant in reg8n.registrant_set.all %}
                     <tr>
                         <td>
@@ -120,6 +120,24 @@
                     </tr>
                     {% endfor %}
                 </table>
+                
+                {% if reg8n.regaddon_set.all.count != 0 %}
+                <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n.regaddon_set.all.count }} {% trans "Addons:" %}
+                </div>
+                <table class="addons-table" border="0" cellspacing="0" cellpadding="0">
+                {% for regaddon in reg8n.regaddon_set.all %}
+                    <tr>
+                        <td>
+                            <span>{{ regaddon.addon.title }}
+                            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </table>
+                {% endif %}
+                
             {% else %}
                 {% trans "Registration Complete. Enjoy the Event!" %}
             {% endif %}
