@@ -7,7 +7,7 @@
     {% directory_nav user directory %}
     <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Delete Page" %}</h1>
     <div class="delete-prompt"> 
-        {% trans "Are you sure you want to permanently delete this directory?" %}
+        {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}?
     </div>
     <div class="info" style="margin: 10px 0px 10px 0px;">
         <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h2>

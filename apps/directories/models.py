@@ -4,11 +4,14 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
 from timezones.fields import TimeZoneField
 from perms.models import TendenciBaseModel 
+from perms.object_perms import ObjectPermission
+from categories.models import CategoryItem
 from directories.managers import DirectoryManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
@@ -71,11 +74,19 @@ class Directory(TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = DirectoryManager()
 
     class Meta:
         permissions = (("view_directory","Can view directory"),)
-        verbose_name_plural = 'directories'
+        verbose_name = "Directory"
+        verbose_name_plural = "Directories"
 
     def get_meta(self, name):
         """
@@ -146,6 +157,16 @@ class Directory(TendenciBaseModel):
 
     def age(self):
         return datetime.now() - self.create_dt
+
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
