@@ -14,7 +14,7 @@ class UploadForm(forms.Form):
     """
     
     app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
-    csv = forms.FileField(label="CSV File")
+    csv = forms.FileField(label='')
     
     
 class ImportMapForm(forms.Form):
