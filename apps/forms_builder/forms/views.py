@@ -11,7 +11,7 @@ from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save
+from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from invoices.models import Invoice
@@ -380,12 +380,16 @@ def entries_export(request, id):
 
 
 def search(request, template_name="forms/search.html"):
+    if not has_perm(request.user,'forms.view_form'):
+        raise Http403
+
+    filters = get_query_filters(request.user, 'forms.view_form')
+    forms = Form.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
-    forms = Form.objects.search(query, user=request.user)
-    try:
-        forms = forms.order_by('-primary_key')
-    except:
-        pass
+    if query:
+        forms = forms.filter(title__icontains=query)
+
+    forms = forms.order_by('-pk')
 
     return render_to_response(template_name, {'forms':forms}, 
         context_instance=RequestContext(request))
@@ -398,7 +402,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     published = Form.objects.published(for_user=request.user)
     form = get_object_or_404(published, slug=slug)
 
-    if not has_perm(request.user,'forms.view_form',form):
+    if not has_view_perm(request.user,'forms.view_form',form):
         raise Http403
     
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
