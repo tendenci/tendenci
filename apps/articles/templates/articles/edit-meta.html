@@ -3,7 +3,7 @@
 {% load styled_forms %}
 {% load i18n %} 
 
-{% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} Edit Meta Information{% endblock %}
+{% block title %}{% firstof MODULE_ARTICLES_LABEL 'Article' %} {% trans "Edit Meta Information" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -18,40 +18,13 @@
     {{ article_headline }}{% endblocktrans %}</h1>
 
     <div class="article-wrap">
-		<div class="options">
-             <div class="quick-options">
-				{% article_options request.user article %} 	       
-             </div>
-		</div>
-    	<form action="{% url article.edit.meta article.pk %}" method="post">{% csrf_token %}
-    	<div class="forms">
+        <form action="{% url article.edit.meta article.pk %}" method="post">{% csrf_token %}
+        <div class="forms">
             {{ form|styled_form }}
-        	<input type="submit" value="Save Changes" />
-			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
-		</div>
+            <input type="submit" value="Save Changes" />
+             or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+        </div>
         </form>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_article = confirm('Permenantly delete {% firstof MODULE_ARTICLES_LABEL 'Article' %}?');	// confirm
-				if(delete_article) $('.t').find('form[name="article-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
 {% endblock %}

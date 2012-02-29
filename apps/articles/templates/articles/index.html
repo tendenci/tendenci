@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<h1>{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %} {% trans "Index Page" %}</h1>
+<h1>{% firstof MODULE_ARTICLES_LABEL_PLURAL trans 'Articles' %} {% trans "Index Page" %}</h1>
 
 <ul>
 	<li><a href="{% url article.search %}">{% trans "Search" %}</a></li>

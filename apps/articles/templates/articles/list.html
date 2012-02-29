@@ -6,7 +6,7 @@
 {% load search_tags %}
 {% load i18n %}
 
-{% block title %}{{ block.super }} {% trans "List" %}{% endblock %}
+{% block title %}{% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "List" %} {{ block.super }}{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}
 {% block meta_keywords %}{{ block.super }}{% endblock %}
 
@@ -18,22 +18,22 @@
 
 {% block body %}
 <div class="t">
-	{% article_nav request.user %}
+    {% article_nav request.user %}
     <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "List" %}</h1>  
 
-	{% article_search %}
+    {% article_search %}
     {% autopaginate articles 10 %}
-	
-	<div class="articles-wrap">
+    
+    <div class="articles-wrap">
     {% for article in articles %}
-		{% search_result article %}
-	{% empty %}
-		<div><p>{% trans "No" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "posted yet" %}.</p>
-		{% if admin %}
-		<p><a href="{% url article.add %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></p>
-		{% endif %}</div>
+        {% search_result article %}
+    {% empty %}
+        <div><p>{% trans "No" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "posted yet" %}.</p>
+        {% if admin %}
+        <p><a href="{% url article.add %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></p>
+        {% endif %}</div>
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>

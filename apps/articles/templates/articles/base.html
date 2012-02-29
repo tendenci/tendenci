@@ -1,7 +1,7 @@
 {% extends "site_base.html" %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_ARTICLES_LABEL 'Articles' %} for  {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_description %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_ARTICLES_LABEL 'Articles' %} and White Papers for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} for  {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
+{% block meta_description %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} and White Papers for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
 {% block meta_keywords %}{% firstof MODULE_ARTICLES_LABEL 'Articles' %},  {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

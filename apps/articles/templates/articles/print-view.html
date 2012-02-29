@@ -20,8 +20,7 @@
 		<h1>{% trans "Print View" %}</h1>
 
 		<div class="guide">
-			<div><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to regular article view" %}</a></div>
-			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+			<div><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to the" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></div>
 		</div>
 	</div>
 
