@@ -74,7 +74,7 @@ def list(request, slug=None, template_name="articles/list.html"):
     try:
         category = int(category)
     except:
-        category = 0
+        category = None
     categories, sub_categories = Article.objects.get_categories(category=category)
 
     return render_to_response(template_name, {'articles': articles,'categories':categories,
