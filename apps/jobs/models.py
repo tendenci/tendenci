@@ -92,12 +92,8 @@ class Job(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_job", "Can view job"),)
-        if get_setting('module', 'jobs', 'label'):
-            verbose_name = get_setting('module', 'jobs', 'label')
-            verbose_name_plural = get_setting('module', 'jobs', 'label')
-        else:
-            verbose_name = "Job"
-            verbose_name_plural = "Jobs"
+        verbose_name = "Job"
+        verbose_name_plural = "Jobs"
 
     def get_meta(self, name):
         """
@@ -179,9 +175,9 @@ class Job(TendenciBaseModel):
         items = {}
         for cat in self.categories.select_related('category__name', 'parent__name'):
             if cat.category:
-                items["category"] = cat.category.name
+                items["category"] = cat.category
             elif cat.parent:
-                items["sub_category"] = cat.parent.name
+                items["sub_category"] = cat.parent
         return items
 
 

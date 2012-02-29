@@ -1,4 +1,4 @@
-{% if SITE_GLOBAL_SEARCHINDEX == "true" %}
+{% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url job.search %}" method="get">
     <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
     <input type="submit" name="search" value="Search" />
