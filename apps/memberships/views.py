@@ -697,7 +697,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
     This will upload the membership import file and then redirect the user
     to the import mapping/preview page of the import file
     """
-    
+
     if not is_admin(request.user):
         raise Http403
         
@@ -713,11 +713,14 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             
             file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
 
-            if not is_import_valid(file_path):
-                messages.add_message(request, messages.ERROR, "Membership Type column required.")
+            import_valid, import_errs = is_import_valid(file_path)
+
+            if not import_valid:
+                for err in import_errs:
+                    messages.add_message(request, messages.ERROR, err)
                 memport.delete()
                 return redirect('membership_import_upload_file')
-                
+
             return redirect('membership_import_preview', memport.id)
     else:
         form = UploadForm()
@@ -745,7 +748,7 @@ def membership_import_preview(request, id):
             #show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
             app = memport.app
-            
+
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             memberships, stats = parse_mems_from_csv(file_path, cleaned_data)
             
