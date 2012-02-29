@@ -18,11 +18,6 @@
     {{ directory.headline }}</h1>
 
     <div class="directory-wrap">
-		<div class="options">
-             <div class="quick-options">
-				{% directory_options request.user directory %} 	       
-             </div>
-		</div>
     	<form action="{% url directory.edit.meta directory.pk %}" method="post">{% csrf_token %}
     	<div class="forms">
             {{ form|styled_form }}
@@ -32,26 +27,4 @@
         </form>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_directory = confirm('Permenantly delete {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}?');	// confirm
-				if(delete_directory) $('.t').find('form[name="directory-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
 {% endblock %}
