@@ -124,7 +124,6 @@ class ListNode(Node):
             query = '%s "tag:%s"' % (query, tag)
 
         # get the list of items
-        # items = self.model.objects.search(user=user, query=query)
         try:
             print self.perms
         except:
