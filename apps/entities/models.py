@@ -1,10 +1,8 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes import generic
 
 from perms.models import TendenciBaseModel
-from perms.object_perms import ObjectPermission
 from entities.managers import EntityManager
 
 class Entity(TendenciBaseModel):
@@ -22,10 +20,6 @@ class Entity(TendenciBaseModel):
     summary = models.TextField(blank=True)
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
-
-    perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
 
     objects = EntityManager()
 
