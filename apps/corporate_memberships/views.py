@@ -822,8 +822,12 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     corp_memb = get_object_or_404(CorporateMembership, name=name)
     
     query = request.GET.get('q', None)
-    memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
-    
+    if use_search_index:
+        memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
+    else:
+        memberships = Membership.objects.filter(
+                                            corporate_membership_id=corp_memb.id)
+        
     if is_admin(request.user) or corp_memb.is_rep(request.user):
         pass
     else:
