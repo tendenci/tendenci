@@ -3,7 +3,6 @@ from articles.feeds import LatestEntriesFeed
 from site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'articles', 'url')
-print urlpath
 if not urlpath:
     urlpath = "articles"
 

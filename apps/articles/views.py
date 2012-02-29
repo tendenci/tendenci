@@ -83,7 +83,7 @@ def list(request, slug=None, template_name="articles/list.html"):
 
 
 def search(request):
-    if get_setting('site', 'global', 'searchindex') == 'true':
+    if get_setting('site', 'global', 'searchindex'):
         haystack_url = "%s?models=articles.article&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
         return HttpResponseRedirect(haystack_url)
     else:
