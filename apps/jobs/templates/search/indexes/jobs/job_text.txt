@@ -1,5 +1,4 @@
-{% load tagging_tags %}
-{% load category_tags %}
+{% load base_filters %}
 
 {% firstof object.title "Untitled" %}
 by {{ object.creator }}
@@ -18,19 +17,20 @@ location:{{ object.location }}
 is:{{ object.status_detail }}
 is:{{ object.list_type }}
 
-{% get_category_for_object object as category %}
-{% if category %}
-category:{{ category }}
-category:{{ category.pk }}
+{% with object.category_set as obj_cats %}
+{% if obj_cats.category %}
+category:{{ obj_cats.category }}
+category:{{ obj_cats.category.pk }}
 {% endif %}
 
-{% get_sub_category_for_object object as sub_category %}
-{% if sub_category %}
-sub_category:{{ sub_category }}
-sub_category:{{ sub_category.pk }}
+{% if obj_cats.sub_category %}
+sub_category:{{ obj_cats.sub_category }}
+sub_category:{{ obj_cats.sub_category.pk }}
 {% endif %}
+{% endwith %}
 
-{% tags_for_object object as tags %}
-{% for tag in tags %}
-{{ tag }} 
+{% if object.tags %}
+{% for tag in object.tags|tag_split %}
+tag:{{ tag }} 
 {% endfor %}
+{% endif %}

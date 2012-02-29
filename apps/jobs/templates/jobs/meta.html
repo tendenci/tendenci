@@ -1,4 +1,3 @@
-{% load job_tags %}
 {% load base_tags %}
 {% load base_filters %}
 {% load i18n %}
@@ -30,7 +29,6 @@
         <div class="categories">
             <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
         </div>
-        
         {% endif %}
         {% endif %}
         
