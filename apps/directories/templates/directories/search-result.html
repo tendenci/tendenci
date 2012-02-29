@@ -1,5 +1,3 @@
-{% load directory_tags %}
-{% load category_tags %}
 {% load i18n %}
 
 <div class="wrap-search-item">
@@ -16,8 +14,4 @@
     </div>
 
     {% include 'directories/meta.html' %}
-    <!-- delete-directory form -->
-    <form name="directory-delete" method="POST" action="{% url directory.delete directory.pk %}">{% csrf_token %}
-        <input type="hidden" name="action" value="delete">
-    </form>
 </div>
