@@ -41,7 +41,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "jobs" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url jobs %}">{% trans "Search" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
+            <li><a href="{% url jobs %}">{% trans "Latest" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
             {% if user.is_authenticated %}
                 <li><a href="{% url job.add %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</a></li>
             {% endif %}
