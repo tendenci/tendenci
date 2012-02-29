@@ -8,16 +8,19 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, is_admin
+from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters
 from event_logs.models import EventLog
 from discounts.models import Discount, DiscountUse
 from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):
+    filters = get_query_filters(request.user, 'discounts.view_discount')
+    discounts = Discount.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
-    discounts = Discount.objects.search(query, user=request.user)
-    
+    if query:
+        discounts = discounts.filter(discount_code__icontains=query)
+
     log_defaults = {
         'event_id' : 1010400,
         'event_data': '%s searched by %s' % ('Discount', request.user),
