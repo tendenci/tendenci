@@ -13,6 +13,7 @@
 	<style type="text/css">
 
 		table {
+            font-size: 12px;
 			margin-top: 5px;
 			white-space: nowrap;
 			border: 1px solid silver;
@@ -70,17 +71,17 @@
                 <tr class="{% cycle 'odd' 'even' as rowcolors %}">
                     <td>{{ forloop.counter }}</td>
                     <td><div>
-                            {% if membership.full_name %}
-                                {{ membership.full_name }}
+                            {% if membership.fullname %}
+                                {{ membership.fullname }}
                             {% else %}
                                 {% trans "No Name" %}
                             {% endif %}
                     </div></td>
-                    <td><div>{{ membership.member_number }}</div></td>
+                    <td><div>{{ membership.membernumber }}</div></td>
                     <td><div>{{ membership.email }}</div></td>
-                    <td><div>{{ membership.membership_type }}</div></td>
-                    <td><div>{{ membership.subscribe_dt|date:"M d, Y" }}</div></td>
-                    <td><div>{{ membership.expire_dt|date:"M d, Y" }}</div></td>
+                    <td><div>{{ membership.membershiptype }}</div></td>
+                    <td><div>{{ membership.subscribedt|date:"M d, Y" }}</div></td>
+                    <td><div>{{ membership.expiredt|date:"M d, Y" }}</div></td>
                     <td><div>
                         {% if membership.skipped %}{% trans "Yes" %}{% endif %}
                     </div></td>

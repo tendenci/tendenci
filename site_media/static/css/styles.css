@@ -159,7 +159,6 @@ a:hover{text-decoration: none; color:#000;}
 	background:#fff;
 	color:#333;
 	border:20px solid #fff;
-	overflow:hidden;
 	}
 
 #container p {
@@ -284,14 +283,13 @@ a:hover{text-decoration: none; color:#000;}
 /* content */
 
 .content {
-	overflow: hidden;
 	margin:10px 0 20px 0;
-	}
+}
 	
 .content-middle {
 	float: left;
 	width: 75%;
-	}
+}
 
 .content-wide {
 	width: 100%;	

@@ -32,18 +32,20 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
     Entries without a Membership Type will be marked as skipped.
     Entries that are already in the database will be marked as skipped.
     """
-    
+
+    print 'mapping', mapping.keys()
+
     membership_dicts = []
     skipped = 0
-    for csv_dict in csv_to_dict(file_path):  # field mapping
-    
+    for csv_dict in csv_to_dict(file_path, machine_name=True):  # field mapping
+
         m = {}
         for app_field, csv_field in mapping.items():
             if csv_field:  # skip blank option
                 # membership['username'] = 'charliesheen'
-                m[clean_field_name(app_field)] = csv_dict[csv_field]
+                m[clean_field_name(app_field)] = csv_dict.get(csv_field, '')
 
-        username = m['user_name']
+        username = m['username']
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
@@ -61,15 +63,15 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
             last_name = user.last_name
             email = user.email
         else:
-            first_name = m.get('first_name')
-            last_name = m.get('last_name')
-            email = m.get('e_mail') or m.get('email')
+            first_name = m.get('firstname')
+            last_name = m.get('lastname')
+            email = m.get('email')
         
         if user:
-            m['full_name'] = user.get_full_name()
+            m['fullname'] = user.get_full_name()
         else:
             if first_name or last_name:
-                m['full_name'] = "%s %s" % (first_name, last_name)
+                m['fullname'] = "%s %s" % (first_name, last_name)
         m['email'] = email
 
         # skip importing a record if
@@ -79,7 +81,7 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
         #check if should be skipped or not
         m['skipped'] = False
         try:
-            membership_type = MembershipType.objects.get(name = m['membership_type'])
+            membership_type = MembershipType.objects.get(name = m['membershiptype'])
         except:
             # no memtype
             membership_type = None
@@ -94,15 +96,15 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
                 skipped = skipped + 1
         
         # detect if renewal
-        m['renewal'] = bool(m.get('renew_date'))
+        m['renewal'] = bool(m.get('renewdate'))
 
         #update the dates
         try:
-            join_dt = dt_parse(m['join_date'])
+            join_dt = dt_parse(m['joindate'])
         except:
             join_dt = None
         try:
-            renew_dt = dt_parse(m['renew_date'])
+            renew_dt = dt_parse(m['renewdate'])
         except:
             renew_dt = None
         
@@ -116,17 +118,17 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
         subscribe_dt = join_dt or datetime.now()
         
         try:
-            expire_dt = dt_parse(m['expire_date'])
+            expire_dt = dt_parse(m['expiredate'])
         except:
             if membership_type:
                 expire_dt = membership_type.get_expiration_dt(join_dt=join_dt, renew_dt=renew_dt, renewal=m.get('renewal'))
             else:
                 expire_dt = None
         
-        m['join_dt'] = join_dt
-        m['renew_dt'] = renew_dt
-        m['expire_dt'] = expire_dt
-        m['subscribe_dt'] = subscribe_dt
+        m['joindt'] = join_dt
+        m['renewdt'] = renew_dt
+        m['expiredt'] = expire_dt
+        m['subscribedt'] = subscribe_dt
         
         membership_dicts.append(m)
     
