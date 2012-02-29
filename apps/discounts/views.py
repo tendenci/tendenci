@@ -15,6 +15,9 @@ from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):
+    if not has_perm(request.user, 'discounts.view_discount'):
+        raise Http403
+
     filters = get_query_filters(request.user, 'discounts.view_discount')
     discounts = Discount.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
