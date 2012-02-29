@@ -3,11 +3,13 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from user_groups.models import Group, GroupMembership
 from site_settings.utils import get_setting
 
@@ -74,7 +76,11 @@ class Form(TendenciBaseModel):
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False)
     payment_methods = models.ManyToManyField("payments.PaymentMethod")
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = FormManager()
 
     class Meta:
