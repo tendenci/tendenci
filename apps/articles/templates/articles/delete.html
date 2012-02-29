@@ -2,7 +2,7 @@
 {% load article_tags %}
 {% load i18n %}
 
-{% block title %}{% trans "Delete Article" %} - {{ article.get_title }}{% endblock %}
+{% block title %}{% trans "Delete" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %} - {{ article.get_title }}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -13,11 +13,11 @@
 {% block body %}
 <div class="t">    
     <div class="article-wrap">
-        <h1>{% trans "Delete an Article" %}</h1>
+        <h1>{% trans "Delete" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</h1>
         <h2>{{ article.headline }}</h2>
         <div class="content">{{ article.body|safe|truncatewords_html:"100" }}</div>
         <div class="delete-prompt"> 
-        	{% trans "Are you sure you want to permanently delete this article?" %}
+            {% trans "Are you sure you want to permanently delete this" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %} ?
         </div>
         <div class="delete-form">
             <form name="article-delete" method="POST" action="{% url article.delete article.pk %}">{% csrf_token %}
@@ -25,8 +25,8 @@
                 <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
             </form>
         </div>
-        <div class="back-item"><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to article" %} {{ article.headline }}</a></div>
-        <div class="back-search"><a href="{% url article.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_ARTICLES_LABEL 'articles' %} </a></div>
+        <div class="back-item"><a href="{{ article.get_absolute_url }}">&laquo; {% trans "Back to" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %} {{ article.headline }}</a></div>
+        <div class="back-search"><a href="{% url article.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} </a></div>
     </div>
 </div>
 {% endblock %}
