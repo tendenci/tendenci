@@ -52,7 +52,7 @@
     }, 
     {
         "default_value": "Job", 
-        "description": "The singular name of the plugin.", 
+        "description": "The singular name of the app.", 
         "data_type": "string", 
         "update_dt": "2012-02-16 16:10:19", 
         "input_type": "text", 
@@ -69,7 +69,7 @@
     }, 
     {
         "default_value": "Jobs", 
-        "description": "The plural name of the plugin.", 
+        "description": "The plural name of the app.", 
         "data_type": "string", 
         "update_dt": "2012-02-16 16:10:14", 
         "input_type": "text", 
@@ -120,7 +120,7 @@
     },
     {
         "default_value": "jobs", 
-        "description": "The root url for the jobs plugin. Use letters and dashes only.", 
+        "description": "The root url for the jobs app. Use letters and dashes only.", 
         "data_type": "string",
         "update_dt": "2012-02-16 15:25:04",
         "input_type": "text",

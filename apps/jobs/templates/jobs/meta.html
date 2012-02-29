@@ -23,17 +23,19 @@
             {% endfor %}
         </div>
         {% endif %}
-        
-        {% if not admin %}
-        {% if user == job.creator or user == job.owner %}
-        <div class="categories">
-            <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
-        </div>
-        {% endif %}
-        {% endif %}
-        
-        {% if admin or user == job.creator or user == job.owner %}
-            {% meta_creator_owner job %}
+
+        {% if user.is_authenticated %}
+            {% if not admin %}
+            {% if user == job.creator or user == job.owner %}
+            <div class="categories">
+                <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+            
+            {% if admin or user == job.creator or user == job.owner %}
+                {% meta_creator_owner job %}
+            {% endif %}
         {% endif %}
     </div>
     
