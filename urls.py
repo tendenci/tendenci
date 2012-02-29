@@ -67,7 +67,6 @@ urlpatterns = patterns('',
     (r'^event-logs/', include('event_logs.urls')),
     (r'^contributions/', include('contributions.urls')),
     (r'^theme-editor/', include('theme_editor.urls')),
-    (r'^directories/', include('directories.urls')),
     (r'^contact/', include('form_builder.urls')),
     (r'^sitemap.xml', include('sitemaps.urls')),
     (r'^help-files/', include('help_files.urls')),
@@ -100,6 +99,7 @@ urlpatterns = patterns('',
 
     url(r'^', include('jobs.urls')),
     url(r'^', include('articles.urls')),
+    url(r'^', include('directories.urls')),
 )
 
 handler500 = 'base.views.custom_error'
