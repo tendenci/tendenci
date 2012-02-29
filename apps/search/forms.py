@@ -189,7 +189,7 @@ class ModelSearchForm(SearchForm):
             for app in registered_apps:
                 if app['verbose_name'].lower() == 'user':
                     try:
-                        models_index = registered_apps_models.index(app['model')
+                        models_index = registered_apps_models.index(app['model'])
                         registered_apps_models.pop(models_index)
                         names_index = registered_apps_names.index(app['model']._meta.module_name)
                         registered_apps_names.pop(names_index)
