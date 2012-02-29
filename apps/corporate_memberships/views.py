@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, date
 import csv
+import operator
 
 #from django.conf import settings
 #from django.core.urlresolvers import reverse
@@ -10,7 +11,6 @@ from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -21,8 +21,8 @@ from django.db.models import Q
 from imports.utils import render_excel
 
 from base.http import Http403
-from perms.utils import has_perm, is_admin, get_query_filters
-from site_settings.utils import get_setting
+from perms.utils import has_perm, is_admin, is_member
+#from site_settings.utils import get_setting
 
 from event_logs.models import EventLog
 
@@ -55,12 +55,7 @@ from perms.utils import get_notice_recipients
 from base.utils import send_email_notification
 from files.models import File
 from profiles.models import Profile
-
-use_search_index = get_setting('site', 'global', 'searchindex')
-if use_search_index in ('true', True):
-    use_search_index = True
-else:
-    use_search_index = False
+from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -636,22 +631,38 @@ def view(request, id, template="corporate_memberships/view.html"):
 
 
 def list_view(request, template_name="corporate_memberships/search.html"):
-    allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoussearchcorporatemember')
     if not request.user.is_authenticated() and not allow_anonymous_search:
+#    if not is_admin(request.user) and (not allow_anonymous_search) and \
+#             not (allow_member_search and is_member(request.user)):
         raise Http403
     
-    filters = get_query_filters(request.user, 'corporate_memberships.view_corporatemembership')
-    
-    corp_members = CorporateMembership.objects.filter(filters).distinct()
-    if not request.user.is_authenticated():
-        corp_members = corp_members.select_related()
+    filter_and, filter_or = CorporateMembership.get_search_filter(request.user)
+
+    q_obj = None
+    if filter_and:
+        q_obj = Q(**filter_and)
+    if filter_or:
+        q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+        if q_obj:
+            q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+        else:
+            q_obj = q_obj_or
+    if q_obj:
+        corp_members = CorporateMembership.objects.filter(q_obj)
+    else:
+        corp_members = CorporateMembership.objects.all()
+
+#    # too slow - commenting it out   
+#    if request.user.is_authenticated():
+#        corp_members = corp_members.select_related()
+        
     
     corp_members = corp_members.order_by('name')
     
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
 
-def search(request):
+def search(request): 
     if use_search_index:
         haystack_url = "%s?models=corporate_memberships.corporatemembership&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
         return HttpResponseRedirect(haystack_url)
@@ -722,6 +733,10 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
             
             corp_memb_update_perms(corp_memb)
             
+            # this is to update the search index for corporate memberships
+            if use_search_index:
+                corp_memb.save()
+            
             # log an event here
             
             if (request.POST.get('submit', '')).lower() == 'save':
@@ -789,6 +804,10 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
             
             rep.delete()
             corp_memb_update_perms(corp_memb)
+            
+            # this is to update the search index for corporate memberships
+            if use_search_index:
+                corp_memb.save()
                 
             return HttpResponseRedirect(reverse('corp_memb.edit_reps', args=[corp_memb.pk]))
     
