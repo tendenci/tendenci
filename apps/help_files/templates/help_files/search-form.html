@@ -1,0 +1,6 @@
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url help_files.search %}" method="get">
+<input type="text" name="q" value="{% with request.GET.q|striptags as search_value %}{% firstof search_value 'Search' %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}{% endwith %}" onfocus="if (this.value == '{% firstof search_value 'Search' %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}') this.value = '';" onblur="if (this.value == '') this.value = '{% firstof search_value 'Search' %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}';" />
+<input type="submit" name="search" value="Search" />
+</form>
+{% endif %}
