@@ -659,6 +659,16 @@ def list_view(request, template_name="corporate_memberships/search.html"):
     
     corp_members = corp_members.order_by('name')
     
+    log_defaults = {
+        'event_id': 684000,
+        'event_data': '%s listed by %s' % ('Corporate memberships', request.user),
+        'description': '%s listed' % 'Corporate memberships',
+        'user': request.user,
+        'request': request,
+        'source': 'corporatemembership'
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
 
