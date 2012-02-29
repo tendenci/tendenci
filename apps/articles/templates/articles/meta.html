@@ -34,16 +34,18 @@
         </div>
         {% endif %}
 
-        {% if not admin %}
-        {% if user == job.creator or user == job.owner %}
-        <div class="categories">
-            <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
-        </div>
-        {% endif %}
-        {% endif %}
+        {% if user.is_authenticated %}
+            {% if not admin %}
+            {% if user == article.creator or user == article.owner %}
+            <div class="categories">
+                <strong>Owned by you</strong>{% if not article.status_detail == "active" %} - status: {{ article.obj_status }}{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
 
-        {% if admin or user == article.creator or user == article.owner %}
-            {% meta_creator_owner article %}
+            {% if admin or user == article.creator or user == article.owner %}
+                {% meta_creator_owner article %}
+            {% endif %}
         {% endif %}
     </div>
     <div class="meta-right">
@@ -67,12 +69,11 @@
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
-            <li>
-                <a class="delete" href="{% url article.delete article.pk %}">{% trans "Delete" %}</a>
-            </li>               
-            <li><a href="{% url article.edit.meta article.pk %}">{% trans "Edit Meta" %}</a></li>
-            <li><a href="{% url category.update article.opt_app_label article.opt_module_name article.pk %}">{% trans "Edit Categories" %}</a></li>
-                
+                <li>
+                    <a class="delete" href="{% url article.delete article.pk %}">{% trans "Delete" %}</a>
+                </li>               
+                <li><a href="{% url article.edit.meta article.pk %}">{% trans "Edit Meta" %}</a></li>
+                <li><a href="{% url category.update article.opt_app_label article.opt_module_name article.pk %}">{% trans "Edit Categories" %}</a></li>
             </ul>
         </div>
         </li>
