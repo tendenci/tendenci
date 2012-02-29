@@ -86,7 +86,7 @@
     },
     {
         "default_value": "articles", 
-        "description": "The root url for the articles plugin. Use letters and dashes only.", 
+        "description": "The root url for the articles app. Use letters and dashes only.", 
         "data_type": "string",
         "update_dt": "2012-02-16 15:25:04",
         "input_type": "text",
