@@ -91,7 +91,7 @@
 
 	<h2>{{ date|date:"l, F j Y" }}</h2>
     
-    {% event_list date type 'start_dt' as events %}
+    {% event_list date type 'time' as events %}
 
 	{% for event in events %}
 		<div class="event-wrap">

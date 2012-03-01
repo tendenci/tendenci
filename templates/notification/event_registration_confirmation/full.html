@@ -17,11 +17,33 @@
         {% if for_admin %}
             {% trans "Registration Complete." %}
             <div style="font-size:1.0em; margin-top:5px;">
-                {{ reg8n_number }} {% trans "Registrants:" %}
-                {% for reg in reg8n.registrant_set.all %}
-                    {{ reg.lastname_firstname }}<br>
-                {% endfor %}
-            </div>
+                    {{ reg8n_number }} {% trans "Registrants:" %}
+                </div>
+
+                <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+                    {% for registrant in reg8n.registrant_set.all %}
+                    <tr>
+                        <td>
+                            <span>
+                            {% if registrant.name %}
+                                    {{ registrant.name }}
+                            {% else %}
+                                {% trans "Guest #" %}{{ forloop.counter0 }}
+                            {% endif %}
+                            {% if registrant.custom_reg_form_entry %}
+                            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                            {% for field in roster_field_list %}
+                            {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                            {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
         {% else %}
             {% trans "Registration Complete. Enjoy the Event!" %}
         {% endif %}
@@ -34,10 +56,33 @@
                 {% trans "Almost Registered. Payment is still required." %}
                 <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrants:" %}
-                    {% for reg in reg8n.registrant_set.all %}
-                        {{ reg.lastname_firstname }}<br>
-                    {% endfor %}
                 </div>
+
+                <table class="registrants-table" border="0" cellspacing="0" cellpadding="0">
+                    {% for registrant in reg8n.registrant_set.all %}
+                    <tr>
+                        <td>
+                            <span>
+                            {% if registrant.name %}
+                                    {{ registrant.name }}
+                            {% else %}
+                                {% trans "Guest #" %}{{ forloop.counter0 }}
+                            {% endif %}
+                            {% if registrant.custom_reg_form_entry %}
+                            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                            {% for field in roster_field_list %}
+                            {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                            {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
             {% else %}
                 {% trans "Almost Registered. Payment is still required." %}
                 <a href="{{ SITE_GLOBAL_SITEURL }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
@@ -49,10 +94,50 @@
                 {% trans "Registration Complete." %}
                 <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrants:" %}
-                    {% for reg in reg8n.registrant_set.all %}
-                        {{ reg.lastname_firstname }}<br>
-                    {% endfor %}
                 </div>
+
+                <table class="registrants-table" border="0" cellspacing="0" cellpadding="0">
+                    {% for registrant in reg8n.registrant_set.all %}
+                    <tr>
+                        <td>
+                            <span>
+                            {% if registrant.name %}
+                                    {{ registrant.name }}
+                            {% else %}
+                                {% trans "Guest #" %}{{ forloop.counter0 }}
+                            {% endif %}
+                            {% if registrant.custom_reg_form_entry %}
+                            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                            {% for field in roster_field_list %}
+                            {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                            {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                
+                {% if reg8n.regaddon_set.all.count != 0 %}
+                <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n.regaddon_set.all.count }} {% trans "Addons:" %}
+                </div>
+                <table class="addons-table" border="0" cellspacing="0" cellpadding="0">
+                {% for regaddon in reg8n.regaddon_set.all %}
+                    <tr>
+                        <td>
+                            <span>{{ regaddon.addon.title }}
+                            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </table>
+                {% endif %}
+                
             {% else %}
                 {% trans "Registration Complete. Enjoy the Event!" %}
             {% endif %}

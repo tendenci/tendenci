@@ -10,6 +10,8 @@ from django.http import Http404, HttpResponse
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import render_to_string
+from django.forms.models import model_to_dict
 
 from perms.utils import is_admin
 from site_settings.utils import get_setting
@@ -145,22 +147,25 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     all_addons = get_active_addons(event)
     available_addons = get_addons_for_list(event, users)
     
-    addon_list = []
+    a_list = []
     for addon in all_addons:
-        a_dict = {
-            'title':addon.title,
-            'price':str(addon.price),
-            'pk':addon.pk,
-            'enabled':True,
-            'is_public':addon.allow_anonymous,
-        }
-        
-        if addon not in available_addons:
-            a_dict['enabled'] = False
-        
-        addon_list.append(a_dict)
+        d = model_to_dict(addon)
+        d['options'] = addon.options
+        if addon in available_addons:
+            # temporarily allow anon viewing for this email
+            d['allow_anonymous'] = True
+        a_list.append(d)
     
-    data = json.dumps({'pricings':pricing_list, 'addons':addon_list})
+    form = render_to_string('events/addons/addon-add-box.html',
+        {'addons':a_list, 'anon_pricing':True},
+        RequestContext(request))
+        
+    print form
+    
+    data = json.dumps({
+        'pricings':pricing_list,
+        'add-addons-form':form,
+    })
     return HttpResponse(data, mimetype="text/plain")
 
 def multi_register(request, event_id, template_name="events/registration/multi_register.html"):
@@ -365,6 +370,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
             'sets': sets,
             'addons':active_addons,
             'pricings':active_pricings,
+            'anon_pricing':True,
             'total_price':reg_formset.get_total_price()+addon_formset.get_total_price(),
             'allow_memberid_pricing':get_setting('module', 'events', 'memberidpricing'),
             'shared_pricing':get_setting('module', 'events', 'sharedpricing'),

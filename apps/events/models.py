@@ -11,6 +11,7 @@ from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import AutoField
 
+from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from entities.models import Entity
 from events.managers import EventManager, RegistrantManager, EventTypeManager
@@ -687,6 +688,8 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto', 
         help_text=_('Photo that represents this event.'), null=True, blank=True)
+        
+    tags = TagField(blank=True)
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)

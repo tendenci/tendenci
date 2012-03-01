@@ -1,3 +1,4 @@
+import calendar
 from datetime import datetime, timedelta
 
 from django.db import models
@@ -15,12 +16,23 @@ class Course(TendenciBaseModel):
     You can think of this as test since there will be several questions
     linked to it.
     """
+    now = datetime.now()
+    dd_year = now.year + 1
+    dd_month = now.month
+    dd_day = now.day
+    
+    if dd_month == 2 and dd_day == 29:
+        # check if next year is a leap year
+        if not calendar.isleap(dd_year):
+            dd_month = 3
+            dd_day = 1
+    
     title = models.CharField(_(u'Title'), max_length=200)
     content = models.TextField(_(u'Content'))
     retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
     retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
     passing_score = models.DecimalField(_(u'Passing Score'), help_text=u'out of 100%', max_digits=5, decimal_places=2)
-    deadline = models.DateTimeField(_(u'Deadline'), default=datetime(datetime.now().year+1, datetime.now().month, datetime.now().day))
+    deadline = models.DateTimeField(_(u'Deadline'), default=datetime(year=dd_year, month=dd_month, day=dd_day))
     close_after_deadline = models.BooleanField(_(u'Close After Deadline'), default=False)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     

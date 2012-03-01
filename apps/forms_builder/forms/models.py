@@ -146,6 +146,20 @@ class Field(models.Model):
     
     def __unicode__(self):
         return self.label
+        
+    def get_field_class(self):
+        if "/" in self.field_type:
+            field_class, field_widget = self.field_type.split("/")
+        else:
+            field_class, field_widget = self.field_type, None
+        return field_class
+        
+    def get_field_widget(self):
+        if "/" in self.field_type:
+            field_class, field_widget = self.field_type.split("/")
+        else:
+            field_class, field_widget = self.field_type, None
+        return field_widget
 
     def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
@@ -303,6 +317,17 @@ class FieldEntry(models.Model):
     
     def __unicode__(self):
         return ('%s: %s' % (self.field.label, self.value))
+        
+    def include_in_email(self):
+        widget = self.field.get_field_widget()
+        field_class = self.field.get_field_class()
+        if widget == 'forms_builder.forms.widgets.Description':
+            return False
+        if widget == 'forms_builder.forms.widgets.Header':
+            return False
+        if field_class == 'FileField':
+            return False
+        return True
     
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
