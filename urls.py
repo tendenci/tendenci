@@ -39,7 +39,6 @@ urlpatterns = patterns('',
     (r'^memberships/', include('memberships.urls')),
     (r'^corporatememberships/', include('corporate_memberships.urls')),
     (r'^entities/', include('entities.urls')),
-    (r'^locations/', include('locations.urls')),
     (r'^pages/', include('pages.urls')),
     (r'^users/', include('profiles.urls')),
     (r'^photos/', include('photos.urls')),
@@ -101,6 +100,7 @@ urlpatterns = patterns('',
     url(r'^', include('articles.urls')),
     url(r'^', include('directories.urls')),
     url(r'^', include('help_files.urls')),
+    url(r'^', include('locations.urls')),
 )
 
 handler500 = 'base.views.custom_error'
