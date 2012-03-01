@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<h1>{% firstof MODULE_LOCATIONS_LABEL 'Locations' %} {% trans "Index Page" %}</h1>
+<h1>{% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %} {% trans "Index Page" %}</h1>
 
 <ul>
 	<li><a href="{% url location.search %}">{% trans "Search" %}</a></li>
