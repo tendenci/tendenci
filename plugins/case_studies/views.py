@@ -13,6 +13,8 @@ from models import CaseStudy, Service, Technology
 def index(request, slug=None, template_name="case_studies/view.html"):
     if not slug: return HttpResponseRedirect(reverse('case_study.search'))
     case_study = get_object_or_404(CaseStudy, slug=slug)
+    services = Service.objects.all()
+    technologies = Technology.objects.all()
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
@@ -29,7 +31,7 @@ def index(request, slug=None, template_name="case_studies/view.html"):
             'instance': case_study,
         }
         EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'case_study': case_study},
+        return render_to_response(template_name, {'case_study': case_study, 'services': services, 'technologies': technologies},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -38,6 +40,8 @@ def search(request, template_name="case_studies/search.html"):
     query = request.GET.get('q', None)
     case_studies = CaseStudy.objects.search(query, user=request.user)
     case_studies = case_studies.order_by('-create_dt')
+    services = Service.objects.all()
+    technologies = Technology.objects.all()
     
     log_defaults = {
         'event_id' : 1000400,
@@ -49,7 +53,7 @@ def search(request, template_name="case_studies/search.html"):
     }
     EventLog.objects.log(**log_defaults)
 
-    return render_to_response(template_name, {'case_studies': case_studies},
+    return render_to_response(template_name, {'case_studies': case_studies, 'services': services, 'technologies': technologies},
         context_instance=RequestContext(request))        
 def service(request, id, template_name="case_studies/search.html"):
     "List of case studies by service"
