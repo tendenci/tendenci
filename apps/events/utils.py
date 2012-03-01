@@ -153,6 +153,8 @@ def get_vevents(request, d):
     e_str = ""
     # load only upcoming events by default
     events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
+    events = events.order_by('start_dt')
+    
     for evnt in events:
         event = evnt.object
         e_str += "BEGIN:VEVENT\n"

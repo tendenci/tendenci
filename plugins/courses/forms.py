@@ -1,3 +1,4 @@
+import calendar
 from datetime import datetime, timedelta
 
 from django import forms
@@ -10,12 +11,23 @@ from perms.forms import TendenciBaseForm
 from courses.models import Course, Question, CourseAttempt
 
 class CourseForm(TendenciBaseForm):
+    now = datetime.now()
+    dd_year = now.year + 1
+    dd_month = now.month
+    dd_day = now.day
+    
+    if dd_month == 2 and dd_day == 29:
+        # check if next year is a leap year
+        if not calendar.isleap(dd_year):
+            dd_month = 3
+            dd_day = 1
+    
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     content = forms.CharField(required=False,
                 widget=TinyMCE(attrs={'style':'width:100%'},
                 mce_attrs={'storme_app_label':u'courses',
                 'storme_model':Course._meta.module_name.lower()}))
-    deadline = SplitDateTimeField(label=_('Deadline'), initial=datetime(datetime.now().year+1, datetime.now().month, datetime.now().day))
+    deadline = SplitDateTimeField(label=_('Deadline'), initial=datetime(year=dd_year, month=dd_month, day=dd_day))
                 
     class Meta:
         model = Course

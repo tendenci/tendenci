@@ -427,7 +427,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return unicode('')
+            return unicode()
 
         args = [photo.pk, self.size]
         if self.crop:

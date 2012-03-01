@@ -152,6 +152,7 @@ def search(request, template_name="events/search.html"):
         events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
 
     types = Type.objects.all().order_by('name')
+    events = events.order_by('start_dt')
 
     EventLog.objects.log(
         event_id=174000,  # searched event
@@ -1520,8 +1521,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         'date': datetime(year=int(year), month=int(month), day=int(day)),
         'now':datetime.now(),
         'type':None,
-        }, 
-        context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 @login_required
 def types(request, template_name='events/types/index.html'):
@@ -2263,6 +2263,7 @@ def pending(request, template_name="events/pending.html"):
         raise Http403
         
     events = Event.objects.search(status=False, status_detail='pending')
+    events = events.order_by('start_dt')
     
     return render_to_response(template_name, {
         'events': events,

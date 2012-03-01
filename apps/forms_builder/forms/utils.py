@@ -37,6 +37,8 @@ def generate_submitter_email_body(entry):
     template = get_template('forms/submitter_email_content.html')
 
     context['form'] = entry.form
+    context['entry'] = entry
+    context['fields'] = entry.fields.all().order_by('field__position')
     output = template.render(context)
 
     return output

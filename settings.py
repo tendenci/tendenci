@@ -90,6 +90,9 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 # trailing slash if there is a path component (optional in other cases).
 STATIC_URL = '/site_media/static/'
 
+# Added 2012-03-01 to use cloudfront CDN
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-65/'
+
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
 AVATAR_DEFAULT_URL = STATIC_URL + '/images/icons/default-user-80.jpg'
