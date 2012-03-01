@@ -31,12 +31,18 @@
 	box-shadow: 0 0 5px #AAA;
 }
 
-.t .locations-wrap .location-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
+.location-search-item .image {
+    width: 35%;
+    float: left;
+}
+
+.location-search-item .details {
+    width: 55%;
+    float: left;
+}
+
+.location-search-item .image a {
+    box-shadow: 0 0 5px #AAA;
 }
 
 .t .locations-wrap .location-wrap h2 {
