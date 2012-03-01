@@ -25,6 +25,7 @@ class LocationRegistry(CoreRegistry):
     url = {
         'add': lazy_reverse('location.add'),
         'search': lazy_reverse('location.search'),
+        'list': lazy_reverse('locations'),
     }
 
 site.register(Location, LocationRegistry)
