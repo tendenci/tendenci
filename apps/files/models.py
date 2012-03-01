@@ -127,6 +127,8 @@ class File(TendenciBaseModel):
 
             return doc.text()
 
+        return unicode()
+
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])

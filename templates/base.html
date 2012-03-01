@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US"> 
  
 <head profile="http://gmpg.org/xfn/11">   
-    <title>{% block title %}{% endblock %} - {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
+    <title>{% block title %}{% endblock %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
     <meta charset="UTF-8">
     <meta name="description" content="{% block meta_description %}{% endblock %}" />
     <meta name="keywords" content="{% block meta_keywords %}{% endblock %}" />
@@ -12,7 +12,7 @@
 
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/" />
     {% block meta_canonical_url %}{% endblock %} 
-    <link href="{{ STATIC_URL }}css/global_tendenci.css?62" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/global_tendenci.css?65" rel="stylesheet" type="text/css" />
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
     {% block extra_head %}{% endblock %}
     {% if admin %}<link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />{% endif %}

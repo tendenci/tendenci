@@ -1,0 +1,17 @@
+.add-addons-box{
+    padding: 10px 0px;
+}
+
+.add-addons-box>h3{
+    padding-bottom: 5px;
+}
+
+.add-addons-box td{
+    vertical-align: middle;
+    padding-right: 10px;
+    padding-top: 5px;
+}
+
+.addon-form{
+    padding-top: 10px;
+}

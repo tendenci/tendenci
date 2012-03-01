@@ -2,6 +2,7 @@
 from datetime import datetime
 from os.path import join
 from uuid import uuid4
+from decimal import Decimal
 
 from django import forms
 from django.core.files.storage import FileSystemStorage
@@ -119,7 +120,7 @@ class FormForForm(forms.ModelForm):
                 raise forms.ValidationError("Please set your price.")
 
             try:  # custom price is valid amount
-                custom_price = float(custom_price)
+                custom_price = Decimal(custom_price)
             except ValueError:
                 raise forms.ValidationError("Price must be a valid amount")
         

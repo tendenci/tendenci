@@ -45,3 +45,12 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			$('.custom-price').closest('label').attr('for', '');
+		});
+    </script>
+{% endblock %}
