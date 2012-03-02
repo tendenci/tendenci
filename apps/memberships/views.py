@@ -1,5 +1,5 @@
 import os
-import sys
+#import sys
 import hashlib
 from hashlib import md5
 from datetime import datetime, timedelta
@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-from django.contrib.contenttypes.models import ContentType, ContentTypeManager
+#from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -18,11 +18,11 @@ from django.template.defaultfilters import slugify
 
 from event_logs.models import EventLog
 from base.http import Http403
-from user_groups.models import GroupMembership
-from perms.utils import get_notice_recipients, \
-    has_perm, update_perms_and_save, is_admin, is_member, is_developer
-from invoices.models import Invoice
-from corporate_memberships.models import CorporateMembership, CorporateMembershipType, IndivMembEmailVeri8n
+#from user_groups.models import GroupMembership
+from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
+from perms.utils import has_perm
+#from invoices.models import Invoice
+from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
@@ -30,14 +30,15 @@ from imports.utils import render_excel
 from djcelery.models import TaskMeta
 
 from memberships.models import App, AppEntry, Membership, \
-    MembershipType, Notice, AppField, AppFieldEntry, MembershipImport
-from memberships.forms import AppForm, AppEntryForm, AppCorpPreForm, \
-    MemberApproveForm, CSVForm, ReportForm, EntryEditForm, ExportForm
+    MembershipType, Notice, AppField, MembershipImport
+from memberships.forms import AppCorpPreForm, \
+    MemberApproveForm, ReportForm, EntryEditForm, ExportForm
 from memberships.utils import is_import_valid, prepare_chart_data, \
-    get_days, has_app_perm, get_over_time_stats
+    get_days, get_over_time_stats
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
+from site_settings.utils import get_setting
 
 try:
     from notification import models as notification
@@ -48,22 +49,32 @@ from base.utils import send_email_notification
 def membership_index(request):
     return HttpResponseRedirect(reverse('membership.search'))
 
-def membership_search(request, template_name="memberships/search.html"):
-    query = request.GET.get('q', None)
-    members = Membership.objects.search(query, user=request.user)
+def membership_list(request, template_name="memberships/list.html"):
+    filters = get_query_filters(request.user, 'jobs.view_job')
+    members = Membership.objects.filter(filters).distinct()
     types = MembershipType.objects.all()
+    
+#    if not request.user.is_anonymous():
+#        members = members.select_related()
 
     EventLog.objects.log(**{
         'event_id' : 474000,
-        'event_data': '%s searched by %s' % ('Membership', request.user),
-        'description': '%s searched' % 'Membership',
+        'event_data': '%s listed by %s' % ('Membership', request.user),
+        'description': '%s listed' % 'Membership',
         'user': request.user,
         'request': request,
         'source': 'memberships'
     })
 
     return render_to_response(template_name, {'members': members, 'types': types},
-        context_instance=RequestContext(request))    
+        context_instance=RequestContext(request))  
+    
+def membership_search(request):
+    if get_setting('site', 'global', 'searchindex'):
+        haystack_url = "%s?models=memberships.membership&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
+        return HttpResponseRedirect(haystack_url)
+    else:
+        return HttpResponseRedirect(reverse('membership.list'))  
 
 
 @login_required
@@ -71,13 +82,10 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     """
     Membership details.
     """
-    query = 'pk:%s' % id
-    sqs = Membership.objects.search(query, user=request.user)
-
-    if sqs:
-        membership = sqs.best_match().object
-    else:
-        raise Http404
+    membership = get_object_or_404(Membership, id)
+    
+    if not has_perm(request.user, 'memberships.view_membership', membership):
+        raise Http403
 
     # log membership details view
     EventLog.objects.log(**{
@@ -100,16 +108,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     if not slug: raise Http404
     user = request.user
     
-    if is_admin(user):
-        # get applicatios
-        app = get_object_or_404(App, slug=slug)
-    else:
-        # check user permissions / get application QS
-        query = '"slug:%s"' % slug
-        apps = App.objects.search(query, user=user)
-        # get application
-        if apps: app = apps.best_match().object
-        else: raise Http404
+    app = get_object_or_404(App, slug=slug)
+    if not app.allow_view_by(user):
+        raise Http403
+    
     
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
@@ -425,14 +427,10 @@ def application_confirmation(request, hash=None, template_name="memberships/entr
 
     if not hash:
         raise Http404
-
-    query = '"hash:%s"' % hash
-    sqs = AppEntry.objects.search(query, user=request.user)
-
-    if sqs:
-        entry = sqs[0].object
-    else:
-        raise Http404
+    
+    entry = get_object_or_404(AppEntry, hash)
+#    if not entry.allow_view_by(request.user):
+#        raise Http403
 
     return render_to_response(template_name, {'is_confirmation':True, 'entry': entry},
         context_instance=RequestContext(request))
@@ -446,18 +444,9 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     if not id:
         return redirect(reverse('membership.application_entries_search'))
     
-    if is_admin(request.user):
-        entry = get_object_or_404(AppEntry, id=id)
-    else:
-        # TODO: Not use search but query the database
-        # TODO: Needs a manager to query database with permission checks
-        query = '"id:%s"' % id
-        sqs = AppEntry.objects.search(query, user=request.user)
-
-        if sqs:
-            entry = sqs[0].object
-        else:
-            raise Http404
+    entry = get_object_or_404(AppEntry, id=id)
+    if not entry.allow_view_by(request.user):
+        raise Http403
 
     # log entry view
     EventLog.objects.log(**{
@@ -644,13 +633,12 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
     }, context_instance=RequestContext(request))
 
 @login_required
-def application_entries_search(request, template_name="memberships/entries/search.html"):
+def application_entries_list(request, template_name="memberships/entries/list.html"):
     """
     Displays a page for searching membership application entries.
     """
-
-    query = request.GET.get('q')
-    entries = AppEntry.objects.search(query, user=request.user)
+    filters = get_query_filters(request.user, 'memberships.view_appentry')
+    entries = AppEntry.objects.filter(filters).distinct()
     entries = entries.order_by('-entry_time')
 
     apps = App.objects.all()
@@ -671,6 +659,14 @@ def application_entries_search(request, template_name="memberships/entries/searc
         'apps':apps,
         'types':types,
         }, context_instance=RequestContext(request))
+
+@login_required    
+def application_entries_search(request):
+    if get_setting('site', 'global', 'searchindex'):
+        haystack_url = "%s?models=memberships.appentry&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
+        return HttpResponseRedirect(haystack_url)
+    else:
+        return HttpResponseRedirect(reverse('membership.application_entries_list')) 
 
 @login_required    
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
