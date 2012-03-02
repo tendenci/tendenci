@@ -27,6 +27,8 @@ from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, get_language, activate
 
+from site_settings.utils import get_setting
+
 # favour django-mailer but fall back to django.core.mail
 if 'mailer' in settings.INSTALLED_APPS:
     from mailer import send_mail
@@ -311,7 +313,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         
     sender = extra_context.get('sender', '')
     if not sender:
-        sender = settings.DEFAULT_FROM_EMAIL
+        sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
+        if not sender:
+            sender = settings.DEFAULT_FROM_EMAIL
         
     sender_display = extra_context.get('sender_display', '')
         
