@@ -88,7 +88,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 
 # URL that handles the media served from STATIC_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
-STATIC_URL = '/site_media/static/'
+LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
 STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-65/'
@@ -268,7 +268,7 @@ AUTHENTICATION_BACKENDS = (
 #    TINYMCE
 # -------------------------------------- #
 TINYMCE_JS_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static', 'tinymce')
-TINYMCE_JS_URL = STATIC_URL + 'tinymce/tiny_mce.js'
+TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tinymce/tiny_mce.js'
 TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
