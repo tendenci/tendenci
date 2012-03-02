@@ -44,7 +44,7 @@
     <div class="memberships-wrap">
 
     {% for member in members %}
-        {% with member.object as membership %}
+        {% with member as membership %}
             {% include 'memberships/search-result.html' %}
         {% endwith %}
     {% empty %}

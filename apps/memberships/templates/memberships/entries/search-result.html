@@ -1,0 +1,52 @@
+{% load humanize %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="wrap-search-item">
+<div class="appentry-wrap-search">
+
+    <div class="result-head {{ entry.status_msg|lower }}">
+        {% if entry.is_pending %}
+        <div class="member-number" title="No Member Number Yet">0000</div>
+        {% else %}
+        <div class="member-number">{{ entry.membership.member_number }}</div>
+        {% endif %}
+
+        <div class="member-status">
+            {% if entry.is_renewal %}
+                Renewal
+            {% else %}
+                Join
+            {% endif %}
+            <a href="{% url membership.application_entries entry.pk %}">{{ entry.status_msg }}</a>
+        </div>
+
+        <div class="result-content">
+            <span class="member-name">{{ entry.name }}</span>
+            <div class="member-email">{{ entry.email }}</div>
+        </div>
+
+        {% if entry.is_pending %}
+        <div class="member-date">Since {{ entry.create_dt|date }}</div>
+        {% else %}
+        <div class="member-date">{% firstof entry.decision_dt|date  entry.create_dt|date %}</div>
+        {% endif %}
+
+        <div style="clear:both;"></div>
+
+        
+        <div class="balance">
+        {% if entry.invoice.pk %}
+            <a href="{% url invoice.view entry.invoice.pk %}">Balance ${% firstof entry.invoice.balance  0|intcomma %}</a>
+        {% else %}
+            Balance ${% firstof entry.invoice.balance  0|intcomma %}
+        {% endif %}
+        </div>
+        
+
+    </div>
+
+    <div style="clear:both;"></div>
+</div>
+</div>
