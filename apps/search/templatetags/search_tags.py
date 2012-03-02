@@ -26,7 +26,9 @@ class SearchResultNode(IncludeNode):
             class_name = result_object.__class__.__name__.lower()
             if class_name == 'corporatemembership':
                 var_name = 'corporate_membership'
-                template_name = "corporate_memberships/search-result.html"
+                #template_name = "corporate_memberships/search-result.html"
+            if class_name == 'membership':
+                var_name = 'membership'
                 
             if var_name == 'user':
                 # special case for users and profiles
@@ -35,6 +37,9 @@ class SearchResultNode(IncludeNode):
             if var_name == 'photo_set':
                 #special case since Image and PhotoSet share the same app.
                 template_name = "photos/photo-set/search-result.html"
+            elif var_name == 'application_entry':
+                var_name = 'entry'
+                template_name = "memberships/entries/search-result.html"
             else:
                 template_name = "%s/search-result.html" % (result_object._meta.app_label)
             try:

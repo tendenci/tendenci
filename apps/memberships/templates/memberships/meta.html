@@ -4,27 +4,13 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% has_perm user memberships.change_membership membership as can_edit %}
-{% has_perm user memberships.delete_membership membership as can_delete %}
+{% is_admin user as admin %}
 
 <div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
     <div class="meta-left">
-        {% if user.is_authenticated %}
-            <div class="submitted">{% blocktrans with membership.create_dt|date:"long" as create_date %}Created on {{ create_date }}
-            by:{% endblocktrans %} <a href="{{ membership.creator.get_absolute_url }}">
-            {% if membership.creator.first_name %}{{ membership.creator.first_name }} {{ membership.creator.last_name }}
-            {% else %}
-            {{ membership.creator }}
-            {% endif %}</a>
-            </div>
-            <div class="submitted">{% blocktrans with membership.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
-            by:{% endblocktrans %} <a href="{{ membership.owner.get_absolute_url }}">
-            {% if membership.owner.first_name %}{{ membership.owner.first_name }} {{ membership.owner.last_name }}
-            {% else %}
-            {{ membership.owner }}
-            {% endif %}</a>
-            </div>
-        {% endif %}
+        {% if admin or user == membership.creator or user == membership.owner or user == membership.user %}
+                {% meta_creator_owner membership %}
+            {% endif %}
     </div>
     
     <div class="meta-right">
@@ -32,7 +18,7 @@
     </div>
     
 </div>
-{% if can_edit %}
+{% if admin %}
 <div class="editor-bar">
 
     <div class="perm-status">
@@ -49,11 +35,9 @@
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>
-                {% if can_delete %}
                 <li>
                     <a class="delete" href="#">{% trans "Delete" %}</a>
                 </li>
-                {% endif %}
             </ul>
         </div>
         </li>

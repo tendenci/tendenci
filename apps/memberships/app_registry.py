@@ -1,6 +1,6 @@
 from registry import site
 from registry.base import PeopleRegistry, lazy_reverse
-from models import Membership
+from models import Membership, AppEntry
 
 
 class MembershipRegistry(PeopleRegistry):
@@ -67,3 +67,11 @@ class MembershipRegistry(PeopleRegistry):
     }
 
 site.register(Membership, MembershipRegistry)
+
+class AppEntryRegistry(PeopleRegistry):
+    version = '1.0'
+    author = 'Schipul - The Web Marketing Company'
+    author_email = 'programmers@schipul.com'
+    description = 'Membership application entry.'
+    icon = '/site_media/static/images/icons/memberships-color-64x64.png'
+site.register(AppEntry, AppEntryRegistry)
