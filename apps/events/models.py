@@ -518,6 +518,11 @@ class Registration(models.Model):
                         registrant = reg
                         registrant.email = email
                         break
+            if (not registrant) and registrants:
+                # this registrant probably didn't use the custom reg form,
+                # but the custom reg form is now enabled
+                registrant = registrants[0]
+                
         else:
             try:
                 registrant = self.registrant_set.filter(
