@@ -28,7 +28,6 @@ class Command(BaseCommand):
                 age = datetime.now() - unindexed_items[0].create_dt
                 age = (int(age.days)*60*60*24) + age.seconds
                 age = (age / 3600) + 1
-                print age
 
                 ages.append(int(age))
                 items.append(app['model']._meta.app_label)
