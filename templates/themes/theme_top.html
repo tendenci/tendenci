@@ -1,0 +1,14 @@
+{% load i18n %}
+
+<div id="theme-bar">
+    <div class="item">
+        <strong>THEME:</strong> <span>{{ THEME }}</span></li>
+    </div>
+    <div class="item">
+        <strong>CUSTOM TEMPLATE:</strong> <span>{% if THEME_TEMPLATE %}{{ THEME_TEMPLATE }}{% else %}default{% endif %}</span>
+    </div>
+    <div class="editor-link">
+        <a href="{% url theme_editor %}?file={{ THEME_TEMPLATE }}">Edit in Theme Editor</a>
+    </div>
+    <div style="clear: both"></div>
+</div>
