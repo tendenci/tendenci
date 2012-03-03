@@ -14,8 +14,7 @@ def themed_response(*args, **kwargs):
     return HttpResponse(render_to_theme(*args, **kwargs), **httpresponse_kwargs)
     
 def render_to_theme(template_name, dictionary=None, context_instance=None):
-    """
-    Loads the given template_name and renders it with the given dictionary as
+    """Loads the given template_name and renders it with the given dictionary as
     context. The template_name may be a string to load a single template using
     get_template, or it may be a tuple to use select_template to find one of
     the templates in the list. Returns a string.
@@ -30,15 +29,17 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
         context_instance = Context(dictionary)
     
     theme = context_instance['THEME']
-        
+    theme_template = "%s/templates/%s" % (theme, template_name)
+    context_instance["THEME_TEMPLATE"] = template_name
+    
     if isinstance(template_name, (list, tuple)):
         try:
-            t = select_template("%s/templates/%s" % (theme, template_name))
+            t = select_template(theme_template)
         except TemplateDoesNotExist:
-            t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates",template_name)).read(), "utf-8"))
+            t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
     else:
         try:
-            t = get_template("%s/templates/%s" % (theme, template_name))
+            t = get_template(template_name)
         except TemplateDoesNotExist:
             t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
     return t.render(context_instance)
