@@ -31,15 +31,30 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
     theme = context_instance['THEME']
     theme_template = "%s/templates/%s" % (theme, template_name)
     context_instance["THEME_TEMPLATE"] = template_name
+    context_instance["CUSTOM_TEMPLATE"] = True
     
     if isinstance(template_name, (list, tuple)):
         try:
             t = select_template(theme_template)
         except TemplateDoesNotExist:
-            t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+            # load the default file
+            default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+            try:
+                default_file = file(default_template).read()
+            except IOError:
+                raise TemplateDoesNotExist(template_name)
+            t = Template(unicode(default_file, "utf-8"))
+            context_instance["CUSTOM_TEMPLATE"] = False
     else:
         try:
-            t = get_template(template_name)
+            t = get_template(theme_template)
         except TemplateDoesNotExist:
-            t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+            # load the default file
+            default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+            try:
+                default_file = file(default_template).read()
+            except IOError:
+                raise TemplateDoesNotExist(template_name)
+            t = Template(unicode(default_file, "utf-8"))
+            context_instance["CUSTOM_TEMPLATE"] = False
     return t.render(context_instance)

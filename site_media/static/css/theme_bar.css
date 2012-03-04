@@ -1,7 +1,4 @@
 #theme-bar {
-    background: #f9e69a;
-    border: 1px solid #010101;
-    padding: 10px;
     margin-bottom: 20px;
 }
 
@@ -11,6 +8,3 @@
     padding-right: 10px;
 }
 
-#theme-bar .editor-link {
-    float: right;
-}

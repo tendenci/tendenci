@@ -11,6 +11,10 @@ table#file-editor div.pwd {
     padding: 5px;
 }
 
+#editor-td {
+    vertical-align: top;
+}
+
 .file_attrs {
 	margin-bottom: 10px;
 }
