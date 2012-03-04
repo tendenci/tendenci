@@ -31,10 +31,15 @@ class ThemeExtendsNode(ExtendsNode):
         theme_template = get_theme_template(parent, theme=theme)
         try:
             template = get_template(theme_template)
-        except TemplateDoesNotExist, e:
+        except TemplateDoesNotExist:
             #load the true default template directly to be sure
             #that we are not loading the active theme's template
-            template = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", parent)).read(), "utf-8"))
+            default_template = os.path.join(settings.PROJECT_ROOT, "templates", parent)
+            try:
+                default_file = file(default_template).read()
+            except IOError:
+                raise TemplateDoesNotExist(parent)
+            template = Template(unicode(default_file, "utf-8"))
         return template
         
 class ThemeConstantIncludeNode(ConstantIncludeNode):
@@ -48,7 +53,12 @@ class ThemeConstantIncludeNode(ConstantIncludeNode):
             try:
                 t = get_template(theme_template)
             except TemplateDoesNotExist:
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)).read(), "utf-8"))
+                default_template = os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)
+                try:
+                    default_file = file(default_template).read()
+                except IOError:
+                    raise TemplateDoesNotExist(template_name)
+                t = Template(unicode(default_file, "utf-8"))
             self.template = t
         except:
             if settings.TEMPLATE_DEBUG:
@@ -70,7 +80,12 @@ class ThemeIncludeNode(IncludeNode):
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+                default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+                try:
+                    default_file = file(default_template).read()
+                except IOError:
+                    raise TemplateDoesNotExist(template_name)
+                t = Template(unicode(default_file, "utf-8"))
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
@@ -104,7 +119,12 @@ class SpaceIncludeNode(IncludeNode):
                     except TemplateDoesNotExist:
                         #load the true default template directly to be sure
                         #that we are not loading the active theme's template
-                        t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", "theme_includes", template_name)).read(), "utf-8"))
+                        default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+                        try:
+                            default_file = file(default_template).read()
+                        except IOError:
+                            raise TemplateDoesNotExist(template_name)
+                        t = Template(unicode(default_file, "utf-8"))
                     return t.render(context)
                 except:
                     if settings.TEMPLATE_DEBUG:
@@ -147,7 +167,12 @@ class ThemeSettingNode(IncludeNode):
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+                default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+                try:
+                    default_file = file(default_template).read()
+                except IOError:
+                    raise TemplateDoesNotExist(template_name)
+                t = Template(unicode(default_file, "utf-8"))
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
