@@ -72,8 +72,6 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-THEME_DIR = os.path.join(PROJECT_ROOT, 'themes')
-
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'media')
@@ -263,6 +261,12 @@ AUTHENTICATION_BACKENDS = (
     'social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+# -------------------------------------- #
+# THEMES
+# -------------------------------------- #
+THEMES_DIR = os.path.join(PROJECT_ROOT, 'templates', 'themes')
+CUSTOM_TEMPLATES_DIR = os.path.join(PROJECT_ROOT, 'themes')
 
 # -------------------------------------- #
 #    TINYMCE
