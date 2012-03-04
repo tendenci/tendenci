@@ -32,7 +32,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         raise Http403
         
     selected_theme = request.GET.get("theme_edit", get_theme())
-    theme_root = os.path.join(settings.CUSTOM_TEMPLATES_DIR, selected_theme)
+    theme_root = os.path.join(settings.THEMES_DIR, selected_theme)
     
     # get the default file and clean up any input
     default_file = request.GET.get("file", DEFAULT_FILE)
@@ -44,16 +44,18 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         default_file = default_file.replace('///', '/')
         default_file = default_file.replace('//', '/')
     
-    
-    # if the default_file is not a directory or file within
-    # the themes folder then return a 404
-    if not qstr_is_file(default_file, ROOT_DIR=theme_root) and not qstr_is_dir(default_file, ROOT_DIR=theme_root):
-        raise Http404("Custom template not found")
-    
-    # if default_file is a directory then append the
-    # trailing slash so we can get the dirname below
-    if qstr_is_dir(default_file, ROOT_DIR=theme_root):
+    is_file = qstr_is_file(default_file, ROOT_DIR=theme_root)
+    is_dir = qstr_is_dir(default_file, ROOT_DIR=theme_root)
+    if is_file:
+        pass
+    elif is_dir:
+        # if default_file is a directory then append the
+        # trailing slash so we can get the dirname below
         default_file = '%s/' % default_file
+    else:
+        # if the default_file is not a directory or file within
+        # the themes folder then return a 404
+        raise Http404("Custom template not found. Make sure you've copied over the themes to the THEME_DIR.")
     
     # get the current file name
     current_file = os.path.basename(default_file)
@@ -99,20 +101,23 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     theme_form = ThemeSelectForm(initial = {'theme_edit':selected_theme})
     upload_form = UploadForm(initial = {'file_dir':pwd})
     
-    return render_to_response(template_name, {'file_form': file_form,
-                                              'theme_form': theme_form,
-                                              'upload_form': upload_form,
-                                              'current_theme':selected_theme,
-                                              'current_file': current_file,
-                                              'prev_dir_name': prev_dir_name,
-                                              'prev_dir': prev_dir,
-                                              'pwd':pwd,
-                                              'dirs':dirs,
-                                              'files': files,
-                                              'non_editable_files': non_editable_files,
-                                              'archives':archives},
-                              context_instance=RequestContext(request))
- 
+    return render_to_response(template_name, {
+        'file_form': file_form,
+        'theme_form': theme_form,
+        'upload_form': upload_form,
+        'current_theme': selected_theme,
+        'current_file': current_file,
+        'prev_dir_name': prev_dir_name,
+        'prev_dir': prev_dir,
+        'pwd': pwd,
+        'dirs': dirs,
+        'files': files,
+        'non_editable_files': non_editable_files,
+        'archives': archives,
+        'is_file': is_file,
+        'is_dir': is_dir,
+    }, context_instance=RequestContext(request))
+
 @login_required
 def get_version(request, id):
     version = ThemeFileVersion.objects.get(pk=id)
@@ -147,13 +152,13 @@ def original_templates(request, template_name="theme_editor/original_templates.h
     dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
     files, non_editable_files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
     return render_to_response(template_name, {
-                                                'current_dir': current_dir,
-                                                'prev_dir_name': prev_dir_name,
-                                                'prev_dir':prev_dir,
-                                                'dirs': dirs,
-                                                'files': files,
-                                                'non_editable_files': non_editable_files},
-                              context_instance=RequestContext(request))
+        'current_dir': current_dir,
+        'prev_dir_name': prev_dir_name,
+        'prev_dir':prev_dir,
+        'dirs': dirs,
+        'files': files,
+        'non_editable_files': non_editable_files
+    }, context_instance=RequestContext(request))
 
 @permission_required('theme_editor.change_themefileversion')
 def copy_to_theme(request):
@@ -194,7 +199,7 @@ def copy_to_theme(request):
     
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
-    return redirect('original_templates')
+    return redirect('theme_editor.original_templates')
 
 
 def delete_file(request):
@@ -235,7 +240,7 @@ def delete_file(request):
     
     messages.add_message(request, messages.INFO, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
     
-    return redirect('theme_editor')
+    return redirect('theme_editor.editor')
     
 def upload_file(request, template_name="theme_editor/upload.html"):
     # if no permission; raise 403 exception

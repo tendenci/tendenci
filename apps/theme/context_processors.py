@@ -10,7 +10,7 @@ def theme(request):
             request.session['theme'] = request.GET.get('theme')
         elif 'theme' in request.session:
             del request.session['theme']
-
+    
     theme = request.session.get('theme', get_setting('module', 'theme_editor', 'theme'))
     contexts['THEME'] = theme
     contexts['THEME_URL'] = '/themes/' + theme + '/'

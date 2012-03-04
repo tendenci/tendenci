@@ -19,9 +19,10 @@
 {% if current_file %}
 <div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> (<span id="file_name">{{ pwd }}/{{ current_file }}</span>)</big></div>
 {% endif %}
-        <table id="file-editor" width="100%">
-        <tr>
-        	<td width="80%">
+<table id="file-editor" width="100%">
+    <tr>
+        <td width="80%" id="editor-td" >
+            {% if is_file %}
             <form class="uniForm" method="POST" name="edit" action="">{% csrf_token %}
                 {% if file_form.content.errors and current_file %}<div>{{ file_form.content.errors }}</div>{% endif %}
 					 <div style="border: 1px solid #999; padding: 0px;">{{ file_form.content }}</div>
@@ -35,7 +36,7 @@
                         <div style="clear:both"></div>
                     </div>
             </form>
-        
+            
         	<div id="file_version_box">
             	<h2>{% trans "Versions" %}</h2>
             	{% if archives %}
@@ -50,6 +51,9 @@
                 	<p>{% trans "No versions available." %}</p>
                 {% endif %}
             </div>
+            {% else %}
+                <p>{% trans "No file selected." %}</p>
+            {% endif %}
         </td>
         <td width="20%" valign="top">
             <div class='theme-selection'>
@@ -75,13 +79,13 @@
                {% endif %}
                {% if prev_dir %}
                    <p class="prev_dir">
-                       <a href="{% url theme_editor %}?file={{ prev_dir }}&theme_edit={{ current_theme }}#to-editor">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+                       <a href="{% url theme_editor.editor %}?file={{ prev_dir }}&theme_edit={{ current_theme }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
                    </p>
                {% endif %}
                {% if dirs %}
                <ul class="dir_list">   
                     {% for dir in dirs %}
-                        <li class="dir_item"><a href="{% url theme_editor %}?file={{ dir }}/&theme_edit={{ current_theme }}#to-editor">{{ dir|basename|safe }}</a></li>
+                        <li class="dir_item"><a href="{% url theme_editor.editor %}?file={{ dir }}/&theme_edit={{ current_theme }}">{{ dir|basename|safe }}</a></li>
                     {% endfor %}
                </ul>
                {%  endif %}
@@ -90,7 +94,7 @@
                     {% if files %}
                     {% for file in files %}
                         <li {% if current_file == file %}class="current_file"{% endif %}>
-                            <a href="{% url theme_editor %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
+                            <a href="{% url theme_editor.editor %}?file={{ pwd }}/{{ file }}&theme_edit={{ current_theme }}#to-editor">{{ file|safe }}</a>
                         </li>
                     {% endfor %}
                     {% endif %}
@@ -113,12 +117,12 @@
                     <input type="submit" value="Upload new theme file" />
                </form>
                <br>
-               <a href="{% url original_templates %}">{% trans "Customize more templates" %}</a>
+               <a href="{% url theme_editor.original_templates %}">{% trans "Customize more templates" %}</a>
                <br>
            </div>
-      </td>
-      </tr>
-      </table>
+        </td>
+    </tr>
+</table>
 {% endblock %}
 
 {% block extra_body %}
