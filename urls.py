@@ -116,7 +116,7 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^themes/(?P<path>.*)$',
             'django.views.static.serve',
-            {'document_root': settings.THEME_DIR, 'show_indexes': True}),
+            {'document_root': settings.THEMES_DIR, 'show_indexes': True}),
     )
 
 # template tag testing environment
