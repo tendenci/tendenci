@@ -119,7 +119,7 @@
                 <h3><a href="/photos"><span>{% trans "Photo" %}</span> {% trans "Gallery" %}</a></h3>
                 {% list_photos as photos_list limit=6 %}
                 {% if photos_list|length > 2 %}
-                    {% for photos in photos_list %}
+                    {% for photo in photos_list %}
                     <a href="{{ photo.get_absolute_url }}"><img src="{% photo_image_url photo size=80x80 crop=True %}" alt="{{ photo.title }}" /></a>
                     {% endfor %}
                 {% else %}
