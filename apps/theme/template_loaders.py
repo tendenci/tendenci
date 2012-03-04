@@ -15,7 +15,7 @@ class Loader(BaseLoader):
     def get_template_sources(self, template_name, template_dirs=None):
         """
         Return the absolute paths to "template_name", when appended to the
-        selected theme directory in THEME_DIR.
+        selected theme directory in THEMES_DIR.
         Any paths that don't lie inside one of the
         template dirs are excluded from the result set, for security reasons.
         """

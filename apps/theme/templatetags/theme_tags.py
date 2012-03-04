@@ -9,6 +9,8 @@ from boxes.models import Box
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 
+from theme.utils import get_theme_template
+
 register = Library()
 
 class ThemeExtendsNode(ExtendsNode):
@@ -26,8 +28,9 @@ class ThemeExtendsNode(ExtendsNode):
         if hasattr(parent, 'render'):
             return parent # parent is a Template object
         theme = context['THEME']
+        theme_template = get_theme_template(parent, theme=theme)
         try:
-            template = get_template("%s/templates/%s"%(theme,parent))
+            template = get_template(theme_template)
         except TemplateDoesNotExist, e:
             #load the true default template directly to be sure
             #that we are not loading the active theme's template
@@ -40,9 +43,10 @@ class ThemeConstantIncludeNode(ConstantIncludeNode):
 
     def render(self, context):
         theme = context['THEME']
+        theme_template = get_theme_template(self.template_path, theme=theme)
         try:
             try:
-                t = get_template("%s/templates/%s" % (theme, self.template_path))
+                t = get_template(theme_template)
             except TemplateDoesNotExist:
                 t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)).read(), "utf-8"))
             self.template = t
@@ -60,8 +64,9 @@ class ThemeIncludeNode(IncludeNode):
         try:
             template_name = self.template_name.resolve(context)
             theme = context['THEME']
+            theme_template = get_theme_template(template_name, theme=theme)
             try:
-                t = get_template("%s/templates/%s"%(theme,template_name))
+                t = get_template(theme_template)
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
@@ -93,8 +98,9 @@ class SpaceIncludeNode(IncludeNode):
                 try:
                     template_name = setting_value
                     theme = context['THEME']
+                    theme_template = get_theme_template(template_name, theme=theme)
                     try:
-                        t = get_template("%s/templates/theme_includes/%s"%(theme,template_name))
+                        t = get_template(theme_template)
                     except TemplateDoesNotExist:
                         #load the true default template directly to be sure
                         #that we are not loading the active theme's template
