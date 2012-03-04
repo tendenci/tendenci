@@ -5,7 +5,7 @@ from django.utils import simplejson as json
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.template.defaultfilters import date as date_filter
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404, HttpResponse
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory
@@ -17,6 +17,7 @@ from perms.utils import is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from memberships.models import Membership
+from theme.shortcuts import themed_response as render_to_response
 
 from events.models import Event, RegConfPricing, Registrant, Addon
 from events.utils import email_admins
