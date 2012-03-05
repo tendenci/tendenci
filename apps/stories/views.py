@@ -1,4 +1,5 @@
 import os.path
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -7,11 +8,13 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
-from stories.models import Story
-from stories.forms import StoryForm, UploadStoryImageForm
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
+
+from stories.models import Story
+from stories.forms import StoryForm, UploadStoryImageForm
 
 
 def index(request, id=None, template_name="stories/view.html"):
