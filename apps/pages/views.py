@@ -1,24 +1,24 @@
-
-# django
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from base.utils import check_template
-from pages.models import Page
-from pages.forms import PageForm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from perms.utils import update_perms_and_save, get_notice_recipients
-from perms.utils import is_admin, has_perm
+from perms.utils import (update_perms_and_save, get_notice_recipients,
+    is_admin, has_perm)
 from categories.forms import CategoryForm
 from categories.models import Category
+
+from pages.models import Page
+from pages.forms import PageForm
 
 try:
     from notification import models as notification
