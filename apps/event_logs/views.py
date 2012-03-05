@@ -15,6 +15,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from base.http import render_to_403
 from base.http import Http403
 from perms.utils import has_perm
+from registry import site
 
 from event_logs.utils import day_bars, month_days,\
     request_month_range
@@ -202,3 +203,16 @@ def event_source_summary_report(request, source):
                  'form': form, 'date_range': (from_date, to_date),
                  'source': source},
                 context_instance=RequestContext(request))
+
+
+@staff_member_required
+def info(request):
+    apps = site.get_registered_apps().all_apps
+    logged_models = []
+    for app in apps:
+        if 'event_logs' in app:
+            for model in app['event_logs'].keys():
+                logged_models.append({model:app['event_logs'][model]})
+    return render_to_response('event_logs/info.html', {
+        'logged_models':logged_models,
+    }, context_instance=RequestContext(request))
