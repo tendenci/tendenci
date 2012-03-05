@@ -4,8 +4,10 @@ from django.template import Library, Template, Variable
 from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
+from django.contrib.auth.models import AnonymousUser, User
 
 from boxes.models import Box
+from perms.utils import get_query_filters, is_admin
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 
@@ -102,10 +104,14 @@ class SpaceIncludeNode(IncludeNode):
 
         if setting_value:
             # First try to render this as a box
-            query = '"pk:%s"' % (setting_value)
+            user = AnonymousUser()
+            if 'user' in context:
+                if isinstance(context['user'], User):
+                    user = context['user']
             try:
-                box = Box.objects.search(query=query).best_match()
-                context['box'] = box.object
+                filters = get_query_filters(user, 'boxes.view_box')
+                box = Box.objects.filter(filters).filter(pk=setting_value)
+                context['box'] = box[0]
                 template = get_template('theme_includes/box.html')
                 return template.render(context)
             except:
@@ -138,6 +144,13 @@ class ThemeSettingNode(IncludeNode):
         self.setting_name = setting_name
 
     def render(self, context):
+
+        # If not a user or not an admin, don't return the form.
+        if not isinstance(context['user'], User):
+            return ''
+        if not is_admin(context['user']):
+            return ''
+        
         try:
             setting_name = Variable(self.setting_name)
             setting_name = setting_name.resolve(context)

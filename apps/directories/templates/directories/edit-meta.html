@@ -1,0 +1,30 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Edit Meta Information" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% directory_nav user %}
+    <h1>{% firstof MODULE_DIRECTORIES_LABEL 'Directory' %} {% trans "Meta Information for" %}<br />
+    {{ directory.headline }}</h1>
+
+    <div class="directory-wrap">
+    	<form action="{% url directory.edit.meta directory.pk %}" method="post">{% csrf_token %}
+    	<div class="forms">
+            {{ form|styled_form }}
+        	<input type="submit" value="Save Changes" />
+			 or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}

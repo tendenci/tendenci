@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser, User
 
+from perms.utils import get_query_filters
 
 def parse_tag_kwargs(bits):
     """
@@ -76,6 +77,8 @@ class ListNode(Node):
                 user = user.resolve(context)
             except:
                 user = self.kwargs['user']
+                if user == "anon" or user == "anonymous":
+                    user = AnonymousUser()
         else:
             # check the context for an already existing user
             # and see if it is really a user object
@@ -121,22 +124,27 @@ class ListNode(Node):
             query = '%s "tag:%s"' % (query, tag)
 
         # get the list of items
-        items = self.model.objects.search(user=user, query=query)
+        try:
+            print self.perms
+        except:
+            self.perms = 'app.view'
+        filters = get_query_filters(user, self.perms)
+        items = self.model.objects.filter(filters).distinct()
         objects = []
         
         if items:
             #exclude certain primary keys
             if exclude:
-                items = items.exclude(primary_key__in=exclude)
+                items = items.exclude(pk__in=exclude)
 
             # if order is not specified it sorts by relevance
             if order:
                 items = items.order_by(order)
 
             if randomize:
-                objects = [item.object for item in random.sample(items, len(items))][:limit]
+                objects = [item for item in random.sample(items, len(items))][:limit]
             else:
-                objects = [item.object for item in items[:limit]]
+                objects = [item for item in items[:limit]]
 
         context[self.context_var] = objects
         

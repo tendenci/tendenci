@@ -1,0 +1,6 @@
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url location.search %}" method="get">
+<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+<input style="vertical-align:top;" class="btn" type="submit" value="Search {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %}" />
+</form>
+{% endif %}
