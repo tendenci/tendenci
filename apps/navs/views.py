@@ -1,6 +1,6 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
@@ -8,10 +8,12 @@ from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
 from django.utils import simplejson as json
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
 from perms.utils import has_perm, update_perms_and_save, is_admin
 from pages.models import Page
+
 from navs.models import Nav, NavItem
 from navs.forms import NavForm, PageSelectForm, ItemForm
 from navs.utils import cache_nav
