@@ -24,7 +24,7 @@ from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
 from perms.utils import (has_perm, get_notice_recipients, is_admin,
-    update_perms_and_save, get_administrators)
+    update_perms_and_save, get_administrators, has_view_perm)
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -107,41 +107,37 @@ def index(request, id=None, template_name="events/view.html"):
 
     event = get_object_or_404(Event, pk=id)
     
+    days = []
     if not event.on_weekend:
         days = get_active_days(event)
-    else:
-        days = []
-    
-    if has_perm(request.user, 'events.view_event', event):
 
-        EventLog.objects.log(
-            event_id=175000,  # view event
-            event_data='%s (%d) viewed by %s' %
-                (event._meta.object_name, event.pk, request.user),
-            description='%s viewed' % event._meta.object_name,
-            user=request.user,
-            request=request,
-            instance=event
-        )
-
-        speakers = event.speaker_set.all().order_by('pk')
-        try:
-            organizer = event.organizer_set.all().order_by('pk')[0]
-        except:
-            organizer = None
-
-        return render_to_response(template_name, {
-            'days':days,
-            'event': event,
-            'speakers': speakers,
-            'organizer': organizer,
-            'now': datetime.now(),
-            'addons': event.addon_set.filter(status=True),
-            },
-            context_instance=RequestContext(request))
-    else:
+    if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
 
+    EventLog.objects.log(
+        event_id=175000,  # view event
+        event_data='%s (%d) viewed by %s' %
+            (event._meta.object_name, event.pk, request.user),
+        description='%s viewed' % event._meta.object_name,
+        user=request.user,
+        request=request,
+        instance=event
+    )
+
+    speakers = event.speaker_set.all().order_by('pk')
+    organizers = event.organizer_set.all().order_by('pk') or None
+
+    if organizers:
+        organizer = organizer[0]
+
+    return render_to_response(template_name, {
+        'days':days,
+        'event': event,
+        'speakers': speakers,
+        'organizer': organizer,
+        'now': datetime.now(),
+        'addons': event.addon_set.filter(status=True),
+    }, context_instance=RequestContext(request))
 
 def search(request, template_name="events/search.html"):
     query = request.GET.get('q', None)
