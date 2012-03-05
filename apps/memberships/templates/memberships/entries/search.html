@@ -29,9 +29,9 @@
 	<div class="memberships-wrap">
 
     {% for entry in entries %}
-		
+		{% with entry|get_object as entry %}
 		{% include 'memberships/entries/search-result.html' %}
-		
+		{% endwith %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
