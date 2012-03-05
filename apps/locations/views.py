@@ -1,17 +1,17 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
+from event_logs.models import EventLog
+from perms.utils import has_perm, update_perms_and_save, is_admin
 from locations.models import Location
 from locations.forms import LocationForm
 from locations.utils import get_coordinates
-from perms.utils import is_admin
-from event_logs.models import EventLog
-from perms.utils import has_perm, update_perms_and_save
 
 def index(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('location.search'))
