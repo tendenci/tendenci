@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -11,20 +11,19 @@ from django.contrib.contenttypes.models import ContentType
 
 from base.http import Http403
 from base.utils import now_localized
-
-from jobs.models import Job, JobPricing
-from jobs.forms import JobForm, JobPricingForm
-from jobs.utils import job_set_inv_payment, get_job_unique_slug
-
+from theme.shortcuts import themed_response as render_to_response
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
-
-from perms.utils import get_notice_recipients, is_admin, update_perms_and_save, has_perm
-
+from perms.utils import (get_notice_recipients, is_admin, has_perm, 
+    update_perms_and_save)
 from categories.forms import CategoryForm, CategoryForm2
 from categories.models import Category
+
+from jobs.models import Job, JobPricing
+from jobs.forms import JobForm, JobPricingForm
+from jobs.utils import job_set_inv_payment, get_job_unique_slug
 
 try:
     from notification import models as notification
