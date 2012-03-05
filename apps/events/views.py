@@ -24,7 +24,7 @@ from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
 from perms.utils import (has_perm, get_notice_recipients, is_admin,
-    update_perms_and_save, get_administrators, has_view_perm)
+    get_query_filters, update_perms_and_save, get_administrators, has_view_perm)
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
@@ -51,10 +51,7 @@ from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import (get_active_addons, get_available_addons, 
     get_addons_for_list)
 
-try:
-    from notification import models as notification
-except:
-    notification = None
+from notification import models as notification
     
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """
@@ -128,7 +125,7 @@ def index(request, id=None, template_name="events/view.html"):
     organizers = event.organizer_set.all().order_by('pk') or None
 
     if organizers:
-        organizer = organizer[0]
+        organizer = organizers[0]
 
     return render_to_response(template_name, {
         'days':days,
@@ -140,15 +137,25 @@ def index(request, id=None, template_name="events/view.html"):
     }, context_instance=RequestContext(request))
 
 def search(request, template_name="events/search.html"):
-    query = request.GET.get('q', None)
-    if query:
-        events = Event.objects.search(query, user=request.user)
-    else:
-        # load upcoming events only by default
-        events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
 
-    types = Type.objects.all().order_by('name')
+    has_index = get_setting('site', 'global', 'searchindex')
+
+    if has_index:  # list view
+        query = request.GET.get('q')
+        if query:
+            events = Event.objects.search(query, user=request.user)
+        else:
+            # load upcoming events only by default
+            events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
+
+    else:
+        filters = get_query_filters(request.user, 'events.view_event')
+        events = Event.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            events = events.select_related()
+
     events = events.order_by('start_dt')
+    types = Type.objects.all().order_by('name')
 
     EventLog.objects.log(
         event_id=174000,  # searched event
@@ -165,9 +172,7 @@ def search(request, template_name="events/search.html"):
         context_instance=RequestContext(request)
     )
 
-
 def icalendar(request):
-    import re
     from events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -199,7 +204,6 @@ def icalendar(request):
     return response
 
 def icalendar_single(request, id):
-    import re
     from events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -245,7 +249,7 @@ def print_view(request, id, template_name="events/print-view.html"):
         instance = event
     )
 
-    if has_perm(request.user,'events.view_event',event):
+    if has_view_perm(request.user,'events.view_event',event):
         return render_to_response(template_name, {'event': event}, 
             context_instance=RequestContext(request))
     else:
@@ -1367,22 +1371,11 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             )
 
             # check permission
-            if not has_perm(request.user, 'events.view_registrant', registrant):
+            if not has_view_perm(request.user, 'events.view_registrant', registrant):
                 raise Http403
         except:
             raise Http404
     elif hash:
-#        sqs = SearchQuerySet()
-#        sqs = sqs.models(Registrant)
-#        sqs = sqs.filter(event_pk=event.pk)
-#        sqs = sqs.auto_query(sqs.query.clean(hash))
-#        sqs = sqs.order_by("-update_dt")
-#
-#        try:
-#            registrant = sqs[0].object
-#        except:
-#            raise Http404
-
         sqs = Registrant.objects.filter(registration__event=event)
         sqs = sqs.order_by("-update_dt")
 
@@ -1398,13 +1391,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
     if registrant.cancel_dt:
         raise Http404
 
-
     if request.method == "POST":
         # check if already canceled. if so, do nothing
         if not registrant.cancel_dt:
             user_is_registrant = False
-            if not request.user.is_anonymous() and registrant.user:
-                if request.user.id == registrant.user.id:
+            if request.user.is_authenticated() and registrant.user:
+                if request.user == registrant.user:
                     user_is_registrant = True
 
             registrant.cancel_dt = datetime.now()
@@ -1463,7 +1455,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     from events.utils import next_month, prev_month
 
     if type: # redirect to /events/month/ if type does not exist
-        if not Type.objects.search('slug:%s' % type):
+        if not Type.objects.filter(slug=type).exists():
             return HttpResponseRedirect(reverse('event.month'))
 
     # default/convert month and year
@@ -1510,7 +1502,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
     year = int(year)
-    if year < 1900:
+    if year <= 1900:
         raise Http404
     
     return render_to_response(template_name, {
@@ -1697,7 +1689,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 def registrant_details(request, id=0, hash='', template_name='events/registrants/details.html'):
     registrant = get_object_or_404(Registrant, pk=id)
 
-    if has_perm(request.user,'registrants.view_registrant',registrant):
+    if has_view_perm(request.user,'registrants.view_registrant',registrant):
         return render_to_response(template_name, {'registrant': registrant}, 
             context_instance=RequestContext(request))
     else:
@@ -1719,7 +1711,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     if reg8n_id:
         registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
     
-        is_permitted = has_perm(request.user, 'events.view_registration', registration)
+        is_permitted = has_view_perm(request.user, 'events.view_registration', registration)
         is_registrant = request.user in [r.user for r in registration.registrant_set.all()]
 
         # permission denied; if not given explicit permission or not registrant
@@ -2258,8 +2250,7 @@ def pending(request, template_name="events/pending.html"):
     if not is_admin(request.user):
         raise Http403
         
-    events = Event.objects.search(status=False, status_detail='pending')
-    events = events.order_by('start_dt')
+    events = Event.objects.filter(status=False, status_detail='pending').order_by('start_dt')
     
     return render_to_response(template_name, {
         'events': events,
@@ -2295,7 +2286,7 @@ def list_addons(request, event_id, template_name="events/addons/list.html"):
     
     event = get_object_or_404(Event, pk=event_id)
     
-    if not has_perm(request.user,'events.view_event', event):
+    if not has_view_perm(request.user,'events.view_event', event):
         raise Http404
     
     return render_to_response(template_name, {
