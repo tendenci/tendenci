@@ -1,10 +1,11 @@
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
 from perms.utils import has_perm, is_admin, update_perms_and_save, get_notice_recipients
