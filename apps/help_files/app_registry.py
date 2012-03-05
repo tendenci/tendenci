@@ -31,6 +31,7 @@ class HelpFileRegistry(CoreRegistry):
     url = {
         'search': lazy_reverse('help_files.search'),
         'add': lazy_reverse('admin:help_files_helpfile_add'),
+        'list': lazy_reverse('help_files'),
     }
 
 site.register(HelpFile, HelpFileRegistry)

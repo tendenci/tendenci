@@ -1,4 +1,5 @@
 from django.conf import settings
+from site_settings.utils import get_setting
 
 
 # Maximum allowed length for field values.
@@ -9,3 +10,15 @@ LABEL_MAX_LENGTH = getattr(settings, "FORMS_BUILDER_LABEL_MAX_LENGTH", 255)
 
 # Absolute path where files will be uploaded to.
 UPLOAD_ROOT = getattr(settings, "MEDIA_ROOT", None)
+
+use_search_index = get_setting('site', 'global', 'searchindex')
+if use_search_index in ('true', True):
+    use_search_index = True
+else:
+    use_search_index = False
+allow_anonymous_search = get_setting('module', 
+                                     'corporate_memberships', 
+                                     'anonymoussearchcorporatemembers')
+allow_member_search = get_setting('module', 
+                                  'corporate_memberships', 
+                                  'membersearchcorporatemembers')

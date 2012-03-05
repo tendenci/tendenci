@@ -9,15 +9,16 @@ from base.http import Http403
 from locations.models import Location
 from locations.forms import LocationForm
 from locations.utils import get_coordinates
+from site_settings.utils import get_setting
 from perms.utils import is_admin
 from event_logs.models import EventLog
-from perms.utils import has_perm, update_perms_and_save
+from perms.utils import has_perm, has_view_perm, update_perms_and_save, get_query_filters
 
 def index(request, id=None, template_name="locations/view.html"):
-    if not id: return HttpResponseRedirect(reverse('location.search'))
+    if not id: return HttpResponseRedirect(reverse('locations'))
     location = get_object_or_404(Location, pk=id)
     
-    if has_perm(request.user,'locations.view_location',location):
+    if has_view_perm(request.user,'locations.view_location',location):
         log_defaults = {
             'event_id' : 835000,
             'event_data': '%s (%d) viewed by %s' % (location._meta.object_name, location.pk, request.user),
@@ -32,15 +33,20 @@ def index(request, id=None, template_name="locations/view.html"):
     else:
         raise Http403
 
-def search(request, template_name="locations/search.html"):
+
+def list(request, template_name="locations/list.html"):
     query = request.GET.get('q', None)
-    locations = Location.objects.search(query, user=request.user)
+    filters = get_query_filters(request.user, 'locations.view_location')
+    locations = Location.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        locations = locations.select_related()
+
     locations = locations.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 834000,
-        'event_data': '%s searched by %s' % ('Location', request.user),
-        'description': '%s searched' % 'Location',
+        'event_data': '%s listed by %s' % ('Location', request.user),
+        'description': '%s listed' % 'Location',
         'user': request.user,
         'request': request,
         'source': 'locations'
@@ -50,19 +56,32 @@ def search(request, template_name="locations/search.html"):
     return render_to_response(template_name, {'locations':locations}, 
         context_instance=RequestContext(request))
 
+
+def search(request, template_name="locations/search.html"):
+    if get_setting('site', 'global', 'searchindex'):
+        haystack_url = "%s?models=locations.location&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
+        return HttpResponseRedirect(haystack_url)
+    else:
+        return HttpResponseRedirect(reverse('articles'))
+
 def nearest(request, template_name="locations/nearest.html"):
     locations = []
     lat, lng = None, None
     query = request.GET.get('q')
+    filters = get_query_filters(request.user, 'locations.view_location')
 
     if query:
         lat, lng = get_coordinates(address=query)
 
+    all_locations = Location.objects.filter(filters).distinct()
+    if not request.user.is_anonymous():
+        all_locations = all_locations.select_related()
+
     if all((lat,lng)):
-        for location in Location.objects.search(user=request.user).load_all():
-            location.object.distance = location.object.get_distance2(lat, lng)
-            if location.object.distance != None:
-                locations.append(location.object)
+        for location in all_locations:
+            location.distance = location.get_distance2(lat, lng)
+            if location.distance != None:
+                locations.append(location)
             locations.sort(key=lambda x: x.distance)
 
     log_defaults = {
@@ -80,20 +99,21 @@ def nearest(request, template_name="locations/nearest.html"):
         'origin': {'lat':lat,'lng':lng},
         }, context_instance=RequestContext(request))
 
+
 def print_view(request, id, template_name="locations/print-view.html"):
     location = get_object_or_404(Location, pk=id)    
 
-    log_defaults = {
-        'event_id' : 835000,
-        'event_data': '%s (%d) viewed by %s' % (location._meta.object_name, location.pk, request.user),
-        'description': '%s viewed' % location._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': location,
-    }
-    EventLog.objects.log(**log_defaults)
-       
-    if has_perm(request.user,'locations.view_location',location):
+    if has_view_perm(request.user,'locations.view_location',location):
+        log_defaults = {
+            'event_id' : 835000,
+            'event_data': '%s (%d) viewed by %s' % (location._meta.object_name, location.pk, request.user),
+            'description': '%s viewed' % location._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': location,
+        }
+        EventLog.objects.log(**log_defaults)
+
         return render_to_response(template_name, {'location': location}, 
             context_instance=RequestContext(request))
     else:

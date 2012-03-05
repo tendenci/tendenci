@@ -14,7 +14,7 @@
                             {% if app.enabled %}
                             <ul>
                                 <li class="app">
-                                     <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
                                          {{ app|title }}
                                      </a>
                                 </li>
@@ -38,7 +38,7 @@
                     {% for app in registered_apps.plugins %}
                         <ul>
                             <li class="app">
-                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
                                      {{ app|title }}
                                  </a>
                             </li>
