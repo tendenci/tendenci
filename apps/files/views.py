@@ -1,22 +1,24 @@
 import os
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.middleware.csrf import get_token as csrf_get_token
 
+from theme.shortcuts import themed_response as render_to_response
 import simplejson as json
 from base.http import Http403
-from files.models import File
-from files.utils import get_image
-from files.forms import FileForm, MostViewedForm
 from perms.decorators import admin_required
 from perms.object_perms import ObjectPermission
 from perms.utils import update_perms_and_save, has_perm
 from event_logs.models import EventLog
+
 from files.cache import FILE_IMAGE_PRE_KEY
+from files.models import File
+from files.utils import get_image
+from files.forms import FileForm, MostViewedForm
 
 
 def index(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/view.html"):
