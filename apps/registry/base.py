@@ -132,17 +132,22 @@ class Registry(object):
         """
         Autogenetate the URLs that will exist in the apps urls dict
 
-        Example from template:
-        {{ app.url.add }}
-        {{ app.url.search }}
+        Example from template::
 
-        Example in python:
-        app['url']['add']
-        app['url']['search']
+            {{ app.url.add }}
+            {{ app.url.search }}
+            {{ app.url.list }}
+
+        Example in python::
+
+            app['url']['add']
+            app['url']['search']
+            app['url']['list']
         """
         url = {
             'add': '',
             'search': '',
+            'list': '',
         }
         admin_add = 'admin:%s_%s_add' % (
             self.model._meta.app_label,
@@ -155,7 +160,8 @@ class Registry(object):
         if self.has_admin:
             url.update({
                 'add': self._reverse(admin_add),
-                'search': self._reverse(admin_index)
+                'search': self._reverse(admin_index),
+                'list': self._reverse(admin_index)
             })
         return url
 

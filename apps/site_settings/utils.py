@@ -167,11 +167,13 @@ def get_box_list(user):
     This will be used as a special select
     """
     from boxes.models import Box
-    boxes = Box.objects.search(user=user)
+    from perms.utils import get_query_filters
+    filters = get_query_filters(user, 'boxes.view_box')
+    boxes = Box.objects.filter(filters)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
     l = [('','None')]
     for box in boxes:
-        l.append((box.primary_key, box.title))
+        l.append((box.pk, box.title))
     
     return l

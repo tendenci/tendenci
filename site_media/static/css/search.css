@@ -328,3 +328,70 @@ clear-left{
 .corpmember-box .label{
     font-weight: bold;
 }
+
+/* MEMBERSHIP APP ENTRY SEARCH */
+.appentry-wrap-search {
+	margin-bottom: 20px;
+	position: relative;
+	background-color: white;
+	border: 1px solid #DDD;
+	border-top: none;
+}
+
+.appentry-wrap-search:last-child {
+	margin-bottom: 0;
+}
+
+.result-head {
+	padding: 10px;
+
+}
+.result-head.approved {
+	border-top: 10px solid #7AE309;
+}
+.result-head.disapproved {
+	border-top: 10px solid #E30918;
+}
+.result-head.pending {
+	border-top: 10px solid #FFE44B;
+}
+.result-head .member-requires-approval {
+	font-weight: bold;
+	float: left;
+}
+.result-head .member-number {
+	font-weight: bold;
+	float: left;
+}
+.result-head .member-subscription {
+	float: left;
+	margin-top: 4px;
+}
+
+.result-head .member-status {
+	text-align: right;
+}
+.result-head .member-status a {
+	color: black;
+	text-decoration: underline;
+}
+.result-head .member-date {
+	font-size: .8em;
+	text-align: right;
+	margin-top: 4px;
+	float: right;
+}
+.result-head .balance {
+	text-align: right;
+	padding-top: 10px;
+}
+
+.result-content {
+	margin-top: 4px;
+	float: left;
+}
+
+.result-content .member-name {
+	margin-bottom: 3px;
+}
+/* ---END MEMBERSHIP APP ENTRY SEARCH */

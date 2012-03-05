@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="wrap-search-item">
+    <div class="search-item location-search-item">
+        <h2><a href="{{ location.get_absolute_url }}">{% firstof location.location_name "Untitled" %}</a></h2>
+        <div class="image">
+            {% if origin %}
+                <a title="Google Directions" href="http://maps.google.com/maps?saddr={{ location.get_address }}&daddr={{ request.GET.q }}">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:B|{{ location.latitude }},{{ location.longitude }}&markers=color:green|label:A|{{ origin.lat }},{{ origin.lng }}&sensor=false"></a>
+            {% else %}
+                <a title="Google Directions" href="http://maps.google.com/maps?q={{ location.get_address }}">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false"></a>
+            {% endif %}
+        </div>
+        <div class="details">
+            <p>{{ location.address }} <br />{{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
+            <p>{{ location.phone }}</p>
+            <p>{{ location.email }}</p>
+            {% if location.distance %}<p>{{ location.distance|floatformat }} {% trans "miles away" %}</p>{% endif %}
+            <p>{{ location.description|striptags|truncatewords:20|safe }}</p>
+        </div>
+        <div style="clear:both;"><!--ie-bug--></div>
+    </div>
+    {% include "locations/meta.html" %}
+</div>

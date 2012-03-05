@@ -1,0 +1,48 @@
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% is_admin user as admin %}
+
+<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+    <div class="meta-left">
+        {% if admin or user == membership.creator or user == membership.owner or user == membership.user %}
+                {% meta_creator_owner membership %}
+            {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+    
+</div>
+{% if admin %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ membership.obj_perms }}</li>
+        <li>{{ membership.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ membership.pk }}&source={{ membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <!--
+        <li><a class="edit-link" href="#">{% trans "Edit" %}</a></li>        
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li>
+                    <a class="delete" href="#">{% trans "Delete" %}</a>
+                </li>
+            </ul>
+        </div>
+        </li>
+        -->
+    </ul>
+    </div>
+</div> 
+{% endif %}

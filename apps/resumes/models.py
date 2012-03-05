@@ -42,7 +42,7 @@ class Resume(models.Model):
     expiration_dt = models.DateTimeField(null=True, blank=True) #date resume expires based on activation date and duration
 
     resume_url = models.CharField(max_length=300, blank=True) # link to other (fuller) resume posting
-    syndicate = models.BooleanField(blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True)
            
     #TODO: foreign
     contact_name = models.CharField(max_length=150, blank=True)

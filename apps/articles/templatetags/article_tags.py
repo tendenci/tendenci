@@ -31,6 +31,7 @@ def article_search(context):
 
 class ListArticlesNode(ListNode):
     model = Article
+    perms = 'articles.view_article'
 
 
 @register.tag
