@@ -1,4 +1,6 @@
 import os
+import simplejson as json
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
@@ -8,7 +10,6 @@ from django.contrib import messages
 from django.middleware.csrf import get_token as csrf_get_token
 
 from theme.shortcuts import themed_response as render_to_response
-import simplejson as json
 from base.http import Http403
 from perms.decorators import admin_required
 from perms.object_perms import ObjectPermission
