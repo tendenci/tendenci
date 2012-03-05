@@ -641,13 +641,19 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
     }, context_instance=RequestContext(request))
 
 @login_required
-def application_entries_list(request, template_name="memberships/entries/list.html"):
+def application_entries_search(request, template_name="memberships/entries/search.html"):
     """
     Displays a page for searching membership application entries.
     """
-    filters = get_query_filters(request.user, 'memberships.view_appentry')
-    entries = AppEntry.objects.filter(filters).distinct()
-    entries = entries.order_by('-entry_time')
+    query = request.GET.get('q')
+    if get_setting('site', 'global', 'searchindex') and query:
+        entries = AppEntry.objects.search(query, user=request.user)
+        entries = entries.order_by('-entry_time')
+    else:
+        filters = get_query_filters(request.user, 'memberships.view_appentry')
+        entries = AppEntry.objects.filter(filters).distinct()
+        entries = entries.order_by('-entry_time')
+        entries = entries.select_related()
 
     apps = App.objects.all()
     types = MembershipType.objects.all()
@@ -655,8 +661,8 @@ def application_entries_list(request, template_name="memberships/entries/list.ht
     # log entry search view
     EventLog.objects.log(**{
         'event_id' : 1084000,
-        'event_data': '%s searched by %s' % ('Membership Entries', request.user),
-        'description': '%s searched' % 'Membership Entries',
+        'event_data': '%s listed by %s' % ('Membership Entries', request.user),
+        'description': '%s listed' % 'Membership Entries',
         'user': request.user,
         'request': request,
         'source': 'memberships',
@@ -668,13 +674,6 @@ def application_entries_list(request, template_name="memberships/entries/list.ht
         'types':types,
         }, context_instance=RequestContext(request))
 
-@login_required    
-def application_entries_search(request):
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=memberships.appentry&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('membership.application_entries_list')) 
 
 @login_required    
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
