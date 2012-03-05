@@ -1,7 +1,7 @@
 import os
 import re
 
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
@@ -18,6 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, is_admin
 from site_settings.utils import get_setting
@@ -28,7 +29,8 @@ from djcelery.models import TaskMeta
 from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
+from photos.forms import (PhotoUploadForm, PhotoEditForm, 
+    PhotoSetAddForm, PhotoSetEditForm)
 from photos.tasks import ZipPhotoSetTask
 
 def search(request, template_name="photos/search.html"):
