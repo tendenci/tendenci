@@ -102,7 +102,7 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
     response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
     return response
 
-def list(request, template_name="files/list.html"):
+def search(request, template_name="files/list.html"):
     """
     This page lists out all files from newest to oldest.
     If a search index is available, this page will also
@@ -123,7 +123,7 @@ def list(request, template_name="files/list.html"):
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
-def search(request):
+def search_redirect(request):
     return HttpResponseRedirect(reverse('files'))
 
 def print_view(request, id, template_name="files/print-view.html"):

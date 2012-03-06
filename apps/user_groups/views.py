@@ -34,7 +34,7 @@ try:
 except:
     notification = None
 
-def list(request, template_name="user_groups/list.html"):
+def search(request, template_name="user_groups/list.html"):
     """
     This page lists out all user groups.  If a search index
     is available, this page also allows you to search through
@@ -64,7 +64,7 @@ def list(request, template_name="user_groups/list.html"):
     return render_to_response(template_name, {'groups':groups}, 
         context_instance=RequestContext(request))
 
-def search(request, template_name="user_groups/list.html"):
+def search_redirect(request, template_name="user_groups/list.html"):
     """
     This page redirects to the list page.  The list page can
     have a search feature if a search index is available.
