@@ -1,0 +1,11 @@
+#info .event-model {
+    padding-bottom: 10px;
+}
+
+#info .event-model-logs {
+    padding-left: 10px;
+}
+
+#info .event-model .event-model-label {
+    text-transform: uppercase;
+}
