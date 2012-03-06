@@ -27,6 +27,7 @@ class DeclarativeMetaclass(type):
     def __new__(cls, name, bases, attrs):
         attrs['fields'] = FieldDict()
         allowed_fields = [
+            '__doc__',
             'version',
             'author',
             'author_email',
@@ -42,7 +43,7 @@ class DeclarativeMetaclass(type):
                 if field_name not in ['fields', '__module__']:
                     if field_name not in allowed_fields:
                         exception = 'Registry field %s not allowed. '\
-                                    'They following fields are allowed: %s'
+                                    'The following fields are allowed: %s'
                         raise FieldNotAllowed(_(exception) % (
                             field_name,
                             allowed_fields
@@ -212,3 +213,15 @@ class PeopleRegistry(Registry):
 
         # application type
         self.fields['app_type'] = 'people'
+
+class LogRegistry(Registry):
+    """
+    Registry for event log associated applications that are not
+    classified as core, plugin or people.
+    """
+    
+    def __init__(self, model):
+        super(LogRegistry, self).__init__(model)
+        
+        # application type
+        self.fields['app_type'] = 'log'
