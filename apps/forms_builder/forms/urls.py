@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 
 
 urlpatterns = patterns("forms_builder.forms.views",
-    url(r"^$", "search", name="forms"),
+    url(r"^$", "list", name="forms"),
     url(r"^entries/export/(?P<id>\d+)$", "entries_export", name="form_entries_export"),
     url(r"^entries/delete/(?P<id>\d+)$", "entry_delete", name="form_entry_delete"),
     url(r"^add/$", "add", name="form_add"),
