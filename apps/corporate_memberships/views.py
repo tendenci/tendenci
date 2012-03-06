@@ -56,6 +56,7 @@ from base.utils import send_email_notification
 from files.models import File
 from profiles.models import Profile
 from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
+from site_settings.utils import get_setting
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -632,14 +633,13 @@ def view(request, id, template="corporate_memberships/view.html"):
     return render_to_response(template, context, RequestContext(request))
 
 
-def list_view(request, template_name="corporate_memberships/search.html"):
+def search(request, template_name="corporate_memberships/search.html"):
     if not request.user.is_authenticated() and not allow_anonymous_search:
-#    if not is_admin(request.user) and (not allow_anonymous_search) and \
-#             not (allow_member_search and is_member(request.user)):
         raise Http403
     
+    query = request.GET.get('q', None)
+    
     filter_and, filter_or = CorporateMembership.get_search_filter(request.user)
-
     q_obj = None
     if filter_and:
         q_obj = Q(**filter_and)
@@ -649,22 +649,28 @@ def list_view(request, template_name="corporate_memberships/search.html"):
             q_obj = reduce(operator.and_, [q_obj, q_obj_or])
         else:
             q_obj = q_obj_or
-    if q_obj:
-        corp_members = CorporateMembership.objects.filter(q_obj)
-    else:
-        corp_members = CorporateMembership.objects.all()
-
-#    # too slow - commenting it out   
-#    if request.user.is_authenticated():
-#        corp_members = corp_members.select_related()
-        
     
-    corp_members = corp_members.order_by('name')
+    if get_setting('site', 'global', 'searchindex') and query:
+        corp_members = CorporateMembership.objects.search(query, user=request.user)
+        if q_obj:
+            corp_members = corp_members.filter(q_obj)
+        corp_members = corp_members.order_by('name_exact')
+    else:
+        if q_obj:
+            corp_members = CorporateMembership.objects.filter(q_obj)
+        else:
+            corp_members = CorporateMembership.objects.all()
+    
+        if request.user.is_authenticated():
+            corp_members = corp_members.select_related()
+            
+        
+        corp_members = corp_members.order_by('name')
     
     log_defaults = {
         'event_id': 684000,
-        'event_data': '%s listed by %s' % ('Corporate memberships', request.user),
-        'description': '%s listed' % 'Corporate memberships',
+        'event_data': '%s searched by %s' % ('Corporate memberships', request.user),
+        'description': '%s searched' % 'Corporate memberships',
         'user': request.user,
         'request': request,
         'source': 'corporatemembership'
@@ -673,13 +679,6 @@ def list_view(request, template_name="corporate_memberships/search.html"):
     
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
-
-def search(request): 
-    if use_search_index:
-        haystack_url = "%s?models=corporate_memberships.corporatemembership&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('corp_memb.list'))
     
     
 @login_required
