@@ -130,9 +130,6 @@ class ListStoriesNode(ListNode):
             tag = tag.strip()
             query = '%s "tag:%s"' % (query, tag)
 
-        # get the list of staff
-        # items = self.model.objects.search(user=user, query=query)
-
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters)
         
