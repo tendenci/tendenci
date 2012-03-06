@@ -21,7 +21,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Files" %}</a>
             <div>
             <ul class="dropdown-menu">
-                <li><a href="{% url file.search %}">{% trans "Search Files" %}</a></li>
+                <li><a href="{% url files %}">{% trans "File List" %}</a></li>
                 {% if can_add_file %}
                 <li><a href="{% url file.add %}">{% trans "Add a File" %}</a></li>
                 {% endif %}
