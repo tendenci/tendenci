@@ -20,6 +20,7 @@ import haystack
 from haystack.query import SearchQuerySet
 
 apps_not_to_search = [
+    'discount',
     'donation',
     'file',
     'form',
