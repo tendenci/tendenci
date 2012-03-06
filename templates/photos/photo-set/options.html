@@ -2,7 +2,6 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% is_admin user as admin %}
 {% has_perm user photos.view_photoset as can_view %}
 {% has_perm user photos.add_photoset as can_add %}
 {% has_perm user photos.change_photoset as can_change %}

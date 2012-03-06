@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
-from perms.utils import is_admin, is_member, is_developer
+from perms.utils import is_admin, is_member, is_developer, get_query_filters
 from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
@@ -98,19 +98,13 @@ class PhotoSet(TendenciBaseModel):
         to the given user's permissions.
         This makes use of the search index to avoid hitting the database.
         """
-        
-        sqs = SearchQuerySet().models(Image).filter(photosets=self.pk)
-
         # user information
         user = user or AnonymousUser()
-        
-        if hasattr(user, 'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-        
-        sqs = PhotoSet.objects._permissions_sqs(sqs, user, status, status_detail)
-        
-        return sqs        
+
+        filters = get_query_filters(user, 'photologue.view_photo')
+        photos = Image.objects.filter(filters).filter(photoset=self.pk).distinct()
+
+        return photos
 
 class Image(ImageModel, TendenciBaseModel):
     """
