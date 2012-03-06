@@ -1,10 +1,6 @@
 from django.core.cache import cache
 
 base_colors = {
-     # contacts - TEAL/LIME-GREEN base
-    '125114':'33CCCC', # add - contact form submitted / new user added
-    '125115':'0066CC', # add - contact form submitted / user already exists
-    
     # entities - TURQUOISE base - complement is ?????
     '290000':'00FFCC', # base
     '291000':'00FFCC', # add
