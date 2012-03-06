@@ -144,15 +144,12 @@ def list(request, template_name="events/list.html"):
     has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
 
-    if has_index:
-        if query:
-            events = Event.objects.search(query, user=request.user)
-        else:
-            # load upcoming events only by default
-            events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
+    if has_index and query:
+        events = Event.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
+        events = events.filter(start_dt__gte=datetime.now())
         if request.user.is_authenticated():
             events = events.select_related()
 
