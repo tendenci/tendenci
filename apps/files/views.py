@@ -14,12 +14,12 @@ from files.utils import get_image
 from files.forms import FileForm, MostViewedForm
 from perms.decorators import admin_required
 from perms.object_perms import ObjectPermission
-from perms.utils import update_perms_and_save, has_perm
+from perms.utils import update_perms_and_save, has_perm, has_view_perm
 from event_logs.models import EventLog
 from files.cache import FILE_IMAGE_PRE_KEY
 
 
-def index(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/view.html"):
+def details(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/details.html"):
     from files.search_indexes import FileIndex
     if not id: return HttpResponseRedirect(reverse('file.search'))
 
@@ -28,7 +28,7 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         quality = int(quality)
 
     file = get_object_or_404(File, pk=id)
-    if not has_perm(request.user, 'files.view_file', file):
+    if not has_view_perm(request.user, 'files.view_file', file):
         raise Http403
 
     # check 'if public'
@@ -101,21 +101,38 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
     response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
     return response
 
-def search(request, template_name="files/search.html"):
+def list(request, template_name="files/list.html"):
+    """
+    This page lists out all files from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through files.
+    """
+    has_index = get_setting('site', 'global', 'searchindex'):
     query = request.GET.get('q', None)
-    files = File.objects.search(query, user=request.user)
 
-    if not query:
+    if has_index:
+        if query:
+            files = File.objects.search(query, user=request.user)
+        else:
+            files = File.objects.order_by('-update_dt')
+    else:
+        filters = get_query_filters(request.user, 'files.view_file')
+        files = File.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            files = files.select_related()
         files = files.order_by('-update_dt')
 
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
+def search(request):
+    return HttpResponseRedirect(reverse('files'))
+
 def print_view(request, id, template_name="files/print-view.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not has_perm(request.user,'files.view_file',file):
+    if not has_view_perm(request.user,'files.view_file',file):
         raise Http403
 
     return render_to_response(template_name, {'file': file}, 
