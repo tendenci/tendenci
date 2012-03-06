@@ -15,7 +15,10 @@
     <link href="{{ STATIC_URL }}css/global_tendenci.css?65" rel="stylesheet" type="text/css" />
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
     {% block extra_head %}{% endblock %}
-    {% if admin %}<link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />{% endif %}
+    {% if admin %}
+    <link href="{{ LOCAL_STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />
+    {% endif %}
 </head> 
 
 <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
