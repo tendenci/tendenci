@@ -1,49 +1,6 @@
 from django.core.cache import cache
 
 base_colors = {
-    # entities - TURQUOISE base - complement is ?????
-    '290000':'00FFCC', # base
-    '291000':'00FFCC', # add
-    '292000':'33FFCC', # edit
-    '293000':'33FF66', # delete
-    '294000':'66FFCC', # search 
-    '295000':'99FFCC', # view
-
-    # accounting
-    '310000':'006666', # base
-    '311000':'006666', # add
-    '312000':'006633', # edit
-    '313000':'006600', # delete
-    '314000':'009900', # search 
-    '315000':'009933', # view 
-    '311220':'FF0000', # invoice adjusted    RED!!! 
-    '312100':'339900', # general ledger added 
-    '312200':'339900', # general ledger edited
-    '312300':'339900', # general ledger deleted
-    '312400':'339900', # general ledger searched
-    '312500':'339900', # general ledger viewed
-    '313300':'669933', # accounting entry deleted
-    '313400':'669933', # accounting transaction deleted
-    '315105':'669933', # acct entry table export    
-
-    # payments - PINK ORANGE base - complement is ????
-    '280000':'FF6666', # base
-    '281000':'FF6666', # add
-    '282000':'FF6666', # edit
-    '283000':'FF6666', # delete
-    '284000':'FF6666', # search 
-    '285000':'FF6666', # view 
-    '286000':'FF6666', # export 
-    '282101':'FF6666', # Edit - Credit card approved 
-    '282102':'FF6666', # Edit - Credit card declined 
-
-    # make_payments - PINK ORANGE base - complement is ????
-    '670000':'66CC00', # base
-    '671000':'66CC00', # add
-    '672000':'66CC33', # edit
-    '673000':'66CC66', # delete
-    '674000':'66FF00', # search 
-    '675000':'66FF33', # view 
    
     # actions (Marketing Actions)
     '300000':'FF0033', # base
