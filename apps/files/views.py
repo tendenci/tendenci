@@ -111,17 +111,14 @@ def list(request, template_name="files/list.html"):
     has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
 
-    if has_index:
-        if query:
-            files = File.objects.search(query, user=request.user)
-        else:
-            files = File.objects.search(user=request.user).order_by('-update_dt')
+    if has_index and query:
+        files = File.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             files = files.select_related()
-        files = files.order_by('-update_dt')
+    files = files.order_by('-update_dt')
 
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
