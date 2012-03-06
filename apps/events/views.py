@@ -141,7 +141,7 @@ def list(request, template_name="events/list.html"):
     from today.  If a search index is available, this page
     also provides the option to search through events.
     """
-    has_index = get_setting('site', 'global', 'searchindex'):
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
 
     if has_index:
