@@ -135,18 +135,21 @@ def details(request, id=None, template_name="events/view.html"):
         'addons': event.addon_set.filter(status=True),
     }, context_instance=RequestContext(request))
 
-def search(request, template_name="events/search.html"):
+def list(request, template_name="events/list.html"):
     """
     This page lists out all the upcoming events starting
     from today.  If a search index is available, this page
     also provides the option to search through events.
     """
-    if '/search/' in request.path:
-        return HttpResponseRedirect(reverse('events'))
-
+    has_index = get_setting('site', 'global', 'searchindex'):
     query = request.GET.get('q', None)
-    if query:
-        events = Event.objects.search(query, user=request.user)
+
+    if has_index:
+        if query:
+            events = Event.objects.search(query, user=request.user)
+        else:
+            # load upcoming events only by default
+            events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
     else:
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
@@ -170,6 +173,9 @@ def search(request, template_name="events/search.html"):
         {'events': events,'types': types, 'now': datetime.now()},
         context_instance=RequestContext(request)
     )
+
+def search(request):
+    return HttpResponseRedirect(reverse('events'))
 
 def icalendar(request):
     from events.utils import get_vevents

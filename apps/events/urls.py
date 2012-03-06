@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from events.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('events',                  
-    url(r'^$', 'views.search', name="events"),
+    url(r'^$', 'views.list', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
     url(r'^search/$', 'views.search', name="event.search"),
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
