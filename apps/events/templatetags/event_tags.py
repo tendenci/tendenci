@@ -55,11 +55,9 @@ def registrant_options(context, user, registrant):
 
 @register.inclusion_tag("events/registrants/search-form.html", takes_context=True)
 def registrant_search(context, event=None):
-
     context.update({
         "event": event
     })
-
     return context
 
 
@@ -129,34 +127,32 @@ class EventListNode(Node):
         
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
-        try:
-            type = Type.objects.get(slug=type_slug)
-        except:
-            type = None
-        
+
+        types = Type.objects.filter(slug=type_slug)
+
+        type = None
+        if types:
+            type = types[0]
+
         day = datetime(day.year, day.month, day.day)
         weekday = day.strftime('%a')
+
         #one day offset so we can get all the events on that day
         bound = timedelta(hours=23, minutes=59)
-        
-        sqs = Event.objects.search(date_range=(day+bound, day), user=context['user'])
-        
+
+        start_dt = day+bound
+        end_dt = day
+
+        filters = get_query_filters(request.user, 'events.view_event')
+        events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt)
+
         if type:
-            sqs = sqs.filter(type_id=type.pk)
-            
+            events = events.filter(type=type)
+
         if weekday == 'Sun' or weekday == 'Sat':
-            sqs = sqs.filter(on_weekend=True)
-        
-        if self.ordering:
-            if self.ordering == 'time':
-                sqs = sqs.order_by('hour', 'minute')
-            else:
-                sqs = sqs.order_by(self.ordering)
-        else:
-            sqs = sqs.order_by('-number_of_days', 'start_dt')
-            
-        #print sqs
-        events = [sq.object for sq in sqs]
+            events = events.filter(on_weekend=True)
+
+        events = events.order_by(self.ordering or 'start_dt')
         
         context[self.context_var] = events
         return ''
