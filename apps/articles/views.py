@@ -48,21 +48,29 @@ def index(request, slug=None, template_name="articles/view.html"):
         raise Http403
 
 
-def list(request, slug=None, template_name="articles/list.html"):
-    if slug: 
-        return HttpResponseRedirect(reverse('article', args=[slug]))
+def list(request, template_name="articles/list.html"):
+    get = dict(request.GET)
+    query = get.pop('q', [])
+    get.pop('page', None)  # pop page query string out; page ruins pagination
+    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
+    query = ''.join(query)
+    if query_extra:
+        query = '%s %s' % (query, ' '.join(query_extra))
 
-    filters = get_query_filters(request.user, 'articles.view_article')
-    articles = Article.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
-        articles = articles.select_related()
+    if get_setting('site', 'global', 'searchindex') and query:
+        articles = Article.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'articles.view_article')
+        articles = Article.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            articles = articles.select_related()
 
     articles = articles.order_by('-release_dt')
 
     log_defaults = {
         'event_id': 434000,
-        'event_data': '%s listed by %s' % ('Article', request.user),
-        'description': '%s listed' % 'Article',
+        'event_data': '%s searched by %s' % ('Article', request.user),
+        'description': '%s searched' % 'Article',
         'user': request.user,
         'request': request,
         'source': 'articles'
@@ -74,7 +82,7 @@ def list(request, slug=None, template_name="articles/list.html"):
     try:
         category = int(category)
     except:
-        category = None
+        category = 0
     categories, sub_categories = Article.objects.get_categories(category=category)
 
     return render_to_response(template_name, {'articles': articles,'categories':categories,
@@ -83,11 +91,7 @@ def list(request, slug=None, template_name="articles/list.html"):
 
 
 def search(request):
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=articles.article&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('articles'))
+    return HttpResponseRedirect(reverse('articles'))
 
 
 def print_view(request, slug, template_name="articles/print-view.html"):
