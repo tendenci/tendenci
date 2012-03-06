@@ -8,13 +8,14 @@ from django.contrib import messages
 from news.models import News
 from news.forms import NewsForm
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save
+from perms.utils import has_perm, update_perms_and_save, get_query_filters
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
 from perms.utils import get_notice_recipients
 from perms.utils import is_admin
+from site_settings.utils import get_setting 
 
 try:
     from notification import models as notification
@@ -49,7 +50,12 @@ def index(request, slug=None, template_name="news/view.html"):
 
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
-    news = News.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        news = News.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'news.view_news')
+        news = News.objects.filter(filters).distinct()
+        news = news.select_related()  
     news = news.order_by('-release_dt')
 
     log_defaults = {
