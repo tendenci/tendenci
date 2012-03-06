@@ -60,17 +60,22 @@ def details(request, slug=None, template_name="jobs/view.html"):
 
 
 def list(request, template_name="jobs/list.html"):
-    filters = get_query_filters(request.user, 'jobs.view_job')
-    jobs = Job.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
-        jobs = jobs.select_related()
+    query = request.GET.get('q', None)
+
+    if get_setting('site', 'global', 'searchindex') and query:
+        jobs = Job.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'jobs.view_job')
+        jobs = Job.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            jobs = jobs.select_related()
 
     jobs = jobs.order_by('status_detail','list_type','-post_dt')
 
     log_defaults = {
         'event_id': 254000,
-        'event_data': '%s listed by %s' % ('Job', request.user),
-        'description': '%s listed' % 'Job',
+        'event_data': '%s searched by %s' % ('Job', request.user),
+        'description': '%s searched' % 'Job',
         'user': request.user,
         'request': request,
         'source': 'jobs'
@@ -82,11 +87,7 @@ def list(request, template_name="jobs/list.html"):
 
 
 def search(request):
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=jobs.job&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('jobs'))
+    return HttpResponseRedirect(reverse('jobs'))
 
 
 def print_view(request, slug, template_name="jobs/print-view.html"):
