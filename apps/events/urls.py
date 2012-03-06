@@ -2,9 +2,9 @@ from django.conf.urls.defaults import patterns, url
 from events.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('events',                  
-    url(r'^$', 'views.list', name="events"),
+    url(r'^$', 'views.search', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
-    url(r'^search/$', 'views.search', name="event.search"),
+    url(r'^search/$', 'views.search', kwargs={'redirect':True}, name="event.search"),
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
     url(r'^print-view/(?P<id>\d+)/$', 'views.print_view', name="event.print_view"),
     url(r'^add/$', 'views.add', name="event.add"),
