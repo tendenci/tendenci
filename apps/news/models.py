@@ -76,3 +76,13 @@ class News(TendenciBaseModel):
 
     def __unicode__(self):
         return self.headline
+    
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
