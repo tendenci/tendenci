@@ -26,7 +26,7 @@ class JobRegistry(CoreRegistry):
     
     url = {
         'add': lazy_reverse('job.add'),
-        'search': lazy_reverse('job.search'),
+        'search': lazy_reverse('jobs'),
         'list': lazy_reverse('jobs')
     }
 
