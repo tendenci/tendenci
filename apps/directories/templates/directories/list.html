@@ -29,7 +29,7 @@
     {% empty %}
         <div><p>{% trans "No" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %} {% trans "posted yet" %}.</p>
         {% if admin %}
-        <p><a href="{% url article.add %}">{% trans "Add a new" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</a></p>
+        <p><a href="{% url directory.add %}">{% trans "Add a new" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</a></p>
         {% endif %}</div>
     {% endfor %}
     </div>
