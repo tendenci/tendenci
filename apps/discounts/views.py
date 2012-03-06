@@ -14,7 +14,7 @@ from discounts.models import Discount, DiscountUse
 from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
-def search(request, template_name="discounts/search.html"):
+def list(request, template_name="discounts/search.html"):
     if not has_perm(request.user, 'discounts.view_discount'):
         raise Http403
 
@@ -151,7 +151,7 @@ def delete(request, id, template_name="discounts/delete.html"):
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
         discount.delete()
         
-        return redirect('discount.search')
+        return redirect('discounts')
 
     return render_to_response(template_name, {'discount': discount}, 
         context_instance=RequestContext(request))
