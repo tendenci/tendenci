@@ -95,9 +95,8 @@ def event_custom_reg_form_list(request, event_id,
                'reg_conf': reg_conf,
                'regconfpricings': regconfpricings}
     return render_to_response(template_name, context, RequestContext(request))
-    
-    
-def index(request, id=None, template_name="events/view.html"):
+
+def details(request, id=None, template_name="events/view.html"):
 
     if not id:
         return HttpResponseRedirect(reverse('event.month'))
@@ -137,17 +136,17 @@ def index(request, id=None, template_name="events/view.html"):
     }, context_instance=RequestContext(request))
 
 def search(request, template_name="events/search.html"):
+    """
+    This page lists out all the upcoming events starting
+    from today.  If a search index is available, this page
+    also provides the option to search through events.
+    """
+    if '/search/' in request.path:
+        return HttpResponseRedirect(reverse('events'))
 
-    has_index = get_setting('site', 'global', 'searchindex')
-
-    if has_index:  # list view
-        query = request.GET.get('q')
-        if query:
-            events = Event.objects.search(query, user=request.user)
-        else:
-            # load upcoming events only by default
-            events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
-
+    query = request.GET.get('q', None)
+    if query:
+        events = Event.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
