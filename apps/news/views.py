@@ -55,7 +55,8 @@ def search(request, template_name="news/search.html"):
     else:
         filters = get_query_filters(request.user, 'news.view_news')
         news = News.objects.filter(filters).distinct()
-        news = news.select_related()  
+        if request.user.is_authenticated():
+            news = news.select_related()  
     news = news.order_by('-release_dt')
 
     log_defaults = {
