@@ -143,7 +143,7 @@ class EventListNode(Node):
         start_dt = day+bound
         end_dt = day
 
-        filters = get_query_filters(request.user, 'events.view_event')
+        filters = get_query_filters(context['user'], 'events.view_event')
         events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt)
 
         if type:
