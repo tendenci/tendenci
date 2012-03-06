@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from events.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('events',                  
-    url(r'^$', 'views.index', name="events"),
+    url(r'^$', 'views.search', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
     url(r'^search/$', 'views.search', name="event.search"),
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
@@ -17,7 +17,7 @@ urlpatterns = patterns('events',
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
-    url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
+    url(r'^(?P<id>\d+)/$', 'views.details', name="event"),
     
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
