@@ -28,10 +28,14 @@ def list(request, template_name="contacts/list.html"):
     if not has_perm(request.user,'contacts.view_contact'):
         raise Http403
 
-    filters = get_query_filters(request.user, 'contacts.view_contact')
-    contacts = Contact.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
-        contacts = contacts.select_related()
+    query = request.GET.get('q', None)
+    if get_setting('site', 'global', 'searchindex') and query:
+        contacts = Contact.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'contacts.view_contact')
+        contacts = Contact.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            contacts = contacts.select_related()
 
     contacts = contacts.order_by('-create_dt')
 
