@@ -3,6 +3,7 @@
 {% load file_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% is_admin user as admin %}
@@ -20,50 +21,14 @@
 <div class="t">
     {% file_nav request.user %}
 
-    <h1>{% trans "Search Files" %}</h1>
+    <h1>{% firstof MODULE_FILES_LABEL_PLURAL 'Files' %}</h1>
 
 	{% file_search %}
     {% autopaginate files 10 %}
 	
 	<div class="files-wrap">
     {% for file in files %}
-    {% with file.object as file %}
-
-		<div class="file-wrap">
-			<div class="options">
-                <div class="quick-options">
-					{% file_options request.user file %} 	       
-                </div>
-			</div>
-
-			{% if file.icon %}
-            <div class="icon"><img src="{{ file.icon }}" /></div>
-            {% endif %}
-
-            <h2><a href="{% url file file.pk %}">{{ file.basename }}</a></h2>
-
-            {% if file.type == 'image' %}
-            <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this image" %}</a></div>
-            {% endif %}
-
-            {% if file.type == 'pdf' %}
-            <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this PDF" %}</a></div>
-            {% endif %}
-
-            {% if file.type == 'text' %}
-            <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this text file" %}</a></div>
-            {% endif %}
-
-			<div class="meta">
-                <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</a></div>
-            </div>
-
-            <!-- delete-file form -->
-            <form name="file-delete" method="POST" action="{% url file.delete file.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-		</div>
-	{% endwith %}
+        {% search_result file %}
 	{% empty %}
 		{% if admin %}
 			{% if request.GET.q %}
