@@ -45,12 +45,22 @@ def details(request, slug=None, template_name="directories/view.html"):
         raise Http403
 
 def list(request, template_name="directories/list.html"):
-    filters = get_query_filters(request.user, 'directories.view_directory')
-    directories = Directory.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
-        directories = directories.select_related()
+    get = dict(request.GET)
+    query = get.pop('q', [])
+    get.pop('page', None)  # pop page query string out; page ruins pagination
+    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
+    if query_extra:
+        query = '%s %s' % (''.join(query), ' '.join(query_extra))
 
-    directories = directories.order_by('headline')
+    if get_setting('site', 'global', 'searchindex') and query:
+        directories = Directory.objects.search(query, user=request.user).order_by('headline_exact')
+    else:
+        filters = get_query_filters(request.user, 'directories.view_directory')
+        directories = Directory.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            directories = directories.select_related()
+    
+        directories = directories.order_by('headline')
 
     log_defaults = {
         'event_id' : 444000,
@@ -65,7 +75,7 @@ def list(request, template_name="directories/list.html"):
     try:
         category = int(category)
     except:
-        category = None
+        category = 0
     categories, sub_categories = Directory.objects.get_categories(category=category)
 
     return render_to_response(template_name, {
@@ -77,11 +87,7 @@ def list(request, template_name="directories/list.html"):
 
 
 def search(request):
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=directories.directory&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('jobs'))
+    return HttpResponseRedirect(reverse('directories'))
 
 
 def print_view(request, slug, template_name="directories/print-view.html"):
