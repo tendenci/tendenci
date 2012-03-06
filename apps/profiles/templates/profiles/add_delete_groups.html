@@ -5,9 +5,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
-<link rel="stylesheet" href="/site_media/static/css/profiles.css">
-<link rel="stylesheet" href="/site_media/static/css/admin/django-admin-widgets.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/admin/django-admin-widgets.css">
 {% endblock %}
 
 {% block body %}
@@ -47,8 +47,8 @@
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="/site_media/static/js/admin/django-admin.multiselect.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/admin/django-admin.multiselect.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
             jQuery.each($("select[multiple]"), function () {

@@ -15,9 +15,9 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="/site_media/static/css/iconrow.css">
-<link rel="stylesheet" href="/site_media/static/css/profiles.css">
-<link type="text/css" href="/site_media/static/css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
 {% endblock %}
 
 {% block body %}
@@ -360,13 +360,13 @@
 <script>
 	if (!(window.jQuery)) { 
 		var s = document.createElement('script');
-		s.setAttribute('src', '/site_media/static/js/jquery-1.4.2.min.js'); 
+		s.setAttribute('src', '{{ STATIC_URL }}js/jquery-1.4.2.min.js'); 
 		s.setAttribute('type', 'text/javascript');
 		document.getElementsByTagName('head')[0].appendChild(s);}
 </script>
-<script type="text/javascript" src="/site_media/static/js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
 
-<script type="text/javascript" src="/site_media/static/js/global/dropdown.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
     if(document.location.hash != ""){window.scrollTo(0,0);}
