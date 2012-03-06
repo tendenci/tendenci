@@ -212,7 +212,18 @@ def info(request):
     for app in apps:
         if 'event_logs' in app:
             for model in app['event_logs'].keys():
-                logged_models.append({model:app['event_logs'][model]})
+                logs = app['event_logs'][model]
+                log_list = []
+                for log in logs.keys():
+                    log_list.append({
+                        'label': log.replace('_', ' '),
+                        'id': logs[log][0],
+                        'color':logs[log][1],
+                    })
+                logged_models.append({
+                    'label': model.replace('_', ' '),
+                    'event_logs':sorted(log_list, key=lambda x: x['label']),
+                })
     return render_to_response('event_logs/info.html', {
-        'logged_models':logged_models,
+        'logged_models':sorted(logged_models, key=lambda x: x['label']),
     }, context_instance=RequestContext(request))

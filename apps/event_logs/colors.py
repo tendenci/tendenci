@@ -1,15 +1,6 @@
 from django.core.cache import cache
 
 base_colors = {
-    # login
-    '125200':'66CCFF',
-    
-    # impersonation
-    '1080000':'FF0000',
-    
-    # homepage
-    '100000':'7F0000', # view; tendenci color (maroon)
- 
      # contacts - TEAL/LIME-GREEN base
     '125114':'33CCCC', # add - contact form submitted / new user added
     '125115':'0066CC', # add - contact form submitted / user already exists
