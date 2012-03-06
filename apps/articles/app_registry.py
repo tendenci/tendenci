@@ -25,7 +25,7 @@ class ArticleRegistry(CoreRegistry):
     
     url = {
         'add': lazy_reverse('article.add'),
-        'search': lazy_reverse('article.search'),
+        'search': lazy_reverse('articles'),
         'list': lazy_reverse('articles'),
     }
 
