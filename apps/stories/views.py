@@ -53,7 +53,7 @@ def print_details(request, id, template_name="stories/print_details.html"):
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
     
-def list(request, template_name="stories/list.html"):
+def search(request, template_name="stories/list.html"):
     """
     This page lists out all stories from newest to oldest.
     If a search index is available, this page will also
@@ -84,7 +84,7 @@ def list(request, template_name="stories/list.html"):
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
 
-def search(request):
+def search_redirect(request):
     return HttpResponseRedirect(reverse('stories'))
 
 @login_required   

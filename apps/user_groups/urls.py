@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('user_groups.views',
-    url(r'^$',                              'list',     name='groups'),
+    url(r'^$',                              'search',     name='groups'),
     url(r'^add/$',                          'group_add_edit', name='group.add'),
-    url(r'^search/$',                       'search',   name='group.search'),
+    url(r'^search/$',                       'search_redirect',   name='group.search'),
     url(r'^edit_perms/(?P<id>\d+)/$',       'group_edit_perms', name="group.edit_perms"),
     url(r'^delete/(?P<id>\d+)/$',       'group_delete', name="group.delete"),
     url(r'^(?P<group_slug>[-.\w]+)/$',      'group_detail',   name='group.detail'),
