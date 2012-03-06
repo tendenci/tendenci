@@ -49,18 +49,22 @@ from base.utils import send_email_notification
 def membership_index(request):
     return HttpResponseRedirect(reverse('membership.search'))
 
-def membership_list(request, template_name="memberships/list.html"):
-    filters = get_query_filters(request.user, 'jobs.view_job')
-    members = Membership.objects.filter(filters).distinct()
+def membership_search(request, template_name="memberships/search.html"):
+    query = request.GET.get('q')
+    if get_setting('site', 'global', 'searchindex') and query:
+        members = Membership.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'memberships.view_membership')
+        members = Membership.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            members = members.select_related()
+            
     types = MembershipType.objects.all()
-    
-#    if not request.user.is_anonymous():
-#        members = members.select_related()
 
     EventLog.objects.log(**{
         'event_id' : 474000,
-        'event_data': '%s listed by %s' % ('Membership', request.user),
-        'description': '%s listed' % 'Membership',
+        'event_data': '%s searched by %s' % ('Membership', request.user),
+        'description': '%s searched' % 'Membership',
         'user': request.user,
         'request': request,
         'source': 'memberships'
@@ -68,13 +72,6 @@ def membership_list(request, template_name="memberships/list.html"):
 
     return render_to_response(template_name, {'members': members, 'types': types},
         context_instance=RequestContext(request))  
-    
-def membership_search(request):
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=memberships.membership&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('membership.list'))  
 
 
 @login_required
