@@ -66,7 +66,7 @@ def list(request, template_name="stories/list.html"):
         stories = Story.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'stories.view_story')
-        stories = File.objects.filter(filters).distinct()
+        stories = Story.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             stories = stories.select_related()
     stories = stories.order_by('-create_dt')
