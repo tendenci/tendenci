@@ -1,32 +1,11 @@
 {% load base_filters %}
 {% load base_tags %}
-{% load avatar_tags %}
-{% load profile_tags %}
-{% load perm_tags %}
 {% load i18n %}
-
-{% get_or_create_profile_for profile.user as "user_this_profile" %}
-{% assign can_edit_user profile|args:user|call:'allow_edit_by' %}
-{% is_admin profile.user as admin %}
-{% is_admin user as viewer_admin %}
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
-        {% if user.is_authenticated %}
-            <div class="submitted">{% blocktrans with profile.create_dt|date:"long" as create_date %}Created on {{ create_date }}
-                by:{% endblocktrans %} <a href="{{ profile.creator.get_absolute_url }}">
-                {% if profile.creator.first_name %}{{ profile.creator.first_name }} {{ profile.creator.last_name }}
-                {% else %}
-                {{ profile.creator }}
-                {% endif %}</a>
-            </div>
-            <div class="submitted">{% blocktrans with profile.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
-                by:{% endblocktrans %} <a href="{{ profile.owner.get_absolute_url }}">
-                {% if profile.owner.first_name %}{{ profile.owner.first_name }} {{ profile.owner.last_name }}
-                {% else %}
-                {{ profile.owner }}
-                {% endif %}</a>
-            </div>
+        {% if admin or user == profile.creator or user == profile.owner %}
+            {% meta_creator_owner profile %}
         {% endif %}
         
     </div>
@@ -34,7 +13,7 @@
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
-{% if can_edit_user %}
+{% if admin %}
 <div class="editor-bar">
 
     <div class="perm-status">
@@ -56,7 +35,6 @@
                 <li>
                     <a href="{% url auth_password_change profile.user.id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
                 </li> 
-                {% if viewer_admin %}
                     <li>
                         <a href="{% url profile.edit_perms profile.user.id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                     </li>
@@ -66,7 +44,6 @@
                     <li>
                         <a href="{% url profile.delete profile.user.id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
                     </li>
-                {% endif %}
             </ul>
         </div>
         </li>
