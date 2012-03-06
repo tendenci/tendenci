@@ -18,14 +18,14 @@
 {{ block.super }}
 <div class="t">
 {% users_nav request.user user_this %}
-    <h1>{% trans "Users Search" %}</h1>
+    <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "Users Search" %}{% else %}{% trans "Users List" %}{% endif %}</h1>
 	{{ MODULE_USERS_USERSEARCHSTATEMENT }}
 	{% profile_search %}
     {% autopaginate profiles 10 %}
 
 	<div class="profiles-wrap">
     {% for profile in profiles %}
-    {% with profile.object as profile %}
+    {% with profile|get_object as profile %}
 		{% include 'profiles/search-result.html' %}
 	{% endwith %}
 	{% empty %}
