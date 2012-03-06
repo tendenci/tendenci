@@ -60,11 +60,28 @@ def index(request, template_name="help_files/index.html"):
 
 def search(request, template_name="help_files/search.html"):
     """ Help Files Search """
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=help_files.helpfile&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
+    query = request.GET.get('q', None)
+
+    if get_setting('site', 'global', 'searchindex') and query:
+        help_files = HelpFile.objects.search(query, user=request.user)
     else:
-        return HttpResponseRedirect(reverse('help_files'))
+        filters = get_query_filters(request.user, 'help_files.view_helpfile')
+        help_files = HelpFile.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            help_files = help_files.select_related()
+
+    log_defaults = {
+        'event_id' : 1000400,
+        'event_data': '%s searched by %s' % ('Help File', request.user),
+        'description': '%s searched' % 'Help File',
+        'user': request.user,
+        'request': request,
+        'source': 'help_files'
+    }
+    EventLog.objects.log(**log_defaults)
+
+    return render_to_response(template_name, {'help_files':help_files}, 
+        context_instance=RequestContext(request))
 
 
 def topic(request, id, template_name="help_files/topic.html"):
