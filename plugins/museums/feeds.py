@@ -11,7 +11,7 @@ class LatestEntriesFeed(SubFeed):
     description =  "Latest Museums by %s" % get_setting('site','global','sitedisplayname')
 
     def items(self):
-        items = Musuem.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')[:20]
+        items = Museum.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')[:20]
         return items
 
     def item_title(self, item):
@@ -32,7 +32,7 @@ class MuseumSitemap(TendenciSitemap):
     priority = 0.5
 
     def items(self):
-        items = Musuem.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
+        items = Museum.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items
 
     def lastmod(self, obj):
