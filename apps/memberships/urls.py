@@ -5,7 +5,7 @@ urlpatterns = patterns("memberships.views",
     # memberships
     url(r"^$", "membership_index", name="membership.index"),
     url(r"^search/$", "membership_search", name="membership.search"),
-    url(r"^list/$", "membership_list", name="membership.list"),
+    #url(r"^list/$", "membership_list", name="membership.list"),
     url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
 
     # notices
