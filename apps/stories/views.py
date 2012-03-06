@@ -8,13 +8,14 @@ from django.conf import settings
 from django.contrib import messages
 
 from base.http import Http403
+from site_settings.utils import get_setting
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 
 
-def index(request, id=None, template_name="stories/view.html"):
+def details(request, id=None, template_name="stories/view.html"):
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
     
@@ -52,9 +53,22 @@ def print_details(request, id, template_name="stories/print_details.html"):
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
     
-def search(request, template_name="stories/search.html"):
+def list(request, template_name="stories/list.html"):
+    """
+    This page lists out all stories from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through stories.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    stories = Story.objects.search(query, user=request.user)
+
+    if has_index and query:
+        stories = Story.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'stories.view_story')
+        stories = File.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            stories = stories.select_related()
     stories = stories.order_by('-create_dt')
 
     log_defaults = {
@@ -69,8 +83,10 @@ def search(request, template_name="stories/search.html"):
     
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
-    
-    
+
+def search(request):
+    return HttpResponseRedirect(reverse('stories'))
+
 @login_required   
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
     
