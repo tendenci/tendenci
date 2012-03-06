@@ -17,10 +17,12 @@ class SearchResultNode(IncludeNode):
         """
         try:
             result = self.result.resolve(context)
-            try:
+
+            if hasattr(result, 'object'):
                 result_object = result.object
-            except:
+            else:
                 result_object = result
+
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
             # class_name is static - it won't be changed by the user
             class_name = result_object.__class__.__name__.lower()
