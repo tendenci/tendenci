@@ -424,7 +424,7 @@ def email_registrants(event, email, **kwargs):
         
         email.body = tmp_body  # restore to the original
         
-def email_admins(event, event_price, self_reg8n, reg8n):
+def email_admins(event, event_price, self_reg8n, reg8n, registrants):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
@@ -438,6 +438,7 @@ def email_admins(event, event_price, self_reg8n, reg8n):
             'SITE_GLOBAL_SITEURL': site_url,
             'self_reg8n': self_reg8n,
             'reg8n': reg8n,
+            'registrants': registrants,
             'event': event,
             'price': event_price,
             'is_paid': reg8n.invoice.balance == 0,

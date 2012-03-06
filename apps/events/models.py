@@ -450,6 +450,14 @@ class Registration(models.Model):
 
         payment_attempts = self.invoice.payment_set.count()
 
+        registrants = self.registrant_set.all().order_by('id')
+        for registrant in registrants:
+            #registrant.assign_mapped_fields()
+            if registrant.custom_reg_form_entry:
+                registrant.name = registrant.custom_reg_form_entry.__unicode__()
+            else:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+
         # only send email on success! or first fail
         if payment.is_paid or payment_attempts <= 1:
             notification.send_emails(
@@ -460,6 +468,7 @@ class Registration(models.Model):
                     'site_url': site_url,
                     'self_reg8n': self_reg8n,
                     'reg8n': self,
+                    'registrants': registrants,
                     'event': self.event,
                     'price': self.invoice.total,
                     'is_paid': payment.is_paid,
@@ -467,7 +476,7 @@ class Registration(models.Model):
                 True,  # notice saved in db
             )
             #notify the admins too
-            email_admins(self.event, self.invoice.total, self_reg8n, self)
+            email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
     @property
     def canceled(self):
