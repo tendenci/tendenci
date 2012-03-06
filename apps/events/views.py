@@ -1050,12 +1050,19 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 if reg8n_created:
                     # update the spots taken on this event
                     update_event_spots_taken(event)
+                    registrants = reg8n.registrant_set.all().order_by('id')
+                    for registrant in registrants:
+                        #registrant.assign_mapped_fields()
+                        if registrant.custom_reg_form_entry:
+                            registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                        else:
+                            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
                     if is_credit_card_payment:
                         # online payment
                         # get invoice; redirect to online pay
                         # email the admins as well
-                        email_admins(event, event_price, self_reg8n, reg8n)
+                        email_admins(event, event_price, self_reg8n, reg8n, registrants)
                         
                         return HttpResponseRedirect(reverse(
                             'payments.views.pay_online',
@@ -1065,6 +1072,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                         # offline payment:
                         # send email; add message; redirect to confirmation
                         primary_registrant = reg8n.registrant
+                        
                         if primary_registrant and  primary_registrant.email:
                             notification.send_emails(
                                 [primary_registrant.email],
@@ -1074,6 +1082,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                     'SITE_GLOBAL_SITEURL': site_url,
                                     'self_reg8n': self_reg8n,
                                     'reg8n': reg8n,
+                                    'registrants': registrants,
                                     'event': event,
                                     'price': event_price,
                                     'is_paid': reg8n.invoice.balance == 0
@@ -1081,7 +1090,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                 True, # save notice in db
                             )                            
                             #email the admins as well
-                            email_admins(event, event_price, self_reg8n, reg8n)
+                            email_admins(event, event_price, self_reg8n, reg8n, registrants)
                         
                     # log an event
                     log_defaults = {
