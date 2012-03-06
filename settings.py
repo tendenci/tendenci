@@ -95,7 +95,7 @@ STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-65-2/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
-AVATAR_DEFAULT_URL = STATIC_URL + '/images/icons/default-user-80.jpg'
+AVATAR_DEFAULT_URL = STATIC_URL + 'images/icons/default-user-80.jpg'
 AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
