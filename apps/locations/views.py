@@ -36,10 +36,14 @@ def index(request, id=None, template_name="locations/view.html"):
 
 def list(request, template_name="locations/list.html"):
     query = request.GET.get('q', None)
-    filters = get_query_filters(request.user, 'locations.view_location')
-    locations = Location.objects.filter(filters).distinct()
-    if not request.user.is_anonymous():
-        locations = locations.select_related()
+
+    if get_setting('site', 'global', 'searchindex') and query:
+        locations = Location.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'locations.view_location')
+        locations = Location.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            locations = locations.select_related()
 
     locations = locations.order_by('-create_dt')
 
@@ -57,12 +61,9 @@ def list(request, template_name="locations/list.html"):
         context_instance=RequestContext(request))
 
 
-def search(request, template_name="locations/search.html"):
-    if get_setting('site', 'global', 'searchindex'):
-        haystack_url = "%s?models=locations.location&q=%s" % (reverse('haystack_search'),request.GET.get('q', ''))
-        return HttpResponseRedirect(haystack_url)
-    else:
-        return HttpResponseRedirect(reverse('articles'))
+def search(request):
+    return HttpResponseRedirect(reverse('locations'))
+
 
 def nearest(request, template_name="locations/nearest.html"):
     locations = []
