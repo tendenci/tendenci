@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
+from django.db.models import Q
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.contrib.auth.decorators import login_required
@@ -379,7 +380,7 @@ def entries_export(request, id):
     return response
 
 
-def search(request, template_name="forms/search.html"):
+def list(request, template_name="forms/list.html"):
     if not has_perm(request.user,'forms.view_form'):
         raise Http403
 
@@ -387,7 +388,7 @@ def search(request, template_name="forms/search.html"):
     forms = Form.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
     if query:
-        forms = forms.filter(title__icontains=query)
+        forms = forms.filter(Q(title__icontains=query)|Q(intro__icontains=query)|Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
 
