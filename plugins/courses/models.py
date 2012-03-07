@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 
 from perms.models import TendenciBaseModel
@@ -35,6 +37,10 @@ class Course(TendenciBaseModel):
     deadline = models.DateTimeField(_(u'Deadline'), default=datetime(year=dd_year, month=dd_month, day=dd_day))
     close_after_deadline = models.BooleanField(_(u'Close After Deadline'), default=False)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
     
     objects = CourseManager()
     
