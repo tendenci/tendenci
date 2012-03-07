@@ -5,8 +5,9 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from perms.utils import has_perm
-from perms.utils import is_admin
+from perms.utils import is_admin, get_query_filters
 from event_logs.models import EventLog
+from site_settings.utils import get_setting
 
 from models import CaseStudy, Service, Technology
 
@@ -38,7 +39,14 @@ def index(request, slug=None, template_name="case_studies/view.html"):
 
 def search(request, template_name="case_studies/search.html"):
     query = request.GET.get('q', None)
-    case_studies = CaseStudy.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        case_studies = CaseStudy.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'case_studies.view_casestudy')
+        case_studies = CaseStudy.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            case_studies = case_studies.select_related()
+        
     case_studies = case_studies.order_by('-create_dt')
     services = Service.objects.all()
     technologies = Technology.objects.all()
@@ -54,13 +62,20 @@ def search(request, template_name="case_studies/search.html"):
     EventLog.objects.log(**log_defaults)
 
     return render_to_response(template_name, {'case_studies': case_studies, 'services': services, 'technologies': technologies},
-        context_instance=RequestContext(request))        
+        context_instance=RequestContext(request))  
+          
 def service(request, id, template_name="case_studies/search.html"):
     "List of case studies by service"
     service = get_object_or_404(Service, pk=id)
     query = '"service:%s"' % service
 
-    case_studies = CaseStudy.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        case_studies = CaseStudy.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'case_studies.view_casestudy')
+        case_studies = CaseStudy.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            case_studies = case_studies.select_related()
 
     return render_to_response(template_name, {'service':service, 'case_studies': case_studies}, 
         context_instance=RequestContext(request))
@@ -70,7 +85,13 @@ def technology(request, id, template_name="case_studies/search.html"):
     technology = get_object_or_404(Technology, pk=id)
     query = '"technology:%s"' % technology
 
-    case_studies = CaseStudy.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        case_studies = CaseStudy.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'case_studies.view_casestudy')
+        case_studies = CaseStudy.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            case_studies = case_studies.select_related()
 
     return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies}, 
         context_instance=RequestContext(request))
