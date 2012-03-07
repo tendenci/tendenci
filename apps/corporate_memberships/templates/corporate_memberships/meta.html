@@ -1,16 +1,10 @@
-{% load corporate_memberships_tags %}
-{% load tagging_tags %}
 {% load base_tags %}
 {% load base_filters %}
-{% load category_tags %}
-{% load perm_tags %}
 {% load i18n %}
 
-{% is_admin user as admin %}
-{% allow_edit_corp corporate_membership user as allow_edit %}
-<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left"> 
-        {% if allow_edit %}
+        {% if admin or user == corporate_membership.creator or user == corporate_membership.owner %}
             {% meta_creator_owner corporate_membership %}
         {% endif %}
     </div>
@@ -21,7 +15,7 @@
     
 </div>
 
-{% if allow_edit %}
+{% if admin %}
 <div class="editor-bar">
 
     <div class="perm-status">
@@ -40,12 +34,9 @@
 				<li>
 					<a class="option-link roster" href="{% url corp_memb.roster_search %}?name={{corporate_membership.name|urlencode}}">{% trans "Roster" %}</a>
 				</li>				
-				
-				{% if admin %}
 					<li>
 						<a class="option-link delete" href="{% url corp_memb.delete corporate_membership.pk %}">{% trans "Delete" %}</a>
 					</li>				
-				{% endif %}
             </ul>
         </div>
         </li>
