@@ -7,9 +7,9 @@ if not urlpath:
     urlpath = "locations"
 
 urlpatterns = patterns('',                  
-    url(r'^%s/$' % urlpath, 'locations.views.list', name="locations"),
+    url(r'^%s/$' % urlpath, 'locations.views.search', name="locations"),
     url(r'^%s/(?P<id>\d+)/$' % urlpath, 'locations.views.index', name="location"),
-    url(r'^%s/search/$' % urlpath, 'locations.views.search', name="location.search"),
+    url(r'^%s/search/$' % urlpath, 'locations.views.search_redirect', name="location.search"),
     url(r'^%s/nearest/$' % urlpath, 'locations.views.nearest', name="location.nearest"),
     url(r'^%s/print-view/(?P<id>\d+)/$' % urlpath, 'locations.views.print_view', name="location.print_view"),
     url(r'^%s/add/$' % urlpath, 'locations.views.add', name="location.add"),
