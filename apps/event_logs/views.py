@@ -21,6 +21,7 @@ from event_logs.utils import day_bars, month_days,\
     request_month_range
 from event_logs.models import EventLog, EventLogBaseColor, EventLogColor
 from event_logs.forms import EventLogSearchForm, EventsFilterForm
+from event_logs.colors import non_model_event_logs
 
 
 def index(request, id=None, template_name="event_logs/view.html"):
@@ -224,6 +225,20 @@ def info(request):
                     'label': model.replace('_', ' '),
                     'event_logs':sorted(log_list, key=lambda x: x['label']),
                 })
+    for model in non_model_event_logs.keys():
+        logs = non_model_event_logs[model]
+        log_list = []
+        for log in logs.keys():
+            log_list.append({
+                'label': log.replace('_', ' '),
+                'id': logs[log][0],
+                'color':logs[log][1],
+                'event_logs': sorted(log_list, key=lambda x: x['label'])
+            })
+        logged_models.append({
+            'label': model.replace('_', ' '),
+            'event_logs':sorted(log_list, key=lambda x: x['label']),
+        })
     return render_to_response('event_logs/info.html', {
         'logged_models':sorted(logged_models, key=lambda x: x['label']),
     }, context_instance=RequestContext(request))
