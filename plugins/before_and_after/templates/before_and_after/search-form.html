@@ -24,8 +24,9 @@
     {% endif %}
   {% endfor %}
   </select>
-    
+    {% if SITE_GLOBAL_SEARCHINDEX %}
     <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+    {% endif %}
     
     <input type="submit" value="Search" />
     </form>
