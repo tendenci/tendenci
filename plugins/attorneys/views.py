@@ -5,36 +5,24 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import has_perm
+from perms.utils import has_perm, get_query_filters
 from event_logs.models import EventLog
 from attorneys.models import Attorney
 from attorneys.utils import get_vcard_content
-
-def index(request, template_name='attorneys/index.html'):
-    attorneys = Attorney.objects.search(query=None, user=request.user)
-    attorneys = attorneys.order_by('ordering','create_dt')
-    
-    log_defaults = {
-        'event_id' : 496000,
-        'event_data': '%s page viewed by %s' % ('Attorneys', request.user),
-        'description': '%s viewed' % 'Attorneys',
-        'user': request.user,
-        'request': request,
-        'source': 'attorneys'
-    }
-    EventLog.objects.log(**log_defaults)
-    
-    return render_to_response(template_name, 
-        {
-            'attorneys':attorneys,
-        },
-        context_instance=RequestContext(request))
 
 def search(request, template_name='attorneys/search.html'):
     category = request.GET.get('category', None)
     q = request.GET.get('q', None)
     
-    attorneys = Attorney.objects.search(query=q, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and q:
+        attorneys = Attorney.objects.search(query=q, user=request.user)
+        
+    else:
+        filters = get_query_filters(request.user, 'attorneys.view_attorney')
+        attorneys = Attorney.objects.filter(filters).distinct()
+        if not request.user.is_authenticated():
+            attorneys = attorneys.select_related()
+    
     attorneys = attorneys.order_by('ordering','create_dt')
     
     if category:
