@@ -1,11 +1,21 @@
+#info {
+    padding-top: 20px;
+}
+
+#info tr,td {
+    padding: 5px;
+}
+
 #info .event-model {
-    padding-bottom: 10px;
+    border-bottom: 1px solid #000000;
 }
 
-#info .event-model-logs {
-    padding-left: 10px;
-}
-
-#info .event-model .event-model-label {
+#info .event-model-label {
     text-transform: uppercase;
+    padding-top: 15px;
+}
+
+#info .color-box {
+    width: 10px;
+    height: 10px;
 }
