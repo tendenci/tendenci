@@ -26,7 +26,7 @@
                 <div class="page-select">
                     {{ page_select.pages }}
                 </div>
-                <input class="nav-add" type="submit" value="{% trans 'Add selected pages to' %} {{ current_nav.title }}" />
+                <input class="nav-add" type="submit" value="{% trans 'Add selected pages' %}" />
                 </div>
             </form>
             <a id="add-custom" >{% trans 'Add a Custom Navigation Item' %}</a>
@@ -117,8 +117,8 @@
         <div class="nav-item" id="base"> 
             <input type="hidden" name="form-0-id" id="id_form-0-id" /> 
             <a href="#" class="nav-item-label"><b>+ </b></a>
-            <a href="#" class="nav-move-right">&rarr;</a>
-            <a href="#" class="nav-move-left">&larr;</a>
+            <a href="#" class="nav-move-right"><img class="nav-move-image" src="{{ STATIC_URL }}images/arrow-right.jpg" /></a>
+            <a href="#" class="nav-move-left"><img class="nav-move-image" src="{{ STATIC_URL }}images/arrow-left.jpg" /></a>
             <div class="nav-item-detail">
                 <table>
                 <tr>
@@ -164,5 +164,5 @@
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.form.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/navs.js"></script>
+    <script type="text/javascript" src="{{ LOCAL_STATIC_URL }}js/navs.js"></script>
 {% endblock %}
