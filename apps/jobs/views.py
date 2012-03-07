@@ -59,7 +59,7 @@ def details(request, slug=None, template_name="jobs/view.html"):
         raise Http403
 
 
-def search(request, template_name="jobs/list.html"):
+def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
