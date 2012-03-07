@@ -2,8 +2,8 @@ from django.conf.urls.defaults import patterns, url
 from resumes.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('',                  
-    url(r'^$', 'resumes.views.index', name="resumes"),
-    url(r'^search/$', 'resumes.views.search', name="resume.search"),
+    url(r'^$', 'resumes.views.search', name="resumes"),
+    url(r'^search/$', 'resumes.views.search_redirect', name="resume.search"),
     url(r'^print-view/(?P<slug>[\w\-\/]+)/$', 'resumes.views.print_view', name="resume.print_view"),
     url(r'^add/$', 'resumes.views.add', name="resume.add"),
     url(r'^edit/(?P<id>\d+)/$', 'resumes.views.edit', name="resume.edit"),
