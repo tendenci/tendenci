@@ -40,7 +40,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "resumes" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url resume.search %}">{% trans "Search Resumes" %}</a></li>
+            <li><a href="{% url resumes %}">{% trans "Resume List" %}</a></li>
             {% if user.is_authenticated %}
                 <li><a href="{% url resume.add %}">{% trans "Add Resume" %}</a></li>
             {% endif %}
