@@ -10,7 +10,7 @@ from perms.utils import has_perm, has_view_perm, get_query_filters, is_admin
 from models import Testimonial
 
 def details(request, pk=None, template_name="testimonials/view.html"):
-    if not pk: return HttpResponseRedirect(reverse('testimonial.search'))
+    if not pk: return HttpResponseRedirect(reverse('testimonials'))
     testimonial = get_object_or_404(Testimonial, pk=pk)
 
     # non-admin can not view the non-active content
