@@ -1,6 +1,9 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
+
+from perms.object_perms import ObjectPermission
 from perms.models import TendenciBaseModel
 from timezones.fields import TimeZoneField
 from contacts.managers import ContactManager
@@ -65,6 +68,10 @@ class Contact(TendenciBaseModel):
     companies = models.ManyToManyField(Company, blank=True)
 
     message = models.TextField()
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     # TODO: consider attachments
 

@@ -7,6 +7,9 @@ from parse_uri import ParseUri
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
+
+from perms.object_perms import ObjectPermission
 from site_settings.utils import get_setting
 from tagging.fields import TagField
 from files.models import File, file_directory
@@ -45,6 +48,10 @@ class Story(TendenciBaseModel):
     image = models.ForeignKey('StoryPhoto', 
         help_text=_('Photo that represents this story.'), null=True, blank=True)
     tags = TagField(blank=True, default='')
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = StoryManager()
 

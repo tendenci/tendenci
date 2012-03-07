@@ -12,6 +12,7 @@ from django.core.urlresolvers import reverse
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from perms.utils import is_admin, is_member, is_developer, get_query_filters
 from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
@@ -33,6 +34,10 @@ class PhotoSet(TendenciBaseModel):
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
     author = models.ForeignKey(User)
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     class Meta:
         verbose_name = _("photo")
@@ -128,7 +133,11 @@ class Image(ImageModel, TendenciBaseModel):
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     def get_meta(self, name):
         """
         This method is standard across all models that are
