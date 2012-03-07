@@ -32,7 +32,7 @@
     </div>
     <div class="bna-search-wrap">
         {% for bna in bnas %}
-        {% with bna.object as bna %}
+        {% with bna|get_object as bna %}
             <div class="bna-search-item">
                 <div class="bna-featured">
                 <a href="{{ bna.get_absolute_url }}">
