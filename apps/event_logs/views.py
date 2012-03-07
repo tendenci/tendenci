@@ -21,7 +21,7 @@ from event_logs.utils import day_bars, month_days,\
     request_month_range
 from event_logs.models import EventLog, EventLogBaseColor, EventLogColor
 from event_logs.forms import EventLogSearchForm, EventsFilterForm
-from event_logs.colors import non_model_event_logs
+from event_logs.colors import non_model_event_logs, get_color
 
 
 def index(request, id=None, template_name="event_logs/view.html"):
@@ -136,7 +136,7 @@ def source_colors(data):
 
 def event_colors(data):
     for item in data:
-        item['color'] = EventLogColor.get_color(item['event_id'])
+        item['color'] = get_color(str(item['event_id']))
 
 
 @staff_member_required
