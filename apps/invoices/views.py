@@ -8,6 +8,7 @@ from invoices.forms import AdminNotesForm, AdminAdjustForm
 from perms.utils import is_admin
 from event_logs.models import EventLog
 from notification.utils import send_notifications
+from site_settings.utils import get_setting
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -60,7 +61,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
-    if query:
+    if get_setting('site', 'global', 'searchindex') and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()
