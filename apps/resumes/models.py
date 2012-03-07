@@ -94,10 +94,9 @@ class Resume(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("resume", [self.slug])
-    
+
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or uuid.uuid1()
         super(Resume, self).save(*args, **kwargs)
 
     def __unicode__(self):
