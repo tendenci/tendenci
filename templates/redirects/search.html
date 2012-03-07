@@ -3,6 +3,7 @@
 {% load redirect_tags %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}Search{% endblock %}
@@ -14,41 +15,15 @@
 
 {% block body %}
 <div class="t">
- {% redirect_nav request.user %}
-    <h1>{% trans "Redirect Search" %}</h1>
+    {% redirect_nav request.user %}
+    <h1>{% firstof MODULE_REDIRECTS_LABEL_PLURAL "Redirects" %}</h1>
 	 
 	{% redirect_search %}
     {% autopaginate redirects 10 %}
 	
 	<div class="redirects-wrap">
     {% for redirect in redirects %}
-		<div class="redirect-wrap">
-            <div class="quick-options">
-			{% redirect_options request.user redirect %}
-		    </div>
-
-            <p>
-            	<strong>{% trans "From URL:" %}</strong>&nbsp;<a href="/{{ redirect.from_url }}">{{ redirect.from_url }}</a>
-            	{% if redirect.uses_regex %}
-            	&nbsp;{% trans "(Uses Regular Expression)" %}
-   				{% endif %}
-           	</p>
-            <p><strong>{% trans "To URL:" %}</strong>&nbsp;{{ redirect.to_url }}</p>
-            <p>
-            	<strong>{% trans "HTTP Status:" %}</strong>&nbsp;{{ redirect.http_status }}
-            	{% if redirect.http_status == 302 %}
-            		&nbsp;-&nbsp;{% trans "Temporary Redirect" %}
-            	{% else %}
-            		&nbsp;-&nbsp;{% trans "Permanent Redirect" %}
-            	{% endif %}
-            </p>
-
-            <!-- delete-article form -->
-            <form name="redirect-delete" method="POST" action="{% url redirect.delete redirect.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
-
-		</div>
+        {% search_result redirect %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}
