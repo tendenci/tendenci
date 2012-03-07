@@ -69,7 +69,7 @@ def search(request, template_name="stories/search.html"):
         stories = Story.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             stories = stories.select_related()
-    stories = stories.order_by('-create_dt')
+        stories = stories.order_by('-create_dt')
 
     log_defaults = {
         'event_id' : 1060400,
