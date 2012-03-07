@@ -1,71 +1,50 @@
 {% load base_filters %}
-{% load attorneys_tags %}
-{% load perm_tags %}
-{% load tagging_tags %}
+{% load base_tags %}
 
-{% has_perm user attorneys.change_attorney attorney as can_edit %}
-{% has_perm user attorneys.delete_attorney attorney as can_delete %}
-{% tags_for_object attorney as tags %}
-
-
-            <div class="meta {% if not user.is_authenticated and not tags %}anon{% endif %}">
-    			<div class="meta-left">
-                	{% if tags %}
-    				<div class="tags"><strong>Tags: </strong>
-    					{% for tag in tags %}
-    						<a href="{% url attorney.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-    					{% endfor %}
-    				</div>
-    				{% endif %}
-    				
-    				{% if user.is_authenticated %}
-                	<div class="submitted">Created {{ attorney.create_dt|date:"long" }}
-                	by <a href="{{ attorney.creator.get_absolute_url }}">
-                	{% if attorney.creator.first_name %}{{ attorney.creator.first_name }} {{ attorney.creator.last_name }}
-                    {% else %}
-                    {{ attorney.creator }}
-                    {% endif %}</a>
-                    </div>
-                    
-                    <div class="submitted">Last updated {{ attorney.update_dt|date:"long" }}
-                	by <a href="{{ attorney.owner.get_absolute_url }}">
-                	{% if attorney.owner.first_name %}{{ attorney.owner.first_name }} {{ attorney.owner.last_name }}
-                    {% else %}
-                    {{ attorney.owner }}
-                    {% endif %}</a>
-                    </div>
-                    {% endif %}
-                    
-                </div>
-                <div class="meta-right">
-    				<a class="share-link"></a>
-                </div>
-            </div>
-            {% if can_edit %}
-            <div class="editor-bar">
-
-                <div class="perm-status">
-                <ul>
-                    <li>{% obj_perms attorney %}</li>
-                    <li>{% obj_status attorney %}</li>
-                </ul>
-                </div>
-                <div class="edit-links">
-                <ul>
-                    <li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20attorneys-{{ attorney.pk }}">Eventlogs</a></li>
-                    <li><a class="edit-link" href="{% url admin:attorneys_attorney_change attorney.pk %}?next={{ request.path }}">Edit</a></li>
-                    <li><a class="options-link" href="#">Options <small>&#9650;</small></a>
-                    <div class="options-list">
-                        <ul>
-                        {% if can_delete %}
-    					<li>
-    						<a class="delete" href="{% url admin:attorneys_attorney_delete attorney.pk %}">Delete</a>
-    					</li>				
-    				    {% endif %}                            
-                        </ul>
-                    </div>
-                    </li>
-                </ul>
-                </div>
-            </div> 
+<div class="meta {% if not user.is_authenticated and not tags %}anon{% endif %}">
+	<div class="meta-left">
+    	{% if attorney.tags %}
+		<div class="tags"><strong>Tags: </strong>
+			{% for tag in attorney.tags|tag_split %}
+				<a href="{% url attorneys.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+			{% endfor %}
+		</div>
+		{% endif %}
+		
+		{% if user.is_authenticated %}
+    		{% if admin or user == attorney.creator or user == attorney.owner %}
+                {% meta_creator_owner attorney %}
             {% endif %}
+        {% endif %}
+        
+    </div>
+    <div class="meta-right">
+		<a class="share-link"></a>
+    </div>
+</div>
+{% if admin %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ attorney.obj_perms }}</li>
+        <li>{{ attorney.obj_status  }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20attorneys-{{ attorney.pk }}">Eventlogs</a></li>
+        <li><a class="edit-link" href="{% url admin:attorneys_attorney_change attorney.pk %}?next={{ request.path }}">Edit</a></li>
+        <li><a class="options-link" href="#">Options <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+			<li>
+				<a class="delete" href="{% url admin:attorneys_attorney_delete attorney.pk %}">Delete</a>
+			</li>				
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}

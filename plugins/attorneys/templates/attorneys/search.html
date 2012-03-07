@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load attorneys_tags %}
 {% load perm_tags %}
+{% load base_filters %}
 
 {% block title %}Attorneys{% endblock %}
 
@@ -23,7 +24,7 @@
     {% endif %}
     <div class="attorneys-wrap">
         {% for attorney in attorneys %}
-        {% with attorney.object as attorney %}
+        {% with attorney|get_object as attorney %}
         {% include "attorneys/search-result.html" %}
         {% endwith %}
         {% empty %}
