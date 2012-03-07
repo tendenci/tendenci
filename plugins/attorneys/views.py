@@ -10,6 +10,27 @@ from event_logs.models import EventLog
 from attorneys.models import Attorney
 from attorneys.utils import get_vcard_content
 
+def index(request, template_name='attorneys/index.html'):
+    filters = get_query_filters(request.user, 'attorneys.view_attorney')
+    attorneys = Attorney.objects.filter(filters).distinct()
+    attorneys = attorneys.order_by('ordering','create_dt')
+    
+    log_defaults = {
+        'event_id' : 496000,
+        'event_data': '%s page viewed by %s' % ('Attorneys', request.user),
+        'description': '%s viewed' % 'Attorneys',
+        'user': request.user,
+        'request': request,
+        'source': 'attorneys'
+    }
+    EventLog.objects.log(**log_defaults)
+    
+    return render_to_response(template_name,
+        {
+            'attorneys':attorneys,
+        },
+        context_instance=RequestContext(request))
+    
 def search(request, template_name='attorneys/search.html'):
     category = request.GET.get('category', None)
     q = request.GET.get('q', None)
@@ -20,7 +41,7 @@ def search(request, template_name='attorneys/search.html'):
     else:
         filters = get_query_filters(request.user, 'attorneys.view_attorney')
         attorneys = Attorney.objects.filter(filters).distinct()
-        if not request.user.is_authenticated():
+        if request.user.is_authenticated():
             attorneys = attorneys.select_related()
     
     attorneys = attorneys.order_by('ordering','create_dt')
