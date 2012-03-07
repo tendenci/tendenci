@@ -1,12 +1,9 @@
-{% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
-{% load perm_tags %}
 {% load i18n %}
 
-{% is_admin user as admin %}
 
-<div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
         {% if admin or user == membership.creator or user == membership.owner or user == membership.user %}
                 {% meta_creator_owner membership %}
