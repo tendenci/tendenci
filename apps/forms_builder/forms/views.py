@@ -380,7 +380,7 @@ def entries_export(request, id):
     return response
 
 
-def search(request, template_name="forms/list.html"):
+def search(request, template_name="forms/search.html"):
     if not has_perm(request.user,'forms.view_form'):
         raise Http403
 

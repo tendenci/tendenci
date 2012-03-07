@@ -102,7 +102,7 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
     response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
     return response
 
-def search(request, template_name="files/list.html"):
+def search(request, template_name="files/search.html"):
     """
     This page lists out all files from newest to oldest.
     If a search index is available, this page will also

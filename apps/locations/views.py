@@ -34,7 +34,7 @@ def index(request, id=None, template_name="locations/view.html"):
         raise Http403
 
 
-def search(request, template_name="locations/list.html"):
+def search(request, template_name="locations/search.html"):
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:

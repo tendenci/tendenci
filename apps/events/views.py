@@ -135,7 +135,12 @@ def details(request, id=None, template_name="events/view.html"):
         'addons': event.addon_set.filter(status=True),
     }, context_instance=RequestContext(request))
 
-def search(request, redirect=False, template_name="events/list.html"):
+
+def month_redirect(request):
+    return HttpResponseRedirect(reverse('event.month'))
+
+
+def search(request, redirect=False, template_name="events/search.html"):
     """
     This page lists out all the upcoming events starting
     from today.  If a search index is available, this page

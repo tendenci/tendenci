@@ -48,7 +48,7 @@ def index(request, slug=None, template_name="articles/view.html"):
         raise Http403
 
 
-def search(request, template_name="articles/list.html"):
+def search(request, template_name="articles/search.html"):
     get = dict(request.GET)
     query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
