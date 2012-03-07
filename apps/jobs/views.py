@@ -59,7 +59,7 @@ def details(request, slug=None, template_name="jobs/view.html"):
         raise Http403
 
 
-def list(request, template_name="jobs/list.html"):
+def search(request, template_name="jobs/list.html"):
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
@@ -86,7 +86,7 @@ def list(request, template_name="jobs/list.html"):
         context_instance=RequestContext(request))
 
 
-def search(request):
+def search_redirect(request):
     return HttpResponseRedirect(reverse('jobs'))
 
 

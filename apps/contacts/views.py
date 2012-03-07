@@ -22,7 +22,7 @@ def details(request, id=None, template_name="contacts/view.html"):
         raise Http403
 
 
-def list(request, template_name="contacts/list.html"):
+def search(request, template_name="contacts/list.html"):
     if request.user.is_anonymous():
         raise Http403
     if not has_perm(request.user,'contacts.view_contact'):
@@ -43,7 +43,7 @@ def list(request, template_name="contacts/list.html"):
         context_instance=RequestContext(request))
 
 
-def search(request):
+def search_redirect(request):
     return HttpResponseRedirect(reverse('contacts'))
 
 

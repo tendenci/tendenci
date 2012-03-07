@@ -34,7 +34,7 @@ def index(request, id=None, template_name="locations/view.html"):
         raise Http403
 
 
-def list(request, template_name="locations/list.html"):
+def search(request, template_name="locations/list.html"):
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
@@ -61,7 +61,7 @@ def list(request, template_name="locations/list.html"):
         context_instance=RequestContext(request))
 
 
-def search(request):
+def search_redirect(request):
     return HttpResponseRedirect(reverse('locations'))
 
 

@@ -14,7 +14,7 @@ from discounts.models import Discount, DiscountUse
 from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
-def list(request, template_name="discounts/search.html"):
+def search(request, template_name="discounts/search.html"):
     if not has_perm(request.user, 'discounts.view_discount'):
         raise Http403
 
