@@ -71,16 +71,15 @@ def search(request, template_name="stories/search.html"):
             stories = stories.select_related()
         stories = stories.order_by('-create_dt')
 
-    log_defaults = {
+    EventLog.objects.log(**{
         'event_id' : 1060400,
         'event_data': '%s searched by %s' % ('Story', request.user),
         'description': '%s searched' % 'Story',
         'user': request.user,
         'request': request,
         'source': 'stories'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    })
+
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
 
