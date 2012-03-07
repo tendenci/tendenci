@@ -1,5 +1,5 @@
 {% extends "default.html" %}
 
-{% block title %}Staff{% endblock %}
+{% block title %}{% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %}{% endblock %}
 
 {% block extra_body %}{{ block.super }}{% endblock %}
