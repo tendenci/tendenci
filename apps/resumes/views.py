@@ -38,7 +38,7 @@ def index(request, slug=None, template_name="resumes/view.html"):
     else:
         raise Http403
 
-def search(request, template_name="resumes/list.html"):
+def search(request, template_name="resumes/search.html"):
     """
     This page lists out all resumes from newest to oldest.
     If a search index is available, this page will also
