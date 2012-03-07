@@ -9,7 +9,7 @@ from django.forms.models import inlineformset_factory
 
 from base.http import Http403
 from perms.utils import get_notice_recipients, has_perm, update_perms_and_save
-from perms.utils import is_admin
+from perms.utils import is_admin, get_query_filters
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 
@@ -34,7 +34,14 @@ def search(request, template_name="courses/search.html"):
     """
     
     query = request.GET.get('q', None)
-    courses = Course.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        courses = Course.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'courses.view_course')
+        courses = Course.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            courses = courses.select_related()
+
     courses = courses.order_by('-create_dt')
 
     log_defaults = {
