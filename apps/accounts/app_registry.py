@@ -11,7 +11,6 @@ class AccountRegistry(LogRegistry):
         'account':{
             'login':('125200', '66CCFF'), # accounts app
             'impersonation':('1080000', 'FF0000'), # perms app
-            'homepage':('100000', '7F0000'), # base app
         },
     }
 
