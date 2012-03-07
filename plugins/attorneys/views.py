@@ -11,8 +11,11 @@ from attorneys.models import Attorney
 from attorneys.utils import get_vcard_content
 
 def index(request, template_name='attorneys/index.html'):
-    filters = get_query_filters(request.user, 'attorneys.view_attorney')
-    attorneys = Attorney.objects.filter(filters).distinct()
+    if get_setting('site', 'global', 'searchindex'):
+        attorneys = Attorney.objects.search(query=None, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'attorneys.view_attorney')
+        attorneys = Attorney.objects.filter(filters).distinct()
     attorneys = attorneys.order_by('ordering','create_dt')
     
     log_defaults = {
