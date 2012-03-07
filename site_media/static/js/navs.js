@@ -210,8 +210,9 @@ $(document).ready(function(){
         error: showResponse,
         dataType: 'json',
         clearForm: true,
-        resetForm: true,
+        resetForm: true
     };
+    
     $('#page-select').ajaxForm(options);
     
     //set the nav items to become sortable
@@ -223,6 +224,6 @@ $(document).ready(function(){
                     input = $($(items[i]).find('.ordering input'));
                     input.attr('value', i);
                 }
-            },
+            }
     });
 });
