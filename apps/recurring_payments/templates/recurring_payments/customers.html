@@ -69,6 +69,7 @@
 		</table>
 	</div>
 	
+	{% if SITE_GLOBAL_SEARCHINDEX %}
 	<div class="rp-search-box">
 	<form class="search-form" action="" method="get">
 	<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
@@ -78,6 +79,7 @@
 	<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
 	{% endif %}
 	</div>
+	{% endif %}
 	
 	
 	
