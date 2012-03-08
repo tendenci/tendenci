@@ -59,6 +59,7 @@ def directory_pricing_table(context):
 
 class ListDirectoriesNode(ListNode):
     model = Directory
+    perms = 'directories.view_directory'
 
 
 @register.tag
