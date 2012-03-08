@@ -53,7 +53,7 @@ def search(request, template_name="articles/search.html"):
     query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
     query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
-    query = ''.join(query)
+    query = ' '.join(query)
     if query_extra:
         query = '%s %s' % (query, ' '.join(query_extra))
 
