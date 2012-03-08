@@ -7,9 +7,10 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from event_logs.models import EventLog
-from perms.utils import has_perm, is_admin, update_perms_and_save, get_notice_recipients
+from site_settings.utils import get_setting
+from perms.utils import has_perm, is_admin, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
 
-from help_files.models import Topic, HelpFile, HelpFileMigration, Request
+from help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from help_files.forms import RequestForm, HelpFileForm
 
 try:
@@ -19,22 +20,39 @@ except:
 
 
 def index(request, template_name="help_files/index.html"):
-    "List all topics and all links"
+    """List all topics and all links"""
     topic_pks = []
-    help_files = HelpFile.objects.search(None, user=request.user)
+    filters = get_query_filters(request.user, 'help_files.view_helpfile')
 
-    # consolidate all the topics
-    for hf in help_files:
-        if hf.topic:
-            topic_pks.extend(hf.topic)
+    # Access the join table and iterate over a dict to avoid
+    # n+1 queries to get all of the correct topics.
+    byhelpfile = {}
+    for tp in HelpFile_Topics.objects.select_related('helpfile', 'topic').all():
+        byhelpfile.setdefault(tp.helpfile.id, []).append(tp.topic)
+    # Use stored lists
+    for hf in HelpFile.objects.filter(filters).distinct():
+        if byhelpfile.get(hf.id, ''):
+            for topic in byhelpfile[hf.id]:
+                topic_pks.append(topic.pk)
+
     topic_pks = sorted(list(set(topic_pks)))
 
     topics = Topic.objects.filter(pk__in=topic_pks)
     m = len(topics)/2
     topics = topics[:m], topics[m:] # two columns
-    most_viewed = HelpFile.objects.filter(allow_anonymous_view=True).order_by('-view_totals')[:5]
-    featured = HelpFile.objects.filter(is_featured=True, allow_anonymous_view=True)[:5]
-    faq = HelpFile.objects.filter(is_faq=True, allow_anonymous_view=True)[:3]
+    most_viewed = HelpFile.objects.filter(filters).order_by('-view_totals').distinct()[:5]
+    featured = HelpFile.objects.filter(filters).filter(is_featured=True).distinct()[:5]
+    faq = HelpFile.objects.filter(filters).filter(is_faq=True).distinct()[:3]
+
+    log_defaults = {
+        'event_id' : 1000600,
+        'event_data': '%s index searched by %s' % ('Help File', request.user),
+        'description': '%s index searched' % 'Help File',
+        'user': request.user,
+        'request': request,
+        'source': 'help_files'
+    }
+    EventLog.objects.log(**log_defaults)
 
     return render_to_response(template_name, locals(), 
         context_instance=RequestContext(request))
@@ -43,8 +61,14 @@ def index(request, template_name="help_files/index.html"):
 def search(request, template_name="help_files/search.html"):
     """ Help Files Search """
     query = request.GET.get('q', None)
-    help_files = HelpFile.objects.search(query, user=request.user)
-    help_files = help_files.order_by('-create_dt')
+
+    if get_setting('site', 'global', 'searchindex') and query:
+        help_files = HelpFile.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'help_files.view_helpfile')
+        help_files = HelpFile.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            help_files = help_files.select_related()
 
     log_defaults = {
         'event_id' : 1000400,
@@ -65,19 +89,31 @@ def topic(request, id, template_name="help_files/topic.html"):
     topic = get_object_or_404(Topic, pk=id)
     query = None
 
-    help_files = HelpFile.objects.search(query, user=request.user)
-    help_files = help_files.filter(topic__in=[topic.pk])
+    filters = get_query_filters(request.user, 'help_files.view_helpfile')
+    help_files = HelpFile.objects.filter(filters).filter(topics__in=[topic.pk]).distinct()
+    if not request.user.is_anonymous():
+        help_files = help_files.select_related()
+
+    log_defaults = {
+        'event_id' : 1000400,
+        'event_data': '%s topic searched by %s' % ('Help File', request.user),
+        'description': '%s topic searched' % 'Help File',
+        'user': request.user,
+        'request': request,
+        'source': 'help_files'
+    }
+    EventLog.objects.log(**log_defaults)
 
     return render_to_response(template_name, {'topic':topic, 'help_files':help_files}, 
         context_instance=RequestContext(request))
 
 
 def details(request, slug, template_name="help_files/details.html"):
-    "Help file details"
+    """Help file details"""
     help_file = get_object_or_404(HelpFile, slug=slug)
-    HelpFile.objects.filter(pk=help_file.pk).update(view_totals=help_file.view_totals+1)
 
-    if has_perm(request.user, 'help_files.view_helpfile', help_file):
+    if has_view_perm(request.user, 'help_files.view_helpfile', help_file):
+        HelpFile.objects.filter(pk=help_file.pk).update(view_totals=help_file.view_totals+1)
         log_defaults = {
             'event_id' : 1000500,
             'event_data': '%s (%d) viewed by %s' % (help_file._meta.object_name, help_file.pk, request.user),
@@ -217,7 +253,7 @@ def requests(request, template_name="help_files/request_list.html"):
     """
         Display a list of help file requests
     """
-    if not is_admin(request.user):
+    if not has_perm(request.user, 'help_files.change_request'):
         raise Http403
     
     requests = Request.objects.all()

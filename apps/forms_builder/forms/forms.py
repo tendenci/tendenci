@@ -15,7 +15,7 @@ from site_settings.utils import get_setting
 from payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
+from perms.utils import is_admin, is_developer
 from captcha.fields import CaptchaField
 from user_groups.models import Group
 
@@ -106,6 +106,7 @@ class FormForForm(forms.ModelForm):
             
         if not self.user.is_authenticated(): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+
 
     def clean_pricing_option(self):
         pricing_pk = int(self.cleaned_data['pricing_option'])
@@ -213,6 +214,9 @@ class FormAdminForm(TendenciBaseForm):
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
 
+        if not is_developer(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])
         i = 0
@@ -313,6 +317,8 @@ class FormForm(TendenciBaseForm):
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
 
+        if not is_developer(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])

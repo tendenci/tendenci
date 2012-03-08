@@ -1,8 +1,10 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from perms.models import TendenciBaseModel 
+from perms.object_perms import ObjectPermission
 from locations.managers import LocationManager
 from entities.models import Entity
 from locations.utils import get_coordinates
@@ -30,13 +32,17 @@ class Location(TendenciBaseModel):
     hq = models.BooleanField(_('Headquarters'))
     entity = models.ForeignKey(Entity,null=True, blank=True)
 
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = LocationManager()
 
     class Meta:
         permissions = (("view_location","Can view location"),)
 
     def __unicode__(self):
-        return self.description
+        return self.location_name
 
     @models.permalink
     def get_absolute_url(self):

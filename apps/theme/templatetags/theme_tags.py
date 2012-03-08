@@ -4,10 +4,14 @@ from django.template import Library, Template, Variable
 from django.conf import settings
 from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode
+from django.contrib.auth.models import AnonymousUser, User
 
 from boxes.models import Box
+from perms.utils import get_query_filters, is_admin
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
+
+from theme.utils import get_theme_template
 
 register = Library()
 
@@ -26,12 +30,18 @@ class ThemeExtendsNode(ExtendsNode):
         if hasattr(parent, 'render'):
             return parent # parent is a Template object
         theme = context['THEME']
+        theme_template = get_theme_template(parent, theme=theme)
         try:
-            template = get_template("%s/templates/%s"%(theme,parent))
-        except TemplateDoesNotExist, e:
+            template = get_template(theme_template)
+        except TemplateDoesNotExist:
             #load the true default template directly to be sure
             #that we are not loading the active theme's template
-            template = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", parent)).read(), "utf-8"))
+            default_template = os.path.join(settings.PROJECT_ROOT, "templates", parent)
+            try:
+                default_file = file(default_template).read()
+            except IOError:
+                raise TemplateDoesNotExist(parent)
+            template = Template(unicode(default_file, "utf-8"))
         return template
         
 class ThemeConstantIncludeNode(ConstantIncludeNode):
@@ -40,11 +50,17 @@ class ThemeConstantIncludeNode(ConstantIncludeNode):
 
     def render(self, context):
         theme = context['THEME']
+        theme_template = get_theme_template(self.template_path, theme=theme)
         try:
             try:
-                t = get_template("%s/templates/%s" % (theme, self.template_path))
+                t = get_template(theme_template)
             except TemplateDoesNotExist:
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)).read(), "utf-8"))
+                default_template = os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)
+                try:
+                    default_file = file(default_template).read()
+                except IOError:
+                    raise TemplateDoesNotExist(template_name)
+                t = Template(unicode(default_file, "utf-8"))
             self.template = t
         except:
             if settings.TEMPLATE_DEBUG:
@@ -60,12 +76,18 @@ class ThemeIncludeNode(IncludeNode):
         try:
             template_name = self.template_name.resolve(context)
             theme = context['THEME']
+            theme_template = get_theme_template(template_name, theme=theme)
             try:
-                t = get_template("%s/templates/%s"%(theme,template_name))
+                t = get_template(theme_template)
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+                default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+                try:
+                    default_file = file(default_template).read()
+                except IOError:
+                    raise TemplateDoesNotExist(template_name)
+                t = Template(unicode(default_file, "utf-8"))
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
@@ -82,10 +104,14 @@ class SpaceIncludeNode(IncludeNode):
 
         if setting_value:
             # First try to render this as a box
-            query = '"pk:%s"' % (setting_value)
+            user = AnonymousUser()
+            if 'user' in context:
+                if isinstance(context['user'], User):
+                    user = context['user']
             try:
-                box = Box.objects.search(query=query).best_match()
-                context['box'] = box.object
+                filters = get_query_filters(user, 'boxes.view_box')
+                box = Box.objects.filter(filters).filter(pk=setting_value)
+                context['box'] = box[0]
                 template = get_template('theme_includes/box.html')
                 return template.render(context)
             except:
@@ -93,12 +119,18 @@ class SpaceIncludeNode(IncludeNode):
                 try:
                     template_name = setting_value
                     theme = context['THEME']
+                    theme_template = get_theme_template(template_name, theme=theme)
                     try:
-                        t = get_template("%s/templates/theme_includes/%s"%(theme,template_name))
+                        t = get_template(theme_template)
                     except TemplateDoesNotExist:
                         #load the true default template directly to be sure
                         #that we are not loading the active theme's template
-                        t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", "theme_includes", template_name)).read(), "utf-8"))
+                        default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+                        try:
+                            default_file = file(default_template).read()
+                        except IOError:
+                            raise TemplateDoesNotExist(template_name)
+                        t = Template(unicode(default_file, "utf-8"))
                     return t.render(context)
                 except:
                     if settings.TEMPLATE_DEBUG:
@@ -112,6 +144,13 @@ class ThemeSettingNode(IncludeNode):
         self.setting_name = setting_name
 
     def render(self, context):
+
+        # If not a user or not an admin, don't return the form.
+        if not isinstance(context['user'], User):
+            return ''
+        if not is_admin(context['user']):
+            return ''
+        
         try:
             setting_name = Variable(self.setting_name)
             setting_name = setting_name.resolve(context)
@@ -141,7 +180,12 @@ class ThemeSettingNode(IncludeNode):
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
-                t = Template(unicode(file(os.path.join(settings.PROJECT_ROOT, "templates", template_name)).read(), "utf-8"))
+                default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
+                try:
+                    default_file = file(default_template).read()
+                except IOError:
+                    raise TemplateDoesNotExist(template_name)
+                t = Template(unicode(default_file, "utf-8"))
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:

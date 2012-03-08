@@ -1,0 +1,9 @@
+{% extends "jobs/base.html" %}
+{% load job_tags %}
+{% load i18n %}
+
+{% block body %}
+    {% job_nav request.user %}
+<h1>{% trans "Thank you" %}</h1>
+<p>{% trans "Your job is is under review and will be approved by an administrator" %}</p>
+{% endblock %}

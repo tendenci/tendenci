@@ -1,0 +1,38 @@
+{% extends "profiles/base.html" %}
+{% load pagination_tags %}
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load search_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}Users Search Page{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+{% endblock %}
+
+{% block body %}
+{{ block.super }}
+<div class="t">
+{% users_nav request.user user_this %}
+    <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "Users Search" %}{% else %}{% trans "Users List" %}{% endif %}</h1>
+    {{ MODULE_USERS_USERSEARCHSTATEMENT }}
+    {% profile_search %}
+    <span><em>{{ profiles|length }} {% trans "Users" %} {% trans "Found" %}</em></span>
+    {% autopaginate profiles 10 %}
+
+    <div class="profiles-wrap">
+    {% for profile in profiles %}
+        {% search_result profile %}
+    {% empty %}
+
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

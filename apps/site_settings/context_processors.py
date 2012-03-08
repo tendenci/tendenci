@@ -1,13 +1,13 @@
 from django.core.cache import cache
+from django.conf import settings as d_settings
 
 from site_settings.models import Setting
 from site_settings.cache import SETTING_PRE_KEY
 
 def settings(request):
+    """Context processor for settings
     """
-        Context processor for settings
-    """
-    key = [SETTING_PRE_KEY, 'all']
+    key = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
     key = '.'.join(key)
     
     settings = cache.get(key)

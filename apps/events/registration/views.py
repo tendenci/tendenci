@@ -290,10 +290,17 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                 is_credit_card_payment = (reg8n.payment_method and 
                     (reg8n.payment_method.machine_name).lower() == 'credit-card'
                     and reg8n.amount_paid > 0)
+                registrants = reg8n.registrant_set.all().order_by('id')
+                for registrant in registrants:
+                    #registrant.assign_mapped_fields()
+                    if registrant.custom_reg_form_entry:
+                        registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                    else:
+                        registrant.name = ' '.join([registrant.first_name, registrant.last_name])
                 
                 if is_credit_card_payment: # online payment
                     # email the admins as well
-                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
                     # get invoice; redirect to online pay
                     return redirect('payments.views.pay_online',
                         reg8n.invoice.id, reg8n.invoice.guid)
@@ -302,7 +309,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                     # email the registrant
                     send_registrant_email(reg8n, self_reg8n)
                     # email the admins as well
-                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n)
+                    email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
                     
                 # log an event
                 log_defaults = {

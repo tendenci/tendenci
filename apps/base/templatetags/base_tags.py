@@ -589,3 +589,7 @@ def do_hash_tags_for_object(parser, token):
     
 register.tag('tags_strip_hash', do_non_hash_tags_for_object)
 register.tag('tags_hash_tags', do_hash_tags_for_object)
+
+@register.inclusion_tag("base/meta_creator_owner.html")
+def meta_creator_owner(obj):
+    return {'obj': obj}

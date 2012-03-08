@@ -10,7 +10,7 @@ from entities.models import Entity
 from entities.forms import EntityForm
 from perms.object_perms import ObjectPermission
 from event_logs.models import EventLog
-from perms.utils import is_admin, has_perm, update_perms_and_save
+from perms.utils import is_admin, has_perm, update_perms_and_save, get_query_filters
 
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))
@@ -32,10 +32,8 @@ def index(request, id=None, template_name="entities/view.html"):
         raise Http403
 
 def search(request, template_name="entities/search.html"):
-    query = request.GET.get('q', None)
-    entities = Entity.objects.search(query, user=request.user)
-    # TODO: Facet entity_name so that it can be ordered by
-    # entities = entities.order_by('entity_name')
+    filters = get_query_filters(request.user, 'entities.view_entity')
+    entities = Entity.objects.filter(filters).distinct()
 
     log_defaults = {
         'event_id' : 294000,
@@ -52,7 +50,7 @@ def search(request, template_name="entities/search.html"):
 
 def print_view(request, id, template_name="entities/print-view.html"):
     entity = get_object_or_404(Entity, pk=id)
-     
+
     if has_perm(request.user,'entities.view_entity',entity):
         log_defaults = {
             'event_id' : 295000,

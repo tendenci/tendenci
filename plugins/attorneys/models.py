@@ -3,7 +3,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from files.models import File, file_directory
@@ -38,6 +40,10 @@ class Attorney(TendenciBaseModel):
     admissions = models.TextField(_('admissions'), blank=True)
     ordering = models.IntegerField(blank=True, null=True)
     tags = tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = AttorneyManager()
 

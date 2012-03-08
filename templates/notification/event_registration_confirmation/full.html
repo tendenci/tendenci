@@ -17,14 +17,10 @@
         {% if for_admin %}
             {% trans "Registration Complete." %}
             <div style="font-size:1.0em; margin-top:5px;">
-                    {{ reg8n_number }} {% trans "Registrants:" %}
-                </div>
+                    {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
 
-                <table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
-                    {% for registrant in reg8n.registrant_set.all %}
-                    <tr>
-                        <td>
-                            <span>
+                    {% for registrant in registrants %}
+                            <div>
                             {% if registrant.name %}
                                     {{ registrant.name }}
                             {% else %}
@@ -39,11 +35,9 @@
                             {% endfor %}
                             {% endwith %}
                             {% endif %}
-                            </span>
-                        </td>
-                    </tr>
+                            </div>
                     {% endfor %}
-                </table>
+                </div>
         {% else %}
             {% trans "Registration Complete. Enjoy the Event!" %}
         {% endif %}
@@ -54,15 +48,11 @@
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             {% if for_admin %}
                 {% trans "Almost Registered. Payment is still required." %}
-                <div style="font-size:1.0em; margin-top:5px;">
-                    {{ reg8n_number }} {% trans "Registrants:" %}
-                </div>
+                            <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
 
-                <table class="registrants-table" border="0" cellspacing="0" cellpadding="0">
-                    {% for registrant in reg8n.registrant_set.all %}
-                    <tr>
-                        <td>
-                            <span>
+                    {% for registrant in registrants %}
+                            <div>
                             {% if registrant.name %}
                                     {{ registrant.name }}
                             {% else %}
@@ -77,12 +67,9 @@
                             {% endfor %}
                             {% endwith %}
                             {% endif %}
-                            </span>
-                        </td>
-                    </tr>
+                            </div>
                     {% endfor %}
-                </table>
-
+                </div>
             {% else %}
                 {% trans "Almost Registered. Payment is still required." %}
                 <a href="{{ SITE_GLOBAL_SITEURL }}{% url payment.pay_online reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "Complete this registration." %}</a>
@@ -92,15 +79,11 @@
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             {% if for_admin %}
                 {% trans "Registration Complete." %}
-                <div style="font-size:1.0em; margin-top:5px;">
-                    {{ reg8n_number }} {% trans "Registrants:" %}
-                </div>
+                            <div style="font-size:1.0em; margin-top:5px;">
+                    {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
 
-                <table class="registrants-table" border="0" cellspacing="0" cellpadding="0">
-                    {% for registrant in reg8n.registrant_set.all %}
-                    <tr>
-                        <td>
-                            <span>
+                    {% for registrant in registrants %}
+                            <div>
                             {% if registrant.name %}
                                     {{ registrant.name }}
                             {% else %}
@@ -115,12 +98,9 @@
                             {% endfor %}
                             {% endwith %}
                             {% endif %}
-                            </span>
-                        </td>
-                    </tr>
+                            </div>
                     {% endfor %}
-                </table>
-                
+                </div>
                 {% if reg8n.regaddon_set.all.count != 0 %}
                 <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n.regaddon_set.all.count }} {% trans "Addons:" %}

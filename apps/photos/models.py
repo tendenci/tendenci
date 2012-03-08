@@ -12,7 +12,8 @@ from django.core.urlresolvers import reverse
 from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
-from perms.utils import is_admin, is_member, is_developer
+from perms.object_perms import ObjectPermission
+from perms.utils import is_admin, is_member, is_developer, get_query_filters
 from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta
@@ -33,6 +34,10 @@ class PhotoSet(TendenciBaseModel):
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
     author = models.ForeignKey(User)
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     class Meta:
         verbose_name = _("photo")
@@ -98,19 +103,13 @@ class PhotoSet(TendenciBaseModel):
         to the given user's permissions.
         This makes use of the search index to avoid hitting the database.
         """
-        
-        sqs = SearchQuerySet().models(Image).filter(photosets=self.pk)
-
         # user information
         user = user or AnonymousUser()
-        
-        if hasattr(user, 'impersonated_user'):
-            if isinstance(user.impersonated_user, User):
-                user = user.impersonated_user
-        
-        sqs = PhotoSet.objects._permissions_sqs(sqs, user, status, status_detail)
-        
-        return sqs        
+
+        filters = get_query_filters(user, 'photologue.view_photo')
+        photos = Image.objects.filter(filters).filter(photoset=self.pk).distinct()
+
+        return photos
 
 class Image(ImageModel, TendenciBaseModel):
     """
@@ -134,7 +133,11 @@ class Image(ImageModel, TendenciBaseModel):
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     def get_meta(self, name):
         """
         This method is standard across all models that are

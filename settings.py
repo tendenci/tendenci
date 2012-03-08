@@ -72,8 +72,6 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
-THEME_DIR = os.path.join(PROJECT_ROOT, 'themes')
-
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'media')
@@ -111,7 +109,7 @@ TEMPLATE_LOADERS = (
     'theme.template_loaders.load_template_source',
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    #'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -194,6 +192,7 @@ INSTALLED_APPS = (
     'dashboard',
     'profiles',
     'articles',
+    'jobs',
     'news',
     'stories',
     'pages',
@@ -220,7 +219,6 @@ INSTALLED_APPS = (
     'categories',
     'contributions',
     'theme_editor',
-    'jobs',
     'styled_forms',
     'form_builder',
     'newsletters',
@@ -263,6 +261,11 @@ AUTHENTICATION_BACKENDS = (
     'social_auth.backends.facebook.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+# -------------------------------------- #
+# THEMES
+# -------------------------------------- #
+THEMES_DIR = os.path.join(PROJECT_ROOT, 'themes')
 
 # -------------------------------------- #
 #    TINYMCE
@@ -318,6 +321,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
+CACHE_PRE_KEY = "TENDENCI"
 
 # --------------------------------------#
 # CELERY
