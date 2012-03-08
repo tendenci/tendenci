@@ -2,6 +2,7 @@ from ordereddict import OrderedDict
 from ast import literal_eval
 
 from django import forms
+from django.conf import settings as d_settings
 from django.core.cache import cache
 from django.core.files import File
 from django.core.files.base import ContentFile

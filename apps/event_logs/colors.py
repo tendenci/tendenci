@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from django.conf import settings
 
 non_model_event_logs = {
     'rss': {
@@ -44,7 +45,8 @@ def generate_base_colors():
     return d
 
 def cache_colors(colors):
-    key = 'event_log_colors'
+    keys = [settings.CACHE_PRE_KEY, 'event_log_colors']
+    key = '.'.join(keys)
     is_set = cache.add(key, colors)
     if not is_set:
         cache.set(key, colors)
@@ -53,7 +55,8 @@ def get_color(event_id):
     """Gets the hex color of an event log based on the event id
     get_color('id')
     """
-    key = 'event_log_colors'
+    keys = [settings.CACHE_PRE_KEY, 'event_log_colors']
+    key = '.'.join(keys)
     colors = cache.get(key)
     if not colors:
         colors = generate_colors()
