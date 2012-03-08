@@ -124,10 +124,8 @@ class ListNode(Node):
             query = '%s "tag:%s"' % (query, tag)
 
         # get the list of items
-        try:
-            print self.perms
-        except:
-            self.perms = 'app.view'
+        self.perms = getattr(self, 'perms', unicode())
+
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters).distinct()
         objects = []
