@@ -57,6 +57,7 @@ box.safe = True
 
 class ListBoxesNode(ListNode):
     model = Box
+    perms = 'boxes.view_box'
 
 
 @register.tag
