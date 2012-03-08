@@ -1,5 +1,8 @@
+from django.conf import settings as d_settings
 from django.core.management.base import BaseCommand
 from django.core.cache import cache
+
+from site_settings.utils import delete_all_settings_cache
 
 class Command(BaseCommand):
     """
@@ -21,4 +24,4 @@ class Command(BaseCommand):
             except:
                 if int(options['verbosity']) > 0:
                     print "We could not update that setting."
-            cache.delete("settings.all")
+            delete_all_settings_cache()

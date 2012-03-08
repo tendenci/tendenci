@@ -321,6 +321,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
+CACHE_PRE_KEY = "TENDENCI"
 
 # --------------------------------------#
 # CELERY
