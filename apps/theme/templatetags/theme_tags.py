@@ -59,7 +59,7 @@ class ThemeConstantIncludeNode(ConstantIncludeNode):
                 try:
                     default_file = file(default_template).read()
                 except IOError:
-                    raise TemplateDoesNotExist(template_name)
+                    raise TemplateDoesNotExist(self.template_path)
                 t = Template(unicode(default_file, "utf-8"))
             self.template = t
         except:
@@ -117,7 +117,7 @@ class SpaceIncludeNode(IncludeNode):
             except:
                 # Otherwise try to render a template
                 try:
-                    template_name = setting_value
+                    template_name = os.path.join('theme_includes',setting_value)
                     theme = context['THEME']
                     theme_template = get_theme_template(template_name, theme=theme)
                     try:
