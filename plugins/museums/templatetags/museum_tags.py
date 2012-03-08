@@ -8,6 +8,7 @@ register = Library()
 
 class ListMuseumsNode(ListNode):
     model = Museum
+    perms = 'museums.view_museum'
 
 
 @register.tag
