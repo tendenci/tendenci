@@ -32,7 +32,7 @@ from djcelery.models import TaskMeta
 from memberships.models import App, AppEntry, Membership, \
     MembershipType, Notice, AppField, MembershipImport
 from memberships.forms import AppCorpPreForm, \
-    MemberApproveForm, ReportForm, EntryEditForm, ExportForm
+    MemberApproveForm, ReportForm, EntryEditForm, ExportForm, AppEntryForm
 from memberships.utils import is_import_valid, prepare_chart_data, \
     get_days, get_over_time_stats
 from memberships.importer.forms import ImportMapForm, UploadForm
