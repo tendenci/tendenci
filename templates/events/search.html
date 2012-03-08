@@ -130,7 +130,7 @@
 
 <div class="t search-view">
 {% event_nav request.user %}
-    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL 'Event' %} {% trans "Search" %}</h1>  
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_EVENTS_LABEL_PLURAL 'Events' %}</h1>  
 
 	{% event_search %}
 

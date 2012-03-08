@@ -60,7 +60,7 @@ class CourseAdmin(admin.ModelAdmin):
     edit_link.short_description = 'edit'
 
     def view_on_site(self, obj):
-        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('courses.detail', args=[obj.pk]),
             obj,

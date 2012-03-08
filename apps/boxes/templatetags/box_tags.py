@@ -1,7 +1,9 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import AnonymousUser, User
 
+from perms.utils import get_query_filters
 from base.template_tags import ListNode, parse_tag_kwargs
 from boxes.models import Box
 
@@ -14,13 +16,30 @@ class GetBoxNode(Node):
 
     def render(self, context):
         query = '"pk:%s"' % (self.pk)
+        user = AnonymousUser()
+        
+        if 'user' in self.kwargs:
+            try:
+                user = Variable(self.kwargs['user'])
+                user = user.resolve(context)
+            except:
+                user = self.kwargs['user']
+                if user == "anon" or user == "anonymous":
+                    user = AnonymousUser()
+        else:
+            # check the context for an already existing user
+            # and see if it is really a user object
+            if 'user' in context:
+                if isinstance(context['user'], User):
+                    user = context['user']
         try:
-            box = Box.objects.search(query=query).best_match()
-            context['box'] = box.object
+            filters = get_query_filters(user, 'boxes.view_box')
+            box = Box.objects.filter(filters).filter(pk=self.pk).distinct()
+            context['box'] = box[0]
             template = get_template('boxes/edit-link.html')
             output = '<div id="box-%s" class="boxes">%s %s</div>' % (
-                box.object.pk,
-                box.object.content,
+                box[0].pk,
+                box[0].content,
                 template.render(context),
             )
             return output

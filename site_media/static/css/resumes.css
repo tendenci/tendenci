@@ -144,27 +144,16 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 
 .t-print .resume-wrap {
 	width: 8in;
+	margin: 30px auto 0;
+	background-color: white;
 	padding: .25in;
-	margin: 20px 0;
 	border: 1px solid silver;
-}
-.t-print .hide-this {
-	width: 8.5in;
-	margin: 20px 0;
-	position: relative;
-}
-.t-print .guide {
-	position: absolute;
-	top: 0; right: 0;
-}
-.t-print object {
-	visibility: hidden;
+	-moz-box-shadow: 0 0 5px #AAA;
+	-webkit-box-shadow: 0 0 5px #AAA;
+	box-shadow: 0 0 5px #AAA;
 }
 
 @media print {
-	.hide-this {
-		display: none;
-	}
 	.t-print .resume-wrap {
 		width: 100%;
 		border: none;

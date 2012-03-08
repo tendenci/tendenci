@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div id="theme-bar">
+    <div class="alert-message block-message fade in info" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p>
+            <strong>THEME:</strong> <span>{{ THEME }}</span></li>
+        </p>
+        {% if request.session.theme %}
+        <p><strong>Admin Theme Preview:</strong><br />
+        You are previewing the {{ request.session.theme }} theme.</p>
+        <div class="alert-actions">
+            <a class="btn" href="{{ request.path }}?theme=">Stop previewing</a> <a class="btn" href="{% url theme_editor.editor %}?theme_edit={{ request.session.theme }}">Edit this theme</a>
+        </div>
+        {% endif %}
+        {% if CUSTOM_TEMPLATE %}
+        <p>
+            <strong>TEMPLATE:</strong> <span>{% if THEME_TEMPLATE %}{{ THEME_TEMPLATE }}{% endif %} {% if CUSTOM_TEMPLATE %}(This template is customized.){% endif %}</span> <br />
+        </p>
+        <div class="alert-actions">
+            <a class="btn" href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}">Edit this template</a>
+        </div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,29 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}Edit{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% location_nav request.user location %}
+
+    <h1>{% firstof MODULE_LOCATIONS_LABEL 'Location' %} {% trans "Edit" %}</h1>
+
+    <div class="location-wrap">
+    	<form action="{% url location.edit location.pk %}" method="post">{% csrf_token %}
+    	<div class="forms">
+        	{{ form|styled_form }}
+            <input type="submit" value="Save Changes" />
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}

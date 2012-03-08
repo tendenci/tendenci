@@ -27,6 +27,7 @@ class CorporateMembershipRegistry(PeopleRegistry):
 
     url = {
         'search': lazy_reverse('corp_memb.search'),
+        'list': lazy_reverse('corp_memb.list')
     }
 
 site.register(CorporateMembership, CorporateMembershipRegistry)

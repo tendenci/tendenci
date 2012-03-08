@@ -6,14 +6,21 @@ def get_theme():
     theme = get_setting('module', 'theme_editor', 'theme')
     return theme
 
-def get_theme_root():
-    theme = get_theme()
-    theme_root = os.path.join(settings.THEME_DIR, theme)
+def get_theme_root(theme=None):
+    if theme is None: # default theme
+        theme = get_theme()
+    theme_root = os.path.join(settings.THEMES_DIR, theme)
     return theme_root
+    
+def get_theme_template(template_name, theme=None):
+    if theme is None: # default theme
+        theme = get_theme()
+    theme_template = os.path.join('themes', theme, 'templates', template_name)
+    return theme_template
 
 def theme_options():
     """
-    Returns a string of the available themes in THEME_DIR
+    Returns a string of the available themes in THEMES_DIR
     """
     options = ''
     themes = sorted(theme_choices())
@@ -24,8 +31,8 @@ def theme_options():
     
 def theme_choices():
     """
-    Returns a list of available themes in THEME_DIR
+    Returns a list of available themes in THEMES_DIR
     """
-    for theme in os.listdir(settings.THEME_DIR):
-        if os.path.isdir(os.path.join(settings.THEME_DIR, theme)):
+    for theme in os.listdir(settings.THEMES_DIR):
+        if os.path.isdir(os.path.join(settings.THEMES_DIR, theme)):
             yield theme

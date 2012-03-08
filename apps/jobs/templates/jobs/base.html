@@ -1,0 +1,7 @@
+{% extends "site_base.html" %}
+
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_JOBS_LABEL 'Job' %} Listings for {{SITE_GLOBAL_SITEDISPLAYNAME }} - employment opportunities and {% firstof MODULE_JOBS_LABEL 'Job' %} openings{% endblock %}
+{% block meta_description %}{% firstof MODULE_JOBS_LABEL 'Job' %} search page for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} listing {% firstof MODULE_JOBS_LABEL 'Job' %} openings and employment opportunities{% endblock %}
+{% block meta_keywords %}Employment Search, {% firstof MODULE_JOBS_LABEL 'Job' %} Search, {{SITE_GLOBAL_SITEDISPLAYNAME }}, Employment, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}, employment opportunities, employment, hiring, staffing, agencies{% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}

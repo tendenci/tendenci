@@ -42,7 +42,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "groups" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url group.search %}">{% trans "Search Groups" %}</a></li>
+            <li><a href="{% url groups %}">{% trans "Group List" %}</a></li>
             {% if can_add_group %}
                 <li><a href="{% url group.add %}">{% trans "Add Group" %}</a></li>
             {% endif %}

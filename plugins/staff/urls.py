@@ -7,9 +7,9 @@ if not urlpath:
     urlpath = "staff"
 
 urlpatterns = patterns('staff.views',
-    url(r'^%s/$' % urlpath, 'index', name="staff"),
-    url(r'^%s/search/$' % urlpath, 'search', name="staff.search"),
+    url(r'^%s/$' % urlpath, 'search', name="staff"),
+    url(r'^%s/search/$' % urlpath, 'search_redirect', name="staff.search"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='staff.feed'),
-    url(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, 'index', name="staff.view"),
-    url(r'^%s/(?P<slug>[\w\-]+)/(?P<cv>cv)/$' % urlpath, 'index', name="staff.cv"),
+    url(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, 'details', name="staff.view"),
+    url(r'^%s/(?P<slug>[\w\-]+)/(?P<cv>cv)/$' % urlpath, 'details', name="staff.cv"),
 )

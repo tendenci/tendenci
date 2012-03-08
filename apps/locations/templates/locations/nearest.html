@@ -1,0 +1,45 @@
+{% extends "locations/base.html" %}
+{% load pagination_tags %}
+{% load locations_tags %}
+{% load base_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}Search{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+
+    {% location_nav request.user %}
+
+    <h1>{% trans "Nearest"%} {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %}</h1>
+
+    <form class="search-form" action="{% url location.nearest %}" method="get">
+    <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+    <input style="vertical-align:top;" class="btn" type="submit" value="Find Nearest {% firstof MODULE_LOCATIONS_LABEL 'Location' %}" />
+    </form>
+
+    {% autopaginate locations 10 %}
+    
+    <div class="locations-wrap">
+    {% for location in locations %}
+        {% search_result location %}
+    {% empty %}
+        {% if request.GET.q %}
+            <div>{% trans "0 Results Found" %}</div>
+        {% else %}
+            <div style="color:#666; font-size:.9em">{% trans "Please enter your location; address, city, state, or zipcode."%}</div>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
