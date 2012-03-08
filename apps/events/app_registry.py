@@ -32,7 +32,8 @@ class EventRegistry(CoreRegistry):
     
     url = {
         'add': lazy_reverse('event.add'),
-        'search': lazy_reverse('events'),
+        'search': lazy_reverse('event.search'),
+        'list': lazy_reverse('events'),
     }
 
 site.register(Event, EventRegistry)
