@@ -24,6 +24,7 @@
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
     
 	{% photo_search %}
+	<span><em>{{ photos|length }} {% firstof MODULE_PHOTOS_LABEL trans 'Photos' %} {% trans "Found" %}</em></span>
     {% autopaginate photos 10 %}
     
     <div class="photos-wrap">
@@ -32,7 +33,7 @@
             {% search_result image %}
         {% endwith %}
     {% empty %}
-        <div>{% trans "No photos were found." %}</div>
+
     {% endfor %}
     </div>
     

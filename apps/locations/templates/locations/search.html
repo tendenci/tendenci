@@ -19,14 +19,14 @@
 
     <h1>{% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %} {% trans "List" %}</h1>
     {% location_search %}
-
+    <span><em>{{ locations|length }} {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %} {% trans "Found" %}</em></span>
     {% autopaginate locations 10 %}
     
     <div class="locations-wrap">
     {% for location in locations %}
         {% search_result location %}
     {% empty %}
-        <div>{% trans "0 Results Found" %}</div>
+
     {% endfor %}
     </div>
 
