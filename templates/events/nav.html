@@ -43,7 +43,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "events" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url events %}">{% trans "Event List" %}</a></li>
+            <li><a href="{% url event.search %}">{% trans "Event List" %}</a></li>
             <li><a href="{% url event.month %}">{% trans "Monthly Calendar" %}</a></li>
             <li class="divider"></li>
             {% if can_add_event %}
