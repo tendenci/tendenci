@@ -35,7 +35,7 @@
             <div>
             <ul class="dropdown-menu">
         {% endif %}
-            <li><a href="{% url discount.search %}">{% trans "Search Discounts" %}</a></li>
+            <li><a href="{% url discounts %}">{% trans "Search Discounts" %}</a></li>
             {% if can_add_discount %}
                 <li><a href="{% url discount.add %}">{% trans "Add Discount" %}</a></li>
             {% endif %}

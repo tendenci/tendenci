@@ -1,0 +1,37 @@
+{% load file_tags %}
+{% load i18n %}
+
+<div class="file-wrap">
+    <div class="options">
+        <div class="quick-options">
+            {% file_options request.user file %}           
+        </div>
+    </div>
+
+    {% if file.icon %}
+    <div class="icon"><img src="{{ file.icon }}" /></div>
+    {% endif %}
+
+    <h2><a href="{% url file file.pk %}">{{ file.basename }}</a></h2>
+
+    {% if file.type == 'image' %}
+    <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this image" %}</a></div>
+    {% endif %}
+
+    {% if file.type == 'pdf' %}
+    <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this PDF" %}</a></div>
+    {% endif %}
+
+    {% if file.type == 'text' %}
+    <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this text file" %}</a></div>
+    {% endif %}
+
+    <div class="meta">
+        <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</a></div>
+    </div>
+
+    <!-- delete-file form -->
+    <form name="file-delete" method="POST" action="{% url file.delete file.pk %}">{% csrf_token %}
+        <input type="hidden" name="action" value="delete">
+    </form>
+</div>

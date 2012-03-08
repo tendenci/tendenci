@@ -14,7 +14,7 @@
                             {% if app.enabled %}
                             <ul>
                                 <li class="app">
-                                     <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
                                          {{ app|title }}
                                      </a>
                                 </li>
@@ -38,7 +38,7 @@
                     {% for app in registered_apps.plugins %}
                         <ul>
                             <li class="app">
-                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
                                      {{ app|title }}
                                  </a>
                             </li>
@@ -128,7 +128,7 @@
                     <ul>
                         <li><a href="/settings/module/theme_editor/">{% trans "Current Theme: " %}{{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
                         <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
-                        <li><a href="{% url theme_editor %}">{% trans "Theme Editor" %}</a></li>
+                        <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
                         <li><a href="/settings/module/theme_editor/">{% trans "Change my Theme" %}</a></li>
                     </ul>
                 </div>
@@ -183,7 +183,7 @@
                         <li><a href="/settings/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
                         <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
-                        <li><a href="{% url theme_editor %}">{% trans "Theme Editor" %}</a></li>
+                        <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
                         <li><a href="{% url campaign_monitor.template_index %}">{% trans "Campaign Monitor" %}</a></li>
                         <li><a href="{% url event_log.search %}">{% trans "Event Logs" %}</a></li>
                         <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>

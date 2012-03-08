@@ -1,0 +1,39 @@
+{% extends "event_logs/base.html" %}
+{% load event_log_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}Event Log ID List {{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-logs.css">
+<link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/event-logs-info.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% event_log_nav request.user %}
+    <h1>Event Log ID List</h1>
+    <div id="info">
+    <table>
+    {% for model in logged_models %}
+        <tr class="event-model">
+            <td class="event-model-label" >
+                <strong>{{ model.label }}</strong>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% for log in model.event_logs %}
+            <tr class="event-log">
+                <td>{{ log.label }}</td>
+                <td>{{ log.id }}</td>
+                <td><div class="color-box" style="background:#{{ log.color }}"></div></td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+    </div>
+</div>
+{% endblock %}

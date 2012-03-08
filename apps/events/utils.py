@@ -152,11 +152,11 @@ def get_vevents(request, d):
     
     e_str = ""
     # load only upcoming events by default
-    events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
+    filters = get_query_filters(request.user, 'events.view_event')
+    events = Event.objects.filter(filters).filter(start_dt__lte=datetime.now())
     events = events.order_by('start_dt')
-    
+
     for evnt in events:
-        event = evnt.object
         e_str += "BEGIN:VEVENT\n"
         
         # organizer
@@ -424,7 +424,7 @@ def email_registrants(event, email, **kwargs):
         
         email.body = tmp_body  # restore to the original
         
-def email_admins(event, event_price, self_reg8n, reg8n):
+def email_admins(event, event_price, self_reg8n, reg8n, registrants):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
@@ -438,6 +438,7 @@ def email_admins(event, event_price, self_reg8n, reg8n):
             'SITE_GLOBAL_SITEURL': site_url,
             'self_reg8n': self_reg8n,
             'reg8n': reg8n,
+            'registrants': registrants,
             'event': event,
             'price': event_price,
             'is_paid': reg8n.invoice.balance == 0,

@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from base.http import Http403
 from base.utils import now_localized
@@ -21,7 +22,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
 
-from perms.utils import get_notice_recipients, is_admin, update_perms_and_save, has_perm
+from perms.utils import get_notice_recipients, is_admin, is_developer, update_perms_and_save, is_member, has_perm, get_query_filters, has_view_perm
 
 from categories.forms import CategoryForm, CategoryForm2
 from categories.models import Category
@@ -32,17 +33,14 @@ except:
     notification = None
 
 
-def index(request, slug=None, template_name="jobs/view.html"):
+def details(request, slug=None, template_name="jobs/view.html"):
     if not slug:
-        return HttpResponseRedirect(reverse('job.search'))
-    job = get_object_or_404(Job, slug=slug)
+        return HttpResponseRedirect(reverse('jobs'))
+    job = get_object_or_404(Job.objects.select_related(), slug=slug)
 
-    # non-admin can not view the non-active content
-    # status=0 has been taken care of in the has_perm function
-    if (job.status_detail).lower() != 'active' and (not is_admin(request.user)):
-        raise Http403
+    can_view = has_view_perm(request.user, 'jobs.view_job', job)
 
-    if has_perm(request.user, 'jobs.view_job', job):
+    if can_view:
         log_defaults = {
             'event_id': 255000,
             'event_data': '%s (%d) viewed by %s' % (
@@ -63,13 +61,16 @@ def index(request, slug=None, template_name="jobs/view.html"):
 
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
-    jobs = Job.objects.search(query, user=request.user)
-    jobs = jobs.order_by('status_detail','list_type','-post_dt')
-    
-    if len(jobs) <= 0:
-        # try without ordering by status_detail
+
+    if get_setting('site', 'global', 'searchindex') and query:
         jobs = Job.objects.search(query, user=request.user)
-        jobs = jobs.order_by('list_type','-post_dt')
+    else:
+        filters = get_query_filters(request.user, 'jobs.view_job')
+        jobs = Job.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            jobs = jobs.select_related()
+
+    jobs = jobs.order_by('status_detail','list_type','-post_dt')
 
     log_defaults = {
         'event_id': 254000,
@@ -85,20 +86,26 @@ def search(request, template_name="jobs/search.html"):
         context_instance=RequestContext(request))
 
 
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('jobs'))
+
+
 def print_view(request, slug, template_name="jobs/print-view.html"):
     job = get_object_or_404(Job, slug=slug)
 
-    log_defaults = {
-        'event_id': 255001,
-        'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
-        'description': '%s viewed - print view' % job._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': job,
-    }
-    EventLog.objects.log(**log_defaults)
+    can_view = has_view_perm(request.user, 'jobs.view_job', job)
 
-    if has_perm(request.user, 'jobs.view_job', job):
+    if can_view:
+        log_defaults = {
+            'event_id': 255001,
+            'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
+            'description': '%s viewed - print view' % job._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': job,
+        }
+        EventLog.objects.log(**log_defaults)
+
         return render_to_response(template_name, {'job': job},
             context_instance=RequestContext(request))
     else:
@@ -135,7 +142,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 
             # set it to pending if the user is anonymous or not an admin
             if not can_add_active:
-                job.status = 0
+                #job.status = 1
                 job.status_detail = 'pending'
 
             # list types and duration
@@ -256,8 +263,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
         
     form = form_class(request.POST or None,
                         instance=job,
-                        user=request.user,
-                        prefix='job')
+                        user=request.user)
     
     #setup categories
     content_type = get_object_or_404(ContentType, app_label='jobs',model='job')

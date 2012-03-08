@@ -19,7 +19,7 @@ from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, is_admin
+from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters, has_view_perm
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
@@ -35,9 +35,15 @@ def search(request, template_name="photos/search.html"):
     """ Photos search """
     
     query = request.GET.get('q', None)
-    photos = Image.objects.search(query, 
-        user=request.user).order_by('-create_dt')
-    
+    if get_setting('site', 'global', 'searchindex') and query:
+        photos = Image.objects.search(query, user=request.user).order_by('-create_dt')
+    else:
+        filters = get_query_filters(request.user, 'photologue.view_photo')
+        photos = Image.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            photos = photos.select_related()
+    photos = photos.order_by('-create_dt')
+
     log_defaults = {
         'event_id' : 990400,
         'event_data': '%s searched by %s' % ('Image', request.user),
@@ -54,7 +60,7 @@ def search(request, template_name="photos/search.html"):
 def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
     photo = get_object_or_404(Image, id=id)
-    if not has_perm(request.user, 'photologue.view_photo', photo):
+    if not has_view_perm(request.user, 'photologue.view_photo', photo):
         raise Http403
     
     # security-check on size name
@@ -436,7 +442,13 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
 
     query = request.GET.get('q', None)
-    photo_sets = PhotoSet.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        photo_sets = PhotoSet.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'photos.view_photoset')
+        photo_sets = PhotoSet.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            photo_sets = photo_sets.select_related()
     photo_sets = photo_sets.order_by('-create_dt')
 
     log_defaults = {
@@ -643,15 +655,15 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     """ View photos in photo set """
     
     photo_set = get_object_or_404(PhotoSet, id=id)
-    if not has_perm(request.user, 'photos.view_photoset', photo_set):
+    if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
         
     
     order = get_setting('module', 'photos', 'photoordering')
     if order == 'descending':
-        photos = photo_set.get_images(user=request.user).order_by('-photo_pk')
+        photos = photo_set.get_images(user=request.user).order_by('-pk')
     else:
-        photos = photo_set.get_images(user=request.user).order_by('photo_pk')
+        photos = photo_set.get_images(user=request.user).order_by('pk')
     
     EventLog.objects.log(**{
         'event_id' : 991500,
