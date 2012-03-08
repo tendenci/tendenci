@@ -7,6 +7,7 @@ register = Library()
 
 class ListLotsNode(ListNode):
     model = Lot
+    perms = 'lots.view_lot'
 
 @register.tag
 def list_lots(parser, token):
