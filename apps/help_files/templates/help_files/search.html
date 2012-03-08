@@ -18,16 +18,16 @@
     <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans "Search" %}</h1>
      
     {% help_file_search %}
+    <span><em>{{ help_files|length }} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans "Found" %}</em></span>
     {% autopaginate help_files 10 %}
     
     <div class="help-files-wrap">
     {% for help_file in help_files %}
         {% search_result help_file %}
     {% empty %}
-        <div><p>{% trans "No" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans "posted yet" %}.</p>
         {% if admin %}
         <p><a href="{% url help_files.add %}">{% trans "Add a new" %} {% firstof MODULE_HELP_FILES_LABEL 'Help File' %}</a></p>
-        {% endif %}</div>
+        {% endif %}
     {% endfor %}
     </div>
 

@@ -23,26 +23,27 @@
 
     <h1>{% firstof MODULE_FILES_LABEL_PLURAL 'Files' %}</h1>
 
-	{% file_search %}
+    {% file_search %}
+    <span><em>{{ files|length }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</em></span>
     {% autopaginate files 10 %}
-	
-	<div class="files-wrap">
+    
+    <div class="files-wrap">
     {% for file in files %}
         {% search_result file %}
-	{% empty %}
-		{% if admin %}
-			{% if request.GET.q %}
-				<div>{% trans "0 Results Found" %}</div>
-			{% else %}
-				<div style="color:#666; font-size:.9em">
-					{% trans "No files in here at all."%}  <a href="{% url file.add %}">{% trans "Add a file."%}</a>
-				</div>
-			{% endif %}
-		{% else %}
-			<div>{% trans "0 Results Found" %}</div>
-		{% endif %}
+    {% empty %}
+        {% if admin %}
+            {% if request.GET.q %}
+                <div>{% trans "0 Results Found" %}</div>
+            {% else %}
+                <div style="color:#666; font-size:.9em">
+                    {% trans "No files in here at all."%}  <a href="{% url file.add %}">{% trans "Add a file."%}</a>
+                </div>
+            {% endif %}
+        {% else %}
+
+        {% endif %}
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -50,40 +51,40 @@
 
 {% block extra_body %}
     {{ block.super }}
-	<script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="/site_media/static/js/jquery-1.4.2.min.js"></script>
     <script type="text/javascript">
-		$(document).ready(function(){
+        $(document).ready(function(){
 
-			// url exists
-			url_exists = function(url){
-				var http = new XMLHttpRequest();
-				http.open('HEAD', url, false);
-				http.send();
-				return http.status!=404;
-			}
+            // url exists
+            url_exists = function(url){
+                var http = new XMLHttpRequest();
+                http.open('HEAD', url, false);
+                http.send();
+                return http.status!=404;
+            }
 
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_file = confirm('Permenantly delete file?');	// confirm
-				if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_file = confirm('Permenantly delete file?');  // confirm
+                if(delete_file) $(this).parents('.file-wrap').find('form[name="file-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
 
-			// loop through files
-			$('.t .file-wrap h2 a').each(function(){
-				if(!url_exists(this.href)){
-					$(this).addClass('broken');
-				}
-			});
+            // loop through files
+            $('.t .file-wrap h2 a').each(function(){
+                if(!url_exists(this.href)){
+                    $(this).addClass('broken');
+                }
+            });
 
-		});
+        });
     </script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-		var iconrow = new dropdown({
-			container:	'more-options-wrap',
-			trigger:	'more-options-trigger',
-			target:		'more-options-target'
-		});
-	</script>     
+    <script type="text/javascript">
+        var iconrow = new dropdown({
+            container:  'more-options-wrap',
+            trigger:    'more-options-trigger',
+            target:     'more-options-target'
+        });
+    </script>     
 {% endblock %}

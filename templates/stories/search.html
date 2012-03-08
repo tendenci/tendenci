@@ -17,19 +17,20 @@
 
 {% block body %}
 <div class="t">
-	{% stories_nav request.user %}
+    {% stories_nav request.user %}
     <h1>{% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %}</h1>
-	 
-	{% stories_search %}
+     
+    {% stories_search %}
+    <span><em>{{ stories|length }} {% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %} {% trans "Found" %}</em></span>
     {% autopaginate stories 10 %}
-	
-	<div class="stories-wrap">
-    {% for story in stories %}	
-		{% search_result story %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+    
+    <div class="stories-wrap">
+    {% for story in stories %}  
+        {% search_result story %}
+    {% empty %}
+
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>

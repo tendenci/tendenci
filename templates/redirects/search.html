@@ -17,17 +17,18 @@
 <div class="t">
     {% redirect_nav request.user %}
     <h1>{% firstof MODULE_REDIRECTS_LABEL_PLURAL "Redirects" %}</h1>
-	 
-	{% redirect_search %}
+     
+    {% redirect_search %}
+    <span><em>{{ redirects|length }} {% firstof MODULE_REDIRECTS_LABEL_PLURAL "Redirects" %} {% trans "Found" %}</em></span>
     {% autopaginate redirects 10 %}
-	
-	<div class="redirects-wrap">
+    
+    <div class="redirects-wrap">
     {% for redirect in redirects %}
         {% search_result redirect %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+    {% empty %}
+
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -36,13 +37,13 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_redirect = confirm('Permenantly delete redirect?');	// confirm
-				if(delete_redirect) $(this).parents('.redirect-wrap').find('form[name="redirect-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
+        $(document).ready(function(){
+            // delete confirmation
+            $('.delete').click(function(){
+                var delete_redirect = confirm('Permenantly delete redirect?');  // confirm
+                if(delete_redirect) $(this).parents('.redirect-wrap').find('form[name="redirect-delete"]').submit() // delete: if OK
+                return false;   // cancel
+            });
+        });
     </script>
 {% endblock %}

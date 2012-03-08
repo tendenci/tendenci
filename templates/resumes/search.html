@@ -22,16 +22,17 @@
 {% resume_nav request.user %}
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_RESUMES_LABEL_PLURAL trans 'Resumes' %}</h1>  
 
-	{% resume_search %}
+    {% resume_search %}
+    <span><em>{{ resumes|length }} {% firstof MODULE_RESUMES_LABEL_PLURAL trans 'Resumes' %} {% trans "Found" %}</em></span>
     {% autopaginate resumes 10 %}
-	
-	<div class="resumes-wrap">
+    
+    <div class="resumes-wrap">
     {% for resume in resumes %}
-		{% search_result resume %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        {% search_result resume %}
+    {% empty %}
+
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
@@ -40,11 +41,11 @@
 {% block extra_body %}
     {{ block.super }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
+    <script type="text/javascript">
+    var iconrow = new dropdown({
+        container:  'more-options-wrap',
+        trigger:    'more-options-trigger',
+        target:     'more-options-target'
+    });
+    </script>
 {% endblock %}
