@@ -3,15 +3,18 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
+from perms.models import TendenciBaseModel 
+from perms.object_perms import ObjectPermission
 from managers import ServiceManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from module_meta import ServiceMeta
 
-class Service(models.Model):
+class Service(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     slug = SlugField(_('URL Path'), unique=True)  
@@ -39,28 +42,20 @@ class Service(models.Model):
     contact_fax = models.CharField(max_length=50, blank=True)
     contact_email = models.CharField(max_length=300, blank=True)
     contact_website = models.CharField(max_length=300, blank=True)
-    allow_anonymous_view = models.BooleanField(_("Public can view"))
-    allow_user_view = models.BooleanField(_("Signed in user can view"))
-    allow_member_view = models.BooleanField()
-    allow_anonymous_edit = models.BooleanField()
-    allow_user_edit = models.BooleanField(_("Signed in user can change"))
-    allow_member_edit = models.BooleanField()
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False, null=True)
-    creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True)
-    owner_username = models.CharField(max_length=50, null=True)
-    status = models.BooleanField("Active", default=True)
-    status_detail = models.CharField(max_length=50, default='active')
-    
+
     meta = models.OneToOneField(MetaTags, null=True)
     tags = TagField(blank=True)
-                 
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = ServiceManager()
 
     class Meta:
         permissions = (("view_service","Can view service"),)
+        verbose_name = "Service"
+        verbose_name_plural = "Services"
 
     def get_meta(self, name):
         """
