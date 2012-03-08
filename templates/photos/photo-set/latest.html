@@ -94,6 +94,7 @@
 
 
 	{% photo_set_search %}
+	<span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
     {% autopaginate photo_sets %}
 
     {% if photo_sets %}
@@ -104,7 +105,6 @@
 
         {% paginate %}
     {% else %}
-    <p>{% trans "No photo sets were found." %}</p>
     {% endif %}
 
 </div>
