@@ -26,6 +26,7 @@ def help_file_search(context):
 
 class ListHelpFilesNode(ListNode):
     model = HelpFile
+    perms = 'help_files.view_helpfile'
 
 
 @register.tag
