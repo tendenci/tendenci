@@ -1,32 +1,30 @@
 # django
 from django.core.cache import cache
+from django.conf import settings as d_settings
 
 # local
 from site_settings.models import Setting
 from site_settings.cache import SETTING_PRE_KEY
 
 def delete_all_settings_cache():
-    keys = [SETTING_PRE_KEY, 'all']
-    key = '.'.join(keys) 
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
+    key = '.'.join(keys)
     cache.delete(key)
     
 def cache_setting(scope, scope_category, name, value):
+    """Caches a single setting within a scope
+    and scope category
     """
-        Caches a single setting within a scope
-        and scope category
-    """
-    keys = [SETTING_PRE_KEY, scope, 
-            scope_category, 
-            name]
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope, 
+            scope_category, name]
     key = '.'.join(keys)   
     is_set = cache.add(key, value)
     if not is_set:
         cache.set(key, value)
     
 def cache_settings(scope, scope_category):
-    """
-        Caches all settings within a scope
-        and scope category
+    """Caches all settings within a scope
+    and scope category
     """
     filters = {
         'scope': scope,
@@ -35,9 +33,8 @@ def cache_settings(scope, scope_category):
     settings = Setting.objects.filter(**filters)
     if settings:
         for setting in settings:
-            keys = [SETTING_PRE_KEY, setting.scope, 
-                    setting.scope_category, 
-                    setting.name]
+            keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
+                    setting.scope, setting.scope_category, setting.name]
             key = '.'.join(keys)
             is_set = cache.add(key, setting.value)
             if not is_set:
@@ -48,10 +45,9 @@ def delete_setting_cache(scope, scope_category, name):
         Deletes a single setting within a
         scope and scope category
     """
-    keys = [SETTING_PRE_KEY, scope, 
-            scope_category, 
-            name]
-    key = '.'.join(keys) 
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope, 
+            scope_category, name]
+    key = '.'.join(keys)
     cache.delete(key)
     
 def delete_settings_cache(scope, scope_category):
@@ -65,9 +61,8 @@ def delete_settings_cache(scope, scope_category):
     }
     settings = Setting.objects.filter(**filters)
     for setting in settings:
-        keys = [SETTING_PRE_KEY, setting.scope, 
-                setting.scope_category, 
-                setting.name]
+        keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 
+                setting.scope, setting.scope_category, setting.name]
         key = '_'.join(keys)
         cache.delete(key)
         
@@ -78,7 +73,8 @@ def get_setting(scope, scope_category, name):
         Returns the value of the setting if it exists
         otherwise it returns an empty string
     """
-    keys = [SETTING_PRE_KEY, scope, scope_category, name]
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
+            scope_category, name]
     key = '.'.join(keys)
     
     setting = cache.get(key)
@@ -120,29 +116,17 @@ def get_setting(scope, scope_category, name):
 
 def check_setting(scope, scope_category, name):
     #check cache first
-    keys = [SETTING_PRE_KEY, scope, scope_category, name]
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
+            scope_category, name]
     key = '.'.join(keys)
     
     setting = cache.get(key)
     if setting:
         return True
-        
-    #check the dne cache
-    #keys.append("DNE")
-    #dne_key = '.'.join(keys)
-    
-    #setting = cache.get(dne_key)
-    #if setting:
-    #    return False
     
     #check the db if it is not in the cache
     exists = Setting.objects.filter(scope=scope, 
         scope_category=scope_category, name=name).exists()
-    
-    #if not exists:
-    #    print keys
-        #cache with the dne_key if the setting doens't exist
-    #    cache.set(dne_key, True)
     
     return exists
 
