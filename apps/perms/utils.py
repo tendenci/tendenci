@@ -183,21 +183,28 @@ def has_view_perm(user, perm, obj=None):
     """
     # impersonation
     user = getattr(user, 'impersonated_user', user)
+    obj.status_detail = obj.status_detail.lower()
+    active_status_details = ("active", 'published')
     if obj:
-        if user.is_anonymous() and obj.status and (obj.status_detail).lower() == "active" and obj.allow_anonymous_view:
-            return True
+        if user.is_anonymous():
+            if obj.status and obj.status_detail in active_status_details and obj.allow_anonymous_view:
+                return True
+            else:
+                return False
         elif is_developer(user):
             return True
         elif is_admin(user) and obj.status:
             return True
         elif obj.creator_id == user.pk or obj.owner_id == user.pk:
             return True
-        elif is_member(user) and obj.status and obj.status_detail and (obj.allow_anonymous_view or obj.allow_user_view or obj.allow_member_view):
+        elif is_member(user) and obj.status and obj.status_detail in active_status_details \
+                    and (obj.allow_anonymous_view or obj.allow_user_view or obj.allow_member_view):
             return True
-        elif obj.status and obj.status_detail and (obj.allow_anonymous_view or obj.allow_user_view):
+        elif obj.status and obj.status_detail in active_status_details \
+                    and (obj.allow_anonymous_view or obj.allow_user_view):
             return True
         else:
-            return has_perm(request.user, perm, obj)
+            return has_perm(user, perm, obj)
     return False
 
 
