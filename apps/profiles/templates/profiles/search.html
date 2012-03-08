@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load avatar_tags %}
 {% load profile_tags %}
+{% load search_tags %}
 {% load perm_tags %}
 {% load base_filters %}
 {% load i18n %}
@@ -19,33 +20,19 @@
 <div class="t">
 {% users_nav request.user user_this %}
     <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "Users Search" %}{% else %}{% trans "Users List" %}{% endif %}</h1>
-	{{ MODULE_USERS_USERSEARCHSTATEMENT }}
-	{% profile_search %}
+    {{ MODULE_USERS_USERSEARCHSTATEMENT }}
+    {% profile_search %}
+    <span><em>{{ profiles|length }} {% trans "Users" %} {% trans "Found" %}</em></span>
     {% autopaginate profiles 10 %}
 
-	<div class="profiles-wrap">
+    <div class="profiles-wrap">
     {% for profile in profiles %}
-    {% with profile|get_object as profile %}
-		{% include 'profiles/search-result.html' %}
-	{% endwith %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        {% search_result profile %}
+    {% empty %}
+
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-{{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
-    
 {% endblock %}
