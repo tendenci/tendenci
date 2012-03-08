@@ -10,11 +10,13 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import AutoField
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from entities.models import Entity
 from events.managers import EventManager, RegistrantManager, EventTypeManager
+from perms.object_perms import ObjectPermission
 from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
@@ -707,7 +709,11 @@ class Event(TendenciBaseModel):
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = EventManager()
 
     class Meta:
