@@ -23,6 +23,7 @@ def case_study_search(context):
 
 class ListCaseStudyNode(ListNode):
     model = CaseStudy
+    perms = 'case_studies.view_casestudy'
 
 
 @register.tag

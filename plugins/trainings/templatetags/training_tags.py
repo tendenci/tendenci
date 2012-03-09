@@ -11,6 +11,7 @@ def training_search(context):
 
 class ListTrainingsNode(ListNode):
     model = Training
+    perms = 'trainings.view_training'
 
 
 @register.tag
