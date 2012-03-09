@@ -118,7 +118,7 @@ def add(request, form_class=CourseForm, template_name="courses/add.html"):
             EventLog.objects.log(**log_defaults)
             
             messages.add_message(request, messages.SUCCESS, 'Successfully created %s' % course)
-            return redirect('courses.edit_questions', course.pk)
+            return redirect('courses.detail', course.pk)
     else:
         form = form_class(user=request.user)
        

@@ -35,7 +35,7 @@
     <div class="edit-links">
     <ul>
         <li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20courses-{{ course.pk }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="{% url courses.edit course.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="edit-link" href="{% url admin:courses_course_change course.pk %}">{% trans "Edit" %}</a></li>
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>

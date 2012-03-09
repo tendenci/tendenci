@@ -14,6 +14,9 @@
     <h1>{{ course.title }} {% trans "Questions" %}</h1>
     
 	<div class="questions-wrap">
+        <div>
+            <a href="{% url admin:courses_course_change course.pk %}" >{% trans "Add More Questions" %}</a>
+        </div>
     	{% for question in questions %}
             <div class="question-wrap">
                 <h2>{{ question.question }}</h2>
@@ -24,9 +27,9 @@
                         </div>
                     {% endfor %}
                 </div>
-                <div>
-                    <a href="{% url admin:courses_question_change question.pk %}" >{% trans "Edit" %}</a> &nbsp; &nbsp; <a href="{% url admin:courses_question_delete question.pk %}">{% trans "Delete"  %}</a>
-                </div>
+            </div>
+            <div class="question-controls" >
+                <a href="{% url admin:courses_question_change question.pk %}" >{% trans "Edit" %}</a> &nbsp; &nbsp; <a href="{% url admin:courses_question_delete question.pk %}">{% trans "Delete"  %}</a>
             </div>
         {% endfor %}
     </div>
