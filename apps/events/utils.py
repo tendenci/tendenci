@@ -13,7 +13,7 @@ from events.models import Registration, Event, RegistrationConfiguration
 from events.models import Registrant, RegConfPricing, CustomRegForm
 from events.forms import FormForCustomRegForm
 from user_groups.models import Group
-from perms.utils import is_member, is_admin
+from perms.utils import is_member, is_admin, get_query_filters
 from discounts.models import Discount, DiscountUse
 
 try:
