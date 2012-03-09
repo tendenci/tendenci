@@ -214,8 +214,6 @@ class FormAdminForm(TendenciBaseForm):
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not is_developer(self.user):
-            if 'status' in self.fields: self.fields.pop('status')
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])
