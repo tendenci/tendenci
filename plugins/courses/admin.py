@@ -6,11 +6,19 @@ from django.conf import settings
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 
-from courses.models import Course, Question, CourseAttempt
+from courses.models import Course, Question, Answer, CourseAttempt
 from courses.forms import CourseForm
 
 class CourseAttemptAdmin(admin.ModelAdmin):
     list_display = ['course', 'user', 'score', 'create_dt']
+    
+class AnswerInline(admin.StackedInline):
+    model = Answer
+    
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [
+        AnswerInline,
+    ]
 
 class QuestionInline(admin.TabularInline):
     model = Question
@@ -134,3 +142,4 @@ class CourseAdmin(admin.ModelAdmin):
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseAttempt, CourseAttemptAdmin)
+admin.site.register(Question, QuestionAdmin)

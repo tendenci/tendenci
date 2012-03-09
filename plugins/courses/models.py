@@ -68,19 +68,25 @@ class Course(TendenciBaseModel):
         return (datetime.now() > self.deadline)
 
 class Question(models.Model):
-    """
-    Represents a single question for a course.
+    """Represents a single question for a course.
     point_value should always be equal to 100 over total number of course questions.
     """
     course = models.ForeignKey(Course, related_name="questions")
     question = models.CharField(_(u'Question'), max_length=200)
-    answer_choices = models.CharField(_(u'Answer Choices'), help_text=_(u'separated by comma'), max_length=200)
-    answer = models.CharField(_(u'Correct Answer'), max_length=200)
     point_value = models.IntegerField(_(u'Point Value'), default=0)
     
     def __unicode__(self):
         return "%s: %s" % (self.course.title, self.question)
-
+        
+class Answer(models.Model):
+    """Represents an Answer choice for a question.
+    """
+    question = models.ForeignKey(Question, related_name="answers")
+    answer = models.CharField(_(u'answer'), max_length=100)
+    correct = models.BooleanField(_(u'is correct'))
+    
+    def __unicode__(self):
+        return "%s: %s" % (self.question.question, self.answer)
 
 class CourseAttempt(models.Model):
     """
