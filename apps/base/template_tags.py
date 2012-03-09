@@ -133,7 +133,11 @@ class ListNode(Node):
         if items:
             #exclude certain primary keys
             if exclude:
-                items = items.exclude(pk__in=exclude)
+                excludes = []
+                for ex in exclude:
+                    if ex.isdigit():
+                        excludes.append(int(ex))
+                items = items.exclude(pk__in=excludes)
 
             # if order is not specified it sorts by relevance
             if order:
