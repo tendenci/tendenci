@@ -42,7 +42,7 @@
 			<li>
 				<a class="delete" href="{% url courses.delete course.pk %}">{% trans "Delete" %}</a>
 			</li>		
-            <li><a class="edit-link" href="{% url courses.edit_questions course.pk %}">{% trans "Edit Questions" %}</a></li>
+            <li><a class="edit-link" href="{% url courses.questions course.pk %}">{% trans "Questions" %}</a></li>
             </ul>
         </div>
         </li>

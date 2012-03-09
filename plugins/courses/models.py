@@ -78,6 +78,20 @@ class Question(models.Model):
     def __unicode__(self):
         return "%s: %s" % (self.course.title, self.question)
         
+    def correct_answers(self):
+        return self.answers.filter(correct=True)
+        
+    def choices(self):
+        cl = []
+        letters = map(chr, range(97, 123))
+        answers = self.answers.all()
+        for i in range(len(answers)):
+            cl.append({
+                'letter':letters[i],
+                'answer':answers[i]
+            })
+        return cl
+        
 class Answer(models.Model):
     """Represents an Answer choice for a question.
     """

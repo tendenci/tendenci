@@ -163,36 +163,23 @@ def edit(request, pk, form_class=CourseForm, template_name="courses/edit.html"):
         'form':form,
         'course': course,
     }, context_instance=RequestContext(request))
-
+    
 @login_required
-def edit_questions(request, pk, template_name="courses/edit_questions.html"):
-    """
-    Generate a formset for questions.
+def questions(request, pk, template_name="courses/questions.html"):
+    """List all the questions of a course
     """
     
     course = get_object_or_404(Course, pk=pk)
     
     if not has_perm(request.user, 'courses.change_course', course):
         raise Http403
-    
-    form_class = inlineformset_factory(Course, Question, form=QuestionForm, extra=1)
-    
-    if request.method == "POST":
-        form = form_class(request.POST, instance=course)
-        if form.is_valid():
-            questions = form.save(commit=False)
-            for question in questions:
-                question.save()
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated questions for %s' % course)
-            return redirect('courses.detail', course.pk)
-    else:
-        form = form_class(instance=course)
-       
-    return render_to_response(template_name, {
-        'form':form,
-        'course':course,
-        }, context_instance=RequestContext(request))
         
+    return render_to_response(template_name, {
+        'course':course,
+        'questions':course.questions.all(),
+    }, context_instance=RequestContext(request))
+
+
 @login_required
 def delete(request, pk, template_name="courses/delete.html"):
     course = get_object_or_404(Course, pk=pk)
@@ -208,6 +195,7 @@ def delete(request, pk, template_name="courses/delete.html"):
     return render_to_response(template_name, {
         'course':course,
         }, context_instance=RequestContext(request))
+
         
 @login_required
 def take(request, pk, template_name="courses/take.html"):
