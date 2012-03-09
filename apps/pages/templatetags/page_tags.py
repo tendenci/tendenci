@@ -33,6 +33,7 @@ def page_search(context):
 
 class ListPageNode(ListNode):
     model = Page
+    perms = 'pages.view_page'
 
 
 @register.tag

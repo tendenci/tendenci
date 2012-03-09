@@ -13,7 +13,7 @@ from events.models import Registration, Event, RegistrationConfiguration
 from events.models import Registrant, RegConfPricing, CustomRegForm
 from events.forms import FormForCustomRegForm
 from user_groups.models import Group
-from perms.utils import is_member, is_admin
+from perms.utils import is_member, is_admin, get_query_filters
 from discounts.models import Discount, DiscountUse
 
 try:
@@ -156,7 +156,7 @@ def get_vevents(request, d):
     events = Event.objects.filter(filters).filter(start_dt__lte=datetime.now())
     events = events.order_by('start_dt')
 
-    for evnt in events:
+    for event in events:
         e_str += "BEGIN:VEVENT\n"
         
         # organizer
