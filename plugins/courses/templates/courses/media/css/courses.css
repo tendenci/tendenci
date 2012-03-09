@@ -20,7 +20,11 @@
 .question-wrap {
     margin-top: 10px;
     padding: 5px;
-    border: 1px solid #000000;
+}
+
+.question-controls {
+    padding: 5px;
+    background: #EEEEEE;
 }
 
 .choices-wrap {

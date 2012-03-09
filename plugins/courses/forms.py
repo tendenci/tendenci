@@ -108,17 +108,14 @@ class AnswerForm(forms.Form):
         
         # set up answer choices
         choices = []
-        for choice in self.question.answer_choices.split(','):
-            choices.append((choice.strip(), choice.strip()))
+        for choice in self.question.answers.all():
+            choices.append((choice.pk, choice.answer))
             
-        # set up the correct answers
-        self.answers = []
-        for answer in self.question.answer.split(','):
-            self.answers.append(answer.strip())
+        self.answers = self.question.correct_answers()
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
-        if len(self.answers) == 1:
+        if self.answers.count() == 1:
             self.fields['answer'] = forms.ChoiceField(
                 label=self.question.question,
                 choices=choices,
@@ -138,8 +135,8 @@ class AnswerForm(forms.Form):
         """
         if self.is_valid():
             data = self.cleaned_data['answer']
-            if len(self.answers) == 1:
-                if data == self.question.answer:
+            if self.answers.count() == 1:
+                if self.question.answers.filter(pk=data).exists():
                     return self.question.point_value
             else:
                 if set(data) == set(self.answers):
