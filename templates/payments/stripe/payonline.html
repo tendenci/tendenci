@@ -121,66 +121,19 @@
     
     {# billing_info_form.as_p #}
     
-    
-    
     <button type="submit" class="submit-button">Submit Payment</button>
+    
+    <div id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
+    	<img src="{{ STATIC_URL }}images/ajax-loader.gif" alt=""/> loading...
+    </div>
 </form>
 </div>
 
 {% endblock %}
 
 {% block extra_body %}
+
     {{ block.super }}
 {% set_stripe_key %}
-
-<script>
-	$(document).ready(function() {
-	  $("#payment-form").submit(function(event) {
-	    // disable the submit button to prevent repeated clicks
-	    $('.submit-button').attr("disabled", "disabled");
-	
-	    Stripe.createToken({
-	        number: $('.card-number').val(),
-	        cvc: $('.card-cvc').val(),
-	        exp_month: $('.card-expiry-month').val(),
-	        exp_year: $('.card-expiry-year').val()
-	    }, stripeResponseHandler);
-
-	    // prevent the form from submitting with the default action
-	    return false;
-	  });
-	});
-	
-	function stripeResponseHandler(status, response) {
-	    if (response.error) {
-	       
-	        //show the errors on the form
-	        $("#card-errors").addClass('errors');
-	        $("#card-errors").html(response.error.message);
-	        $('.submit-button').removeAttr('disabled');
-	        
-	    } else {
-	        var form$ = $("#payment-form");
-	        // token contains id, last4, and card type
-	        var token = response['id'];
-	        // insert the token into the form so it gets submitted to the server
-	        form$.append("<input type='hidden' name='stripe_token' value='" + token + "'/>");
-	        // and submit
-	        form$.get(0).submit();
-	    }
-	}
-
-</script>
-<script>
-	function PopupLink(oLink) {
-		if (null != oLink) { 
-	 		window.open(oLink.href, null, "height=350, width=450, scrollbars=1, resizable=1");
-			return false;
-		}
-		return true;
-}
-	
-	
-</script>
-
+<script type="text/javascript" src="{{ STATIC_URL }}js/stripe_payment.js"></script>
 {% endblock %}
