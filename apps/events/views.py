@@ -123,6 +123,7 @@ def details(request, id=None, template_name="events/view.html"):
     speakers = event.speaker_set.all().order_by('pk')
     organizers = event.organizer_set.all().order_by('pk') or None
 
+    organizer = None
     if organizers:
         organizer = organizers[0]
 
