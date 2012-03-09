@@ -20,7 +20,7 @@ class LatestAlbums(SubFeed):
         return item.name
 
     def item_description(self, item):
-        if item.get_cover_photo:
+        if item.get_cover_photo():
             return '<a href="%s"><img src="%s" /></a><br />%s' % (item.get_absolute_url(), item.get_cover_photo().get_medium_640_url(), item.description)
         return item.description
 
