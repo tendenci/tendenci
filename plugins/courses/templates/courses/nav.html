@@ -11,46 +11,56 @@
 	{% has_perm user courses.delete_course nav_object as can_delete_course %}
 {% endif %}
 
-<div id="showh">
-	<ul id="primary">
-	
-    {% if user.is_authenticated %}
-	<li>
-	    <a href="{% url dashboard %}" title="Tendenci Home Page">
-		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
-		alt="Tendenci User Home" align="top" width="34" height="15"></a>
-	</li>
+<ul id="module-tabs" class="tabs">
+{% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+{% endif %}
+<li class="dropdown active" data-dropdown="dropdown">
+    <a href="#" class="dropdown-toggle">{% firstof MODULE_COURSES_LABEL trans 'Course' %}</a>
+    {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All Courses" %}</li>
+            <li class="divider"></li>
+    {% else %}
+        <div>
+        <ul class="dropdown-menu">
     {% endif %}
-
-	<li>
-		<span>{% firstof MODULE_COURSES_LABEL trans 'Course' %}</span>
-		<ul id="secondary">
-			<li><a href="{% url courses %}">{% firstof MODULE_COURSES_LABEL trans 'Courses' %}:</a></li> 
-			{% if nav_object %}
-                {% if can_view_course %}
-                    <li><a href="{% url courses.detail nav_object.pk %}">{% trans "View" %}</a></li>
-                {% endif %}
-				{% if can_edit_course %}
-                    <li><a href="{% url courses.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
-                    <li><a href="{% url courses.edit_questions nav_object.pk %}">{% trans "Edit Questions" %}</a></li>
-				{% endif %}
-                {% if admin %}
-                    <li><a href="{% url courses.add_completion nav_object.pk %}">{% trans "Add Completion" %}</a></li>
-                    <li><a href="{% url courses.clone nav_object.pk %}">{% trans "Clone" %}</a></li>
-                    <li><a href="{% url courses.completion_report nav_object.pk %}">{% trans "Completion Report" %}</a> </li>
-                {% endif %}
-			{% endif %}
-            <li><a href="{% url courses.search %}">{% trans "Search" %}</a></li>
-            {% if admin %}
-                <li><a href="{% url courses.top_tests %}">{% trans "Top Tests Taken" %}</a></li>
+    <li><a href="{% url courses.search %}">{% trans "Search" %}</a></li>
+    {% if admin %}
+        <li><a href="{% url courses.top_tests %}">{% trans "Top Tests Taken" %}</a></li>
+    {% endif %}
+    {% if can_add_course %}
+        <li><a href="{% url courses.add %}">{% trans "Add Course" %}</a></li>
+    {% endif %}
+    </ul>
+    {% if nav_object %}
+        {% if can_view_course or can_edit_course %}
+        <ul>
+            <li class="heading">{% trans "This Course" %}</li>
+            <li class="divider"></li>
+            {% if can_view_course %}
+                <li><a href="{% url courses.detail nav_object.pk %}">{% trans "View" %}</a></li>
             {% endif %}
-			{% if can_add_course %}
-                <li><a href="{% url courses.add %}">{% trans "Add" %}</a></li>
-			{% endif %}
-			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
-			{% endif %}
-		</ul>
-	</li>
-	</ul>
-</div>
+            {% if can_edit_course %}
+                <li><a href="{% url courses.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
+                <li><a href="{% url courses.questions nav_object.pk %}">{% trans "Questions" %}</a></li>
+            {% endif %}
+            {% if admin %}
+                <li><a href="{% url courses.add_completion nav_object.pk %}">{% trans "Add Completion" %}</a></li>
+                <li><a href="{% url courses.clone nav_object.pk %}">{% trans "Clone" %}</a></li>
+                <li><a href="{% url courses.completion_report nav_object.pk %}">{% trans "Completion Report" %}</a></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+    {% endif %}
+    </div>
+</li>
+</ul>
