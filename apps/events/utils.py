@@ -156,7 +156,7 @@ def get_vevents(request, d):
     events = Event.objects.filter(filters).filter(start_dt__lte=datetime.now())
     events = events.order_by('start_dt')
 
-    for evnt in events:
+    for event in events:
         e_str += "BEGIN:VEVENT\n"
         
         # organizer
