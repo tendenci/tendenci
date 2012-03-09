@@ -610,6 +610,7 @@ class AppEntryForm(forms.ModelForm):
     class Meta:
         model = AppEntry
         exclude = (
+            'hash',
             'entry_time',
             'allow_anonymous_view',
             'allow_anonymous_edit',
