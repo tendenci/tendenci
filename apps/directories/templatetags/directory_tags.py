@@ -110,6 +110,6 @@ def list_directories(parser, token):
     kwargs = parse_tag_kwargs(bits)
 
     if 'order' not in kwargs:
-        kwargs['order'] = 'headline_exact'
+        kwargs['order'] = 'headline'
 
     return ListDirectoriesNode(context_var, *args, **kwargs)
