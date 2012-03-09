@@ -32,7 +32,7 @@ class LocationSitemap(TendenciSitemap):
     priority = 0.3
 
     def items(self):
-        items = Location(**PUBLIC_FILTER).order_by('-create_dt')
+        items = Location.objects.filter(**PUBLIC_FILTER).order_by('-create_dt')
         return items
 
     def lastmod(self, obj):
