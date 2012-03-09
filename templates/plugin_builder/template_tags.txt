@@ -8,6 +8,7 @@ register = Library()
 
 class ListS_P_CAPNode(ListNode):
     model = S_S_CAP
+    perms = 'S_P_LOW.view_S_S_LOW'
 
 
 @register.tag

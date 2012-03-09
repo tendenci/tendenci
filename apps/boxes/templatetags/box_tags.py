@@ -15,23 +15,12 @@ class GetBoxNode(Node):
         self.pk = pk
 
     def render(self, context):
-        query = '"pk:%s"' % (self.pk)
         user = AnonymousUser()
         
-        if 'user' in self.kwargs:
-            try:
-                user = Variable(self.kwargs['user'])
-                user = user.resolve(context)
-            except:
-                user = self.kwargs['user']
-                if user == "anon" or user == "anonymous":
-                    user = AnonymousUser()
-        else:
-            # check the context for an already existing user
-            # and see if it is really a user object
-            if 'user' in context:
-                if isinstance(context['user'], User):
-                    user = context['user']
+        if 'user' in context:
+            if isinstance(context['user'], User):
+                user = context['user']
+
         try:
             filters = get_query_filters(user, 'boxes.view_box')
             box = Box.objects.filter(filters).filter(pk=self.pk).distinct()
@@ -44,8 +33,7 @@ class GetBoxNode(Node):
             )
             return output
         except:
-            return ""
-
+            return unicode()
 
 @register.tag
 def box(parser, token):
@@ -69,6 +57,7 @@ box.safe = True
 
 class ListBoxesNode(ListNode):
     model = Box
+    perms = 'boxes.view_box'
 
 
 @register.tag
