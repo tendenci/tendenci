@@ -208,12 +208,17 @@ def has_view_perm(user, perm, obj=None):
     return False
 
 
-def get_query_filters(user, perm):
+def get_query_filters(user, perm, **kwargs):
     """
     Method to generate search query filters for different user types.
     """
     # impersonation
     user = getattr(user, 'impersonated_user', user)
+
+    perms_field = kwargs.get('perms_field', True)
+
+    group_perm = Q()
+    group_q = Q()
 
     if not isinstance(user, User) or user.is_anonymous():
         anon_q = Q(allow_anonymous_view=True)
@@ -228,10 +233,9 @@ def get_query_filters(user, perm):
         elif is_admin(user) or has_perm(user, perm):
             return Q(status=True)
         else:
-            try:
-                group_perm = Q(perms__codename=perm.split(".")[1])
-            except:
-                group_perm = True
+
+            if '.' in perm and perms_field:
+                group_perm = Q(perms__codename=perm.split(".")[-1])
 
             if is_member(user):
                 anon_q = Q(allow_anonymous_view=True)
@@ -239,7 +243,10 @@ def get_query_filters(user, perm):
                 member_q = Q(allow_member_view=True)
                 status_q = Q(status=True)
                 status_detail_q = Q(status_detail='active')
-                group_q = Q(perms__group__in=user.group_member.select_related('pk'))
+
+                if perms_field:
+                    group_q = Q(perms__group__in=user.group_member.select_related('pk'))
+
                 creator_perm_q = Q(creator=user)
                 owner_perm_q = Q(owner=user)
                 member_filter = (status_q & (((anon_q | user_q | member_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
@@ -250,7 +257,10 @@ def get_query_filters(user, perm):
                 user_q = Q(allow_user_view=True)
                 status_q = Q(status=True)
                 status_detail_q = Q(status_detail='active')
-                group_q = Q(perms__group__in=user.group_member.select_related('pk'))
+
+                if perms_field:
+                    group_q = Q(perms__group__in=user.group_member.select_related('pk'))
+
                 creator_perm_q = Q(creator=user)
                 owner_perm_q = Q(owner=user)
                 user_filter = (status_q & (((anon_q | user_q | (group_q & group_perm)) & status_detail_q) | (creator_perm_q | owner_perm_q)))
