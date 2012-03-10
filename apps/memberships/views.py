@@ -231,6 +231,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
             # online payment
             if entry_invoice.total>0 and entry.payment_method and entry.payment_method.is_online:
+
                 return HttpResponseRedirect(reverse(
                     'payments.views.pay_online',
                     args=[entry_invoice.pk, entry_invoice.guid]
@@ -432,10 +433,8 @@ def application_confirmation(request, hash=None, template_name="memberships/entr
 
     if not hash:
         raise Http404
-    
-    entry = get_object_or_404(AppEntry, hash)
-#    if not entry.allow_view_by(request.user):
-#        raise Http403
+
+    entry = get_object_or_404(AppEntry, hash=hash)
 
     return render_to_response(template_name, {'is_confirmation':True, 'entry': entry},
         context_instance=RequestContext(request))
