@@ -7,7 +7,7 @@
     	{% if course.tags %}
 		<div class="tags"><strong>{% trans "Tags:" %} </strong>
 			{% for tag in course.tags|tag_split %}
-				<a href="{% url course.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+				<a href="{% url courses.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
 			{% endfor %}
 		</div>
 		{% endif %}
