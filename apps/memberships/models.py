@@ -1375,21 +1375,20 @@ class AppEntry(TendenciBaseModel):
     def auto_update_paid_object(self, request, payment):
         """
         Update the object after online payment is received.
+        If auto-approve; approve entry; send emails; log.
         """
-
-        # if auto-approve; approve entry; send emails
-        # -------------------------------------------
         from notification import models as notification
 
-        auto_approvals = (
-            not self.membership_type.require_approval,
-            not self.membership_type.renewal_require_approval,
-        )
+        if self.is_renewal:
+            # if auto-approve renews
+            if not self.membership_type.renewal_require_approval:
+                self.approve()
+        else:
+            # if auto-approve joins
+            if not self.membership_type.require_approval:
+                self.approve()
 
-        # auto join or renew
-        if any(auto_approvals):
-
-            self.approve()
+        if self.is_approved:
 
             membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
