@@ -46,7 +46,7 @@ def search(request, template_name="user_groups/search.html"):
     if has_index and query:
         groups = Group.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'groups.view_group')
+        filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
         groups = Group.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             groups = groups.select_related()
