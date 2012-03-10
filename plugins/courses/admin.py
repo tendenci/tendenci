@@ -20,6 +20,18 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [
         AnswerInline,
     ]
+    list_display = ['question', 'course', 'view_on_site']
+    
+    def view_on_site(self, obj):
+        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+            reverse('courses.questions', args=[obj.course.pk]),
+            obj.course,
+            link_icon,
+        )
+        return link
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'view'
     
     def response_change(self, request, obj, post_url_continue=None):
         return redirect('courses.questions', obj.course.pk)
@@ -144,6 +156,12 @@ class CourseAdmin(admin.ModelAdmin):
         if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
+        
+    def response_add(self, request, obj, post_url_continue=None):
+        return redirect('courses.questions', obj.pk)
+    
+    def response_change(self, request, obj, post_url_continue=None):
+        return redirect('courses.questions', obj.pk)
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseAttempt, CourseAttemptAdmin)
