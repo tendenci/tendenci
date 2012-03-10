@@ -22,13 +22,20 @@ class CourseForm(TendenciBaseForm):
             dd_month = 3
             dd_day = 1
     
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
-    content = forms.CharField(required=False,
-                widget=TinyMCE(attrs={'style':'width:100%'},
-                mce_attrs={'storme_app_label':u'courses',
-                'storme_model':Course._meta.module_name.lower()}))
-    deadline = SplitDateTimeField(label=_('Deadline'), initial=datetime(year=dd_year, month=dd_month, day=dd_day))
-                
+    STATUS_CHOICES = (('active','Active'),('pending','Pending'))
+    
+    status = forms.BooleanField(required=False, initial=False)
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    content = forms.CharField(
+                    required=False,
+                    widget=TinyMCE(attrs={'style':'width:100%'},
+                    mce_attrs={'storme_app_label':u'courses',
+                    'storme_model':Course._meta.module_name.lower()}))
+    deadline = SplitDateTimeField(
+                    required=False,
+                    label=_('Deadline'),
+                    initial=datetime(year=dd_year, month=dd_month, day=dd_day))
+    
     class Meta:
         model = Course
         fields = (

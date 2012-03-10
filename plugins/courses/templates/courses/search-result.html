@@ -5,8 +5,10 @@
     <div class="search-item course-search-item">
         <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
         <div class="content">
-            <p><b>DEADLINE:</b> {{ course.deadline }}</p>
             {{ course.content|striptags|truncatewords:40|safe  }}
+            {% if course.deadline %}
+                <p><b>DEADLINE:</b> {{ course.deadline }}</p>
+            {% endif %}
         </div>
         <div class="user-options">
             {% course_user_status course request.user %}
