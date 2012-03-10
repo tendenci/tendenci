@@ -1,9 +1,11 @@
 import random
+from operator import or_
 
 from django.template import Node, Variable, Context, loader
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser, User
+from django.db.models import Q
 
 from perms.utils import get_query_filters
 
@@ -117,17 +119,21 @@ class ListNode(Node):
 
             exclude = exclude.replace('"', '')
             exclude = exclude.split(',')
-        
-        # process tags
-        for tag in tags:
-            tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
 
         # get the list of items
         self.perms = getattr(self, 'perms', unicode())
 
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters).distinct()
+
+        if tags:  # tags is a comma delimited list
+            # this is fast; but has one hole
+            # it finds words inside of other words
+            # e.g. "event" is within "prevent"
+            tag_queries = [Q(tags__icontains=t) for t in tags]
+            tag_query = reduce(or_, tag_queries)
+            items = items.filter(tag_query)
+
         objects = []
         
         if items:
