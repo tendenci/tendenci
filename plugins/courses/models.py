@@ -85,7 +85,7 @@ class Question(models.Model):
         cl = []
         letters = map(chr, range(97, 123))
         answers = self.answers.all()
-        for i in range(len(answers)):
+        for i in range(min([len(letters)], len(answers))):
             cl.append({
                 'letter':letters[i],
                 'answer':answers[i]

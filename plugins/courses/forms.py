@@ -98,8 +98,8 @@ class QuestionForm(forms.ModelForm):
         
     def clean_point_value(self):
         data = self.cleaned_data['point_value']
-        if data <= 0:
-            raise forms.ValidationError("Point Value should be a positive integer")
+        if data < 0:
+            raise forms.ValidationError("Point Value should be greater than 0")
         return data
 
 class AnswerForm(forms.Form):
@@ -112,14 +112,17 @@ class AnswerForm(forms.Form):
         Create the answer field based on the question
         """
         self.question = kwargs.pop('question')
-        
-        # set up answer choices
-        choices = []
-        for choice in self.question.answers.all():
-            choices.append((choice.pk, choice.answer))
-            
         self.answers = self.question.correct_answers()
-        label = "%s. %s" % (self.question.number, self.question.question)
+        
+        choices = []
+        # set up answer choices
+        if self.question.correct_answers():
+            label = "%s. %s" % (self.question.number, self.question.question)
+            for choice in self.question.choices():
+                c_label = "%s. %s" % (choice['letter'], choice['answer'].answer)
+                choices.append((choice['answer'].pk, c_label))
+        else:
+            label = "%s" % self.question.question
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
@@ -143,11 +146,12 @@ class AnswerForm(forms.Form):
         """
         if self.is_valid():
             data = self.cleaned_data['answer']
+            a_list = [unicode(x) for x in self.answers.values_list('pk', flat=True)]
             if self.answers.count() == 1:
-                if self.question.answers.filter(pk=data).exists():
+                if self.answers.filter(pk=data).exists():
                     return self.question.point_value
             else:
-                if set(data) == set(self.answers):
+                if set(data) == set(a_list):
                     return self.question.point_value
         return 0
 
