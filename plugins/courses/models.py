@@ -1,7 +1,9 @@
 import calendar
+from decimal import Decimal
 from datetime import datetime, timedelta
 
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
@@ -23,7 +25,12 @@ class Course(TendenciBaseModel):
     content = models.TextField(_(u'Content'))
     retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
     retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
-    passing_score = models.DecimalField(_(u'Passing Score'), help_text=u'out of 100%', max_digits=5, decimal_places=2)
+    passing_score = models.DecimalField(_(u'Passing Score'),
+                        help_text=u'out of 100%',
+                        max_digits=5,
+                        decimal_places=2,
+                        validators=[MaxValueValidator(Decimal('100')), MinValueValidator(Decimal('0'))],
+                    )
     deadline = models.DateTimeField(_(u'Deadline'), null=True)
     close_after_deadline = models.BooleanField(_(u'Close After Deadline'), default=False)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
