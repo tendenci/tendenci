@@ -71,6 +71,7 @@ class Question(models.Model):
     point_value should always be equal to 100 over total number of course questions.
     """
     course = models.ForeignKey(Course, related_name="questions")
+    number = models.IntegerField(_(u'Number'))
     question = models.CharField(_(u'Question'), max_length=200)
     point_value = models.IntegerField(_(u'Point Value'), default=0)
     

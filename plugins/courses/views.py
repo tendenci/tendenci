@@ -176,7 +176,7 @@ def questions(request, pk, template_name="courses/questions.html"):
         
     return render_to_response(template_name, {
         'course':course,
-        'questions':course.questions.all(),
+        'questions':course.questions.all().order_by('number'),
     }, context_instance=RequestContext(request))
 
 
@@ -218,7 +218,7 @@ def take(request, pk, template_name="courses/take.html"):
         return redirect('courses.detail', course.pk)
     
     #check if this course has any questions at all
-    questions = course.questions.all()
+    questions = course.questions.all().order_by('number')
     if not questions:
         messages.add_message(request, messages.ERROR, 'This course does not have any questions yet. Try again later.')
         return redirect('courses.detail', course.pk)
@@ -276,6 +276,7 @@ def take(request, pk, template_name="courses/take.html"):
     return render_to_response(template_name, {
         'forms':forms,
         'course':course,
+        'questions':questions,
         }, context_instance=RequestContext(request))
 
 @login_required

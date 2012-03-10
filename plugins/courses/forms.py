@@ -94,7 +94,7 @@ class CourseForm(TendenciBaseForm):
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ('question', 'point_value')
+        fields = ('number', 'question', 'point_value')
         
     def clean_point_value(self):
         data = self.cleaned_data['point_value']
@@ -119,18 +119,19 @@ class AnswerForm(forms.Form):
             choices.append((choice.pk, choice.answer))
             
         self.answers = self.question.correct_answers()
+        label = "%s. %s" % (self.question.number, self.question.question)
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
         if self.answers.count() == 1:
             self.fields['answer'] = forms.ChoiceField(
-                label=self.question.question,
+                label=label,
                 choices=choices,
                 widget=forms.RadioSelect,
             )
         else:
             self.fields['answer'] = forms.MultipleChoiceField(
-                label=self.question.question,
+                label=label,
                 choices=choices,
                 widget=forms.CheckboxSelectMultiple,
             )
