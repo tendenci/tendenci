@@ -54,7 +54,7 @@ def search(request, template_name="resumes/search.html"):
         resumes = Resume.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             resumes = resumes.select_related()
-        resumes = resumes.order_by('-create_dt')
+    resumes = resumes.order_by('-create_dt')
 
     EventLog.objects.log(**{
         'event_id' : 354000,
