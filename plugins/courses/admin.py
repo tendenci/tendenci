@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
 from django.conf import settings
@@ -7,7 +8,7 @@ from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 
 from courses.models import Course, Question, Answer, CourseAttempt
-from courses.forms import CourseForm
+from courses.forms import CourseForm, QuestionForm
 
 class CourseAttemptAdmin(admin.ModelAdmin):
     list_display = ['course', 'user', 'score', 'create_dt']
@@ -19,9 +20,13 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [
         AnswerInline,
     ]
+    
+    def response_change(self, request, obj, post_url_continue=None):
+        return redirect('courses.questions', obj.course.pk)
 
 class QuestionInline(admin.TabularInline):
     model = Question
+    form = QuestionForm
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = [

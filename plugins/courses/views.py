@@ -311,13 +311,20 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
         }, context_instance=RequestContext(request))
 
 @login_required
-def certificate(request, pk, template_name="courses/certificate.html"):
+def certificate(request, pk, user_id=None, template_name="courses/certificate.html"):
     course = get_object_or_404(Course, pk=pk)
     
     if not has_perm(request.user, 'courses.view_course', course):
         raise Http403
     
-    attempt = get_best_passed_attempt(course, request.user)
+    if user_id:
+        user = get_object_or_404(User, pk=user_id)
+        if not (user == request.user or is_admin(request.user)):
+            raise Http403
+    else:
+        user = request.user
+    
+    attempt = get_best_passed_attempt(course, user)
     
     if not attempt:
         # there is no certificate if the user hasn't passed the course yet
