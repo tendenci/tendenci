@@ -19,7 +19,7 @@
         </div>
     	{% for question in questions %}
             <div class="question-wrap">
-                <h2>{{ question.number }}. {{ question.question }}</h2>
+                <h2>{% if question.correct_answers %}{{ question.number }}.{% endif %} {{ question.question }}</h2>
                 <div class="choices-wrap">
                     {% for choice in question.choices %}
                         <div class="choice-wrap {% if choice.answer.correct %}answer{% endif %}">
