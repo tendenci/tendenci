@@ -3,10 +3,12 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
 from resumes.managers import ResumeManager
+from perms.object_perms import ObjectPermission
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from resumes.module_meta import ResumeMeta
@@ -77,7 +79,13 @@ class Resume(models.Model):
     
     meta = models.OneToOneField(MetaTags, null=True)
     tags = TagField(blank=True)
-                 
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
+
+
     objects = ResumeManager()
 
     class Meta:
