@@ -11,7 +11,8 @@ class DiscountRegistry(CoreRegistry):
     
     url = {
         'add': lazy_reverse('discount.add'),
-        'search': lazy_reverse('discount.search'),
+        'search': lazy_reverse('discounts'),
+        'list': lazy_reverse('discounts'),
     }
 
 site.register(Discount, DiscountRegistry)

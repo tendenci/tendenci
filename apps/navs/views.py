@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
 from django.utils import simplejson as json
+from django.conf import settings
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403

@@ -13,6 +13,7 @@
             <a class="btn" href="{{ request.path }}?theme=">Stop previewing</a> <a class="btn" href="{% url theme_editor.editor %}?theme_edit={{ request.session.theme }}">Edit this theme</a>
         </div>
         {% endif %}
+        {% comment %}
         {% if CUSTOM_TEMPLATE %}
         <p>
             <strong>TEMPLATE:</strong> <span>{% if THEME_TEMPLATE %}{{ THEME_TEMPLATE }}{% endif %} {% if CUSTOM_TEMPLATE %}(This template is customized.){% endif %}</span> <br />
@@ -21,5 +22,6 @@
             <a class="btn" href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}">Edit this template</a>
         </div>
         {% endif %}
+        {% endcomment %}
     </div>
 </div>

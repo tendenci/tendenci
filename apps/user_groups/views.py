@@ -16,7 +16,8 @@ from django.http import HttpResponse
 
 from djcelery.models import TaskMeta
 from base.http import Http403
-from perms.utils import is_admin, get_notice_recipients, has_perm
+from site_settings.utils import get_setting
+from perms.utils import is_admin, get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from entities.models import Entity
 from event_logs.models import EventLog
 from event_logs.utils import request_month_range, day_bars
@@ -33,12 +34,22 @@ try:
 except:
     notification = None
 
-def group_search(request, template_name="user_groups/search.html"):
+def search(request, template_name="user_groups/search.html"):
+    """
+    This page lists out all user groups.  If a search index
+    is available, this page also allows you to search through
+    user groups.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    groups = Group.objects.search(query, user=request.user)
 
-    # exclude the membership
-    # groups = groups.exclude(type='membership')
+    if has_index and query:
+        groups = Group.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'groups.view_group', perms_field=False)
+        groups = Group.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            groups = groups.select_related()
 
     log_defaults = {
         'event_id' : 164000,
@@ -52,11 +63,18 @@ def group_search(request, template_name="user_groups/search.html"):
 
     return render_to_response(template_name, {'groups':groups}, 
         context_instance=RequestContext(request))
-    
+
+def search_redirect(request):
+    """
+    This page redirects to the list page.  The list page can
+    have a search feature if a search index is available.
+    """
+    return HttpResponseRedirect(reverse('groups'))
+
 def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
 
-    if not has_perm(request.user,'user_groups.view_group',group): raise Http403
+    if not has_view_perm(request.user,'user_groups.view_group',group): raise Http403
     
     log_defaults = {
         'event_id' : 165000,
@@ -204,7 +222,7 @@ def group_membership_self_add(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
     user = get_object_or_404(User, pk=user_id)
     
-    if not has_perm(request.user,'user_groups.view_group') and not group.allow_self_add:
+    if not has_view_perm(request.user,'user_groups.view_group') and not group.allow_self_add:
         raise Http403
     
     group_membership = GroupMembership.objects.filter(member=user, group=group)
@@ -240,7 +258,7 @@ def group_membership_self_add(request, slug, user_id):
 def group_membership_self_remove(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
     
-    if not has_perm(request.user,'user_groups.view_group') and not group.allow_self_remove:
+    if not has_view_perm(request.user,'user_groups.view_group') and not group.allow_self_remove:
         raise Http403
 
     user = get_object_or_404(User, pk=user_id)

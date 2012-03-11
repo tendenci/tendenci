@@ -1,7 +1,9 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from embedly import get_oembed
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
@@ -32,7 +34,11 @@ class Video(TendenciBaseModel):
     description = tinymce_models.HTMLField()
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     ordering = models.IntegerField(blank=True, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = VideoManager()
     
     def __unicode__(self):

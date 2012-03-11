@@ -26,6 +26,7 @@ class FormRegistry(CoreRegistry):
     url = {
         'add': lazy_reverse('form_add'),
         'search': lazy_reverse('forms'),
+        'list': lazy_reverse('forms'),
     }
 
 site.register(Form, FormRegistry)

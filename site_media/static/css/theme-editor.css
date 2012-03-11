@@ -43,7 +43,7 @@ table#file-editor div.pwd {
 }
 
 #right_files_list ul li.dir_item {
-    background: url('/site_media/static/images/icons/closedFolder_16x16.gif') left center no-repeat;
+    background: url('../images/icons/closedFolder_16x16.gif') left center no-repeat;
     padding: 2px 2px 2px 20px;
 }
 

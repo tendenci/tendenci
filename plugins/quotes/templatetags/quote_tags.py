@@ -8,6 +8,7 @@ register = Library()
 
 class ListQuotesNode(ListNode):
     model = Quote
+    perms = 'quotes.view_quote'
 
 
 @register.tag

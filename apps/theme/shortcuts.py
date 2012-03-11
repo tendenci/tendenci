@@ -30,7 +30,10 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
     theme_template = "%s/templates/%s" % (theme, template_name)
     context_instance["THEME_TEMPLATE"] = template_name
     context_instance["CUSTOM_TEMPLATE"] = True
-    
+
+    if 'homepage.html' in template_name:
+        context_instance["CUSTOM_TEMPLATE"] = False
+
     if isinstance(template_name, (list, tuple)):
         try:
             t = select_template(theme_template)

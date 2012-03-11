@@ -1,98 +1,65 @@
 {% load base_filters %}
 {% load base_tags %}
-{% load page_tags %}
-{% load perm_tags %}
-{% load tagging_tags %}
-{% load category_tags %}
 {% load i18n %}
 
-{% has_perm user pages.change_page page as can_edit %}
-{% has_perm user pages.delete_page page as can_delete %}
-{% get_category_for_object page as category %}
-{% get_sub_category_for_object page as sub_category %}
-{% tags_hash_tags page as hash_tags %}
-{% tags_strip_hash page as nonhash_tags %}
+<div class="meta {% if not user.is_authenticated %}anon{% endif %}">
+    <div class="meta-left">
+    	
+    	{% with page.category_set as page_cat %}
+        {% if page_cat %}
+        <div class="categories">
+            <strong>{% trans "Category:" %} </strong><a href="{% url page.search %}?q=category:{{ page_cat }}">{{ page_cat.category }}</a>
+        {% if page_cat.sub_category %}
+            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url page.search %}?q=sub_category:{{ page_cat.sub_category }}">{{ page_cat.sub_category }}</a>
+        {% endif %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        
+        {% if page.tags %}
+        <div class="tags"><strong>{% trans "Tags:" %} </strong>
+            {% for tag in page.tags|tag_split %}
+                <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if admin or user == page.creator or user == page.owner %}
+            {% meta_creator_owner page %}
+        {% endif %}
+        
+    </div>
+    <div class="meta-right">
+        <a class="print-link" href="{% url page.print_view page.slug %}">{% trans "Print" %}</a>
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+</div>
+{% if admin %}
+<div class="editor-bar">
 
-
-            <div class="meta {% if not user.is_authenticated and not category and not nonhash_tags %}anon{% endif %}">
-                <div class="meta-left">
-                    {% if category %}
-                    <div class="categories">
-                        <strong>{% trans "Category:" %} </strong><a href="{% url page.search %}?q=category:{{ category }}">{{ category }}</a>
-                    {% if sub_category %}
-                        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url page.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>
-                    {% endif %} 
-                    </div>
-                    {% endif %}
-    
-                    {% if nonhash_tags or hash_tags %}
-                    <div class="tags">
-                        {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
-                        {% for tag in nonhash_tags %}
-                            <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                        
-                        {% if hash_tags and can_edit %}
-                        {% for tag in hash_tags %}
-                            {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    
-                    {% if user.is_authenticated %}
-                    <div class="submitted">{% blocktrans with page.create_dt|date:"long" as create_date %}Created on {{ create_date }}
-                    by:{% endblocktrans %} <a href="{{ page.creator.get_absolute_url }}">
-                    {% if page.creator.first_name %}{{ page.creator.first_name }} {{ page.creator.last_name }}
-                    {% else %}
-                    {{ page.creator }}
-                   {% endif %}</a>
-                    </div>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                    <div class="submitted">{% blocktrans with page.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
-                    by:{% endblocktrans %} <a href="{{ page.owner.get_absolute_url }}">
-                    {% if page.owner.first_name %}{{ page.owner.first_name }} {{ page.owner.last_name }}
-                    {% else %}
-                    {{ page.owner }}
-                   {% endif %}</a>
-                    </div>
-                    {% endif %}
-                    
-                </div>
-                <div class="meta-right">
-                    <a class="print-link" href="{% url page.print_view page.slug %}">{% trans "Print" %}</a>
-                    <a class="share-link" >{% trans "Share" %}</a>
-                </div>
-            </div>
-            {% if can_edit %}
-            <div class="editor-bar">
-
-                <div class="perm-status">
-                <ul>
-                    <li>{{ page.obj_perms }}</li>
-                    <li>{{ page.obj_status }}</li>
-                </ul>
-                </div>
-                <div class="edit-links">
-                <ul>
-                    <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ page.pk }}&source={{ page.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-                    <li><a class="edit-link" href="{% url page.edit page.pk %}">{% trans "Edit" %}</a></li>
-                    <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
-                    <div class="options-list">
-                        <ul>
-                        {% if can_delete %}
-                        <li>
-                            <a class="delete" href="{% url page.delete page.pk %}">{% trans "Delete" %}</a>
-                        </li>               
-                        {% endif %}
-                            <li><a href="{% url page.edit.meta page.pk %}">{% trans "Edit Meta" %}</a></li>
-                            <li><a href="{% url category.update page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a></li>
-                            
-                        </ul>
-                    </div>
-                    </li>
-                </ul>
-                </div>
-            </div> 
-            {% endif %}
+    <div class="perm-status">
+    <ul>
+        <li>{{ page.obj_perms }}</li>
+        <li>{{ page.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ page.pk }}&source={{ page.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url page.edit page.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+            <li>
+                <a class="delete" href="{% url page.delete page.pk %}">{% trans "Delete" %}</a>
+            </li>               
+                <li><a href="{% url page.edit.meta page.pk %}">{% trans "Edit Meta" %}</a></li>
+                <li><a href="{% url category.update page.opt_app_label page.opt_module_name page.pk %}">{% trans "Edit Categories" %}</a></li>
+                
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}

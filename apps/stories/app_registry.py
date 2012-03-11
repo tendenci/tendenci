@@ -25,7 +25,7 @@ class StoryRegistry(CoreRegistry):
     
     url = {
         'add': lazy_reverse('story.add'),
-        'search': lazy_reverse('story.search'),
+        'search': lazy_reverse('stories'),
     }
 
 site.register(Story, StoryRegistry)
