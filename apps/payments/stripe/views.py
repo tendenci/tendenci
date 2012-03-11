@@ -44,11 +44,8 @@ def pay_online(request, payment_id, template_name='payments/stripe/payonline.htm
             
             try:
                 charge_response = stripe.Charge.create(**params)
-                print type(charge_response)
-                print charge_response
                 # an example of response: https://api.stripe.com/v1/charges/ch_YjKFjLIItzRDv7
                 #charge_response = simplejson.loads(charge)
-                
             except:
                 charge_response = traceback.format_exc()
                 print 'error=', charge_response
