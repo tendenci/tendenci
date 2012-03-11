@@ -3,7 +3,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 from meta.models import Meta as MetaTags
 from perms.models import TendenciBaseModel
@@ -54,6 +56,10 @@ class BeforeAndAfter(TendenciBaseModel):
     admin_notes = models.TextField(_('admin notes'), blank=True)
     meta = models.OneToOneField(MetaTags, null=True, blank=True)
     ordering = models.IntegerField(blank=True, null=True)
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
     
     objects = BeforeAndAfterManager()
 

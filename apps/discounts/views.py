@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, is_admin
+from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters
 from event_logs.models import EventLog
 from theme.shortcuts import themed_response as render_to_response
 
@@ -17,9 +17,15 @@ from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):
+    if not has_perm(request.user, 'discounts.view_discount'):
+        raise Http403
+
+    filters = get_query_filters(request.user, 'discounts.view_discount')
+    discounts = Discount.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
-    discounts = Discount.objects.search(query, user=request.user)
-    
+    if query:
+        discounts = discounts.filter(discount_code__icontains=query)
+
     log_defaults = {
         'event_id' : 1010400,
         'event_data': '%s searched by %s' % ('Discount', request.user),
@@ -147,7 +153,7 @@ def delete(request, id, template_name="discounts/delete.html"):
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
         discount.delete()
         
-        return redirect('discount.search')
+        return redirect('discounts')
 
     return render_to_response(template_name, {'discount': discount}, 
         context_instance=RequestContext(request))

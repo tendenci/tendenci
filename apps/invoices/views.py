@@ -8,6 +8,7 @@ from theme.shortcuts import themed_response as render_to_response
 from perms.utils import is_admin
 from event_logs.models import EventLog
 from notification.utils import send_notifications
+from site_settings.utils import get_setting
 
 from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
@@ -63,7 +64,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
-    if query:
+    if get_setting('site', 'global', 'searchindex') and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()

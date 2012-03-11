@@ -30,7 +30,7 @@ class GroupRegistry(PeopleRegistry):
     }
     
     url = {
-        'search': lazy_reverse('group.search'),
+        'search': lazy_reverse('groups'),
         'add': lazy_reverse('group.add'),
     }
 

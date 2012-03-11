@@ -5,13 +5,14 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from theme.shortcuts import themed_response as render_to_response
+from site_settings.utils import get_setting 
 from base.http import Http403
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from perms.utils import (get_notice_recipients, has_perm, is_admin,
-    update_perms_and_save)
+    update_perms_and_save, get_query_filters)
+from theme.shortcuts import themed_response as render_to_response
 
 from news.models import News
 from news.forms import NewsForm
@@ -49,7 +50,13 @@ def index(request, slug=None, template_name="news/view.html"):
 
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
-    news = News.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        news = News.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'news.view_news')
+        news = News.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            news = news.select_related()  
     news = news.order_by('-release_dt')
 
     log_defaults = {

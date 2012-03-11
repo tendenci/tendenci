@@ -39,7 +39,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "redirects" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url redirects %}">{% trans "Search Redirects" %}</a></li>
+            <li><a href="{% url redirects %}">{% trans "Redirect List" %}</a></li>
             {% if can_add_redirect %}
                 <li><a href="{% url redirect.add %}">{% trans "Add a Redirect" %}</a></li>
             {% endif %}

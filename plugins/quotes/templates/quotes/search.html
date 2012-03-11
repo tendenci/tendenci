@@ -1,8 +1,8 @@
 {% extends "quotes/base.html" %}
 {% load pagination_tags %}
 {% load quote_tags %}
-{% load tagging_tags %}
 {% load perm_tags %}
+{% load search_tags %}
 
 {% block title %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} Quotes - {{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Quotes, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Quotes{% endblock %}
 {% block meta_description %}{{ request.GET.q|striptags }} Quotes from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}
@@ -24,12 +24,15 @@ form.search-form input[type="text"] {width: 60%; margin-bottom: 10px;}
 
 {% block body %}
 {% has_perm user quotes.add_quote as can_add_quote %}
+<h1>{% firstof SITE_GLOBAL_QUOTES_LABEL_PLURAL "Quotes" %}</h1>
 
-<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Business Quotes</h1>
-<form class="search-form" action="{% url quote.search %}" method="get">
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url quotes %}" method="get">
 <input type="text" id="" name="q" value="{{ request.GET.q|striptags }}" />
 <input type="submit" value="Search" />
 </form>
+{% endif %}
+
 {% autopaginate quotes 20 %}
 {% if can_add_quote %}
     <div class="clearfix"><a id="add-quote" href="{% url admin:quotes_quote_add %}">Add a Quote</a></div>
@@ -38,24 +41,7 @@ form.search-form input[type="text"] {width: 60%; margin-bottom: 10px;}
 <div class="quotes-wrap">
 <ul>
 {% for quote in quotes %}
-    {% with quote.object as quote %}
-    {% tags_for_object quote as tags %}
-    <li>
-    <div class="quote">
-      <p class="quote-text">{{ quote.quote|safe|linebreaks }}</p>
-          <p><strong>&mdash;<a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a></strong></p>
-        {% if tags %}
-            <p>Tags: {% for tag in tags %}{% if not tag.name|slice:":3" == "zzz" %}<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a>{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</p>
-        {% endif %}
-        <small><a href="{{ quote.get_absolute_url }}">Quote Link</a></small>
-        <div class="meta">  
-            {% if quote.status_detail == 'pending' %}
-              <span class="copyright body-copy-alerts"><em>Pending</em></span>
-            {% endif %}   
-        </div>   
-    </div>
-    </li>
-    {% endwith %}
+    {% search_result quote %}
     {% empty %}
     <li>0 {{ request.GET.q|striptags }} Quotes Found</li>
     {% endfor %}

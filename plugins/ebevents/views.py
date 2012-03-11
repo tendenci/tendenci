@@ -42,8 +42,10 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         q_event_year = 0  
     
     # pull from cache
-    xml = cache.get('event_booking_xml')
-
+    keys = [settings.CACHE_PRE_KEY, 'event_booking_xml']
+    key = '.'.join(keys)
+    xml = cache.get(key)
+    
     # direct pull and cache
     if not xml:
         # Code when eventbooking goes down
@@ -53,7 +55,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         xml = url_object.read()
 
         # cache the content for one hour
-        cache.set('event_booking_xml', xml, 60*60*2) # 2 hours
+        cache.set(key, xml, 60*60*2) # 2 hours
         
     soup = BeautifulStoneSoup(xml)
     nodes = soup.findAll('event')

@@ -25,7 +25,8 @@ class DirectoryRegistry(CoreRegistry):
 
     url = {
         'add': lazy_reverse('directory.add'),
-        'search': lazy_reverse('directory.search'),
+        'search': lazy_reverse('directories'),
+        'list': lazy_reverse('directories'),
     }
 
 site.register(Directory, DirectoryRegistry)

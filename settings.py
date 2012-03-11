@@ -89,11 +89,11 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-65/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-66-2/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
-AVATAR_DEFAULT_URL = STATIC_URL + '/images/icons/default-user-80.jpg'
+AVATAR_DEFAULT_URL = STATIC_URL + 'images/icons/default-user-80.jpg'
 AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -192,6 +192,7 @@ INSTALLED_APPS = (
     'dashboard',
     'profiles',
     'articles',
+    'jobs',
     'news',
     'stories',
     'pages',
@@ -218,7 +219,6 @@ INSTALLED_APPS = (
     'categories',
     'contributions',
     'theme_editor',
-    'jobs',
     'styled_forms',
     'form_builder',
     'newsletters',
@@ -321,6 +321,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
+CACHE_PRE_KEY = "TENDENCI"
 
 # --------------------------------------#
 # CELERY
