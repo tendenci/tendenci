@@ -872,8 +872,8 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
-        markup = markup_pattern.search(data)
+        pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = pattern.search(data)
         if markup:
             raise forms.ValidationError("Markup is not allowed in the name field")
 

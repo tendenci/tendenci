@@ -1,0 +1,83 @@
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+<div class="meta">
+    <div class="meta-left">
+        <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ article.release_dt|date:"long" }}
+        {% if article.creator.first_name %}
+         {% trans "by" %} {% if user.is_authenticated %}
+         <a href="{{ article.creator.get_absolute_url }}">{{ article.creator.first_name }} {{ article.creator.last_name }}</a>
+           {% else %}
+           {{ article.creator.first_name }} {{ article.creator.last_name }}
+           {% endif %}
+        {% endif %}
+        </div>
+
+        {% with article.category_set as article_cat %}
+        {% if article_cat.category %}
+        <div class="categories">
+            <strong>{% trans "Category:" %} </strong><a href="{% url article.search %}?q=category:{{ article_cat.category }}">{{ article_cat.category }}</a>
+            {% if article_cat.sub_category %}
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url article.search %}?q=sub_category:{{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if article.tags %}
+        <div class="tags">
+            <strong>Tags: </strong>
+            {% for tag in article.tags|tag_split %}
+                <a href="{% url article.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            {% if not admin %}
+            {% if user == article.creator or user == article.owner %}
+            <div class="categories">
+                <strong>Owned by you</strong>{% if not article.status_detail == "active" %} - status: {{ article.obj_status }}{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% if admin or user == article.creator or user == article.owner %}
+                {% meta_creator_owner article %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="meta-right">
+        <!-- <a class="print-link" href="{# url article.print_view article.slug #}">Print</a> -->
+        <a class="share-link" >{% trans "Share" %}</a>
+    </div>
+</div>
+{% if admin %}
+<div class="editor-bar">
+
+    <div class="perm-status">
+    <ul>
+        <li>{{ article.obj_perms }}</li>
+        <li>{{ article.obj_status }}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20articles-{{ article.pk }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url article.edit article.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li>
+                    <a class="delete" href="{% url article.delete article.pk %}">{% trans "Delete" %}</a>
+                </li>               
+                <li><a href="{% url article.edit.meta article.pk %}">{% trans "Edit Meta" %}</a></li>
+                <li><a href="{% url category.update article.opt_app_label article.opt_module_name article.pk %}">{% trans "Edit Categories" %}</a></li>
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div> 
+{% endif %}

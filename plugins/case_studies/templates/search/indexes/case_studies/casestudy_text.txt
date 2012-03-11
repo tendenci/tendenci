@@ -6,11 +6,11 @@
 {{ object.execution|striptags|stripentities }}
 {{ object.results|striptags|stripentities }}
 
-{% for service in object.service.all %}
+{% for service in object.services.all %}
 service:{{ service }} 
 {% endfor %}
 
-{% for technology in object.technology.all %}
+{% for technology in object.technologies.all %}
 technology:{{ technology }} 
 {% endfor %}
 

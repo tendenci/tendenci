@@ -6,10 +6,11 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import floatformat
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 
 from base.template_tags import ListNode, parse_tag_kwargs
 from site_settings.utils import get_setting
+from perms.utils import get_query_filters
 
 from events.models import Event, Registrant, Type, RegConfPricing
 from events.utils import get_pricing, registration_earliest_time
@@ -54,11 +55,9 @@ def registrant_options(context, user, registrant):
 
 @register.inclusion_tag("events/registrants/search-form.html", takes_context=True)
 def registrant_search(context, event=None):
-
     context.update({
         "event": event
     })
-
     return context
 
 
@@ -128,34 +127,32 @@ class EventListNode(Node):
         
         day = self.day.resolve(context)
         type_slug = self.type_slug.resolve(context)
-        try:
-            type = Type.objects.get(slug=type_slug)
-        except:
-            type = None
-        
+
+        types = Type.objects.filter(slug=type_slug)
+
+        type = None
+        if types:
+            type = types[0]
+
         day = datetime(day.year, day.month, day.day)
         weekday = day.strftime('%a')
+
         #one day offset so we can get all the events on that day
         bound = timedelta(hours=23, minutes=59)
-        
-        sqs = Event.objects.search(date_range=(day+bound, day), user=context['user'])
-        
+
+        start_dt = day+bound
+        end_dt = day
+
+        filters = get_query_filters(context['user'], 'events.view_event')
+        events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt)
+
         if type:
-            sqs = sqs.filter(type_id=type.pk)
-            
+            events = events.filter(type=type)
+
         if weekday == 'Sun' or weekday == 'Sat':
-            sqs = sqs.filter(on_weekend=True)
-        
-        if self.ordering:
-            if self.ordering == 'time':
-                sqs = sqs.order_by('hour', 'minute')
-            else:
-                sqs = sqs.order_by(self.ordering)
-        else:
-            sqs = sqs.order_by('-number_of_days', 'start_dt')
-            
-        #print sqs
-        events = [sq.object for sq in sqs]
+            events = events.filter(on_weekend=True)
+
+        events = events.order_by(self.ordering or 'start_dt')
         
         context[self.context_var] = events
         return ''
@@ -279,10 +276,14 @@ class ListEventsNode(ListNode):
                 user = user.resolve(context)
             except:
                 user = self.kwargs['user']
+                if user == "anon" or user == "anonymous":
+                    user = AnonymousUser()
         else:
             # check the context for an already existing user
+            # and see if it is really a user object
             if 'user' in context:
-                user = context['user']
+                if isinstance(context['user'], User):
+                    user = context['user']
 
         if 'limit' in self.kwargs:
             try:
@@ -312,23 +313,25 @@ class ListEventsNode(ListNode):
             tag = tag.strip()
             query = '%s "tag:%s"' % (query, tag)
 
-        # get the list of staff
-        items = self.model.objects.search(user=user, query=query)
+        filters = get_query_filters(user, 'events.view_event')
+        items = Event.objects.filter(filters)
         objects = []
-        # if order is not specified it sorts by relevance
 
+        # if order is not specified it sorts by relevance
         if order:
             if order == "next_upcoming":
-                items = items.filter(start_dt__gt = datetime.now())
+                # Removed seconds so we can cache the query better
+                now = datetime.now().replace(second=0)
+                items = items.filter(start_dt__gt = now)
                 items = items.order_by("start_dt")
             else:
                 items = items.order_by(order)
 
         if items:
             if randomize:
-                objects = [item.object for item in random.sample(items, items.count())][:limit]
+                objects = [item for item in random.sample(items, items.count())][:limit]
             else:
-                objects = [item.object for item in items[:limit]]
+                objects = [item for item in items[:limit]]
 
         context[self.context_var] = objects
         return ""

@@ -6,16 +6,17 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
-from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from base.utils import check_template
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from perms.utils import (update_perms_and_save, get_notice_recipients,
-    is_admin, has_perm)
+    is_admin, has_perm,  get_query_filters)
 from categories.forms import CategoryForm
 from categories.models import Category
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
 
 from pages.models import Page
 from pages.forms import PageForm
@@ -55,7 +56,13 @@ def index(request, slug=None, template_name="pages/view.html"):
 
 def search(request, template_name="pages/search.html"):
     query = request.GET.get('q', None)
-    pages = Page.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        pages = Page.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'pages.view_page')
+        pages = Page.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            pages = pages.select_related() 
     pages = pages.order_by('-create_dt')
 
     log_defaults = {

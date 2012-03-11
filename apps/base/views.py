@@ -28,8 +28,10 @@ def image_preview(request, app_label, model, id,  size):
         instance = content_type.get_object_for_this_type(id=id)
     except:
         return HttpResponseNotFound("Image not found.", mimetype="text/plain")
-
-    response = cache.get(IMAGE_PREVIEW_CACHE + '.'.join([model, str(instance.id), size]))
+    
+    keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
+    key = '.'.join(keys)
+    response = cache.get(key)
     original_size = size
     
     if not response:
@@ -81,7 +83,10 @@ def image_preview(request, app_label, model, id,  size):
             
             image.save(response, "JPEG", quality=100)
             
-            cache.set(IMAGE_PREVIEW_CACHE + '.'.join([model, str(instance.id), size]), response)
+            keys = [settings.CACHE_PRE_KEY, IMAGE_PREVIEW_CACHE, model, str(instance.id), size]
+            key = '.'.join(keys)
+            
+            cache.set(key, response)
             return response
     
         else: # raise http 404 error (returns page not found)

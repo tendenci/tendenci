@@ -19,7 +19,7 @@ from base.decorators import ssl_required
 
 from perms.object_perms import ObjectPermission
 from perms.utils import (has_perm, is_admin, update_perms_and_save,
-    get_notice_recipients)
+    get_notice_recipients, get_query_filters)
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -127,8 +127,15 @@ def search(request, template_name="profiles/search.html"):
             raise Http403
 
     query = request.GET.get('q', None)
-    profiles = Profile.objects.search(query, user=request.user)
-    profiles = profiles.order_by('last_name_exact')
+    if get_setting('site', 'global', 'searchindex') and query:
+        profiles = Profile.objects.search(query, user=request.user)
+        profiles = profiles.order_by('last_name_exact')
+    else:
+        filters = get_query_filters(request.user, 'profiles.view_profile')
+        profiles = Profile.objects.filter(filters).distinct()
+        profiles = profiles.order_by('user__last_name')
+        if request.user.is_authenticated():
+            profiles = profiles.select_related()
 
     log_defaults = {
         'event_id' : 124000,

@@ -61,10 +61,17 @@ class CategoryManager(Manager):
         ct = ContentType.objects.get_for_model(model)
         filters = {'content_type':ct}
 
-        cat_items = CategoryItem.objects.filter(**filters)
+        cat_items = CategoryItem.objects.filter(**filters).select_related('category__name','parent__name')
+        categories = []
+        sub_categories = []
+        for cat in cat_items:
+            if cat.category and cat.category not in categories:
+                categories.append(cat.category)
+            elif cat.parent and cat.parent not in sub_categories:
+                sub_categories.append(cat.parent)
 
-        categories = set([c.category for c in cat_items if c.category])
-        sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items if c.parent])
+        #categories = set([c.category for c in cat_items if c.category])
+        #sub_categories = set([self.get(pk=c.parent.pk) for c in cat_items if c.parent])
 
         # find all cat_items using category (ct & object_id)
         # find all cat_items using objects found within cat_items

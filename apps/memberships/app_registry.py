@@ -1,6 +1,6 @@
 from registry import site
 from registry.base import PeopleRegistry, lazy_reverse
-from models import Membership
+from models import Membership, AppEntry
 
 
 class MembershipRegistry(PeopleRegistry):
@@ -67,3 +67,4 @@ class MembershipRegistry(PeopleRegistry):
     }
 
 site.register(Membership, MembershipRegistry)
+

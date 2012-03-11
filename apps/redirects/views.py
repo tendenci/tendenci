@@ -5,9 +5,10 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
-from perms.utils import has_perm
+from perms.utils import has_perm, get_query_filters, has_view_perm
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
 
 from redirects.models import Redirect
 from redirects.forms import RedirectForm
@@ -15,16 +16,29 @@ from redirects import dynamic_urls
 
 @login_required
 def search(request, template_name="redirects/search.html"):
+    """
+    This page lists out all redirects from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through redirects.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
+    query = request.GET.get('q', None)
+
+    if has_index and query:
+        redirects = Redirect.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'redirects.add_redirect')
+        redirects = Redirect.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            redirects = redirects.select_related()
+        redirects = redirects.order_by('-create_dt')
+
     # check permission
     if not has_perm(request.user,'redirects.add_redirect'):  
         raise Http403
-    
-    query = request.GET.get('q', None)
-    redirects = Redirect.objects.search(query, user=request.user)
 
     return render_to_response(template_name, {'redirects':redirects}, 
         context_instance=RequestContext(request))
-    return render_to_response(template_name, {'redirects':redirects}, context_instance=RequestContext(request))
 
 @login_required
 def add(request, form_class=RedirectForm, template_name="redirects/add.html"):

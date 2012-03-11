@@ -4,20 +4,52 @@
 {% for field in fields %}
     {% if field.field.field_type == 'FileField' %}
     <tr>
-        <td><strong>{{ field.field.label }}</strong></td>
-        <td><a href="{{ media_url }}{{ field.value }}">{{ field.value|str_basename }}</a></td>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#4f6b72;">{{ field.field.label }}</span>
+            </td>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#000000;"><a href="{{ media_url }}{{ field.value }}">{{ field.value|str_basename }}</a></span></td>
     </tr>
     {% else %}
         {% if field.field.field_type == 'BooleanField' %}
         <tr>
-            <td><strong>{{ field.field.label }}</strong></td>
-            <td>{{ field.value|yesno:"Yes,No" }}</td>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#4f6b72;">{{ field.field.label }}</span>
+            </td>
+            <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                <span style="font-size:9.0pt;color:#000000;">{{ field.value|yesno:"Yes,No" }}</span>
+            </td>
         </tr>
         {% else %}
-        <tr>
-            <td><strong>{{ field.field.label }}</strong></td>
-            <td>{{ field.value }}</td>
-        </tr>
+            {% if "Header" in field.field.field_type %}
+            <tr>
+              <td colspan="2" style="padding:0in 0in 0in 0in">
+              <span style="font-size:12.0pt">&nbsp;</span>
+              </td>
+            </tr>
+                <tr>
+                <td colspan="2" bgcolor="#F2F2F2" style="border:solid #d8dfea 1.0pt;background:#f2f2f2;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                    <span style="font-size:9.0pt;color:#4f6b72;">Section - {{ field.field.label }}</span>
+                </td>
+                </tr>
+            {% else %}
+                {% if "Description" in field.field.field_type %}
+                    <tr>
+                    <td colspan="2" bgcolor="#F2F2F2" style="border:solid #d8dfea 1.0pt;background:#f2f2f2;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                        <span style="font-size:9.0pt;color:#4f6b72;">{{ field.field.label }}</span>
+                    </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                            <span style="font-size:9.0pt;color:#4f6b72;">{{ field.field.label }}</span>
+                        </td>
+                        <td style="border:dotted #d8dfea 1.0pt;padding:3.75pt 3.75pt 3.75pt 3.75pt">
+                            <span style="font-size:9.0pt;color:#000000;">{{ field.value }}</span>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endfor %}

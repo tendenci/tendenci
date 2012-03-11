@@ -4,8 +4,9 @@
 {% load staff_tags %}
 {% load perm_tags %}
 {% load search_tags %}
+{% load i18n %}
 
-{% block title %}Staff{% endblock %}
+{% block title %}{% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -17,21 +18,20 @@
 {% endblock %}
 
 {% block body %}
-{# list_staff as staff_members limit=30 order="-update_dt" #}
 
 {% autopaginate staff_members 9 %}
 {% has_perm user staff.add_staff as can_add_staff %}
 <div class="t">
-    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} Staff List</h1>
+    <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %}</h1>
     {% staff_search %}
     {% if can_add_staff %}
-    <div><a href="{% url admin:staff_staff_add %}">Add Staff</a></div>
+    <div><a href="{% url admin:staff_staff_add %}">{% trans "Add" %} {% firstof MODULE_STAFF_LABEL 'Staff' %}</a></div>
     {% endif %}
     <div class="staff-search-wrap-list clearfix">
         {% for staff in staff_members %}
             {% search_result staff %}
         {% empty %}
-            <p>0 Staff Found</p>
+            <p>0 {% firstof MODULE_STAFF_LABEL_PLURAL 'Staff' %} {% trans "Found" %}</p>
         {% endfor %}
     </div>
     {% paginate %}

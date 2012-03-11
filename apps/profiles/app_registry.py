@@ -19,9 +19,6 @@ class ProfileRegistry(PeopleRegistry):
             'search':('124000', '3366FF'),
             'view':('125000', '3399FF'),
         },
-        'login':{
-            'login':('125200','66CCFF'),
-        },
     }
     
     url = {
