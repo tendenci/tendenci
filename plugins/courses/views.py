@@ -17,7 +17,7 @@ from courses.models import Course, Question, CourseAttempt
 from courses.forms import (CourseForm, QuestionForm, AnswerForm,
     CourseAttemptForm, DateRangeForm)
 from courses.utils import (can_retry, get_passed_attempts, get_top_tests,
-    get_best_passed_attempt)
+    get_best_passed_attempt, get_course_recipients)
 
 try:
     from notification import models as notification
@@ -249,8 +249,8 @@ def take(request, pk, template_name="courses/take.html"):
                 }
                 notification.send_emails(recipients, 'course_completion', extra_context)
                 
-        # send notification to administrators
-        recipients = get_notice_recipients('module', 'courses', 'courserecipients')
+        # send notification to recipients of the course
+        recipients = get_course_recipients(course)
         if recipients:
             if notification:
                 attempt_count = CourseAttempt.objects.filter(user=request.user, course=course).count()

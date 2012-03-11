@@ -23,8 +23,10 @@ class Course(TendenciBaseModel):
     
     title = models.CharField(_(u'Title'), max_length=200)
     content = models.TextField(_(u'Content'))
-    retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
-    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
+    recipients = models.CharField(_(u'Recipients'), help_text=_(u"Comma separated emails"), max_length=200, blank=True)
+    can_retry = models.BooleanField(_(u'Allow Retries'), default=True)
+    retries = models.IntegerField(_(u'Retries'), help_text=_(u'Number of retries allowed (0, means unlimited)'), default=0)
+    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=_(u'Number of hours before another retry'), default=0)
     passing_score = models.DecimalField(_(u'Passing Score'),
                         help_text=u'out of 100%',
                         max_digits=5,

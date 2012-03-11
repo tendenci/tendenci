@@ -41,6 +41,8 @@ class CourseForm(TendenciBaseForm):
         fields = (
             'title', 
             'content',
+            'recipients',
+            'can_retry',
             'retries',
             'retry_interval',
             'passing_score',
@@ -59,6 +61,8 @@ class CourseForm(TendenciBaseForm):
                 'fields': [
                     'title',
                     'content',
+                    'recipients',
+                    'can_retry',
                     'retries',
                     'retry_interval',
                     'passing_score',
