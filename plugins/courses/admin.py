@@ -8,7 +8,7 @@ from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 
 from courses.models import Course, Question, Answer, CourseAttempt
-from courses.forms import CourseForm, QuestionForm
+from courses.forms import CourseForm, QuestionForm, QuestionFormset
 
 class CourseAttemptAdmin(admin.ModelAdmin):
     list_display = ['course', 'user', 'score', 'create_dt']
@@ -39,6 +39,7 @@ class QuestionAdmin(admin.ModelAdmin):
 class QuestionInline(admin.TabularInline):
     model = Question
     form = QuestionForm
+    formset = QuestionFormset
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = [
