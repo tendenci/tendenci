@@ -65,6 +65,23 @@ class Course(TendenciBaseModel):
         if self.deadline:
             return (datetime.now() > self.deadline)
         return False
+        
+    def user_attempts(self):
+        d = {}
+        attempts = self.attempts.all()
+        for a in attempts:
+            if a.user in d.keys():
+                d[a.user]['list'].append(a)
+            else:
+                d[a.user] = {}
+                d[a.user]['user'] = a.user
+                d[a.user]['list'] = [a,]
+        
+        l = []
+        for u in d.keys():
+            l.append(d[u])
+        return l
+            
 
 class Question(models.Model):
     """Represents a single question for a course.
