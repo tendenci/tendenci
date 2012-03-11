@@ -76,7 +76,7 @@ class PhotoSet(TendenciBaseModel):
                 pass
 
         # photo record exists; check if file exists
-        if not cover_photo.file_exists():
+        if cover_photo and not cover_photo.file_exists():
             return None
 
         return cover_photo
