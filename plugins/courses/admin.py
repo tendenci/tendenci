@@ -52,10 +52,13 @@ class CourseAdmin(admin.ModelAdmin):
             {'fields': (
                 'title',
                 'content',
+                'recipients',
+                'can_retry',
                 'retries',
                 'retry_interval',
                 'passing_score',
                 'deadline',
+                'close_after_deadline',
                 'tags',
             )}
         ),
