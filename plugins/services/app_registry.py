@@ -11,7 +11,8 @@ class ServiceRegistry(PluginRegistry):
 
     url = {
         'add': lazy_reverse('service.add'),
-        'search': lazy_reverse('service.search'),
+        'search': lazy_reverse('services'),
+        'list': lazy_reverse('services'),
     }
 
 site.register(Service, ServiceRegistry)

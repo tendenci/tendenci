@@ -16,11 +16,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.contrib.contenttypes import generic
 
 from base.utils import day_validate
 from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
 from perms.utils import get_notice_recipients, is_member, is_admin, has_perm
+from perms.object_perms import ObjectPermission
 from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
@@ -272,6 +274,11 @@ class Membership(TendenciBaseModel):
     payment_method = models.ForeignKey(PaymentMethod, null=True)
     ma = models.ForeignKey("App", null=True)
     send_notice = models.BooleanField(default=True)
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = MembershipManager()
 
     class Meta:
@@ -390,6 +397,22 @@ class Membership(TendenciBaseModel):
 
     def get_join_dt(self):
         pass
+    
+    def allow_view_by(self, this_user):
+        if is_admin(this_user): return True
+        
+        if this_user.is_anonymous():
+            if self.allow_anonymous_view:
+                return self.status and self.status_detail=='active'
+        else:
+            if this_user in (self.creator, self.owner, self.user):
+                return self.status and self.status_detail=='active'
+            elif self.allow_user_view:
+                return self.status and self.status_detail=='active'
+            elif has_perm(this_user, 'memberships.view_app', self):
+                return True
+        
+        return False
 
 class MembershipArchive(TendenciBaseModel):
     """
@@ -784,6 +807,7 @@ class App(TendenciBaseModel):
                 return self.status and self.status_detail in ['active', 'published']
             elif self.allow_user_view:
                 return self.status and self.status_detail in ['active', 'published']
+
             elif has_perm(this_user, 'memberships.view_app', self):
                 return True
         
@@ -875,6 +899,7 @@ class AppEntry(TendenciBaseModel):
     user = models.ForeignKey(User, null=True, editable=False)
     membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
     entry_time = models.DateTimeField(_("Date/Time"))
+    hash = models.CharField(max_length=40, null=True, default='')
 
     is_renewal = models.BooleanField(editable=False)
     is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
@@ -882,6 +907,10 @@ class AppEntry(TendenciBaseModel):
     judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
 
     invoice = models.ForeignKey(Invoice, null=True, editable=False)
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = MemberAppEntryManager()
 
@@ -896,6 +925,24 @@ class AppEntry(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.application_entries', [self.pk])
+
+    
+    def allow_view_by(self, this_user):
+        if is_admin(this_user): return True
+        
+        if this_user.is_anonymous():
+            if self.allow_anonymous_view:
+                return True
+        else:
+            if this_user in (self.creator, self.owner):
+                return True
+            elif self.allow_user_view:
+                return True
+            elif has_perm(this_user, 'memberships.view_appentry', self):
+                return True
+        
+        return False
+
 
     @property
     def name(self):
@@ -943,9 +990,9 @@ class AppEntry(TendenciBaseModel):
         except:
             return unicode()
 
-    @property
-    def hash(self):
-        return md5(unicode(self.pk)).hexdigest()
+#    @property
+#    def hash(self):
+#        return md5(unicode(self.pk)).hexdigest()
 
     @models.permalink
     def hash_url(self):
@@ -1328,21 +1375,20 @@ class AppEntry(TendenciBaseModel):
     def auto_update_paid_object(self, request, payment):
         """
         Update the object after online payment is received.
+        If auto-approve; approve entry; send emails; log.
         """
-
-        # if auto-approve; approve entry; send emails
-        # -------------------------------------------
         from notification import models as notification
 
-        auto_approvals = (
-            not self.membership_type.require_approval,
-            not self.membership_type.renewal_require_approval,
-        )
+        if self.is_renewal:
+            # if auto-approve renews
+            if not self.membership_type.renewal_require_approval:
+                self.approve()
+        else:
+            # if auto-approve joins
+            if not self.membership_type.require_approval:
+                self.approve()
 
-        # auto join or renew
-        if any(auto_approvals):
-
-            self.approve()
+        if self.is_approved:
 
             membership_total = Membership.objects.filter(status=True, status_detail='active').count()
 
@@ -1386,6 +1432,11 @@ class AppEntry(TendenciBaseModel):
         # update invoice with details
         invoice.estimate = True
         invoice.status_detail = status_detail
+        
+        invoice.bill_to = '%s %s' % (self.first_name, self.last_name)
+        invoice.bill_to_first_name = self.first_name
+        invoice.bill_to_last_name = self.last_name
+        invoice.bill_to_email = self.email
         
         # if this membership is under a corporate and its corporate membership allows
         # threshold and the threshold is whithin limit, then this membership gets the

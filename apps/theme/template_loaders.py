@@ -10,12 +10,22 @@ from django.utils._os import safe_join
 from theme.utils import get_theme_root
 
 class Loader(BaseLoader):
+    """Loader that includes a theme's templates files that enables 
+    template overriding similar to how a project's templates dir overrides
+    an app's templates dir. In other words this takes advantage of django's
+    template prioritization.
+    Notes:
+    This takes into account the ACTIVE THEME only.
+    The other themes are still available but must be accessed in a 
+    different manner. Look into theme's theme_tags.py and shorcuts.py
+    Since the context is not available. We will be unable to mark if 
+    a template is custom from here.
+    """
     is_usable = True
 
     def get_template_sources(self, template_name, template_dirs=None):
-        """
-        Return the absolute paths to "template_name", when appended to the
-        selected theme directory in THEME_DIR.
+        """Return the absolute paths to "template_name", when appended to the
+        selected theme directory in THEMES_DIR.
         Any paths that don't lie inside one of the
         template dirs are excluded from the result set, for security reasons.
         """

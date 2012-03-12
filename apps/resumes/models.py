@@ -42,7 +42,7 @@ class Resume(models.Model):
     expiration_dt = models.DateTimeField(null=True, blank=True) #date resume expires based on activation date and duration
 
     resume_url = models.CharField(max_length=300, blank=True) # link to other (fuller) resume posting
-    syndicate = models.BooleanField(blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True)
            
     #TODO: foreign
     contact_name = models.CharField(max_length=150, blank=True)
@@ -94,10 +94,9 @@ class Resume(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("resume", [self.slug])
-    
+
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or uuid.uuid1()
         super(Resume, self).save(*args, **kwargs)
 
     def __unicode__(self):

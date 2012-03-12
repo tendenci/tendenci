@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
@@ -12,6 +13,8 @@ from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from news.module_meta import NewsMeta
 from entities.models import Entity
+from categories.models import CategoryItem
+from perms.object_perms import ObjectPermission
 
 class News(TendenciBaseModel):
     guid = models.CharField(max_length=40)
@@ -28,7 +31,7 @@ class News(TendenciBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
-    syndicate = models.BooleanField(_('Include in RSS feed'))
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True) # for podcast feeds
     enclosure_type = models.CharField(_('Enclosure Type'),max_length=120, blank=True) # for podcast feeds
@@ -39,6 +42,14 @@ class News(TendenciBaseModel):
         
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
+    
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = NewsManager()
     class Meta:
@@ -65,3 +76,13 @@ class News(TendenciBaseModel):
 
     def __unicode__(self):
         return self.headline
+    
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items

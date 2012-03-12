@@ -3,9 +3,11 @@ from datetime import datetime
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from managers import StaffManager
 from files.models import File
 from site_settings.models import Setting
@@ -48,6 +50,10 @@ class Staff(TendenciBaseModel):
     
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
 
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = StaffManager()
 
     def __unicode__(self):
@@ -55,8 +61,8 @@ class Staff(TendenciBaseModel):
 
     class Meta:
         permissions = (("view_staff","Can view staff"),)
-        verbose_name = 'staff'
-        verbose_name_plural = 'staff'
+        verbose_name = 'Staff'
+        verbose_name_plural = 'Staff'
         get_latest_by = "-start_date"
 
     @models.permalink

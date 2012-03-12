@@ -21,4 +21,6 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
                                  'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
                                  'site_url': site_url })
     
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+    from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
+    
+    send_mail(subject, message, from_email, [user.email])

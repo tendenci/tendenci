@@ -86,7 +86,7 @@ class File(TendenciBaseModel):
             return None
 
         # assign icons directory
-        icons_dir = os.path.join(settings.STATIC_URL, 'images/icons')
+        icons_dir = os.path.join(settings.LOCAL_STATIC_URL, 'images/icons')
 
         # map file-type to image file
         icons = {
@@ -126,6 +126,8 @@ class File(TendenciBaseModel):
                 return unicode()
 
             return doc.text()
+
+        return unicode()
 
     @models.permalink
     def get_absolute_url(self):

@@ -243,6 +243,7 @@
 
 
 {% with registrant.additional_registrants as additionals %}
+{% with registrant.registration.regaddon_set.all as regaddons %}
 
 {% if registrant.registration.invoice.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
@@ -258,7 +259,6 @@
 	{% endfor %}
 	{% endif %}	
   	
-    	
     {% if additionals %}
         <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "additional registrants:" %}</a> 
 	    {% for reg in additionals %}
@@ -271,6 +271,14 @@
 	    	</a>
 	    {% endfor %}
     {% endif %}
+    {% if regaddons %}
+        <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "addons:" %}</a> 
+	    {% for regaddon in regaddons %}
+	    	{{ regaddon.addon.title }}
+            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+	    {% endfor %}
+    {% endif %}
+    
     {% if request.user.is_admin %}
         {% if registrant.registration.invoice.admin_notes %}
             {% trans "admin notes: " %}{{ registrant.registration.invoice.admin_notes }}
@@ -288,7 +296,7 @@
     </td>
 </tr>
 
-
+{% endwith %}
 {% endwith %}
 
 {% endfor %}

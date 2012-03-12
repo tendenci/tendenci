@@ -330,6 +330,7 @@ class EventForm(TendenciBaseForm):
             'type',
             'external_url',
             'photo_upload',
+            'tags',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -347,6 +348,7 @@ class EventForm(TendenciBaseForm):
                                  'type',
                                  'external_url',
                                  'photo_upload',
+                                 'tags',
                                  ],
                       'legend': ''
                       }),
@@ -870,8 +872,8 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
-        markup = markup_pattern.search(data)
+        pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = pattern.search(data)
         if markup:
             raise forms.ValidationError("Markup is not allowed in the name field")
 
@@ -1033,6 +1035,7 @@ class PendingEventForm(EventForm):
             'type',
             'external_url',
             'photo_upload',
+            'tags',
             )
         
         fieldsets = [('Event Information', {
@@ -1045,6 +1048,7 @@ class PendingEventForm(EventForm):
                                  'type',
                                  'external_url',
                                  'photo_upload',
+                                 'tags',
                                  ],
                       'legend': ''
                       }),
@@ -1076,6 +1080,7 @@ class AddonForm(BetterModelForm):
                 'fields': [
                     'title',
                     'price',
+                    'group',
                 ],'legend': ''
             }),
             ('Permissions', {
@@ -1094,4 +1099,4 @@ class AddonForm(BetterModelForm):
 class AddonOptionForm(forms.ModelForm):
     class Meta:
         model = AddonOption
-        fields = ('title', 'choices')
+        fields = ('title',)

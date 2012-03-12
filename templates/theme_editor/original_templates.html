@@ -14,17 +14,17 @@
         
 {% block body %}
     <div id="right_files_list">
-    <a href="{% url theme_editor %}" style="float:right">{% trans "Back to Theme-Editor" %}</a>
+    <a href="{% url theme_editor.editor %}" style="float:right">{% trans "Back to Theme-Editor" %}</a>
    <h2>{% trans "Choose a folder or file:" %}</h2>
    {% if prev_dir %}
        <p class="prev_dir">
-           <a href="{% url original_templates %}?dir={{ prev_dir }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
+           <a href="{% url theme_editor.original_templates %}?dir={{ prev_dir }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
        </p>
    {% endif %}
    {% if dirs %}
        <ul class="dir_list">   
             {% for dir in dirs %}
-                <li class="dir_item"><a href="{% url original_templates %}?dir={{ dir }}">{{ dir|basename|safe }}</a></li>
+                <li class="dir_item"><a href="{% url theme_editor.original_templates %}?dir={{ dir }}">{{ dir|basename|safe }}</a></li>
             {% endfor %}
        </ul>
    {%  endif %}
@@ -32,7 +32,7 @@
        <ul class="files_list">
             {% for file in files %}
                 <li>
-                    {{ file|safe }}<a class="copy" href="{% url copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;{% trans "copy to theme templates" %}</a>
+                    {{ file|safe }}<a class="copy" href="{% url theme_editor.copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;{% trans "copy to custom templates" %}</a>
                 </li>
             {% endfor %}
        </ul>

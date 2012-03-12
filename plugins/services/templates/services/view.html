@@ -96,24 +96,7 @@
         
         {% url service service.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
+        {% include 'services/meta.html' %}
     </div>
-
-    <!-- delete-service form -->
-    <form name="service-delete" method="POST" action="{% url service.delete service.pk %}">{% csrf_token %}
-        <input type="hidden" name="action" value="delete">
-    </form>
-
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
-	<script type="text/javascript">
-	var iconrow = new dropdown({
-		container:	'more-options-wrap',
-		trigger:	'more-options-trigger',
-		target:		'more-options-target'
-	});
-	</script>
 {% endblock %}

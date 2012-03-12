@@ -1,9 +1,11 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from stories.models import Story
 from files.models import file_directory, File
 
@@ -37,7 +39,7 @@ class Museum(TendenciBaseModel):
     snacks = models.BooleanField(_(u'Snacks?'), default=False)
     shopping_information = models.TextField(_(u'Shopping Information'), blank=True)
     events = models.CharField(_(u'Events'), max_length=200, blank=True)
-    special_offers = models.ManyToManyField(Story, default=None)
+    special_offers = models.ManyToManyField(Story, default=None, blank=True)
     
     ## Stay Connected
     facebook = models.CharField(_(u'Facebook'), max_length=200, blank=True)
@@ -47,7 +49,10 @@ class Museum(TendenciBaseModel):
     
     slug = models.SlugField(max_length=200, unique=True, default="")
     ordering = models.IntegerField(blank=True, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+        object_id_field="object_id", content_type_field="content_type")
+
     objects = MuseumManager()
     
     def __unicode__(self):

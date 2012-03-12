@@ -3,11 +3,13 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from user_groups.models import Group, GroupMembership
 from site_settings.utils import get_setting
 
@@ -74,7 +76,11 @@ class Form(TendenciBaseModel):
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False)
     payment_methods = models.ManyToManyField("payments.PaymentMethod")
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = FormManager()
 
     class Meta:
@@ -146,6 +152,20 @@ class Field(models.Model):
     
     def __unicode__(self):
         return self.label
+        
+    def get_field_class(self):
+        if "/" in self.field_type:
+            field_class, field_widget = self.field_type.split("/")
+        else:
+            field_class, field_widget = self.field_type, None
+        return field_class
+        
+    def get_field_widget(self):
+        if "/" in self.field_type:
+            field_class, field_widget = self.field_type.split("/")
+        else:
+            field_class, field_widget = self.field_type, None
+        return field_widget
 
     def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
@@ -303,6 +323,17 @@ class FieldEntry(models.Model):
     
     def __unicode__(self):
         return ('%s: %s' % (self.field.label, self.value))
+        
+    def include_in_email(self):
+        widget = self.field.get_field_widget()
+        field_class = self.field.get_field_class()
+        if widget == 'forms_builder.forms.widgets.Description':
+            return False
+        if widget == 'forms_builder.forms.widgets.Header':
+            return False
+        if field_class == 'FileField':
+            return False
+        return True
     
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
