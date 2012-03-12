@@ -13,9 +13,12 @@ def get_theme_root(theme=None):
     return theme_root
     
 def get_theme_template(template_name, theme=None):
+    """Returns a relative path for the theme template.
+    This is used primarily as an input for loader's get_template
+    """
     if theme is None: # default theme
         theme = get_theme()
-    theme_template = os.path.join(settings.PROJECT_ROOT, 'themes', theme, 'templates', template_name)
+    theme_template = os.path.join('themes', theme, 'templates', template_name)
     return theme_template
 
 def theme_options():

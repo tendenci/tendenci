@@ -34,14 +34,9 @@ class ThemeExtendsNode(ExtendsNode):
         try:
             template = get_template(theme_template)
         except TemplateDoesNotExist:
-            #load the true default template directly to be sure
-            #that we are not loading the active theme's template
-            default_template = os.path.join(settings.PROJECT_ROOT, "templates", parent)
-            try:
-                default_file = file(default_template).read()
-            except IOError:
-                raise TemplateDoesNotExist(parent)
-            template = Template(unicode(default_file, "utf-8"))
+            #to be sure that we not are loading the active theme's template,
+            #make sure theme's template_loader is disabled.
+            template = get_template(parent)
         return template
         
 class ThemeConstantIncludeNode(ConstantIncludeNode):
@@ -55,12 +50,7 @@ class ThemeConstantIncludeNode(ConstantIncludeNode):
             try:
                 t = get_template(theme_template)
             except TemplateDoesNotExist:
-                default_template = os.path.join(settings.PROJECT_ROOT, "templates", self.template_path)
-                try:
-                    default_file = file(default_template).read()
-                except IOError:
-                    raise TemplateDoesNotExist(self.template_path)
-                t = Template(unicode(default_file, "utf-8"))
+                t = get_template(self.template_path)
             self.template = t
         except:
             if settings.TEMPLATE_DEBUG:
@@ -80,14 +70,7 @@ class ThemeIncludeNode(IncludeNode):
             try:
                 t = get_template(theme_template)
             except TemplateDoesNotExist:
-                #load the true default template directly to be sure
-                #that we are not loading the active theme's template
-                default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
-                try:
-                    default_file = file(default_template).read()
-                except IOError:
-                    raise TemplateDoesNotExist(template_name)
-                t = Template(unicode(default_file, "utf-8"))
+                t = get_template(template_name)
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
@@ -123,14 +106,7 @@ class SpaceIncludeNode(IncludeNode):
                     try:
                         t = get_template(theme_template)
                     except TemplateDoesNotExist:
-                        #load the true default template directly to be sure
-                        #that we are not loading the active theme's template
-                        default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
-                        try:
-                            default_file = file(default_template).read()
-                        except IOError:
-                            raise TemplateDoesNotExist(template_name)
-                        t = Template(unicode(default_file, "utf-8"))
+                        t = get_template(template_name)
                     return t.render(context)
                 except:
                     if settings.TEMPLATE_DEBUG:
