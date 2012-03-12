@@ -114,7 +114,7 @@ def search(request, template_name="files/search.html"):
     if has_index and query:
         files = File.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'files.view_file')
+        filters = get_query_filters(request.user, 'files.view_file', perms_field=False)
         files = File.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             files = files.select_related()
