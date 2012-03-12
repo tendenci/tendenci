@@ -4,6 +4,8 @@ from django.template.loader import get_template, Template
 from django.http import HttpResponse
 from django.conf import settings
 
+from theme.utils import get_theme_template
+
 def themed_response(*args, **kwargs):
     """Returns a HttpResponse whose content is filled with the result of calling
     django.template.loader.render_to_string() with the passed arguments.
@@ -27,35 +29,25 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
         context_instance = Context(dictionary)
     
     theme = context_instance['THEME']
-    theme_template = "%s/templates/%s" % (theme, template_name)
+    theme_template = get_theme_template(template_name, theme=theme)
     context_instance["THEME_TEMPLATE"] = template_name
     context_instance["CUSTOM_TEMPLATE"] = True
 
-    if 'homepage.html' in template_name:
-        context_instance["CUSTOM_TEMPLATE"] = False
+    #if 'homepage.html' in template_name:
+    #    context_instance["CUSTOM_TEMPLATE"] = False
 
     if isinstance(template_name, (list, tuple)):
         try:
             t = select_template(theme_template)
         except TemplateDoesNotExist:
             # load the default file
-            default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
-            try:
-                default_file = file(default_template).read()
-            except IOError:
-                raise TemplateDoesNotExist(template_name)
-            t = Template(unicode(default_file, "utf-8"))
+            t = get_template(template_name)
             context_instance["CUSTOM_TEMPLATE"] = False
     else:
         try:
             t = get_template(theme_template)
         except TemplateDoesNotExist:
             # load the default file
-            default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
-            try:
-                default_file = file(default_template).read()
-            except IOError:
-                raise TemplateDoesNotExist(template_name)
-            t = Template(unicode(default_file, "utf-8"))
+            t = get_template(template_name)
             context_instance["CUSTOM_TEMPLATE"] = False
     return t.render(context_instance)
