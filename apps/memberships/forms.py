@@ -3,6 +3,7 @@ from uuid import uuid4
 from captcha.fields import CaptchaField
 from os.path import join
 from datetime import datetime
+from hashlib import md5
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.forms.fields import CharField, ChoiceField, BooleanField
@@ -609,6 +610,7 @@ class AppEntryForm(forms.ModelForm):
     class Meta:
         model = AppEntry
         exclude = (
+            'hash',
             'entry_time',
             'allow_anonymous_view',
             'allow_anonymous_edit',
@@ -750,6 +752,9 @@ class AppEntryForm(forms.ModelForm):
         app_entry.status_detail = 'active'
         app_entry.allow_anonymous_view = False
         
+        app_entry.save()
+        
+        app_entry.hash = md5(unicode(app_entry.pk)).hexdigest()
         app_entry.save()
         
         #create all field entries

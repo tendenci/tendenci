@@ -159,46 +159,46 @@ the payment entries in the general ledger for accounting purposes.
 <table width="100%">
 <tr>
 <td width="30%"><div class="label">{% trans "Cardholder Name:" %}</div></td>
-<td width="20%">{{ payment.first_name }} {{ payment.last_name }}</td>
+<td width="20%">{% if payment.first_name %}{{ payment.first_name }}{% endif %} {% if payment.last_name %}{{ payment.last_name }}{% endif %}</td>
 <td colspan="2">&nbsp;</td>
 </tr>
 
 <tr>
 <td width="30%"><div class="label">{% trans "Company:" %}</div></td>
-<td width="20%">{{ payment.company }}</td>
+<td width="20%">{% if payment.companye %}{{ payment.company }}{% endif %}</td>
 <td colspan="2">&nbsp;</td>
 </tr>
 
 <tr>
 <td width="30%"><div class="label">{% trans "Billing Address:" %}</div></td>
-<td width="20%">{{ payment.address}}</td>
+<td width="20%">{% if payment.address %}{{ payment.address}}{% endif %}</td>
 <td colspan="2">&nbsp;</td>
 </tr>
 
 <tr>
 <td width="30%"><div class="label">{% trans "City:" %}</div></td>
-<td width="20%">{{ payment.city}}</td>
+<td width="20%">{% if payment.city %}{{ payment.city}}{% endif %}</td>
 <td class="label" width="30%">State:</td>
-<td width="20%">{{ payment.state }}</td>
+<td width="20%">{% if payment.state_name %}{{ payment.state }}{% endif %}</td>
 </tr>
 
 <tr>
 <td width="30%"><div class="label">{% trans "Zip:" %}</div></td>
-<td width="20%">{{ payment.zip}}</td>
+<td width="20%">{% if payment.zip %}{{ payment.zip}}{% endif %}</td>
 <td class="label" width="30%">Country:</td>
-<td width="20%">{{ payment.country }}</td>
+<td width="20%">{% if payment.country %}{{ payment.country }}{% endif %}</td>
 </tr>
 
 <tr>
 <td width="30%"><div class="label">{% trans "Phone:" %}</div></td>
-<td width="20%">{{ payment.phone}}</td>
+<td width="20%">{% if payment.phone %}{{ payment.phone}}{% endif %}</td>
 <td class="label" width="30%">Fax:</td>
-<td width="20%">{{ payment.fax }}</td>
+<td width="20%">{% if payment.fax %}{{ payment.fax }}{% endif %}</td>
 </tr>
 
 <tr>
 <td width="30%"><div class="label">{% trans "Email:" %}</div></td>
-<td width="20%">{{ payment.email|obfuscate_email }}</td>
+<td width="20%">{% if payment.email %}{{ payment.email|obfuscate_email }}{% endif %}</td>
 <td colspan="2">&nbsp;</td>
 </tr>
 

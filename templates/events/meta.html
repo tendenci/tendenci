@@ -10,9 +10,18 @@
 {% has_perm user events.delete_event event as can_delete %}
 {% has_perm user events.add_event as can_add %}
 {% is_admin user as admin %}
+{% tags_for_object event as tags %}
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
+    
+        {% if tags %}
+        <div class="tags"><strong>{% trans "Tags:" %} </strong>
+            {% for tag in tags %}
+                <a href="{% url event.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
         
         {% if user.is_authenticated %}
         <div class="submitted">{% blocktrans with event.create_dt|date:"long" as create_date %}Created on {{ create_date }}
@@ -22,6 +31,7 @@
             {{ event.creator }}
        {% endif %}</a>
         </div>
+        
         <div class="submitted">{% blocktrans with event.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
             by:{% endblocktrans %} <a href="{{ event.owner.get_absolute_url }}">
             {% if event.owner.first_name %}{{ event.owner.first_name }} {{ event.owner.last_name }}
@@ -32,6 +42,7 @@
         {% endif %}
         
     </div>
+    
     <div class="meta-right">
         <a class="print-link" href="{% url event.print_view event.pk %}">{% trans "Print" %}</a>
         <a class="share-link" >{% trans "Share" %}</a>

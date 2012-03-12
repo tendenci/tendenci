@@ -4,7 +4,7 @@
 
 <div id="admin-bar">
 	<ul>
-	   <li><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}/images/tendenci_white_small_100x51.gif" height="24" /></a></li>
+	   <li><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
     	<li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
         	<div class="sub">
             	<div class="column">
@@ -14,7 +14,7 @@
                             {% if app.enabled %}
                             <ul>
                                 <li class="app">
-                                     <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                     <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
                                          {{ app|title }}
                                      </a>
                                 </li>
@@ -38,7 +38,7 @@
                     {% for app in registered_apps.plugins %}
                         <ul>
                             <li class="app">
-                                 <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
+                                 <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
                                      {{ app|title }}
                                  </a>
                             </li>
@@ -128,7 +128,7 @@
                     <ul>
                         <li><a href="/settings/module/theme_editor/">{% trans "Current Theme: " %}{{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
                         <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
-                        <li><a href="{% url theme_editor %}">{% trans "Theme Editor" %}</a></li>
+                        <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
                         <li><a href="/settings/module/theme_editor/">{% trans "Change my Theme" %}</a></li>
                     </ul>
                 </div>
@@ -183,7 +183,7 @@
                         <li><a href="/settings/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
                         <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
-                        <li><a href="{% url theme_editor %}">{% trans "Theme Editor" %}</a></li>
+                        <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
                         <li><a href="{% url campaign_monitor.template_index %}">{% trans "Campaign Monitor" %}</a></li>
                         <li><a href="{% url event_log.search %}">{% trans "Event Logs" %}</a></li>
                         <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
@@ -210,8 +210,17 @@
         </li>
         {# special link for valentines day #}
         {% if TODAY|date:"n/j" in "2/7,2/8,2/9,2/10,2/11,2/12,2/13,2/14,2/15,2/16,2/17" %}
-            <li><a style="color:#F8C7CD;" href="http://tendenci.com/valentine/" target="_blank"><span style="color:#F8C7CD;" class="glyph heading">&#78;</span>&nbsp;&nbsp;<span style="text-decoration: underline;">{% trans "Happy Valentine's Day! Love, Tendenci" %}</span></a>
+            <li><a style="color:#F8C7CD;" href="http://tendenci.com/valentine/" target="_blank">
+                <span style="color:#F8C7CD;" class="glyph heading">&#78;</span>
+                &nbsp;&nbsp;<span style="text-decoration: underline;">{% trans "Happy Valentine's Day! Love, Tendenci" %}</span></a></li>
         {% endif %}
+
+        {% comment %}
+        {% if CUSTOM_TEMPLATE %}
+            <li><a href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}">Using Custom Template</a></li>
+        {% endif %}
+        {% endcomment %}
+
     	<li class="right"><a href="/accounts/logout">{% trans "Logout" %}</a></li>
     	<li class="right"><a href="/profiles">{{ user.username }}</a></li>
     	<!-- <li class="right search"><a href="#">Search</a>

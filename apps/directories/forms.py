@@ -6,7 +6,7 @@ from django import forms
 
 from directories.models import Directory, DirectoryPricing
 from directories.utils import get_payment_method_choices, get_duration_choices
-from perms.utils import is_admin
+from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -67,7 +67,6 @@ class DirectoryForm(TendenciBaseForm):
             'payment_method',
             'activation_dt',
             'expiration_dt',
-            'entity',
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
@@ -91,7 +90,6 @@ class DirectoryForm(TendenciBaseForm):
                                  'activation_dt',
                                  'requested_duration',
                                  'expiration_dt',
-                                 'entity'
                                  ],
                       'legend': ''
                       }),
@@ -170,7 +168,10 @@ class DirectoryForm(TendenciBaseForm):
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+
+        if not is_developer(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+
         if self.fields.has_key('payment_method'):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         if self.fields.has_key('requested_duration'):

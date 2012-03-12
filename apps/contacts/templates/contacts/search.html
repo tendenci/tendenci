@@ -1,0 +1,68 @@
+{% extends "contacts/base.html" %}
+{% load pagination_tags %}
+{% load contact_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="/site_media/static/css/contacts.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+
+    {% contact_nav request.user %}
+
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_CONTACTS_LABEL 'Contacts' %} {% trans "Search" %}</h1>
+
+	{% contact_search %}
+    {% autopaginate contacts 10 %}
+	
+	<div class="contacts-wrap">
+    {% for contact in contacts %}
+    	{% has_perm user contacts.view_contact contact as can_view %}
+    	{% if can_view %}
+		<div class="contact-wrap">
+
+            <h2><a href="{% url contact contact.pk %}">{% firstof contact trans "No Name" %}</a></h2>
+            <div class="content">{{ contact.message|linebreaks }}</div>
+			<div class="meta">
+            	<div class="submitted">{% blocktrans with contact.create_dt|date:"long" as create_date %} Submitted on {{ create_date }}{% endblocktrans %}</div>
+            </div>
+
+            <!-- delete-contact form -->
+            <form name="contact-delete" method="POST" action="{% url contact.delete contact.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+
+		</div>
+		{% endif %}
+	{% empty %}
+		<div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_contact = confirm('Permenantly delete {{ MODULE_CONTACTS_LABEL }}?');	// confirm
+				if(delete_contact) $(this).parents('.contact-wrap').find('form[name="contact-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "profiles/base.html" %}
+{% load pagination_tags %}
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% block title %}Administrators{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+{% endblock %}
+
+{% block body %}
+{{ block.super }}
+<div class="t">
+    {% users_nav request.user request.user %}
+    {% is_developer request.user as user_is_developer %}
+    {% is_admin request.user as user_is_admin %}
+    <h1>{% trans "Administrators" %}</h1>
+    {% autopaginate admins 50 %}
+
+	<div class="profiles-wrap">
+    <div class="admin-list">
+    {% for admin in admins %}
+        <div class="admin-item">
+            <div class="admin-profile-image">
+                <a href="{{ admin.get_absolute_url }}">{% avatar admin.user 48 %}</a>
+            </div>
+            <div class="admin-meta">
+                <p>
+                    {% is_developer admin.user as admin_is_developer %}
+                    {% is_admin admin.user as admin_is_admin %}
+                    <strong>
+                        {{ admin }}
+                        {% if admin_is_developer %}
+                        (developer)
+                        {% else %}
+                        {% if admin_is_admin %}
+                        (admin)
+                        {% endif %}
+                        {% endif %}
+                        {% if admin_is_developer %}
+                            {% if user_is_developer %}
+                                &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
+                            {% endif %}
+                        {% else %}
+                            {% if admin_is_admin %}
+                               {% if user_is_developer or user_is_admin %}
+                                    &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
+                               {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </strong>
+                </p>
+                {% if admin.user.first_name and  admin.user.last_name  %}
+                <p>
+                    {{ admin.user.first_name }}&nbsp;{{ admin.user.last_name }}
+                </p>
+                {% endif %}
+                <p>{{ admin.user.email|obfuscate_email }}</p>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+	{% empty %}
+		<div>{% trans "No administrators found." %}</div>
+    {% endfor %}
+	</div>
+    </div>
+    {% paginate %}
+</div>
+{% endblock %}

@@ -6,6 +6,7 @@ from django.http import Http404
 from forms import SIMPaymentForm
 from payments.models import Payment
 from payments.utils import payment_processing_object_updates
+from payments.utils import log_payment, send_payment_notice
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from notification.utils import send_notifications
@@ -97,30 +98,10 @@ def authorizenet_thankyou_processing(request, response_d, **kwargs):
         payment_processing_object_updates(request, payment)
         
         # log an event
-        if payment.response_code == '1':
-            event_id = 282101
-            description = '%s edited - credit card approved ' % payment._meta.object_name
-        else:
-            event_id = 282102
-            description = '%s edited - credit card declined ' % payment._meta.object_name
-            
-        log_defaults = {
-            'event_id' : event_id,
-            'event_data': '%s (%d) edited by %s' % (payment._meta.object_name, payment.pk, request.user),
-            'description': description,
-            'user': request.user,
-            'request': request,
-            'instance': payment,
-        }
-        EventLog.objects.log(**log_defaults)
+        log_payment(request, payment)
         
-        notif_context = {
-        'request': request,
-        'object': payment,
-        }
-
-        send_notifications('module','payments', 'paymentrecipients',
-            'payment_added', notif_context)
+        # send payment recipients notification
+        send_payment_notice(request, payment) 
             
     return payment
         
@@ -132,7 +113,8 @@ def payment_update_authorizenet(request, response_d, payment, **kwargs):
     payment.response_reason_text = response_d.get('x_response_reason_text', '')
     payment.trans_id = response_d.get('x_trans_id', '')
     payment.card_type = response_d.get('x_card_type', '')
-    payment.account_number = response_d.get('x_account_number', '')
+    # last 4 digits only
+    payment.account_number = response_d.get('x_account_number', '')[-4:]
     payment.auth_code = response_d.get('x_auth_code', '')
     payment.avs_code = response_d.get('x_avs_code', '')
     # replace the data captured from authnet in case they changed from there.

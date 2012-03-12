@@ -43,7 +43,6 @@ function getPricingList(){
         dataType: "json",
         success: function(d){
             var p_list = d['pricings'];
-            var a_list = d['addons'];
             
             // reinitialize pricings
             var p_html = "";
@@ -67,25 +66,7 @@ function getPricingList(){
             $('#pricing-choices').html(p_html);
             
             //reinitialize addons
-            var a_html = "";
-            for(i=0; i<a_list.length; i++){
-                a_html = a_html + '<div '
-                if(a_list[i]['enabled']){
-                    a_html = a_html + '>'
-                } else {
-                    a_html = a_html + "class='gray-text'>"
-                }
-                a_html = a_html + '<input type="radio" name="add-addons" value="' + a_list[i]['pk'] + '"'
-                a_html = a_html + 'quantity="'+ a_list[i]['quantity'] +'" price="' + a_list[i]['price'] + '"'
-                a_html = a_html + 'title="' + a_list[i]['title'] + '"' + ' is_public="' + a_list[i]['is_public'] + '"'
-                if(a_list[i]['enabled']){
-                    a_html = a_html + '>'
-                }else{
-                    a_html = a_html + ' DISABLED>'
-                }
-                a_html = a_html + ' ' + a_list[i]['title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + a_list[i]['price'] + ')</div>'
-            }
-            $('#addon-choices').html(a_html);
+            $('.add-addons-box').html(d['add-addons-form']);
         }
     });
 };

@@ -1,0 +1,84 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ directory.get_title }}{% endblock %}
+{% block meta_description %}{{ directory.get_description }}{% endblock %}
+{% block meta_keywords %}{{ directory.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ directory.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% directory_nav request.user directory %}
+
+    <div class="directory-wrap">
+
+        <h2>{{ directory.headline }}</h2>
+
+        <div class="content">
+
+            {% if directory.logo %} 
+                <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{{ directory.headline }}"/></div>
+            {% endif %}
+            <p>{{ directory.body|safe }}</p>
+
+            {% if directory.source %}
+            <p>{% trans "Source: " %}{{ directory.source|safe }}</p>
+            {% endif %} 
+
+            <div class="contact">
+                {% if directory.first_name and directory.last_name %}
+                <div>{{ directory.first_name }} {{ directory.last_name }}</div>
+                {% endif %}
+                {% if directory.address %}
+                    <div>{{ directory.address }}</div>
+                {% endif %}
+                {% if directory.address2 %}
+                    <div>{{ directory.address2 }}</div>
+                {% endif %}
+                {% if directory.city or directory.state or directory.zip_code %}
+                    <div>
+                        {% if directory.city %}{{ directory.city }}{% endif %}
+                        {% if directory.state %}{{ directory.state }}{% endif %}
+                        {% if directory.zip_code %}{{ directory.zip_code }}{% endif %}
+                    </div>
+                {% endif %}
+                {% if directory.country %}
+                    <div>{{ directory.country }}</div>
+                {% endif %}
+                {% if directory.phone %}
+                    <div>{{ directory.phone }}</div>
+                {% endif %}
+                {% if directory.phone2 %}
+                    <div>{{ directory.phone2 }}</div>
+                {% endif %}
+                {% if directory.fax %}
+                    <div>{{ directory.fax }} fax.</div>
+                {% endif %}             
+                {% if directory.email %}
+                    <div>{{ directory.email|obfuscate_email }}</div>
+                {% endif %} 
+                {% if directory.email2 %}
+                    <div>{{ directory.email2|obfuscate_email }}</div>
+                {% endif %} 
+                {% if directory.website %}
+                    <div>{{ directory.website|urlize }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% include "directories/meta.html" %}
+
+        <div>{% url directory directory.pk as the_url %}</div>
+        <div class="fb-connect">{% fb_like_button_iframe the_url %}</div>
+
+    </div>
+</div>
+{% endblock %}

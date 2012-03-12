@@ -5,9 +5,15 @@
         {{ event.start_dt|date:"l, M j, Y" }}
         
         {% if event.start_dt < now %}
-            <div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
-                {% trans "Past event" %}
-            </div>
+            {% if event.end_dt < now %}
+                <div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
+                    {% trans "Past event" %}
+                </div>
+            {% else %}
+                <div class="age-msg" title="about {{ event.start_dt|timesince }} ago">
+                    {% trans "Ongoing event" %}
+                </div>
+            {% endif %}
         {% else %}
         <div class="age-msg" title ="in about {{ event.start_dt|timeuntil }}">
             {{ event.start_dt|timeuntil }}

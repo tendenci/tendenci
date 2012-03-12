@@ -8,23 +8,27 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.contrib.contenttypes import generic
+
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
 from base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
-
+from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from memberships.models import MembershipType, App, Membership
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
-from perms.utils import is_admin
+from perms.utils import is_admin, is_member
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
 from payments.models import PaymentMethod
+from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
+from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
 
 
 FIELD_CHOICES = (
@@ -239,12 +243,20 @@ class CorporateMembership(TendenciBaseModel):
     
     corp_app = models.ForeignKey("CorpApp")
     
+    perms = generic.GenericRelation(ObjectPermission,
+                                      object_id_field="object_id",
+                                      content_type_field="content_type")
+    
     objects = CorporateMembershipManager()
     
     class Meta:
         permissions = (("view_corporatemembership", "Can view corporate membership"),)
-        verbose_name = _("Corporate Member")
-        verbose_name_plural = _("Corporate Members")
+        if get_setting('module', 'corporate_memberships', 'label'):
+            verbose_name = get_setting('module', 'corporate_memberships', 'label')
+            verbose_name_plural = get_setting('module', 'corporate_memberships', 'label_plural')
+        else:
+            verbose_name = _("Corporate Member")
+            verbose_name_plural = _("Corporate Members")
     
     def __unicode__(self):
         return "%s" % (self.name)
@@ -257,6 +269,31 @@ class CorporateMembership(TendenciBaseModel):
     @property   
     def module_name(self):
         return self._meta.module_name
+    
+    @staticmethod
+    def get_search_filter(user):
+        if is_admin(user): return None, None
+        
+        filter_and, filter_or = None, None
+        
+        if allow_anonymous_search or (allow_member_search and is_member(user)):
+            filter_and =  {'status':1,
+                           'status_detail':'active'}
+        else:
+            if user.is_authenticated():
+                filter_or = {'creator': user,
+                             'owner': user}
+                if use_search_index:
+                    filter_or.update({'reps': user})
+                else:
+                    filter_or.update({'reps__user': user})
+            else:
+                filter_and = {'allow_anonymous_view':True,}
+                
+                
+        return filter_and, filter_or
+        
+        
     
     def assign_secret_code(self):
         if not self.secret_code:
@@ -371,6 +408,8 @@ class CorporateMembership(TendenciBaseModel):
                 # 1) archive corporate membership
                 self.archive(request.user)
                 
+                user = request.user
+                
                 # 2) update the corporate_membership record with the renewal info from renew_entry
                 self.renewal = True
                 self.corporate_membership_type = renew_entry.corporate_membership_type
@@ -379,7 +418,8 @@ class CorporateMembership(TendenciBaseModel):
                 self.renew_dt = renew_entry.create_dt
                 self.approved = True
                 self.approved_denied_dt = datetime.now()
-                self.approved_denied_user = request.user
+                if user and (not user.is_anonymous()):
+                    self.approved_denied_user = user
                 self.status = 1
                 self.status_detail = 'active'
                 
@@ -393,7 +433,6 @@ class CorporateMembership(TendenciBaseModel):
                 renew_entry.save()
                 
                 # 3) approve the individual memberships
-                user = request.user
                 if user and not user.is_anonymous():
                     user_id = user.id
                     username = user.username

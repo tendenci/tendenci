@@ -18,23 +18,18 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
 from perms.utils import is_admin
-from perms.utils import has_perm
+from perms.utils import has_perm, has_view_perm, get_query_filters
 
 try:
     from notification import models as notification
 except:
     notification = None
 
-def index(request, slug=None, template_name="directories/view.html"):
-    if not slug: return HttpResponseRedirect(reverse('directory.search'))
+def details(request, slug=None, template_name="directories/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('directories'))
     directory = get_object_or_404(Directory, slug=slug)
-    
-    # non-admin can not view the non-active content
-    # status=0 has been taken care of in the has_perm function
-    if (directory.status_detail).lower() != 'active' and (not is_admin(request.user)):
-        raise Http403
-    
-    if has_perm(request.user,'directories.view_directory',directory):
+
+    if has_view_perm(request.user,'directories.view_directory',directory):
         log_defaults = {
             'event_id' : 445000,
             'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
@@ -50,15 +45,23 @@ def index(request, slug=None, template_name="directories/view.html"):
         raise Http403
 
 def search(request, template_name="directories/search.html"):
-
     get = dict(request.GET)
-    query = get.pop('q', [''])
+    query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
     query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
-    query = '%s %s' % (''.join(query), ' '.join(query_extra))
+    query = ' '.join(query)
+    if query_extra:
+        query = '%s %s' % (''.join(query), ' '.join(query_extra))
 
-    directories = Directory.objects.search(
-        query, user=request.user).order_by('headline_exact')
+    if get_setting('site', 'global', 'searchindex') and query:
+        directories = Directory.objects.search(query, user=request.user).order_by('headline_exact')
+    else:
+        filters = get_query_filters(request.user, 'directories.view_directory')
+        directories = Directory.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            directories = directories.select_related()
+    
+        directories = directories.order_by('headline')
 
     log_defaults = {
         'event_id' : 444000,
@@ -83,20 +86,24 @@ def search(request, template_name="directories/search.html"):
         }, 
         context_instance=RequestContext(request))
 
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('directories'))
+
+
 def print_view(request, slug, template_name="directories/print-view.html"):
     directory = get_object_or_404(Directory, slug=slug)    
-
-    log_defaults = {
-        'event_id' : 445001,
-        'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
-        'description': '%s viewed - print view' % directory._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': directory,
-    }
-    EventLog.objects.log(**log_defaults)
-       
-    if has_perm(request.user,'directories.view_directory',directory):
+    if has_view_perm(request.user,'directories.view_directory',directory):
+        log_defaults = {
+            'event_id' : 445001,
+            'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
+            'description': '%s viewed - print view' % directory._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': directory,
+        }
+        EventLog.objects.log(**log_defaults)
+    
         return render_to_response(template_name, {'directory': directory}, 
             context_instance=RequestContext(request))
     else:
@@ -424,7 +431,6 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
 
 def pricing_search(request, template_name="directories/pricing-search.html"):
     directory_pricing = DirectoryPricing.objects.all().order_by('duration')
-    
+
     return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
         context_instance=RequestContext(request))
-    

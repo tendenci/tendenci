@@ -17,7 +17,7 @@
       <tr>
         {% if obj.event.pk %}
      	<td><a href="{% url event.registration_confirmation obj.event.pk obj.pk %}">{{obj.pk}}</a></td>
-     	<td colspan="2"><a href="{% url events.views.index obj.event.pk %}">{{obj.event.title|truncatewords:5}}</a></td>
+     	<td colspan="2"><a href="{% url event obj.event.pk %}">{{obj.event.title|truncatewords:5}}</a></td>
      	{% endif %}
      	<td>{{obj.event.start_dt|date:'long'}}</td>
      	<td>{{obj.amount_paid|format_currency}}</td>

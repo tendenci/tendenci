@@ -87,53 +87,74 @@ def get_corporate_membership_choices():
     
     return cm_list
 
-def csv_to_dict(file_path):
+def has_null_byte(file_path):
+    f = open(file_path, 'r')
+    data = f.read()
+    f.close()
+    return ('\0' in data)
+
+def csv_to_dict(file_path, **kwargs):
     """
     Returns a list of dicts. Each dict represents record.
     """
+    machine_name = kwargs.get('machine_name', False)
+
+    # null byte; assume xls; not csv
+    if has_null_byte(file_path):
+        return []
+
     csv_file = csv.reader(open(file_path, 'rU'))
-    col = csv_file.next()
+    colnames = csv_file.next()  # row 1;
+
+    if machine_name:
+        colnames = [slugify(c).replace('-','') for c in colnames]
+
+    cols = xrange(len(colnames))
     lst = []
 
-    try:
-        for row in csv_file:
-            entry = {}
-            for i in xrange(len(col)):
-                entry[col[i]] = row[i].decode('latin-1')
-            lst.append(entry)
-    except csv.Error as e:
-        # NULL byte error
-        # stop everything; return empty list
-        # Empty list will raise an error msg
-        # this can typically be corrected by
-        # saving the file as a .csv
-        return []
+    for row in csv_file:
+        entry = {}
+        rows = len(row)-1
+        for col in cols:
+            if col > rows:
+                break  # go to next row
+            entry[colnames[col]] = row[col]
+        lst.append(entry)
 
     return lst  # list of dictionaries
 
 def is_import_valid(file_path):
     """
-    Run import file against required files
-    'username' and 'membership-type' are required fields
+    Returns a 2-tuple containing a booelean and list of errors
+
+    The import file must be of type .csv and and include
+    a membership type column.
     """
-    memberships = csv_to_dict(file_path)  # list of membership dicts
+    errs = []
+    ext = os.path.splitext(file_path)[1]
+
+    if ext != '.csv':
+        errs.append("Pleaes make sure you're importing a .csv file.")
+        return False, errs
+
+    if has_null_byte(file_path):
+        errs.append('This .csv file has null characters, try re-saving it.')
+        return False, errs
+
+    # get header column
+    f = open(file_path, 'r')
+    row = f.readline()
+    f.close()
+
+    headers = [slugify(r).replace('-','') for r in row.split(',')]
+
     required = ('membershiptype',)
+    requirements_met = [r in headers for r in required]
 
-    # normalize all keys
-    # Membership Type ->  membershiptype
-    # membership-type ->  membershiptype
-    # membership_type -> membershiptype
-
-    membership_keys = []
-    for m in memberships[0].keys():
-        key = m.replace('-','')
-        key = m.replace('_','')
-        key = slugify(key)
-        membership_keys.append(key)
-
-    requirements = [r in membership_keys for r in required]
-
-    return all(requirements)
+    if all(requirements_met):
+        return True, []
+    else:
+        return False, ['Please make sure there is a membership type column.']
     
 def count_active_memberships(date):
     """
