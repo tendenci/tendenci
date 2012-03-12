@@ -801,12 +801,12 @@ class App(TendenciBaseModel):
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail in ['active', 'published']
         else:
             if this_user in (self.creator, self.owner):
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail in ['active', 'published']
             elif self.allow_user_view:
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail in ['active', 'published']
             elif has_perm(this_user, 'memberships.view_app', self):
                 return True
         
