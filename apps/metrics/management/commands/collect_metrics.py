@@ -2,7 +2,6 @@ import commands
 from datetime import date, timedelta
 
 from django.core.management.base import BaseCommand, CommandError
-from django.contrib.auth.models import User
 from django.conf import settings
 
 from metrics.models import Metric
@@ -48,18 +47,19 @@ class Command(BaseCommand):
 
     def get_users(self):
         """
-        Get all users from the auth_users table
+        Get all users from the profiles_profile table
         """
-        return User.objects.all()
+        from profiles.models import Profile
+
+        return Profile.objects.filter(status_detail="active", status=True)
 
     def get_members(self):
         """
-        Get all members from the auth_users table
+        Get all members from the memberships_membership table
         """
-        from perms.utils import is_member
-        users = self.users or self.get_users()
+        from memberships.models import Membership
 
-        return [user for user in users if is_member(user)]
+        return Membership.objects.filter(status_detail="active", status=True)
 
     def get_visits(self):
         """

@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
+
 from tagging.fields import TagField
+from perms.models import TendenciBaseMode
 from perms.models import TendenciBaseModel
 from S_P_LOW.managers import S_S_CAPManager
 

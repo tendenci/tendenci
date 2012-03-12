@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
 
 from haystack import indexes
@@ -14,6 +15,10 @@ class EventIndex(TendenciBaseSearchIndex):
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
     on_weekend = indexes.BooleanField(model_attr='on_weekend')
+    
+    # fields for sorting events that span multiple days
+    hour = indexes.IntegerField()
+    minute = indexes.IntegerField()
     
     # event type id
     type_id = indexes.IntegerField(null=True)
@@ -32,6 +37,12 @@ class EventIndex(TendenciBaseSearchIndex):
         description = strip_tags(description)
         description = strip_entities(description)
         return description
+        
+    def prepare_hour(self, obj):
+        return int(obj.start_dt.hour)
+    
+    def prepare_minute(self, obj):
+        return int(obj.start_dt.minute)
         
     def prepare_type_id(self, obj):
         if obj.type:

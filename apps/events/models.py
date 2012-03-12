@@ -10,10 +10,13 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import AutoField
+from django.contrib.contenttypes import generic
 
+from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from entities.models import Entity
 from events.managers import EventManager, RegistrantManager, EventTypeManager
+from perms.object_perms import ObjectPermission
 from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
@@ -449,6 +452,14 @@ class Registration(models.Model):
 
         payment_attempts = self.invoice.payment_set.count()
 
+        registrants = self.registrant_set.all().order_by('id')
+        for registrant in registrants:
+            #registrant.assign_mapped_fields()
+            if registrant.custom_reg_form_entry:
+                registrant.name = registrant.custom_reg_form_entry.__unicode__()
+            else:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+
         # only send email on success! or first fail
         if payment.is_paid or payment_attempts <= 1:
             notification.send_emails(
@@ -459,6 +470,7 @@ class Registration(models.Model):
                     'site_url': site_url,
                     'self_reg8n': self_reg8n,
                     'reg8n': self,
+                    'registrants': registrants,
                     'event': self.event,
                     'price': self.invoice.total,
                     'is_paid': payment.is_paid,
@@ -466,7 +478,7 @@ class Registration(models.Model):
                 True,  # notice saved in db
             )
             #notify the admins too
-            email_admins(self.event, self.invoice.total, self_reg8n, self)
+            email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
     @property
     def canceled(self):
@@ -517,6 +529,11 @@ class Registration(models.Model):
                         registrant = reg
                         registrant.email = email
                         break
+            if (not registrant) and registrants:
+                # this registrant probably didn't use the custom reg form,
+                # but the custom reg form is now enabled
+                registrant = registrants[0]
+                
         else:
             try:
                 registrant = self.registrant_set.filter(
@@ -687,10 +704,16 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto', 
         help_text=_('Photo that represents this event.'), null=True, blank=True)
+        
+    tags = TagField(blank=True)
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = EventManager()
 
     class Meta:
@@ -1000,25 +1023,18 @@ class Addon(models.Model):
                 return False
         return True
     
+    def field_name(self):
+        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
     
 class AddonOption(models.Model):
     addon = models.ForeignKey(Addon, related_name="options")
     title = models.CharField(max_length=100)
-    choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
+    # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
+    # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
     
     def __unicode__(self):
-        return self.addon.title + ": " + self.title
-    
-    def field_name(self):
-        return "%s_%s" % (self.addon.pk, self.title.lower().replace(' ', '').replace('-', ''))
-    
-    def choice_list(self):
-        choices = []
-        for op in self.choices.split(','):
-            if op:
-                choices.append(op)
-        return choices
-        
+        return self.title
+
             
 class RegAddon(models.Model):
     """Event registration addon.
@@ -1043,7 +1059,8 @@ class RegAddonOption(models.Model):
     """
     regaddon = models.ForeignKey(RegAddon)
     option = models.ForeignKey(AddonOption)
-    selected_option = models.CharField(max_length=50)
+    # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
+    # selected_option = models.CharField(max_length=50)
     
     class Meta:
         unique_together = (('regaddon', 'option'),)

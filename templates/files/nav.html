@@ -5,7 +5,6 @@
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user file.add_file as can_add_file %}
 
-
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}
     <li class="dropdown" data-dropdown="dropdown">
@@ -21,7 +20,7 @@
         <a href="#" class="dropdown-toggle">{% trans "Files" %}</a>
             <div>
             <ul class="dropdown-menu">
-                <li><a href="{% url file.search %}">{% trans "Search Files" %}</a></li>
+                <li><a href="{% url files %}">{% trans "File List" %}</a></li>
                 {% if can_add_file %}
                 <li><a href="{% url file.add %}">{% trans "Add a File" %}</a></li>
                 {% endif %}

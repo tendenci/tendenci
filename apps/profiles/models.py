@@ -3,10 +3,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.contrib.contenttypes import generic
 
 from timezones.fields import TimeZoneField
 from perms.models import TendenciBaseModel
 from entities.models import Entity
+from perms.object_perms import ObjectPermission
 
 from profiles.managers import ProfileManager
          
@@ -76,6 +78,10 @@ class Profile(TendenciBaseModel):
     first_responder = models.BooleanField(_('first responder'), default=False)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
     
     objects = ProfileManager()
     

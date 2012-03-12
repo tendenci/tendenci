@@ -120,6 +120,10 @@ input#navs-search-box {
 
 	
 /* form */
+div.forms {
+    width: 100%;
+}
+
 div.forms div.form-field div.id_start_dt .field input {
 	margin:0 5px 0 0;
 	width:18%;
@@ -138,6 +142,19 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 	width:80px;
 }
 
+div.forms .page-select {
+	overflow-x:auto;
+	overflow-y:visible;
+	width:95%;
+	height:300px;
+	background-color:#eee;
+	border:solid 1px #666;
+}
+
+div.forms .page-select ul {
+	margin-left:5px;
+}
+
 #add-custom {
 	cursor:pointer;
 	text-decoration:underline;
@@ -148,19 +165,6 @@ div.forms div.form-field div.id_end_dt .field input#id_end_dt_1 {
 #save-all {
 	float:right;
 	margin:50px 110px 0 0;
-}
-
-.page-select {
-	overflow-x:auto;
-	overflow-y:visible;
-	width:95%;
-	height:300px;
-	background-color:#eee;
-	border:solid 1px #666;
-}
-
-.page-select ul {
-	margin-left:5px;
 }
 
 .nav-edit-menu {
@@ -231,6 +235,10 @@ a.nav-item-label:hover span.helpertext {
 	float:right;
 	margin:0 5px;
 	text-decoration:none;
+}
+
+.nav-move-image {
+    margin-top: -3px;
 }
 
 .nav-move-up {

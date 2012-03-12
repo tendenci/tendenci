@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 
+from perms.utils import get_query_filters
 from base.template_tags import ListNode, parse_tag_kwargs
 from stories.models import Story
 
@@ -56,6 +57,7 @@ def story_expiration(obj):
 
 class ListStoriesNode(ListNode):
     model = Story
+    perms = 'stories.view_story'
 
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
@@ -87,7 +89,7 @@ class ListStoriesNode(ListNode):
                 tags = self.kwargs['tags']
 
             tags = tags.replace('"', '')
-            tags = tags.split(',')
+            tags = [t.strip() for t in tags.split(',')]
 
         if 'user' in self.kwargs:
             try:
@@ -123,18 +125,25 @@ class ListStoriesNode(ListNode):
             except:
                 order = self.kwargs['order']
 
-        # process tags
-        for tag in tags:
-            tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
+        filters = get_query_filters(user, self.perms)
+        items = self.model.objects.filter(filters)
 
-        # get the list of staff
-        items = self.model.objects.search(user=user, query=query)
+        if tags:  # tags is a comma delimited list
+            # this is fast; but has one hole
+            # it finds words inside of other words
+            # e.g. "event" is within "prevent"
+            tag_queries = [Q(tags__icontains=t) for t in tags]
+            tag_query = reduce(or_, tag_queries)
+            items = items.filter(tag_query)
+
         objects = []
 
+        # Removed seconds so we can cache the query better
+        now = datetime.now().replace(second=0)
+
         # Custom filter for stories
-        date_query = reduce(or_, [Q(end_dt__gte = datetime.now()), Q(expires=False)])
-        date_query = reduce(and_, [Q(start_dt__lte = datetime.now()), date_query])
+        date_query = reduce(or_, [Q(end_dt__gte = now), Q(expires=False)])
+        date_query = reduce(and_, [Q(start_dt__lte = now), date_query])
         items = items.filter(date_query)
 
         if order:
@@ -143,9 +152,9 @@ class ListStoriesNode(ListNode):
         # if order is not specified it sorts by relevance
         if items:
             if randomize:
-                objects = [item.object for item in random.sample(items, len(items))][:limit]
+                objects = [item for item in random.sample(items, len(items))][:limit]
             else:
-                objects = [item.object for item in items[:limit]]
+                objects = [item for item in items[:limit]]
 
             context[self.context_var] = objects
         return ""
