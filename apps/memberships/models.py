@@ -20,7 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from base.utils import day_validate
 from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
-from perms.utils import get_notice_recipients, is_member
+from perms.utils import get_notice_recipients, is_member, is_admin, has_perm
 from invoices.models import Invoice
 from directories.models import Directory
 from user_groups.models import Group
@@ -772,7 +772,22 @@ class App(TendenciBaseModel):
         init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
 
         return dict(init_kwargs)
-
+    
+    def allow_view_by(self, this_user):
+        if is_admin(this_user): return True
+        
+        if this_user.is_anonymous():
+            if self.allow_anonymous_view:
+                return self.status and self.status_detail in ['active', 'published']
+        else:
+            if this_user in (self.creator, self.owner):
+                return self.status and self.status_detail in ['active', 'published']
+            elif self.allow_user_view:
+                return self.status and self.status_detail in ['active', 'published']
+            elif has_perm(this_user, 'memberships.view_app', self):
+                return True
+        
+        return False
 
 class AppFieldManager(models.Manager):
     """
