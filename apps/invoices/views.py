@@ -61,10 +61,14 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
+    bill_to_email = request.GET.get('bill_to_email', None)
+
     if get_setting('site', 'global', 'searchindex') and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()
+        if bill_to_email:
+            invoices = invoices.filter(bill_to_email=bill_to_email)
     if is_admin(request.user):
         invoices = invoices.order_by('-create_dt')
     else:
@@ -73,7 +77,7 @@ def search(request, template_name="invoices/search.html"):
             invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
-    
+
     return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
         context_instance=RequestContext(request))
     
