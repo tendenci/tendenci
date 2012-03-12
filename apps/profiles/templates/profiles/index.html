@@ -53,7 +53,7 @@
 		   		<h2>{% if request.user.id == user_this.id %}My{% else %}{{ user_this.first_name }}'s{% endif %} {% trans "Content" %}</h2>
 		   		<div class="option-links">
 		   			{% if content_counts.invoice > 0 %}
-		   				<a href="{% url invoice.search %}?bill_to={{ user_this.last_name }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a>
+		   				<a href="{% url invoice.search %}?bill_to_email={{ user_this.email }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a>
 		   			{% endif %}
 		   		</div>
 	   		</div>
