@@ -392,7 +392,8 @@ class Membership(TendenciBaseModel):
         memb_archive.membership = self
         memb_archive.membership_create_dt = self.create_dt
         memb_archive.membership_update_dt = self.update_dt
-        memb_archive.archive_user = user
+        if user and (not user.is_anonymous()):
+            memb_archive.archive_user = user
         memb_archive.save()
 
     def get_join_dt(self):
