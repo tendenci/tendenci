@@ -1388,7 +1388,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
             )
 
             # check permission
-            if not has_view_perm(request.user, 'events.view_registrant', registrant):
+            if not has_perm(request.user, 'events.view_registrant', registrant):
                 raise Http403
         except:
             raise Http404
@@ -1706,7 +1706,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 def registrant_details(request, id=0, hash='', template_name='events/registrants/details.html'):
     registrant = get_object_or_404(Registrant, pk=id)
 
-    if has_view_perm(request.user,'registrants.view_registrant',registrant):
+    if has_perm(request.user,'registrants.view_registrant',registrant):
         return render_to_response(template_name, {'registrant': registrant}, 
             context_instance=RequestContext(request))
     else:
@@ -1728,7 +1728,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     if reg8n_id:
         registration = get_object_or_404(Registration, event=event, pk=reg8n_id)
     
-        is_permitted = has_view_perm(request.user, 'events.view_registration', registration)
+        is_permitted = has_perm(request.user, 'events.view_registration', registration)
         is_registrant = request.user in [r.user for r in registration.registrant_set.all()]
 
         # permission denied; if not given explicit permission or not registrant
