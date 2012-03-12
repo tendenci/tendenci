@@ -315,11 +315,11 @@
 {% endblock %}
 
 {% block extra_body %}
-{{ block.super }}
 <script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript" >
     {% include 'events/registration/include/register-registrant.js' %}
     {% include 'events/addons/register-addon.js' %}
     {% include 'events/registration/include/register.js' %}
 </script>
+{{ block.super }}
 {% endblock %}
