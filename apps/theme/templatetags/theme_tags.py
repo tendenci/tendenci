@@ -35,8 +35,7 @@ class ThemeExtendsNode(ExtendsNode):
         try:
             template = get_template(theme_template)
         except TemplateDoesNotExist:
-            #to be sure that we not are loading the active theme's template,
-            #make sure theme's template_loader is disabled.
+            #to be sure that we not are loading the active theme's template
             template = get_default_template(parent)
         return template
         
