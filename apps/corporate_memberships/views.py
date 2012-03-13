@@ -523,7 +523,7 @@ def approve(request, id, template="corporate_memberships/approve.html"):
                     'corp_renew_entry': renew_entry,
                     'invoice': renew_entry.invoice,
                 }
-                send_email_notification('corp_memb_renewed_user', recipients, extra_context)
+                send_email_notification('corp_memb_renewal_approved', recipients, extra_context)
                 msg = 'Corporate membership "%s" renewal has been APPROVED.' % corporate_membership.name
                 
                 event_id = 682002
@@ -534,6 +534,17 @@ def approve(request, id, template="corporate_memberships/approve.html"):
             else:
                 # approve join
                 corporate_membership.approve_join(request)
+                
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(corporate_membership)
+                recipients.append(corporate_membership.creator.email)
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                    'invoice': corporate_membership.invoice,
+                }
+                send_email_notification('corp_memb_join_approved', recipients, extra_context)
+                
                 msg = 'Corporate membership "%s" has been APPROVED.' % corporate_membership.name
                 event_id = 682001
                 event_data = '%s (%d) approved by %s' % (corporate_membership._meta.object_name, 
