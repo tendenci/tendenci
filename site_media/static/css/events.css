@@ -53,6 +53,9 @@
 	white-space: nowrap;
 }
 
+.t .search-form .form-field { float: left; }
+.t .search-form #event_types_container { margin-left: 20px;height: 58px; }
+
 .t .quick-options {
 	float: right;
 	margin-right: 5px;

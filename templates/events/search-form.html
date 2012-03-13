@@ -1,6 +1,35 @@
-{% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url event.search %}" method="get">
+
+<div class="form-field clearfix">
+    <div class="id_start_dt">
+            <div class="label">
+                <label for="start_dt">Start Date</label>
+            </div>
+            <div class="field">
+                <input style="width: 70px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
+            </div>
+     </div>
+</div>
+
+<div id="event_types_container" class="form-field clearfix">
+    <div class="id_event_types">
+            <div class="label">
+                <label for="event_type">Event Types</label>
+            </div>
+            <div class="field">
+                <select name="event_type">
+                    <option value="">All</option>
+                    {% for type in types %}
+                    <option value="{{ type.slug }}" {% if event_type == type.slug %}selected="selected"{% endif %}>{{ type.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+     </div>
+</div>
+<div class="clear"></div>
+
+{% if SITE_GLOBAL_SEARCHINDEX %}
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="Search" />
-</form>
 {% endif %}
+<input class="btn" type="submit" value="Search" />
+</form>
