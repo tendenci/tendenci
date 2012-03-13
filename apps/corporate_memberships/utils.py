@@ -252,7 +252,9 @@ def edit_corpapp_update_memb_app(corpapp):
 def dues_rep_emails_list(corp_memb):
     dues_reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb,
                                                       is_dues_rep=1)
-    return [dues_rep.user.email for dues_rep in dues_reps if dues_rep.user.email]
+    if dues_reps:
+        return [dues_rep.user.email for dues_rep in dues_reps if dues_rep.user.email]
+    return []
 
 def corp_memb_update_perms(corp_memb, **kwargs):
     """
