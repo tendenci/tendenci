@@ -222,7 +222,7 @@ def group_membership_self_add(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
     user = get_object_or_404(User, pk=user_id)
     
-    if not has_view_perm(request.user,'user_groups.view_group') and not group.allow_self_add:
+    if not has_view_perm(request.user,'user_groups.view_group', group) and not group.allow_self_add:
         raise Http403
     
     group_membership = GroupMembership.objects.filter(member=user, group=group)
@@ -258,7 +258,7 @@ def group_membership_self_add(request, slug, user_id):
 def group_membership_self_remove(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
     
-    if not has_view_perm(request.user,'user_groups.view_group') and not group.allow_self_remove:
+    if not has_view_perm(request.user,'user_groups.view_group', group) and not group.allow_self_remove:
         raise Http403
 
     user = get_object_or_404(User, pk=user_id)
