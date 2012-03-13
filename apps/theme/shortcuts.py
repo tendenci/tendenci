@@ -29,26 +29,30 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
     else:
         context_instance = Context(dictionary)
     
+    toggle = context_instance["TOGGLE_TEMPLATE"]
     theme = context_instance['THEME']
     theme_template = get_theme_template(template_name, theme=theme)
     context_instance["THEME_TEMPLATE"] = template_name
     context_instance["CUSTOM_TEMPLATE"] = True
-
+    
     #if 'homepage.html' in template_name:
     #    context_instance["CUSTOM_TEMPLATE"] = False
-
-    if isinstance(template_name, (list, tuple)):
-        try:
-            t = select_template(theme_template)
-        except TemplateDoesNotExist:
-            # load the default file
-            t = get_default_template(template_name)
-            context_instance["CUSTOM_TEMPLATE"] = False
+    
+    if toggle=="TRUE":
+        t = get_default_template(template_name)
     else:
-        try:
-            t = get_template(theme_template)
-        except TemplateDoesNotExist:
-            # load the default file
-            t = get_default_template(template_name)
-            context_instance["CUSTOM_TEMPLATE"] = False
+        if isinstance(template_name, (list, tuple)):
+            try:
+                t = select_template(theme_template)
+            except TemplateDoesNotExist:
+                # load the default file
+                t = get_default_template(template_name)
+                context_instance["CUSTOM_TEMPLATE"] = False
+        else:
+            try:
+                t = get_template(theme_template)
+            except TemplateDoesNotExist:
+                # load the default file
+                t = get_default_template(template_name)
+                context_instance["CUSTOM_TEMPLATE"] = False
     return t.render(context_instance)
