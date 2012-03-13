@@ -29,7 +29,7 @@ def detail(request, pk=None, template_name="trainings/detail.html"):
 
     if request.user.is_authenticated():
     
-        if has_view_perm(request.user, 'trainings.view_completion'):
+        if has_perm(request.user, 'trainings.view_completion'):
             completions = Completion.objects.filter(training=training)
         else:
             completions = Completion.objects.filter(training=training, owner=request.user)
@@ -207,7 +207,7 @@ def completion_report_all(request, template_name="trainings/report-all.html"):
     if 'end_dt' in request.GET.keys():
         end_dt = request.GET['end_dt']
     
-    if has_view_perm(request.user,'trainings.view_completion'):
+    if has_perm(request.user,'trainings.view_completion'):
         completions = Completion.objects.values('owner', 'owner__last_name','owner__first_name').filter(finish_dt__gte=start_dt, finish_dt__lte=end_dt).annotate(points_sum=Sum('training__points')).order_by('-points_sum')
     
         all_user_completions = []
