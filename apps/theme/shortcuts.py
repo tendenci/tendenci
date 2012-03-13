@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.conf import settings
 
 from theme.utils import get_theme_template
+from theme.template_loaders import get_default_template
 
 def themed_response(*args, **kwargs):
     """Returns a HttpResponse whose content is filled with the result of calling
@@ -41,13 +42,13 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
             t = select_template(theme_template)
         except TemplateDoesNotExist:
             # load the default file
-            t = get_template(template_name)
+            t = get_default_template(template_name)
             context_instance["CUSTOM_TEMPLATE"] = False
     else:
         try:
             t = get_template(theme_template)
         except TemplateDoesNotExist:
             # load the default file
-            t = get_template(template_name)
+            t = get_default_template(template_name)
             context_instance["CUSTOM_TEMPLATE"] = False
     return t.render(context_instance)

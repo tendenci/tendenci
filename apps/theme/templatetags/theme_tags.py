@@ -11,6 +11,7 @@ from perms.utils import get_query_filters, is_admin
 from site_settings.models import Setting
 from site_settings.forms import build_settings_form
 
+from theme.template_loaders import get_default_template
 from theme.utils import get_theme_template
 
 register = Library()
@@ -36,7 +37,7 @@ class ThemeExtendsNode(ExtendsNode):
         except TemplateDoesNotExist:
             #to be sure that we not are loading the active theme's template,
             #make sure theme's template_loader is disabled.
-            template = get_template(parent)
+            template = get_default_template(parent)
         return template
         
 class ThemeConstantIncludeNode(ConstantIncludeNode):
@@ -50,7 +51,7 @@ class ThemeConstantIncludeNode(ConstantIncludeNode):
             try:
                 t = get_template(theme_template)
             except TemplateDoesNotExist:
-                t = get_template(self.template_path)
+                t = get_default_template(self.template_path)
             self.template = t
         except:
             if settings.TEMPLATE_DEBUG:
@@ -70,7 +71,7 @@ class ThemeIncludeNode(IncludeNode):
             try:
                 t = get_template(theme_template)
             except TemplateDoesNotExist:
-                t = get_template(template_name)
+                t = get_default_template(template_name)
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
@@ -106,7 +107,7 @@ class SpaceIncludeNode(IncludeNode):
                     try:
                         t = get_template(theme_template)
                     except TemplateDoesNotExist:
-                        t = get_template(template_name)
+                        t = get_default_template(template_name)
                     return t.render(context)
                 except:
                     if settings.TEMPLATE_DEBUG:
@@ -156,12 +157,7 @@ class ThemeSettingNode(IncludeNode):
             except TemplateDoesNotExist:
                 #load the true default template directly to be sure
                 #that we are not loading the active theme's template
-                default_template = os.path.join(settings.PROJECT_ROOT, "templates", template_name)
-                try:
-                    default_file = file(default_template).read()
-                except IOError:
-                    raise TemplateDoesNotExist(template_name)
-                t = Template(unicode(default_file, "utf-8"))
+                t = get_default_template(template_name)
             return t.render(context)
         except:
             if settings.TEMPLATE_DEBUG:
