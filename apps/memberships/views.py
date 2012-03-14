@@ -79,7 +79,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     """
     Membership details.
     """
-    membership = get_object_or_404(Membership, id)
+    membership = get_object_or_404(Membership, pk=id)
     
     if not has_perm(request.user, 'memberships.view_membership', membership):
         raise Http403
