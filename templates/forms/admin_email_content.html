@@ -59,7 +59,7 @@
 <br />
     {% if form.email_text %}
         <p>The recipient received the following message in an email:</p>
-        {{ form.email_text|safe }}
+        {{ form.email_text|linebreaks|safe }}
     {% else %}
         The form submitter did not receive an email because no Email Text to Submitter was entered.
     {% endif %}
