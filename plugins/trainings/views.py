@@ -70,7 +70,7 @@ def search(request, template_name='trainings/search.html'):
         trainings = Training.objects.search(query, user=request.user)
         trainings = trainings.order_by('-create_dt')
     else:
-        if has_view_perm(request.user, 'trainings.view_training'):
+        if has_perm(request.user, 'trainings.view_training') and has_perm(request.user, 'trainings.view_completion'):
             trainings = Training.objects.all().annotate(completions=Count('completion')).order_by('-completions')
         else:
             filters = get_query_filters(request.user, 'trainings.view_training')
