@@ -65,8 +65,8 @@ class Form(TendenciBaseModel):
         blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=
         _("If checked, the person submitting the form will be sent an email"))
-    email_from = models.EmailField(_("From address"), blank=True, 
-        help_text=_("The address the email will be sent from"))
+    email_from = models.EmailField(_("Reply-To address"), blank=True, 
+        help_text=_("The address the replies to the email will be sent to"))
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
