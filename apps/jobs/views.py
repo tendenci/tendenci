@@ -233,6 +233,12 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
     else:
+        # Redirect user w/perms to create pricing if none exist
+        pricings = JobPricing.objects.all()
+        if not pricings and has_perm(request.user, 'jobs.add_jobpricing'):
+            messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label')))
+            return HttpResponseRedirect(reverse('job_pricing.add'))
+
         form = form_class(user=request.user)
         initial_category_form_data = {
             'app_label': 'jobs',
