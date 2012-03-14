@@ -126,7 +126,7 @@ class ListStoriesNode(ListNode):
                 order = self.kwargs['order']
 
         filters = get_query_filters(user, self.perms)
-        items = self.model.objects.filter(filters)
+        items = self.model.objects.filter(filters).distinct()
 
         if tags:  # tags is a comma delimited list
             # this is fast; but has one hole
