@@ -144,7 +144,7 @@ class EventListNode(Node):
         end_dt = day
 
         filters = get_query_filters(context['user'], 'events.view_event')
-        events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt)
+        events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt).distinct()
 
         if type:
             events = events.filter(type=type)
@@ -314,7 +314,7 @@ class ListEventsNode(ListNode):
             query = '%s "tag:%s"' % (query, tag)
 
         filters = get_query_filters(user, 'events.view_event')
-        items = Event.objects.filter(filters)
+        items = Event.objects.filter(filters).distinct()
         objects = []
 
         # if order is not specified it sorts by relevance
