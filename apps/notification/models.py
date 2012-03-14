@@ -176,6 +176,39 @@ class NoticeQueueBatch(models.Model):
     Denormalized data for a notice.
     """
     pickled_data = models.TextField()
+    
+class NoticeEmail(models.Model):
+    """Saved Emails
+    """
+    sender = models.CharField(max_length=200, blank=True)
+    emails = models.CharField(max_length=200, blank=True)
+    bcc = models.CharField(max_length=200, blank=True)
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    reply_to = models.CharField(max_length=100, blank=True)
+    from_display = models.CharField(max_length=100, blank=True)
+    title = models.TextField(blank=True)
+    content = models.TextField(blank=True)
+    date_sent = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__(self):
+        return self.title
+    
+    def resend(self):
+        header = {}
+        if self.reply_to:
+            headers['Reply-To'] = reply_to
+        if self.from_display:
+            headers['From'] = from_display
+        
+        if self.bcc:
+            email = EmailMessage(self.title, self.content, self.sender,
+                        self.recipients, self.recipient_bcc, headers=headers)
+        else:
+            email = EmailMessage(self.title, self.content, self.sender, 
+                        self.recipients, headers=headers)
+        
+        email.content_subtype = content_type
+        email.send(fail_silently=True)  # should we raise exception or not?
 
 def create_notice_type(label, display, description, default=2, verbosity=1):
     """
@@ -318,12 +351,13 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             sender = settings.DEFAULT_FROM_EMAIL
         
     sender_display = extra_context.get('sender_display', '')
-        
+    from_display = '%s<%s>' % (sender_display, sender)
+    
     if 'recipient_bcc' in extra_context.keys():
         recipient_bcc = extra_context['recipient_bcc']
     else:
         recipient_bcc = None
-
+    
     for email_addr in emails:
         recipients = [email_addr]
        
@@ -339,8 +373,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         if reply_to:
             headers['Reply-To'] = reply_to
         if sender_display:
-            headers['From'] = '%s<%s>' % (sender_display, sender)
-            
+            headers['From'] = from_display
         
         if recipient_bcc:
             email = EmailMessage(subject, body, sender, 
@@ -351,6 +384,16 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         email.content_subtype = content_type
         email.send(fail_silently=True)  # should we raise exception or not?
     
+    to = ','.join(emails)
+    if recipient_bcc:
+        bcc = ','.join(recipient_bcc)
+    else:
+        bcc = ''
+    if reply_to is None:
+        reply_to = ''
+    NoticeEmail.objects.create(emails=to, sender=sender, bcc=bcc,
+        title=subject, content=body, reply_to=reply_to,
+        from_display=from_display, notice_type=notice_type)
 
 def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
     """

@@ -1,6 +1,7 @@
 from django.contrib import admin
-from notification.models import NoticeType, NoticeSetting, Notice, ObservedItem
-
+from notification.models import (NoticeType, NoticeSetting, Notice,
+    ObservedItem, NoticeEmail)
+    
 class NoticeTypeAdmin(admin.ModelAdmin):
     list_display = ('label', 'display', 'description', 'default')
 
@@ -15,3 +16,4 @@ admin.site.register(NoticeType, NoticeTypeAdmin)
 admin.site.register(NoticeSetting, NoticeSettingAdmin)
 admin.site.register(Notice, NoticeAdmin)
 admin.site.register(ObservedItem)
+admin.site.register(NoticeEmail)
