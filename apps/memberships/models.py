@@ -670,7 +670,10 @@ class Notice(models.Model):
                 })
 
         # send email to admins
-        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        membership_recipients = get_notice_recipients('module', 'memberships', 'membershiprecipients')
+        admin_recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        recipients = list(set(membership_recipients + admin_recipients))
+
 
         if recipients and notification:
             notification.send_emails(recipients,
