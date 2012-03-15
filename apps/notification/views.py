@@ -95,4 +95,9 @@ def mark_all_seen(request):
         notice.unseen = False
         notice.save()
     return HttpResponseRedirect(reverse("notification_notices"))
-    
+
+def email(request, guid):
+    email = get_object_or_404(NoticeEmail, guid=guid)
+    return render_to_response("notification/email.html", {
+        'email':email,
+    }, context_instance=RequestContext(request))
