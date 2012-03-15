@@ -152,13 +152,28 @@ def search(request, redirect=False, template_name="events/search.html"):
 
     has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
+    event_type = request.GET.get('event_type', None)
+    start_dt = request.GET.get('start_dt', None)
+    if isinstance(start_dt, unicode):
+        start_dt = datetime.strptime(
+            start_dt,
+            '%Y-%m-%d'
+        )
+    else:
+        start_dt = datetime.now()
 
     if has_index and query:
+        event_type_obj = Type.objects.filter(slug=event_type)
+        if event_type_obj:
+            query = "%s type:%s" % (query, event_type_obj[0].name)
         events = Event.objects.search(query, user=request.user)
+        events = events.filter(start_dt__gte=start_dt)
     else:
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
-        events = events.filter(start_dt__gte=datetime.now())
+        events = events.filter(start_dt__gte=start_dt)
+        if event_type:
+            events = events.filter(type__slug=event_type)
         if request.user.is_authenticated():
             events = events.select_related()
 
@@ -176,7 +191,7 @@ def search(request, redirect=False, template_name="events/search.html"):
 
     return render_to_response(
         template_name,
-        {'events': events,'types': types, 'now': datetime.now()},
+        {'events': events,'types': types, 'now': datetime.now(), 'event_type': event_type, 'start_dt': start_dt},
         context_instance=RequestContext(request)
     )
 
@@ -1353,7 +1368,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
-            args=[event.pk, registrant.hash])
+            args=[event.pk, registration.registrant.hash])
         )
         
     for regt in registrants:
@@ -1481,7 +1496,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     else:
         month, year = datetime.now().month, datetime.now().year
     
-    if year <= 1900:
+    if year <= 1900 or year >= 9999:
         raise Http404
 
     calendar.setfirstweekday(calendar.SUNDAY)

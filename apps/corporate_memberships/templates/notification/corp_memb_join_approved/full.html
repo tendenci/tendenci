@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<p>{% blocktrans with object.name as objname %}Your corporate membership "{{ objname }}" has been approved.{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+</p>
+
+<p>
+	{% blocktrans %}To view the invoice, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url invoice.view invoice.pk %}</a>
+	</p>
+
+<p>
+{% blocktrans %}To add individual memberships under your corporate, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre object.corp_app.memb_app.slug object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre object.corp_app.memb_app.slug object.pk %}</a>
+</p>
+<p>{% trans "Thanks!" %}</p>
+
+<p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>
