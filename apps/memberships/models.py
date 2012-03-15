@@ -538,18 +538,6 @@ class Notice(models.Model):
         """
         context = self.get_entry_items(entry, membership)
 
-#        if membership: user = getattr(membership, 'user', None)
-#        elif entry: user = getattr(entry, 'user', None)
-#
-#        if user:
-#            context = {
-#                'firstname': user.first_name,
-#                'lastname': user.last_name,
-#                'name': user.get_full_name(),
-#                'username': user.username,
-#                'email': user.email,
-#            }
-
         return self.build_notice(self.subject, context=context)
 
     def get_content(self, entry=None, membership=None):
@@ -564,40 +552,6 @@ class Notice(models.Model):
         expiration_dt = ''
         
         context = self.get_entry_items(entry, membership)
-
-#        if membership:
-#            user = getattr(membership, 'user', None)
-#        elif entry:
-#            user = getattr(entry, 'user', None)
-
-#        try:
-#            profile = user.get_profile()
-#        except Profile.DoesNotExist as e:
-#            profile = Profile.objects.create_profile(user=user)
-#        except AttributeError as e:
-#            profile = None  # no profile boo; no user/profile shortcode vars
-#
-#        if user:
-#            context = {
-#                'firstname': user.first_name,
-#                'lastname': user.last_name,
-#                'name': user.get_full_name(),
-#                'username': user.username,
-#                'email': user.email, 
-#            }
-#
-#        if profile:
-#            context = {
-#                'title': profile.position_title,
-#                'address': profile.address,
-#                'city': profile.city,
-#                'state': profile.state,
-#                'zipcode': profile.zipcode,
-#                'phone': profile.phone,
-#                'workphone': profile.work_phone,
-#                'homephone': profile.home_phone,
-#                'fax': profile.fax,
-#            }
 
         if membership:
 
@@ -643,8 +597,6 @@ class Notice(models.Model):
         In the future, maybe we can pull from the membership application entry
         """
         context = kwargs.get('context') or {}  # get context
-#        content = content.replace('[','{{')  # replace shortcode tags
-#        content = content.replace(']','}}')  # replace shortcode tags
         content = fieldify(content)
 
         context = Context(context)
@@ -990,10 +942,6 @@ class AppEntry(TendenciBaseModel):
             return entry_field.value
         except:
             return unicode()
-
-#    @property
-#    def hash(self):
-#        return md5(unicode(self.pk)).hexdigest()
 
     @models.permalink
     def hash_url(self):
