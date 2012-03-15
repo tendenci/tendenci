@@ -199,12 +199,11 @@ class NoticeEmail(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('notification_email', [self.guid])
-    
+
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or unicode(uuid.uuid1())
         super(NoticeEmail, self).save(*args, **kwargs)
-    
+
     def resend(self):
         headers = {}
         if self.reply_to:
