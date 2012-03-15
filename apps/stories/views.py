@@ -123,6 +123,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             if tags:
                 form.fields['tags'].initial = tags
 
+    else:
+        raise Http403
+
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
     
@@ -162,7 +165,10 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                     return redirect('story', id=story.pk)             
         else:
             form = form_class(instance=story, user=request.user)
-    
+
+    else:
+        raise Http403
+
     return render_to_response(template_name, {'story': story, 'form':form }, 
         context_instance=RequestContext(request))
 

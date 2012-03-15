@@ -1,5 +1,6 @@
 from os.path import splitext
 import datetime
+import uuid
 
 try:
     import cPickle as pickle
@@ -176,6 +177,53 @@ class NoticeQueueBatch(models.Model):
     Denormalized data for a notice.
     """
     pickled_data = models.TextField()
+    
+class NoticeEmail(models.Model):
+    """Saved Emails
+    """
+    guid = models.CharField(max_length=50)
+    sender = models.CharField(max_length=200, blank=True)
+    emails = models.CharField(max_length=200, blank=True)
+    bcc = models.CharField(max_length=200, blank=True)
+    notice_type = models.ForeignKey(NoticeType, verbose_name=_('notice type'))
+    reply_to = models.CharField(max_length=100, blank=True)
+    from_display = models.CharField(max_length=100, blank=True)
+    title = models.TextField(blank=True)
+    content = models.TextField(blank=True)
+    content_type = models.CharField(max_length=10)
+    date_sent = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__(self):
+        return self.title
+        
+    @models.permalink
+    def get_absolute_url(self):
+        return ('notification_email', [self.guid])
+
+    def save(self, *args, **kwargs):
+        self.guid = self.guid or unicode(uuid.uuid1())
+        super(NoticeEmail, self).save(*args, **kwargs)
+
+    def resend(self):
+        headers = {}
+        if self.reply_to:
+            headers['Reply-To'] = self.reply_to
+        if self.from_display:
+            headers['From'] = self.from_display
+        
+        email_list = []
+        for email in self.emails.split(','):
+            email_list.append(email)
+
+        if self.bcc:
+            email = EmailMessage(self.title, self.content, self.sender,
+                        email_list, self.recipient_bcc, headers=headers)
+        else:
+            email = EmailMessage(self.title, self.content, self.sender, 
+                        email_list, headers=headers)
+
+        email.content_subtype = self.content_type or 'html'
+        return email.send()
 
 def create_notice_type(label, display, description, default=2, verbosity=1):
     """
@@ -308,8 +356,9 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     
     if 'reply_to' in extra_context.keys():
         reply_to = extra_context['reply_to']
+        headers['Reply-To'] = reply_to
     else:
-        reply_to = None
+        reply_to = ''
         
     sender = extra_context.get('sender', '')
     if not sender:
@@ -318,39 +367,48 @@ def send_emails(emails, label, extra_context=None, on_site=True):
             sender = settings.DEFAULT_FROM_EMAIL
         
     sender_display = extra_context.get('sender_display', '')
-        
-    if 'recipient_bcc' in extra_context.keys():
-        recipient_bcc = extra_context['recipient_bcc']
-    else:
-        recipient_bcc = None
+    from_display = '%s<%s>' % (sender_display, sender)
 
+    if sender_display:
+        headers['From'] = from_display
+    
+    recipient_bcc = extra_context.get('recipient_bcc') or []
+        
+    if messages['full'][1] == '.html':
+        # commented out for Amazon SES
+        # headers = {'Content-Type': 'text/html'}
+        content_type = 'html'
+    else:
+        # commented out for Amazon SES
+        # headers = {'Content-Type': 'text/plain'}
+        content_type = 'text'
+    
     for email_addr in emails:
         recipients = [email_addr]
-       
-        if messages['full'][1] == '.html':
-            # commented out for Amazon SES
-            # headers = {'Content-Type': 'text/html'} 
-            content_type = 'html'
-        else:
-            # commented out for Amazon SES
-            # headers = {'Content-Type': 'text/plain'}
-            content_type = 'text'
-
-        if reply_to:
-            headers['Reply-To'] = reply_to
-        if sender_display:
-            headers['From'] = '%s<%s>' % (sender_display, sender)
-            
         
         if recipient_bcc:
             email = EmailMessage(subject, body, sender, 
                                  recipients, recipient_bcc, headers=headers)
-        else: 
+        else:
             email = EmailMessage(subject, body, sender, 
                                  recipients, headers=headers)
         email.content_subtype = content_type
         email.send(fail_silently=True)  # should we raise exception or not?
-    
+
+    to = ','.join(emails)
+    bcc = ','.join(recipient_bcc)
+    reply_to = reply_to or unicode()
+
+    NoticeEmail.objects.create(
+        emails=to,
+        sender=sender,
+        bcc=bcc,
+        title=subject,
+        content=body,
+        reply_to=reply_to,
+        from_display=from_display,
+        notice_type=notice_type
+    )
 
 def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
     """

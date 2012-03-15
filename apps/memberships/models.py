@@ -380,8 +380,9 @@ class Membership(TendenciBaseModel):
         """
         Copy self to the MembershipArchive table
         """
-        memb_archive = MembershipArchive()
+        arch = MembershipArchive()
         
+<<<<<<< HEAD
         field_names = [field.name for field in self.__class__._meta.fields]
         field_names.remove('id')
         field_names.remove('guid') # the archive table doesn't have guid, so remove it
@@ -395,6 +396,21 @@ class Membership(TendenciBaseModel):
         if user and (not user.is_anonymous()):
             memb_archive.archive_user = user
         memb_archive.save()
+=======
+        fields = [field.name for field in self.__class__._meta.fields]
+
+        fields.remove('id')
+        fields.remove('guid')
+
+        for field in fields:
+            setattr(arch, field, getattr(self, field))
+
+        arch.membership = self
+        arch.membership_create_dt = self.create_dt
+        arch.membership_update_dt = self.update_dt
+        arch.user = user
+        arch.save()
+>>>>>>> refs/heads/sprint-5.0.67
 
     def get_join_dt(self):
         pass
@@ -538,18 +554,6 @@ class Notice(models.Model):
         """
         context = self.get_entry_items(entry, membership)
 
-#        if membership: user = getattr(membership, 'user', None)
-#        elif entry: user = getattr(entry, 'user', None)
-#
-#        if user:
-#            context = {
-#                'firstname': user.first_name,
-#                'lastname': user.last_name,
-#                'name': user.get_full_name(),
-#                'username': user.username,
-#                'email': user.email,
-#            }
-
         return self.build_notice(self.subject, context=context)
 
     def get_content(self, entry=None, membership=None):
@@ -564,40 +568,6 @@ class Notice(models.Model):
         expiration_dt = ''
         
         context = self.get_entry_items(entry, membership)
-
-#        if membership:
-#            user = getattr(membership, 'user', None)
-#        elif entry:
-#            user = getattr(entry, 'user', None)
-
-#        try:
-#            profile = user.get_profile()
-#        except Profile.DoesNotExist as e:
-#            profile = Profile.objects.create_profile(user=user)
-#        except AttributeError as e:
-#            profile = None  # no profile boo; no user/profile shortcode vars
-#
-#        if user:
-#            context = {
-#                'firstname': user.first_name,
-#                'lastname': user.last_name,
-#                'name': user.get_full_name(),
-#                'username': user.username,
-#                'email': user.email, 
-#            }
-#
-#        if profile:
-#            context = {
-#                'title': profile.position_title,
-#                'address': profile.address,
-#                'city': profile.city,
-#                'state': profile.state,
-#                'zipcode': profile.zipcode,
-#                'phone': profile.phone,
-#                'workphone': profile.work_phone,
-#                'homephone': profile.home_phone,
-#                'fax': profile.fax,
-#            }
 
         if membership:
 
@@ -643,8 +613,6 @@ class Notice(models.Model):
         In the future, maybe we can pull from the membership application entry
         """
         context = kwargs.get('context') or {}  # get context
-#        content = content.replace('[','{{')  # replace shortcode tags
-#        content = content.replace(']','}}')  # replace shortcode tags
         content = fieldify(content)
 
         context = Context(context)
@@ -718,7 +686,10 @@ class Notice(models.Model):
                 })
 
         # send email to admins
-        recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        membership_recipients = get_notice_recipients('module', 'memberships', 'membershiprecipients')
+        admin_recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+        recipients = list(set(membership_recipients + admin_recipients))
+
 
         if recipients and notification:
             notification.send_emails(recipients,
@@ -808,7 +779,6 @@ class App(TendenciBaseModel):
                 return self.status and self.status_detail in ['active', 'published']
             elif self.allow_user_view:
                 return self.status and self.status_detail in ['active', 'published']
-
             elif has_perm(this_user, 'memberships.view_app', self):
                 return True
         
@@ -990,10 +960,6 @@ class AppEntry(TendenciBaseModel):
             return entry_field.value
         except:
             return unicode()
-
-#    @property
-#    def hash(self):
-#        return md5(unicode(self.pk)).hexdigest()
 
     @models.permalink
     def hash_url(self):
