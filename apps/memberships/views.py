@@ -39,11 +39,8 @@ from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
 from site_settings.utils import get_setting
+from notification import models as notification
 
-try:
-    from notification import models as notification
-except:
-    notification = None
 from base.utils import send_email_notification
 
 def membership_index(request):
