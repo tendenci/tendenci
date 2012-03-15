@@ -214,16 +214,16 @@ class NoticeEmail(models.Model):
         email_list = []
         for email in self.emails.split(','):
             email_list.append(email)
-        
+
         if self.bcc:
             email = EmailMessage(self.title, self.content, self.sender,
                         email_list, self.recipient_bcc, headers=headers)
         else:
             email = EmailMessage(self.title, self.content, self.sender, 
                         email_list, headers=headers)
-        
-        email.content_subtype = self.content_type
-        email.send(fail_silently=True)  # should we raise exception or not?
+
+        email.content_subtype = self.content_type or 'html'
+        return email.send()
 
 def create_notice_type(label, display, description, default=2, verbosity=1):
     """
