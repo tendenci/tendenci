@@ -394,18 +394,21 @@ def send_emails(emails, label, extra_context=None, on_site=True):
                                  recipients, headers=headers)
         email.content_subtype = content_type
         email.send(fail_silently=True)  # should we raise exception or not?
-    
+
     to = ','.join(emails)
-    if recipient_bcc:
-        bcc = ','.join(recipient_bcc)
-    else:
-        bcc = ''
-    if reply_to is None:
-        reply_to = ''
-    NoticeEmail.objects.create(emails=to, sender=sender, bcc=bcc,
-        title=subject, content=body, reply_to=reply_to,
-        from_display=from_display, notice_type=notice_type, 
-        content_type=content_type)
+    bcc = ','.join(recipient_bcc)
+    reply_to = reply_to or unicode()
+
+    NoticeEmail.objects.create(
+        emails=to,
+        sender=sender,
+        bcc=bcc,
+        title=subject,
+        content=body,
+        reply_to=reply_to,
+        from_display=from_display,
+        notice_type=notice_type
+    )
 
 def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
     """
