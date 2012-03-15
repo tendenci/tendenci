@@ -1368,7 +1368,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
-            args=[event.pk, registrant.hash])
+            args=[event.pk, registration.registrant.hash])
         )
         
     for regt in registrants:
