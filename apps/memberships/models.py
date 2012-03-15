@@ -380,21 +380,21 @@ class Membership(TendenciBaseModel):
         """
         Copy self to the MembershipArchive table
         """
-        memb_archive = MembershipArchive()
+        arch = MembershipArchive()
         
-        field_names = [field.name for field in self.__class__._meta.fields]
-        field_names.remove('id')
-        field_names.remove('guid') # the archive table doesn't have guid, so remove it
-        
-        for name in field_names:
-            exec("memb_archive.%s=self.%s" % (name, name))
-            
-        memb_archive.membership = self
-        memb_archive.membership_create_dt = self.create_dt
-        memb_archive.membership_update_dt = self.update_dt
-        if user and (not user.is_anonymous()):
-            memb_archive.archive_user = user
-        memb_archive.save()
+        fields = [field.name for field in self.__class__._meta.fields]
+
+        fields.remove('id')
+        fields.remove('guid')
+
+        for field in fields:
+            setattr(arch, field, getattr(self, field))
+
+        arch.membership = self
+        arch.membership_create_dt = self.create_dt
+        arch.membership_update_dt = self.update_dt
+        arch.user = user
+        arch.save()
 
     def get_join_dt(self):
         pass
