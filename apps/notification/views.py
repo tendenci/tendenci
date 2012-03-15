@@ -98,6 +98,8 @@ def mark_all_seen(request):
 
 def email(request, guid):
     email = get_object_or_404(NoticeEmail, guid=guid)
+    only_content = 'only-content' in request.GET
     return render_to_response("notification/email.html", {
         'email':email,
+        'only_content': only_content,
     }, context_instance=RequestContext(request))

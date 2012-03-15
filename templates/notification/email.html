@@ -1,1 +1,61 @@
-{{ email.content|safe }}
+
+{% if only_content %}
+	{{ email.content|safe }}
+{% else %}
+<html>
+<head>
+	<title>{{ email.title }}</title>
+
+<style type="text/css">
+	body {
+		margin: 0;
+	}
+	table#t-header {
+		width: 100%;
+		padding: 15px;
+	}
+	table#t-header td:first-child {
+		text-align: right;
+		padding-right: 7px;
+		width: 50px;
+	}
+
+	iframe {
+		border: none;
+		border-top: 1px solid #EEE;
+		height: 100%;
+		width: 100%;
+	}
+
+</style>
+
+</head>
+<body>
+
+<table id="t-header">
+	<tr>
+		<td>from:</td>
+		<td>
+			<span title="from address">{{ email.sender }}</span> 
+			<span title="from display">{{ email.from_display }}</span>
+		</td>
+	</tr>
+	<tr>
+		<td>to:</td>
+		<td><span title="to address">{{ email.emails }}</span></td>
+	</tr>
+	<tr>
+		<td>date:</td>
+		<td>{{ email.date_sent }}</td>
+	</tr>
+	<tr>
+		<td>subject:</td>
+		<td>{{ email.title }}</td>
+	</tr>
+</table>
+
+<iframe src="{% url notification_email email.guid %}?only-content"></iframe>
+
+</body>
+</html>
+{% endif %}
