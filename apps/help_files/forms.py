@@ -30,8 +30,6 @@ class HelpFileAdminForm(TendenciBaseForm):
         else:
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not is_developer(self.user):
-            if 'status' in self.fields: self.fields.pop('status')
 
 class HelpFileForm(TendenciBaseForm):
     answer = forms.CharField(required=False,
