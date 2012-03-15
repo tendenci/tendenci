@@ -368,13 +368,11 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         
     sender_display = extra_context.get('sender_display', '')
     from_display = '%s<%s>' % (sender_display, sender)
+
     if sender_display:
         headers['From'] = from_display
     
-    if 'recipient_bcc' in extra_context.keys():
-        recipient_bcc = extra_context['recipient_bcc']
-    else:
-        recipient_bcc = None
+    recipient_bcc = extra_context.get('recipient_bcc') or []
         
     if messages['full'][1] == '.html':
         # commented out for Amazon SES
