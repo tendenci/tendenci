@@ -2,6 +2,7 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load styled_forms %}
 {% load i18n %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
@@ -16,10 +17,12 @@
     
     <h1>{% trans "Membership Import Upload File" %}</h1>
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ datetime.now }}</p>
-
+    
     <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Import .csv File'>
+    <div class="forms">
+        {{ form|styled_form }}
+        <input type='submit' value='Import .csv File'>
+    </div>
     </form>
 </div>
 {% endblock %}

@@ -8,12 +8,38 @@ from django.conf import settings
 from memberships.utils import csv_to_dict
 from memberships.models import AppField, App
 
+INTERACTIVE_CHOICES = (
+    (1, 'Interactive'),
+    (0, 'Not Interactive (no login)'),
+)
+
+OVERRIDE_CHOICES = (
+    (0, 'Blank Fields'),
+    (1, 'All Fields (override)'),
+)
+
+KEY_CHOICES = (
+    ('email','email'),
+    ('first_name,last_name,email','first_name and last_name and email'),
+    ('first_name,last_name,phone','first_name and last_name and phone'),
+    ('first_name,last_name,company','first_name and last_name and company'),
+    ('username','username'),
+)
+
 class UploadForm(forms.Form):
     """
     CSV upload form for membership imports
     """
     
     app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
+    interactive = forms.CharField(
+        widget=forms.RadioSelect(choices=INTERACTIVE_CHOICES),
+        initial=0,)
+    override = forms.CharField(
+        widget=forms.RadioSelect(choices=OVERRIDE_CHOICES),
+        initial=0,)
+    key = forms.ChoiceField(
+        initial="email", choices=KEY_CHOICES)
     csv = forms.FileField(label='')
     
     
