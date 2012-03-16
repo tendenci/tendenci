@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -9,15 +9,22 @@ from django.contrib import messages
 
 from base.http import Http403
 from base.utils import now_localized
-from site_settings.utils import get_setting
-from resumes.models import Resume
-from resumes.forms import ResumeForm
 from perms.object_perms import ObjectPermission
-from perms.utils import update_perms_and_save, get_notice_recipients, is_admin, has_perm, has_view_perm, get_query_filters
+from perms.utils import (update_perms_and_save, get_notice_recipients,
+    is_admin, has_perm, has_view_perm, get_query_filters)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from notification import models as notification
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
+
+from resumes.models import Resume
+from resumes.forms import ResumeForm
+
+try:
+    from notification import models as notification
+except:
+    notification = None
 
 def index(request, slug=None, template_name="resumes/view.html"):
     if not slug: return HttpResponseRedirect(reverse('resume.search'))
