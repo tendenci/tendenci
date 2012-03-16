@@ -8,6 +8,16 @@ from notification.models import (NoticeType, NoticeSetting, Notice,
 class NoticeTypeAdmin(admin.ModelAdmin):
     list_display = ('label', 'display', 'description', 'default')
 
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return obj is None
+
+    def __init__(self, *args, **kwargs):
+        super(NoticeTypeAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = (None, )
+
 class NoticeSettingAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'notice_type', 'medium', 'send')
 
@@ -17,6 +27,12 @@ class NoticeAdmin(admin.ModelAdmin):
 class NoticeEmailAdmin(admin.ModelAdmin):
     list_display = ('preview_email', 'date_sent')
     actions = ['resend']
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return False
 
     def preview_email(self, obj):
         return '<a href="%s">%s</a>' % \
@@ -29,8 +45,15 @@ class NoticeEmailAdmin(admin.ModelAdmin):
             print q.resend()
     resend.short_description = "Resend the selected emails"
 
-admin.site.register(NoticeType, NoticeTypeAdmin)
-admin.site.register(NoticeSetting, NoticeSettingAdmin)
-admin.site.register(Notice, NoticeAdmin)
-admin.site.register(ObservedItem)
+    def has_change_permission(self, request, obj=None):
+        return obj is None
+
+    def __init__(self, *args, **kwargs):
+        super(NoticeEmailAdmin, self).__init__(*args, **kwargs)
+        self.list_display_links = (None, )
+
+# admin.site.register(NoticeType, NoticeTypeAdmin)
+# admin.site.register(NoticeSetting, NoticeSettingAdmin)
+# admin.site.register(Notice, NoticeAdmin)
+# admin.site.register(ObservedItem)
 admin.site.register(NoticeEmail, NoticeEmailAdmin)
