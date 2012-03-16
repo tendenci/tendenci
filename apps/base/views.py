@@ -8,13 +8,13 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.template import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import redirect
 from django.conf import settings
 
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
 from perms.utils import is_admin
-from theme.shortcuts import themed_response
+from theme.shortcuts import themed_response as render_to_response
 
 
 def image_preview(request, app_label, model, id,  size):
@@ -240,4 +240,4 @@ def homepage(request, template_name="homepage.html"):
         'source': 'homepage'
     })
 
-    return themed_response(template_name, {}, context_instance=RequestContext(request))
+    return render_to_response(template_name, {}, context_instance=RequestContext(request))
