@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.forms.models import inlineformset_factory
@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 
+from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from event_logs.models import EventLog

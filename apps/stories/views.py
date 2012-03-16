@@ -1,4 +1,5 @@
 import os.path
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -8,11 +9,14 @@ from django.conf import settings
 from django.contrib import messages
 
 from base.http import Http403
+from perms.utils import (has_perm, update_perms_and_save,
+    get_query_filters, has_view_perm)
+from event_logs.models import EventLog
 from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
+
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
-from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
-from event_logs.models import EventLog
 
 
 def details(request, id=None, template_name="stories/view.html"):
