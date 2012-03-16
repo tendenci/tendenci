@@ -451,7 +451,28 @@ class MembershipArchive(TendenciBaseModel):
         return "%s #%s" % (self.user.get_full_name(), self.member_number)
         
 class MembershipImport(models.Model):
+    INTERACTIVE_CHOICES = (
+        (1, 'Interactive'),
+        (0, 'Not Interactive (no login)'),
+    )
+
+    OVERRIDE_CHOICES = (
+        (0, 'Blank Fields'),
+        (1, 'All Fields (override)'),
+    )
+
+    KEY_CHOICES = (
+        ('email','email'),
+        ('first_name,last_name,email','first_name and last_name and email'),
+        ('first_name,last_name,phone','first_name and last_name and phone'),
+        ('first_name,last_name,company','first_name and last_name and company'),
+        ('username','username'),
+    )
+    
     app = models.ForeignKey('App')
+    interactive = models.IntegerField(choices=INTERACTIVE_CHOICES, default=0)
+    override = models.IntegerField(choices=OVERRIDE_CHOICES, default=0)
+    key = models.CharField(max_length=50, choices=KEY_CHOICES, default="email")
     creator = models.ForeignKey(User)
     create_dt = models.DateTimeField(auto_now_add=True)
     

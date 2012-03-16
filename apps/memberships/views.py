@@ -694,8 +694,16 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         if form.is_valid():
             cleaned_data = form.cleaned_data
             app = cleaned_data['app']
+            interactive = cleaned_data['interactive']
+            override = cleaned_data['override']
+            key = cleaned_data['key']
             
-            memport = MembershipImport.objects.create(app=app, creator=request.user)
+            memport = MembershipImport.objects.create(
+                app=app,
+                interactive=interactive,
+                override=override,
+                key=key,
+                creator=request.user)
             
             csv = File.objects.save_files_for_instance(request, memport)[0]
             
