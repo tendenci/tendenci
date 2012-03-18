@@ -229,7 +229,7 @@ class Registrant(models.Model):
         if self.custom_reg_form_entry:
             user_fields = [item[0] for item in USER_FIELD_CHOICES]
             for field in user_fields:
-                exec('self.%s=self.custom_reg_form_entry.get_value_of_mapped_field("%s")' % (field, field))
+                setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
                 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
