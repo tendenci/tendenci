@@ -1,4 +1,4 @@
-{% extends "profiles/base.html" %}
+{% extends "profiles/base-wide.html" %}
 {% load avatar_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -26,7 +26,6 @@
 	{% users_nav request.user user_this %}
 	
     <h1>{{ user_this.get_full_name }} ({{ user_this.username }})</h1>
-    {% users_options request.user user_this %}
     <div class="clear-right"></div>
 	  
     <div id="userview-tabs">
