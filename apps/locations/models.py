@@ -2,12 +2,15 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.contrib.auth.models import User
 
 from perms.models import TendenciBaseModel 
 from perms.object_perms import ObjectPermission
 from locations.managers import LocationManager
 from entities.models import Entity
 from locations.utils import get_coordinates
+from files.models import File
+
 
 class Location(TendenciBaseModel):
     guid = models.CharField(max_length=40) 
@@ -127,6 +130,20 @@ class Location(TendenciBaseModel):
             self.latitude, self.longitude = get_coordinates(self.get_address())
 
         super(Location, self).save(*args, **kwargs)
+
+
+class LocationImport(models.Model):
+
+    creator = models.ForeignKey(User)
+    create_dt = models.DateTimeField(auto_now_add=True)
+
+    def get_file(self):
+        file = File.objects.get_for_model(self)[0]
+        return file
+        
+    def __unicode__(self):
+        return self.get_file().file.path
+
 
 class Distance(models.Model):
     """Holds distance information between zip codes and locations"""
