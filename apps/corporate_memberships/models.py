@@ -632,7 +632,7 @@ class CorporateMembership(TendenciBaseModel):
         field_names.remove('id')
         
         for name in field_names:
-            exec("corp_memb_archive.%s=self.%s" % (name, name))
+            setattr(corp_memb_archive, 'name', getattr(self, 'name'))
             
         corp_memb_archive.corporate_membership = self
         corp_memb_archive.corp_memb_create_dt = self.create_dt

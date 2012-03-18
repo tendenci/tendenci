@@ -381,7 +381,7 @@ class Membership(TendenciBaseModel):
         Copy self to the MembershipArchive table
         """
         arch = MembershipArchive()
-        
+
         fields = [field.name for field in self.__class__._meta.fields]
 
         fields.remove('id')
@@ -767,7 +767,6 @@ class App(TendenciBaseModel):
                 return True
         
         return False
-
 
 class AppFieldManager(models.Manager):
     """
