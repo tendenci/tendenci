@@ -17,9 +17,9 @@
         {% with article.category_set as article_cat %}
         {% if article_cat.category %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url article.search %}?q=category:{{ article_cat.category }}">{{ article_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url articles %}?q=category:{{ article_cat.category }}">{{ article_cat.category }}</a>
             {% if article_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url article.search %}?q=sub_category:{{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url articles %}?q=sub_category:{{ article_cat.sub_category }}">{{ article_cat.sub_category }}</a>
             {% endif %}
         </div>
         {% endif %}
@@ -29,7 +29,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in article.tags|tag_split %}
-                <a href="{% url article.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url articles %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
