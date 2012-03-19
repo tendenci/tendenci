@@ -141,7 +141,6 @@ class ProfileForm(TendenciBaseForm):
                   'interactive', 
                   'allow_anonymous_view',
                   'admin_notes',
-                  'entity',
                   'security_level',
                   'status',
                   'status_detail',
