@@ -1,6 +1,9 @@
+from django.db.models import signals
+
 from haystack import indexes
 from haystack import site
 from invoices.models import Invoice
+from search.signals import save_unindexed_item
 
 class InvoiceIndex(indexes.SearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -39,5 +42,17 @@ class InvoiceIndex(indexes.SearchIndex):
         if myobj:
             return myobj._meta.verbose_name
         return obj.object_type
+    
+    def _setup_save(self, model):
+        signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
+        
+    def _teardown_save(self, model):
+        signals.post_save.disconnect(save_unindexed_item, sender=model)
+        
+    def _setup_delete(self, obj):
+        signals.post_delete.connect(self.remove_object, sender=obj)
+
+    def _teardown_delete(self, obj):
+        signals.post_delete.disconnect(self.remove_object, sender=obj)
 
 site.register(Invoice, InvoiceIndex)
