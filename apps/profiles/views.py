@@ -103,9 +103,15 @@ def index(request, username='', template_name="profiles/index.html"):
     }
     EventLog.objects.log(**log_defaults)
  
+    state_zip = ' '.join((profile.state, profile.zipcode))
+    city_state = ', '.join((profile.city, profile.state))
+    city_state_zip = ', '.join((profile.city, state_zip, profile.country))
+
     return render_to_response(template_name, {
         "user_this": user_this,
         "profile":profile,
+        'city_state': city_state,
+        'city_state_zip': city_state_zip,
         'content_counts': content_counts,
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
