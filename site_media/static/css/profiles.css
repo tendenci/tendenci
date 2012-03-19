@@ -7,6 +7,7 @@
 .t {
 	width: 90%;
 	margin-top: 1em;
+    position: relative;
 }
 
 .t form.search-form input[type="text"] {
@@ -14,10 +15,115 @@
 	padding:5px;
 	width:60%;
 }
-.profile-icon img{
-	padding: 4px;
-	border: 1px solid silver;
+
+.profile-icon img {
+    float: left;
+    margin-right: 20px;
 }
+
+.info {
+    position: relative;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed silver;
+    margin-bottom: 20px;
+}
+
+.contact.info h2 {
+    position: absolute;
+    top: -28px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.contact.info table {
+    width: 100%;
+}
+
+.contact.info table tr td {
+    padding-bottom: 9px;
+}
+
+.contact.info table td:first-child {
+    text-align: right;
+    padding-right: 20px;
+    width: 130px;
+}
+
+.contact.info .city-state-zip {
+    display: block;
+    margin-top: 5px;
+}
+
+.membership.info h2 {
+    position: absolute;
+    top: -28px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.membership.info table {
+    width: 100%;
+}
+
+.membership.info table tr td:first-child {
+    text-align: right;
+    width: 130px;
+    padding-right: 20px;
+}
+
+.group.info h2 {
+    position: absolute;
+    top: -28px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.group.info table {
+    width: 100%;
+}
+
+.group.info table tr td:first-child {
+    text-align: right;
+    width: 130px;
+    padding-right: 20px;
+}
+
+.contribution.info {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+
+    width: 200px;
+    background-color: white;
+    border: 1px solid #CCC;
+    padding: 20px 20px 12px;
+
+    -moz-box-shadow: 0 0 5px #AAA;
+    -webkit-box-shadow: 0 0 5px #AAA;
+    box-shadow: 0 0 5px #AAA;
+
+}
+
+.contribution.info h2 {
+    float: left;
+}
+
+.contribution.info .item {
+    font-size: .9em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #DDD;
+    margin-bottom: 10px;
+}
+
+.contribution.info .more {
+    font-size: .9em;
+    margin-left: 5px;
+}
+
+.contribution.info .create-dt {
+    font-size: .9em;
+}
+
 .t-iconrow{
 	float: right;
 }
@@ -456,9 +562,7 @@ div.forms div.form-field div.id_ssn .field input {
 	width: 20%;
 }
 
-.t .contribution {
-	border-bottom: 1px solid #DDD;
-	padding: 10px;
+/*.t .contribution {
 	margin: 10px 0;
 }
 .t .contribution .content-type {
@@ -471,7 +575,7 @@ div.forms div.form-field div.id_ssn .field input {
 }
 .t .contribution .contrib-create-dt {
 	float: right;		
-}
+}*/
 
 .t #userview-groups .group {
 	border-bottom: 1px solid #DDD;
