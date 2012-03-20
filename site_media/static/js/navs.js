@@ -141,6 +141,7 @@ $(document).ready(function(){
     var initial = $("#id_form-INITIAL_FORMS").val(0);
     var total = $("#id_form-TOTAL_FORMS").val();
     var items = $("#nav-items").find(".nav-item");
+    var item;
 
     for(i=0;i<total;i++){
         var level = $($(items[i]).find('.level input')).val();
@@ -157,13 +158,13 @@ $(document).ready(function(){
     
     //custom form add
     $('#add-custom').click(function(){
-        form_number = parseInt($("#id_form-TOTAL_FORMS").val())
+        form_number = parseInt($("#id_form-TOTAL_FORMS").val());
         items = $("#nav-items");
         item = $("#base");
         //copy the template form
         clone = item.clone();
         //set default values to the form
-        clone.attr('id', '')
+        clone.attr('id', '');
         clone.show();
         clone.find('.nav-item-detail').show();
         clone.find('#id_form-0-ordering').val(form_number);
