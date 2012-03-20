@@ -9,7 +9,7 @@ from events.utils import count_event_spots_taken
 from events.models import Type as EventType
 from perms.indexes import TendenciBaseSearchIndex
 from perms.object_perms import ObjectPermission
-from search.signals import save_unindexed_item
+from search.indexes import CustomSearchIndex
 
 class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
@@ -75,7 +75,7 @@ class EventTypeIndex(indexes.RealTimeSearchIndex):
     primary_key = indexes.CharField(model_attr='pk')
 
 
-class RegistrantIndex(indexes.SearchIndex):
+class RegistrantIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     event_pk = indexes.IntegerField(model_attr='registration__event__pk')
     cancel_dt = indexes.DateTimeField(model_attr='cancel_dt', null=True)
@@ -110,18 +110,6 @@ class RegistrantIndex(indexes.SearchIndex):
             if not obj.last_name:
                 obj.last_name = obj.custom_reg_form_entry.__unicode__()
         return obj.last_name
-    
-    def _setup_save(self, model):
-        signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
-        
-    def _teardown_save(self, model):
-        signals.post_save.disconnect(save_unindexed_item, sender=model)
-
-    def _setup_delete(self, obj):
-        signals.post_delete.connect(self.remove_object, sender=obj)
-
-    def _teardown_delete(self, obj):
-        signals.post_delete.disconnect(self.remove_object, sender=obj)
 
 site.register(Event, EventIndex)
 site.register(EventType, EventTypeIndex)
