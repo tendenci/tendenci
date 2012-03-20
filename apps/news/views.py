@@ -1,21 +1,21 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from news.models import News
-from news.forms import NewsForm
+from site_settings.utils import get_setting 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, get_query_filters
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from perms.utils import (get_notice_recipients, has_perm, is_admin,
+    update_perms_and_save, get_query_filters)
+from theme.shortcuts import themed_response as render_to_response
 
-from perms.utils import get_notice_recipients
-from perms.utils import is_admin
-from site_settings.utils import get_setting 
+from news.models import News
+from news.forms import NewsForm
 
 try:
     from notification import models as notification

@@ -214,13 +214,21 @@
                 <span style="color:#F8C7CD;" class="glyph heading">&#78;</span>
                 &nbsp;&nbsp;<span style="text-decoration: underline;">{% trans "Happy Valentine's Day! Love, Tendenci" %}</span></a></li>
         {% endif %}
-
-        {% comment %}
+        
         {% if CUSTOM_TEMPLATE %}
-            <li><a href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}">Using Custom Template</a></li>
+            <li><a href="#">{% trans "Using Custom Template" %}</a>
+                <div class="sub">
+            	<div class="column">
+                    <ul>
+                        <li><a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{% trans "Theme" %}: {{ THEME }}</a></li>
+                        <li><a href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}&theme_edit={{ THEME }}">{% trans 'Template' %}: {{ THEME_TEMPLATE }}</a></li>
+                        <li><a href="/?toggle_template={% if TOGGLE_TEMPLATE == 'TRUE' %}FALSE{% else %}TRUE{% endif %}">{% trans 'Toggle Template' %}</a></li>
+                    </ul>
+                </div>
+                </div>
+            </li>
         {% endif %}
-        {% endcomment %}
-
+        
     	<li class="right"><a href="/accounts/logout">{% trans "Logout" %}</a></li>
     	<li class="right"><a href="/profiles">{{ user.username }}</a></li>
     	<!-- <li class="right search"><a href="#">Search</a>
