@@ -12,8 +12,8 @@ from django.contrib import messages
 from base.http import Http403
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
-from perms.utils import (is_admin, has_perm, has_view_perm,
-    update_perms_and_save, get_query_filters)
+from perms.utils import has_perm, has_view_perm, update_perms_and_save, get_query_filters
+from perms.decorators import admin_required
 from theme.shortcuts import themed_response as render_to_response
 
 from locations.models import Location, LocationImport
@@ -226,16 +226,13 @@ def delete(request, id, template_name="locations/delete.html"):
 
 
 @login_required
+@admin_required
 def locations_import_upload(request, template_name='locations/import-upload-file.html'):
     """
     This is the upload view for the location imports.
     This will upload the location import file and then redirect the user
     to the import mapping/preview page of the import file
     """
-
-    if not is_admin(request.user):
-        raise Http403
-
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -263,14 +260,12 @@ def locations_import_upload(request, template_name='locations/import-upload-file
 
 
 @login_required
+@admin_required
 def locations_import_preview(request, id, template_name='locations/import-map-fields.html'):
     """
     This will generate a form based on the uploaded CSV for field mapping.
     A preview will be generated based on the mapping given.
     """
-    if not is_admin(request.user):
-        raise Http403
-    
     locport = get_object_or_404(LocationImport, pk=id)
     
     if request.method == 'POST':
@@ -303,15 +298,13 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
 
 
 @login_required
+@admin_required
 def locations_import_confirm(request, id, template_name='locations/import-confirm.html'):
     """
     Confirm the locations import and continue with the process.
     This can only be accessed via a hidden post form from the preview page.
     That will hold the original mappings selected by the user.
     """
-    if not is_admin(request.user):
-        raise Http403
-
     locport = get_object_or_404(LocationImport, pk=id)
     
     if request.method == "POST":
@@ -340,13 +333,11 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
 
 
 @login_required
+@admin_required
 def locations_import_status(request, task_id, template_name='locations/import-confirm.html'):
     """
     Checks if a location import is completed.
     """
-    if not is_admin(request.user):
-        raise Http403
-
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
