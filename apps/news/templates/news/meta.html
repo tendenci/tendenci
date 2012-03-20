@@ -42,7 +42,7 @@
         {% with news.category_set as news_cat %}
         {% if news_cat %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url news.search %}?q=category:{{ news_cat }}">{{ news_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url news.search %}?q=category:{{ news_cat.category }}">{{ news_cat.category }}</a>
         {% if news_cat.sub_category %}
             | <strong>{% trans "Sub Category:" %} </strong><a href="{% url news.search %}?q=sub_category:{{ news_cat.sub_category }}">{{ news_cat.sub_category }}</a>
         {% endif %}	
