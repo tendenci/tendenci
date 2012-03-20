@@ -318,17 +318,13 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
         form = ImportMapForm(request.POST, locport=locport)
 
         if form.is_valid():
-            print "form valid"
             cleaned_data = form.cleaned_data
             file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
-            print "file path" + str(file_path)
 
             if not settings.CELERY_IS_ACTIVE:
-                print "celery not active"
                 # if celery server is not present 
                 # evaluate the result and render the results page
                 result = ImportLocationsTask()
-                print result
                 locations, stats = result.run(request.user, file_path, cleaned_data)
                 return render_to_response(template_name, {
                     'locations': locations,
@@ -336,11 +332,8 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
                     'now': datetime.now(),
                 }, context_instance=RequestContext(request))
             else:
-                print "celery active"
                 result = ImportLocationsTask.delay(request.user, file_path, cleaned_data)
-                print result
 
-            print "confirm finished, redirecting"
             return redirect('locations_import_status', result.task_id)
     else:
         return redirect('locations_import_preview', locport.id)
