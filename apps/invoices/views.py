@@ -1,14 +1,17 @@
 from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.conf import settings
+
 from base.http import Http403
-from invoices.models import Invoice
-from invoices.forms import AdminNotesForm, AdminAdjustForm
+from theme.shortcuts import themed_response as render_to_response
 from perms.utils import is_admin
 from event_logs.models import EventLog
 from notification.utils import send_notifications
 from site_settings.utils import get_setting
+
+from invoices.models import Invoice
+from invoices.forms import AdminNotesForm, AdminAdjustForm
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
