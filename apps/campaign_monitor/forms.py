@@ -34,7 +34,6 @@ class TemplateForm(forms.ModelForm):
     
 class CampaignForm(forms.Form):
     # module content
-    include_login = forms.BooleanField(initial=False, required=False)
     jump_links = forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     events =  forms.ChoiceField(initial=1, choices=INCLUDE_CHOICES)
     event_start_dt = forms.DateField(initial=datetime.date.today(), widget=SelectDateWidget(None, range(THIS_YEAR, THIS_YEAR+10)))

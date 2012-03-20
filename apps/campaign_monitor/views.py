@@ -457,12 +457,11 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
         form = form_class(request.POST)
         if form.is_valid():
             template = form.cleaned_data['template']
-            
+
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
-            html_url = str("%s%s"%(site_url, template.get_html_url()))
-            html_url += "?include_login=%s" % form.cleaned_data.get('include_login', False)
-            html_url += "&jump_links=%s" % form.cleaned_data.get('jump_links')
+            html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+            html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
             html_url += "&events=%s" % form.cleaned_data.get('events')
             html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
             html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
@@ -477,14 +476,14 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             html_url += "&pages_days=%s" % form.cleaned_data.get('pages_days')
             
             if template.zip_file:
-                zip_url = str("%s%s"%(site_url, template.get_zip_url()))
+                zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
             else:
-                zip_url = ""
-            
+                zip_url = unicode()
+
             #sync with campaign monitor
             try:
                 t = CST(template_id = template.template_id)
-                t.update(str(template.name), html_url, zip_url)
+                t.update(unicode(template.name), html_url, zip_url)
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return redirect('campaign_monitor.campaign_generate')
