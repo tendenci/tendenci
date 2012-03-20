@@ -56,8 +56,6 @@ def parse_locs_from_csv(file_path, mapping, parse_range=None):
     parse_range is the range of rows to be parsed from the csv.
     """
 
-    print 'mapping', mapping.keys()
-
     location_dicts = []
     skipped = 0
 

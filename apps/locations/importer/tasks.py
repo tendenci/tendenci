@@ -17,7 +17,6 @@ class ImportLocationsTask(Task):
         from django.template.defaultfilters import slugify
 
         location_fields = [f.name for f in Location._meta.fields]
-        print location_fields
 
         #get parsed membership dicts
         imported = []
