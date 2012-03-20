@@ -1,3 +1,4 @@
+import calendar
 from datetime import datetime, timedelta
 
 from django import forms
@@ -10,18 +11,38 @@ from perms.forms import TendenciBaseForm
 from courses.models import Course, Question, CourseAttempt
 
 class CourseForm(TendenciBaseForm):
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
-    content = forms.CharField(required=True,
-                widget=TinyMCE(attrs={'style':'width:100%'},
-                mce_attrs={'storme_app_label':u'courses',
-                'storme_model':Course._meta.module_name.lower()}))
-    deadline = SplitDateTimeField(label=_('Deadline'), initial=datetime(datetime.now().year+1, datetime.now().month, datetime.now().day))
-                
+    now = datetime.now()
+    dd_year = now.year + 1
+    dd_month = now.month
+    dd_day = now.day
+    
+    if dd_month == 2 and dd_day == 29:
+        # check if next year is a leap year
+        if not calendar.isleap(dd_year):
+            dd_month = 3
+            dd_day = 1
+    
+    STATUS_CHOICES = (('active','Active'),('pending','Pending'))
+    
+    status = forms.BooleanField(required=False, initial=False)
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    content = forms.CharField(
+                    required=False,
+                    widget=TinyMCE(attrs={'style':'width:100%'},
+                    mce_attrs={'storme_app_label':u'courses',
+                    'storme_model':Course._meta.module_name.lower()}))
+    deadline = SplitDateTimeField(
+                    required=False,
+                    label=_('Deadline'),
+                    initial=datetime(year=dd_year, month=dd_month, day=dd_day))
+    
     class Meta:
         model = Course
         fields = (
             'title', 
             'content',
+            'recipients',
+            'can_retry',
             'retries',
             'retry_interval',
             'passing_score',
@@ -40,6 +61,8 @@ class CourseForm(TendenciBaseForm):
                 'fields': [
                     'title',
                     'content',
+                    'recipients',
+                    'can_retry',
                     'retries',
                     'retry_interval',
                     'passing_score',
@@ -75,17 +98,27 @@ class CourseForm(TendenciBaseForm):
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ('question', 'answer_choices', 'answer', 'point_value')
+        fields = ('number', 'question', 'point_value')
         
-    def clean_point_value(self):
-        data = self.cleaned_data['point_value']
-        if data <= 0:
-            raise forms.ValidationError("Point Value should be a positive integer")
-        return data
+class QuestionFormset(forms.models.BaseInlineFormSet):
+    """Validate that the total score for all questions are above 0
+    """
+    
+    def clean(self):
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        score = 0
+        for i in range(0, self.total_form_count()):
+            form = self.forms[i]
+            if form.cleaned_data:
+                score += form.cleaned_data['point_value']
+        
+        if score == 0:
+            raise forms.ValidationError(_(u"Total points for all questions must be greater than 0"))
 
 class AnswerForm(forms.Form):
-    """
-    Create a form based on a given question
+    """Create a form based on a given question
     """
     
     def __init__(self, *args, **kwargs):
@@ -93,44 +126,45 @@ class AnswerForm(forms.Form):
         Create the answer field based on the question
         """
         self.question = kwargs.pop('question')
+        self.answers = self.question.correct_answers()
         
-        # set up answer choices
         choices = []
-        for choice in self.question.answer_choices.split(','):
-            choices.append((choice.strip(), choice.strip()))
-            
-        # set up the correct answers
-        self.answers = []
-        for answer in self.question.answer.split(','):
-            self.answers.append(answer.strip())
+        # set up answer choices
+        if self.question.correct_answers():
+            label = "%s. %s" % (self.question.number, self.question.question)
+            for choice in self.question.choices():
+                c_label = "%s. %s" % (choice['letter'], choice['answer'].answer)
+                choices.append((choice['answer'].pk, c_label))
+        else:
+            label = "%s" % self.question.question
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
-        if len(self.answers) == 1:
+        if self.answers.count() == 1:
             self.fields['answer'] = forms.ChoiceField(
-                label=self.question.question,
+                label=label,
                 choices=choices,
                 widget=forms.RadioSelect,
             )
         else:
             self.fields['answer'] = forms.MultipleChoiceField(
-                label=self.question.question,
+                label=label,
                 choices=choices,
                 widget=forms.CheckboxSelectMultiple,
             )
     
     def points(self):
-        """
-        Return question's point value if answer is correct.
+        """Return question's point value if answer is correct.
         Return 0 otherwise.
         """
         if self.is_valid():
             data = self.cleaned_data['answer']
-            if len(self.answers) == 1:
-                if data == self.question.answer:
+            a_list = [unicode(x) for x in self.answers.values_list('pk', flat=True)]
+            if self.answers.count() == 1:
+                if self.answers.filter(pk=data).exists():
                     return self.question.point_value
             else:
-                if set(data) == set(self.answers):
+                if set(data) == set(a_list):
                     return self.question.point_value
         return 0
 

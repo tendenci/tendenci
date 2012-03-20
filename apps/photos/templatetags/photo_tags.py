@@ -150,17 +150,41 @@ def photo_set_search(context):
 
 class ListPhotosNode(ListNode):
     model = Image
+    perms = 'photos.view_image'
 
 
 @register.tag
 def list_photos(parser, token):
     """
-    Example:
+    Used to pull a list of :model:`photos.Image` items.
 
-    {% list_photos as photos user=user limit=3 %}
-    {% for photo in photos %}
-        {{ photo.title }}
-    {% endfor %}
+    Usage::
+
+        {% list_photos as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``photos_sidebar`` or 
+    ``photos_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Newest Added**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_photos as photos_list limit=5 tags="cool" %}
+        {% for photo in photos_list %}
+            {{ photo.title }}
+        {% endfor %}
     """
     args, kwargs = [], {}
     bits = token.split_contents()

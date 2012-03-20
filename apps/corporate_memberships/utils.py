@@ -9,6 +9,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from corporate_memberships.models import (CorpField, AuthorizedDomain, 
@@ -23,11 +24,14 @@ from payments.models import Payment
 
 # get the corpapp default fields list from json
 def get_corpapp_default_fields_list():
-    json_fields_path = os.path.join(settings.PROJECT_ROOT, 
-                                    "templates/corporate_memberships/regular_fields.json")
-    fd = open(json_fields_path, 'r')
-    data = ''.join(fd.read())
-    fd.close()
+#    json_fields_path = os.path.join(settings.PROJECT_ROOT, 
+#                                    "templates/corporate_memberships/regular_fields.json")
+#    fd = open(json_fields_path, 'r')
+#    data = ''.join(fd.read())
+#    fd.close()
+    
+    data = render_to_string('corporate_memberships/regular_fields.json', 
+                               {}, context_instance=None)
     
     if data:
         return simplejson.loads(data)
@@ -248,7 +252,9 @@ def edit_corpapp_update_memb_app(corpapp):
 def dues_rep_emails_list(corp_memb):
     dues_reps = CorporateMembershipRep.objects.filter(corporate_membership=corp_memb,
                                                       is_dues_rep=1)
-    return [dues_rep.user.email for dues_rep in dues_reps if dues_rep.user.email]
+    if dues_reps:
+        return [dues_rep.user.email for dues_rep in dues_reps if dues_rep.user.email]
+    return []
 
 def corp_memb_update_perms(corp_memb, **kwargs):
     """
@@ -412,12 +418,12 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
                     pass
                 else:
                     try:
-                        exec('corp_memb.%s=cm[field_name]' % field_name)
+                        setattr(corp_memb, 'field_name', cm[field_name])
                     except ValueError:
                         pass
             else:
                 if corp_memb_field_type_dict[field_name] == 'CharField':
-                    exec('corp_memb.%s=""' % field_name)
+                    setattr(corp_memb, 'field_name', unicode())
 
         if corp_memb.renew_dt:
             if not corp_memb.renewal:

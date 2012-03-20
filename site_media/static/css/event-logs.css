@@ -220,6 +220,11 @@ div.id_source {
 	clear: both;
 }
 
+div.id_object_id {
+	padding-top: 10px;
+	clear:both;
+}
+
 form#search-form input#id_user_id {
 	width: 75px;
 }

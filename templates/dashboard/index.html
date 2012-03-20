@@ -45,7 +45,26 @@
 
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         {% if admin %}
-        <div style="padding: 10px 10px 0 10px; font-size: 16px; background-color: #efe; border: solid 2px #aca; "><p>Check out the <a href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Tendenci Guide</a> to get started.</p></div>
+	        {% if not has_paid and activate_url %}
+			<div class=" alert-message block-message fade in" data-alert="alert">
+				<a class="close" href="#">×</a>
+				Your free trial period {% if expired %}expired{% else %}expires{% endif %} on {{ expiration_dt }}.
+				<div class="alert-actions">
+		            <a class="btn" href="{{ activate_url }}">Activate Your Account</a>
+		        </div> 
+			</div>
+			{% endif %}
+        
+        
+        <div class="alert-message block-message fade in success" data-alert="alert">
+        <a class="close" href="#">×</a>
+        <p><strong>Welcome to the Tendenci Dashboard!</strong></p>
+        <p>Your Tendenci site comes with a built-in guide to get you started. In includes basic concepts like adding pages and other content, editing your navigation, uploading photos, and other general topics.</p>
+        <div class="alert-actions">
+            <a class="btn" href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">Go to the Guide</a>
+        </div>
+    </div>
+    
         {% endif %}
     {% endif %}
 
@@ -70,10 +89,6 @@
 
 		{% if MODULE_DIRECTORIES_ENABLED %}
     	<li class="directories"><a href="{% url directory.search %}"><span>{% trans "Directories" %}</span></a></li>
-		{% endif %}
-		
-		{% if MODULE_JOBS_ENABLED %}
-    	<li class="jobs"><a href="{% url job.search %}"><span>{%  trans "Jobs" %}</span></a></li>
 		{% endif %}
 
  		{% if MODULE_RESUMES_ENABLED %}
@@ -157,7 +172,7 @@
         <div class="rss-feed">
         	<h3>{% trans "Tendenci Help" %}</h3>
 			{% cache 86400 tendenci_help_rss %}
-                {% get_rss "http://support.tendenci.com/en/rss/helpfiles/" as rss %}
+                {% get_rss "http://tendenci.com/help-files/feed/" as rss %}
                 <ul>
                 {% for entry in rss.entries|slice:":3" %}
                     <li>
@@ -209,10 +224,10 @@
 	    <li><a href="/settings/module/theme_editor/">Change Themes</a></li>
 	    <li><a href="/settings/module/theme/">Theme Settings</a></li>
 	    {% endif %}
-		<li><a href="{% url theme_editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Update Styles" %}</a></li>
-		<li><a href="{% url theme_editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
-		<li><a href="{% url theme_editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
-    	<li><a href="{% url theme_editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
+		<li><a href="{% url theme_editor.editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Update Styles" %}</a></li>
+		<li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
+		<li><a href="{% url theme_editor.editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
+    	<li><a href="{% url theme_editor.editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
     </ul>
     </div>
     {% endif %}

@@ -1,0 +1,72 @@
+{% extends "news/base.html" %}
+{% load news_tags %}
+{% load tagging_tags %}
+{% load base_tags %}
+{% load category_tags %}
+{% load i18n %}
+
+{% block title %}{{ news.get_title }}{% endblock %}
+{% block meta_description %}{{ news.get_description }}{% endblock %}
+{% block meta_keywords %}{{ news.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ news.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/news.css">
+{% endblock %}
+
+{% block body %}
+{% tags_for_object news as tags %}
+
+<div class="t">
+    {% news_nav request.user news %}
+
+    <div class="news-wrap">
+		<div class="options">
+             <div class="quick-options">
+				{% news_options request.user news %} 	       
+             </div>
+		</div>
+
+        <h2>{{ news.headline }}</h2>
+        <div class="content">
+        	{{ news.body|safe }} 
+			{% if news.source %}<p>{% trans "Source:" %} {{ news.source|urlize }}</p>{% endif %}
+	         <div class="contact">
+		         {% if news.first_name and news.last_name %}
+		         	<div>{{ news.first_name }} {{ news.last_name }}</div>
+		         {% endif %}	
+		         {% if news.phone %}    
+		         <div>{{ news.phone }}</div>
+		         {% endif %}	
+		         {% if news.fax %} 
+		         <div>{{ news.fax }}</div>	
+		         {% endif %}	
+		         {% if news.email %} 
+		         <div>{{ news.email|urlize }}</div>	
+		         {% endif %}	
+		         {% if news.website %} 
+		         <div>{{ news.website|urlize }}</div>
+		         {% endif %}		
+	         </div>                 
+        </div>
+        {% include "news/meta.html" %}
+		<br />
+        {% url news.view news.pk as the_url %}
+        <p>{% fb_like_button_iframe the_url %}</p>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+	<script type="text/javascript">
+	var iconrow = new dropdown({
+		container:	'more-options-wrap',
+		trigger:	'more-options-trigger',
+		target:		'more-options-target'
+	});
+	</script>
+{% endblock %}

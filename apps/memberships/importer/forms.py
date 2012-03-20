@@ -14,7 +14,7 @@ class UploadForm(forms.Form):
     """
     
     app = forms.ModelChoiceField(label='Application', queryset=App.objects.all())
-    csv = forms.FileField(label="CSV File")
+    csv = forms.FileField(label='')
     
     
 class ImportMapForm(forms.Form):
@@ -27,16 +27,15 @@ class ImportMapForm(forms.Form):
         file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
         
         csv = csv_to_dict(file_path)
-        
+
         # choices list
         choices = csv[0].keys()
-        
-        # make tuples; sort tuples (case-insensitive)
-        choice_tuples = [(c,c) for c in csv[0].keys()]
-        
-        choice_tuples.insert(0, ('',''))  # insert blank option
+        machine_choices = [slugify(c).replace('-','') for c in choices]
+        choice_tuples = zip(machine_choices, choices)
+
+        choice_tuples.insert(0, ('',''))  # insert blank option; top option
         choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
-        
+
         app_fields = AppField.objects.filter(app=app)
         
         native_fields = [
@@ -55,7 +54,9 @@ class ImportMapForm(forms.Form):
         ]
 
         for native_field in native_fields:
-            self.fields[slugify(native_field)] = forms.ChoiceField(**{
+            native_field_machine = slugify(native_field).replace('-','')
+
+            self.fields[native_field_machine] = forms.ChoiceField(**{
                 'label': native_field,
                 'choices': choice_tuples,
                 'required': False,
@@ -63,25 +64,27 @@ class ImportMapForm(forms.Form):
 
             # compare required field with choices
             # if they match; set initial
-            if native_field in choices:
-                self.fields[slugify(native_field)].initial = native_field
+            if native_field_machine in machine_choices:
+                self.fields[native_field_machine].initial = native_field_machine
 
-        self.fields['user-name'].required = True
-        self.fields['membership-type'].required = True
+        self.fields['username'].required = True
+        self.fields['membershiptype'].required = True
 
         for app_field in app_fields:
             for csv_row in csv:
             
-                if slugify(app_field.label) == 'membership-type':
+                app_field_machine = slugify(app_field.label).replace('-','')
+
+                if slugify(app_field_machine) == 'membershiptype':
                     continue  # skip membership type
 
-                self.fields[app_field.field_name] = forms.ChoiceField(**{
+                self.fields[app_field_machine] = forms.ChoiceField(**{
                     'label':app_field.label,
                     'choices': choice_tuples,
                     'required': False,
                 })
-                
+
                 # compare label with choices
                 # if label matches choice; set initial
-                if app_field.label in choices:
-                    self.fields[app_field.field_name].initial = app_field.label
+                if app_field_machine in machine_choices:
+                    self.fields[app_field_machine].initial = app_field_machine

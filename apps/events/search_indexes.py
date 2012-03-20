@@ -1,4 +1,6 @@
+from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
+from django.db.models import signals
 
 from haystack import indexes
 from haystack import site
@@ -7,6 +9,7 @@ from events.utils import count_event_spots_taken
 from events.models import Type as EventType
 from perms.indexes import TendenciBaseSearchIndex
 from perms.object_perms import ObjectPermission
+from search.indexes import CustomSearchIndex
 
 class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
@@ -14,6 +17,10 @@ class EventIndex(TendenciBaseSearchIndex):
     start_dt = indexes.DateTimeField(model_attr='start_dt')
     end_dt = indexes.DateTimeField(model_attr='end_dt')
     on_weekend = indexes.BooleanField(model_attr='on_weekend')
+    
+    # fields for sorting events that span multiple days
+    hour = indexes.IntegerField()
+    minute = indexes.IntegerField()
     
     # event type id
     type_id = indexes.IntegerField(null=True)
@@ -32,6 +39,12 @@ class EventIndex(TendenciBaseSearchIndex):
         description = strip_tags(description)
         description = strip_entities(description)
         return description
+        
+    def prepare_hour(self, obj):
+        return int(obj.start_dt.hour)
+    
+    def prepare_minute(self, obj):
+        return int(obj.start_dt.minute)
         
     def prepare_type_id(self, obj):
         if obj.type:
@@ -62,7 +75,7 @@ class EventTypeIndex(indexes.RealTimeSearchIndex):
     primary_key = indexes.CharField(model_attr='pk')
 
 
-class RegistrantIndex(indexes.SearchIndex):
+class RegistrantIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     event_pk = indexes.IntegerField(model_attr='registration__event__pk')
     cancel_dt = indexes.DateTimeField(model_attr='cancel_dt', null=True)
@@ -90,6 +103,13 @@ class RegistrantIndex(indexes.SearchIndex):
 
     def prepare_groups_can_view(self, obj):
         return ObjectPermission.objects.groups_with_perms('registrants.view_registrant', obj)
+    
+    def prepare_last_name(self, obj):
+        if obj.custom_reg_form_entry:
+            obj.last_name = obj.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            if not obj.last_name:
+                obj.last_name = obj.custom_reg_form_entry.__unicode__()
+        return obj.last_name
 
 site.register(Event, EventIndex)
 site.register(EventType, EventTypeIndex)

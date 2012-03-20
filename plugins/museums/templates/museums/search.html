@@ -15,7 +15,8 @@
 {% block body %}
 {% autopaginate museums 10 %}
 <div class="t">
-<h1>{% trans 'Museum List' %}</h1>
+<h1>{% firstof SITE_GLOBAL_MUSEUMS_LABEL_PLURAL "Museums" %}</h1>
+
 {% museum_search %}
 <div class="museums-wrap clearfix">
 {% for museum in museums %}

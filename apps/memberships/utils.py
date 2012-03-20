@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 
 from perms.utils import has_perm, is_admin
-from memberships.models import AppField, Membership, MembershipType
+from memberships.models import App, AppField, Membership, MembershipType
 from corporate_memberships.models import CorporateMembership
 
 
@@ -87,43 +87,74 @@ def get_corporate_membership_choices():
     
     return cm_list
 
-def csv_to_dict(file_path):
+def has_null_byte(file_path):
+    f = open(file_path, 'r')
+    data = f.read()
+    f.close()
+    return ('\0' in data)
+
+def csv_to_dict(file_path, **kwargs):
     """
     Returns a list of dicts. Each dict represents record.
     """
+    machine_name = kwargs.get('machine_name', False)
+
+    # null byte; assume xls; not csv
+    if has_null_byte(file_path):
+        return []
+
     csv_file = csv.reader(open(file_path, 'rU'))
-    col = csv_file.next()
+    colnames = csv_file.next()  # row 1;
+
+    if machine_name:
+        colnames = [slugify(c).replace('-','') for c in colnames]
+
+    cols = xrange(len(colnames))
     lst = []
 
-    try:
-        for row in csv_file:
-            entry = {}
-            for i in xrange(len(col)):
-                entry[col[i]] = row[i].decode('latin-1')
-            lst.append(entry)
-    except csv.Error as e:
-        # NULL byte error
-        # stop everything; return empty list
-        # Empty list will raise an error msg
-        # this can typically be corrected by
-        # saving the file as a .csv
-        return []
+    for row in csv_file:
+        entry = {}
+        rows = len(row)-1
+        for col in cols:
+            if col > rows:
+                break  # go to next row
+            entry[colnames[col]] = row[col]
+        lst.append(entry)
 
     return lst  # list of dictionaries
 
 def is_import_valid(file_path):
     """
-    Run import file against required files
-    'username' and 'membership-type' are required fields
-    """
-    memberships = csv_to_dict(file_path)  # list of membership dicts
-    membership_keys = [slugify(m) for m in memberships[0].keys()]
-    #required = ('username','membership-type')
-    #there is no username in the export at the moment.
-    required = ('membership-type',)
-    requirements = [r in membership_keys for r in required]
+    Returns a 2-tuple containing a booelean and list of errors
 
-    return all(requirements)
+    The import file must be of type .csv and and include
+    a membership type column.
+    """
+    errs = []
+    ext = os.path.splitext(file_path)[1]
+
+    if ext != '.csv':
+        errs.append("Pleaes make sure you're importing a .csv file.")
+        return False, errs
+
+    if has_null_byte(file_path):
+        errs.append('This .csv file has null characters, try re-saving it.')
+        return False, errs
+
+    # get header column
+    f = open(file_path, 'r')
+    row = f.readline()
+    f.close()
+
+    headers = [slugify(r).replace('-','') for r in row.split(',')]
+
+    required = ('membershiptype',)
+    requirements_met = [r in headers for r in required]
+
+    if all(requirements_met):
+        return True, []
+    else:
+        return False, ['Please make sure there is a membership type column.']
     
 def count_active_memberships(date):
     """
@@ -196,26 +227,25 @@ def has_app_perm(user, perm, obj=None):
 def get_over_time_stats():
     """
     Returns membership statistics over time.
-    time ranges are:
-    1 month,
-    2 months,
-    3 months,
-    6 months,
-    1 year
+        Last Month 
+        Last 3 Months 
+        Last 6 Months 
+        Last 9 Months 
+        Last 12 Months
+        Year to Date
     """
-    now = datetime.now()
-    this_month = datetime(day=1, month=now.month, year=now.year)
-    this_year = datetime(day=1, month=1, year=now.year)
+    today = date.today()
+    year = datetime(day=1, month=1, year=today.year)
     times = [
-        ("Month", this_month, 0),
-        ("Last Month", last_n_month(1), 1),
-        ("Last 3 Months", last_n_month(2), 2),
-        ("Last 6 Months", last_n_month(5), 3),
-        ("Year", this_year, 4),
+        ("Last Month", months_back(1), 1),
+        ("Last 3 Months", months_back(3), 2),
+        ("Last 6 Months", months_back(6), 3),
+        ("Last 9 Months", months_back(9), 4),
+        ("Last 12 Months", months_back(12), 5),
+        ("Year to Date", year, 5),
     ]
-    
+
     stats = []
-    
     for time in times:
         start_dt = time[1]
         d = {}
@@ -225,17 +255,111 @@ def get_over_time_stats():
         d['active'] = active_mems.count()
         d['time'] = time[0]
         d['start_dt'] = start_dt
-        d['end_dt'] = now
+        d['end_dt'] = today
         d['order'] = time[2]
         stats.append(d)
-    
+
     return sorted(stats, key=lambda x:x['order'])
 
-def last_n_month(n):
+def months_back(n):
+    """Return datetime minus n months"""
+    from dateutil.relativedelta import relativedelta
+
+    return date.today() + relativedelta(months=-n)
+
+def get_app_field_labels(app):
+    """Get a list of field labels for this app.
     """
-        Get the first day of the last n months.
+    labels_list = []
+    fields = app.fields.all().order_by('position')
+    for field in fields:
+        labels_list.append(field.label)
+        
+    return labels_list
+
+def get_notice_token_help_text(notice=None):
+    """Get the help text for how to add the token in the email content,
+        and display a list of available token.
     """
-    now = datetime.now()
-    last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
-    return last
+    help_text = ''
+    if notice and notice.membership_type:
+        membership_types = [notice.membership_type]
+    else:
+        membership_types = MembershipType.objects.filter(status=1, status_detail='active')
+    
+    # get a list of apps from membership types
+    apps_list = []    
+    for mt in membership_types:
+        apps = App.objects.filter(membership_types=mt)
+        if apps:
+            apps_list.extend(apps)
+            
+    apps_list = set(apps_list)
+    apps_len = len(apps_list)
+     
+    # render the tokens
+    help_text += '<div style="margin: 1em 10em;">'
+    help_text += """
+                <div style="margin-bottom: 1em;">
+                You can use tokens to display member info or site specific information.
+                A token is composed of a field label or label lower case with underscore (_)
+                instead of spaces, wrapped in 
+                {{ }} or [ ]. <br />
+                For example, token for "First Name" field: {{ first_name }}
+                </div> 
+                """
+                
+    help_text += '<div id="toggle_token_view"><a href="javascript:;">Click to view available tokens</a></div>'
+    help_text += '<div id="notice_token_list">'
+    if apps_list: 
+        for app in apps_list:
+            if apps_len > 1:
+                help_text += '<div style="font-weight: bold;">%s</div>' % app.name
+            labels_list = get_app_field_labels(app)
+            help_text += "<ul>"
+            for label in labels_list:
+                help_text += '<li>{{ %s }}</li>' % slugify(label).replace('-', '_')
+            help_text += "</ul>"
+    else:
+        help_text += '<div>No field tokens because there is no applications.</div>'
+            
+    other_labels = ['membernumber',
+                    'membershiptype',
+                    'membershiplink',
+                    'renewlink',
+                    'expirationdatetime',
+                    'sitecontactname',
+                    'sitecontactemail',
+                    'sitedisplayname',
+                    'timesubmitted'
+                    ]
+    help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
+    help_text += "<ul>"
+    for label in other_labels:
+        help_text += '<li>{{ %s }}</li>' % label
+    help_text += "</ul>"
+        
+    help_text += "</div>"
+         
+        
+    help_text += "</div>"
+    
+    help_text += """
+                <script>
+                    $(document).ready(function() {
+                        $('#notice_token_list').hide();
+                         $('#toggle_token_view').click(function () {
+                        $('#notice_token_list').toggle();
+                         });
+                    });
+                </script>
+                """
+              
+    return help_text
+        
+        
+        
+        
+    
+    
 

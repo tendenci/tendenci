@@ -113,7 +113,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                 if type_exp_method_list[i]=='':
                     type_exp_method_list[i] = "0"
 
-            exec('instance.%s="%s"' % (field, type_exp_method_list[i]))
+            setattr(instance, 'field', type_exp_method_list[i])
          
         if not change:
             instance.creator = request.user
@@ -184,6 +184,7 @@ class NoticeAdmin(admin.ModelAdmin):
     
     class Media:
         js = (
+            "%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
         

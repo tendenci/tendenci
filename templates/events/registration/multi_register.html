@@ -9,182 +9,12 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-anon-registration.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
 {% endblock %}
 
 {% block body %}
-
-<style type="text/css"> 
-    .event-info {
-        padding: 10px;
-        background-color: #F5F5F5;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-        text-align: left;   
-        margin-bottom: 10px;
-        width: 61%;
-    }
-    .event-title {
-        font-size: 1.3em;   
-        margin-bottom: 10px;
-    }
-    .event-time {
-        font-size: 1.1em;
-    }
-    .event-price {
-        font-size: 1.5em;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .event-msg {
-        padding: 10px;
-        color: #777;
-    }
-    .hidden {
-        display: none;
-    }
-    .registrant-header{
-        border-bottom: 1px dotted #ccc;
-        margin-top: 5px;
-        padding: 5px 8px;
-        font-weight: bold;
-        font-size: 14px;
-        cursor: pointer;
-    }
-    .even-registrant, .odd-registrant{
-        background-color: #f5f5f5;
-        padding: 10px;
-    }
-    #reg-form-box{
-        border: 1px solid #ccc;
-        background-color: #fff;
-        padding: 1em;
-        -moz-border-radius: 4px;
-        border-radius: 4px;
-        width: 200px;
-        
-    }
-    #reg-form-box input[type="text"]{
-        width: 150px;
-    }
-    #reg-form-wrap{
-        float: right;
-        width: 200px;
-        margin:2px;
-    }
-    #registrant-forms{
-        width: 70%;
-    }
-    
-    #reg-summary{
-        font-weight: bold;
-        font-size: 1.2em;
-        margin-bottom: 1em;
-        border-bottom: 1px solid silver;
-    }
-    #summary-total-price{
-        border-top: 1px solid #ccc;
-        margin-bottom: 1em;
-    }
-    #total-label,#total-amount{ 
-        font-weight: bold;
-    }
-    #summary-price, #summary-total-price{
-        width: 90%;
-    }
-    #summary-price td, #summary-total-price td{
-        padding: 3px;
-    }
-    #summary-discounted-price{
-        margin-bottom: 1em;
-        width: 90%;
-	}
-    .line-on-top{
-        border-top: 1px solid #ccc;
-    }
-    #register-button {
-        font-size: 1.2em;
-        padding: 5px;
-    }
-    div.delete-button-wrap{
-        display: none;
-    }
-    
-    #update_summary{
-        margin-bottom: 1em;
-        padding: 3px;
-    }
-    
-    .errors-box{
-        background-color: #FFEBE8;
-        border: 2px solid #FF8B78;
-        margin-bottom: 20px;
-        padding: 10px;
-        width: 80%;
-    }
-    .deleted-item td{
-        text-decoration: line-through;
-    }
-    .clear{
-        clear: both;
-    }
-    .delete-button{
-        padding: 6px 10px 6px 15px;
-        background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
-        border: 1px solid #CCC;
-        cursor: pointer;
-        color: darkred;
-    }
-
-    .extra-registrants {
-        width: 50px;
-    }
-    
-    .add-registrants-box {
-        padding-top: 20px;
-    }
-    
-    .add-registrants-box h3 {
-        margin-bottom: 5px;
-    }
-    
-    .add-registrants-box input{
-        margin: 5px;
-    }
-
-    .summary-total {
-        font-weight: bold;
-        font-size: 1.7em;
-        margin-bottom: 10px;
-    }
-
-    .summary-payment {
-        margin-bottom: 15px;
-    }
-    
-    .registrant-set{
-        border:1px solid black;
-        padding: 5px;
-        margin-bottom: 15px;
-    }
-    
-    .admin {color: #800; font-weight: bold;}
-    .discount-summary {display: none;}
-    .showhide {font-size: 18px;}
-    .gray-text {color: #777; }
-    
-    .error {
-        color: #722;
-        padding: 5px;
-    }
-    
-    .notice {
-        color: #992;
-        padding: 5px;
-    }
-</style>
-
 <div class="t">    
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
@@ -204,11 +34,12 @@
         </div>
     </div>
         
-    {% if reg_form.errors or registrant.errors %}
+    {% if reg_form.errors or registrant.errors or registrant.non_form_errors %}
         <div class="errors-box">
+            {% trans "There were some problems in the forms. Please review. Thanks!" %}
             <ul>
                 {% for error in reg_form.non_field_errors %}
-                    <li><a href="javascript:;">{{ error }}</a></li>
+                    <li>{{ error }}</li>
                 {% endfor %}
                 {% for field in reg_form %}
                     {% if field.errors %}
@@ -218,14 +49,14 @@
                     {% endif %}
                 {% endfor %}
                 {% for error in registrant.non_form_errors %}
-                    <li><a href="javascript:;">{{ error }}</a></li>
+                    <li>{{ error }}</li>
                 {% endfor %}
                 {% for form in registrant.forms %}
                     {{ form.non_field_errors }}
                     {% for field in form %}
                         {% if field.errors %}
                             {% for error in field.errors %}
-                            <li><a href="javascript:;">{{ field.label_tag }}  &ndash; {{ error }}</a></li>
+                            <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
                             {% endfor %}
                         {% endif %}
                     {% endfor %}
@@ -246,7 +77,7 @@
                     <div id="original-price" style="display:none;">0.00</div>
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-    					<span class="summary-total-amount" id="summary-total-amount">{{ registrant.get_total_price }}</span>
+    					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
     				</div>
 
                     <div class="summary-payment">
@@ -272,34 +103,26 @@
                             </div>
                         {% endif %}
                         
-                        {% if reg_form.free_event %}
-                            {{ reg_form.payment_method }}
-                        {% else %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.payment_method.errors }}</div>
-                                <div class="required">{% trans "Payment Method" %}</div>
-                                <div class="field">{{ reg_form.payment_method }}</div>
-                            </div>
-                        {% endif %}
                         
-                        {% if reg_form.captcha %}
-                            <div class="form-field">
-                                <div class="error">{{ reg_form.captcha.errors }}</div>
-                                <div class="required">{% trans "Type the Code Below" %}</div>
-                                <div class="field">{{ reg_form.captcha }}</div>
-                            </div>
-                        {% endif %}
-                        <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
                     </div>
 
     				{# price list #}
     				<table id="summary-price">
     					{% for form in registrant.forms %}
-                        <tr id="price_registrant_{{ forloop.counter0 }}">
-                            <td width="50%">{% trans "Reg" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                        <tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}">
+                            <td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="reg-price">{{ form.get_price }}</span>
+                                <span class="item-price">{{ form.get_price|floatformat:2 }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% for form in addon_formset.forms %}
+                        <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
+                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+                            <td width="50%" align="right">
+                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                                <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -309,7 +132,7 @@
 							<td><div id="total-label">{% trans "Total" %}</div></td>
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="total-amount">{{ registrant.get_total_price }}</span>
+								<span id="total-amount">{{ total_price|floatformat:2 }}</span>
 							</td>
 						</tr>
                         <tr class="discount-summary">
@@ -342,6 +165,23 @@
 							<span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">{{ form.get_form_label }}</span>:
 						</div>
 						<div class="{% cycle 'odd-registrant' 'even-registrant'%}">
+							
+							{% if custom_reg_form %}
+							{% for field in form %}
+							{% if field.label != 'Delete' %}
+								<div class="form-field">
+									<div class="error">{{ field.errors }}</div>
+									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
+									<div class="field">{{ field }}</div>
+									{% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>   
+				                    {% endif %}
+								</div>
+							{% endif %}
+							{% endfor %}
+							
+							{% else %}
+							
 							{% if form.first_name %}
 							<div class="form-field">
 								<div class="error">{{ form.first_name.errors }}</div>
@@ -389,6 +229,9 @@
                                 <div class="field">{{ form.pricing }}</div>
                             </div>
                             {% endif %}
+                            
+                            
+                           {% endif %}
 						</div>
 					</div>
 				{% endfor %}
@@ -400,504 +243,83 @@
                 </div>
 				{% endfor %}
 			</div>
+            
+            {% if addons %}
+                <div class="addon-forms">
+                    {% include 'events/addons/formset.html' %}
+                </div>
+            {% else %}
+                {{ addon_formset.management_form }}
+            {% endif %}
 			
             <div class="add-registrants-box">
-                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}</h3>
+                <h3>{% blocktrans %}Choose a pricing to add another set of registrants{% endblocktrans %}:</h3>
                 <div id="pricing-choices">
                     {% for pricing in pricings %}
                     <div {% if not pricing.allow_anonymous %}class="gray-text"{% endif %}>
-                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>{{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
+                    <input type="radio" name="add-registrants-pricing" value="{{ pricing.pk }}" quantity="{{ pricing.quantity }}" price="{{ pricing.price }}" title="{{ pricing.title }}" 
+                        is_public="{{ pricing.allow_anonymous }}" {% if not pricing.allow_anonymous %}DISABLED{% endif %}>
+                        {{ pricing.title }} ({{ pricing.quantity }} for {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }})
                     </div>
                     {% empty %}
-                    No pricings are publicly available.<br>
+                        No pricings available.<br />
                     {% endfor %}
                 </div>
-                <input id="add-registrants-button" type="button" value="Add Registrant Set">
-                <h3>...or enable more pricings:</h3>
-                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="">
+                <div>
+                    {% trans 'How many?' %}<input id="add-registrants-number" type="text" value="1" /><input id="add-registrants-button" type="button" value="Add"/>
+                </div>
+            </div>
+            {% if addons %}
+                <div class="add-addons-box">
+                {% include 'events/addons/addon-add-box.html' %}
+                </div>
+            {% endif %}
+            <div id="email-validation">
+                <h3>{% trans 'Enable more pricings' %}{% if addons %} {% trans 'and addons' %}{% endif %}:</h3>
+                <label>{% trans "Email" %}:</label><input type="text" id="pricing-email" value="" />
                 {% if allow_memberid_pricing %}
-                    <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="">
+                    <label>{% trans "Member ID" %}:</label><input type="text" id="pricing-memberid" value="" />
                 {% endif %}
-                <br>
-                <input id="pricing-check" type="button" value="Get More Pricings">
+                <br/>
+                <input id="pricing-check" type="button" value="Get More">
             </div>
             
             <div class="clear"></div>
-            <input type="submit" name="submit" class="register-submit" id="register-button" value="{% trans 'Register & Pay' %}" />
+            {% if reg_form.free_event %}
+                {{ reg_form.payment_method }}
+            {% else %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.payment_method.errors }}</div>
+                    <div class="required">{% trans "Payment Method" %}</div>
+                    <div class="field">{{ reg_form.payment_method }}</div>
+                </div>
+            {% endif %}
+            {% if reg_form.captcha %}
+                <div class="form-field">
+                    <div class="error">{{ reg_form.captcha.errors }}</div>
+                    <div class="required">{% trans "Type the Code Below" %}</div>
+                    <div class="field">{{ reg_form.captcha }}</div>
+                </div>
+            {% endif %}
+            <input type="submit" name="submit" class="register-submit registration-green-button" id="register-button" value="{% trans 'Register &amp; Pay' %}" />
             
             <div class="clear"></div>
         </div>
+        
         </form>
-        <div style="display: none;">
-            <table>
-            <tr id="price_registrant-hidden">
-                <td width="50%">{% trans "Reg" %}#<span class="item-counter"></span></td>
-                <td width="50%" align="right">
-                    <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                    <span class="reg-price"></span>
-                </td>
-            </tr>
-            </table>
-            <div id="delete-hidden" class="delete">
-                <div class="delete-button-wrap">
-                    <input type="button" class="delete-button" value="&nbsp;&nbsp;{% trans 'Delete' %}">
-                </div>
-            </div>
-            <div id="registrant-hidden">
-                <div class="registrant-header">
-                    <span class="showhide"></span>{% trans "Registrant" %} #<span class="item-counter">1</span>:
-                </div>
-                <div class="registrant-notice"></div>
-                <div class="odd-registrant">
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label required">{% trans "First Name" %}</div>
-                        <div class="field">
-                            <input value="{{ request.user.first_name }}" id="id_registrant-0-first_name" type="text" name="registrant-0-first_name" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label required">{% trans "Last Name" %}</div>
-                        <div class="field">
-                            <input value="{{ request.user.last_name }}" id="id_registrant-0-last_name" type="text" name="registrant-0-last_name" maxlength="50">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label">{% trans "Company" %}</div>
-                        <div class="field">
-                            <input id="id_registrant-0-company_name" type="text" name="registrant-0-company_name" maxlength="100">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label">{% trans "Phone" %}</div>
-                        <div class="field">
-                            <input id="id_registrant-0-phone" type="text" name="registrant-0-phone" maxlength="20">
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label required">{% trans "Email" %}</div>
-                        <div class="field">
-                            <input class="registrant-email" value="{{ request.user.email }}" type="text" name="registrant-0-email" id="id_registrant-0-email">
-                        </div>
-                    </div>
-                    {% if allow_memberid_pricing %}
-                    <div class="form-field">
-                        <div class="error"></div>
-                        <div class="label">{% trans "Member ID" %}</div>
-                        <div class="field">
-                            <input class="registrant-memberid" value="" type="text" name="registrant-0-memberid" id="id_registrant-0-memberid">
-                        </div>
-                    </div>
-                    {% endif %}
-                    <div class="form-field">
-                        <div class="field">
-                            <input class="registrant-pricing" type="hidden" name="registrant-0-pricing" id="id_registrant-0-pricing" value="">
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div style="display:none">
+            {% include 'events/registration/base_forms.html' %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_body %}
- <script type="text/javascript">
-    function getUserStatus(form){
-        var form = $(form)
-        var email = form.find('.registrant-email').val();
-        var memberid = form.find('.registrant-memberid').val();
-        var pricingid = form.find('.registrant-pricing').val();
-        
-        $.ajax({
-            url: "{% url event.reg_user_status event.pk %}",
-            type: "GET",
-            data: {'email':email, 'memberid':memberid, 'pricingid':pricingid},
-            dataType: "json",
-            success: function(data){
-                if(data){
-                    var notice= $(form.parent().find('.registrant-notice')[0])
-                    if(data['error']=='INVALID'){
-                        var msg = "<div class='error'>Invalid user for pricing.</div>"
-                        notice.html(msg);
-                    }else if(data['error']=='REG'){
-                        var msg = "<div class='error'>User already registered.</div>"
-                        notice.html(msg);
-                    }else{
-                        var msg = "<div class='notice'>User already registered but can still register more people.</div>"
-                        notice.html(msg);
-                    }
-                }
-            }
-        });
-    }    
-    $('.first-registrant-email').blur(function(){
-        form = $(this).parent().parent().parent()
-        getUserStatus(form);
-    });
-    $('.first-registrant-memberid').blur(function(){
-        form = $(this).parent().parent().parent()
-        getUserStatus(form);
-    });
-
-    function deleteRegistrant(ele, prefix) {
-        var registrant_form = $(ele);
-        var attr_id = $(registrant_form).attr("id");
-        
-        // remove the registrant form
-        $(registrant_form).remove();
-        
-        // update the TOTAL_FORMS
-        var forms = $(".registrant-form");
-        $("#id_" + prefix + "-TOTAL_FORMS").val(forms.length);
-        
-		// update the total amount and remove the reg price entry
-		var reg_id = attr_id.split('_')[1];
-		var registrant_summary_entry = $("tr[id=price_registrant_" + reg_id + "]");
-		var registrant_price = $(registrant_summary_entry).find(".reg-price").html();
-		
-		var total_amount = $("#total-amount").html();
-		total_amount = (parseFloat(total_amount) - parseFloat(registrant_price)).toFixed(2);
-		
-		$(registrant_summary_entry).remove();
-        
-		$("#total-amount").html(total_amount);
-        $("span.summary-total-amount").html(total_amount);
-        $("#original-price").html(total_amount);
-        $('#discount-amount').html(0);
-        $('#final-amount').html(total_amount);
-	}
-
-    function updateIndex(e, prefix, idx){
-        var id_regex = new RegExp('(registrant-\\d+)');
-        var replacement = prefix + '-' + idx
-        if ($(e).attr("for")) 
-            {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
-        if (e.id) {e.id = e.id.replace(id_regex, replacement);}
-        if (e.name){ e.name = e.name.replace(id_regex, replacement);}
-    }
-
-    // update the serial number on the form. ex: Registrant #3, Reg #3
-    function updateFormHeader(this_form, prefix, idx, hide_form){
-        // change the serial number on the form
-        var id_regex = new RegExp('(registrant_\\d+)');
-        var replacement = prefix + '_' + idx
-        if (this_form.id) {this_form.id = this_form.id.replace(id_regex, replacement);}
-
-        var reg_header = $(this_form).find('.registrant-header');
-        if (reg_header) {
-            if(hide_form==1){
-                $(reg_header).parent().children('div:last').hide();
-            }else if(hide_form==-1){
-                $(reg_header).parent().children('div:last').show();
-            }
-            $(reg_header).children('span.showhide').text('+ ');
-            var ic = $(reg_header).find('.item-counter');
-            if (ic) {
-                $(ic).html(idx+1);
-            }
-        };
-        
-    }
-    
-    function updateSummary(this_form, prefix, idx){
-        // change the serial number in the summary
-        var price_item = $('#summary-price').find('tr')[idx];
-        if (price_item){
-            if (price_item.id){
-                price_item.id = 'price_registrant_' + idx;
-                var item_counter = $(price_item).find('.item-counter');
-                if (item_counter) {$(item_counter).html(idx+1);}
-            }
-        }   
-    }
-    
-    function addSummaryEntry(this_form, prefix, idx, price){
-        var row = $('#price_registrant-hidden').clone(true);
-        $(row).attr('style', '');
-        $(row).find('.item-counter').html(idx+1);
-        $(row).find('.reg-price').html(price);
-        
-		var replacement = 'price_registrant_' + idx;
-        $(row).attr('id', replacement);
-		
-        // append entry to summary box
-		$('#summary-price').append(row);
-        
-		// update the total
-		var total_amount = $("#total-amount").html();
-		total_amount = (parseFloat(total_amount) + parseFloat($(row).find(".reg-price").html())).toFixed(2);
-		$("#total-amount").html(total_amount);
-		$("span.summary-total-amount").html(total_amount);
-        $("#original-price").html(total_amount);
-        $('#discount-amount').html(0);
-        $('#final-amount').html(total_amount);
-	}
-
-    function addRegistrant(prefix, pricing, initial_data, set_container, hide_form){
-        var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-        var row = $('#registrant-hidden').clone(true).get(0);
-        // place proper class
-        $(row).addClass('registrant-form');
-        if(formCount > 0){
-            // remove required att
-            $(row).find('div.label').removeClass("required");
-        };
-        
-        // update id attr
-        var replacement = prefix + '_' + formCount
-        $(row).attr('id',replacement);
-        
-        $(row).find(".form-field").children().children().each(function() {
-            updateIndex(this, prefix, formCount);
-            if($(this).attr("name")==(prefix+"-"+formCount+"-pricing")){
-                // assign pricing selected
-                $(this).val(pricing['pk'])
-            }else if($(this).attr("name")==(prefix+"-"+formCount+"-email")){
-                // assign email selected
-                if(initial_data['email']){
-                    $(this).val(initial_data['email'])
-                }else{
-                    // default if no email and 1st form
-                    if(formCount>0){
-                        $(this).val(initial_data['email'])
-                    }
-                }
-            }else if($(this).attr("name")==(prefix+"-"+formCount+"-memberid")){
-                // assign memberid selected
-                $(this).val(initial_data['memberid'])
-            }else{
-                // clear the field
-                if(formCount > 0){
-                    $(this).val("")
-                }
-            }
-        });
-        
-        // insert as last element into form list
-        $(set_container).append(row);
-        
-        updateFormHeader(row, prefix, formCount, hide_form);
-        
-        addSummaryEntry(row, prefix, formCount, pricing['price']);
-        
-        $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-        
-        // attempt to get the user status for this form
-        if(hide_form==-1){
-            $(row).find('.registrant-email').attr('class', 'registrant-email first-registrant-email')
-            $(row).find('.registrant-memberid').attr('class', 'registrant-memberid first-registrant-memberid')
-            getUserStatus(row);
-        }else{
-            
-        }
-        
-        return false;
-    }
-    
-    function addRegistrantSet(prefix, pricing, initial_data){
-        extra_count = pricing['quantity'];
-        container = $('<div class="registrant-set"></div>');
-        container.append("<h2>"+pricing['title']+"</h2>");
-        if (extra_count > 0){
-            //only the first one is charged in a set
-            //only the first one has initial data
-            addRegistrant(prefix, pricing, initial_data, container, -1);
-            //the rest will have 0 price
-            for (var i=1; i<extra_count; i++) {
-                pricing['price'] = 0.00;
-                addRegistrant(prefix, pricing, {}, container, 1);
-            }
-        }
-        delete_button = $("#delete-hidden").clone(true);
-        delete_button.removeAttr('id');
-        container.append(delete_button);
-        $('#registrant-forms').append(container);
-        return false;
-    }
-    
-    
-    $(document).ready(function(){
-        default_pricings = $('#pricing-choices').html();
-        // add registrant set button
-        $("#add-registrants-button").click(function(){
-            var pricing = $('input:radio[name=add-registrants-pricing]:checked');
-            var price_d = {};
-            if(pricing.val()){
-                price_d['quantity'] = pricing.attr('quantity');
-                price_d['price'] = pricing.attr('price');
-                price_d['title'] = pricing.attr('title');
-                price_d['pk'] = pricing.val();
-                var init_d = {};
-                init_d['email'] = $('#pricing-email').val();
-                $('#pricing-email').val('');
-                init_d['memberid'] = $('#pricing-memberid').val();
-                $('#pricing-memberid').val('');
-                addRegistrantSet('registrant', price_d, init_d);
-                $('#pricing-choices').html(default_pricings);
-            } else {
-                alert("Please select a pricing first.");
-            }
-        });
-        
-        // show delete-button-wrap
-        $(".delete-button-wrap").show();
-        // delete registrant set button
-        $('.delete-button').live('click', function(){
-            var delete_confirm = confirm('Are you sure you want to delete this registrant set?');   // confirm
-            if(delete_confirm) {
-                // delete each form in the set
-                var set = $($($($(this).parent()).parent()).parent());
-                var forms = set.find('.registrant-form');
-                for(i=0;i<forms.length;i++){
-                    deleteRegistrant(forms[i], 'registrant');
-                }
-                set.remove();
-                
-                // update form index
-                forms = $('.registrant-form');
-                var this_form;
-                for (var i=0, formCount=forms.length; i<formCount; i++){
-                    this_form = forms.get(i);
-                    $(this_form).find(".form-field").children().children().each(function() {
-                        if (this){
-                            updateIndex(this, 'registrant', i);
-                        }
-                    });
-                    updateFormHeader(this_form, 'registrant', i, 0);
-                    updateSummary(this_form, 'registrant', i);
-                }
-            }
-            return false;   // cancel
-        });
-    });
-    
-    $('#discount_check').click(function(){
-        var code = $('#id_discount_code').val();
-        var price = $('#original-price').html();
-        var count = parseInt($('#id_registrant-TOTAL_FORMS').val());
-        $.post(
-            '{% url discount.discounted_price %}',
-            {
-                'code':code,
-                'price':price,
-                'count':count,
-            },
-            function(data, textStatus, jqXHR){
-                json = $.parseJSON(data);
-                //alert(json['message'])
-                $('#discount-message').html(json["message"]);
-                if (!json["error"]){
-                    $('#summary-total-amount').html(json["price"]);
-                    $('#discount-amount').html(json["discount"]);
-                    $('#final-amount').html(json["price"]);
-                    $('.discount-summary').show()
-                } else {
-                    $('#summary-total-amount').html($('#original-price').html());
-                    $('#discount-amount').html(0);
-                    $('#final-amount').html($('#original-price').html());
-                }
-            }
-        );
-    });
-    
-    $('.registrant-header').click(function() {
-        $(this).parent().children('div:last').toggle();
-        if ($(this).children('span.showhide').text() == "+ ") {
-            $(this).children('span.showhide').text('- ');
-        } else 
-        {$(this).children('span.showhide').text('+ '); }
-    });
-    
-    $('#pricing-check').click(function(){
-        getPricingList();
-    });
-    
-    function getPricingList(){
-        var email = $('#pricing-email').val();
-        var memberid = $('#pricing-memberid').val();
-        $.ajax({
-            url: "{% url event.reg_pricing event.pk %}",
-            type: "GET",
-            data: {'email':email, 'memberid':memberid},
-            dataType: "json",
-            success: function(p_list){
-                var p_html = "";
-                for(i=0; i<p_list.length; i++){
-                    p_html = p_html + '<div '
-                    if(p_list[i]['enabled']){
-                        p_html = p_html + '>'
-                    } else {
-                        p_html = p_html + "class='gray-text'>"
-                    }
-                    p_html = p_html + '<input type="radio" name="add-registrants-pricing" value="' + p_list[i]['pk'] + '"'
-                    p_html = p_html + 'quantity="'+ p_list[i]['quantity'] +'" price="' + p_list[i]['price'] + '"'
-                    p_html = p_html + 'title="' + p_list[i]['title'] + '"'
-                    if(p_list[i]['enabled']){
-                        p_html = p_html + '>'
-                    }else{
-                        p_html = p_html + ' DISABLED>'
-                    }
-                    p_html = p_html + p_list[i]['title'] + ' (' + p_list[i]['quantity'] + ' for {{ SITE_GLOBAL_CURRENCYSYMBOL }}' + p_list[i]['price'] + ')</div>'
-                }
-                $('#pricing-choices').html(p_html);
-            }
-        });
-    };
-    
-    $('.register-submit').click(function(){
-        // validate that emails/memberids are only used once.
-        
-        emails = $('.registrant-email');
-        memberids = $('.registrant-memberid');
-        
-        // check email uniqueness
-        var match_found = false;
-        for(i=0;i<emails.length-1;i++){
-            if($(emails[i]).val()){
-                for(j=i+1;j<emails.length-1;j++){
-                    if($(emails[j]).val()){
-                        if($(emails[i]).val() == $(emails[j]).val()){
-                            match_found = true
-                            break
-                        }
-                    }
-                }
-                if(match_found){
-                    break
-                }
-            }
-        };        
-        if(match_found){
-            alert('{% trans "An email can only be used once per registration!" %}');
-            return false;
-        }
-        
-        // check memberid uniqueness
-        var match_found = false;
-        for(i=0;i<memberids.length-1;i++){
-            if($(memberids[i]).val()){
-                for(j=i+1;j<memberids.length-1;j++){
-                    if($(memberids[j]).val()){
-                        if($(memberids[i]).val() == $(memberids[j]).val()){
-                            match_found = true
-                            break
-                        }
-                    }
-                }
-                if(match_found){
-                    break
-                }
-            }
-        };        
-        if(match_found){
-            alert('{% trans "An Member ID can only be used once per registration!" %}');
-            return false;
-        }        
-    });    
-   </script>
+<script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
+<script type="text/javascript" >
+    {% include 'events/registration/include/register-registrant.js' %}
+    {% include 'events/addons/register-addon.js' %}
+    {% include 'events/registration/include/register.js' %}
+</script>
+{{ block.super }}
 {% endblock %}

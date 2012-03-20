@@ -77,20 +77,24 @@ def newsletter_pages_list(request, pages_days, simplified):
 
 
 def newsletter_jobs_list(request, jobs_days, simplified):
-    from jobs.models import Job
-    end_dt = datetime.datetime.now()
-    start_dt = get_start_dt(jobs_days, end_dt)
-    
-    jobs = Job.objects.filter(activation_dt__lte=end_dt)
-    if start_dt:
-        jobs = jobs.filter(activation_dt__gt=start_dt)
-    jobs = jobs.filter(status_detail='active', status=True, allow_anonymous_view=True)
-    jobs = jobs.order_by("list_type")
-    job_content = render_to_string('newsletters/jobs_list.txt', 
-                                   {'jobs': jobs,
-                                    'start_dt': start_dt,
-                                    'end_dt': end_dt,
-                                    'simplified':simplified},
-                                   context_instance=RequestContext(request))
-    
+    jobs = []
+    job_content = ''
+    try:
+        from jobs.models import Job
+        end_dt = datetime.datetime.now()
+        start_dt = get_start_dt(jobs_days, end_dt)
+        
+        jobs = Job.objects.filter(activation_dt__lte=end_dt)
+        if start_dt:
+            jobs = jobs.filter(activation_dt__gt=start_dt)
+        jobs = jobs.filter(status_detail='active', status=True, allow_anonymous_view=True)
+        jobs = jobs.order_by("list_type")
+        job_content = render_to_string('newsletters/jobs_list.txt', 
+                                       {'jobs': jobs,
+                                        'start_dt': start_dt,
+                                        'end_dt': end_dt,
+                                        'simplified':simplified},
+                                       context_instance=RequestContext(request))
+    except ImportError:
+        pass
     return jobs, job_content

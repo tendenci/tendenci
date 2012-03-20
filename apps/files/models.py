@@ -1,4 +1,8 @@
-import os, mimetypes, uuid, Image, re
+import os
+import mimetypes
+import uuid
+import Image
+import re
 from slate import PDF
 
 from django.db import models
@@ -12,7 +16,7 @@ from files.managers import FileManager
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
     return 'files/%s/%s' % (instance.content_type, filename)
-    
+
 
 class File(TendenciBaseModel):
     file = models.FileField("", max_length=260, upload_to=file_directory)
@@ -22,16 +26,16 @@ class File(TendenciBaseModel):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
-    
+
     objects = FileManager()
-    
+
     class Meta:
-        permissions = (("view_file","Can view file"),)
+        permissions = (("view_file", "Can view file"),)
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+
         super(File, self).save(*args, **kwargs)
 
     def basename(self):
@@ -42,13 +46,13 @@ class File(TendenciBaseModel):
 
         # map file-type to extension
         types = {
-            'image' : ('.jpg','.jpeg','.gif','.png','.tif','.tiff','.bmp',),
-            'text' : ('.txt','.doc','.docx'),
-            'spreadsheet' : ('.csv','.xls','.xlsx'),
-            'powerpoint' : ('.ppt','.pptx'),
-            'pdf' : ('.pdf'),
-            'video' : ('.wmv','.mov','.mpg','.mp4','.m4v'),
-            'zip' : ('.zip'),
+            'image': ('.jpg', '.jpeg', '.gif', '.png', '.tif', '.tiff', '.bmp'),
+            'text': ('.txt', '.doc', '.docx'),
+            'spreadsheet': ('.csv', '.xls', '.xlsx'),
+            'powerpoint': ('.ppt', '.pptx'),
+            'pdf': ('.pdf'),
+            'video': ('.wmv', '.mov', '.mpg', '.mp4', '.m4v'),
+            'zip': ('.zip'),
         }
 
         # if file ext. is recognized
@@ -60,11 +64,11 @@ class File(TendenciBaseModel):
         return None
 
     def mime_type(self):
-        types = { # list of uncommon mimetypes
-            'application/msword': ('.doc','.docx'),
-            'application/ms-powerpoint': ('.ppt','.pptx'),
-            'application/ms-excel': ('.xls','.xlsx'),
-            'video/x-ms-wmv': ('.wmv',),
+        types = {  # list of uncommon mimetypes
+            'application/msword': ('.doc', '.docx'),
+            'application/ms-powerpoint': ('.ppt', '.pptx'),
+            'application/ms-excel': ('.xls', '.xlsx'),
+            'video/x-ms-wmv': ('.wmv'),
         }
         # add mimetypes
         for type in types:
@@ -78,10 +82,11 @@ class File(TendenciBaseModel):
 
         # if we don't know the type
         # we can't find an icon [to represent the file]
-        if not self.type(): return None
+        if not self.type():
+            return None
 
         # assign icons directory
-        icons_dir = os.path.join(settings.STATIC_URL, 'images/icons')
+        icons_dir = os.path.join(settings.LOCAL_STATIC_URL, 'images/icons')
 
         # map file-type to image file
         icons = {
@@ -102,23 +107,34 @@ class File(TendenciBaseModel):
             im = Image.open(self.file.path)
             return im.size
         except Exception, e:
-            return (0,0)
-            
-    def pdf_text(self):
-        """Returns a file's pdf text data
-        If the file is not a pdf this will return and empty string.
+            return (0, 0)
+
+    def read(self):
+        """Returns a file's text data
+        For now this only considers pdf files.
+        if the file cannot be read this will return an empty string.
         """
-        if self.type() == 'pdf' and os.path.exists(self.file.path):
-            doc = PDF(self.file.file)
+
+        if not os.path.exists(self.file.path):
+            return unicode()
+
+        if self.type() == 'pdf':
+
+            try:
+                doc = PDF(self.file.file)
+            except PDF.PDFSyntaxError:
+                return unicode()
+
             return doc.text()
-        return ""
+
+        return unicode()
 
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])
 
     @models.permalink
-    def get_absolute_download_url(self):        
+    def get_absolute_download_url(self):
         return ("file", [self.pk, 'download'])
 
     def __unicode__(self):

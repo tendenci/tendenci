@@ -1,7 +1,9 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import AnonymousUser, User
 
+from perms.utils import get_query_filters
 from base.template_tags import ListNode, parse_tag_kwargs
 from boxes.models import Box
 
@@ -13,20 +15,25 @@ class GetBoxNode(Node):
         self.pk = pk
 
     def render(self, context):
-        query = '"pk:%s"' % (self.pk)
+        user = AnonymousUser()
+        
+        if 'user' in context:
+            if isinstance(context['user'], User):
+                user = context['user']
+
         try:
-            box = Box.objects.search(query=query).best_match()
-            context['box'] = box.object
+            filters = get_query_filters(user, 'boxes.view_box')
+            box = Box.objects.filter(filters).filter(pk=self.pk).distinct()
+            context['box'] = box[0]
             template = get_template('boxes/edit-link.html')
             output = '<div id="box-%s" class="boxes">%s %s</div>' % (
-                box.object.pk,
-                box.object.content,
+                box[0].pk,
+                box[0].content,
                 template.render(context),
             )
             return output
         except:
-            return ""
-
+            return unicode()
 
 @register.tag
 def box(parser, token):
@@ -50,18 +57,42 @@ box.safe = True
 
 class ListBoxesNode(ListNode):
     model = Box
+    perms = 'boxes.view_box'
 
 
 @register.tag
 def list_boxes(parser, token):
     """
-    Example:
+    Used to pull a list of :model:`boxes.Box` items.
 
-    {% list_boxes as boxes [user=user limit=3 tags=bloop bleep q=searchterm pk=123] %}
-    {% for box in boxes %}
-        <div class="boxes">{{ box.safe_content }}
-        {% include 'boxes/edit-link.html' %}</div>
-    {% endfor %}
+    Usage::
+
+        {% list_boxes as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``boxes_sidebar`` or 
+    ``boxes_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Newest First**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_boxes as boxes_list limit=5 tags="cool" %}
+        {% for box in boxes_list %}
+            <div class="boxes">{{ box.safe_content }}
+            {% include 'boxes/edit-link.html' %}</div>
+        {% endfor %}
     """
     args, kwargs = [], {}
     bits = token.split_contents()

@@ -9,10 +9,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.fields import AutoField
+from django.contrib.contenttypes import generic
 
+from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from entities.models import Entity
 from events.managers import EventManager, RegistrantManager, EventTypeManager
+from perms.object_perms import ObjectPermission
 from perms.models import TendenciBaseModel
 from meta.models import Meta as MetaTags
 from events.module_meta import EventMeta
@@ -22,6 +26,12 @@ from invoices.models import Invoice
 from files.models import File
 from site_settings.utils import get_setting
 from payments.models import PaymentMethod as GlobalPaymentMethod
+
+from events.settings import (FIELD_MAX_LENGTH, 
+                             LABEL_MAX_LENGTH, 
+                             FIELD_TYPE_CHOICES, 
+                             USER_FIELD_CHOICES)
+
 
 
 class TypeColorSet(models.Model):
@@ -38,7 +48,7 @@ class TypeColorSet(models.Model):
 
 
 class Type(models.Model):
-    
+
     """
     Types is a way of grouping events
     An event can only be one type
@@ -53,9 +63,11 @@ class Type(models.Model):
     @property
     def fg_color(self):
         return '#%s' % self.color_set.fg_color
+
     @property
     def bg_color(self):
         return '#%s' % self.color_set.bg_color
+
     @property
     def border_color(self):
         return '#%s' % self.color_set.border_color
@@ -66,6 +78,7 @@ class Type(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Type, self).save(*args, **kwargs)
+
 
 class Place(models.Model):
     """
@@ -110,6 +123,10 @@ class Registrant(models.Model):
     # this is a field used for dynamic pricing registrations only
     pricing = models.ForeignKey('RegConfPricing', null=True)
     
+    custom_reg_form_entry = models.ForeignKey("CustomRegFormEntry", 
+                                              related_name="registrants", 
+                                              null=True)
+    
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -131,11 +148,11 @@ class Registrant(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    
+
     objects = RegistrantManager()
 
     class Meta:
-        permissions = (("view_registrant","Can view registrant"),)
+        permissions = (("view_registrant", "Can view registrant"),)
 
     @property
     def lastname_firstname(self):
@@ -150,14 +167,14 @@ class Registrant(models.Model):
     def event_registrants(cls, event=None):
 
         return cls.objects.filter(
-            registration__event = event,
-            cancel_dt = None,
+            registration__event=event,
+            cancel_dt=None,
         )
         
     @property
     def additional_registrants(self):
         # additional registrants on the same invoice
-        return self.registration.registrant_set.filter(cancel_dt = None).exclude(id=self.id).order_by('id')
+        return self.registration.registrant_set.filter(cancel_dt=None).exclude(id=self.id).order_by('id')
 
     @property
     def hash(self):
@@ -204,6 +221,17 @@ class Registrant(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
+        
+    def assign_mapped_fields(self):
+        """
+        Assign the value of the mapped fields from custom registration form to this registrant
+        """
+        if self.custom_reg_form_entry:
+            user_fields = [item[0] for item in USER_FIELD_CHOICES]
+            for field in user_fields:
+                setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
+                
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
 
 class RegistrationConfiguration(models.Model):
@@ -214,13 +242,25 @@ class RegistrationConfiguration(models.Model):
     # TODO: use shorter name
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
-    payment_method = models.ManyToManyField(GlobalPaymentMethod)    
+    payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
     
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
+    
+    # custom reg form
+    use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+                                 verbose_name=_("Custom Registration Form"),
+                                 related_name='regconfs',
+                                 help_text="You'll have the chance to edit the selected form")
+    # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
+    bind_reg_form_to_conf_only = models.BooleanField(_(' '),
+                                 choices=((True, 'Use one form for all pricings'), 
+                                          (False, 'Use separate form for each pricing')),
+                                 default=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -250,8 +290,13 @@ class RegConfPricing(models.Model):
     
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+                                 verbose_name=_("Custom Registration Form"),
+                                 related_name='regconfpricings',
+                                 help_text="You'll have the chance to edit the selected form")
+    
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
-    end_dt = models.DateTimeField(_('End Date'), default=datetime.now()+timedelta(hours=6))
+    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(hours=6))
     
     allow_anonymous = models.BooleanField(_("Public can use"))
     allow_user = models.BooleanField(_("Signed in user can use"))
@@ -407,6 +452,14 @@ class Registration(models.Model):
 
         payment_attempts = self.invoice.payment_set.count()
 
+        registrants = self.registrant_set.all().order_by('id')
+        for registrant in registrants:
+            #registrant.assign_mapped_fields()
+            if registrant.custom_reg_form_entry:
+                registrant.name = registrant.custom_reg_form_entry.__unicode__()
+            else:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+
         # only send email on success! or first fail
         if payment.is_paid or payment_attempts <= 1:
             notification.send_emails(
@@ -417,6 +470,7 @@ class Registration(models.Model):
                     'site_url': site_url,
                     'self_reg8n': self_reg8n,
                     'reg8n': self,
+                    'registrants': registrants,
                     'event': self.event,
                     'price': self.invoice.total,
                     'is_paid': payment.is_paid,
@@ -424,7 +478,7 @@ class Registration(models.Model):
                 True,  # notice saved in db
             )
             #notify the admins too
-            email_admins(self.event, self.invoice.total, self_reg8n, self)
+            email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
     @property
     def canceled(self):
@@ -464,12 +518,28 @@ class Registration(models.Model):
         Get first registrant w/ email address
         Order by insertion (primary key)
         """
-
-        try:
-            registrant = self.registrant_set.filter(
-                email__isnull=False).order_by("pk")[0]
-        except:
-            registrant = None
+        registrant = None
+        
+        if self.event.registration_configuration.use_custom_reg_form:
+            registrants = self.registrant_set.all().order_by("pk")
+            for reg in registrants:
+                if reg.custom_reg_form_entry:
+                    email = reg.custom_reg_form_entry.get_email()
+                    if email:
+                        registrant = reg
+                        registrant.email = email
+                        break
+            if (not registrant) and registrants:
+                # this registrant probably didn't use the custom reg form,
+                # but the custom reg form is now enabled
+                registrant = registrants[0]
+                
+        else:
+            try:
+                registrant = self.registrant_set.filter(
+                    email__isnull=False).order_by("pk")[0]
+            except:
+                pass
 
         return registrant
 
@@ -634,10 +704,16 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto', 
         help_text=_('Photo that represents this event.'), null=True, blank=True)
+        
+    tags = TagField(blank=True)
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = EventManager()
 
     class Meta:
@@ -675,7 +751,8 @@ class Event(TendenciBaseModel):
             image.file.save(photo_upload.name, photo_upload)  # save file row
             image.save()  # save image row
 
-            if self.image: self.image.delete()  # delete image and file row
+            if self.image:
+                self.image.delete()  # delete image and file row
             self.image = image  # set image
 
             self.save()
@@ -747,8 +824,247 @@ class Event(TendenciBaseModel):
         if self.image:
             return self.image.file
         return None
+    
+class CustomRegForm(models.Model):
+    name = models.CharField(_("Name"), max_length=50)
+    notes = models.TextField(_("Notes"), max_length=2000, blank=True)
+    validate_guest = models.BooleanField(_("Validate Guest"), default=False,
+                                         help_text="If checked, required fields for " + \
+                                         "the primary registrant will also be required for the guests")
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True)
+    creator_username = models.CharField(max_length=50)
+    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True)    
+    owner_username = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, default='active')
+    
+    class Meta:
+        verbose_name = _("Custom Registration Form")
+        verbose_name_plural = _("Custom Registration Forms")
+        
+    def __unicode__(self):
+        return self.name
+    
+    @property
+    def is_template(self):
+        """
+        A custom registration form is a template when it is not associated with
+        registration configuration and any event registration conf pricing. 
+        A form template can be re-used and will be cloned if it is selected by
+        a regconf or an regconfpricing.
+        """
+        if self.regconfs.exists() or self.regconfpricings.exists():
+            return False
+        return True
+    
+    def clone(self):
+        """
+        Clone this custom registration form and associate it with the event if provided.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        cloned_obj = self.__class__.objects.create(**params)
+        # clone fiellds
+        fields = self.fields.all()
+        for field in fields:
+            field.clone(form=cloned_obj)
+            
+        return cloned_obj
+    
+
+class CustomRegField(models.Model):
+    form = models.ForeignKey("CustomRegForm", related_name="fields")
+    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
+    map_to_field = models.CharField(_("Map to User Field"), choices=USER_FIELD_CHOICES,
+        max_length=64, blank=True, null=True)
+    field_type = models.CharField(_("Type"), choices=FIELD_TYPE_CHOICES,
+        max_length=64)
+    required = models.BooleanField(_("Required"), default=True)
+    visible = models.BooleanField(_("Visible"), default=True)
+    choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
+        help_text="Comma separated options where applicable")
+    position = models.PositiveIntegerField(_('position'), default=0)
+    default = models.CharField(_("Default"), max_length=1000, blank=True,
+        help_text="Default value of the field")
+    display_on_roster = models.BooleanField(_("Show on Roster"), default=False)
+    
+    class Meta:
+        verbose_name = _("Field")
+        verbose_name_plural = _("Fields")
+        ordering = ('position',)
+        
+    def clone(self, form=None):
+        """
+        Clone this custom registration field, and associate it with the form if provided.
+        """
+        params = dict([(field.name, getattr(self, field.name)) \
+                       for field in self._meta.fields if not field.__class__==AutoField])
+        cloned_field = self.__class__.objects.create(**params)
+        
+        if form:
+            cloned_field.form = form
+            cloned_field.save()
+        return cloned_field
+        
+                
+class CustomRegFormEntry(models.Model):
+    form = models.ForeignKey("CustomRegForm", related_name="entries")
+    entry_time = models.DateTimeField(_("Date/time"))
+    
+    def __unicode__(self):
+        name = self.get_name()
+        if name:
+            return name
+        
+        # top 2 fields
+        values = []
+        top_fields = CustomRegField.objects.filter(form=self.form,
+                                                   field_type='CharField'
+                                                   ).order_by('position')[0:2]
+        for field in top_fields:
+            field_entries = field.entries.filter(entry=self)
+            if field_entries:
+                values.append(field_entries[0].value)
+        return (' '.join(values)).strip()
+    
+    def get_value_of_mapped_field(self, map_to_field):
+        mapped_field = CustomRegField.objects.filter(form=self.form,
+                                map_to_field=map_to_field)
+        if mapped_field:
+            #field_entries = CustomRegFieldEntry.objects.filter(entry=self, field=mapped_field[0])
+            field_entries = mapped_field[0].entries.filter(entry=self)
+            if field_entries:
+                return (field_entries[0].value).strip()
+        return ''
+
+    
+    def get_name(self):
+        name = ' '.join([self.get_value_of_mapped_field('first_name'), 
+                         self.get_value_of_mapped_field('last_name')])
+        return name.strip()
+    
+    def get_email(self):
+        return self.get_value_of_mapped_field('email')
+    
+    def get_field_entry_list(self):
+        field_entries = self.field_entries.order_by('field')
+        entry_list = []
+        for field_entry in field_entries:
+            entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
+        return entry_list
+    
+    def get_non_mapped_field_entry_list(self):
+        field_entries = self.field_entries
+        mapped_fields = [item[0] for item in USER_FIELD_CHOICES]
+        field_entries = field_entries.exclude(field__map_to_field__in=mapped_fields).order_by('field')
+        entry_list = []
+        for field_entry in field_entries:
+            entry_list.append({'label': field_entry.field.label, 'value': field_entry.value})
+        return entry_list
+            
+    
+    def roster_field_entry_list(self):
+        list_on_roster = []
+        field_entries = self.field_entries.exclude(field__map_to_field__in=[
+                                    'first_name', 
+                                    'last_name', 
+                                    'position_title', 
+                                    'company_name'
+                                    ]).filter(field__display_on_roster=1).order_by('field')
+
+        for field_entry in field_entries:
+            list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
+        return list_on_roster
+        
+
+class CustomRegFieldEntry(models.Model):
+    entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")
+    field = models.ForeignKey("CustomRegField", related_name="entries")
+    value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
 class EventPhoto(File):
     @property
     def content_type(self):
         return 'events'
+
+
+class Addon(models.Model):
+    event = models.ForeignKey(Event)
+    title = models.CharField(max_length=50)
+    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
+    
+    # permission fields
+    group = models.ForeignKey(Group, blank=True, null=True)
+    allow_anonymous = models.BooleanField(_("Public can use"))
+    allow_user = models.BooleanField(_("Signed in user can use"))
+    allow_member = models.BooleanField(_("All members can use"))
+    
+    status = models.BooleanField(default=True)
+    
+    def delete(self, *args, **kwargs):
+        """
+        Note that the delete() method for an object is not necessarily
+        called when deleting objects in bulk using a QuerySet.
+        """
+        #print "%s, %s" % (self, "status set to false" )
+        self.status = False
+        self.save(*args, **kwargs)
+    
+    def __unicode__(self):
+        return self.title
+
+    def available(self):
+        if not self.reg_conf.enabled or not self.status:
+            return False
+        if hasattr(self, 'event'):
+            if datetime.now() > self.event.end_dt:
+                return False
+        return True
+    
+    def field_name(self):
+        return "%s_%s" % (self.pk, self.title.lower().replace(' ', '').replace('-', ''))
+    
+class AddonOption(models.Model):
+    addon = models.ForeignKey(Addon, related_name="options")
+    title = models.CharField(max_length=100)
+    # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
+    # choices = models.CharField(max_length=200, help_text=_('options are separated by commas, ex: option 1, option 2, option 3'))
+    
+    def __unicode__(self):
+        return self.title
+
+            
+class RegAddon(models.Model):
+    """Event registration addon.
+    An event registration can avail multiple addons.
+    This stores the addon's price at the time of registration.
+    This stores the user's selected options for the addon.
+    """
+    registration = models.ForeignKey('Registration')
+    addon = models.ForeignKey('Addon')
+    
+    # price at the moment of registration
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, default=0)
+    
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return "%s: %s" % (self.registration.pk, self.addon.title)
+    
+class RegAddonOption(models.Model):
+    """Selected event registration addon option.
+    """
+    regaddon = models.ForeignKey(RegAddon)
+    option = models.ForeignKey(AddonOption)
+    # old field for 2 level options (e.g. Option: Size -> Choices: small, large)
+    # selected_option = models.CharField(max_length=50)
+    
+    class Meta:
+        unique_together = (('regaddon', 'option'),)
+        
+    def __unicode__(self):
+        return "%s: %s - %s" % (self.regaddon.pk, self.option.title, self.selected_option)
+    

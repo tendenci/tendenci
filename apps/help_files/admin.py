@@ -6,7 +6,7 @@ from django.conf import settings
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 from models import Topic, HelpFile, Request
-from forms import HelpFileForm
+from forms import HelpFileAdminForm
 import settings
 
 class HelpFileAdmin(admin.ModelAdmin):
@@ -30,7 +30,7 @@ class HelpFileAdmin(admin.ModelAdmin):
         )}),
     )
     prepopulated_fields = {'slug': ['question']}
-    form = HelpFileForm
+    form = HelpFileAdminForm
 
     class Media:
         js = (
@@ -43,7 +43,7 @@ class HelpFileAdmin(admin.ModelAdmin):
     edit_link.short_description = 'edit'
 
     def view_on_site(self, obj):
-        link_icon = '%s/images/icons/external_16x16.png' % settings.STATIC_URL
+        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
         link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
             reverse('help_file.details', args=[obj.slug]),
             obj.question,

@@ -1,9 +1,11 @@
 from haystack import indexes
 from haystack import site
+from django.db.models import signals
 
 from perms.object_perms import ObjectPermission
+from search.indexes import CustomSearchIndex
 
-class TendenciBaseSearchIndex(indexes.RealTimeSearchIndex):
+class TendenciBaseSearchIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     
     # TendenciBaseModel Fields
@@ -45,3 +47,4 @@ class TendenciBaseSearchIndex(indexes.RealTimeSearchIndex):
         (app_label).view_(module_name)
         """
         return ObjectPermission.objects.groups_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.module_name), obj)
+

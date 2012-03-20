@@ -116,7 +116,7 @@ blockquote { margin: 0 0 10px 20px; }
 .topborder { border-top: solid 14px darken(@complimentary, 5); }
 
 header {
-    #logo { .grid(7); margin-top: 10px; margin-bottom: 10px;
+    #logo { .grid(7); margin-top: 10px; margin-bottom: 10px; position: relative;
         a { display: block; text-decoration: none; 
             img { float: left; width: 100px; height: 100px; border: none; }
             h1 { padding: 34px 0 32px 10px; width: 430px; .header-font(54px); color: @primary; text-shadow: 1px 2px 1px #666; float: left; margin: 0; }
@@ -179,7 +179,7 @@ header {
 /* ------------------------------
     Homepage Content
 ------------------------------ */
-#home h3 { .header-font(30px); border: solid 4px @secondary; border-left: none; border-right: none; color: @complimentary; padding: 10px 0 10px 0; margin-bottom: 10px; .textshadow(#333); }
+#home h3, #sidebar h3 { .header-font(30px); border: solid 4px @secondary; border-left: none; border-right: none; color: @complimentary; padding: 10px 0 10px 0; margin-bottom: 10px; .textshadow(#333); }
 
 #messages-box { .grid(12); }
 

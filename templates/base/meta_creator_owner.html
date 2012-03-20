@@ -1,0 +1,16 @@
+{% load base_filters %}
+{% load i18n %}
+            <div class="submitted">{% blocktrans with obj.create_dt|date:"long" as create_date %}Created on {{ create_date }}
+            by:{% endblocktrans %} <a href="{{ obj.creator.get_absolute_url }}">
+            {% if obj.creator.first_name %}{{ obj.creator.first_name }} {{ obj.creator.last_name }}
+            {% else %}
+            {{ obj.creator }}
+            {% endif %}</a>
+            </div>
+            <div class="submitted">{% blocktrans with obj.update_dt|date:"long" as update_date %}Last updated {{ update_date }}
+            by:{% endblocktrans %} <a href="{{ obj.owner.get_absolute_url }}">
+            {% if obj.owner.first_name %}{{ obj.owner.first_name }} {{ obj.owner.last_name }}
+            {% else %}
+            {{ obj.owner }}
+            {% endif %}</a>
+            </div>

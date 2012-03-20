@@ -11,10 +11,21 @@ class FileRegistry(CoreRegistry):
                   'uploaded through wysiwyg and other parts in ' \
                   'the system'
     icon = '/site_media/static/images/icons/files-color-64x64.png'
+    
+    event_logs = {
+        'files':{
+            'base':('180000','330066'),
+            'add':('181000','330066'),
+            'edit':('182000','330066'),
+            'delete':('183000','330066'),
+            'view':('185000','330066'),
+            'download':('186000','330066'),
+        }
+    }
 
     url = {
         'add': lazy_reverse('file.add'),
-        'search': lazy_reverse('file.search'),
+        'search': lazy_reverse('files'),
     }
 
 site.register(File, FileRegistry)

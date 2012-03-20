@@ -1,7 +1,5 @@
-
-# django
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -10,15 +8,18 @@ from django.contrib.contenttypes.models import ContentType
 
 from base.http import Http403
 from base.utils import check_template
-from pages.models import Page
-from pages.forms import PageForm
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from perms.utils import update_perms_and_save, get_notice_recipients
-from perms.utils import is_admin, has_perm
+from perms.utils import (update_perms_and_save, get_notice_recipients,
+    is_admin, has_perm,  get_query_filters)
 from categories.forms import CategoryForm
 from categories.models import Category
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
+
+from pages.models import Page
+from pages.forms import PageForm
 
 try:
     from notification import models as notification
@@ -55,7 +56,13 @@ def index(request, slug=None, template_name="pages/view.html"):
 
 def search(request, template_name="pages/search.html"):
     query = request.GET.get('q', None)
-    pages = Page.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        pages = Page.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'pages.view_page')
+        pages = Page.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            pages = pages.select_related() 
     pages = pages.order_by('-create_dt')
 
     log_defaults = {
@@ -111,15 +118,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
         'category': getattr(category,'name','0'),
         'sub_category': getattr(sub_category,'name','0')
     }
-        
-    defaults = {
-        'title': page.get_title(),
-        'description': page.get_description(),
-        'keywords': page.get_keywords(),
-        'canonical_url': page.get_canonical_url(),
-    }
-    page.meta = MetaTags(**defaults)
-    
+
     if request.method == "POST":
         form = form_class(request.POST, instance=page, user=request.user)
         metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')

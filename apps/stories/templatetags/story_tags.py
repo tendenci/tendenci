@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 
+from perms.utils import get_query_filters
 from base.template_tags import ListNode, parse_tag_kwargs
 from stories.models import Story
 
@@ -56,6 +57,7 @@ def story_expiration(obj):
 
 class ListStoriesNode(ListNode):
     model = Story
+    perms = 'stories.view_story'
 
     def __init__(self, context_var, *args, **kwargs):
         self.context_var = context_var
@@ -87,7 +89,7 @@ class ListStoriesNode(ListNode):
                 tags = self.kwargs['tags']
 
             tags = tags.replace('"', '')
-            tags = tags.split(',')
+            tags = [t.strip() for t in tags.split(',')]
 
         if 'user' in self.kwargs:
             try:
@@ -123,18 +125,25 @@ class ListStoriesNode(ListNode):
             except:
                 order = self.kwargs['order']
 
-        # process tags
-        for tag in tags:
-            tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
+        filters = get_query_filters(user, self.perms)
+        items = self.model.objects.filter(filters).distinct()
 
-        # get the list of staff
-        items = self.model.objects.search(user=user, query=query)
+        if tags:  # tags is a comma delimited list
+            # this is fast; but has one hole
+            # it finds words inside of other words
+            # e.g. "event" is within "prevent"
+            tag_queries = [Q(tags__icontains=t) for t in tags]
+            tag_query = reduce(or_, tag_queries)
+            items = items.filter(tag_query)
+
         objects = []
 
+        # Removed seconds so we can cache the query better
+        now = datetime.now().replace(second=0)
+
         # Custom filter for stories
-        date_query = reduce(or_, [Q(end_dt__gte = datetime.now()), Q(expires=False)])
-        date_query = reduce(and_, [Q(start_dt__lte = datetime.now()), date_query])
+        date_query = reduce(or_, [Q(end_dt__gte = now), Q(expires=False)])
+        date_query = reduce(and_, [Q(start_dt__lte = now), date_query])
         items = items.filter(date_query)
 
         if order:
@@ -143,9 +152,9 @@ class ListStoriesNode(ListNode):
         # if order is not specified it sorts by relevance
         if items:
             if randomize:
-                objects = [item.object for item in random.sample(items, len(items))][:limit]
+                objects = [item for item in random.sample(items, len(items))][:limit]
             else:
-                objects = [item.object for item in items[:limit]]
+                objects = [item for item in items[:limit]]
 
             context[self.context_var] = objects
         return ""
@@ -153,12 +162,35 @@ class ListStoriesNode(ListNode):
 @register.tag
 def list_stories(parser, token):
     """
-    Example:
+    Used to pull a list of :model:`stories.Story` items.
 
-    {% list_stories as stories user=user limit=3 %}
-    {% for story in stories %}
-        {{ story.title }}
-    {% endfor %}
+    Usage::
+
+        {% list_stories as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``stories_sidebar`` or 
+    ``stories_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Earliest Start Date**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_stories as stories_list limit=5 tags="cool" %}
+        {% for story in stories_list %}
+            {{ story.title }}
+        {% endfor %}
     """
     args, kwargs = [], {}
     bits = token.split_contents()

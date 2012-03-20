@@ -30,16 +30,15 @@ urlpatterns = patterns('',
     url(r'^articles/reports/rank/$', 'articles.views.articles_report', name='reports-articles'),
 
     (r'^notifications/', include('notification.urls')),
+    (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^base/', include('base.urls')),
     (r'^avatar/', include('avatar.urls')),
     (r'^dashboard/', include('dashboard.urls')),
     (r'^categories/', include('categories.urls')),
-    (r'^articles/', include('articles.urls')),
     (r'^memberships/', include('memberships.urls')),
     (r'^corporatememberships/', include('corporate_memberships.urls')),
     (r'^entities/', include('entities.urls')),
-    (r'^locations/', include('locations.urls')),
     (r'^pages/', include('pages.urls')),
     (r'^users/', include('profiles.urls')),
     (r'^photos/', include('photos.urls')),
@@ -67,11 +66,9 @@ urlpatterns = patterns('',
     (r'^event-logs/', include('event_logs.urls')),
     (r'^contributions/', include('contributions.urls')),
     (r'^theme-editor/', include('theme_editor.urls')),
-    (r'^jobs/', include('jobs.urls')),
-    (r'^directories/', include('directories.urls')),
     (r'^contact/', include('form_builder.urls')),
     (r'^sitemap.xml', include('sitemaps.urls')),
-    (r'^help-files/', include('help_files.urls')),
+
     (r'^subscribers/', include('subscribers.urls')),
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
@@ -98,6 +95,12 @@ urlpatterns = patterns('',
     
     # other t4 to t5 legacy redirects
     url(r'^en/', include('legacy.urls')),
+
+    url(r'^', include('jobs.urls')),
+    url(r'^', include('articles.urls')),
+    url(r'^', include('directories.urls')),
+    url(r'^', include('help_files.urls')),
+    url(r'^', include('locations.urls')),
 )
 
 handler500 = 'base.views.custom_error'
@@ -115,7 +118,7 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^themes/(?P<path>.*)$',
             'django.views.static.serve',
-            {'document_root': settings.THEME_DIR, 'show_indexes': True}),
+            {'document_root': settings.THEMES_DIR, 'show_indexes': True}),
     )
 
 # template tag testing environment

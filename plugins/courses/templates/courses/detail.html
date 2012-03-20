@@ -62,6 +62,19 @@
             {% endif %}
 		</div>
         
+        {% if admin %}
+        <div class="attempts">
+            <h2>{% trans "User Attempt History" %}</h2>
+			{% for list in course.user_attempts %}
+                <div class="attempt">
+                    <p>User: {{ list.user.get_full_name }}</p>
+                    <p>No. of attempts: {{ list|length }}</p>
+                    <p><a href="{% url courses.user_completion course.pk user.pk %}">{% trans "View Course Attempts" %}</a></p>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
     </div>
 </div>
 {% endblock %}

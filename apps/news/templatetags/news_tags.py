@@ -31,14 +31,39 @@ def news_search(context):
 
 class ListNewsNode(ListNode):
     model = News
+    perms = 'news.view_news'
 
 
 @register.tag
 def list_news(parser, token):
     """
-    Example:
-        {% list_news as news [user=user limit=3] %}
-        {% for news_item in news %}
+    Used to pull a list of :model:`news.News` items.
+
+    Usage::
+
+        {% list_news as [varname] [options] %}
+
+    Be sure the [varname] has a specific name like ``news_sidebar`` or 
+    ``news_list``. Options can be used as [option]=[value]. Wrap text values
+    in quotes like ``tags="cool"``. Options include:
+    
+        ``limit``
+           The number of items that are shown. **Default: 3**
+        ``order``
+           The order of the items. **Default: Latest Release Date**
+        ``user``
+           Specify a user to only show public items to all. **Default: Viewing user**
+        ``query``
+           The text to search for items. Will not affect order.
+        ``tags``
+           The tags required on items to be included.
+        ``random``
+           Use this with a value of true to randomize the items included.
+
+    Example::
+
+        {% list_news as news_list limit=5 tags="cool" %}
+        {% for news_item in news_list %}
             {{ news_item.headline }}
         {% endfor %}
     """

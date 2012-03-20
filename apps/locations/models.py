@@ -1,11 +1,16 @@
 import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
+from django.contrib.auth.models import User
 
 from perms.models import TendenciBaseModel 
+from perms.object_perms import ObjectPermission
 from locations.managers import LocationManager
 from entities.models import Entity
 from locations.utils import get_coordinates
+from files.models import File
+
 
 class Location(TendenciBaseModel):
     guid = models.CharField(max_length=40) 
@@ -30,13 +35,17 @@ class Location(TendenciBaseModel):
     hq = models.BooleanField(_('Headquarters'))
     entity = models.ForeignKey(Entity,null=True, blank=True)
 
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = LocationManager()
 
     class Meta:
         permissions = (("view_location","Can view location"),)
 
     def __unicode__(self):
-        return self.description
+        return self.location_name
 
     @models.permalink
     def get_absolute_url(self):
@@ -85,6 +94,11 @@ class Location(TendenciBaseModel):
         import math
         from time import clock, time
 
+        # if we don't have latitude or longitude
+        # we return a none type object instead of int
+        if not all((self.latitude, self.longitude)):
+            return None
+
         # Convert latitude and longitude to 
         # spherical coordinates in radians.
         degrees_to_radians = math.pi/180.0
@@ -116,6 +130,20 @@ class Location(TendenciBaseModel):
             self.latitude, self.longitude = get_coordinates(self.get_address())
 
         super(Location, self).save(*args, **kwargs)
+
+
+class LocationImport(models.Model):
+
+    creator = models.ForeignKey(User)
+    create_dt = models.DateTimeField(auto_now_add=True)
+
+    def get_file(self):
+        file = File.objects.get_for_model(self)[0]
+        return file
+        
+    def __unicode__(self):
+        return self.get_file().file.path
+
 
 class Distance(models.Model):
     """Holds distance information between zip codes and locations"""

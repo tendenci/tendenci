@@ -196,13 +196,6 @@ class MembershipManager(Manager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', AnonymousUser())
         user = impersonation(user)
-        
-#         if is_member(user) and member_perms == "member-type":
-#             user_membership = Membership.objects.filter(user=user)
-#             try:
-#                 query = '%s type:%s' % (query, user_membership[0].membership_type.name)
-#             except:
-#                 pass
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
@@ -231,14 +224,34 @@ class MembershipManager(Manager):
 
     def get_membership(self):
         """
-            Get membership object
+        Get newest membership record
+        Return membership object
         """
-        try:
-            return self.filter(status=1, status_detail='active').order_by('-pk')[0]
-        except:
-            return None
+        memberships = self.filter(status=1, status_detail='active').order_by('-pk')
+        if memberships:
+            return memberships[0]
 
+        return None
 
+    def silence_old_memberships(self, user):
+        """
+        Silence old memberships within their renewal period
+        that belong to this user.  Returns a list of the memberships silenced.
+        """
+        silenced_memberships = []
 
+        # We are only silencing memerships within
+        # their renewal period per user, not globally.
+        # If user is missing; then we abort.
+        if not user:
+            return silenced_memberships
+
+        for membership in user.memberships.all():
+            if membership.can_renew():
+                membership.send_notice = False
+                membership.save()
+                silenced_memberships.append(membership)
+
+        return silenced_memberships
 
 

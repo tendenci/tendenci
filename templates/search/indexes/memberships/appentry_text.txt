@@ -1,5 +1,0 @@
-id:{{ object.pk }}
-hash:{{ object.hash }}
-application:{{ object.app.name }}
-type:{{ object.membership_type }}
-status:{{ object.status_msg }}

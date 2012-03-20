@@ -13,7 +13,7 @@
 {% block body %}
 <div class="t">
 {% if SITE_GLOBAL_CONTACT_FORM %}
-    {% embed_form SITE_GLOBAL_CONTACT_FORM %}
+    {% embed_form SITE_GLOBAL_CONTACT_FORM "forms/contact_form.html" %}
 {% else %}
     <h1>{% trans "Contact Us" %}</h1>
 

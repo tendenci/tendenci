@@ -18,6 +18,9 @@ django.jQuery('document').ready(function() {
             'Tastypie',
             'User_Groups'
         ];
+        if (custom_reg_form_disabled){
+        	hidden_modules.push('Events');
+        }
         var content_main = django.jQuery('#content-main');
         var modules = content_main.find('div.module');
 

@@ -5,46 +5,62 @@
 {% has_perm user discounts.add_discount as can_add_discount %}
 
 {% if nav_object %}
-	{% has_perm user discounts.view_discount nav_object as can_view_discount %}
-	{% has_perm user discounts.change_discount nav_object as can_edit_discount %}
-	{% has_perm user discounts.delete_discount nav_object as can_delete_discount %}
+    {% has_perm user discounts.view_discount nav_object as can_view_discount %}
+    {% has_perm user discounts.change_discount nav_object as can_edit_discount %}
+    {% has_perm user discounts.delete_discount nav_object as can_delete_discount %}
 {% else %}
-	{% has_perm user discounts.view_discount as can_view_discount %}
-	{% has_perm user discounts.change_discount as can_edit_discount %}
-	{% has_perm user discounts.delete_discount as can_delete_discount %}
+    {% has_perm user discounts.view_discount as can_view_discount %}
+    {% has_perm user discounts.change_discount as can_edit_discount %}
 {% endif %}
 
-<div id="showh">
-	<ul id="primary">
-	
+<ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}
-	<li>
-	    <a href="{% url dashboard %}" title="Tendenci Home Page">
-		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
-		alt="Tendenci User Home" align="top" width="34" height="15"></a>
-	</li>
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
     {% endif %}
-
-	<li>
-		<span>{% trans 'Discounts' %}</span>
-		<ul id="secondary">
-			<li><a href="{% url discount.search %}">{% trans 'Discounts' %}:</a></li>
-			{% if nav_object %}
-				{% if can_edit_discount %}
-                    <li><a href="{% url discount.edit nav_object.pk %}">{% trans "Edit" %}</a></li>
-				{% endif %}
-			{% endif %}
-			<li><a href="{% url discount.search %}">{% trans "Search" %}</a></li>
-            
-			{% if can_add_discount %}
-			<li><a href="{% url discount.add %}">{% trans "Add" %}</a></li>
-			{% endif %}
-
-			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
-			{% endif %}
-		</ul>
-		
-	</li>
-	</ul>
-</div>
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans 'Discounts' %}</a>
+        {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All Discounts" %}</li>
+            <li class="divider"></li>
+        {% else %}
+            <div>
+            <ul class="dropdown-menu">
+        {% endif %}
+            <li><a href="{% url discounts %}">{% trans "Search Discounts" %}</a></li>
+            {% if can_add_discount %}
+                <li><a href="{% url discount.add %}">{% trans "Add Discount" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_discount or can_edit_discount %}
+            <ul>
+                <li class="heading">{% trans "This Discount" %}</li>
+                <li class="divider"></li>
+                {% if can_view_discount %}
+                    <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Discount" %}</a></li>
+                {% endif %}
+                {% if can_edit_discount %}
+                    <li><a href="{% url discount.edit nav_object.pk %}">{% trans "Edit Discount" %}</a></li>
+                {% endif %}
+                {% if can_delete_discount %}
+                    <li class="divider"></li>
+                    <li><a class="delete" href="{% url discount.delete nav_object.pk %}">{% trans "Delete Discount" %}</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    {% if MODULE_EVENTS_ENABLED %}
+    <li><a href="{% url events %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a></li>
+    {% endif %}
+</ul>

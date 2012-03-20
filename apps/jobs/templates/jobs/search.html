@@ -1,0 +1,40 @@
+{% extends "jobs/base.html" %}
+{% load pagination_tags %}
+{% load job_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load search_tags %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {% trans "List" %}{% endblock %}
+{% block meta_description %}{{ block.super }}{% endblock %}
+{% block meta_keywords %}{{ block.super }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
+<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}" href="{% url job.feed %}" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% job_nav request.user %}
+    <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "List" %}</h1>  
+
+    {% job_search %}
+    <span><em>{{ jobs|length }} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "Found" %}</em></span>
+    {% autopaginate jobs 10 %}
+    
+    <div class="jobs-wrap">
+    {% for job in jobs %}
+        {% search_result job %}
+    {% empty %}
+        {% if admin %}
+        <p><a href="{% url job.add %}">{% trans "Add a new" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</a></p>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+{% endblock %}

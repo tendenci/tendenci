@@ -1,0 +1,187 @@
+{% extends "profiles/base-wide.html" %}
+{% load avatar_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load profile_tags %}
+{% load contribution_tags %}
+{% load membership_tags %}
+{% load i18n %}
+
+{% assign can_edit_user profile|args:request.user|call:'allow_edit_by' %}
+{% is_admin request.user as isadmin %}
+	
+{% block title %}Profile View{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+{% endblock %}
+
+{% block body %}
+<div class="t"><div id="t-profile"><div id="t-view">
+
+	{% users_nav request.user user_this %}
+
+	<div class="intro info">
+		<div class="profile-icon">
+			{% avatar user_this 128 %}
+		</div>
+
+		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+		<p>{{ profile.position_title }}</p>
+		<p>{{ city_state }}</p>
+		<div class="clear"></div>
+    </div>
+
+    <div class="contact info">
+
+		<h2>Contact Information</h2>
+
+		<table>
+			<tr>
+				<td>Email</td>
+				<td>{{ user_this.email }}</td>
+			</tr>
+			<tr>
+				<td>Phone</td>
+				<td>{% firstof profile.phone profile.phone2 %}</td>
+			</tr>
+			<tr>
+				<td>Website</td>
+				<td>{{ profile.url }}</td>
+			</tr>
+			<tr>
+				<td>Address</td>
+				<td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
+			</tr>
+	    </table>
+
+    </div>
+
+    <div class="membership info">
+
+		<h2>Memberships</h2>
+
+        {% for membership in memberships %}
+
+        	<table>
+        		<tr>
+        			<td>{{ membership.member_number }} {{ membership.membership_type }}</td>
+        			<td>
+        				<a href="{{ membership.get_entry.get_absolute_url }}">
+	        				{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}
+	        			</a>
+	        		</td>
+        		</tr>
+        	</table>
+
+        {% empty %}
+            <p>Not a member.  
+            	{% if admin %}
+            	<a href="{% url profile.add_membership user_this.username %}">Add membership.</a>
+            	{% endif %}
+            </p>
+        {% endfor %}
+
+    </div>
+
+    <div class="group info">
+
+		{% if can_edit_user %}
+			<div><a href="{% url profile.edit_groups user_this.username %}">{% trans "Edit Available Groups" %}</a></div>
+		{% endif %}
+		
+		{% if group_memberships %}
+
+			<h2>Groups</h2>
+
+			{% for gm in group_memberships %}
+
+				<table>
+					<tr>
+						<td>
+
+							{% if admin %}
+								<a href="{% url group.edituser gm.group.slug user_this.pk %}">
+									{% firstof gm.role 'Member' %}
+								</a>
+							{% else %}
+									{% firstof gm.role 'Member' %}
+							{% endif %}
+
+						</td>
+						<td>
+							<a href="{% url group.detail gm.group.slug %}">
+								{% firstof gm.group.label gm.group.name %}
+							</a>
+						</td>
+					</tr>
+				</table>
+
+			{% endfor %}
+		{% else %}
+			<p>Not in any groups. <a href="{% url groups %}">Join a group.</a></p>
+		{% endif %}
+
+    </div>
+
+    <div class="contribution info">
+
+		{% latest_contributions user_this as contributions %}
+		<div class="latest-contributions">
+			<h2>{% trans "Contributions" %}</h2>
+				<span class="more"> <a href="javascript:;">more &raquo;</a></span>
+				<div class="clear"></div>
+				{% if  contributions %}
+					{% for contribution in contributions|slice:":4" %}
+					<div class="item">
+						{% if contribution.object.get_absolute_url %}
+							<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:8|slice:":-4" }}</a> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+						{% else %}
+							{{ contribution.title }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+						{% endif %}
+					</div>
+					{% endfor %}
+				{% else %}
+					<div>{% trans "No contributions found." %}</div>
+				{% endif %}
+		</div>
+
+    </div>
+
+	{% include "profiles/meta.html" %}
+
+</div></div></div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+{# dynamically load jquery #}
+<script>
+	if (!(window.jQuery)) { 
+		var s = document.createElement('script');
+		s.setAttribute('src', '{{ STATIC_URL }}js/jquery-1.4.2.min.js'); 
+		s.setAttribute('type', 'text/javascript');
+		document.getElementsByTagName('head')[0].appendChild(s);}
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    if(document.location.hash != ""){window.scrollTo(0,0);}
+	var $tabs = $("#userview-tabs").tabs();
+}); 
+
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+
+{% endblock %}

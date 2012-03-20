@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
@@ -8,6 +8,7 @@ from site_settings.utils import get_setting
 from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.models import Event, RegConfPricing, Registration, Registrant
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+from events.forms import FormForCustomRegForm
 
 try:
     from notification import models as notification
@@ -74,7 +75,7 @@ def get_available_pricings(event, user):
         exclude_list = []
         # user permitted pricings
         for price in pricings:
-            # shown to all
+            # shown to all users
             if price.allow_anonymous or price.allow_user:
                 continue
             
@@ -94,6 +95,19 @@ def get_available_pricings(event, user):
     # return the QUERYSET
     return pricings
     
+def get_pricings_for_list(event, users):
+    """
+    Returns the available pricings of an event for a given list of users.
+    """
+    pricings = RegConfPricing.objects.none()
+    
+    for user in users:
+        pricings = pricings | get_available_pricings(event, user)
+    pricings = pricings | get_available_pricings(event, AnonymousUser())
+    
+    # return the QUERYSET
+    return pricings
+    
 def can_use_pricing(event, user, pricing):
     """
     Determine if a user can use a specific pricing of a given event
@@ -109,9 +123,10 @@ def send_registrant_email(reg8n, self_reg8n):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     
-    if reg8n.registrant.email:
+    primary_registrant = reg8n.registrant
+    if primary_registrant and  primary_registrant.email:
         notification.send_emails(
-            [reg8n.registrant.email],
+            [primary_registrant.email],
             'event_registration_confirmation',
             {   
                 'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
@@ -125,12 +140,14 @@ def send_registrant_email(reg8n, self_reg8n):
             True, # save notice in db
         )
         
-def create_registrant(form, event, reg8n):
+def create_registrant(form, event, reg8n, **kwargs):
     """
     Create the registrant.
     form is a RegistrantForm where the registrant's data is.
     reg8n is the Registration instance to associate the registrant with.
     """
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+    
     price = form.get_price()
     
     # initialize the registrant instance and data
@@ -138,43 +155,55 @@ def create_registrant(form, event, reg8n):
     registrant.registration = reg8n
     registrant.amount = price
     registrant.pricing = form.cleaned_data['pricing']
-    registrant.first_name = form.cleaned_data.get('first_name', '')
-    registrant.last_name = form.cleaned_data.get('last_name', '')
-    registrant.email = form.cleaned_data.get('email', '')
-    registrant.phone = form.cleaned_data.get('phone', '')
-    registrant.company_name = form.cleaned_data.get('company_name', '')
     
-    # associate the registrant with a user of the form
-    user = form.get_user()
-    if not user.is_anonymous():
-        registrant.user = user
-        try:
-            user_profile = registrant.user.get_profile()
-        except:
-            user_profile = None
-        if user_profile:
-            registrant.mail_name = user_profile.display_name
-            registrant.address = user_profile.address
-            registrant.city = user_profile.city
-            registrant.state = user_profile.state
-            registrant.zip = user_profile.zipcode
-            registrant.country = user_profile.country
-            registrant.company_name = user_profile.company
-            registrant.position_title = user_profile.position_title
-            
+    if custom_reg_form and isinstance(form, FormForCustomRegForm):
+        entry = form.save(event)
+        registrant.custom_reg_form_entry = entry
+        user = form.get_user()
+        if not user.is_anonymous():
+            registrant.user = user
+    else:
+        registrant.first_name = form.cleaned_data.get('first_name', '')
+        registrant.last_name = form.cleaned_data.get('last_name', '')
+        registrant.email = form.cleaned_data.get('email', '')
+        registrant.phone = form.cleaned_data.get('phone', '')
+        registrant.company_name = form.cleaned_data.get('company_name', '')
+        
+        # associate the registrant with a user of the form
+        user = form.get_user()
+        if not user.is_anonymous():
+            registrant.user = user
+            try:
+                user_profile = registrant.user.get_profile()
+            except:
+                user_profile = None
+            if user_profile:
+                registrant.mail_name = user_profile.display_name
+                registrant.address = user_profile.address
+                registrant.city = user_profile.city
+                registrant.state = user_profile.state
+                registrant.zip = user_profile.zipcode
+                registrant.country = user_profile.country
+                registrant.company_name = user_profile.company
+                registrant.position_title = user_profile.position_title
+                
     registrant.save()
     
     return registrant
     
-def process_registration(reg_form, reg_formset):
+def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
     """
     Create the registrants and the invoice for payment.
     reg_form and reg_formset MUST be validated first
     """
+    custom_reg_form = kwargs.get('custom_reg_form', None)
+    
     # init variables
     user = reg_form.get_user()
     event = reg_form.get_event()
-    total_price = reg_formset.get_total_price()
+    registrants_price = reg_formset.get_total_price()
+    addons_price = addon_formset.get_total_price()
+    total_price = registrants_price + addons_price
     admin_notes = ''
     
     # get the discount, apply if available
@@ -212,7 +241,11 @@ def process_registration(reg_form, reg_formset):
             event,
             reg8n,
         ]
-        registrant = create_registrant(*registrant_args)
+        registrant = create_registrant(*registrant_args, custom_reg_form=custom_reg_form)
+        
+    # create each regaddon
+    for form in addon_formset.forms:
+        form.save(reg8n)
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)

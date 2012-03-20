@@ -1,0 +1,34 @@
+{% extends "stories/base-print.html" %}
+{% load story_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ story.get_title }}{% endblock %}
+{% block meta_description %}{{ story.get_description }}{% endblock %}
+{% block meta_keywords %}{{ story.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ story.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/stories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t-print">
+
+	<div class='hide-this'>
+		<h1>{% trans "Print View" %}</h1>
+
+		<div class="guide">
+			<div><a href="{% url story story.pk %}">&laquo; {% trans "Back to regular story view" %}</a></div>
+			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
+		</div>
+	</div>
+
+    <div class="story-wrap">
+        <h2>{{ story.title }}</h2>
+        <div class="content">{{ story.content|safe }}</div>
+    </div>
+
+</div>
+{% endblock %}

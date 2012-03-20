@@ -42,7 +42,7 @@
                     </div>
                     {% if speaker.description|striptags|wordcount > 50 %}
                     <div class="speaker-desc-short">
-                        {{ speaker.description|striptags|truncatewords:"50" }}
+                        {{ speaker.description|striptags|safe|truncatewords:"50" }}
                     </div>
                     <div class="speaker-desc-long">
                         {{ speaker.description|safe|urlize|linebreaks }}
@@ -92,6 +92,30 @@
                 {% endif %}
             </div>
             {% endif %}
+            
+            {% if addons %}
+                <hr/>
+                <h2 class="addons-title">{% trans "Addons" %}</h2>
+                <div class="addons-wrap">
+                    {% for addon in addons %}
+                        <h2>{{ addon.title }}</h2>
+                        <table class="addon-detail">
+                        <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
+                        {% if addon.options.all %}
+                        <tr>
+                            <td><strong>Options</strong></td>
+                            <td>
+                            {% for op in addon.options.all %}
+                            {{ op.title }}{% if not forloop.last%}, {% endif %}
+                            {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        </table>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
 		</div> <!-- end info -->
 
 		<div class="vitals">
@@ -154,9 +178,10 @@
 
             {% if event.place.address and event.place.city_state %}
             <div class="map">
-<iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+                <iframe width="250" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=12&amp;iwloc=near&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?q={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;ie=UTF8&amp;hl=en&amp;view=map&amp;hq=&amp;hnear={{ event.place.address|urlencode }}+{{ event.place.city_state|join:", "}}+{{ event.place.zip }}&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
             </div>
             {% endif %}
+            
             {% url event event.pk as the_url %}
             <p>{% fb_like_button_iframe the_url %}</p>
 		</div> <!-- end vitals -->

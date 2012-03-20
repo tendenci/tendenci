@@ -5,37 +5,36 @@
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user file.add_file as can_add_file %}
 
-<div id="showh">
-	<ul id="primary">
-	
+<ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}
-	<li>
-	    <a href="{% url dashboard %}" title="Tendenci Home Page">
-		<img border="0" src="{{ STATIC_URL }}images/tendenci34x15.gif"
-		alt="Tendenci User Home" align="top" width="34" height="15"></a>
-	</li>
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
     {% endif %}
-
-	<li>
-		<span>{% trans "Files" %}</span>
-		<ul id="secondary">
-			<li><a href="{% url files %}">{% trans "Files:" %}</a></li> 
-			<li><a href="{% url file.search %}">{% trans "Search" %}</a></li>
-			{% if can_add_file %}
-			<li><a href="{% url file.add %}">{% trans "Add" %}</a></li>
-			{% endif %}
-			{% if user.is_authenticated %}
-			<li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li> 
-			{% endif %}
-		</ul>
-		
-	</li>
-	{% if MODULE_ARTICLES_ENABLED %}
-	<li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
-	{% endif %}
-		
-	{% if MODULE_NEWS_ENABLED %}
-	<li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
-	{% endif %}
-	</ul>
-</div>
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Files" %}</a>
+            <div>
+            <ul class="dropdown-menu">
+                <li><a href="{% url files %}">{% trans "File List" %}</a></li>
+                {% if can_add_file %}
+                <li><a href="{% url file.add %}">{% trans "Add a File" %}</a></li>
+                {% endif %}
+                <li class="divider"></li>
+                {% if admin %}
+                <li><a href="{% url file.report_most_viewed %}">{% trans "Most Viewed" %}</a></li>
+                {% endif %}
+            </ul>
+            </div>
+    </li>
+    {% if MODULE_ARTICLES_ENABLED %}
+    <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+    {% endif %}
+    {% if MODULE_NEWS_ENABLED %}
+    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+    {% endif %}
+</ul>

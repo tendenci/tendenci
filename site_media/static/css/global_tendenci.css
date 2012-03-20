@@ -1,5 +1,5 @@
 @import url('tabs.css');
-@import url('bs-tabs.css');
+@import url('patterns-bs.css');
 @import url('iconrow.css');
 @import url('forms.css');
 @import url('messages.css');
@@ -7,9 +7,7 @@
 
 .wrap-search-item {border-bottom: 1px solid #CCC; margin-bottom: 20px;}
 .search-item {padding: 10px 10px 0 10px;}
-.meta {padding: 10px 10px 5px; background-color: #EEEEEE; margin-top: 10px; font-size: 13px; position: relative; clear: both;}
-
-.meta.anon {background-color: transparent;}
+.meta {padding: 10px 10px 5px; background-color: transparent; margin-top: 10px; font-size: 13px; position: relative; clear: both;}
 
 .meta .submitted,
 .meta .categories,

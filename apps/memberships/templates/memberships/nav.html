@@ -1,0 +1,77 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% has_perm user site_settings.change_setting as can_edit_setting %}
+{% has_perm user memberships.change_notice as can_edit_notice %}
+
+{% if nav_object %}
+    {% has_perm user memberships.view_membership nav_object as can_view_memb %}
+    {% has_perm user memberships.change_membership nav_object as can_edit_memb %}
+    {% has_perm user memberships.delete_membership nav_object as can_delete %}
+{% else %}
+    {% has_perm user memberships.view_membership as can_view_memb %}
+    {% has_perm user memberships.change_membership as can_edit_memb %}
+{% endif %}
+
+
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_MEMBERSHIPS_LABEL trans 'Memberships' %}</a>
+        {% if nav_object %}
+        <div class="dropdown-menu">
+        <ul class="first">
+            <li class="heading">{% trans "All Members" %}</li>
+            <li class="divider"></li>
+        {% else %}
+            <div>
+            <ul class="dropdown-menu">
+        {% endif %}
+            {% if can_edit_setting %}
+            <li><a href="{% url settings.index "module" "memberships" %}">{% trans "Settings" %}</a></li>
+            {% endif %}
+            <li><a href="{% url membership.search %}">{% trans "Search All Members" %}</a></li> 
+            {% if admin %}
+            <li><a href="{% url membership.application_entries_search %}?q=status:pending">{% trans "Pending Members" %}</a></li>
+            <li><a href="{% url membership.application_entries_search %}">{% trans "Membership Entries" %}</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url admin:memberships_app_changelist %}">{% trans "Membership Applications" %}</a></li>
+            <li><a href="{% url admin:memberships_membershiptype_changelist %}">{% trans "Membership Types" %}</a></li>
+            <li><a href="{% url admin:memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url membership_import %}">{% trans "Import" %}</a></li>
+            <li><a href="{% url membership_export %}">{% trans "Export" %}</a></li>
+            {% endif %}
+        </ul>
+        {% if nav_object %}
+            {% if can_view_memb or can_edit_memb %}
+            <ul>
+                <li class="heading">{% trans "This Member" %}</li>
+                <li class="divider"></li>
+                {% if can_view_memb or allow_view %}
+                <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Membership" %}</a></li>
+                <div><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View User Profile" %}</a></div>
+                {% if membership.entries.all %}
+                <li class="divider"></li>
+                {% for entry in nav_object.entries.all %}
+                <li><a href="{% url membership.application_entries entry.pk %}">{% trans "View Entry" %} {{ forloop.counter }}</a></li>
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+            </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </li>
+    <li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>
+</ul>

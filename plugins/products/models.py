@@ -1,9 +1,11 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from products.managers import ProductManager, ProductFileManager
 from files.models import File
 
@@ -48,6 +50,9 @@ class Product(TendenciBaseModel):
     summary = models.TextField(_(u'summary'), help_text=u'A brief summary that can be shown in search results.', blank=True, default=u'',)
     description = models.TextField(_(u'description'), help_text=u'', blank=False, default=u'')
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
+
+    perms = generic.GenericRelation(ObjectPermission, 
+        object_id_field="object_id", content_type_field="content_type")
 
     objects = ProductManager()
     

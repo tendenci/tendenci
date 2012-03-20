@@ -27,13 +27,15 @@ class DeclarativeMetaclass(type):
     def __new__(cls, name, bases, attrs):
         attrs['fields'] = FieldDict()
         allowed_fields = [
+            '__doc__',
             'version',
             'author',
             'author_email',
             'description',
             'icon',
             'url',
-            'packages'
+            'packages',
+            'event_logs'
         ]
 
         if 'app_registry' in attrs['__module__']:
@@ -41,7 +43,7 @@ class DeclarativeMetaclass(type):
                 if field_name not in ['fields', '__module__']:
                     if field_name not in allowed_fields:
                         exception = 'Registry field %s not allowed. '\
-                                    'They following fields are allowed: %s'
+                                    'The following fields are allowed: %s'
                         raise FieldNotAllowed(_(exception) % (
                             field_name,
                             allowed_fields
@@ -131,17 +133,22 @@ class Registry(object):
         """
         Autogenetate the URLs that will exist in the apps urls dict
 
-        Example from template:
-        {{ app.url.add }}
-        {{ app.url.search }}
+        Example from template::
 
-        Example in python:
-        app['url']['add']
-        app['url']['search']
+            {{ app.url.add }}
+            {{ app.url.search }}
+            {{ app.url.list }}
+
+        Example in python::
+
+            app['url']['add']
+            app['url']['search']
+            app['url']['list']
         """
         url = {
             'add': '',
             'search': '',
+            'list': '',
         }
         admin_add = 'admin:%s_%s_add' % (
             self.model._meta.app_label,
@@ -154,7 +161,8 @@ class Registry(object):
         if self.has_admin:
             url.update({
                 'add': self._reverse(admin_add),
-                'search': self._reverse(admin_index)
+                'search': self._reverse(admin_index),
+                'list': self._reverse(admin_index)
             })
         return url
 
@@ -205,3 +213,15 @@ class PeopleRegistry(Registry):
 
         # application type
         self.fields['app_type'] = 'people'
+
+class LogRegistry(Registry):
+    """
+    Registry for event log associated applications that are not
+    classified as core, plugin or people.
+    """
+    
+    def __init__(self, model):
+        super(LogRegistry, self).__init__(model)
+        
+        # application type
+        self.fields['app_type'] = 'log'

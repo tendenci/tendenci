@@ -3,10 +3,12 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
 from resumes.managers import ResumeManager
+from perms.object_perms import ObjectPermission
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from resumes.module_meta import ResumeMeta
@@ -42,7 +44,7 @@ class Resume(models.Model):
     expiration_dt = models.DateTimeField(null=True, blank=True) #date resume expires based on activation date and duration
 
     resume_url = models.CharField(max_length=300, blank=True) # link to other (fuller) resume posting
-    syndicate = models.BooleanField(blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True)
            
     #TODO: foreign
     contact_name = models.CharField(max_length=150, blank=True)
@@ -77,7 +79,13 @@ class Resume(models.Model):
     
     meta = models.OneToOneField(MetaTags, null=True)
     tags = TagField(blank=True)
-                 
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
+
+
     objects = ResumeManager()
 
     class Meta:
@@ -94,10 +102,9 @@ class Resume(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ("resume", [self.slug])
-    
+
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or uuid.uuid1()
         super(Resume, self).save(*args, **kwargs)
 
     def __unicode__(self):

@@ -1,72 +1,73 @@
 {% load base_filters %}
-{% load perm_tags %}
 {% load story_tags %}
-{% load tagging_tags %}
-{% load category_tags %}
+{% load base_tags %}
 {% load i18n %}
 
-{% has_perm user stories.change_story story as can_edit %}
-{% has_perm user stories.delete_story story as can_delete %}
-{% get_category_for_object story as category %}
-{% get_sub_category_for_object story as sub_category %}
-{% tags_for_object story as tags %}
-
-            {% if can_edit %}
-            <div class="meta">
-    			<div class="meta-left">
-    			    {% if tags %}
-    				<div class="tags"><strong>{% trans "Tags:" %} </strong>
-    					{% for tag in tags %}
-    						<a href="{% url story.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-    					{% endfor %}
-    				</div>
-    				{% endif %}
-    				
-                	{% if category %}
-    				<div class="categories">
-    					<strong>{% trans "Category:" %} </strong><a href="{% url story.search %}?q=category:{{ category }}">{{ category }}</a>
-    				{% if sub_category %}
-    					| <strong>{% trans "Sub Category:" %} </strong><a href="{% url story.search %}?q=sub_category:{{ sub_category }}">{{ sub_category }}</a>
-    				{% endif %}	
-    				</div>
-    				{% endif %}
-                	
-                	<div class="submitted">{% blocktrans with story.create_dt|date:"long" as create_date %}Created on {{ create_date }}
-                	by:{% endblocktrans %} <a href="{{ story.creator.get_absolute_url }}">
-                	{% if story.creator.first_name %}{{ story.creator.first_name }} {{ story.creator.last_name }}
-                    {% else %}
-                    {{ story.creator }}
-                   {% endif %}</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="editor-bar">
-                <div class="perm-status">
-                <ul>
-                    <li>{% obj_perms story %}</li>
-                    <li>{% obj_status story %}</li>
-                    <li>{% story_expiration story %}</li>
-                </ul>
-                </div>
-                <div class="edit-links">
-                <ul>
-                    <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ story.pk }}&source={{ story.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-                    <li><a class="edit-link" href="{% url story.edit story.pk %}">{% trans "Edit" %}</a></li>
-                    <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
-                    <div class="options-list">
-                        <ul>
-                        {% if can_delete %}
-    					<li>
-    						<a class="delete" href="{% url story.delete story.pk %}">{% trans "Delete" %}</a>
-    					</li>				
-    				    {% endif %}
-                            <li><a href="{% url category.update story.opt_app_label story.opt_module_name story.pk %}">{% trans "Edit Categories" %}</a></li>
-                            
-                        </ul>
-                    </div>
-                    </li>
-                </ul>
-                </div>
-            </div> 
+<div class="meta">
+    <div class="meta-left">
+        {% with story.category_set as story_cat %}
+        {% if story_cat.category %}
+        <div class="categories">
+            <strong>{% trans "Category:" %} </strong><a href="{% url story.search %}?q=category:{{ story_cat.category }}">{{ story_cat.category }}</a>
+            {% if story_cat.sub_category %}
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url story.search %}?q=sub_category:{{ story_cat.sub_category }}">{{ story_cat.sub_category }}</a>
             {% endif %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if story.tags %}
+        <div class="tags">
+            <strong>Tags: </strong>
+            {% for tag in story.tags|tag_split %}
+                <a href="{% url story.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            {% if not admin %}
+            {% if user == story.creator or user == story.owner %}
+            <div class="categories">
+                <strong>{% trans "Owned by you" %}</strong>{% if not story.status_detail == "active" %} - {% trans "status" %}: {{ story.obj_status }}{% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% if admin or user == story.creator or user == story.owner %}
+                {% meta_creator_owner story %}
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    <div class="meta-right">
+        <a class="print-link" href="{% url story.print_details story.pk %}">{% trans "Print" %}</a>
+    </div>
+</div>
+
+{% if admin %}
+<div class="editor-bar">
+    <div class="perm-status">
+    <ul>
+        <li>{{ story.obj_perms }}</li>
+        <li>{{ story.obj_status }}</li>
+        <li>{% story_expiration story %}</li>
+    </ul>
+    </div>
+    <div class="edit-links">
+    <ul>
+        <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ story.pk }}&source={{ story.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
+        <li><a class="edit-link" href="{% url story.edit story.pk %}">{% trans "Edit" %}</a></li>
+        <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
+        <div class="options-list">
+            <ul>
+                <li><a class="delete" href="{% url story.delete story.pk %}">{% trans "Delete" %}</a></li>               
+                <li><a href="{% url category.update story.opt_app_label story.opt_module_name story.pk %}">{% trans "Edit Categories" %}</a></li>
+                
+            </ul>
+        </div>
+        </li>
+    </ul>
+    </div>
+</div>
+{% endif %}

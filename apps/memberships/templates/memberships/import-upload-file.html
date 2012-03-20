@@ -1,0 +1,25 @@
+{% extends "memberships/base-wide.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}Import Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div id="import-wrap">
+    
+    <h1>{% trans "Membership Import Upload File" %}</h1>
+    <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ datetime.now }}</p>
+
+    <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value='Import .csv File'>
+    </form>
+</div>
+{% endblock %}

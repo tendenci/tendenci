@@ -3,10 +3,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.contrib.contenttypes import generic
 
 from timezones.fields import TimeZoneField
 from perms.models import TendenciBaseModel
 from entities.models import Entity
+from perms.object_perms import ObjectPermission
 
 from profiles.managers import ProfileManager
          
@@ -77,6 +79,9 @@ class Profile(TendenciBaseModel):
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
     
+    perms = generic.GenericRelation(ObjectPermission,
+        object_id_field="object_id", content_type_field="content_type")
+    
     objects = ProfileManager()
     
     def __unicode__(self):
@@ -99,6 +104,13 @@ class Profile(TendenciBaseModel):
             old_email = Profile.objects.get(pk=self.pk).email
         else:
             old_email = ''
+
+        # match allow_anonymous_view with opposite of hide_in_search
+        if self.hide_in_search:
+            self.allow_anonymous_view = False
+        else:
+            self.allow_anonymous_view = True
+
         super(Profile, self).save(*args, **kwargs)
         if old_email and old_email != self.email:
             update_subscription(self, old_email)

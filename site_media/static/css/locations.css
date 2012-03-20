@@ -19,17 +19,30 @@
 }
 
 .t .location-wrap {
-	padding: 10px;
+	padding: 0 10px 10px 10px;
 	margin-bottom: 20px;
 	position: relative;
 }
+.t .location-wrap h1 {
+	margin-bottom: 10px;
+}
+.t .location-wrap div.image a {
+	/*border: 1px solid silver;*/
+	box-shadow: 0 0 5px #AAA;
+}
 
-.t .locations-wrap .location-wrap-search {
-	border: 1px solid #CCC;
-	padding: 10px;
-	margin-bottom: 20px;
-	position: relative;
-	background-color: white;
+.location-search-item .image {
+    width: 35%;
+    float: left;
+}
+
+.location-search-item .details {
+    width: 55%;
+    float: left;
+}
+
+.location-search-item .image a {
+    box-shadow: 0 0 5px #AAA;
 }
 
 .t .locations-wrap .location-wrap h2 {
@@ -40,14 +53,12 @@
 }
 .t .options {
 	text-align: right;
-	position: absolute;
-	top: 0; right: 0;
-	padding: 5px;
-	white-space: nowrap;
-}
+	/*margin-bottom: 10px;*/
+	width: 100%;
 
+}
 .t .quick-options {
-	float: right;
+	/*float: right;*/
 	margin-right: 5px;
 }
 .t .quick-options ul {
@@ -130,3 +141,40 @@ div.location-wrap-search .content {
     line-height: 1em;
     margin-bottom: 2px;
 }
+
+#import-wrap h1 {
+    margin-bottom: 0;
+}
+
+#import-wrap .timestamp {
+    margin-top: 0;
+    font-size: 13px;
+}
+
+#import-wrap form {
+    margin-top: 10px;
+}
+
+#import-wrap .form-field {
+    width: 500px;
+    background-color: #F7F7F7;
+}
+
+#import-wrap .form-field > div {
+    clear: both;
+}
+
+#import-wrap .form-field .label {
+    text-align: right;
+    padding: 5px 10px 5px 0px;
+}
+
+#import-wrap .form-field .label, #import-wrap .form-field .field {
+    width: 200px;
+    float: left;
+}
+
+#import-wrap .form-field .field select {
+    width: 200px;
+}
+

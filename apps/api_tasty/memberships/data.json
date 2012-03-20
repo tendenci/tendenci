@@ -1,0 +1,13 @@
+{
+    "create_user": true,
+    "username": "membertest",
+    "password": "password",
+    "corporate_membership_id": 1,
+    "expire_dt": "10/10/2012",
+    "ma": 5,
+    "member_number": 100,
+    "membership_type": 2,
+    "payment_method": 1,
+    "status_detail": 1,
+    "subscribe_dt": "10/10/2011"
+}

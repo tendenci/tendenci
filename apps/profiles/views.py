@@ -19,7 +19,7 @@ from base.decorators import ssl_required
 
 from perms.object_perms import ObjectPermission
 from perms.utils import (has_perm, is_admin, update_perms_and_save,
-    get_notice_recipients)
+    get_notice_recipients, get_query_filters)
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -67,7 +67,7 @@ def index(request, username='', template_name="profiles/index.html"):
     content_counts = {'total':0, 'invoice':0}
     from django.db.models import Q
     from invoices.models import Invoice
-    inv_count = Invoice.objects.filter(Q(creator=user_this) | (Q(owner=user_this))).count()
+    inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
     
@@ -103,9 +103,15 @@ def index(request, username='', template_name="profiles/index.html"):
     }
     EventLog.objects.log(**log_defaults)
  
+    state_zip = ' '.join((profile.state, profile.zipcode))
+    city_state = ', '.join((profile.city, profile.state))
+    city_state_zip = ', '.join((profile.city, state_zip, profile.country))
+
     return render_to_response(template_name, {
         "user_this": user_this,
         "profile":profile,
+        'city_state': city_state,
+        'city_state_zip': city_state_zip,
         'content_counts': content_counts,
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
@@ -127,8 +133,15 @@ def search(request, template_name="profiles/search.html"):
             raise Http403
 
     query = request.GET.get('q', None)
-    profiles = Profile.objects.search(query, user=request.user)
-    profiles = profiles.order_by('last_name_exact')
+    if get_setting('site', 'global', 'searchindex') and query:
+        profiles = Profile.objects.search(query, user=request.user)
+        profiles = profiles.order_by('last_name_exact')
+    else:
+        filters = get_query_filters(request.user, 'profiles.view_profile')
+        profiles = Profile.objects.filter(filters).distinct()
+        profiles = profiles.order_by('user__last_name')
+        if request.user.is_authenticated():
+            profiles = profiles.select_related()
 
     log_defaults = {
         'event_id' : 124000,
@@ -409,7 +422,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         profile = Profile.objects.create_profile(user=user_edit)
    
     # for now, only admin can grant/remove permissions
-    if not request.user.is_superuser: raise Http403
+    if not is_admin(request.user): raise Http403
     
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
@@ -629,7 +642,11 @@ def user_activity_report(request):
 
 @staff_member_required
 def admin_users_report(request):
-    users = User.objects.all().filter(is_superuser=True)
+    filters = {
+        'is_staff': 1,
+        'is_active': 1,
+    }
+    users = User.objects.all().filter(**filters)
     return render_to_response(
                 'reports/admin_users.html', 
                 {'users': users},  

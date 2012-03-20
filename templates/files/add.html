@@ -1,5 +1,6 @@
 {% extends "files/base.html" %}
 {% load file_tags %}
+{% load styled_forms %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}Add{% endblock %}
@@ -7,7 +8,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/files.css">
-<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -15,12 +16,14 @@
 
     {% file_nav request.user %}
 
-    <h1>{% trans "Files Add" %}</h1>
+    <h1>{% trans "Add File" %}</h1>
 
     <div class="file-wrap">
     <form action="{% url file.add %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-        {{ form.as_p }}
+    	<div class="forms">
+        {{ form|styled_form }}
         <input type="submit" value="Add File" />
+        </div>
     </form>
 
     </div>

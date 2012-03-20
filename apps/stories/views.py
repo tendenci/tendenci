@@ -1,4 +1,5 @@
 import os.path
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -8,17 +9,21 @@ from django.conf import settings
 from django.contrib import messages
 
 from base.http import Http403
+from perms.utils import (has_perm, update_perms_and_save,
+    get_query_filters, has_view_perm)
+from event_logs.models import EventLog
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
+
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
-from perms.utils import has_perm, update_perms_and_save
-from event_logs.models import EventLog
 
 
-def index(request, id=None, template_name="stories/view.html"):
+def details(request, id=None, template_name="stories/view.html"):
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
     
-    if not has_perm(request.user,'stories.view_story', story):
+    if not has_view_perm(request.user,'stories.view_story', story):
         raise Http403
 
     log_defaults = {
@@ -34,26 +39,57 @@ def index(request, id=None, template_name="stories/view.html"):
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
     
-    
-def search(request, template_name="stories/search.html"):
-    query = request.GET.get('q', None)
-    stories = Story.objects.search(query, user=request.user)
-    stories = stories.order_by('-create_dt')
+def print_details(request, id, template_name="stories/print_details.html"):
+    story = get_object_or_404(Story, pk=id)
+    if not has_view_perm(request.user,'stories.view_story', story):
+        raise Http403
 
     log_defaults = {
+        'event_id' : 1060501,
+        'event_data': '%s (%d) print viewed by %s' % (story._meta.object_name, story.pk, request.user),
+        'description': '%s print viewed' % story._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': story,
+    }
+    EventLog.objects.log(**log_defaults)
+
+    return render_to_response(template_name, {'story': story}, 
+        context_instance=RequestContext(request))
+    
+def search(request, template_name="stories/search.html"):
+    """
+    This page lists out all stories from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through stories.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
+    query = request.GET.get('q', None)
+
+    if has_index and query:
+        stories = Story.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'stories.view_story')
+        stories = Story.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            stories = stories.select_related()
+        stories = stories.order_by('-create_dt')
+
+    EventLog.objects.log(**{
         'event_id' : 1060400,
         'event_data': '%s searched by %s' % ('Story', request.user),
         'description': '%s searched' % 'Story',
         'user': request.user,
         'request': request,
         'source': 'stories'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    })
+
     return render_to_response(template_name, {'stories':stories}, 
         context_instance=RequestContext(request))
-    
-    
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('stories'))
+
 @login_required   
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
     
@@ -90,6 +126,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
             tags = request.GET.get('tags', '')
             if tags:
                 form.fields['tags'].initial = tags
+
+    else:
+        raise Http403
 
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
@@ -130,7 +169,10 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                     return redirect('story', id=story.pk)             
         else:
             form = form_class(instance=story, user=request.user)
-    
+
+    else:
+        raise Http403
+
     return render_to_response(template_name, {'story': story, 'form':form }, 
         context_instance=RequestContext(request))
 

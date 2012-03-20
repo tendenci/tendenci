@@ -3,12 +3,15 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
 from perms.utils import is_admin
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from user_groups.models import Group, GroupMembership
+from site_settings.utils import get_setting
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -62,8 +65,8 @@ class Form(TendenciBaseModel):
         blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=
         _("If checked, the person submitting the form will be sent an email"))
-    email_from = models.EmailField(_("From address"), blank=True, 
-        help_text=_("The address the email will be sent from"))
+    email_from = models.EmailField(_("Reply-To address"), blank=True, 
+        help_text=_("The address the replies to the email will be sent to"))
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
@@ -73,7 +76,11 @@ class Form(TendenciBaseModel):
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False)
     payment_methods = models.ManyToManyField("payments.PaymentMethod")
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = FormManager()
 
     class Meta:
@@ -145,6 +152,20 @@ class Field(models.Model):
     
     def __unicode__(self):
         return self.label
+        
+    def get_field_class(self):
+        if "/" in self.field_type:
+            field_class, field_widget = self.field_type.split("/")
+        else:
+            field_class, field_widget = self.field_type, None
+        return field_class
+        
+    def get_field_widget(self):
+        if "/" in self.field_type:
+            field_class, field_widget = self.field_type.split("/")
+        else:
+            field_class, field_widget = self.field_type, None
+        return field_widget
 
     def execute_function(self, entry, value, user=None):
         if self.field_function == "GroupSubscription":
@@ -302,11 +323,23 @@ class FieldEntry(models.Model):
     
     def __unicode__(self):
         return ('%s: %s' % (self.field.label, self.value))
+        
+    def include_in_email(self):
+        widget = self.field.get_field_widget()
+        field_class = self.field.get_field_class()
+        if widget == 'forms_builder.forms.widgets.Description':
+            return False
+        if widget == 'forms_builder.forms.widgets.Header':
+            return False
+        if field_class == 'FileField':
+            return False
+        return True
     
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(FieldEntry, self).save(*args, **kwargs)
         self.field.execute_function(self.entry, self.value, user=user)
+
     
 class Pricing(models.Model):
     """
@@ -314,7 +347,16 @@ class Pricing(models.Model):
     """
     form = models.ForeignKey('Form')
     label = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    
+
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        blank=True,
+        null=True,
+        help_text="Leaving this field blank allows visitors to set their own price"
+    )
+
     def __unicode__(self):
-        return "%s %s" % (self.price, self.label)
+        currency_symbol = get_setting("site", "global", "currencysymbol")
+        if not currency_symbol: currency_symbol = '$'
+        return "%s - %s%s" % (self.label, currency_symbol, self.price, )

@@ -11,7 +11,7 @@
         <form method="post" action="">{% csrf_token %}
         <div class="map-wrap">
             <div class="map-photo">
-                <canvas height="{{ map.height_for_900 }}" width="900" >
+                <canvas height="{{ map|height_for_width:900 }}" width="900" >
                 </canvas>
             </div>
             <p class="map-title">{{ map.name }}</p>
@@ -26,10 +26,10 @@
         </form>
     </div>
     <div id="line-hidden">
-        <input type="text" name="lines-0-x1" id="id_lines-0-x1" />
-        <input type="text" name="lines-0-y1" id="id_lines-0-y1" />
-        <input type="text" name="lines-0-x2" id="id_lines-0-x2" />
-        <input type="text" name="lines-0-y2" id="id_lines-0-y2" />
+        <input type="text" name="lines-0-x1" class="x1" id="id_lines-0-x1" />
+        <input type="text" name="lines-0-y1" class="y1" id="id_lines-0-y1" />
+        <input type="text" name="lines-0-x2" class="x2" id="id_lines-0-x2" />
+        <input type="text" name="lines-0-y2" class="y2" id="id_lines-0-y2" />
 	    <input type="hidden" name="lines-0-id" id="id_lines-0-id" />
 	</div>
 </div>
@@ -39,92 +39,6 @@
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
 <script type="text/javascript">
-// initialize map image
-$("canvas").drawImage({
-  source: "{{ map.file.url }}",
-  x: 0, y: 0,
-  width: 900,
-  fromCenter: false,
-});
-
-//dynamic line form creation
-function updateIndex(e, prefix, idx){
-    var id_regex = new RegExp('('+ prefix +'-\\d+)');
-    var replacement = prefix + '-' + idx
-    if ($(e).attr("for")) 
-        {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
-    if (e.id) {e.id = e.id.replace(id_regex, replacement);}
-    if (e.name){ e.name = e.name.replace(id_regex, replacement);}
-}
-
-function addLine(prefix, data){
-    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-    var row = $('#line-hidden').clone(true).get(0);
-    
-    // place proper class
-    $(row).addClass('line-form');
-    
-    // update id attr
-    var replacement = prefix + '_' + formCount
-    $(row).attr('id',replacement);
-    
-    $(row).find("input").each(function() {
-        updateIndex(this, prefix, formCount);
-        if($(this).attr("name")==(prefix+"-"+formCount+"-x1")){
-            $(this).val(data['x1']);
-        } else if($(this).attr("name")==(prefix+"-"+formCount+"-y1")){
-            $(this).val(data['y1']);
-        } else if($(this).attr("name")==(prefix+"-"+formCount+"-x2")){
-            $(this).val(data['x2']);
-        } else if($(this).attr("name")==(prefix+"-"+formCount+"-y2")){
-            $(this).val(data['y2']);
-        }
-    });
-    
-    // insert as last element into form list
-    $('#lines-formset').append(row);
-    
-    $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-    
-    return false;
-}
-
-//state variables for plotting
-prev_x = null;
-prev_y = null;
-new_line = true;
-//line plotting
-$("canvas").click(function(e){
-    var position = $(this).position();
-    var offset = $(this).offset();
-    var x = e.pageX - (offset.left);
-    var y = e.pageY - (offset.top);
-    $(this).drawArc({
-        fillStyle: "black",
-        x: x, y: y,
-        radius: 10
-    });
-    if (prev_x){
-        $(this).drawLine({
-            strokeStyle: "#000",
-            strokeWidth: 10,
-            strokeCap: "round",
-            strokeJoin: "miter",
-            x1: prev_x, y1: prev_y,
-            x2: x, y2: y,
-        });
-        //intialine a line form here
-        var data = {
-            'x1':prev_x,
-            'y1':prev_y,
-            'x2':x,
-            'y2':y,
-        }
-        addLine('lines', data);
-    }
-    prev_x = x;
-    prev_y = y;
-});
-
+    {% include "lots/media/js/maps.js" %}
 </script>
 {% endblock %}

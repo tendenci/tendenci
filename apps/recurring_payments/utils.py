@@ -36,7 +36,11 @@ class RecurringPaymentEmailNotices(object):
         self.admin_emails = self.get_admin_emails() 
 
     def get_admin_emails(self):
-        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')
+        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')   
+        payment_admins = get_setting('module', 'payments', 'paymentrecipients')
+        if payment_admins:
+            payment_admins = payment_admins.split(',')
+            admin_emails += payment_admins
             
         if admin_emails:
             admin_emails = ','.join(admin_emails)
@@ -78,11 +82,16 @@ class RecurringPaymentEmailNotices(object):
         self.email.recipient = self.admin_emails
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_transaction.html"
+            user_in_texas = False
+            if payment_transaction.payment.state:
+                if payment_transaction.payment.state.lower() in ['texas', 'tx']:
+                    user_in_texas = True
             try:
                 email_content = render_to_string(template_name, 
                                                {'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
-                                                'site_url': self.site_url
+                                                'site_url': self.site_url,
+                                                'user_in_texas': user_in_texas
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
@@ -535,7 +544,7 @@ def api_add_rp(data):
     for key, value in data.items():
         if key in ALLOWED_FIELES:
             if hasattr(rp, key):
-                exec('rp.%s="%s"' % (key, value))
+                rp.key = value
             
     if rp.billing_start_dt:
         try:

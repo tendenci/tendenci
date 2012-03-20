@@ -37,6 +37,8 @@ def generate_submitter_email_body(entry):
     template = get_template('forms/submitter_email_content.html')
 
     context['form'] = entry.form
+    context['entry'] = entry
+    context['fields'] = entry.fields.all().order_by('field__position')
     output = template.render(context)
 
     return output
@@ -51,8 +53,8 @@ def generate_email_subject(form, form_entry):
         for field_entry in field_entries:
             label = field_entry.field.label
             value = field_entry.value
-            # removes parens so they don't break the re compile.
-            label = re.sub('[()]', '', label)
+            # removes parens and asterisks so they don't break the re compile.
+            label = re.sub('[\*()]', '', label)
             if not value:
                 value = ''
                 p = re.compile('(-\s+)?\[%s\]' % label, re.IGNORECASE)
@@ -84,19 +86,24 @@ def generate_email_subject(form, form_entry):
     return subject
     
 
-def make_invoice_for_entry(entry):
+def make_invoice_for_entry(entry, **kwargs):
     """
     Create an invoice for a Form Entry.
     """
+
+    price = entry.pricing.price or kwargs.get('custom_price')
+    price = unicode(price)
+    now = datetime.now()
+
     inv = Invoice()
     inv.title = "%s Invoice" % (entry.form.title)
     inv.object_type = ContentType.objects.get(app_label=entry._meta.app_label, model=entry._meta.module_name)
     inv.object_id = entry.id
-    inv.subtotal = entry.pricing.price
-    inv.total = entry.pricing.price
-    inv.balance = entry.pricing.price
-    inv.due_date = datetime.now()
-    inv.ship_date = datetime.now()
+    inv.subtotal = price
+    inv.total = price
+    inv.balance = price
+    inv.due_date = now
+    inv.ship_date = now
     inv.save()
     
     return inv

@@ -1,28 +1,25 @@
 import os
 from datetime import datetime, date
 import csv
+import operator
 
-#from django.conf import settings
-#from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 from django.utils import simplejson
+from django.db.models import Q
 
 from imports.utils import render_excel
 
 from base.http import Http403
-from perms.utils import has_perm, is_admin
-from site_settings.utils import get_setting
-
+from perms.utils import has_perm, is_admin, is_member
 from event_logs.models import EventLog
 
 from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
@@ -54,6 +51,8 @@ from perms.utils import get_notice_recipients
 from base.utils import send_email_notification
 from files.models import File
 from profiles.models import Profile
+from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
+from site_settings.utils import get_setting
 
 
 def add(request, slug, template="corporate_memberships/add.html"):
@@ -270,8 +269,9 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             # corporate_membership_type, status, status_detail
             need_archive = False
             for key in status_info_before_edit:
-                exec('value=corporate_membership.%s' % key)
-                if value <> status_info_before_edit[key]:
+                value = getattr(corporate_membership, 'key')
+
+                if value != status_info_before_edit[key]:
                     need_archive = True
                     break
                 
@@ -512,13 +512,15 @@ def approve(request, id, template="corporate_memberships/approve.html"):
                 corporate_membership.approve_renewal(request)
                 # send an email to dues reps
                 recipients = dues_rep_emails_list(corporate_membership)
+                if not recipients and corporate_membership.creator:
+                    recipients = [corporate_membership.creator.email]
                 extra_context = {
                     'object': corporate_membership,
                     'request': request,
                     'corp_renew_entry': renew_entry,
                     'invoice': renew_entry.invoice,
                 }
-                send_email_notification('corp_memb_renewed_user', recipients, extra_context)
+                send_email_notification('corp_memb_renewal_approved', recipients, extra_context)
                 msg = 'Corporate membership "%s" renewal has been APPROVED.' % corporate_membership.name
                 
                 event_id = 682002
@@ -529,6 +531,17 @@ def approve(request, id, template="corporate_memberships/approve.html"):
             else:
                 # approve join
                 corporate_membership.approve_join(request)
+                
+                # send an email to dues reps
+                recipients = dues_rep_emails_list(corporate_membership)
+                recipients.append(corporate_membership.creator.email)
+                extra_context = {
+                    'object': corporate_membership,
+                    'request': request,
+                    'invoice': corporate_membership.invoice,
+                }
+                send_email_notification('corp_memb_join_approved', recipients, extra_context)
+                
                 msg = 'Corporate membership "%s" has been APPROVED.' % corporate_membership.name
                 event_id = 682001
                 event_data = '%s (%d) approved by %s' % (corporate_membership._meta.object_name, 
@@ -629,14 +642,48 @@ def view(request, id, template="corporate_memberships/view.html"):
 
 
 def search(request, template_name="corporate_memberships/search.html"):
-    allow_anonymous_search = get_setting('module', 'corporatememberships', 'allowanonymoussearchcorporatemember')
-    if request.user.is_anonymous() and not allow_anonymous_search:
+    if not request.user.is_authenticated() and not allow_anonymous_search:
         raise Http403
     
     query = request.GET.get('q', None)
-    corp_members = CorporateMembership.objects.search(query, user=request.user)
     
-    corp_members = corp_members.order_by('name_exact')
+    filter_and, filter_or = CorporateMembership.get_search_filter(request.user)
+    q_obj = None
+    if filter_and:
+        q_obj = Q(**filter_and)
+    if filter_or:
+        q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+        if q_obj:
+            q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+        else:
+            q_obj = q_obj_or
+    
+    if get_setting('site', 'global', 'searchindex') and query:
+        corp_members = CorporateMembership.objects.search(query, user=request.user)
+        if q_obj:
+            corp_members = corp_members.filter(q_obj)
+        corp_members = corp_members.order_by('name_exact')
+    else:
+        if q_obj:
+            corp_members = CorporateMembership.objects.filter(q_obj)
+        else:
+            corp_members = CorporateMembership.objects.all()
+    
+        if request.user.is_authenticated():
+            corp_members = corp_members.select_related()
+            
+        
+        corp_members = corp_members.order_by('name')
+    
+    log_defaults = {
+        'event_id': 684000,
+        'event_data': '%s searched by %s' % ('Corporate memberships', request.user),
+        'description': '%s searched' % 'Corporate memberships',
+        'user': request.user,
+        'request': request,
+        'source': 'corporatemembership'
+    }
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
@@ -705,28 +752,58 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
             
             corp_memb_update_perms(corp_memb)
             
+            # this is to update the search index for corporate memberships
+            if use_search_index:
+                corp_memb.save()
+            
             # log an event here
             
             if (request.POST.get('submit', '')).lower() == 'save':
                 return HttpResponseRedirect(reverse('corp_memb.view', args=[corp_memb.id]))
-
+    
+    if use_search_index:        
+        memberships = Membership.objects.corp_roster_search(None, 
+                                                user=request.user).filter(
+                                            corporate_membership_id=corp_memb.id)
+    else:
+        memberships = Membership.objects.filter(
+                                            corporate_membership_id=corp_memb.id)
+    try:
+        page = int(request.GET.get('page', 0))
+    except:
+        page = 0
     
     return render_to_response(template_name, {'corp_memb': corp_memb, 
                                               'form': form,
-                                              'reps': reps}, 
+                                              'reps': reps,
+                                              'memberships': memberships,
+                                              'page': page}, 
         context_instance=RequestContext(request))
     
 def reps_lookup(request):
     q = request.REQUEST['term']
-    profiles = Profile.objects.search(
-                        q, 
-                        user=request.user
-                        ).order_by('last_name_exact')
+    
+    if use_search_index:
+        profiles = Profile.objects.search(
+                            q, 
+                            user=request.user
+                            ).order_by('last_name_exact')
+    else:
+        # they don't have search index, probably just check username only for performance sake
+        profiles = Profile.objects.filter(Q(user__first_name__istartswith=q) \
+                                       | Q(user__last_name__istartswith=q) \
+                                       | Q(user__username__istartswith=q) \
+                                       | Q(user__email__istartswith=q))
+        profiles  = profiles.order_by('user__last_name')
+        
     if profiles and len(profiles) > 10:
         profiles = profiles[:10]
 
-    users = [p.object.user for p in profiles]
-    #users = User.objects.all()
+    if use_search_index:
+        users = [p.object.user for p in profiles]
+    else:
+        users = [p.user for p in profiles]
+         
     results = []
     for u in users:
         value = '%s, %s (%s) - %s' % (u.last_name, u.first_name, u.username, u.email)
@@ -739,13 +816,18 @@ def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html
     rep = get_object_or_404(CorporateMembershipRep, pk=id)
     corp_memb = rep.corporate_membership
 
-    if has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
+    if corp_memb.allow_edit_by(request.user) or \
+         has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
         if request.method == "POST":
             
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % rep)
             
             rep.delete()
             corp_memb_update_perms(corp_memb)
+            
+            # this is to update the search index for corporate memberships
+            if use_search_index:
+                corp_memb.save()
                 
             return HttpResponseRedirect(reverse('corp_memb.edit_reps', args=[corp_memb.pk]))
     
@@ -760,8 +842,12 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     corp_memb = get_object_or_404(CorporateMembership, name=name)
     
     query = request.GET.get('q', None)
-    memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
-    
+    if use_search_index:
+        memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
+    else:
+        memberships = Membership.objects.filter(
+                                            corporate_membership_id=corp_memb.id)
+        
     if is_admin(request.user) or corp_memb.is_rep(request.user):
         pass
     else:
@@ -1205,7 +1291,7 @@ def corp_export(request):
                                     value = corp_memb.payment_method.human_name
                                 
                         else:
-                            exec('value=corp_memb.%s' % corp_field.field_name)
+                            value = getattr(corp_memb, corp_field.field_name)
                         
                     else:
                         if field_entries_d.has_key(corp_field.id):
@@ -1226,7 +1312,7 @@ def corp_export(request):
                         if dues_reps:
                             value = '; '.join(['%s (%s)' % (dues_rep.user.get_full_name(), dues_rep.user.username) for dues_rep in dues_reps])
                     else:
-                        exec('value=corp_memb.%s' % field)
+                        value = getattr(corp_memb, field)
                         if field == 'expiration_dt' and (not corp_memb.expiration_dt):
                             value = 'never expire'
                     value_type = type(value)

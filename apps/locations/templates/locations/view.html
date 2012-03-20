@@ -1,0 +1,37 @@
+{% extends "locations/base.html" %}
+{% load locations_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}{{ location.location_name }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% location_nav request.user location %}
+
+    <div class="location-wrap">
+            <h1>{% firstof location.location_name "Untitled" %}</h1>
+
+            <div class="image">
+                <a title="Google Directions" href="http://maps.google.com/maps?q={{ location.get_address }}">
+                <img src="http://maps.googleapis.com/maps/api/staticmap?center={{ location.latitude }},{{ location.longitude }}&size=200x200&markers=color:red|label:A|{{ location.latitude }},{{ location.longitude }}&zoom=8&sensor=false"></a>
+            </div>
+
+            <div class="details">
+                <p>{{ location.address }} <br />{{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
+                <p>{{ location.phone }}</p>
+                <p>{{ location.email }}</p>
+            </div>
+
+            <div style="clear:both;"><!--ie-bug--></div>
+            <div class="content">{{ location.description|safe }}</div>
+
+    </div>
+
+</div>
+{% endblock %}

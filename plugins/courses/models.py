@@ -1,9 +1,14 @@
+import calendar
+from decimal import Decimal
 from datetime import datetime, timedelta
 
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 
 from perms.models import TendenciBaseModel
@@ -15,14 +20,26 @@ class Course(TendenciBaseModel):
     You can think of this as test since there will be several questions
     linked to it.
     """
+    
     title = models.CharField(_(u'Title'), max_length=200)
     content = models.TextField(_(u'Content'))
-    retries = models.IntegerField(_(u'Retries'), help_text=u'Number of retries allowed (0, means unlimited)', default=0)
-    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=u'Number of hours before another retry', default=0)
-    passing_score = models.DecimalField(_(u'Passing Score'), help_text=u'out of 100%', max_digits=5, decimal_places=2)
-    deadline = models.DateTimeField(_(u'Deadline'), default=datetime(datetime.now().year+1, datetime.now().month, datetime.now().day))
+    recipients = models.CharField(_(u'Recipients'), help_text=_(u"Comma separated emails"), max_length=200, blank=True)
+    can_retry = models.BooleanField(_(u'Allow Retries'), default=True)
+    retries = models.IntegerField(_(u'Retries'), help_text=_(u'Number of retries allowed (0, means unlimited)'), default=0)
+    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=_(u'Number of hours before another retry'), default=0)
+    passing_score = models.DecimalField(_(u'Passing Score'),
+                        help_text=u'out of 100%',
+                        max_digits=5,
+                        decimal_places=2,
+                        validators=[MaxValueValidator(Decimal('100')), MinValueValidator(Decimal('0'))],
+                    )
+    deadline = models.DateTimeField(_(u'Deadline'), null=True)
     close_after_deadline = models.BooleanField(_(u'Close After Deadline'), default=False)
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
     
     objects = CourseManager()
     
@@ -44,25 +61,65 @@ class Course(TendenciBaseModel):
         return total_points
     
     def is_closed(self):
-        return (self.close_after_deadline and datetime.now() > self.deadline)
+        return (self.close_after_deadline and self.deadline_has_passed())
         
     def deadline_has_passed(self):
-        return (datetime.now() > self.deadline)
+        if self.deadline:
+            return (datetime.now() > self.deadline)
+        return False
+        
+    def user_attempts(self):
+        d = {}
+        attempts = self.attempts.all()
+        for a in attempts:
+            if a.user in d.keys():
+                d[a.user]['list'].append(a)
+            else:
+                d[a.user] = {}
+                d[a.user]['user'] = a.user
+                d[a.user]['list'] = [a,]
+        
+        l = []
+        for u in d.keys():
+            l.append(d[u])
+        return l
+            
 
 class Question(models.Model):
-    """
-    Represents a single question for a course.
+    """Represents a single question for a course.
     point_value should always be equal to 100 over total number of course questions.
     """
     course = models.ForeignKey(Course, related_name="questions")
+    number = models.IntegerField(_(u'Number'))
     question = models.CharField(_(u'Question'), max_length=200)
-    answer_choices = models.CharField(_(u'Answer Choices'), help_text=_(u'separated by comma'), max_length=200)
-    answer = models.CharField(_(u'Correct Answer'), max_length=200)
     point_value = models.IntegerField(_(u'Point Value'), default=0)
     
     def __unicode__(self):
         return "%s: %s" % (self.course.title, self.question)
-
+        
+    def correct_answers(self):
+        return self.answers.filter(correct=True)
+        
+    def choices(self):
+        cl = []
+        letters = map(chr, range(97, 123))
+        answers = self.answers.all()
+        for i in range(min([len(letters)], len(answers))):
+            cl.append({
+                'letter':letters[i],
+                'answer':answers[i]
+            })
+        return cl
+        
+class Answer(models.Model):
+    """Represents an Answer choice for a question.
+    """
+    question = models.ForeignKey(Question, related_name="answers")
+    answer = models.CharField(_(u'answer'), max_length=100)
+    correct = models.BooleanField(_(u'is correct'))
+    
+    def __unicode__(self):
+        return "%s: %s" % (self.question.question, self.answer)
 
 class CourseAttempt(models.Model):
     """

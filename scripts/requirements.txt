@@ -36,6 +36,7 @@ mimeparse>=0.1.3
 python-dateutil>=1.5
 pdfminer==20110515
 slate==0.3
+--index-url https://code.stripe.com --upgrade stripe
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git
@@ -50,4 +51,4 @@ git+git://github.com/hmarr/boto@ses#egg=boto
 git+git://github.com/hmarr/django-ses#egg=django_ses
 
 # django tasty pie
-git+git://github.com/toastdriven/django-tastypie.git
+git+git://github.com/toastdriven/django-tastypie.git@6692eb2756b58e67758cacfbe25a2eb088e71ca2

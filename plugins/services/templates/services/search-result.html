@@ -1,0 +1,9 @@
+{% load service_tags %}
+
+<div class="service-wrap-search-item">
+    <div class="search-item service-search-item">
+        <h2><a href="{{ service.get_absolute_url }}">{% firstof service.title "Untitled" %}</a></h2>
+        <div class="content">{{ service.description|striptags|truncatewords:20|safe }}</div>
+    </div>
+    {% include 'services/meta.html' %}
+</div>

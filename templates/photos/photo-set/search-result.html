@@ -30,7 +30,7 @@
         <div class="extra-info">
         {% if admin %}
         <div class="visibility">
-            {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
+            {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
         </div>
         {% endif %}
 

@@ -91,9 +91,16 @@ class FanCountNode(Node):
 @register.tag
 def fan_count(parser, token):
     """
+    Pull a fan count for a social media site:
+    
+    Usage::
+
         {% fan_count facebook 12345 %}
+
         or
+
         {% fan_count twitter username %}
+    
     """
     bits = token.contents.split()
     if len(bits) < 3:
@@ -143,7 +150,7 @@ def do_assign(parser, token):
     """
     Assign an expression to a variable in the current context.
     
-    Syntax::
+    Usage::
         {% assign [name] [value] %}
     Example::
         {% assign list entry.get_related %}
@@ -225,7 +232,9 @@ class ResetNode(Node):
 @register.tag      
 def reset(parser, token):
     """
-        Reset a context variable to another one
+    Reset a context variable to another one
+    
+    Usage::
         {% reset var as var1 %} 
     """
     bits = token.split_contents()
@@ -325,12 +334,14 @@ class RssParserNode(Node):
 @register.tag(name="get_rss")
 def get_rss(parser, token):
     """
-    example usage:
+    Take an RSS feed so you can iterate through the entries.
     
-    {% load cache %}
-    {% load rss %}
-    
-    {% cache 500 rss_display %}
+    Usage::
+
+        {% get_rss [rss_feed_url] as [variable] %}
+
+    Example::
+
         {% get_rss "http://www.freesound.org/blog/?feed=rss2" as rss %}
         {% for entry in rss.entries %}
             <h1>{{entry.title}}</h1>
@@ -341,7 +352,6 @@ def get_rss(parser, token):
                 <a href="{{entry.link}}">read more...</a>
             </p>
         {% endfor %}
-    {% endcache %}
     """
     import re
     # This version uses a regular expression to parse tag contents.
@@ -374,7 +384,7 @@ class Md5Hash(Node):
 @register.tag
 def md5_hash(parser, token):
     """
-    Example:
+    Example::
         {% md5_hash obj.pk obj.email %}
     """
     args, kwargs = [], {}
@@ -417,7 +427,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return unicode('')
+            return unicode()
 
         args = [photo.pk, self.size]
         if self.crop:
@@ -433,8 +443,9 @@ def photo_image_url(parser, token):
     """
     Creates a url for a photo that can be resized, cropped, and have quality reduced.
     Used specifically for photos.
-    
-    Example:
+
+    Example::
+
         {% list_photos as photos user=user limit=3 %}
         {% for photo in photos %}
             <img src="{% photo_image_url photo size=100x100 crop=True %}" />
@@ -487,8 +498,22 @@ def image_url(parser, token):
     """
     Creates a url for a photo that can be resized, cropped, and have quality reduced.
     
-    Example:
-        <img src="{% image_url file size=100x100 crop=True quality=90 %}" />
+    Usage::
+
+        {% image_url file [options][size=100x100] [crop=True] [quality=90] %}
+
+    Options include:
+    
+        ``size``
+           The size in the format [width]x[height]. **Default: 100x100**
+        ``crop``
+           Whether or not to crop the image. **Default: False**
+        ``quality``
+           The quality of the rendered image. Use smaller for faster loading. **Default: 90**
+
+    Example::
+
+        <img src="{% image_url file size=150x100 crop=True quality=90 %}" />
     """
     args, kwargs = [], {}
     bits = token.split_contents()
@@ -564,3 +589,7 @@ def do_hash_tags_for_object(parser, token):
     
 register.tag('tags_strip_hash', do_non_hash_tags_for_object)
 register.tag('tags_hash_tags', do_hash_tags_for_object)
+
+@register.inclusion_tag("base/meta_creator_owner.html")
+def meta_creator_owner(obj):
+    return {'obj': obj}

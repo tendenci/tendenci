@@ -1,0 +1,55 @@
+{% extends "events/base.html" %}
+{% load event_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} {{ event.title }} {% trans "Addons" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% event_nav request.user event %}
+
+    <h1>{{ event.title }} {% trans "Addons" %}</h1>
+    
+    <div class="addons-wrap">
+        {% for addon in addons %}
+            <div class="addon-title">
+            <strong>{{ addon.title }}</strong>
+            {% if addon.status %}
+                <a href="{% url event.disable_addon event.id addon.id %}">Disable</a>
+            {% else %}
+                <a href="{% url event.enable_addon event.id addon.id %}">Enable</a>
+            {% endif %}
+            <a href="{% url event.edit_addon event.id addon.id %}">Edit</a>
+            </div>
+            <table class="addon-detail">
+            <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
+            <tr><td><strong>Enabled</strong></td><td>{{ addon.status }}</td></tr>
+            {% if addon.options.all %}
+                <tr>
+                    <td><strong>Options</strong></td>
+                    <td>
+                    {% for op in addon.options.all %}
+                    {{ op.title }}{% if not forloop.last%}, {% endif %}
+                    {% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
+            </table>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

@@ -19,6 +19,3 @@
         </div>
         </form>
     </div>
-    {% if can_edit %}
-    <a href="{% url admin:forms_form_change form.pk %}?next={{ request.path }}">Edit this form</a>
-    {% endif %}

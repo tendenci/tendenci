@@ -306,8 +306,8 @@
         "updated_by": ""
     }, 
     {
-        "default_value": " ", 
-        "description": "Keywords that show up in the keywords meta tag, Page tiltes and other locations on many modules.", 
+        "default_value": "", 
+        "description": "Keywords that show up in the keywords meta tag, Page titles and other locations on many modules.", 
         "data_type": "string", 
         "update_dt": "2010-12-01 14:10:00", 
         "input_type": "text", 
@@ -324,7 +324,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "Keywords that show up in the keywords meta tag, Page tiltes and other locations on many modules.", 
+        "description": "Keywords that show up in the keywords meta tag, Page titles and other locations on many modules.", 
         "data_type": "string", 
         "update_dt": "2010-12-01 14:10:00", 
         "input_type": "text", 
@@ -646,6 +646,40 @@
         "updated_by": ""
     },
     {
+        "default_value": "", 
+        "description": "This is the date when the site was created.", 
+        "data_type": "string", 
+        "update_dt": "2012-02-06 12:25:01", 
+        "input_type": "text", 
+        "client_editable": false, 
+        "name": "sitecreatedt", 
+        "value": "", 
+        "label": "Site Create Date", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "developer", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "", 
+        "description": "This is the payment URL to activate the site if the site is the free one.", 
+        "data_type": "string", 
+        "update_dt": "2012-02-06 12:25:01", 
+        "input_type": "text", 
+        "client_editable": false, 
+        "name": "siteactivatepaymenturl", 
+        "value": "", 
+        "label": "Site Activate Payment URL", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "developer", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
         "default_value": "Schipul", 
         "description": "Select the partner hosting this site.", 
         "data_type": "string", 
@@ -695,5 +729,23 @@
         "scope_category": "global", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "true", 
+        "description": "This setting determines whether or not the site will use a global search index. The search index is used to search content in individual apps and to search across apps.", 
+        "data_type": "boolean", 
+        "update_dt": "2012-02-16 09:42:02", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "searchindex", 
+        "value": "true", 
+        "label": "Use Global Search Index", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
+    
 ]

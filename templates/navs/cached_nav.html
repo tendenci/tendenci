@@ -1,7 +1,7 @@
 {% load nav_tags %}
 <nav class="clearfix">
 {% if cached %}
-    {{ cached }}
+    {{ cached|safe }}
 {% else %}
     {% load_nav nav_id %}
 {% endif %}

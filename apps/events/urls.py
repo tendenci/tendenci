@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from events.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('events',                  
-    url(r'^$', 'views.index', name="events"),
+    url(r'^$', 'views.month_redirect', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
     url(r'^search/$', 'views.search', name="event.search"),
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
@@ -17,7 +17,7 @@ urlpatterns = patterns('events',
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
-    url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
+    url(r'^(?P<id>\d+)/$', 'views.details', name="event"),
     
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
@@ -79,21 +79,21 @@ urlpatterns = patterns('events',
 
     # registrant export
     url(r'^(?P<event_id>\d+)/registrants/export/$',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         name="event.registrant.export"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/paid$',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'paid'},
         name="event.registrant.export.paid"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/non-paid',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'non-paid'},
         name="event.registrant.export.non_paid"
     ),
     url(r'^(?P<event_id>\d+)/registrants/export/total',
-        'views.registrant_export',
+        'views.registrant_export_with_custom',
         {'roster_view':'total'},
         name="event.registrant.export.total"
     ),
@@ -102,6 +102,13 @@ urlpatterns = patterns('events',
     url(r'^(?P<event_id>\d+)/register/$', 'registration.views.multi_register', name='event.anon_multi_register'),
     url(r'^(?P<event_id>\d+)/register/pricing/$', 'registration.views.ajax_pricing', name='event.reg_pricing'),
     url(r'^(?P<event_id>\d+)/register/user_status/$', 'registration.views.ajax_user', name='event.reg_user_status'),
+    
+    # addons
+    url(r'^(?P<event_id>\d+)/addons/$', 'views.list_addons', name='event.list_addons'),
+    url(r'^(?P<event_id>\d+)/addons/add/$', 'views.add_addon', name='event.add_addon'),
+    url(r'^(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/edit/$', 'views.edit_addon', name='event.edit_addon'),
+    url(r'^(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$', 'views.disable_addon', name='event.disable_addon'),
+    url(r'^(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$', 'views.enable_addon', name='event.enable_addon'),
     
     # pending events
     url(r'^minimal_add/$', 'views.minimal_add', name='event.minimal_add'),
@@ -112,6 +119,13 @@ urlpatterns = patterns('events',
     
     # email registrants
     url(r'^message/(?P<event_id>\d+)/$', 'views.message_add', name='event.message'),
+    
+    # custom registration form preview
+    url(r'^custom_reg_form/preview/(?P<id>\d+)/$', 'views.custom_reg_form_preview', 
+        name='event.custom_reg_form_preview'),
+    # custom registration form preview
+    url(r'^custom_reg_form/list/(?P<event_id>\d+)/$', 'views.event_custom_reg_form_list', 
+        name='event.event_custom_reg_form_list'),
     
     # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),

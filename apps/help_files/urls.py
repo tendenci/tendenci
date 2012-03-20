@@ -1,10 +1,19 @@
 from django.conf.urls.defaults import *
+from help_files.feeds import LatestEntriesFeed
+from site_settings.utils import get_setting
+
+urlpath = get_setting('module', 'help_files', 'url')
+if not urlpath:
+    urlpath = "help-files"
 
 urlpatterns = patterns('help_files.views',
-    url(r'^$', 'index', name='help_files'),
-    url(r'^search/$', 'search', name='help_files.search'),
-    url(r'^topic/(?P<id>\d+)/$', 'topic', name='help_files.topic'),
-    url(r'^requests/$', 'requests', name='help_files.requests'),
-    url(r'^request/$', 'request_new', name='help_files.request'),
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'details', name='help_file.details'),
+    url(r'^%s/$' % urlpath, 'index', name='help_files'),
+    url(r'^%s/search/$' % urlpath, 'search', name='help_files.search'),
+    url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='help_files.feed'),
+    url(r'^%s/add/$' % urlpath, 'add', name='help_files.add'),
+    url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name='help_files.edit'),
+    url(r'^%s/topic/(?P<id>\d+)/$' % urlpath, 'topic', name='help_files.topic'),
+    url(r'^%s/requests/$' % urlpath, 'requests', name='help_files.requests'),
+    url(r'^%s/request/$' % urlpath, 'request_new', name='help_files.request'),
+    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'details', name='help_file.details'),
 )

@@ -53,6 +53,9 @@
 	white-space: nowrap;
 }
 
+.t .search-form .form-field { float: left; }
+.t .search-form #event_types_container { margin-left: 20px;height: 58px; }
+
 .t .quick-options {
 	float: right;
 	margin-right: 5px;
@@ -728,6 +731,12 @@ tr.non-paid-middle {
 
 /* pricing list */
 
+#id_captcha_1 { width: 138px; }
+#register-button {
+    width: 200px;
+    margin-bottom: 10px;
+}
+
 div.pricing-list-wrap {
 	margin: 15px 0 15px 0;
 	text-align: left;
@@ -780,4 +789,33 @@ table.pricing-list .price-disabled label {
 #is-registrant a {
 	color: #666;
 	text-decoration: underline;
+}
+
+.addons-title{
+    font-size: 1.5em;
+}
+
+.addons-wrap>h2{
+    padding-top: 5px;
+}
+
+.addon-title{
+    padding-top: 10px;
+}
+
+.addon-title>strong{
+    font-size: 1.2em;
+}
+
+.addon-title>a{
+    float: right;
+    padding: 0px 10px;
+}
+
+.addon-detail {
+    margin: 10px;
+}
+
+.addon-detail td{
+    padding: 5px;
 }

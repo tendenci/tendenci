@@ -7,6 +7,10 @@ from parse_uri import ParseUri
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
+
+from perms.object_perms import ObjectPermission
+from categories.models import CategoryItem
 from site_settings.utils import get_setting
 from tagging.fields import TagField
 from files.models import File, file_directory
@@ -16,6 +20,20 @@ from entities.models import Entity
 
 # Create your models here.
 class Story(TendenciBaseModel):
+    """
+    A Story is used across a site to add linked image content to a specific design area.
+    The basic features of a Story include:
+    
+    - Title
+    - Description (accepts HTML)
+    - Image
+    - Link
+    
+    Stories also include tags and a start and end time for automatic expiration.
+    
+    Stories use the Tendenci Base Model.
+    """
+
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=200, blank=True)
     content = models.TextField(blank=True)
@@ -31,6 +49,14 @@ class Story(TendenciBaseModel):
     image = models.ForeignKey('StoryPhoto', 
         help_text=_('Photo that represents this story.'), null=True, blank=True)
     tags = TagField(blank=True, default='')
+
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = StoryManager()
 
@@ -59,11 +85,14 @@ class Story(TendenciBaseModel):
         return None
 
     def get_absolute_url(self):
-        url = self.full_story_link
-        parsed_url = ParseUri().parse(url)
-
-        if not parsed_url.protocol:  # if relative URL
-            url = '%s%s' % (get_setting('site','global','siteurl'), url)
+        from django.core.urlresolvers import reverse
+        url = reverse("story", args=[self.pk])
+        if self.full_story_link:
+            url = self.full_story_link
+            parsed_url = ParseUri().parse(url)
+    
+            if not parsed_url.protocol:  # if relative URL
+                url = '%s%s' % (get_setting('site','global','siteurl'), url)
 
         return url
 
@@ -88,6 +117,17 @@ class Story(TendenciBaseModel):
             self.image = image  # set image
 
             self.save()
+
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
+
 
 class StoryPhoto(File):
     

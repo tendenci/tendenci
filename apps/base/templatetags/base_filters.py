@@ -358,6 +358,12 @@ def split(str, splitter):
     return str.split(splitter)
 
 @register.filter
+def tag_split(str):
+    str = "".join(str)
+    str = str.replace(", ",",")
+    return str.split(",")
+
+@register.filter
 def make_range(value):
     try:
         value = int(value)
@@ -374,3 +380,14 @@ def underscore_space(value):
 @register.filter
 def format_string(value, arg):
     return arg % value
+
+@register.filter
+def md5_gs(value, arg=None):
+    import hashlib
+    from datetime import datetime, timedelta
+
+    hashdt = ''
+    if arg and int(arg):
+        timestamp = datetime.now() + timedelta(hours=int(arg))
+        hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0',';')).hexdigest()
+    return ''.join([value,hashdt])

@@ -1,9 +1,12 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
+from stories.models import Story
 from files.models import file_directory, File
 
 from museums.managers import MuseumManager
@@ -36,7 +39,7 @@ class Museum(TendenciBaseModel):
     snacks = models.BooleanField(_(u'Snacks?'), default=False)
     shopping_information = models.TextField(_(u'Shopping Information'), blank=True)
     events = models.CharField(_(u'Events'), max_length=200, blank=True)
-    special_offers = models.TextField(_(u'Special Offers'), blank=True)
+    special_offers = models.ManyToManyField(Story, default=None, blank=True)
     
     ## Stay Connected
     facebook = models.CharField(_(u'Facebook'), max_length=200, blank=True)
@@ -46,7 +49,10 @@ class Museum(TendenciBaseModel):
     
     slug = models.SlugField(max_length=200, unique=True, default="")
     ordering = models.IntegerField(blank=True, null=True)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+        object_id_field="object_id", content_type_field="content_type")
+
     objects = MuseumManager()
     
     def __unicode__(self):
@@ -80,6 +86,16 @@ class Museum(TendenciBaseModel):
     @property
     def full_address(self):
         return "%s, %s, %s" % (self.address, self.city, self.state)
+
+    def get_special_offers(self):
+        from datetime import datetime
+        from django.db.models import Q
+        now = datetime.now()
+
+        # Considering special offers that expire
+        return self.special_offers.filter(
+            Q(expires=True, start_dt__lte=now, end_dt__gte=now) | Q(expires=False, start_dt__lte=now)
+        )
 
 class Photo(File):
     museum = models.ForeignKey(Museum, related_name="photos")

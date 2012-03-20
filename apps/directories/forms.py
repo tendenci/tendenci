@@ -1,12 +1,12 @@
 import imghdr
 from datetime import datetime
-from os.path import splitext
+from os.path import splitext, basename
 
 from django import forms
 
 from directories.models import Directory, DirectoryPricing
 from directories.utils import get_payment_method_choices, get_duration_choices
-from perms.utils import is_admin
+from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -32,6 +32,7 @@ class DirectoryForm(TendenciBaseForm):
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    remove_photo = forms.BooleanField(label='Remove the current logo', required=False)
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
@@ -66,7 +67,6 @@ class DirectoryForm(TendenciBaseForm):
             'payment_method',
             'activation_dt',
             'expiration_dt',
-            'entity',
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
@@ -90,7 +90,6 @@ class DirectoryForm(TendenciBaseForm):
                                  'activation_dt',
                                  'requested_duration',
                                  'expiration_dt',
-                                 'entity'
                                  ],
                       'legend': ''
                       }),
@@ -161,14 +160,28 @@ class DirectoryForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
+        if self.instance.logo:
+            self.fields['logo'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current logo: <a target="_blank" href="/site_media/media/%s">%s</a>' % (self.instance.logo, basename(self.instance.logo.file.name))
+        else:
+            self.fields.pop('remove_photo')
+
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+
+        if not is_developer(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+
         if self.fields.has_key('payment_method'):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         if self.fields.has_key('requested_duration'):
             self.fields['requested_duration'].choices = get_duration_choices()
+
+    def save(self, *args, **kwargs):
+        directory = super(DirectoryForm, self).save(*args, **kwargs)
+        if self.cleaned_data.get('remove_photo'):
+            directory.logo = None
+        return directory
 
 DURATION_CHOICES = ((14,'14 Days from Activation date'), 
                     (30,'30 Days from Activation date'), 
