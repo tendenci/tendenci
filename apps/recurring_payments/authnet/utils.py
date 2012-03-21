@@ -81,7 +81,7 @@ def payment_update_from_response(payment, direct_response_str):
     response_dict = direct_response_dict(direct_response_str)
     for key in response_dict.keys():
         if hasattr(payment, key):
-            payment.key = response_dict[key]
+            setattr(payment, key, response_dict[key])
             
     return payment
 

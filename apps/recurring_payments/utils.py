@@ -544,7 +544,7 @@ def api_add_rp(data):
     for key, value in data.items():
         if key in ALLOWED_FIELES:
             if hasattr(rp, key):
-                rp.key = value
+                setattr(rp, key, value)
             
     if rp.billing_start_dt:
         try:
