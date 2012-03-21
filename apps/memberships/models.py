@@ -393,7 +393,8 @@ class Membership(TendenciBaseModel):
         arch.membership = self
         arch.membership_create_dt = self.create_dt
         arch.membership_update_dt = self.update_dt
-        arch.user = user
+        if user and (not user.is_anonymous()):
+            arch.archive_user = user
         arch.save()
 
     def get_join_dt(self):
