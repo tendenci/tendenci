@@ -70,7 +70,7 @@ def index(request, username='', template_name="profiles/index.html"):
     inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
-    
+
     # owners
     additional_owner_ids = ObjectPermission.objects.users_with_perms('profiles.change_profile', profile)
     additional_owners = []
@@ -102,10 +102,10 @@ def index(request, username='', template_name="profiles/index.html"):
         'instance': profile,
     }
     EventLog.objects.log(**log_defaults)
- 
-    state_zip = ' '.join((profile.state, profile.zipcode))
-    city_state = ', '.join((profile.city, profile.state))
-    city_state_zip = ', '.join((profile.city, state_zip, profile.country))
+
+    state_zip = ' '.join([s for s in (profile.state, profile.zipcode) if s])
+    city_state = ', '.join([s for s in (profile.city, profile.state) if s])
+    city_state_zip = ', '.join([s for s in (profile.city, state_zip, profile.country) if s])
 
     return render_to_response(template_name, {
         "user_this": user_this,
