@@ -113,7 +113,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                 if type_exp_method_list[i]=='':
                     type_exp_method_list[i] = "0"
 
-            setattr(instance, 'field', type_exp_method_list[i])
+            setattr(instance, field, type_exp_method_list[i])
          
         if not change:
             instance.creator = request.user
