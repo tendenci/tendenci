@@ -269,7 +269,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             # corporate_membership_type, status, status_detail
             need_archive = False
             for key in status_info_before_edit:
-                value = getattr(corporate_membership, 'key')
+                value = getattr(corporate_membership, key)
 
                 if value != status_info_before_edit[key]:
                     need_archive = True
