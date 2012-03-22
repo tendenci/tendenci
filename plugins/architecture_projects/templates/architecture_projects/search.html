@@ -1,0 +1,101 @@
+{% extends "architecture_projects/base.html" %}
+{% load pagination_tags %}
+{% load architecture_project_tags %}
+{% load perm_tags %}
+
+{% block title %}Architecture Projects{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "architecture_projects/media/css/architectureproject.css" %}
+.t .cs-search-wrap { width: 100%; }
+.t .cs-search-item { border: 0; margin: 0; padding: 0; }
+.cs-search-wrap ul { list-style: none; margin: 0 10px 10px 0; padding: 0; float: left; width: 200px; }
+.cs-search-wrap ul li.cs-search-item { background: #bebebe; margin: 0; position: relative; }
+.cs-search-wrap ul li.cs-search-item:hover { z-index: 99; }
+.cs-search-wrap ul li.cs-search-item .cs-item { position: relative; background: #ebebeb; padding: 10px; width: 180px; min-height: 178px; height:auto !important; height: 178px; }
+.cs-search-wrap ul li.cs-search-item .cs-item a.cs-img-link { display: block; width: 180px; height: 130px; box-shadow: 0 0 4px #333; -moz-box-shadow: 0 0 4px #333; -webkit-box-shadow: 0 0 4px #333; position: relative; z-index: 10; margin-bottom: 10px; }
+.cs-search-wrap ul li.cs-search-item .cs-item h3 { font-size: 14px; line-height: 18px; margin: 0 0 2px 0; padding: 0; }
+.cs-search-wrap ul li.cs-search-item .cs-item h3 a { color: #D8A02F; font-size: 14px; line-height: 18px; }
+
+.cs-search-wrap ul li.cs-search-item .cs-full { width: 180px; display: none; position: absolute; top: 0; left: 0; }
+
+.cs-search-wrap ul li.cs-search-item:hover { background: #D7A030; color: #fff; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item h3 a { color: #444; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item h3 a:hover { color: #000; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-item { background: #D7A030; z-index: 999; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full { background: #D7A030; display: block; padding: 210px 10px 10px 10px; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p { color: #444; margin: 0; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p.categories { padding-top: 6px; border-top: 1px dashed #444; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p a { color: #fff; text-decoration: none; }
+.cs-search-wrap ul li.cs-search-item:hover .cs-full p a:hover { text-decoration: underline; }
+
+#add-case-study { display: block; float: right; text-align: right; padding: 6px 8px; background: #ebebeb; text-decoration: none; margin-bottom: 20px; }
+#add-case-study:hover { background: #444; color: #fff; }
+</style>
+<link rel="alternate" type="application/rss+xml" title="Latest Architecture Projects" href="{% url architecture_project.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate architecture_projects 12 %}
+{% has_perm user architecture_projects.add_architectureproject as can_add_architecture_project %}
+
+<div class="t">
+    <h1>Architecture Projects Search</h1>
+    {% architecture_project_search %}
+    {% if can_add_architecture_project %}
+    <div class="clearfix"><a id="add-case-study" href="{% url admin:architecture_projects_architectureproject_add %}">Add Architecture Project &raquo;</a></div>
+    {% endif %}
+    <div class="cs-search-wrap clearfix">
+        {% for architecture_project in architecture_projects %}
+        <ul>
+        {% with architecture_project.object as architecture_project %}
+        <li class="cs-search-item">
+            <div class="cs-item">
+                {% for img in architecture_project.featured_screenshots %}
+                        {% if forloop.first %}
+                    <a class="cs-img-link" href="{{ architecture_project.get_absolute_url }}"><img alt="{{ architecture_project.client }}" src="{% url file img.pk %}180x130" /></a>
+                    {% endif %}
+                {% endfor %}
+                <h3><a href="{{ architecture_project.get_absolute_url }}" title="{{ architecture_project.client }}">{{ architecture_project.client }}</a></h3>
+            </div>
+            <div class="cs-full">
+                {% spaceless %}<p class="categories"><span><strong>Categories</strong>: </span>
+                {% for category in architecture_project.categories.all %}
+                <a href="{% url architecture_project.search %}?q={{ category.title }}">{{ category.title }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>{% endspaceless %}
+                
+                {% spaceless %}<p class="building_type"><span><strong>BuildingType</strong>: </span>
+                {% for tech in architecture_project.building_types.all %}
+                <a href="{% url architecture_project.search %}?q={{ tech.title }}">{{ tech.title }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>{% endspaceless %}
+                <p style="margin-top: 6px; border-top: 1px dashed #fff; padding-top: 6px;"><a href="{{ architecture_project.url }}">View this Website &raquo;</a></p>
+            </div>
+        </li>
+        {% endwith %}
+        </ul>
+        {% empty %}
+            <p>0 Architecture Projects Found</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+  <script type="text/javascript">
+    var iconrow = new dropdown({
+      container:  'more-options-wrap',
+      trigger:  'more-options-trigger',
+      target:    'more-options-target'
+    });
+	var lis = $('.cs-search-wrap ul');
+	for(var i = 0; i < lis.length; i+=3) {
+	  lis.slice(i, i+3)
+		 .wrapAll('<div class="row clearfix"></div>');
+	}
+  </script>
+{% endblock %}
