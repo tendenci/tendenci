@@ -125,9 +125,10 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     all_pricings = get_active_pricings(event)
     if shared_pricing:
         # use entire user list
-        users = User.objects.filter(pk__in=user_pks)
-        available_pricings = get_pricings_for_list(event, users)
+        shareable_users = User.objects.filter(pk__in=user_pks)
+        available_pricings = get_pricings_for_list(event, shareable_users)
     else:
+        shareable_users = None
         available_pricings = get_available_pricings(event, user)
     pricing_list = []
     for pricing in all_pricings:
@@ -146,7 +147,10 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
         pricing_list.append(p_dict)
         
     all_addons = get_active_addons(event)
-    available_addons = get_addons_for_list(event, users)
+    if shared_pricing:
+        available_addons = get_addons_for_list(event, shareable_users)
+    else:
+        available_addons = get_addons_for_list(event, user)
     
     a_list = []
     for addon in all_addons:
@@ -160,9 +164,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     form = render_to_string('events/addons/addon-add-box.html',
         {'addons':a_list, 'anon_pricing':True},
         RequestContext(request))
-        
-    print form
-    
+            
     data = json.dumps({
         'pricings':pricing_list,
         'add-addons-form':form,
