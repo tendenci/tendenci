@@ -25,7 +25,10 @@
 
 	<div class="intro info">
 		<div class="profile-icon">
-			{% avatar user_this 128 %}
+			<a href="{% url profile.change_avatar  user_this.id %}">
+				{% avatar user_this 128 %}
+			</a>
+
 		</div>
 
 		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
