@@ -31,7 +31,7 @@ class LatestContributionsNode(Node):
 
     def render(self, context):
         limit = self.limit.resolve(context)
-        contributions = Contribution.objects.filter(owner=self.user.resolve(context)).order_by('-update_dt')[:limit]
+        contributions = Contribution.objects.filter(owner=self.user.resolve(context)).order_by('-create_dt')[:limit]
         context[self.context_var] = contributions
         return ''
 
