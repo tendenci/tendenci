@@ -107,7 +107,13 @@ def index(request, username='', template_name="profiles/index.html"):
     city_state = ', '.join([s for s in (profile.city, profile.state) if s])
     city_state_zip = ', '.join([s for s in (profile.city, state_zip, profile.country) if s])
 
+    can_edit = has_perm(request.user, 'profiles.change_profile', user_this)
+
+    if not can_edit:
+        can_edit = request.user == user_this
+
     return render_to_response(template_name, {
+        'can_edit': can_edit,
         "user_this": user_this,
         "profile":profile,
         'city_state': city_state,
@@ -208,15 +214,14 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 interactive = int(interactive)
             except:
                 interactive = 0
-                
-            if interactive == 1:
-                new_user.is_active = 1
-            else:
-                new_user.is_active = 0
+
+            new_user.is_active = interactive
 
             profile.save()
             new_user.save()
-            
+
+            ObjectPermission.objects.assign(new_user, profile)
+
             log_defaults = {
                 'event_id' : 121000,
                 'event_data': '%s (%d) added by %s' % (new_user._meta.object_name, new_user.pk, request.user),
