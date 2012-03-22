@@ -3,8 +3,6 @@
 {% load i18n %}
 
 {% is_admin user_current as user_current_is_admin %}
-
-
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user profiles.add_profile as can_add_profile %}
 
@@ -14,7 +12,7 @@
     {% has_perm user profiles.delete_profile nav_object as can_delete_profile %}
 {% else %}
     {% has_perm user profiles.view_profile as can_view_profile %}
-    {% has_perm user profiles.change_profile as can_edit_profile %}
+    {% has_perm user user.change_user as can_edit_profile %}
 {% endif %}
 
 <ul id="module-tabs" class="tabs">
@@ -53,14 +51,14 @@
             {% endif %}
         </ul>
         {% if nav_object %}
-            {% if can_view_profile or can_edit_profile %}
+            {% if can_view_profile or can_edit %}
             <ul>
                 <li class="heading">{% trans "This User" %}</li>
                 <li class="divider"></li>
                 {% if can_view_profile %}
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
                 {% endif %}
-                {% if can_edit_profile %}
+                {% if can_edit %}
                     <li><a href="{% url profile.edit nav_object.pk %}">{% trans "Edit User Profile" %}</a></li>
                     <li><a href="{% url profile.edit_groups user_this.username %}">{% trans "Edit Groups" %}</a></li>
                 {% endif %}

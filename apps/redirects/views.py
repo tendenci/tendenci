@@ -1,16 +1,18 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from redirects.models import Redirect
-from redirects.forms import RedirectForm
-from site_settings.utils import get_setting
-from redirects import dynamic_urls
 from base.http import Http403
 from perms.utils import has_perm, get_query_filters, has_view_perm
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
+
+from redirects.models import Redirect
+from redirects.forms import RedirectForm
+from redirects import dynamic_urls
 
 @login_required
 def search(request, template_name="redirects/search.html"):

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
 from django.conf import settings
@@ -6,20 +7,45 @@ from django.conf import settings
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 
-from courses.models import Course, Question, CourseAttempt
-from courses.forms import CourseForm
+from courses.models import Course, Question, Answer, CourseAttempt
+from courses.forms import CourseForm, QuestionForm, QuestionFormset
 
 class CourseAttemptAdmin(admin.ModelAdmin):
     list_display = ['course', 'user', 'score', 'create_dt']
+    
+class AnswerInline(admin.StackedInline):
+    model = Answer
+    
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [
+        AnswerInline,
+    ]
+    list_display = ['question', 'course', 'view_on_site']
+    
+    def view_on_site(self, obj):
+        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
+        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
+            reverse('courses.questions', args=[obj.course.pk]),
+            obj.course,
+            link_icon,
+        )
+        return link
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'view'
+    
+    def response_change(self, request, obj, post_url_continue=None):
+        return redirect('courses.questions', obj.course.pk)
 
 class QuestionInline(admin.TabularInline):
     model = Question
+    form = QuestionForm
+    formset = QuestionFormset
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = [
         QuestionInline,
     ]
-    list_display = ['title', 'deadline', 'passing_score', 'view_on_site']
+    list_display = ['title', 'deadline', 'passing_score', 'status', 'view_on_site']
     list_filter = []
     search_fields = []
     fieldsets = (
@@ -27,10 +53,13 @@ class CourseAdmin(admin.ModelAdmin):
             {'fields': (
                 'title',
                 'content',
+                'recipients',
+                'can_retry',
                 'retries',
                 'retry_interval',
                 'passing_score',
                 'deadline',
+                'close_after_deadline',
                 'tags',
             )}
         ),
@@ -131,6 +160,13 @@ class CourseAdmin(admin.ModelAdmin):
         if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
+        
+    def response_add(self, request, obj, post_url_continue=None):
+        return redirect('courses.questions', obj.pk)
+    
+    def response_change(self, request, obj, post_url_continue=None):
+        return redirect('courses.questions', obj.pk)
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseAttempt, CourseAttemptAdmin)
+admin.site.register(Question, QuestionAdmin)

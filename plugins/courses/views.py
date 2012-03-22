@@ -17,7 +17,7 @@ from courses.models import Course, Question, CourseAttempt
 from courses.forms import (CourseForm, QuestionForm, AnswerForm,
     CourseAttemptForm, DateRangeForm)
 from courses.utils import (can_retry, get_passed_attempts, get_top_tests,
-    get_best_passed_attempt)
+    get_best_passed_attempt, get_course_recipients)
 
 try:
     from notification import models as notification
@@ -118,7 +118,7 @@ def add(request, form_class=CourseForm, template_name="courses/add.html"):
             EventLog.objects.log(**log_defaults)
             
             messages.add_message(request, messages.SUCCESS, 'Successfully created %s' % course)
-            return redirect('courses.edit_questions', course.pk)
+            return redirect('courses.detail', course.pk)
     else:
         form = form_class(user=request.user)
        
@@ -163,36 +163,23 @@ def edit(request, pk, form_class=CourseForm, template_name="courses/edit.html"):
         'form':form,
         'course': course,
     }, context_instance=RequestContext(request))
-
+    
 @login_required
-def edit_questions(request, pk, template_name="courses/edit_questions.html"):
-    """
-    Generate a formset for questions.
+def questions(request, pk, template_name="courses/questions.html"):
+    """List all the questions of a course
     """
     
     course = get_object_or_404(Course, pk=pk)
     
     if not has_perm(request.user, 'courses.change_course', course):
         raise Http403
-    
-    form_class = inlineformset_factory(Course, Question, form=QuestionForm, extra=1)
-    
-    if request.method == "POST":
-        form = form_class(request.POST, instance=course)
-        if form.is_valid():
-            questions = form.save(commit=False)
-            for question in questions:
-                question.save()
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated questions for %s' % course)
-            return redirect('courses.detail', course.pk)
-    else:
-        form = form_class(instance=course)
-       
-    return render_to_response(template_name, {
-        'form':form,
-        'course':course,
-        }, context_instance=RequestContext(request))
         
+    return render_to_response(template_name, {
+        'course':course,
+        'questions':course.questions.all().order_by('number'),
+    }, context_instance=RequestContext(request))
+
+
 @login_required
 def delete(request, pk, template_name="courses/delete.html"):
     course = get_object_or_404(Course, pk=pk)
@@ -208,6 +195,7 @@ def delete(request, pk, template_name="courses/delete.html"):
     return render_to_response(template_name, {
         'course':course,
         }, context_instance=RequestContext(request))
+
         
 @login_required
 def take(request, pk, template_name="courses/take.html"):
@@ -230,7 +218,7 @@ def take(request, pk, template_name="courses/take.html"):
         return redirect('courses.detail', course.pk)
     
     #check if this course has any questions at all
-    questions = course.questions.all()
+    questions = course.questions.all().order_by('number')
     if not questions:
         messages.add_message(request, messages.ERROR, 'This course does not have any questions yet. Try again later.')
         return redirect('courses.detail', course.pk)
@@ -261,8 +249,8 @@ def take(request, pk, template_name="courses/take.html"):
                 }
                 notification.send_emails(recipients, 'course_completion', extra_context)
                 
-        # send notification to administrators
-        recipients = get_notice_recipients('module', 'courses', 'courserecipients')
+        # send notification to recipients of the course
+        recipients = get_course_recipients(course)
         if recipients:
             if notification:
                 attempt_count = CourseAttempt.objects.filter(user=request.user, course=course).count()
@@ -288,6 +276,7 @@ def take(request, pk, template_name="courses/take.html"):
     return render_to_response(template_name, {
         'forms':forms,
         'course':course,
+        'questions':questions,
         }, context_instance=RequestContext(request))
 
 @login_required
@@ -323,13 +312,20 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
         }, context_instance=RequestContext(request))
 
 @login_required
-def certificate(request, pk, template_name="courses/certificate.html"):
+def certificate(request, pk, user_id=None, template_name="courses/certificate.html"):
     course = get_object_or_404(Course, pk=pk)
     
     if not has_perm(request.user, 'courses.view_course', course):
         raise Http403
     
-    attempt = get_best_passed_attempt(course, request.user)
+    if user_id:
+        user = get_object_or_404(User, pk=user_id)
+        if not (user == request.user or is_admin(request.user)):
+            raise Http403
+    else:
+        user = request.user
+    
+    attempt = get_best_passed_attempt(course, user)
     
     if not attempt:
         # there is no certificate if the user hasn't passed the course yet

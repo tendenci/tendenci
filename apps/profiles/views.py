@@ -70,7 +70,7 @@ def index(request, username='', template_name="profiles/index.html"):
     inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
-    
+
     # owners
     additional_owner_ids = ObjectPermission.objects.users_with_perms('profiles.change_profile', profile)
     additional_owners = []
@@ -102,10 +102,22 @@ def index(request, username='', template_name="profiles/index.html"):
         'instance': profile,
     }
     EventLog.objects.log(**log_defaults)
- 
+
+    state_zip = ' '.join([s for s in (profile.state, profile.zipcode) if s])
+    city_state = ', '.join([s for s in (profile.city, profile.state) if s])
+    city_state_zip = ', '.join([s for s in (profile.city, state_zip, profile.country) if s])
+
+    can_edit = has_perm(request.user, 'profiles.change_profile', user_this)
+
+    if not can_edit:
+        can_edit = request.user == user_this
+
     return render_to_response(template_name, {
+        'can_edit': can_edit,
         "user_this": user_this,
         "profile":profile,
+        'city_state': city_state,
+        'city_state_zip': city_state_zip,
         'content_counts': content_counts,
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
@@ -202,15 +214,14 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 interactive = int(interactive)
             except:
                 interactive = 0
-                
-            if interactive == 1:
-                new_user.is_active = 1
-            else:
-                new_user.is_active = 0
+
+            new_user.is_active = interactive
 
             profile.save()
             new_user.save()
-            
+
+            ObjectPermission.objects.assign(new_user, profile)
+
             log_defaults = {
                 'event_id' : 121000,
                 'event_data': '%s (%d) added by %s' % (new_user._meta.object_name, new_user.pk, request.user),
