@@ -16,7 +16,7 @@ def render_corp_field(request, field_obj, form):
         if field_obj.display_only:
             field = None
         else:
-            field = eval("form['%s']" % field_name)
+            field = form[field_name]
     return {'request':request, 'field_obj':field_obj, 'field':field}
 
 

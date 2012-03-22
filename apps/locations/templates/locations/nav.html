@@ -43,6 +43,8 @@
             <li><a href="{% url location.nearest %}">{% trans "Nearest" %} {% firstof MODULE_LOCATIONS_LABEL_PLURAL 'Locations' %}</a></li>
             {% if can_add_location %}
                 <li><a href="{% url location.add %}">{% trans "Add" %} {% firstof MODULE_LOCATIONS_LABEL 'Location' %}</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url locations_import_upload_file %}">{% trans "Import" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

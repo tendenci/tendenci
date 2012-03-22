@@ -2,7 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse
@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters
 from event_logs.models import EventLog
+from theme.shortcuts import themed_response as render_to_response
+
 from discounts.models import Discount, DiscountUse
 from discounts.forms import DiscountForm, DiscountCodeForm
 

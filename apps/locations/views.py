@@ -1,18 +1,30 @@
+from datetime import datetime
+import os
+
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from locations.models import Location
-from locations.forms import LocationForm
-from locations.utils import get_coordinates
 from site_settings.utils import get_setting
-from perms.utils import is_admin
 from event_logs.models import EventLog
 from perms.utils import has_perm, has_view_perm, update_perms_and_save, get_query_filters
+from perms.decorators import admin_required
+from theme.shortcuts import themed_response as render_to_response
+
+from locations.models import Location, LocationImport
+from locations.forms import LocationForm
+from locations.utils import get_coordinates
+from locations.importer.forms import UploadForm, ImportMapForm
+from locations.importer.utils import is_import_valid, parse_locs_from_csv
+from locations.importer.tasks import ImportLocationsTask
+from files.models import File
+from djcelery.models import TaskMeta
+
 
 def index(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
@@ -211,3 +223,139 @@ def delete(request, id, template_name="locations/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+
+@login_required
+@admin_required
+def locations_import_upload(request, template_name='locations/import-upload-file.html'):
+    """
+    This is the upload view for the location imports.
+    This will upload the location import file and then redirect the user
+    to the import mapping/preview page of the import file
+    """
+    if request.method == 'POST':
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            
+            locport = LocationImport.objects.create(creator=request.user)
+            csv = File.objects.save_files_for_instance(request, locport)[0]
+            file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            import_valid, import_errs = is_import_valid(file_path)
+
+            if not import_valid:
+                for err in import_errs:
+                    messages.add_message(request, messages.ERROR, err)
+                locport.delete()
+                return redirect('locations_import_upload_file')
+
+            return redirect('locations_import_preview', locport.id)
+    else:
+        form = UploadForm()
+
+    return render_to_response(template_name, {
+            'form': form,
+            'now': datetime.now(),
+        }, context_instance=RequestContext(request))
+
+
+@login_required
+@admin_required
+def locations_import_preview(request, id, template_name='locations/import-map-fields.html'):
+    """
+    This will generate a form based on the uploaded CSV for field mapping.
+    A preview will be generated based on the mapping given.
+    """
+    locport = get_object_or_404(LocationImport, pk=id)
+    
+    if request.method == 'POST':
+        form = ImportMapForm(request.POST, locport=locport)
+
+        if form.is_valid():
+            # Show the user a preview based on the mapping
+            cleaned_data = form.cleaned_data
+            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            locations, stats = parse_locs_from_csv(file_path, cleaned_data)
+            
+            # return the form to use it for the confirm view
+            template_name = 'locations/import-preview.html'
+            return render_to_response(template_name, {
+                'locations': locations,
+                'stats': stats,
+                'locport': locport,
+                'form': form,
+                'now': datetime.now(),
+            }, context_instance=RequestContext(request))
+
+    else:
+        form = ImportMapForm(locport=locport)
+
+    return render_to_response(template_name, {
+        'form': form,
+        'locport': locport,
+        'now': datetime.now(),
+        }, context_instance=RequestContext(request))
+
+
+@login_required
+@admin_required
+def locations_import_confirm(request, id, template_name='locations/import-confirm.html'):
+    """
+    Confirm the locations import and continue with the process.
+    This can only be accessed via a hidden post form from the preview page.
+    That will hold the original mappings selected by the user.
+    """
+    locport = get_object_or_404(LocationImport, pk=id)
+    
+    if request.method == "POST":
+        form = ImportMapForm(request.POST, locport=locport)
+
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+
+            if not settings.CELERY_IS_ACTIVE:
+                # if celery server is not present 
+                # evaluate the result and render the results page
+                result = ImportLocationsTask()
+                locations, stats = result.run(request.user, file_path, cleaned_data)
+                return render_to_response(template_name, {
+                    'locations': locations,
+                    'stats': stats,
+                    'now': datetime.now(),
+                }, context_instance=RequestContext(request))
+            else:
+                result = ImportLocationsTask.delay(request.user, file_path, cleaned_data)
+
+            return redirect('locations_import_status', result.task_id)
+    else:
+        return redirect('locations_import_preview', locport.id)
+
+
+@login_required
+@admin_required
+def locations_import_status(request, task_id, template_name='locations/import-confirm.html'):
+    """
+    Checks if a location import is completed.
+    """
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        #tasks database entries are not created at once.
+        task = None
+    
+    if task and task.status == "SUCCESS":
+
+        locations, stats = task.result
+        
+        return render_to_response(template_name, {
+            'locations': locations,
+            'stats':stats,
+            'now': datetime.now(),
+        }, context_instance=RequestContext(request))
+    else:
+        return render_to_response('memberships/import-status.html', {
+            'task': task,
+            'now': datetime.now(),
+        }, context_instance=RequestContext(request))
+
