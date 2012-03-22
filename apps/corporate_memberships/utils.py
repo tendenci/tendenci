@@ -409,7 +409,7 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
                         cm[field_name] = 0
                         
                 if corp_memb.pk:      
-                    old_value = eval('corp_memb.%s' % field_name)
+                    old_value = getattr(corp_memb, field_name)
                 else:
                     old_value = None
                 
@@ -418,12 +418,12 @@ def new_corp_mems_from_csv(request, file_path, corp_app, columns, update_option=
                     pass
                 else:
                     try:
-                        exec('corp_memb.%s=cm[field_name]' % field_name)
+                        setattr(corp_memb, field_name, cm[field_name])
                     except ValueError:
                         pass
             else:
                 if corp_memb_field_type_dict[field_name] == 'CharField':
-                    exec('corp_memb.%s=""' % field_name)
+                    setattr(corp_memb, field_name, unicode())
 
         if corp_memb.renew_dt:
             if not corp_memb.renewal:

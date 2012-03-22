@@ -381,7 +381,7 @@ class Membership(TendenciBaseModel):
         Copy self to the MembershipArchive table
         """
         arch = MembershipArchive()
-        
+
         fields = [field.name for field in self.__class__._meta.fields]
 
         fields.remove('id')
@@ -393,7 +393,8 @@ class Membership(TendenciBaseModel):
         arch.membership = self
         arch.membership_create_dt = self.create_dt
         arch.membership_update_dt = self.update_dt
-        arch.user = user
+        if user and (not user.is_anonymous()):
+            arch.archive_user = user
         arch.save()
 
     def get_join_dt(self):
@@ -788,7 +789,6 @@ class App(TendenciBaseModel):
                 return True
         
         return False
-
 
 class AppFieldManager(models.Manager):
     """

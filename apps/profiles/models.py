@@ -80,8 +80,7 @@ class Profile(TendenciBaseModel):
     original_username = models.CharField(max_length=50)
     
     perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+        object_id_field="object_id", content_type_field="content_type")
     
     objects = ProfileManager()
     

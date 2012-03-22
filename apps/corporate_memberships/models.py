@@ -632,7 +632,7 @@ class CorporateMembership(TendenciBaseModel):
         field_names.remove('id')
         
         for name in field_names:
-            exec("corp_memb_archive.%s=self.%s" % (name, name))
+            setattr(corp_memb_archive, name, getattr(self, name))
             
         corp_memb_archive.corporate_membership = self
         corp_memb_archive.corp_memb_create_dt = self.create_dt
@@ -918,8 +918,11 @@ class CorpField(models.Model):
                     return "Never Expire"
                 if self.field_name == 'reps':
                     # get representatives
-                    return CorporateMembershipRep.objects.filter(corporate_membership=corporate_membership).order_by('user')
-                return eval("%s.%s" % (self.object_type, self.field_name))
+                    return CorporateMembershipRep.objects.filter(
+                                    corporate_membership=corporate_membership).order_by('user')
+                if self.object_type == 'corporate_membership' and hasattr(corporate_membership, 
+                                                                          self.field_name):
+                    return getattr(corporate_membership, self.field_name)
             else:
                 entry = self.field.filter(corporate_membership=corporate_membership)
                 

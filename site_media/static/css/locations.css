@@ -141,3 +141,40 @@ div.location-wrap-search .content {
     line-height: 1em;
     margin-bottom: 2px;
 }
+
+#import-wrap h1 {
+    margin-bottom: 0;
+}
+
+#import-wrap .timestamp {
+    margin-top: 0;
+    font-size: 13px;
+}
+
+#import-wrap form {
+    margin-top: 10px;
+}
+
+#import-wrap .form-field {
+    width: 500px;
+    background-color: #F7F7F7;
+}
+
+#import-wrap .form-field > div {
+    clear: both;
+}
+
+#import-wrap .form-field .label {
+    text-align: right;
+    padding: 5px 10px 5px 0px;
+}
+
+#import-wrap .form-field .label, #import-wrap .form-field .field {
+    width: 200px;
+    float: left;
+}
+
+#import-wrap .form-field .field select {
+    width: 200px;
+}
+

@@ -1,0 +1,41 @@
+{% extends "courses/base.html" %}
+{% load courses_tags %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_COURSES_LABEL 'Course' %} {% trans 'Questions Update' %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% course_nav request.user course %}
+    <h1>{{ course.title }} {% trans "Questions" %}</h1>
+    
+	<div class="questions-wrap">
+        <div>
+            <a href="{% url admin:courses_course_change course.pk %}" >{% trans "Add More Questions" %}</a>
+        </div>
+    	{% for question in questions %}
+            <div class="question-wrap">
+                <h2>{% if question.correct_answers %}{{ question.number }}.{% endif %} {{ question.question }}</h2>
+                <div class="choices-wrap">
+                    {% for choice in question.choices %}
+                        <div class="choice-wrap {% if choice.answer.correct %}answer{% endif %}">
+                            {{ choice.letter }}. {{ choice.answer.answer }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="question-controls" >
+                <a href="{% url admin:courses_question_change question.pk %}" >{% trans "Edit" %}</a> &nbsp; &nbsp; <a href="{% url admin:courses_question_delete question.pk %}">{% trans "Delete"  %}</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}
