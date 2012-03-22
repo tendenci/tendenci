@@ -126,7 +126,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             del form.fields['activation_dt']
             del form.fields['expiration_dt']
             del form.fields['list_type']
-            del form.fields['entity']
 
         if form.is_valid():
             directory = form.save(commit=False)
@@ -169,7 +168,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             del form.fields['activation_dt']
             del form.fields['expiration_dt']
             del form.fields['list_type']
-            del form.fields['entity']
 
     return render_to_response(template_name, {'directory': directory, 'form':form}, 
         context_instance=RequestContext(request))
@@ -217,7 +215,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         del form.fields['expiration_dt']
         if not is_admin(request.user):
             del form.fields['activation_dt']
-            del form.fields['entity']
         
         if not require_payment:
             del form.fields['payment_method']
@@ -287,7 +284,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         del form.fields['expiration_dt']
         if not is_admin(request.user):
             del form.fields['activation_dt']
-            del form.fields['entity']
         
         if not require_payment:
             del form.fields['payment_method']
