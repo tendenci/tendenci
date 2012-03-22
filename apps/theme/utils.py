@@ -18,7 +18,7 @@ def get_theme_template(template_name, theme=None):
     """
     if theme is None: # default theme
         theme = get_theme()
-    theme_template = os.path.join('themes', theme, 'templates', template_name)
+    theme_template = template_name
     return theme_template
 
 def theme_options():
