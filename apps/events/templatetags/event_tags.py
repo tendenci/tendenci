@@ -254,6 +254,7 @@ class ListEventsNode(ListNode):
         user = AnonymousUser()
         limit = 3
         order = 'next_upcoming'
+        event_type = ''
 
         randomize = False
 
@@ -308,6 +309,13 @@ class ListEventsNode(ListNode):
             except:
                 order = self.kwargs['order']
 
+        if 'type' in self.kwargs:
+            try:
+                event_type = Variable(self.kwargs['type'])
+                event_type = event_type.resolve(context)
+            except:
+                event_type = self.kwargs['type']
+
         # process tags
         for tag in tags:
             tag = tag.strip()
@@ -315,6 +323,8 @@ class ListEventsNode(ListNode):
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters).distinct()
+        if event_type:
+            items = items.filter(type__name__iexact=event_type)
         objects = []
 
         # if order is not specified it sorts by relevance
@@ -356,8 +366,8 @@ def list_events(parser, token):
            The order of the items. **Default: Next Upcoming by date**
         ``user``
            Specify a user to only show public items to all. **Default: Viewing user**
-        ``query``
-           The text to search for items. Will not affect order.
+        ``type``
+           The type of the event.
         ``tags``
            The tags required on items to be included.
         ``random``
