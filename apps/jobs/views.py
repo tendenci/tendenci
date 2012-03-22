@@ -547,7 +547,7 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
 def pending(request, template_name="jobs/pending.html"):
     if not is_admin(request.user):
         raise Http403
-    jobs = Job.objects.filter(status=0, status_detail__contains='pending')
+    jobs = Job.objects.filter(status_detail__contains='pending')
     return render_to_response(template_name, {'jobs': jobs},
             context_instance=RequestContext(request))
 
