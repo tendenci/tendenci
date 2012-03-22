@@ -43,7 +43,7 @@ def search(request, template_name="case_studies/search.html"):
     if get_setting('site', 'global', 'searchindex') and query:
         case_studies = CaseStudy.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'jobs.view_job')
+        filters = get_query_filters(request.user, 'case_studies.view_casestudy')
         case_studies = CaseStudy.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             case_studies = case_studies.select_related()
