@@ -448,65 +448,6 @@ def campaign_sync(request):
     messages.add_message(request, messages.SUCCESS, 'Successfully synced with Campaign Monitor')
     return redirect("campaign_monitor.campaign_index")
 
-#@login_required
-#def campaign_add(request, form_class=CampaignForm, template_name='campaign_monitor/campaigns/add.html'):
-#    
-#    if not has_perm(request.user,'campaign_monitor.add_campaign'):
-#        raise Http403
-#        
-#    if request.method == "POST":
-#        form = form_class(request.POST)
-#        if form.is_valid():
-#            campaign = form.save(commit=False)
-#            
-#            #prepare data
-#            list_ids = [list.list_id for list in form.cleaned_data['lists']]
-#            site_url = get_setting('site', 'global', 'siteurl')
-#            html_url = "%s%s" % (site_url, campaign.template.get_render_url())
-#            text_url = "%s%s" % (site_url, campaign.template.get_text_url())
-#            
-#            try:
-#                c_id = CSC().create(
-#                    client_id, campaign.subject, campaign.name, 
-#                    campaign.from_name, campaign.from_email,
-#                    campaign.reply_to, html_url, text_url, 
-#                    list_ids, []
-#                )
-#            except BadRequest, e:
-#                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
-#                return render_to_response(template_name, {'form':form}, 
-#                context_instance=RequestContext(request))
-#            except Exception, e:
-#                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
-#                return render_to_response(template_name, {'form':form}, 
-#                    context_instance=RequestContext(request))
-#            
-#            campaign.campaign_id = c_id
-#            campaign.save()
-#            messages.add_message(request, messages.SUCCESS, 'Successfully created Campaign: %s' % c_id)
-#            return redirect(campaign)
-#    else:
-#        copy_id = request.GET.get('copy', None)
-#        
-#        if copy_id:
-#            #get campaign to be copied
-#            copy = get_object_or_404(Campaign, campaign_id=campaign_id)
-#            copy_data = {
-#                "name": copy.name,
-#                "subject": copy.subject,
-#                "from_name": copy.from_name,
-#                "from_email": copy.from_email,
-#                "reply_to": copy.reply_to,
-#                "template": copy.template,
-#                "lists": copy.lists
-#            }
-#            form = form_class(initial=copy_data)
-#        else:
-#            form = form_class()
-#        
-#    return render_to_response(template_name, {'form':form}, 
-#        context_instance=RequestContext(request))
-
 @login_required
 def campaign_generate(request, form_class=CampaignForm, template_name='campaign_monitor/campaigns/add.html'):
     if not has_perm(request.user,'campaign_monitor.add_campaign'):
@@ -516,12 +457,11 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
         form = form_class(request.POST)
         if form.is_valid():
             template = form.cleaned_data['template']
-            
+
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
-            html_url = str("%s%s"%(site_url, template.get_html_url()))
-            html_url += "?include_login=%s" % form.cleaned_data.get('include_login', False)
-            html_url += "&jump_links=%s" % form.cleaned_data.get('jump_links')
+            html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+            html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
             html_url += "&events=%s" % form.cleaned_data.get('events')
             html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
             html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
@@ -536,14 +476,14 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             html_url += "&pages_days=%s" % form.cleaned_data.get('pages_days')
             
             if template.zip_file:
-                zip_url = str("%s%s"%(site_url, template.get_zip_url()))
+                zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
             else:
-                zip_url = ""
-            
+                zip_url = unicode()
+
             #sync with campaign monitor
             try:
                 t = CST(template_id = template.template_id)
-                t.update(str(template.name), html_url, zip_url)
+                t.update(unicode(template.name), html_url, zip_url)
             except BadRequest, e:
                 messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
                 return redirect('campaign_monitor.campaign_generate')

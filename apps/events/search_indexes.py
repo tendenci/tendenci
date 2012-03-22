@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
+from django.db.models import signals
 
 from haystack import indexes
 from haystack import site
@@ -8,6 +9,7 @@ from events.utils import count_event_spots_taken
 from events.models import Type as EventType
 from perms.indexes import TendenciBaseSearchIndex
 from perms.object_perms import ObjectPermission
+from search.indexes import CustomSearchIndex
 
 class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')
@@ -73,7 +75,7 @@ class EventTypeIndex(indexes.RealTimeSearchIndex):
     primary_key = indexes.CharField(model_attr='pk')
 
 
-class RegistrantIndex(indexes.SearchIndex):
+class RegistrantIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     event_pk = indexes.IntegerField(model_attr='registration__event__pk')
     cancel_dt = indexes.DateTimeField(model_attr='cancel_dt', null=True)

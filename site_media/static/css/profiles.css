@@ -1,26 +1,157 @@
-.body-copy-alerts{
-	color: red;
-}
-.body-copy-yellow{
-	background-color: yellow;
-}
 .t {
 	width: 90%;
 	margin-top: 1em;
+    position: relative;
 }
 
-#t-profile #t-view{
-	width: 550px;	
-}
 .t form.search-form input[type="text"] {
 	margin-bottom:10px;
 	padding:5px;
 	width:60%;
 }
-.profile-icon img{
-	padding: 4px;
-	border: 1px solid silver;
+
+.profile-icon img {
+    float: left;
+    margin-right: 20px;
 }
+
+.info {
+    position: relative;
+    padding-bottom: 30px;
+    border-bottom: 1px dashed silver;
+    margin-bottom: 30px;
+}
+
+#t-profile div.intro.info p {
+    margin: 0;
+}
+
+.contact.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.contact.info table {
+    width: 100%;
+}
+
+.info table tr td {
+    padding-bottom: 9px;
+}
+
+.info .glyph.plus {
+    font-size: 16px;
+    color: #A5E388;
+}
+
+.info .glyph.gears {
+    font-size: 16px;
+    color:#CCC;
+}
+
+.contact.info table td:first-child {
+    text-align: right;
+    padding-right: 20px;
+    width: 130px;
+}
+
+.contact.info .city-state-zip {
+    display: block;
+    margin-top: 5px;
+}
+
+.membership.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.membership.info .join {
+    margin-bottom: 10px;
+}
+
+.membership.info table {
+    width: 100%;
+}
+
+.membership.info table tr td:first-child {
+    text-align: right;
+    width: 130px;
+    padding-right: 20px;
+}
+
+.membership.info table tr td:last-child {
+    text-align: right;
+}
+
+.group.info {
+    border-bottom: none;
+}
+
+.group.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
+.group.info .join {
+    margin-bottom: 10px;
+}
+
+.group.info table {
+    width: 100%;
+}
+
+.group.info table tr td:first-child {
+    text-align: right;
+    width: 130px;
+    padding-right: 20px;
+}
+
+.contribution.info {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+
+    width: 200px;
+    background-color: white;
+    border: 1px solid #CCC;
+    padding: 20px 20px 12px;
+
+    -moz-box-shadow: 0 0 5px #AAA;
+    -webkit-box-shadow: 0 0 5px #AAA;
+    box-shadow: 0 0 5px #AAA;
+
+}
+
+.contribution.info h2 {
+    float: left;
+}
+
+.contribution.info .item {
+    font-size: .9em;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #DDD;
+    margin-bottom: 10px;
+}
+
+.contribution.info .more {
+    font-size: .9em;
+    margin-left: 5px;
+}
+
+.contribution.info .create-dt {
+    font-size: .9em;
+}
+
+.contribution.info.no-contribs {
+    line-height: 1.5em;
+}
+
 .t-iconrow{
 	float: right;
 }
@@ -31,113 +162,6 @@
 	clear: both;
 }
 
-#userview-profile {
-    padding-top: 10px;
-}
-
-/*LEFT COLUMN*/
-
-#userview-profile .profile-left {
-    padding: 0;
-    margin: 0;
-    width: 29%;
-    overflow:hidden;
-    float: left;
-}
-
-/*User Profile Image*/
-#userview-profile .profile-left .profile-picture {
-    
-}
-
-#userview-profile .profile-left .profile-picture img.t-usericon {
-    padding: 4px;
-    border: solid 1px silver;
-}
-
-/*Option Links*/
-#userview-profile .profile-left .option-links a {
-    display: block;
-    width: auto;
-    text-indent: 6px;
-    font-size: 11px;
-    text-decoration: none;
-    border-bottom: dotted 1px silver;
-    padding: 2px 0;
-    margin: 0;
-}
-
-#userview-profile .profile-left .option-links a:hover {
-    background: #EFF8FF;
-}
-
-/*Web Identites*/
-#userview-profile .profile-left .web-identities {
-    margin: 0;
-    padding: 4px;
-}
-
-#userview-profile .profile-left .web-identities img {
-    border: 0;
-    margin-left: 2px;
-}
-
-/*Module Content*/
-#userview-profile .profile-left .module-content {
-    margin-top: 20px;
-}
-
-#userview-profile .profile-left .module-content h2{
-    margin-bottom: 5px;
-}
-
-/*MEMBERSHIPS */
-#userview-profile .profile-left .membership-details {
-    margin-top: 20px;
-}
-
-#userview-profile .profile-left .membership-details h2{
-    margin-bottom: 8px;
-}
-
-#userview-profile .profile-left .membership-details .member-info 
-{
-    padding-left: 6px;
-}
-
-#userview-profile .profile-left .membership-details .member-info div.data {
-    margin: 4px 0;
-    display: block;
-}
-
-#userview-profile .profile-left .membership-details .member-info div.data .type{
-    color: #666;
-}
-
-
-/*RIGHT COLUMN*/
-
-#userview-profile .profile-right {
-    float: left;
-    margin-left: 15px;
-    width: 68%;
-}
-
-/*Global Boxes*/
-
-#userview-profile .profile-section {
-    margin-bottom: 18px;
-}
-
-#userview-profile .profile-section h2 {
-    font-size: 1em;
-    font-weight: bold;
-    margin: 0 0 4px 0;
-    padding: 4px;
-    border-top: solid 1px #BBB;
-    border-bottom: dotted 1px #BBB;
-    background: #F9F9F9;
-}
 .module-content h2{
 	font-size: 1.2em;
     font-weight: bold;
@@ -146,161 +170,6 @@
 	font-size: 1.2em;
     font-weight: bold;
 }
-
-#userview-profile .profile-section small {
-    font-size: .8em;
-}
-
-/* TABLES for Contact/Work/Education*/
-
-#userview-profile .profile-section table.section-items {
-    margin: 0;
-    padding: 0;
-}
-
-#userview-profile .profile-section table.section-items tr td {
-    vertical-align: top;
-    padding-bottom: 3px;
-}
-#userview-profile .profile-section table.section-items tr td.type {
-    color: #666;
-}
-
-#userview-profile .profile-section table.section-items tr td span.item {
-    display: block;
-}
-
-/* ADDRESSES */
-#userview-profile .profile-addresses .user-address {
-    margin: 10px 2px;
-}
-
-#userview-profile .profile-addresses .additional-addresses {
-    display: none;
-}
-
-#userview-profile .profile-addresses .additional-addresses address {
-    margin-bottom: 10px;
-    padding: 6px;
-}
-
-#userview-profile .profile-addresses address.adr span {
-    font-style: normal;
-}
-
-#userview-profile .profile-addresses address .street-address, #userview-profile .profile-addresses address .mailing-name {
-    display: block;
-}
-
-/*WORK INFO*/
-#userview-profile .previous-careers {
-    display: none;
-}
-
-#userview-profile .profile-right .work-info table.section-items {
-    margin: 10px 0;
-}
-
-#userview-profile .profile-right .work-info .previous-careers table.section-items {
-    margin-bottom: 0;
-}
-
-/*EDUCATION INFO*/
-#userview-profile .education-history {
-    display: none;
-}
-
-#userview-profile .profile-right .education-info table.section-items {
-    margin: 10px 0;
-}
-
-#userview-profile .profile-right .education-info .education-history table.section-items {
-    margin-bottom: 0;
-}
-
-/*BOTTOM COLUMN*/
-
-#userview-profile .profile-bottom {
-    clear: both;
-    padding-top: 10px;
-}
-
-/*Skills*/
-#userview-profile .user-skills .first-responder
-{
-    xfont-weight: normal;
-    xfont-size: 10px;
-    xline-height: 12px;
-}
-
-#userview-profile .user-skills .first-responder img 
-{
-    border: 0;
-}
-
-#userview-profile .user-skills .column 
-{
-    margin-left: 2%;
-    width: 31%;
-    float: left;
-}
-
-#userview-profile .user-skills .edit-skills
-{
-    clear: both;
-    text-align: right;
-}
-
-/*Notes*/
-#userview-profile .user-notes {
-    clear: both;
-}
-
-
-/*Admin-Only Block*/
-
-#userview-profile .admin-section {
-    border: solid 1px #DDD;
-    padding-top: 0px;
-    padding: 0 6px 6px 6px;
-    margin-top: 10px;
-    clear: both;
-}
-#userview-profile .admin-section h2 {
-    background: #EFEFEF;
-    color: #AF0000;
-    margin: 0;
-    margin-top: 6px;
-    padding: 4px;
-}
-#userview-profile .admin-section .speed-registration {
-	border:1px solid #DDDDDD;
-	font-size:12px;
-	height:25px;
-	line-height:25px;
-	padding:6px;
-	text-align:right;
-	vertical-align:middle;
-}
-
-#userview-profile .admin-section .column {
-    float: left;
-    width: 30%;
-    margin-left: 10px;
-    margin-right: 5px;
-    height: 100%;
-}
-
-#userview-profile .admin-section .column h3 {
-    margin: 8px 0;
-    padding: 0;
-}
-
-#userview-profile .admin-section .column a {
-    display: block;
-    margin-bottom: 4px;
-}
-
 
 .t h2 {
 	margin: 0 auto 10px 0;
@@ -372,7 +241,7 @@
 }
 
 .t h1 {
-	margin: 0;
+	margin: 0 0 10px;
 }
 .t .back-to-search {
 	margin-bottom: 20px;
@@ -457,38 +326,6 @@ div.forms div.form-field div.id_dob .field input {
 
 div.forms div.form-field div.id_ssn .field input {
 	width: 20%;
-}
-
-.t .contribution {
-	border-bottom: 1px solid #DDD;
-	padding: 10px;
-	margin: 10px 0;
-}
-.t .contribution .content-type {
-	width: 9%;
-	float: left;
-}
-.t .contribution .contrib-title {
-	float: left;
-	width: 70%;		
-}
-.t .contribution .contrib-create-dt {
-	float: right;		
-}
-
-.t #userview-groups .group {
-	border-bottom: 1px solid #DDD;
-	padding: 10px;
-	margin: 10px 0;
-}
-
-.t #userview-groups .content-type {
-	width: 50%;
-	float: left;
-}
-.t #userview-groups .contrib-title {
-	float: left;
-	width: 50%;		
 }
 
 #t-profile #t-add h2{

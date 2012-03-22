@@ -3,8 +3,6 @@ from datetime import datetime, date
 import csv
 import operator
 
-#from django.conf import settings
-#from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404, render_to_response, redirect
@@ -22,8 +20,6 @@ from imports.utils import render_excel
 
 from base.http import Http403
 from perms.utils import has_perm, is_admin, is_member
-#from site_settings.utils import get_setting
-
 from event_logs.models import EventLog
 
 from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
@@ -273,8 +269,9 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             # corporate_membership_type, status, status_detail
             need_archive = False
             for key in status_info_before_edit:
-                exec('value=corporate_membership.%s' % key)
-                if value <> status_info_before_edit[key]:
+                value = getattr(corporate_membership, key)
+
+                if value != status_info_before_edit[key]:
                     need_archive = True
                     break
                 
@@ -1294,7 +1291,7 @@ def corp_export(request):
                                     value = corp_memb.payment_method.human_name
                                 
                         else:
-                            exec('value=corp_memb.%s' % corp_field.field_name)
+                            value = getattr(corp_memb, corp_field.field_name)
                         
                     else:
                         if field_entries_d.has_key(corp_field.id):
@@ -1315,7 +1312,7 @@ def corp_export(request):
                         if dues_reps:
                             value = '; '.join(['%s (%s)' % (dues_rep.user.get_full_name(), dues_rep.user.username) for dues_rep in dues_reps])
                     else:
-                        exec('value=corp_memb.%s' % field)
+                        value = getattr(corp_memb, field)
                         if field == 'expiration_dt' and (not corp_memb.expiration_dt):
                             value = 'never expire'
                     value_type = type(value)

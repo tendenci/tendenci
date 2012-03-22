@@ -16,4 +16,10 @@ urlpatterns = patterns('',
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'locations.views.edit', name="location.edit"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='locations.feed'),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'locations.views.delete', name="location.delete"),
+    
+    # import
+    url(r'^locations/import/$', 'locations.views.locations_import_upload', name='locations_import_upload_file'),
+    url(r'^locations/import/preview/(?P<id>\d+)/$', 'locations.views.locations_import_preview', name='locations_import_preview'),
+    url(r'^locations/import/confirm/(?P<id>\d+)/$', 'locations.views.locations_import_confirm', name='locations_import_confirm'),
+    url(r'^locations/import/status/(?P<task_id>[-\w]+)/$', 'locations.views.locations_import_status', name='locations_import_status'),
 )

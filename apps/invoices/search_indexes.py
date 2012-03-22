@@ -1,8 +1,11 @@
+from django.db.models import signals
+
 from haystack import indexes
 from haystack import site
 from invoices.models import Invoice
+from search.indexes import CustomSearchIndex
 
-class InvoiceIndex(indexes.SearchIndex):
+class InvoiceIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     object_type = indexes.CharField(model_attr='object_type', null=True)
     object_id = indexes.IntegerField(model_attr='object_id', null=True)
