@@ -14,10 +14,10 @@ def users_nav(context, user_current, user_this):
     context.update({
         "user_current":user_current,
         "user_this": user_this,
-        "nav_object": user_this,
+        "nav_object": profile_this,
         "profile":profile_this
     })
-    
+
     return context
 
 @register.inclusion_tag("profiles/options.html", takes_context=True)
