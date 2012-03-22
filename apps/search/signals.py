@@ -6,7 +6,11 @@ def save_unindexed_item(sender, **kwargs):
     content_type = ContentType.objects.get_for_model(instance)
     # get_or_create fails in rare cases, throwing MultipleObjectsReturned errors
     # switched to try/except to prevent errors
-    try:
-        UnindexedItem.objects.get(content_type=content_type, object_id=instance.id)
-    except:
-        UnindexedItem.objects.create(content_type=content_type, object_id=instance.id)
+
+    params = {
+        'content_type': content_type,
+        'object_id': instance.pk
+    }
+
+    if not UnindexedItem.objects.filter(**params).exists():
+        UnindexedItem.objects.create(**params)
