@@ -318,6 +318,7 @@ def delete(request, id, set_id=0):
         EventLog.objects.log(**log_defaults)
 
         photo.delete()
+
         messages.add_message(request, messages.INFO, 'Photo %s deleted' % id)
         
         try:
@@ -436,10 +437,10 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
             'request': request,
             'instance': photo_set,
         })
-        photo_set.status = False  # soft delete
+        photo_set.delete()
 
         # soft delete all images in photo set
-        Image.objects.filter(photoset=photo_set).update(status=False)
+        Image.objects.filter(photoset=photo_set).delete()
 
         messages.add_message(request, messages.INFO, 'Photo Set %s deleted' % photo_set)
         
@@ -686,7 +687,6 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
-        
     
     order = get_setting('module', 'photos', 'photoordering')
     if order == 'descending':
