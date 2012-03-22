@@ -1,9 +1,3 @@
-.body-copy-alerts{
-	color: red;
-}
-.body-copy-yellow{
-	background-color: yellow;
-}
 .t {
 	width: 90%;
 	margin-top: 1em;
@@ -48,11 +42,12 @@
 }
 
 .info .glyph.plus {
+    font-size: 16px;
     color: #A5E388;
 }
 
 .info .glyph.gears {
-    font-size: 1.1em; /* seemed small */
+    font-size: 16px;
     color:#CCC;
 }
 
