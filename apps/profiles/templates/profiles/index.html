@@ -160,7 +160,7 @@
 	    <div class="contribution info">
 
 		<h2>{% trans "Contributions" %}</h2>
-		<span class="more"> <a href="javascript:;">more &raquo;</a></span>
+		<span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">more &raquo;</a></span>
 		<div class="clear"></div>
 
 		{% for contribution in contributions|slice:":5" %}
