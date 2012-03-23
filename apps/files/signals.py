@@ -35,6 +35,7 @@ def save_files(sender, **kwargs):
         for attr in perm_attrs:
             # example: file.status = instance.status
             setattr(file, attr, getattr(instance, attr))
+        file.name = file.file.path.split('/')[-1]
 
         file.save()
 
