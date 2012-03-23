@@ -1,5 +1,4 @@
 from haystack import indexes
-from haystack import site
 from django.db.models import signals
 
 from perms.object_perms import ObjectPermission
