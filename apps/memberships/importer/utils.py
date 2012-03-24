@@ -37,9 +37,12 @@ def is_duplicate(csv_dict, csv_dicts, key):
         cd = csv_dicts[i]
         match = True
         for k in keys:
-            if cd[k] != csv_dict[k]:
-                match = False
-                break
+            try:
+                if cd[k] != csv_dict[k]:
+                    match = False
+                    break
+            except KeyError:
+                pass
         if match:
             dups.append(cd)
     if dups and dups.index(csv_dict) != 0:
@@ -111,9 +114,9 @@ def parse_mems_from_csv(file_path, mapping, key, parse_range=None):
             if mem_type_exists:
                 m['skipped'] = True
                 skipped = skipped + 1
-                
-        if is_duplicate(csv_dict, csv_dicts, key):
-            m['skipped'] = True
+            elif is_duplicate(csv_dict, csv_dicts, key):
+                m['skipped'] = True
+                skipped = skipped + 1
         
         # detect if renewal
         m['renewal'] = bool(m.get('renewdate'))

@@ -1,7 +1,9 @@
+import os
 from datetime import datetime
 from dateutil.parser import parse as dt_parse
 
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from celery.task import Task
 from celery.registry import tasks
@@ -68,11 +70,27 @@ class ImportMembershipsTask(Task):
                     except User.DoesNotExist:
                         # Maybe we should set a password here too?
                         user = User(username = username)
-
+                        # only set is_active for newly created users
+                        if memport.interactive == 1:
+                            user.is_active =  True
+                        else:
+                            user.is_active = False
+                
                 # update user
-                user.first_name = m.get('firstname') or user.first_name
-                user.last_name = m.get('lastname') or user.last_name
-                user.email = m.get('email') or user.email
+                if memport.override == 0:
+                    # override blank fields only
+                    if not user.first_name:
+                        user.first_name = m.get('firstname') or user.first_name
+                    if not user.last_name:
+                        user.last_name = m.get('lastname') or user.last_name
+                    if not user.email:
+                        user.email = m.get('email') or user.email
+                else:
+                    # override all
+                    user.first_name = m.get('firstname') or user.first_name
+                    user.last_name = m.get('lastname') or user.last_name
+                    user.email = m.get('email') or user.email
+                
                 #save user
                 user.save()
                 
@@ -86,24 +104,60 @@ class ImportMembershipsTask(Task):
                         owner=user,
                         owner_username = user.username,
                     )
+                
                 # update profile
-                profile.company = m.get('company') or profile.company
-                profile.position_title = m.get('positiontitle') or profile.position_title
-                profile.address = m.get('mailingaddress') or profile.address
-                profile.address2 = m.get('address2') or profile.address2
-                profile.city = m.get('city') or profile.city
-                profile.state = m.get('state') or profile.state
-                profile.zipcode = m.get('zipcode') or profile.zipcode
-                profile.county = m.get('county') or profile.county
-                profile.address_type = m.get('addresstype') or profile.address_type
-                profile.work_phone = m.get('workphone') or profile.work_phone
-                profile.home_phone = m.get('homephone') or profile.home_phone
-                profile.mobile_phone = m.get('mobilephone') or profile.mobile_phone
-                profile.email = user.email
-                profile.email2 = m.get('email2') or profile.email2
-                profile.url = m.get('website') or profile.url
-                if m.get('dob'):
-                    profile.dob = dt_parse(m.get('dob')) or datetime.now()
+                if memport.override == 0:
+                    if not profile.company:
+                        profile.company = m.get('company') or profile.company
+                    if not profile.position_title:
+                        profile.position_title = m.get('positiontitle') or profile.position_title
+                    if not profile.address:
+                        profile.address = m.get('mailingaddress') or profile.address
+                    if not profile.address2:
+                        profile.address2 = m.get('address2') or profile.address2
+                    if not profile.city:
+                        profile.city = m.get('city') or profile.city
+                    if not profile.state:
+                        profile.state = m.get('state') or profile.state
+                    if not profile.zipcode:
+                        profile.zipcode = m.get('zipcode') or profile.zipcode
+                    if not profile.country:
+                        profile.country = m.get('county') or profile.county
+                    if not profile.address_type:
+                        profile.address_type = m.get('addresstype') or profile.address_type
+                    if not profile.work_phone:
+                        profile.work_phone = m.get('workphone') or profile.work_phone
+                    if not profile.home_phone:
+                        profile.home_phone = m.get('homephone') or profile.home_phone
+                    if not profile.mobile_phone:
+                        profile.mobile_phone = m.get('mobilephone') or profile.mobile_phone
+                    if profile.email:
+                        profile.email = user.email
+                    if not profile.email2:
+                        profile.email2 = m.get('email2') or profile.email2
+                    if not profile.url:
+                        profile.url = m.get('website') or profile.url
+                    if not profile.dob:
+                        if m.get('dob'):
+                            profile.dob = dt_parse(m.get('dob')) or datetime.now()
+                else:
+                    profile.company = m.get('company') or profile.company
+                    profile.position_title = m.get('positiontitle') or profile.position_title
+                    profile.address = m.get('mailingaddress') or profile.address
+                    profile.address2 = m.get('address2') or profile.address2
+                    profile.city = m.get('city') or profile.city
+                    profile.state = m.get('state') or profile.state
+                    profile.zipcode = m.get('zipcode') or profile.zipcode
+                    profile.county = m.get('county') or profile.county
+                    profile.address_type = m.get('addresstype') or profile.address_type
+                    profile.work_phone = m.get('workphone') or profile.work_phone
+                    profile.home_phone = m.get('homephone') or profile.home_phone
+                    profile.mobile_phone = m.get('mobilephone') or profile.mobile_phone
+                    profile.email = user.email
+                    profile.email2 = m.get('email2') or profile.email2
+                    profile.url = m.get('website') or profile.url
+                    if m.get('dob'):
+                        profile.dob = dt_parse(m.get('dob')) or datetime.now()
                 
                 profile.save()
                 
