@@ -753,7 +753,7 @@ def membership_import_preview(request, id):
             app = memport.app
 
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-            memberships, stats = parse_mems_from_csv(file_path, cleaned_data)
+            memberships, stats = parse_mems_from_csv(file_path, cleaned_data, memport.key)
             
             # return the form to use it for the confirm view
             template_name = 'memberships/import-preview.html'
@@ -792,21 +792,19 @@ def membership_import_confirm(request, id):
         
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            app = memport.app
-            file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             
             if not settings.CELERY_IS_ACTIVE:
                 # if celery server is not present 
                 # evaluate the result and render the results page
                 result = ImportMembershipsTask()
-                memberships, stats = result.run(app, file_path, cleaned_data)
+                memberships, stats = result.run(memport.pk, cleaned_data)
                 return render_to_response('memberships/import-confirm.html', {
                     'memberships': memberships,
                     'stats': stats,
                     'datetime': datetime,
                 }, context_instance=RequestContext(request))
             else:
-                result = ImportMembershipsTask.delay(app, file_path, cleaned_data)
+                result = ImportMembershipsTask.delay(memport.pk, cleaned_data)
             
             return redirect('membership_import_status', result.task_id)
     else:

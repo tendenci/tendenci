@@ -1,4 +1,4 @@
-{% extends "memberships/base-wide.html" %}
+{% extends "memberships/base.html" %}
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -9,20 +9,79 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/memberships.css">
 {% endblock %}
 
 {% block body %}
+<div class="t">
 <div id="import-wrap">
     
     <h1>{% trans "Membership Import Upload File" %}</h1>
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ datetime.now }}</p>
+    <p>
+        {% trans "Download the template (.xls or .csv). Populate the template with your information. Upload your updated spread sheet. Review and adjust settings." %}
+    </p>
+    
+    <strong>{% trans "Download: " %}<span style="font-size:12px;font-weight:normal;text-transform:none;">{% trans "(**skip if you already have your spread sheet ready)" %}</span></strong>
+    <div class="download-csv">
+        <img src="/site_media/static/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+        <a href="#">{% trans ".csv Template" %}</a>
+    </div>
     
     <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
-    <div class="forms">
-        {{ form|styled_form }}
-        <input type='submit' value='Import .csv File'>
+    {% if form.non_field_errors %}
+        {{ form.non_field_errors }}
+    {% endif %}
+    <div>
+        <strong>{% trans "Upload Your CSV" %}</strong>
+        {% if form.csv.errors %}
+        <div class="errors">
+            {{ form.csv.errors }}
+        </div>
+        {% endif %}
+        <p>{{ form.csv }}</p>
+    </div>
+    <div>
+        <strong>{% trans "Application" %}</strong>
+        {% if form.app.errors %}
+        <div class="errors">
+            {{ form.app.errors }}
+        </div>
+        {% endif %}
+        <p>{{ form.app }}</p>
+    </div>
+    <div>
+        <strong>{% trans "Make Users " %}</strong>
+        {% if form.interactive.errors %}
+        <div class="errors">
+            {{ form.interactive.errors }}
+        </div>
+        {% endif %}
+        <p>{{ form.interactive }}</p>
+    </div>
+    <div>
+        <strong>{% trans "Update" %}</strong>
+        {% if form.override.errors %}
+        <div class="errors">
+            {{ form.override.errors }}
+        </div>
+        {% endif %}
+        <p>{{ form.override }}</p>
+    </div>
+    <div>
+        <strong>{% trans "Identify Duplicates by" %}</strong>
+        {% if form.key.errors %}
+        <div class="errors">
+            {{ form.key.errors }}
+        </div>
+        {% endif %}
+        <p>{{ form.key }}</p>
+    </div>
+    <div>
+        <input type="submit" value="Next">
     </div>
     </form>
+
+</div>
 </div>
 {% endblock %}

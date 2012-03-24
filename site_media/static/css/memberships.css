@@ -526,8 +526,16 @@ form.connect-with li {
 	float: left;
 }
 
+#import-wrap ul {
+    list-style: none;
+}
+
 #import-wrap .form-field .error {
 	display: none;
+}
+
+#import-wrap .download-csv img{
+    vertical-align:middle;
 }
 
 /* Step 4 */

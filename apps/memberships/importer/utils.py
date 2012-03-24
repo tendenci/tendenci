@@ -3,6 +3,7 @@ from datetime import datetime
 from dateutil.parser import parse as dt_parse
 
 from django.contrib.auth.models import User
+from profiles.models import Profile
 
 from memberships.models import Membership, MembershipType
 from memberships.utils import csv_to_dict
@@ -23,8 +24,29 @@ def clean_field_name(name):
     name = name.replace('-', '_')
     name = name.replace(' ', '_')
     return name
+    
+def is_duplicate(csv_dict, csv_dicts, key):
+    """Check for duplicates of the element in the same csv file.
+    If it is the first instance of the duplicates it will not be marked
+    as a duplicate.
+    """
+    keys = key.split(',')
+    dups = []
+    for i in range(len(csv_dicts)):
+        csv_dicts[i]['index_number'] = i
+        cd = csv_dicts[i]
+        match = True
+        for k in keys:
+            if cd[k] != csv_dict[k]:
+                match = False
+                break
+        if match:
+            dups.append(cd)
+    if dups and dups.index(csv_dict) != 0:
+        return True
+    return False
 
-def parse_mems_from_csv(file_path, mapping, parse_range=None):
+def parse_mems_from_csv(file_path, mapping, key, parse_range=None):
     """
     Parse membership entries from a csv file.
     An extra field called columns can be passed in for field mapping
@@ -32,26 +54,21 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
     Entries without a Membership Type will be marked as skipped.
     Entries that are already in the database will be marked as skipped.
     """
-
-    print 'mapping', mapping.keys()
-
+    csv_dicts = csv_to_dict(file_path, machine_name=True)
     membership_dicts = []
     skipped = 0
-    for csv_dict in csv_to_dict(file_path, machine_name=True):  # field mapping
-
+    for csv_dict in csv_dicts:  # field mapping
         m = {}
         for app_field, csv_field in mapping.items():
             if csv_field:  # skip blank option
                 # membership['username'] = 'charliesheen'
                 m[clean_field_name(app_field)] = csv_dict.get(csv_field, '')
-
+        
         username = m['username']
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-
             username = clean_username(username)
-
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
@@ -94,6 +111,9 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
             if mem_type_exists:
                 m['skipped'] = True
                 skipped = skipped + 1
+                
+        if is_duplicate(csv_dict, csv_dicts, key):
+            m['skipped'] = True
         
         # detect if renewal
         m['renewal'] = bool(m.get('renewdate'))

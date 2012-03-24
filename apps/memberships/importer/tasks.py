@@ -9,17 +9,23 @@ from celery.registry import tasks
 from profiles.models import Profile
 
 from corporate_memberships.models import CorporateMembership
-from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
-from memberships.importer.utils import parse_mems_from_csv, clean_username
+from memberships.models import (AppEntry, AppField, AppFieldEntry, 
+    MembershipType, Membership, MembershipImport)
+from memberships.importer.utils import (parse_mems_from_csv,
+    clean_username)
 
 class ImportMembershipsTask(Task):
 
-    def run(self, app, file_path, fields, **kwargs):
+    def run(self, memport_id, fields, **kwargs):
         from django.template.defaultfilters import slugify
-
+        
+        memport = MembershipImport.objects.get(pk=memport_id)
+        app = memport.app
+        file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
+        
         #get parsed membership dicts
         imported = []
-        mems, stats = parse_mems_from_csv(file_path, fields)
+        mems, stats = parse_mems_from_csv(file_path, fields, memport.key)
         for m in mems:
             if not m['skipped']:
                 # get membership type.
