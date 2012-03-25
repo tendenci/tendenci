@@ -69,6 +69,28 @@ def map_add(request, template_name="lots/maps/add.html"):
         'form':form,
     }, context_instance=RequestContext(request))
 
+
+@login_required
+def map_detail(request, pk=None, template_name='lots/maps/detail_plot.html'):
+    if not pk: return HttpResponseRedirect(reverse('lots.map_selection'))
+    map = get_object_or_404(Map, pk=pk)
+
+    if has_perm(request.user, 'lots.view_map', map):
+        log_defaults = {
+            'event_id' : 9999500,
+            'event_data': '%s (%d) viewed by %s' % (map._meta.object_name, map.pk, request.user),
+            'description': '%s viewed' % map._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': map,
+        }
+        EventLog.objects.log(**log_defaults)
+        return render_to_response(template_name, {'map': map}, 
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+
+
 @login_required    
 def add(request, map_id=None, template_name="lots/add.html"):
     if not has_perm(request.user, 'lots.add_lot'):
