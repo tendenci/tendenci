@@ -5,19 +5,20 @@ Make sure you have Python 2.6 or 2.7 installed. Other versions of Python are not
 ## Set up environment
 Our preferred way is to use virtualenv with virtualenvwrapper to create an isolated Python environment. 
 
-- Install virtualenv
++ Install virtualenv
     - `pip install virtualenv`
     - `pip install virtualenvwrapper`
     
-- Add the following lines to your .bashrc and restart your shell
-	- `export WORKON_HOME=$HOME/.virtualenv`
-	- `source /usr/local/bin/virtualenvwrapper.sh`
-	- `export PIP_VIRTUALENV_BASE=$WORKON_HOME`
-	- `export PIP_RESPECT_VIRTUALENV=true`
++ Add the following lines to your .bashrc and restart your shell
+	export WORKON_HOME=$HOME/.virtualenv
+	source /usr/local/bin/virtualenvwrapper.sh
+	export PIP_VIRTUALENV_BASE=$WORKON_HOME
+	export PIP_RESPECT_VIRTUALENV=true
 
-- Make a virtualenv called `tendenci`
++ Make a virtualenv called `tendenci`
     - `mkvirtualenv tendenci`
-- Activate the virtual environment
+
++ Activate the virtual environment
     - `workon tendenci`
     
 ## Pull Tendenci code
