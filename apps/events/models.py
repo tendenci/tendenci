@@ -154,6 +154,12 @@ class Registrant(models.Model):
     class Meta:
         permissions = (("view_registrant", "Can view registrant"),)
 
+    def __unicode__(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_lastname_firstname()
+        else:
+            return '%s, %s' % (self.last_name, self.first_name)
+
     @property
     def lastname_firstname(self):
         fn = self.first_name or None
@@ -944,6 +950,12 @@ class CustomRegFormEntry(models.Model):
         name = ' '.join([self.get_value_of_mapped_field('first_name'), 
                          self.get_value_of_mapped_field('last_name')])
         return name.strip()
+
+    def get_lastname_firstname(self):
+        name = '%s, %s' % (self.get_value_of_mapped_field('last_name'), 
+                         self.get_value_of_mapped_field('first_name'))
+        return name.strip()
+
     
     def get_email(self):
         return self.get_value_of_mapped_field('email')
