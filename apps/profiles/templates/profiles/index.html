@@ -97,7 +97,7 @@
 
 	        		</td>
 	        		<td>
-	        			{% if membership.get_entry %}
+	        			{% if membership.get_entry.invoice %}
 	        			<a href="{% url invoice.view membership.get_entry.invoice.pk %}">
 	        				Balance ${% firstof membership.get_entry.invoice.balance  0|intcomma %}
 	        			</a>
