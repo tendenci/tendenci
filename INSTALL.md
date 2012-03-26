@@ -28,7 +28,7 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
 	cd Tendenci
 	pip install -r scripts/requirements.txt
 
-## Create database table
+## Create database tables
 	python manage.py syncdb
 	python manage.py migrate
 	
