@@ -25,8 +25,8 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
     - `git clone git@github.com:schipul/Tendenci-5.0.git`
     
 ## Install dependencies:
-	- `cd Tendenci`
-    - `pip install -r scripts/requirements.txt`
+	cd Tendenci
+	pip install -r scripts/requirements.txt
 
 ## Create database table
 	- `python manage.py syncdb`
