@@ -1,6 +1,8 @@
 from django.db.models import signals
 from haystack import indexes
 from haystack import site
+
+from search.signals import save_unindexed_item
 from recurring_payments.models import RecurringPayment
 
 class RecurringPaymentIndex(indexes.SearchIndex):
