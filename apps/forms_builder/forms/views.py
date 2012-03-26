@@ -275,12 +275,12 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
 
-    
+@login_required
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
     
     # check permission
-    if not has_perm(request.user,'forms.view_form',entry.form):
+    if not has_perm(request.user,'forms.change_form',entry.form):
         raise Http403
 
     return render_to_response(template_name, {'entry':entry}, 
