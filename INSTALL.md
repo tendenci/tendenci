@@ -10,10 +10,10 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
     - `pip install virtualenvwrapper`
     
 - Add the following lines to your .bashrc and restart your shell
-    - `export WORKON_HOME=$HOME/.virtualenv`
-    - `source /usr/local/bin/virtualenvwrapper.sh`
-    - `export PIP_VIRTUALENV_BASE=$WORKON_HOME`
-    - `export PIP_RESPECT_VIRTUALENV=true`
+	export WORKON_HOME=$HOME/.virtualenv
+	source /usr/local/bin/virtualenvwrapper.sh
+	export PIP_VIRTUALENV_BASE=$WORKON_HOME
+	export PIP_RESPECT_VIRTUALENV=true
 
 - Make a virtualenv called `tendenci`
     - `mkvirtualenv tendenci`
@@ -29,8 +29,8 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
 	pip install -r scripts/requirements.txt
 
 ## Create database table
-	- `python manage.py syncdb`
-	- `python manage.py migrate`
+	python manage.py syncdb
+	python manage.py migrate
 	
 Now you can test your site by running the command locally:
 	`python manage.py runserver 0:8000`
