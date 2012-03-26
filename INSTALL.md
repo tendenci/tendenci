@@ -42,6 +42,5 @@ Now you can test your site by running the command locally:
 
 - The above installation uses the `sqlite3` as the default database. For a 'large' database engine, check out django doc on how to get your database running.
 
-- Tendenci has the django haystack search built in. You can take advantage of global search and full-text search by setting up your own search engine. For information on how to install a search engine, visit 
-	`[http://django-haystack.readthedocs.org/en/latest/installing_search_engines.html](http://django-haystack.readthedocs.org/en/latest/installing_search_engines.html)`.  
+- Tendenci has the django haystack search built in. You can take advantage of global search and full-text search by setting up your own search engine. For information on how to install a search engine, visit [http://django-haystack.readthedocs.org/en/latest/installing_search_engines.html](http://django-haystack.readthedocs.org/en/latest/installing_search_engines.html).  
 	
