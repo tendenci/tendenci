@@ -205,7 +205,7 @@
     }, 
     {
         "default_value": "AuthorizeNet", 
-        "description": "Merchant Account is the entity where the client has their merchant account for online processing.", 
+        "description": "Merchant Account is the entity where the client has their merchant account for online processing. Check out the help file on <a href='http://tendenci.com/help-files/setup-online-payment-tendenci-t5-site/'>how to set up online payment</a>.", 
         "data_type": "string", 
         "update_dt": "2011-04-28 13:59:53", 
         "input_type": "text", 
