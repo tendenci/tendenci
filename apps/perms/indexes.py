@@ -1,7 +1,6 @@
 from haystack import indexes
 from django.db.models import signals
 
-from search.signals import save_unindexed_item
 from perms.object_perms import ObjectPermission
 
 class TendenciBaseSearchIndex(indexes.SearchIndex):
@@ -48,14 +47,18 @@ class TendenciBaseSearchIndex(indexes.SearchIndex):
         return ObjectPermission.objects.groups_with_perms('%s.view_%s' % (obj._meta.app_label, obj._meta.module_name), obj)
 
     def _setup_save(self, model):
+        from search.signals import save_unindexed_item
         signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
         
     def _teardown_save(self, model):
+        from search.signals import save_unindexed_item
         signals.post_save.disconnect(save_unindexed_item, sender=model)
 
     def _setup_delete(self, obj):
+        from search.signals import save_unindexed_item
         signals.post_delete.connect(self.remove_object, sender=obj)
 
     def _teardown_delete(self, obj):
+        from search.signals import save_unindexed_item
         signals.post_delete.disconnect(self.remove_object, sender=obj)
 

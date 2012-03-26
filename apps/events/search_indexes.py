@@ -8,7 +8,6 @@ from events.models import Event, Registrant
 from events.utils import count_event_spots_taken
 from events.models import Type as EventType
 
-from search.signals import save_unindexed_item
 from perms.indexes import TendenciBaseSearchIndex
 from perms.object_perms import ObjectPermission
 
@@ -113,15 +112,19 @@ class RegistrantIndex(indexes.SearchIndex):
         return obj.last_name
 
     def _setup_save(self, model):
+        from search.signals import save_unindexed_item
         signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
         
     def _teardown_save(self, model):
+        from search.signals import save_unindexed_item
         signals.post_save.disconnect(save_unindexed_item, sender=model)
 
     def _setup_delete(self, obj):
+        from search.signals import save_unindexed_item
         signals.post_delete.connect(self.remove_object, sender=obj)
 
     def _teardown_delete(self, obj):
+        from search.signals import save_unindexed_item
         signals.post_delete.disconnect(self.remove_object, sender=obj)
 
 site.register(Event, EventIndex)

@@ -2,7 +2,6 @@ from django.db.models import signals
 from haystack import indexes
 from haystack import site
 
-from search.signals import save_unindexed_item
 from recurring_payments.models import RecurringPayment
 
 class RecurringPaymentIndex(indexes.SearchIndex):
@@ -27,15 +26,19 @@ class RecurringPaymentIndex(indexes.SearchIndex):
         return RecurringPayment.objects.all().order_by('user')
 
     def _setup_save(self, model):
+        from search.signals import save_unindexed_item
         signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
         
     def _teardown_save(self, model):
+        from search.signals import save_unindexed_item
         signals.post_save.disconnect(save_unindexed_item, sender=model)
 
     def _setup_delete(self, obj):
+        from search.signals import save_unindexed_item
         signals.post_delete.connect(self.remove_object, sender=obj)
 
     def _teardown_delete(self, obj):
+        from search.signals import save_unindexed_item
         signals.post_delete.disconnect(self.remove_object, sender=obj)
 
 site.register(RecurringPayment, RecurringPaymentIndex)
