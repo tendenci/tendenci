@@ -12,7 +12,7 @@
     <div class="icon"><img src="{{ file.icon }}" /></div>
     {% endif %}
 
-    <h2><a href="{% url file file.pk %}">{{ file.basename }}</a></h2>
+    <h2><a href="{% url file file.pk %}">{{ file.get_name }}</a></h2>
 
     {% if file.type == 'image' %}
     <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download this image" %}</a></div>

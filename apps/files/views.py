@@ -42,15 +42,11 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
         if not request.user.is_authenticated():
             raise Http403
 
-    # we either have the name in our database
-    # or we pull the name straight off of the file
-    file_name = file.name or file.file.name
-
     # get image binary
     try:
         data = file.file.read()
         file.file.close()
-    except:
+    except IOError:  # no such file or directory
         raise Http404
 
     # log downloads and views
@@ -93,7 +89,7 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
-        response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
+        response['Content-Disposition'] = '%s filename=%s'% (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
         return response
@@ -104,7 +100,7 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
     else: raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
+    response['Content-Disposition'] = '%s filename=%s'% (attachment, file.get_name())
     return response
 
 def search(request, template_name="files/search.html"):
