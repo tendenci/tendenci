@@ -374,7 +374,7 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     if file_type != 'all':
         event_logs = event_logs.filter(event_data__icontains=file_type)
 
-    event_logs =event_logs.annotate(count=Count('object_id'))
+    event_logs = event_logs.annotate(count=Count('object_id')).order_by('-count')
 
     return render_to_response(template_name, {
         'form': form,
