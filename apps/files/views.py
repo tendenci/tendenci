@@ -44,7 +44,7 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
 
     # we either have the name in our database
     # or we pull the name straight off of the file
-    file_name = file.name or file.file.name
+    file_name = file.name or file.file.path.split('/')[-1]
 
     # get image binary
     try:
