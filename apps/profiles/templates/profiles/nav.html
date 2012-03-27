@@ -51,6 +51,7 @@
             {% endif %}
         </ul>
         {% if nav_object %}
+            {# Edit links need to point to the user_this instead of nav_object since the views for profile pull from auth.user #}
             {% if can_view_profile or can_edit %}
             <ul>
                 <li class="heading">{% trans "This User" %}</li>
@@ -59,7 +60,7 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
                 {% endif %}
                 {% if can_edit %}
-                    <li><a href="{% url profile.edit nav_object.pk %}">{% trans "Edit User Profile" %}</a></li>
+                    <li><a href="{% url profile.edit user_this.id %}">{% trans "Edit User Profile" %}</a></li>
                     <li><a href="{% url profile.edit_groups user_this.username %}">{% trans "Edit Groups" %}</a></li>
                 {% endif %}
                 {% if admin %}
