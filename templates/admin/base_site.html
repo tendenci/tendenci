@@ -21,7 +21,7 @@ a.section:link, a.section:visited { color: #666666; }
 {% endblock %}
  
 {% block branding %}
-<h1 id="site-name" ><span><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif"></span>
+<h1 id="site-name" ><span><a href="{% url dashboard %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" /></a></span>
 {% if user.is_authenticated %}<a href="/">{{ SITE_GLOBAL_SITEDISPLAYNAME }} ({{ SITE_GLOBAL_SITEURL }})</a>
 {% else %}
 {% trans "Web Administration" %}
