@@ -49,5 +49,22 @@
         "scope_category": "memberships", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "admin-only", 
+        "description": "Who is allowed to export members. <ul><li>Public - Everyone can export members</li><li>Users - People logged-in can export members</li><li>Members - All members can export</li><li>Members of Same Type - Only members of that membership can export</li><li>Admin Only - Only administrators can export</li></ul>", 
+        "data_type": "string", 
+        "update_dt": "2012-03-27 15:38:23", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "memberexport", 
+        "value": "admin-only", 
+        "label": "Member Export", 
+        "input_value": "public, users, members, membership-of-same-type, admin-only", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "memberships", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

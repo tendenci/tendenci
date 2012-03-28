@@ -95,6 +95,10 @@
 		        			{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}
 		        		{% endif %}
 
+		        		{% if membership.can_renew and membership.ma %}
+		        		<span><a href="{{ membership.ma.get_absolute_url }}">Renew Now</a></span>
+		        		{% endif %}
+
 	        		</td>
 	        		<td>
 	        			{% if membership.get_entry.invoice %}

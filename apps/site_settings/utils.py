@@ -136,12 +136,14 @@ def get_form_list(user):
     This will be used as a special select
     """
     from forms_builder.forms.models import Form
-    forms = Form.objects.search(user=user)
+    from perms.utils import get_query_filters
+    filters = get_query_filters(user, 'forms.view_form')
+    forms = Form.objects.filter(filters)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
     l = [('','None')]
     for form in forms:
-        l.append((form.primary_key, form.title))
+        l.append((form.pk, form.title))
     
     return l
     
