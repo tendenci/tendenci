@@ -872,20 +872,25 @@ def membership_join_report(request):
                 },
                 context_instance=RequestContext(request))
     
-@staff_member_required
+
 def membership_export(request):
-    #if not is_admin(request.user):raise Http403   # admin only page
-    
+    from django.template.defaultfilters import slugify
+
     template_name = 'memberships/export.html'
     form = ExportForm(request.POST or None, user=request.user)
     
     if request.method == 'POST':
         if form.is_valid():
             app = form.cleaned_data['app']
-            
-            filename = "memberships_%d_export.csv" % app.id
-            
-            fields = AppField.objects.filter(app=app).exclude(field_type__in=('section_break','page_break')).order_by('position')
+
+            file_name = "%s.csv" % slugify(app.name)
+
+            exclude_params = (
+                'horizontal-rule',
+                'header',
+            )
+
+            fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
 
             label_list = [field.label for field in fields]
             extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail']
@@ -953,7 +958,7 @@ def membership_export(request):
                 data_row.append('\n')
                 data_row_list.append(data_row)
                 
-            return render_excel(filename, label_list, data_row_list, '.csv')
+            return render_excel(file_name, label_list, data_row_list, '.csv')
                     
     return render_to_response(template_name, {
             'form':form

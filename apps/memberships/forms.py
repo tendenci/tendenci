@@ -953,15 +953,42 @@ class CSVForm(forms.Form):
 
 
 class ExportForm(forms.Form):
+
     app = forms.ModelChoiceField(
-                label=_('Application'), 
-                queryset=App.objects.all())
-    passcode = forms.CharField(label=_("Type Your Password"), 
-                               widget=forms.PasswordInput(render_value=False))
+        label=_('Application'), 
+        queryset=App.objects.all()
+    )
+
+    passcode = forms.CharField(
+        label=_("Type Your Password"), 
+        widget=forms.PasswordInput(render_value=False)
+    )
     
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', '')
+        from base.http import Http403
+        from site_settings.utils import get_setting
+        from perms.utils import is_member, is_admin
+        from memberships.models import Membership
+
+        self.user = kwargs.pop('user', None)
         super(ExportForm, self).__init__(*args, **kwargs)
+
+        who_can_export = get_setting('module','memberships','memberexport')
+
+        if who_can_export == 'admin-only':
+            if not is_admin(self.user):
+                raise Http403
+        elif who_can_export == 'membership-of-same-type':
+            if not is_member(self.user):
+                raise Http403
+            membership_types = self.user.memberships.values_list('membership_type').distinct()
+            self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
+        elif who_can_export == 'members':
+            if not is_member(self.user):
+                raise Http403
+        elif who_can_export == 'users':
+            if not self.user.is_authenticated():
+                raise Http403
         
     def clean_passcode(self):
         value = self.cleaned_data['passcode']
