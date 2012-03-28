@@ -107,7 +107,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
     
     fieldsets = (
         (None, {'fields': ('user', 'url', 'description',)}),
-        ("Billing Settings", {'fields': ('payment_amount',  
+        ("Billing Settings", {'fields': ('payment_amount', ('taxable', 'tax_rate',),
                            'billing_start_dt', 'billing_cycle', 'billing_dt_select', )}),
         ("Trial Period", {'fields': ('has_trial_period',  'trial_amount', 
                            'trial_period_start_dt',  'trial_period_end_dt',  ),

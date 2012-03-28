@@ -25,6 +25,8 @@ class RecurringPaymentForm(forms.ModelForm):
                   'url', 
                   'description',
                   'payment_amount',
+                  'taxable',
+                  'tax_rate',
                   'billing_start_dt',
                   'billing_cycle',
                   'billing_dt_select',
