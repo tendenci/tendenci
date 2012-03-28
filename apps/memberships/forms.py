@@ -513,6 +513,7 @@ class EntryEditForm(forms.ModelForm):
     class Meta:
         model = AppEntry
         exclude = (
+            'hash',
             'entry_time',
             'allow_anonymous_view',
             'allow_anonymous_edit',
@@ -576,7 +577,7 @@ class EntryEditForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         super(EntryEditForm, self).save(*args, **kwargs)
-
+        
         for key, value in self.cleaned_data.items():
             pk = key.split('.')[1]
 
