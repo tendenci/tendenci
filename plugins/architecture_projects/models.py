@@ -34,15 +34,15 @@ class ArchitectureProject(TendenciBaseModel):
     def get_absolute_url(self):
         return ("architecture_project.view", [self.slug])
         
-    def featured_screenshots(self):
+    def featured_images(self):
         try:
             return self.image_set.filter(file_type='featured')
         except:
             return False
     
-    def screenshots(self):
+    def images(self):
         try:
-            return self.image_set.filter(file_type='screenshot')
+            return self.image_set.filter(file_type='image')
         except:
             return False
             
@@ -51,10 +51,16 @@ class ArchitectureProject(TendenciBaseModel):
             return self.image_set.filter(file_type='other')
         except:
             return False
-            
-    def homepage_images(self):
+
+    def sidebar_images(self):
         try:
-            return self.image_set.filter(file_type='homepage')
+            return self.image_set.filter(file_type='sidebar')
+        except:
+            return False
+
+    def logo_images(self):
+        try:
+            return self.image_set.filter(file_type='logo')
         except:
             return False
 
@@ -93,12 +99,13 @@ class Image(File):
         _('File type'),
         max_length=50,
         choices=(
-            ('featured','Featured Screenshot'),
-            ('screenshot','Screenshot'),
-            ('homepage', 'Homepage Image'),
+            ('featured','Featured Image'),
+            ('image','Image'),
+            ('logo', 'Client Logo'),
+            ('sidebar', 'Sidebar Image'),
             ('other','Other'),
         ),
-        default='other',
+        default='image',
     )
     position = models.IntegerField(blank=True)
 
