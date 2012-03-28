@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from models import RecurringPayment
 from memberships.fields import PriceInput
@@ -89,4 +90,15 @@ class RecurringPaymentForm(forms.ModelForm):
             d['num_days'] = int(d['num_days'])
         except:
             raise forms.ValidationError(_("Number day(s) must be a numeric number."))
+        return value
+    
+    def clean_tax_rate(self):
+        value = self.cleaned_data['tax_rate']
+        taxable = self.cleaned_data['taxable']
+        if taxable:
+            if not value:
+                raise forms.ValidationError(_("Please specify a tax rate."))
+            if value > 1:
+                raise forms.ValidationError(_("Tax rate should be less than 1."))
+        
         return value
