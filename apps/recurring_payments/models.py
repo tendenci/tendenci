@@ -66,6 +66,7 @@ class RecurringPayment(models.Model):
     #billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"))
     #billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=15, decimal_places=2)
+    tax_exempt =models.BooleanField(default=1)
     taxable = models.BooleanField(default=0)
     tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0, 
                                    help_text='Example: 0.0825')
@@ -105,6 +106,9 @@ class RecurringPayment(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+        if self.taxable and self.tax_rate:
+            self.tax_exempt = 0
+        
         super(RecurringPayment, self).save(*args, **kwargs)
     
     @property   
@@ -409,6 +413,7 @@ class RecurringPayment(models.Model):
         if self.taxable and self.tax_rate:
             inv.tax = self.tax_rate * amount
         else:
+            inv.tax_exempt = 1
             inv.tax = 0
         
         inv.subtotal = amount
