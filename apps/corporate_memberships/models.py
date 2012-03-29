@@ -29,6 +29,7 @@ from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
 from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
+from corporate_memberships.utils import dues_rep_emails_list
 
 
 FIELD_CHOICES = (
@@ -364,13 +365,8 @@ class CorporateMembership(TendenciBaseModel):
         if self.renew_entry_id:
             self.approve_renewal(request)
         else:
-            if (self.status_detail).lower() <> 'active':
-                self.status_detail = 'active'
-            self.approved = 1
-            self.approved_denied_dt = datetime.now()
-            if not request.user.is_anonymous():
-                self.approved_denied_user = request.user
-            self.save()
+            self.approve_join(request)
+            
         
         # send notification to administrators
         recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
@@ -479,6 +475,8 @@ class CorporateMembership(TendenciBaseModel):
                         })
                 # email dues reps that corporate membership has been approved
                 recipients = dues_rep_emails_list(self)
+                if not recipients and self.creator:
+                    recipients = [self.creator.email]
                 extra_context = {
                     'object': self,
                     'request': request,
@@ -502,10 +500,21 @@ class CorporateMembership(TendenciBaseModel):
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
-        self.approved_denied_user = request.user
+        if not request.user.is_anonymous():
+            self.approved_denied_user = request.user
         self.status = 1
         self.status_detail = 'active'
         self.save()
+        
+        # send an email to dues reps
+        recipients = dues_rep_emails_list(self)
+        recipients.append(self.creator.email)
+        extra_context = {
+            'object': self,
+            'request': request,
+            'invoice': self.invoice,
+        }
+        send_email_notification('corp_memb_join_approved', recipients, extra_context)
     
     def disapprove_join(self, request, **kwargs):
         self.approved = False
