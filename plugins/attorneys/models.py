@@ -106,3 +106,4 @@ class Attorney(TendenciBaseModel):
         
 class Photo(File):
     attorney = models.ForeignKey(Attorney)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")

@@ -95,6 +95,7 @@ class BuildingType(models.Model):
 
 class Image(File):
     architecture_project = models.ForeignKey(ArchitectureProject)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,
