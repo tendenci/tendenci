@@ -26,13 +26,15 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class ArchitectureProjectAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'client', 'slug', 'overview_parsed', 'create_dt']
+    list_display = ['view_on_site', 'edit_link', 'client', 'project_title', 'slug', 'overview_parsed', 'create_dt']
     list_filter = ['create_dt']
     search_fields = ['client','overview', 'execution', 'results']
     ordering = ('-create_dt',)
     prepopulated_fields = {'slug': ['client']}
     fieldsets = (
         (None, {'fields': (
+            'architect',
+            'project_title',
             'client',
             'slug',
             'url',

@@ -9,9 +9,11 @@ from managers import ArchitectureProjectManager
 from files.models import File
 
 class ArchitectureProject(TendenciBaseModel):
-    client = models.CharField(max_length=75)
-    website = models.URLField(max_length=150)
-    slug = models.SlugField(max_length=100)
+    project_title = models.CharField(max_length=250, blank=True, null=True)
+    architect = models.CharField(max_length=250, blank=True, null=True)
+    client = models.CharField(max_length=250)
+    website = models.URLField(max_length=500)
+    slug = models.SlugField(max_length=100, unique=True)
     url = models.URLField()
     overview = models.TextField(blank=True, null=True)
     execution = models.TextField(blank=True, null=True)
