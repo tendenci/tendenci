@@ -262,10 +262,12 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
                                             status=1)
     payment_profile = PaymentProfile.objects.filter(
                     payment_profile_id=payment_transaction.payment_profile_id)[0]
+    invoice = payment_transaction.payment.invoice
 
     
     return render_to_response(template_name, {
                     'rp': rp,
+                    'invoice': invoice,
                     'payment_transaction': payment_transaction,
                     'payment_profile': payment_profile
                                               }, 

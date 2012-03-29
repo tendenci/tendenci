@@ -8,11 +8,13 @@ from django.core.urlresolvers import reverse
 from django.forms.models import modelformset_factory
 from django.utils import simplejson as json
 from django.conf import settings
+from django.db.models import Q
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
-from perms.utils import has_perm, update_perms_and_save, is_admin
+from site_settings.utils import get_setting
+from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters, has_view_perm
 from pages.models import Page
 
 from navs.models import Nav, NavItem
@@ -22,8 +24,12 @@ from navs.utils import cache_nav
 @login_required
 def search(request, template_name="navs/search.html"):
     query = request.GET.get('q', None)
-    navs = Nav.objects.search(query, user=request.user)
-    
+
+    filters = get_query_filters(request.user, 'navs.view_nav')
+    navs = Nav.objects.filter(filters).distinct()
+    if query:
+        navs = navs.filter(Q(title__icontains=query)|Q(description__icontains=query))
+
     log_defaults = {
         'event_id' : 195400,
         'event_data': '%s searched by %s' % ('Nav', request.user),
@@ -44,7 +50,7 @@ def search(request, template_name="navs/search.html"):
 def detail(request, id, template_name="navs/detail.html"):
     nav = get_object_or_404(Nav, id=id)
     
-    if not has_perm(request.user, 'navs.view_nav', nav):
+    if not has_view_perm(request.user, 'navs.view_nav', nav):
         raise Http403
         
     log_defaults = {

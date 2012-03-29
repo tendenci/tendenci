@@ -4,8 +4,6 @@
 {% load perm_tags %}
 {% load architecture_project_tags %}
 {% load tagging_tags %}
-{% load forms_tags %}
-{% load staff_tags %}
 
 {% block title %}
         {{ architecture_project.client }} - {% for tech in architecture_project.building_types.all %}
@@ -32,6 +30,25 @@
 {{ block.super }}
 <style type="text/css">
 {% include "architecture_projects/media/css/architectureproject.css" %}
+#categories { margin-bottom: 20px; }
+#categories a { color: #777; margin-right: 16px; }
+#categories a:hover { color: #A1DBEA; }
+
+#sidebar { display: none!important; }
+#content { width: 950px!important; }
+section { width: 950px!important; }
+.t { border: none!important; width: 950px!important; }
+.blue-plus { color: #a1dbea; }
+
+#cs-photos-large { margin-bottom: 20px; }
+#cs-photos-large ul { margin: 0; }
+#cs-photos-large ul li { list-style: none; }
+#cs-photos-small .thumb { float: left; margin-bottom: 14px; margin-right: 6px; }
+
+#results { float: left; width: 400px; margin-right: 20px; }
+#client { float: left; width: 200px; margin-right: 20px; }
+#overview { float: left; width: 300px; }
+</style>
 </style>
 {% endblock %}
 
@@ -42,73 +59,55 @@
 <div class="t">
     <div class="cs-view">
         <div class="quick-options">{% architecture_project_options request.user architecture_project %}</div>
+
+        <div id="categories">
+            <a href="{% url architecture_project.search %}"><span class="blue-plus">&#43;</span> All</a>
+            {% for cat in categories %}
+            <a href="{{ cat.get_absolute_url }}"><span class="blue-plus">&#43;</span> {{ cat|title }}</a>
+        {% endfor %}
+        </div><!--- /categories -->
         
-        <h1>{{ architecture_project.client }} Architecture Project</h1>
-        
-        <section id="case-study-text" class="clearfix">
-        
-            <div id="category-tech">
+        <div id="cs-photos-small" class="clearfix">
+                {% for img in architecture_project.featured_images %}
+                <div class="thumb"><a rel="cs-photos" href="#"><img alt="{{ img.description }}" height="76" width="152" src="{% image_url img size=152x76 crop=true quality=90 %}" /></a></div>
+                {% endfor %}
+                {% for img in architecture_project.images %}
+                <div class="thumb"><a rel="cs-photos" href="#"><img alt="{{ img.description }}" height="76" width="152" src="{% image_url img size=152x76 crop=true quality=90 %}" /></a></div>
+                {% endfor %}
+        </div>
+        <div id="cs-photos-large" class="clearfix">
+            <ul id="photo-urls">
+            {% for img in architecture_project.featured_images %}
+            <li><a rel="cs-photos" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="500" width="950" src="{% image_url img size=950x500 crop=true quality=90 %}" /></a></li>
+            {% endfor %}
+            {% for img in architecture_project.images %}
+            <li><a rel="cs-photos" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="500" width="950" src="{% image_url img size=950x500 crop=true quality=90 %}" /></a></li>
+            {% endfor %}
+            </ul>
+        </div>
+
+      <section id="case-study-text" class="clearfix">
             
-            {% spaceless %}
-              {% for img in architecture_project.featured_screenshots %}
-                {% if forloop.first %}
-                <div id="featured-screenshot">
-                    <a rel="cs-photos" title="{{ img.description }}" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="156" width="200" src="{% url file img.pk %}{{ forloop.counter|add:"200" }}x{{ forloop.counter|add:"156" }}/" /></a>
-                </div>
+            <div id="results">
+                {% if architecture_project.results %}
+                    <p>{{ architecture_project.results|safe }}</p>
                 {% endif %}
-                {% endfor %}
-              <h3>Categories</h3>
-                <div class="pad">
-                <ul>
-                {% for category in architecture_project.categories.all %}
-                <li><a href="{% url architecture_project.search %}?q={{ category.title }}">{{ category.title }}</a></li>
-                {% endfor %}
-                </ul>
-                </div>
-            {% endspaceless %}
-                
-            {% spaceless %}
-              <h3>BuildingType</h3>
-                <div class="pad">
-                <ul>
-                {% for tech in architecture_project.building_types.all %}
-                <li><a href="{% url architecture_project.search %}?q={{ tech.title }}">{{ tech.title }}</a></li>
-                {% endfor %}
-                </ul>
-                </div>
-            {% endspaceless %}
-                <a id="case-study-view-site" href="{{ architecture_project.url }}">View this Website &rarr;</a>
             </div>
-            
-            {% if architecture_project.overview %}
-                <h2>Overview</h2>
-                <p>{{ architecture_project.overview|safe }}</p>
-            {% endif %}
-            {% if architecture_project.execution %}
-                <h2>Execution</h2>
-                <p>{{ architecture_project.execution|safe }}</p>
-            {% endif %}
-            {% if architecture_project.results %}
-                <h2>Results</h2>
-                <p>{{ architecture_project.results|safe }}</p>
-            {% endif %}
+
+            <div id="client">
+                {% for img in architecture_project.logo_images%}
+                <a rel="cs-photos" title="{{ img.description }}" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="inheret" width="175" src="{% url file img.pk %}{{ forloop.counter|add:"270" }}x{{ forloop.counter|add:"210" }}/" /></a>
+                {% endfor %}
+                <a class="cs-img-link" href="{{ architecture_project.get_absolute_url }}"></a>
+            </div>
+
+            <div id="overview">
+                {% if architecture_project.overview %}
+                    <p>{{ architecture_project.overview|safe }}</p>
+                {% endif %}
+            </div>
       
         </section><!-- /case-study-text -->
-        
-        <h2>Screenshots</h2>
-        <div id="cs-photos" class="clearfix">
-            {% for img in architecture_project.screenshots %}
-            <a rel="cs-photos" title="{{ img.description }}" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="210" width="270" src="{% url file img.pk %}{{ forloop.counter|add:"270" }}x{{ forloop.counter|add:"210" }}/" /></a>
-            {% endfor %}
-        </div>
-        {% if tags %}
-      <div class="tags">
-          Tags: 
-          {% for tag in tags %}
-            <a href="{% url architecture_project.search %}?q=tag:{{ tag }}">{{ tag }}</a>
-          {% endfor %}  
-      </div>
-      {% endif %}
 
         <div class="case-meta">
             <a href="{% url architecture_project.search %}">&laquo;&nbsp;Search other architecture projects</a>
@@ -122,11 +121,18 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script src="{{ THEME_URL }}media/js/jquery.colorbox-min.js" type="text/javascript"></script>
-
 <script type="text/javascript">
 $(document).ready(function() {
-  $("a[rel='cs-photos']").colorbox({width: '80%',height: '66%'});
+    $('#photo-urls li').hide();
+    $('#photo-urls li:first').show();
+
+    $('#cs-photos-small .thumb a').click(function(){
+    var index = ($(this).parent().index())+1;
+    $('#cs-photos-small .thumb').show();
+    //$(this).parent().hide();
+    $('#photo-urls li').hide();
+    $('#photo-urls li:nth-child('+index+')').show();
+    });
 
 });
 </script>

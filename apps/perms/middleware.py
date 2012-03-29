@@ -57,6 +57,7 @@ def get_imp_user(username, real_user):
         and return the user object
     """
     from perms.utils import is_developer
+
     user = None
     if username == 'anonymous':
         user = AnonymousUser()
@@ -102,6 +103,10 @@ class ImpersonationMiddleware(object):
     """
     def process_request(self, request):
         from perms.utils import is_admin
+<<<<<<< HEAD
+=======
+
+>>>>>>> schipul/sprint-5.0.69
         session_impersonation = False
         message = False
         

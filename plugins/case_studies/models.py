@@ -95,6 +95,7 @@ class Technology(models.Model):
 
 class Image(File):
     case_study = models.ForeignKey(CaseStudy)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,

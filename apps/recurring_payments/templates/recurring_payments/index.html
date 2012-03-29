@@ -190,6 +190,9 @@
   		
   		<div class="rp-body">
 		<div >Payment Amount: <span class="body-bold">{{ rp.payment_amount|format_currency }}</span></div>
+		{% if rp.tax_rate %}
+		<div >Tax Rate: <span class="body-bold">{{ rp.tax_rate_percentage }}</span></div>
+		{% endif %}
 	
 		<div>Initial Billing Cycle Start Date: <span class="body-bold">{{ rp.billing_start_dt }}</span></div>
 	
