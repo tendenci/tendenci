@@ -480,19 +480,18 @@ class ImageURL(Node):
     def render(self, context):
         file = self.file.resolve(context)
 
+        if file and file.pk:
+            args = [file.pk, self.size]
+            if self.crop:
+                args.append("crop")
+            if self.quality:
+                args.append(self.quality)
+            url = reverse('file', args=args)
+            return url
         # return empty unicode string
-        if not file.pk:
-            return unicode('')
+        return unicode('')
 
-        args = [file.pk, self.size]
-        if self.crop:
-            args.append("crop")
-        if self.quality:
-            args.append(self.quality)
-        url = reverse('file', args=args)
-        return url
 
-  
 @register.tag
 def image_url(parser, token):
     """
