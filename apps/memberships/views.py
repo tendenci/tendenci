@@ -16,8 +16,10 @@ from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.template.defaultfilters import slugify
 
+from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from base.http import Http403
+from base.utils import send_email_notification
 #from user_groups.models import GroupMembership
 from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
 from perms.utils import has_perm
@@ -34,15 +36,13 @@ from memberships.models import App, AppEntry, Membership, \
 from memberships.forms import AppCorpPreForm, \
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm, AppEntryForm
 from memberships.utils import is_import_valid, prepare_chart_data, \
-    get_days, get_over_time_stats
+    get_days, get_over_time_stats, get_status_filter, get_membership_stats
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
-from memberships.utils import get_status_filter
-from site_settings.utils import get_setting
+
 from notification import models as notification
 
-from base.utils import send_email_notification
 
 def membership_index(request):
     return HttpResponseRedirect(reverse('membership.search'))
@@ -1020,3 +1020,15 @@ def report_members_over_time(request, template_name='reports/membership_over_tim
     return render_to_response(template_name, {
         'stats': stats,
     }, context_instance=RequestContext(request))
+    
+@staff_member_required 
+def report_members_stats(request, template_name='reports/membership_stats.html'):
+    """Shows a report of memberships per membership type.
+    """
+    
+    summary,total = get_membership_stats()
+    
+    return render_to_response(template_name, {
+        'summary':summary,
+        'total':total,
+        }, context_instance=RequestContext(request))
