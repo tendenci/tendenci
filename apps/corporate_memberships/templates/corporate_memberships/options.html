@@ -44,4 +44,30 @@
 	        </div>
 	  </div>
   {% endif %}
+ 
 </div>
+
+ {% with opt_object.get_pending_renewal_entry as pending_renewal_entry %}
+{% if pending_renewal_entry %}
+    <div><span class="pending-info-box">
+    {% blocktrans with pending_renewal_entry.create_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
+    {% trans "Status of Renewal: " %}<span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
+    {% if is_admin %}
+        <b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve opt_object.pk %}">{% trans "Approve / Disapprove" %}</a>
+    {% endif %}
+    </span>
+    </div>
+{% else %}
+    {% if is_admin and opt_object.is_join_pending %}
+        <div><span class="pending-info-box">
+        <b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve opt_object.pk %}">{% trans "Approve / Disapprove" %}</a>
+        </span>
+        </div>
+    {% endif %}
+    
+    {% if opt_object.can_renew %}
+        <a href="{% url corp_memb.renew opt_object.id %}" style="background-color:yellow;">{% trans "Renew" %}</a>
+    {% endif %}
+{% endif %}
+
+{% endwith %}
