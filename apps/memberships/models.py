@@ -807,6 +807,7 @@ class AppField(models.Model):
     unique = models.BooleanField(_("Unique"), default=False, blank=True)
     admin_only = models.BooleanField(_("Admin Only"), default=False)
     position = models.IntegerField(blank=True)
+    exportable = models.BooleanField(_("Exportable"), default=True)
 
     objects = AppFieldManager()
 

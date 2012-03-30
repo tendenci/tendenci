@@ -35,9 +35,9 @@
     }, 
     {
         "default_value": "true", 
-        "description": "Renewal Reminders is a bit field defining whether or not to run the script that generates an email remionding the user to renew their resume.", 
+        "description": "When set to 'true', Renewal Reminders will send an email reminding the user to renew their resume", 
         "data_type": "boolean", 
-        "update_dt": "2010-08-12 17:19:13", 
+        "update_dt": "2012-03-29 10:43:51", 
         "input_type": "select", 
         "client_editable": false, 
         "name": "runuserresumesrenewalreminders", 

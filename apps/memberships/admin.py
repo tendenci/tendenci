@@ -257,6 +257,7 @@ class AppFieldAdmin(admin.StackedInline):
                 'required',
                 'unique',
                 'admin_only',
+                'exportable'
             ),
             'choices',
             'help_text',

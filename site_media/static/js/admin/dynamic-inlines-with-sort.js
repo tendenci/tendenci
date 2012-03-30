@@ -121,9 +121,6 @@ jQuery(function($) {
 
     var toggle_handler = function(){
 
-        console.log('toggle!');
-        console.log($(this));
-
         if($(this).text() == 'Collapse'){
             collapse($(this));
         }else{
@@ -132,15 +129,27 @@ jQuery(function($) {
 
     };
 
-    // function: toggle choices field
+    var in_list = function(v, l){
+        return (l.indexOf(v) >= 0)
+    }
+
+    var hide_triggers = [
+        '',
+        'header',
+        'horizontal-rule'
+    ]
+
     var manage_choice_field = function(){
         var $dd = $(this); // drop-down
     	var selected_value = $dd.find(":selected").val();
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
 
+        extra_hide_triggers = ['choose-from-list','multi-select']
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
+
     	// toggle choices field
-    	if (selected_value == "choose-from-list" || selected_value == "multi-select"){
+    	if (in_list(selected_value, hide_triggers)){
             fieldset.find(".choices").show("fast");
     	}
     	else {
@@ -148,7 +157,6 @@ jQuery(function($) {
     	}
     };
 
-    // function: toggle help-text field
     var manage_help_text = function(){
 
         var $dd = $(this); // drop-down
@@ -156,8 +164,11 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
 
+        extra_hide_triggers = ['description']
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
+
     	// toggle the 
-    	if (selected_value == "header" || selected_value == "description" || selected_value == "horizontal-rule"){
+        if (in_list(selected_value, hide_triggers)){
             fieldset.find(".help_text").hide("fast");
     	}
     	else {
@@ -166,7 +177,6 @@ jQuery(function($) {
 
     }
 
-    // function: toggle default-value field
     var manage_default_value = function(){
 
         var $dd = $(this); // drop-down
@@ -174,8 +184,11 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
 
+        extra_hide_triggers = ['check-box','file-uploader','description']
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
+
     	// toggle the
-    	if (selected_value == "check-box" || selected_value == "file-uploader" || selected_value == "header" || selected_value == "description" || selected_value == "horizontal-rule"){
+        if (in_list(selected_value, hide_triggers)){
             fieldset.find(".default_value").hide("fast");
     	}
     	else {
@@ -184,51 +197,91 @@ jQuery(function($) {
 
     }
 
-    // function: toggle required checkbox
     var manage_required_checkbox = function(){
 
         var $dd = $(this); // drop-down
     	var selected_value = $dd.find(":selected").val();
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
+        var element = fieldset.find('.required input[id$="required"]').parent();
+
+        extra_hide_triggers = []
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
     	// toggle the
         // removed check-box
-    	if ( selected_value == "header" || selected_value == "description" || selected_value == "horizontal-rule"){
-            fieldset.find('.required input[id$="required"]').parent().hide("fast");
+    	if (in_list(selected_value, hide_triggers)){
+            element.hide("fast");
     	}
     	else {
-    		fieldset.find('.required input[id$="required"]').parent().show("fast");
+    		element.show("fast");
     	}
 
     }
 
-    // function: toggle unique checkbox
     var manage_unique_checkbox = function(){
 
         var $dd = $(this); // drop-down
     	var selected_value = $dd.find(":selected").val();
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
+        var element = fieldset.find('.unique input[id$="unique"]').parent();
+
+
+        var hide_triggers = ['text','paragraph-text','email'];
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
     	// toggle the
-    	if (selected_value == "text" || selected_value == "paragraph-text" || selected_value == "email"){
-            fieldset.find('.unique input[id$="unique"]').parent().show("fast");
+        if (in_list(selected_value, hide_triggers)){
+            element.show("fast");
     	}
     	else {
-    		fieldset.find('.unique input[id$="unique"]').parent().hide("fast");
+    		element.hide("fast");
     	}
     }
 
-    /* called immediately; hiding and event-binding
-    --------------------------------------------------------------------------------- */
+    var manage_admin_checkbox = function(){
 
-    // bind change event to dropdown
-    //$("div.inline-group .field_type select")
-        // each() handles initial calls; live() binds the change-event to f()
-        //.each(manage_label_field).live('change', manage_label_field)
-        //.each(manage_description_field).live('change', manage_description_field)
-        //.each(manage_choice_field).live('change', manage_choice_field);
+        var $dd = $(this); // drop-down
+        var selected_value = $dd.find(":selected").val();
+        var selected_text = $dd.find(":selected").text();
+        var fieldset = $dd.parents("fieldset");
+        var element = fieldset.find('.admin_only input[id$="admin_only"]').parent();
+
+        console.log('fieldset',fieldset)
+        console.log('element',element);
+
+        var hide_triggers = [];
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
+
+        // toggle the
+        if (in_list(selected_value, hide_triggers)){
+            element.show("fast");
+        }
+        else {
+            element.hide("fast");
+        }
+    }
+
+    var manage_exportable_checkbox = function(){
+
+        var $dd = $(this); // drop-down
+        var selected_value = $dd.find(":selected").val();
+        var selected_text = $dd.find(":selected").text();
+        var fieldset = $dd.parents("fieldset");
+        var element = fieldset.find('.exportable input[id$="exportable"]').parent();
+
+        extra_hide_triggers = []
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
+
+        if (in_list(selected_value, hide_triggers)){
+            element.hide("fast");
+        }
+        else {
+            element.show("fast");
+        }
+
+    }
 
     // bind change event to dropdown
     $("div.inline-group .field_type select")
@@ -237,23 +290,8 @@ jQuery(function($) {
         .each(manage_help_text).live('change', manage_help_text)
         .each(manage_default_value).live('change', manage_default_value)
         .each(manage_required_checkbox).live('change', manage_required_checkbox)
-        .each(manage_unique_checkbox).live('change', manage_unique_checkbox);
-
-    // create collapse-link
-    //$('.dynamic-fields').each(add_collapse_link)
-
-    // bind click event to collapse-link
-    //$('.done-btn').live('click', toggle_handler)
-
-    // bind click event to expand-link
-
-
-    // hide dynamic field fields
-    //$(".dynamic-fields").each(hide_fields)
-
-    // bind click event to label
-    //$(".collapse-label").live("click", expand_field_options);
-    // bind click event to done-button
-    //$(".done-btn").live("click", collapse_field_options);
+        .each(manage_unique_checkbox).live('change', manage_unique_checkbox)
+        .each(manage_admin_checkbox).live('change', manage_admin_checkbox)
+        .each(manage_exportable_checkbox).live('change', manage_exportable_checkbox);
 
 });

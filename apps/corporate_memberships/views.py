@@ -510,17 +510,7 @@ def approve(request, id, template="corporate_memberships/approve.html"):
             if renew_entry:
                 # approve the renewal
                 corporate_membership.approve_renewal(request)
-                # send an email to dues reps
-                recipients = dues_rep_emails_list(corporate_membership)
-                if not recipients and corporate_membership.creator:
-                    recipients = [corporate_membership.creator.email]
-                extra_context = {
-                    'object': corporate_membership,
-                    'request': request,
-                    'corp_renew_entry': renew_entry,
-                    'invoice': renew_entry.invoice,
-                }
-                send_email_notification('corp_memb_renewal_approved', recipients, extra_context)
+               
                 msg = 'Corporate membership "%s" renewal has been APPROVED.' % corporate_membership.name
                 
                 event_id = 682002
@@ -531,16 +521,6 @@ def approve(request, id, template="corporate_memberships/approve.html"):
             else:
                 # approve join
                 corporate_membership.approve_join(request)
-                
-                # send an email to dues reps
-                recipients = dues_rep_emails_list(corporate_membership)
-                recipients.append(corporate_membership.creator.email)
-                extra_context = {
-                    'object': corporate_membership,
-                    'request': request,
-                    'invoice': corporate_membership.invoice,
-                }
-                send_email_notification('corp_memb_join_approved', recipients, extra_context)
                 
                 msg = 'Corporate membership "%s" has been APPROVED.' % corporate_membership.name
                 event_id = 682001
@@ -669,8 +649,8 @@ def search(request, template_name="corporate_memberships/search.html"):
         else:
             corp_members = CorporateMembership.objects.all()
     
-        if request.user.is_authenticated():
-            corp_members = corp_members.select_related()
+#        if request.user.is_authenticated():
+#            corp_members = corp_members.select_related()
             
         
         corp_members = corp_members.order_by('name')

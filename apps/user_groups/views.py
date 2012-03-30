@@ -50,6 +50,7 @@ def search(request, template_name="user_groups/search.html"):
         groups = Group.objects.filter(filters).distinct()
         if request.user.is_authenticated():
             groups = groups.select_related()
+        groups = groups.order_by('slug')
 
     log_defaults = {
         'event_id' : 164000,

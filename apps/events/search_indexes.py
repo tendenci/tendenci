@@ -7,6 +7,7 @@ from haystack import site
 from events.models import Event, Registrant
 from events.utils import count_event_spots_taken
 from events.models import Type as EventType
+
 from perms.indexes import TendenciBaseSearchIndex
 from perms.object_perms import ObjectPermission
 from search.indexes import CustomSearchIndex
