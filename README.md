@@ -6,4 +6,19 @@ Tendenci allows membership management organizations to communicate, manage and c
 
 ## Installation
 	
-For information on how to install Tendenci, follow the instructions in `INSTALL.md`.
+For information on how to install Tendenci, follow the instructions in `INSTALL.md`, or [online at Github](https://github.com/tendenci/tendenci/blob/master/INSTALL.md).
+
+## Core Developers
+
+We want to recognize some of the developers of the core of Tendenci, from it's beginnings in Microsoft ASP to this current version written in python.
+
+- Ed Schipul
+- Jennifer Ulmer
+- Nse (Charles) Ekpenyong
+- Jenny Qian
+- Kathryn Ciaralli
+- Eloy Zuniga, Jr.
+- Glen Zangirolami
+- John-Michael Oswalt (JMO)
+
+Tendenci would not exist without them.
