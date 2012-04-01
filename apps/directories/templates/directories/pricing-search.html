@@ -32,7 +32,7 @@
                 </div>
 			</div>
 
-            <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration:" %} {{ dp.duration }}</a></h2>
+            <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
             <div class="content">{% trans "Regular Price:" %} {{ dp.regular_price|format_currency }}</div>
             <div class="content">{% trans "Premium Price:" %} {{ dp.premium_price|format_currency }}</div>
             <div class="content">{% trans "Category Threshold:" %} {{ dp.category_threshold }}</div>

@@ -4,12 +4,16 @@ from os.path import splitext, basename
 
 from django import forms
 
-from directories.models import Directory, DirectoryPricing
-from directories.utils import get_payment_method_choices, get_duration_choices
+from tinymce.widgets import TinyMCE
 from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
+
+from directories.models import Directory, DirectoryPricing
+from directories.utils import (get_payment_method_choices,
+    get_duration_choices)
+from directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
+    STATUS_CHOICES)
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -175,36 +179,14 @@ class DirectoryForm(TendenciBaseForm):
         if self.fields.has_key('payment_method'):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         if self.fields.has_key('requested_duration'):
-            self.fields['requested_duration'].choices = get_duration_choices()
+            self.fields['requested_duration'].choices = get_duration_choices(self.user)
 
     def save(self, *args, **kwargs):
         directory = super(DirectoryForm, self).save(*args, **kwargs)
         if self.cleaned_data.get('remove_photo'):
             directory.logo = None
         return directory
-
-DURATION_CHOICES = (
-    (14,'14 Days from Activation date'), 
-    (30,'30 Days from Activation date'), 
-    (60,'60 Days from Activation date'), 
-    (90,'90 Days from Activation date'),
-    (120,'120 Days from Activation date'),
-    (365,'1 Year from Activation date'),
-)
-ADMIN_DURATION_CHOICES = (
-    (0, 'Unlimited'),
-    (14,'14 Days from Activation date'), 
-    (30,'30 Days from Activation date'), 
-    (60,'60 Days from Activation date'), 
-    (90,'90 Days from Activation date'),
-    (120,'120 Days from Activation date'),
-    (365,'1 Year from Activation date'),
-)
-
-STATUS_CHOICES = (
-    (1, 'Active'),
-    (0, 'Inactive'),
-)
+        
 
 class DirectoryPricingForm(forms.ModelForm):
     status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
