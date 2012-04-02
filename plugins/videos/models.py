@@ -65,10 +65,11 @@ class Video(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("video.details", [self.slug])
-    
-    def embed_code(self):
-        return get_oembed_code(self.video_url, 600, 400)
-        
+
+    def embed_code(self, **kwargs):
+        width = kwargs.get('width') or 600
+        return get_oembed_code(self.video_url, width, 400)
+
     def thumbnail(self):
         return get_oembed_thumbnail(self.video_url, 600, 400)
 
