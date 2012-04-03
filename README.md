@@ -18,8 +18,9 @@ We want to recognize some of the developers of the core of Tendenci, from it's b
 - Jennifer Ulmer
 - Donnell Smith
 - Nse (Charles) Ekpenyong
-- Jenny Qian
 - Kathryn Ciaralli
+- Adil Ahmed (project manager)
+- Jenny Qian
 - Eloy Zuniga, Jr.
 - Glen Zangirolami
 - John-Michael Oswalt (JMO)
