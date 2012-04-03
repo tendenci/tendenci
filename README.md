@@ -4,6 +4,8 @@ Tendenci is a content management system (CMS) designed for organizations with po
 
 Tendenci allows membership management organizations to communicate, manage and conduct transactions with web site visitors. Tendenci is easy to use and offers many modules as one customizable software package.
 
+The name 'Tendenci' was originally created by Randy Sarinas.
+
 ## Installation
 	
 For information on how to install Tendenci, follow the instructions in `INSTALL.md`, or [online at Github](https://github.com/tendenci/tendenci/blob/master/INSTALL.md).
@@ -14,6 +16,7 @@ We want to recognize some of the developers of the core of Tendenci, from it's b
 
 - Ed Schipul
 - Jennifer Ulmer
+- Donnell Smith
 - Nse (Charles) Ekpenyong
 - Jenny Qian
 - Kathryn Ciaralli
