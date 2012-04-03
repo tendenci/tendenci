@@ -27,7 +27,7 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
     - `git clone git@github.com:tendenci/tendenci.git`
 
 ## Install dependencies:
-    cd Tendenci
+    cd tendenci
     pip install -r scripts/requirements.txt
 
 ## Create database tables
