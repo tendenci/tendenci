@@ -30,13 +30,17 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
     cd tendenci
     pip install -r scripts/requirements.txt
 
+## Setup local settings (optional)
+
+At this point, we recommend you setup local settings. You can do this by renaming `local_settings_sample.py` to `local_settings.py` and uncommenting the necessary sections. This includes `DEBUG`, the `ADMINS` list, the root urls (which is based on the folder you install the project to), and possibly setting up a database other than the default sqlite3. We recommend MySQL.
+
 ## Create database tables
     python manage.py syncdb
     python manage.py migrate
     python manage.py update_settings
 
 Now you can test your site by running the command locally:
-    `python manage.py runserver 0:8000`
+    python manage.py runserver 0:8000
 
 
 -----------------------------------------------------------------
