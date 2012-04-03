@@ -901,14 +901,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "Schipul Intranet", 
+        "default_value": "Tendenci", 
         "description": "The name of your site. Shows up in majority of the title tags and is used for SEO (Search Engine Optimization).", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "sitedisplayname", 
-        "value": "Schipul", 
+        "value": "Tendenci", 
         "label": "Site Name", 
         "input_value": " ", 
         "parent_id": 0, 
