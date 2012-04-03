@@ -18,8 +18,9 @@ class Migration(DataMigration):
         sql = ''
         with open(sql_file, 'r') as f:
               sql = f.read()
-        
-        cursor.execute(sql)
+        sql_stats = sql.split(';')
+        for sql_stat in sql_stats:
+            cursor.execute(sql_stat)
         transaction.commit_unless_managed()
 
 
