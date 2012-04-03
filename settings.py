@@ -122,7 +122,7 @@ MIDDLEWARE_CLASSES = (
     'mobile.middleware.MobileMiddleware',
 )
 
-ROOT_URLCONF = 'Tendenci50.urls'
+ROOT_URLCONF = 'tendenci.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "themes"),
