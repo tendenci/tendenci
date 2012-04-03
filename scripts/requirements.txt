@@ -35,7 +35,9 @@ mimeparse>=0.1.3
 python-dateutil>=1.5
 pdfminer==20110515
 slate==0.3
---extra-index-url https://code.stripe.com --upgrade stripe
+stripe
+# or manually run this command
+# pip install --index-url https://code.stripe.com --upgrade stripe
 
 # git repositories
 git+git://github.com/notanumber/xapian-haystack.git
