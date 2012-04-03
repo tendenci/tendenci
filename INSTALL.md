@@ -28,6 +28,7 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
 
 ## Install dependencies:
     cd tendenci
+    pip install reportlab==2.5
     pip install -r scripts/requirements.txt
 
 ## Setup local settings (optional)
