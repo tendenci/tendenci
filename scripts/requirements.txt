@@ -39,10 +39,10 @@ slate==0.3
 --index-url https://code.stripe.com --upgrade stripe
 
 # git repositories
-git+http://github.com/notanumber/xapian-haystack.git
+git+git://github.com/notanumber/xapian-haystack.git
 
 # timezones from master, fixes binding issue on sqlite
-git+http://github.com/brosner/django-timezones.git
+git+git://github.com/brosner/django-timezones.git
 
 # boto
 git+git://github.com/hmarr/boto@ses#egg=boto
