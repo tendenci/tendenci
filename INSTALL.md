@@ -40,6 +40,13 @@ At this point, we recommend you setup local settings. You can do this by renamin
     python manage.py migrate
     python manage.py update_settings
 
+## Install and select your theme
+
+There are multiple themes available to use in `/templates/themes/`. You can install (bulletpoints, for example), by running the following commands:
+
+    cp -r templates/themes/bulletpoints themes/bulletpoints
+    python manage.py set_theme bulletpoints
+
 Now you can test your site by running the command locally:
     python manage.py runserver 0:8000
 
