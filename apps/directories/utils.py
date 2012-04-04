@@ -7,10 +7,20 @@ from payments.models import Payment
 from perms.utils import is_admin
 from site_settings.utils import get_setting
 
-def get_duration_choices():
+def get_duration_choices(user):
     dps = DirectoryPricing.objects.filter(status=1).order_by('duration')
-
-    return [(dp.duration, '%d days after the activation date' % dp.duration) for dp in dps]
+    choices = []
+    for dp in dps:
+        if dp.duration == 0:
+            if is_admin(user):
+                choice = (dp.duration, 'Unlimited')
+            else:
+                continue
+        else:
+            choice = (dp.duration, '%d days after the activation date' % dp.duration)
+        choices.append(choice)
+        
+    return choices
 
 def get_payment_method_choices(user):
     if is_admin(user):

@@ -336,7 +336,7 @@ def delete(request, id, template_name="directories/delete.html"):
 def pricing_add(request, form_class=DirectoryPricingForm, template_name="directories/pricing-add.html"):
     if has_perm(request.user,'directories.add_directorypricing'):
         if request.method == "POST":
-            form = form_class(request.POST)
+            form = form_class(request.POST, user=request.user)
             if form.is_valid():           
                 directory_pricing = form.save(commit=False)
                 directory_pricing.status = 1
@@ -354,7 +354,7 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
-            form = form_class()
+            form = form_class(user=request.user)
            
         return render_to_response(template_name, {'form':form}, 
             context_instance=RequestContext(request))
@@ -367,7 +367,7 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
     if not has_perm(request.user,'directories.change_directorypricing',directory_pricing): Http403
     
     if request.method == "POST":
-        form = form_class(request.POST, instance=directory_pricing)
+        form = form_class(request.POST, instance=directory_pricing, user=request.user)
         if form.is_valid():           
             directory_pricing = form.save(commit=False)
             directory_pricing.save(request.user)
@@ -384,7 +384,7 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
             
             return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
     else:
-        form = form_class(instance=directory_pricing)
+        form = form_class(instance=directory_pricing, user=request.user)
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
