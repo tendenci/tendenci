@@ -281,7 +281,7 @@ def print_view(request, id, template_name="events/print-view.html"):
 
 def handle_uploaded_file(f, instance):
     import os
-    from settings import MEDIA_ROOT
+    from django.conf import settings
 
     file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
 
@@ -292,7 +292,7 @@ def handle_uploaded_file(f, instance):
         unicode(instance.pk),
     )
 
-    absolute_directory = os.path.join(MEDIA_ROOT, relative_directory)
+    absolute_directory = os.path.join(settings.MEDIA_ROOT, relative_directory)
 
     if not os.path.exists(absolute_directory):
         os.makedirs(absolute_directory)

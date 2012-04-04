@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 from haystack.query import SearchQuerySet
 from perms.managers import TendenciBaseManager
-from settings import MEDIA_ROOT
+from django.conf import settings
 
 def save_to_disk(f, instance):
     """
@@ -29,7 +29,7 @@ def save_to_disk(f, instance):
             unicode(instance.pk),
         )
 
-    absolute_directory = os.path.join(MEDIA_ROOT, relative_directory)
+    absolute_directory = os.path.join(settings.MEDIA_ROOT, relative_directory)
 
     if not os.path.exists(absolute_directory):
         os.makedirs(absolute_directory)
