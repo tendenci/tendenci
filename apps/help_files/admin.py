@@ -7,7 +7,6 @@ from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 from models import Topic, HelpFile, Request
 from forms import HelpFileAdminForm
-import settings
 
 class HelpFileAdmin(admin.ModelAdmin):
     list_display = ['view_on_site', 'edit_link', 'question', 'level', 'status_detail', 'view_totals']

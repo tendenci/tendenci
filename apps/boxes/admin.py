@@ -7,7 +7,6 @@ from event_logs.models import EventLog
 from perms.utils import is_admin, get_notice_recipients, update_perms_and_save
 from boxes.models import Box 
 from boxes.forms import BoxForm
-import settings
 
 
 class BoxAdmin(admin.ModelAdmin):
