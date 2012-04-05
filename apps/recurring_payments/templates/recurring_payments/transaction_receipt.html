@@ -42,6 +42,9 @@
 		border-top: 1px dashed #ccc;
 		padding-top: 3px;
 	}
+	.totals{
+		width: 5em;
+	}
 
 </style>
 
@@ -84,13 +87,13 @@
 		<div class="rp-receipt-field">
 			<table>
 				<tr>
-					<td>Subtotal: </td><td>{{ invoice.subtotal|format_currency }}</td>
+					<td class="totals">Subtotal: </td><td align="right">{{ invoice.subtotal|format_currency }}</td>
 				</tr>
 				<tr>
-					<td>Tax: </td><td>{{ invoice.tax|format_currency }}</td>
+					<td class="totals">Tax: </td><td align="right">{{ invoice.tax|format_currency }}</td>
 				</tr>
 				<tr>
-					<td class="rp-total-label">Total: </td><td class="rp-total">{{ invoice.total|format_currency }}</td>
+					<td class="rp-total-label totals">Total: </td><td class="rp-total" align="right">{{ invoice.total|format_currency }}</td>
 				</tr>
 			
 			</table>

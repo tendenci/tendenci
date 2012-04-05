@@ -78,7 +78,7 @@
         </div>
         {% if tags %}
         <div class="photo-tags">
-            {% trans "Tags:" %} {% for tag in tags %} {{ tag }} {% endfor %}
+            <strong>{% trans "Tags:" %}</strong> {% for tag in tags %}<a href="{% url photos_search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}{% endfor %}
         </div>
         {% endif %}
 	</div><!-- END .photo-instance -->

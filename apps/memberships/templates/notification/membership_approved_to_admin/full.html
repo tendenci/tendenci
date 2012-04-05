@@ -24,13 +24,10 @@
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
         {% trans "View Approved Application" %}
     </a></div>
-
+    
     <div>========================</div>
-
+    
     <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
-        {% blocktrans with entry.create_dt|date as create_date and entry.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
-    </a><div>
 
 </body>
 </html>
