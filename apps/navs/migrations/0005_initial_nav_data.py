@@ -8,51 +8,9 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         ''' Insert default nav information '''
-        
-        # First, remove the foreign keys on creator and owner
-#        db.delete_foreign_key('navs_nav', 'creator_id')
-#        db.delete_foreign_key('navs_nav', 'owner_id')
-        
-        if not orm.Nav.objects.exists():
-            nav = orm.Nav.objects.create(
-                allow_anonymous_view=1,
-                creator_id=1,
-                creator_username='admin',
-                owner_id=1,
-                owner_username='admin',
-                status=1,
-                status_detail='active',
-                title='Main Navigation',
-                description='The main navigation that is initially created.',
-                megamenu=0,
-            )
-            nav_items = (
-                {"label": "Events", "level": 0, "url": "/events/month/"},
-                {"label": "Calendar", "level": 1, "url": "/events/month/"},
-                {"label": "Event Photos", "level": 1, "url": "/photos/set/latest/"},
-                {"label": "Members", "level": 0, "url": "/"},
-                {"label": "Benefits", "level": 1, "url": "/"},
-                {"label": "Log In", "level": 1, "url": "/login/"},
-                {"label": "News", "level": 0, "url": "/news/search/"},
-                {"label": "Jobs", "level": 0, "url": "/jobs/search/"},
-                {"label": "About Us", "level": 0, "url": "/about-us/"},
-                {"label": "Contact", "level": 0, "url": "/contact/"},
-                {"label": "Home", "level": 0, "url": "/"},
-            )
-            for idx,item in enumerate(nav_items):
-                navitem = orm.NavItem.objects.create(
-                    label=item['label'],
-                    level=item['level'],
-                    url=item['url'],
-                    ordering=idx,
-                    nav=nav,
-                )
-            
-#            # Add our constraints back
-#            sql_creator = db.foreign_key_sql('navs_nav', 'creator_id', 'auth_user', 'id')
-#            sql_owner = db.foreign_key_sql('navs_nav', 'owner_id', 'auth_user', 'id')
-#            db.execute(sql_creator)
-#            db.execute(sql_owner)
+        from django.core.management import call_command
+        call_command("loaddata", "nav.json")
+        call_command("loaddata", "navitem.json")
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")

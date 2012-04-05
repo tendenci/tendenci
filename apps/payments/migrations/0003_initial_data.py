@@ -4,25 +4,12 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-from django.conf import settings
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        from django.db import connection, transaction
-        cursor = connection.cursor()
-
-        project_root = settings.PROJECT_ROOT
-        sql_file = os.path.join(project_root, 'apps','payments','sql','payment_method.sql')
-
-        sql = ''
-        with open(sql_file, 'r') as f:
-              sql = f.read()
-        sql_stats = sql.split(';')
-        for sql_stat in sql_stats:
-            cursor.execute(sql_stat)
-        transaction.commit_unless_managed()
-
+        from django.core.management import call_command
+        call_command("loaddata", "paymentmethod.json")
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")

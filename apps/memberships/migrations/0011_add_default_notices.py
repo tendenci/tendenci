@@ -9,28 +9,8 @@ from django.conf import settings as django_settings
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        # initial sql for notices
-        from django.db import connection, transaction
-        from memberships.models import Notice
-        
-        # check if notices already exist, if so, no need to add
-        has_notice = Notice.objects.exists()
-        
-        if not has_notice:
-            cursor = connection.cursor()
-            
-            sql_file = os.path.abspath(os.path.join(
-                            os.path.split(os.path.abspath(os.path.dirname(__file__)))[0],
-                            'sql/notice.sql')
-                                )
-                    
-            with open(sql_file, 'r') as f:
-                sql = f.read()
-                sql_stats = sql.split(';')
-                for sql_stat in sql_stats:
-                    cursor.execute(sql_stat)
-                transaction.commit_unless_managed()
-
+        from django.core.management import call_command
+        call_command("loaddata", "notice.json")
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")

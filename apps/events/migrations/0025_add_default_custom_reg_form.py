@@ -8,33 +8,13 @@ from django.db import models
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        # initial sql for custom registration form
-        from django.db import connection, transaction
-        from events.models import CustomRegForm, CustomRegField
-        
-        # check if custom registration forms already exist, if so, no need to add
-        has_form = CustomRegForm.objects.exists()
-        
-        if not has_form:
-            cursor = connection.cursor()
-            
-            sql_form_file = os.path.abspath(os.path.join(
-                            os.path.split(os.path.abspath(os.path.dirname(__file__)))[0],
-                            'sql/customregform.sql')
-                                )
-            sql_field_file = os.path.abspath(os.path.join(
-                            os.path.split(os.path.abspath(os.path.dirname(__file__)))[0],
-                            'sql/customregfield.sql')
-                                )
-            for sql_file in [sql_form_file, sql_field_file]:   
-                with open(sql_file, 'r') as f:
-                    sql = f.read()
-                    
-                    sql_stats = sql.split(';')
-                    for sql_stat in sql_stats:
-                        cursor.execute(sql_stat)
-                    transaction.commit_unless_managed()
+        from django.core.management import call_command
 
+        # Doesn't call loaddata command because the schema changed
+        initial = {"status": "active", "create_dt": "2012-01-18 15:36:00", "name": "Default Custom Registration Form", "update_dt": "2011-11-04 14:22:40", "notes": "This is a default custom registration form.", "creator_id": 1, "owner_id": 1, "creator_username": "default", "owner_username": "default"}
+
+        form = orm.CustomRegForm.objects.get_or_create(**initial)
+        call_command("loaddata", "customregfield.json")
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
