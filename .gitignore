@@ -40,6 +40,8 @@ plugins/apps.json
 # except for .gitignore
 !.gitignore
 
+# Docs
+docs/build
 /themes/thinksmart/media/css/styles.css
 /themes/thinksmart/media/css/styles.less
 /themes/thinksmart/media/images/logo-blue.png

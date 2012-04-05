@@ -1,0 +1,4 @@
+Template media
+==============
+
+Template media in the ``media`` folder can be referenced in the template using the ``{{ THEME_URL }}media/``.

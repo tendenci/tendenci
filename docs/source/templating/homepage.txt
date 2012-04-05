@@ -1,0 +1,16 @@
+Homepage Template
+=================
+
+The ``homepage.html`` template is rendered for the homepage. The following blocks are available.
+
+Blocks
+------
+
+- extra_head
+- html_body
+- extra_body
+- body_ids
+- body_classes
+- title
+- meta_keywords
+- meta_description
