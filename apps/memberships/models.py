@@ -784,7 +784,7 @@ class AppField(models.Model):
     content_type = models.ForeignKey(ContentType,
         related_name="membership_app_field_set", editable=False, null=True)
     attribute_name = models.CharField(_("Attribute Name"), max_length=300)
-    label = models.CharField(_("Label"), max_length=200)
+    label = models.CharField(_("Label"), max_length=2000)
 
     description = models.TextField(_("Description"), max_length=200, blank=True)
 
