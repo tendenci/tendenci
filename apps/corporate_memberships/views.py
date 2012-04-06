@@ -260,11 +260,9 @@ def edit(request, id, template="corporate_memberships/edit.html"):
                                'status_detail': corporate_membership.status_detail}
     old_corp_memb = CorporateMembership.objects.get(pk=corporate_membership.pk)
         
-        
     if request.method == "POST":
         if form.is_valid():
             corporate_membership = form.save(request.user, commit=False)
-            
             # archive the corporate membership if any of these changed:
             # corporate_membership_type, status, status_detail
             need_archive = False
@@ -274,10 +272,8 @@ def edit(request, id, template="corporate_memberships/edit.html"):
                 if value != status_info_before_edit[key]:
                     need_archive = True
                     break
-                
             if need_archive:
                 old_corp_memb.archive(request.user)
-            
             corporate_membership.save()
             corp_memb_update_perms(corporate_membership)
             

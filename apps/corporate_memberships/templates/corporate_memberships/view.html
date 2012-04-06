@@ -43,31 +43,7 @@
 				{% if corporate_membership.real_time_status_detail == 'active' %}
 				<a href="{% url membership.application_details_corp_pre corporate_membership.corp_app.memb_app.slug corporate_membership.pk %}">{% trans "Join under this corporation" %}</a>
 				{% endif %}
-				{% with corporate_membership.get_pending_renewal_entry as pending_renewal_entry %}
-				{% if pending_renewal_entry %}
-	    			<div class="pending-info-box">
-	    			{% blocktrans with pending_renewal_entry.create_dt|date:"d-M-Y" as renew_date %}Renewed on {{ renew_date }}{% endblocktrans %}<br />
-	    			{% trans "Status of Renewal: " %}<span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
-	    			{% if is_admin %}
-	    				<b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve corporate_membership.pk %}">{% trans "Approve / Disapprove" %}</a>
-	    			{% endif %}
-	    			</div>
-	    		{% else %}
-	    			{% if is_admin and corp_memb.is_join_pending %}
-	    				<div class="pending-info-box">
-	    				<b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve corporate_membership.pk %}">{% trans "Approve / Disapprove" %}</a>
-	    				</div>
-	    			{% endif %}
-	    			
-		    		{% if corporate_membership.can_renew %}
-					{% if can_change %}
-		    			<div><a href="{% url corp_memb.renew corporate_membership.id %}" style="background-color:yellow;">{% trans "Renew" %}</a>&nbsp;&nbsp;&nbsp;</div>
-		    			{% endif %}
-
-		    		{% endif %}
-	    		{% endif %}
-	    		{% endwith %}
-   		
+				
 	    		
 			</div>
 				
