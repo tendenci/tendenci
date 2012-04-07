@@ -1,4 +1,5 @@
 {% load theme_tags %}
+{% load base_tags %}
 <section id="about-info">
     <h2>About {{ SITE_GLOBAL_SITEDISPLAYNAME }}</h2>
     <div class="blurb">
@@ -6,6 +7,6 @@
     </div>
 </section><!-- /#about-info -->
 <section id="about-img">
-    <img src="http://media.tendenciapp.com/images/photo.jpg" />
+    <img src="{% stock_image_url "400x200" %}" />
 </section><!-- /#about-img -->
 {% theme_setting setting_name %}
