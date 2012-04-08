@@ -6,4 +6,65 @@ Here are some guides to getting setup on remote hosts.
 Webfaction
 ----------
 
-Coming Soon.
+Webfaction website and application creation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Complete the following steps from the webfaction panel.
+
+#) Add your domain in the Domains section
+
+#) Add a new application. Select **Django 1.2.5 (mod_wsgi 3.3/Python 2.7).
+
+#) Create a new MySQL database. Note the password (jmoswalt_t5_2:8400c876)
+
+#) Add a new website, matching the new domain with the new django application.
+
+Now, you will need to SSH into your webfaction account.
+
+::
+
+    cd ~/webapps/NEW_APPNAME/
+    git clone git@github.com:tendenci/tendenci.git
+    cp myproject.wsgi tendenci.wsgi
+    rm -rf myproject
+    rm myproject.wsgi
+
+Next, you will need to edit a couple of files. In ``tendenci.wsgi``, replacing ``'myproject.settings'`` with ``'tendenci.settings'``.
+
+You will also need to edit ``apache2/conf/httpd.conf``. On the last line, replace ``myproject.wsgi`` with ``tendenci.wsgi``.
+
+Install dependencies
+~~~~~~~~~~~~~~~~~~~~
+::
+
+    cd ~/webapps/NEW_APPNAME/tendenci
+    pip install reportlab==2.5
+    pip install -r scripts/requirements.txt
+
+Setup database settings
+~~~~~~~~~~~~~~~~~~~~~~~
+::
+
+    cp local_settings_sample.py local_settings.py
+
+In the settings file, uncomment the database setting for mysql, and add your database name as the USER and the NAME, as well as adding your password
+
+Create database tables
+~~~~~~~~~~~~~~~~~~~~~~
+::
+
+    python2.7 manage.py syncdb
+    python2.7 manage.py migrate
+    python2.7 manage.py update_settings
+
+Install and select your theme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are multiple themes available to use in ``/templates/themes/``. You can install (bulletpoints, for example), by running the following commands:
+
+::
+
+    cp -r templates/themes/prfirm themes/prfirm
+    python2.7 manage.py set_theme prfirm
+
+Now restart apache with ``../apache2/bin/restart``
