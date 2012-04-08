@@ -13,7 +13,7 @@ Complete the following steps from the webfaction panel.
 
 #) Add your domain in the Domains section
 
-#) Add a new application. Select **Django 1.2.5 (mod_wsgi 3.3/Python 2.7).
+#) Add a new application. Select **Django 1.2.5 (mod_wsgi 3.3/Python 2.7)**.
 
 #) Create a new MySQL database. Note the password (jmoswalt_t5_2:8400c876)
 
