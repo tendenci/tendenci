@@ -49,7 +49,8 @@ def membership_index(request):
 
 def membership_search(request, template_name="memberships/search.html"):
     query = request.GET.get('q')
-    if get_setting('site', 'global', 'searchindex') and query:
+    total_count = Membership.objects.all().count()
+    if get_setting('site', 'global', 'searchindex') and (total_count > 1000 or query):
         members = Membership.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'memberships.view_membership')
