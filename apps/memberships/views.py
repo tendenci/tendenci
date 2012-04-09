@@ -54,9 +54,9 @@ def membership_search(request, template_name="memberships/search.html"):
     else:
         filters = get_query_filters(request.user, 'memberships.view_membership')
         members = Membership.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            members = members.select_related()
-            
+        # if not request.user.is_anonymous():
+        #     members = members.select_related()
+
     types = MembershipType.objects.all()
 
     EventLog.objects.log(**{
