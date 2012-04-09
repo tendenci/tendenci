@@ -36,6 +36,11 @@ class CaseStudy(TendenciBaseModel):
         verbose_name = 'Case Study'
         verbose_name_plural = 'Case Studies'
 
+    def delete(self, *args, **kwargs):
+        for img in self.image_set.all():
+            img.delete()
+        return super(CaseStudy, self).delete(*args, **kwargs)
+
     @models.permalink
     def get_absolute_url(self):
         return ("case_study.view", [self.slug])
