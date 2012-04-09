@@ -32,6 +32,11 @@ class ArchitectureProject(TendenciBaseModel):
         verbose_name = 'Architecture Project'
         verbose_name_plural = 'Architecture Projects'
 
+    def delete(self, *args, **kwargs):
+        for img in self.image_set.all():
+            img.delete()
+        return super(ArchitectureProject, self).delete(*args, **kwargs)
+
     @models.permalink
     def get_absolute_url(self):
         return ("architecture_project.view", [self.slug])
