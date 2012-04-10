@@ -42,7 +42,7 @@
             {% endif %}
             <li><a href="{% url membership.search %}">{% trans "Search All Members" %}</a></li> 
             {% if admin %}
-            <li><a href="{% url membership.application_entries_search %}?q=status:pending">{% trans "Pending Members" %}</a></li>
+            <li><a href="{% url membership.application_entries_search %}?q=status=pending">{% trans "Pending Members" %}</a></li>
             <li><a href="{% url membership.application_entries_search %}">{% trans "Membership Entries" %}</a></li>
             <li class="divider"></li>
             <li><a href="{% url admin:memberships_app_changelist %}">{% trans "Membership Applications" %}</a></li>
