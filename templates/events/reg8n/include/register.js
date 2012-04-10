@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $('#discount_check').click(function(){
         code = $('#id_discount_code').val();
-        price = $('#original-price').html();
-        count = parseInt($('#id_registrant-TOTAL_FORMS').val());
+        price = $('#total-amount').html();
+        // only 1 registrant set is discounted
+        count = 1;
         $.post(
             '{% url discount.discounted_price %}',
             {
