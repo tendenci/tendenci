@@ -553,8 +553,12 @@ def add_registration(*args, **kwargs):
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
-    discount = kwargs.get('discount', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    
+    # apply discount if any
+    discount = reg_form.get_discount()
+    if discount:
+        admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
     
     reg8n_attrs = {
         "event": event,
@@ -569,10 +573,20 @@ def add_registration(*args, **kwargs):
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
     
+    discount_applied = False
     for form in registrant_formset.forms:
-        amount = event_price
-        if not count % price.quantity == 0:
+        if count % price.quantity == 0:
+            amount = event_price
+            # apply the discount to the first registrant only
+            if not discount_applied:
+                if discount:
+                    amount = event_price - Decimal(discount.value)
+                    if amount < 0:
+                        amount = 0
+                discount_applied = True
+        else:
             amount = Decimal('0.00')
+            
         if not form in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
@@ -602,11 +616,10 @@ def add_registration(*args, **kwargs):
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
     
     if discount:
-        for i in range(0, count):
-            DiscountUse.objects.create(
-                    discount=discount,
-                    invoice=invoice,
-                )
+        DiscountUse.objects.create(
+                discount=discount,
+                invoice=invoice,
+            )
     
     return (reg8n, created)
 
