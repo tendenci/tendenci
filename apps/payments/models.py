@@ -89,7 +89,9 @@ class Payment(models.Model):
         return self.response_code=='1' and self.response_reason_code=='1' and self.status_detail == 'approved'
 
     def __unicode__(self):
-        return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
+        return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, 
+                                                                   self.trans_id, 
+                                                                   self.amount)
         
     @models.permalink
     def get_absolute_url(self):
