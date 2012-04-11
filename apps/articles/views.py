@@ -51,6 +51,7 @@ def index(request, slug=None, template_name="articles/view.html"):
 
 
 def search(request, template_name="articles/search.html"):
+    from datetime import datetime
     get = dict(request.GET)
     query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
@@ -64,6 +65,7 @@ def search(request, template_name="articles/search.html"):
     else:
         filters = get_query_filters(request.user, 'articles.view_article')
         articles = Article.objects.filter(filters).distinct()
+        articles = articles.filter(release_dt__lte==datetime.now())
         if not request.user.is_anonymous():
             articles = articles.select_related()
 
