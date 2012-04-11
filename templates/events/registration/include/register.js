@@ -78,9 +78,9 @@ $(document).ready(function(){
     });
     
     $('#discount_check').click(function(){
-        var code = $('#id_discount_code').val();
-        var price = $('#original-price').html();
-        var count = parseInt($('#id_registrant-TOTAL_FORMS').val());
+        var code = $('#id_discount').val();
+        var price = $('#total-amount').html();
+        var count = 1;
         $.post(
             '{% url discount.discounted_price %}',
             {
@@ -98,9 +98,9 @@ $(document).ready(function(){
                     $('#final-amount').html(json["price"]);
                     $('.discount-summary').show()
                 } else {
-                    $('#summary-total-amount').html($('#original-price').html());
-                    $('#discount-amount').html(0);
-                    $('#final-amount').html($('#original-price').html());
+                    $('#summary-total-amount').html($('#total-amount').html());
+                    $('#discount-amount').html("0.00");
+                    $('#final-amount').html($('#total-amount').html());
                 }
             }
         );

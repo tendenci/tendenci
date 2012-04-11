@@ -29,14 +29,16 @@ function updateSummaryTotal(){
     // update the total
     var summary_table = $('#summary-price');
     var items = $('#summary-price tr');
-    var total_amount = 0;
+    var total_amount = 0.00;
+    var discount_amount = parseFloat($('#discount-amount').html());
+    console.log(discount_amount);
     for(i=0;i<items.length;i++){
         item_amount = parseFloat($(items[i]).find('.item-price').html());
         total_amount = total_amount + item_amount;
     }
     $('#total-amount').html(total_amount.toFixed(2));
     $('#summary-total-amount').html(total_amount.toFixed(2));
-    $('#final-amount').html(total_amount.toFixed(2));
+    $('#final-amount').html((total_amount - discount_amount).toFixed(2));
 }
 
 function updateSummaryIndex(prefix){

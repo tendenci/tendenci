@@ -4,6 +4,7 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
+from discounts.models import Discount, DiscountUse
 
 from events.utils import get_event_spots_taken, update_event_spots_taken
 from events.models import Event, RegConfPricing, Registration, Registrant

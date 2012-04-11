@@ -10,7 +10,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}css/event-anon-registration.css" />
+<link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/event-anon-registration.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
 {% endblock %}
 
@@ -94,11 +94,11 @@
                             </div>
                         {% endif %}
                         
-                        {% if reg_form.discount_code %}
+                        {% if reg_form.discount %}
                             <div class="form-field">
-                                <div id="discount-message" class="error">{{ reg_form.discount_code.errors }}</div>
+                                <div id="discount-message" class="error">{{ reg_form.discount.errors }}</div>
 								<div class="required">{% trans "Discount Code" %}</div>
-								<div class="field">{{ reg_form.discount_code }}</div>
+								<div class="field">{{ reg_form.discount }}</div>
                                 <button type="button" id="discount_check">Check Discount</button>
                             </div>
                         {% endif %}
@@ -139,7 +139,7 @@
                             <td><div id="discount-label">{% trans "Discount" %}</div></td>
                             <td align="right">
 								<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="discount-amount">0</span>
+								<span id="discount-amount">0.00</span>
 							</td>
                         </tr>
                         <tr class="line-on-top discount-summary">
@@ -315,7 +315,7 @@
 {% endblock %}
 
 {% block extra_body %}
-<script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
+<script src="{{ LOCAL_STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript" >
     {% include 'events/registration/include/register-registrant.js' %}
     {% include 'events/addons/register-addon.js' %}

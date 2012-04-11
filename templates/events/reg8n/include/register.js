@@ -21,9 +21,9 @@ $(document).ready(function(){
                     $('#final-amount').html(json["price"]);
                     $('.discount-summary').show()
                 } else {
-                    $('#summary-total-amount').html($('#original-price').html());
-                    $('#discount-amount').html(0);
-                    $('#final-amount').html($('#original-price').html());
+                    $('#summary-total-amount').html($('#total-amount').html());
+                    $('#discount-amount').html("0.00");
+                    $('#final-amount').html($('#total-amount').html());
                 }
             }
         );
