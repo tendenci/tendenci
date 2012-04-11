@@ -31,7 +31,6 @@ function updateSummaryTotal(){
     var items = $('#summary-price tr');
     var total_amount = 0.00;
     var discount_amount = parseFloat($('#discount-amount').html());
-    console.log(discount_amount);
     for(i=0;i<items.length;i++){
         item_amount = parseFloat($(items[i]).find('.item-price').html());
         total_amount = total_amount + item_amount;

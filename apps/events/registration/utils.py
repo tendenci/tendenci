@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from django.contrib.auth.models import User, AnonymousUser
 
@@ -212,7 +213,7 @@ def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
     if discount:
         total_price = total_price - discount.value
         if total_price < 0:
-            total_price = 0
+            total_price = Decimal('0.00')
         admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
         
     # override event_price to price specified by admin
