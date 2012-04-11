@@ -286,7 +286,7 @@ TINYMCE_DEFAULT_CONFIG = {
                                 image,|,pagebreak,fullscreen,codemirror",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
                                 forecolor,|,pastetext,pasteword,\
-                                removeformat,media,charmap,|,\
+                                removeformat,charmap,|,\
                                 outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",
