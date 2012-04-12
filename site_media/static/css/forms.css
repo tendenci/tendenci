@@ -137,7 +137,7 @@ div.forms fieldset.permissions {
     margin-bottom: 5px;
 }
 
-.required {
+.label.required {
 	font-weight: bold;
 }
 
