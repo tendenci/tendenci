@@ -2,7 +2,7 @@
 {% load news_tags %}
 {% list_news as featured_news limit=8 %}
 <section id="news-featured">
-    <h2>News</h2>
+    <h3>News</h3>
     
     {% if featured_news %}
     {% for news_item in featured_news|slice:":1" %}
