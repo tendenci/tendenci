@@ -83,36 +83,9 @@ Bulletpoints Theme - homepage.html
     <div class="container">
         <section id="home-content" class="center">
             <div class="space" id="space_2">{% space_include MODULE_THEME_SPACE_2 %}</div>
-            <div id="newsletter-form" class="clearfix">
-                <h3>{% trans 'Get in Touch' %}</h3>
-                {# embed_form 1 #}
-                <form action="/forms/contact-us/" method="post">{% csrf_token %}
-                    <div class="forms">
-                    <div class="form-field">
-                        <div class="id_field_1">
-                            <div class="label">
-                                <label for="id_field_1">{% trans 'First Name' %}</label>
-                            </div>
-                            
-                            <div class="field">
-                                <input id="id_field_1" type="text" name="field_1" maxlength="100">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <div class="id_field_3">
-                            <div class="label">
-                                <label for="id_field_3">{% trans 'Email Address' %}</label>
-                            </div>
-                            <div class="field">
-                                <input id="id_field_3" type="text" name="field_3" maxlength="100">
-                            </div>
-                        </div>
-                    </div>
-                        <input type="submit" id="newsletter-submit" value="{% trans 'Contact Us' %}">
-                    </div>
-                </form>
-            </div><!-- /#newsletter-form -->
+             <div class="space" id="newsletter-form">
+                {% space_include MODULE_THEME_SPACE_5 %}
+            </div>
             <div class="space" id="space_3">
                 {% space_include MODULE_THEME_SPACE_3 %}
             </div>
