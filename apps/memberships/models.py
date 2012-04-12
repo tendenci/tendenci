@@ -287,7 +287,11 @@ class Membership(TendenciBaseModel):
         permissions = (("view_membership","Can view membership"),)
 
     def __unicode__(self):
-        return "%s #%s" % (self.user.get_full_name(), self.member_number)
+        if self.user.get_full_name():
+            label = self.user.get_full_name()
+        else:
+            label = self.user.username
+        return "#%s %s" % (self.member_number, label)
 
     @models.permalink
     def get_absolute_url(self):
