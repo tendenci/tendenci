@@ -35,8 +35,9 @@
             <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
             <div class="content">{% trans "Regular Price:" %} {{ dp.regular_price|format_currency }}</div>
             <div class="content">{% trans "Premium Price:" %} {{ dp.premium_price|format_currency }}</div>
-            <div class="content">{% trans "Category Threshold:" %} {{ dp.category_threshold }}</div>
-            
+            <div class="content">{% trans "Member Regular Price:" %} {{ dp.regular_price_member|format_currency }}</div>
+            <div class="content">{% trans "Member Premium Price:" %} {{ dp.premium_price_member|format_currency }}</div>
+            <div class="content">{% trans "Show Member Pricing:" %} {{ dp.show_member_pricing }}</div>
             <div class="content">{% trans "Status:" %} <b>{% if dp.status %}{% trans "Active" %}{%else%}{% trans "Inactive" %}{%endif%}</b></div>
 			<div class="meta">
             	<div class="submitted">{% blocktrans with dp.create_dt|date:"long" as dp_create and dp.creator as dp_creator %} Created on {{ dp_create }} by {{ dp_creator }}{% endblocktrans %}</div>

@@ -176,7 +176,9 @@ class DirectoryPricing(models.Model):
     duration = models.IntegerField(blank=True, choices=ADMIN_DURATION_CHOICES)
     regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    category_threshold = models.IntegerField(blank=True)
+    regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    show_member_pricing = models.BooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True)
@@ -199,7 +201,6 @@ class DirectoryPricing(models.Model):
             self.owner_username=user.username
         if not self.regular_price: self.regular_price = 0
         if not self.premium_price: self.premium_price = 0
-        if not self.category_threshold: self.category_threshold = 0
             
         super(DirectoryPricing, self).save(*args, **kwargs)
 

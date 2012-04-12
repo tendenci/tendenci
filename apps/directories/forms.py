@@ -196,7 +196,9 @@ class DirectoryPricingForm(forms.ModelForm):
         fields = ('duration',
                   'regular_price',
                   'premium_price',
-                  'category_threshold',
+                  'regular_price_member',
+                  'premium_price_member',
+                  'show_member_pricing',
                   'status',)
     
     def __init__(self, *args, **kwargs):
