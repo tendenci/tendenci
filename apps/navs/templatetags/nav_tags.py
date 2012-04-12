@@ -59,15 +59,9 @@ def load_nav(context, nav_id):
     This will call nav_item that will call itself recursively nesting 
     the subnavs
     """
-    user = AnonymousUser()
-    
-    if 'user' in context:
-        if isinstance(context['user'], User):
-            user = context['user']
+    # No perms check because load_nav is only called by the other tags
     try:
-        filters = get_query_filters(user, 'navs.view_nav')
-        navs = Nav.objects.filter(filters).filter(id=nav_id).distinct()
-        nav = navs[0]
+        nav = Nav.objects.get(id=nav_id)
     except:
         return None
     context.update({
@@ -103,7 +97,7 @@ def nav(context, nav_id):
         nav_object = navs[0]
         nav = get_nav(nav_object.pk)
         if not nav:
-            cache_nav(nav)
+            cache_nav(nav_object)
     except:
         return None
 
