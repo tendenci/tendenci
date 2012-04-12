@@ -236,6 +236,8 @@ INSTALLED_APPS = (
     'discounts',
     'metrics',
     'search',
+    'navs',
+    'pluginmanager',
     'plugin_builder',
     'navs',
     'tendenci_guide',
