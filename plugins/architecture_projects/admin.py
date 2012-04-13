@@ -8,6 +8,7 @@ from django.conf import settings
 
 from event_logs.models import EventLog
 from perms.object_perms import ObjectPermission
+from perms.utils import update_perms_and_save
 from models import ArchitectureProject, Category, BuildingType, Image
 from forms import ArchitectureProjectForm, FileForm
 
@@ -26,11 +27,14 @@ class FileAdmin(admin.StackedInline):
     extra = 0
 
 class ArchitectureProjectAdmin(admin.ModelAdmin):
-    list_display = ['view_on_site', 'edit_link', 'client', 'project_title', 'slug', 'overview_parsed', 'create_dt']
-    list_filter = ['create_dt']
-    search_fields = ['client','overview', 'execution', 'results']
+    list_display = ['view_on_site', 'edit_link', 'client', 'project_title', 'status', 'ordering']
+    list_filter = ['client']
+    
+    list_filter = ['client']
+    search_fields = ['client','overview', 'execution', 'results', 'architect', 'project_title']
     ordering = ('-create_dt',)
-    prepopulated_fields = {'slug': ['client']}
+    list_editable = ['ordering', 'status']
+    prepopulated_fields = {'slug': ['project_title']}
     fieldsets = (
         (None, {'fields': (
             'architect',
@@ -58,6 +62,7 @@ class ArchitectureProjectAdmin(admin.ModelAdmin):
     )
     form = ArchitectureProjectForm
     inlines = (FileAdmin,)
+    ordering = ['-ordering']
 
     class Media:
         js = (
@@ -65,6 +70,7 @@ class ArchitectureProjectAdmin(admin.ModelAdmin):
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
             '%sjs/admin/architecture-projects-dynamic-sort.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
@@ -133,33 +139,7 @@ class ArchitectureProjectAdmin(admin.ModelAdmin):
 
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
-        add = not change
-
-        # set up user permission
-        instance.allow_user_view, instance.allow_user_edit = form.cleaned_data['user_perms']
-
-        if add:
-            instance.creator = request.user
-            instance.creator_username = request.user.username
-            instance.owner = request.user
-            instance.owner_username = request.user.username
-
-        # save the object
-        instance.save()
-        form.save_m2m()
-
-        # permissions
-        if add:
-            # assign permissions for selected groups
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            # assign creator permissions
-            ObjectPermission.objects.assign(instance.creator, instance)
-        else:
-            # assign permissions
-            ObjectPermission.objects.remove_all(instance)
-            ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], instance)
-            ObjectPermission.objects.assign(instance.creator, instance)
-
+        perms = update_perms_and_save(request, form, instance)
         return instance
 
     def save_formset(self, request, form, formset, change):
