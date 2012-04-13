@@ -21,16 +21,33 @@ class ArchitectureProject(TendenciBaseModel):
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
     categories = models.ManyToManyField('Category')
     building_types = models.ManyToManyField('BuildingType')
+    ordering = models.IntegerField(blank=True, null=True)
 
     objects = ArchitectureProjectManager()
 
     def __unicode__(self):
         return self.client
 
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.ordering is None:
+            # Append
+            try:
+                last = model.objects.order_by('-ordering')[0]
+                self.ordering = last.ordering + 1
+            except:
+                # First row
+                self.ordering = 0
+        
+        return super(ArchitectureProject, self).save(*args, **kwargs)
+
+
     class Meta:
         permissions = (("view_architectureproject","Can view architecture project"),)
         verbose_name = 'Architecture Project'
         verbose_name_plural = 'Architecture Projects'
+        ordering = ('ordering',)
 
     def delete(self, *args, **kwargs):
         for img in self.image_set.all():
@@ -95,6 +112,7 @@ class BuildingType(models.Model):
 
     class Meta:
         ordering = ['title']
+        permissions = (("view_architecture_project","Can view project"),)
 
     @models.permalink
     def get_absolute_url(self):

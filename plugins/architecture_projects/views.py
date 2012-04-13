@@ -41,7 +41,7 @@ def search(request, template_name="architecture_projects/search.html"):
         filters = get_query_filters(request.user, 'architecture_projects.view_architectureproject')
         architecture_projects = ArchitectureProject.objects.filter(filters)
 
-    architecture_projects = architecture_projects.order_by('-create_dt')
+    architecture_projects = architecture_projects.order_by('-ordering')
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()
 
