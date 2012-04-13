@@ -64,13 +64,15 @@ class FormForForm(forms.ModelForm):
                     else:
                         default = False
                 field_args["initial"] = field.default
-            #if "queryset" in arg_names:
-            #    field_args["queryset"] = field.queryset()
+
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+
             self.fields[field_key] = field_class(**field_args)
-            
+
+            self.fields[field_key].widget.attrs['title'] = field.label
+
         # include pricing options if any
         if self.form.custom_payment and self.form.pricing_set.all():
 
@@ -103,7 +105,7 @@ class FormForForm(forms.ModelForm):
                     widget=forms.RadioSelect,
                     initial=1,
                 )
-            
+
         if not self.user.is_authenticated(): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 

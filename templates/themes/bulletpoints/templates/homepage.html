@@ -63,7 +63,7 @@ Bulletpoints Theme - homepage.html
                 {% else %}
                 {% for item in 4|make_range %}
                 <div class="story story-{% cycle "even" "odd" %}">
-                  <div class="story-image"><a href="#"><img style="height: 324px; width: 618px;" src="http://media.tendenciapp.com/images/rotator.jpg" alt="Sample"></a></div>
+                  <div class="story-image"><a href="#"><img style="height: 324px; width: 618px;" src="{% stock_image_url '618x324' %}" alt="Sample"></a></div>
                     <div class="story-text">
                         <h2 class="headline"><a href="#">Sample Story {{ forloop.counter }}</a></h2>
                         <div class="story-summary">

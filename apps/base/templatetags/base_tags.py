@@ -592,3 +592,8 @@ register.tag('tags_hash_tags', do_hash_tags_for_object)
 @register.inclusion_tag("base/meta_creator_owner.html")
 def meta_creator_owner(obj):
     return {'obj': obj}
+
+@register.inclusion_tag("base/stock_image_url.html", takes_context=True)
+def stock_image_url(context, size):
+    context.update({'size': size})
+    return context

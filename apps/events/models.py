@@ -397,10 +397,11 @@ class Registration(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        description = 'Tendenci Invoice %d for Event (%d): %s (Reg# %d).' % (
+        description = 'Tendenci Invoice %d for Event (%d): %s - %s (Reg# %d).' % (
             inv.id,
             self.event.pk,
             self.event.title,
+            self.event.start_dt.strftime('%Y-%m-%d'),
             inv.object_id,
         )
         

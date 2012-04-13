@@ -71,7 +71,7 @@
                 {% endif %}
                 {% if can_delete_profile %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url profile.delete nav_object.pk %}">{% trans "Delete User" %}</a></li>
+                    <li><a class="delete" href="{% url profile.delete user_this.pk %}">{% trans "Delete User" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
