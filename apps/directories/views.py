@@ -10,7 +10,7 @@ from django.contrib import messages
 
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import (is_admin, get_notice_recipients, has_perm,
+from perms.utils import (is_admin, is_member, get_notice_recipients, has_perm,
     has_view_perm, get_query_filters, update_perms_and_save)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -206,20 +206,29 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
 @login_required
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
-    if not has_perm(request.user,'directories.add_directory'): raise Http403
+    can_add_active = has_perm(request.user,'directories.add_directory')
     
+    if not any(is_admin(request.user),
+               can_add_active,
+               get_setting('module', 'directories', 'usercanadd'),
+               (is_member(request.user) and get_setting('module', 'directories', 'directoriesrequiresmembership'))
+               ):
+        raise Http403
+     
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
+    
+    form = form_class(request.POST or None, request.FILES or None, user=request.user)
+    del form.fields['expiration_dt']
+    if not can_add_active:
+        del form.fields['activation_dt']
+        del form.fields['status_detail']
+        del form.fields['status']
+    
+    if not require_payment:
+        del form.fields['payment_method']
+        del form.fields['list_type']
 
-    if request.method == "POST":
-        form = form_class(request.POST, request.FILES, user=request.user)
-        del form.fields['expiration_dt']
-        if not is_admin(request.user):
-            del form.fields['activation_dt']
-        
-        if not require_payment:
-            del form.fields['payment_method']
-            del form.fields['list_type']
-            
+    if request.method == "POST":   
         if form.is_valid():           
             directory = form.save(commit=False)
 
@@ -242,7 +251,9 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             # set the expiration date
             directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
             
-            if not directory.status_detail: directory.status_detail = 'pending'
+            if not can_add_active:
+                directory.status = True
+                directory.status_detail = 'pending'
 
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
@@ -276,18 +287,10 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             if directory.payment_method.lower() in ['credit card', 'cc']:
                 if directory.invoice and directory.invoice.balance > 0:
                     return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
-                
-            return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
-    else:
-        form = form_class(user=request.user)
-        
-        del form.fields['expiration_dt']
-        if not is_admin(request.user):
-            del form.fields['activation_dt']
-        
-        if not require_payment:
-            del form.fields['payment_method']
-            del form.fields['list_type']
+            if can_add_active:  
+                return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
+            else:
+                return HttpResponseRedirect(reverse('directory.thank_you'))             
 
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
@@ -431,3 +434,7 @@ def pricing_search(request, template_name="directories/pricing-search.html"):
 
     return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
         context_instance=RequestContext(request))
+
+
+def thank_you(request, template_name="directories/thank-you.html"):
+    return render_to_response(template_name, {}, context_instance=RequestContext(request))
