@@ -60,7 +60,7 @@ def localize_date(date, from_tz=None, to_tz=None):
         from_tz=settings.TIME_ZONE
     
     if to_tz is None: 
-        to_tz=settings.UI_TIME_ZONE
+        to_tz=settings.TIME_ZONE
         
     return adjust_datetime_to_timezone(date,from_tz=from_tz,to_tz=to_tz)
 
