@@ -31,6 +31,7 @@ from events.settings import (FIELD_MAX_LENGTH,
                              LABEL_MAX_LENGTH, 
                              FIELD_TYPE_CHOICES, 
                              USER_FIELD_CHOICES)
+from base.utils import localize_date
 
 
 
@@ -328,19 +329,19 @@ class RegConfPricing(models.Model):
         if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
-            if datetime.now() > self.event.end_dt:
+            if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
                 return False
         return True
     
     @property
     def registration_has_started(self):
-        if datetime.now() >= self.start_dt:
+        if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
             return True
         return False
         
     @property
     def registration_has_ended(self):
-        if datetime.now() >= self.end_dt:
+        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
     
@@ -354,9 +355,15 @@ class RegConfPricing(models.Model):
     
     @property
     def within_time(self):
-        if self.start_dt <= datetime.now() <= self.end_dt:
+        if localize_date(self.start_dt, from_tz=self.timezone) \
+            <= localize_date(datetime.now())                    \
+            <= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
+    
+    @property
+    def timezone(self):
+        return self.reg_conf.event.timezone.zone
     
 class Registration(models.Model):
 

@@ -1,0 +1,9 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load i18n %}
+
+{% block body %}
+    {% directory_nav request.user %}
+<h1>{% trans "Thank you" %}</h1>
+<p>{% trans "Your directory is is under review and will be approved by an administrator" %}</p>
+{% endblock %}

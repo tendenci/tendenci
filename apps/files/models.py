@@ -141,4 +141,4 @@ class File(TendenciBaseModel):
         return ("file", [self.pk, 'download'])
 
     def __unicode__(self):
-        return self.name
+        return self.get_name()
