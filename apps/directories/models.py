@@ -57,6 +57,7 @@ class Directory(TendenciBaseModel):
      
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
+    pricing = models.ForeignKey('DirectoryPricing', null=True)
     activation_dt = models.DateTimeField(_('Activation Date/Time'), null=True, blank=True)
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
