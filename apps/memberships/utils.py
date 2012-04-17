@@ -368,7 +368,58 @@ def get_notice_token_help_text(notice=None):
                 """
               
     return help_text
-        
+
+def spawn_username(*args):
+    """
+    Join arguments to create username [string].
+    Find similiar usernames; auto-increment newest username.
+    Return new username [string].
+    """
+    if not args:
+        raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
+
+    import re
+
+    max_length = 8
+
+    un = ' '.join(args)             # concat args into one string
+    un = re.sub('\s+','_',un)       # replace spaces w/ underscores
+    un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
+    un = un.strip('_.- ')           # strip funny-characters from sides
+    un = un[:max_length].lower()    # keep max length and lowercase username
+
+    others = [] # find similiar usernames
+    for u in User.objects.filter(username__startswith=un):
+        if u.username.replace(un, '0').isdigit():
+            others.append(int(u.username.replace(un,'0')))
+
+    if others and 0 in others:
+        # the appended digit will compromise the username length
+        # there would have to be more than 99,999 duplicate usernames
+        # to kill the database username max field length
+        un = '%s%s' % (un, str(max(others)+1))
+
+    return un.lower()
+
+def get_user(**kwargs):
+    """
+    Get user via single keyword argument.
+    Example: get_user(username=username)
+    Only works with unique fields e.g. id, username
+    """
+    for k, v in kwargs.items():
+
+        try:
+            user = User.objects.get(**{k:v})
+        except User.MultipleObjectsReturned:
+            user = User.objects.filter(**{k:v})[0]
+        except User.DoesNotExist:
+            user = None
+
+        if user:
+            break  # get out of for loop
+
+    return user
 
 def get_membership_stats():
     now = datetime.now()

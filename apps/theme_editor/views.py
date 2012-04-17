@@ -17,7 +17,7 @@ from theme_editor.models import ThemeFileVersion
 from theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
 from theme_editor.utils import get_dir_list, get_file_list, get_file_content
 from theme_editor.utils import qstr_is_file, qstr_is_dir, copy
-from theme_editor.utils import handle_uploaded_file
+from theme_editor.utils import handle_uploaded_file, app_templates
 
 from base.http import Http403
 from perms.utils import has_perm
@@ -123,9 +123,17 @@ def get_version(request, id):
     version = ThemeFileVersion.objects.get(pk=id)
     return HttpResponse(version.content)
     
+@permission_required('theme_editor.change_themefileversion')
+def app_list(request, template_name="theme_editor/app_list.html"):
+    app_list = []
+    for app in app_templates.keys():
+        app_list.append((app, app_templates[app]))
+    return render_to_response(template_name, {
+        'apps': sorted(app_list, key=lambda app: app[0]),
+    }, context_instance=RequestContext(request))
 
 @permission_required('theme_editor.change_themefileversion')
-def original_templates(request, template_name="theme_editor/original_templates.html"):
+def original_templates(request, app=None, template_name="theme_editor/original_templates.html"):
     
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -149,9 +157,14 @@ def original_templates(request, template_name="theme_editor/original_templates.h
     elif not current_dir_split[0]:
         prev_dir = ''
     
-    dirs = get_dir_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
-    files, non_editable_files = get_file_list(current_dir, ROOT_DIR = os.path.join(settings.PROJECT_ROOT, "templates"), include_plugins=True)
+    root = os.path.join(settings.PROJECT_ROOT, "templates")
+    if app:
+        root = app_templates[app]
+    
+    dirs = get_dir_list(current_dir, ROOT_DIR=root)
+    files, non_editable_files = get_file_list(current_dir, ROOT_DIR=root)
     return render_to_response(template_name, {
+        'app':app,
         'current_dir': current_dir,
         'prev_dir_name': prev_dir_name,
         'prev_dir':prev_dir,
@@ -159,9 +172,10 @@ def original_templates(request, template_name="theme_editor/original_templates.h
         'files': files,
         'non_editable_files': non_editable_files
     }, context_instance=RequestContext(request))
+    
 
 @permission_required('theme_editor.change_themefileversion')
-def copy_to_theme(request):
+def copy_to_theme(request, app=None):
     
     current_dir = request.GET.get("dir", '')
     if current_dir:
@@ -171,11 +185,6 @@ def copy_to_theme(request):
         current_dir = current_dir.replace('///', '/')
         current_dir = current_dir.replace('//', '/')
     
-    plugin = None
-    if current_dir.startswith('plugins.'):
-        plugin = current_dir.split('plugins.')[1].split('/')[0]
-        current_dir = current_dir.split('plugins.')[1]
-    
     chosen_file = request.GET.get("file", '')
     if chosen_file:
         chosen_file = chosen_file.replace('\\','/')
@@ -184,18 +193,16 @@ def copy_to_theme(request):
         chosen_file = chosen_file.replace('///', '/')
         chosen_file = chosen_file.replace('//', '/')
     
-    if plugin:
-        full_filename = os.path.join(settings.PROJECT_ROOT, "plugins",
-            plugin, 'templates', current_dir,
-            chosen_file)
-    else:
-        full_filename = os.path.join(settings.PROJECT_ROOT, 'templates',
-            current_dir, chosen_file)
+    root = os.path.join(settings.PROJECT_ROOT, "templates")
+    if app:
+        root = app_templates[app]
+    
+    full_filename = os.path.join(root, current_dir, chosen_file)
     
     if not os.path.isfile(full_filename):
         raise Http404
         
-    copy(current_dir, chosen_file, plugin=plugin)
+    copy(chosen_file, current_dir, full_filename)
     
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     

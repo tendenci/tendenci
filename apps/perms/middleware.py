@@ -103,7 +103,6 @@ class ImpersonationMiddleware(object):
     """
     def process_request(self, request):
         from perms.utils import is_admin
-
         session_impersonation = False
         message = False
         

@@ -15,7 +15,7 @@ class Map(File):
         permissions = (("view_map","Can view map"),)
         
     def __unicode__(self):
-        return self.name
+        return self.get_name()
         
     @property
     def content_type(self):

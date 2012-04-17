@@ -4,13 +4,30 @@ from django.contrib.contenttypes.models import ContentType
 from directories.models import DirectoryPricing
 from invoices.models import Invoice
 from payments.models import Payment
-from perms.utils import is_admin
+from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
-def get_duration_choices():
-    dps = DirectoryPricing.objects.filter(status=1).order_by('duration')
-
-    return [(dp.duration, '%d days after the activation date' % dp.duration) for dp in dps]
+def get_duration_choices(user):
+    currency_symbol = get_setting('site', 'global', 'currencysymbol')
+    pricings = DirectoryPricing.objects.filter(status=1).order_by('duration')
+    choices = []
+    for pricing in pricings:
+        if pricing.duration == 0:
+            if is_admin(user):
+                choice = (pricing.pk, 'Unlimited')
+            else:
+                continue
+        else:
+            if is_member(user):
+                prices = "%s %s/%s" % (currency_symbol,pricing.regular_price_member, 
+                                            pricing.premium_price_member)
+            else:
+                prices = "%s %s/%s" % (currency_symbol, pricing.regular_price, 
+                                    pricing.premium_price)
+            choice = (pricing.pk, '%d days for %s' % (pricing.duration, prices))
+        choices.append(choice)
+        
+    return choices
 
 def get_payment_method_choices(user):
     if is_admin(user):
@@ -27,7 +44,7 @@ def get_payment_method_choices(user):
         else:
             return ()
   
-def directory_set_inv_payment(user, directory, **kwargs): 
+def directory_set_inv_payment(user, directory, pricing): 
     if get_setting('module', 'directories', 'directoriesrequirespayment'):
         if not directory.invoice:
             inv = Invoice()
@@ -66,7 +83,7 @@ def directory_set_inv_payment(user, directory, **kwargs):
             inv.message = 'Thank You.'
             inv.status = True
             
-            inv.total = get_directory_price(user, directory)
+            inv.total = get_directory_price(user, directory, pricing)
             inv.subtotal = inv.total
             inv.balance = inv.total
             inv.estimate = 1
@@ -92,16 +109,16 @@ def directory_set_inv_payment(user, directory, **kwargs):
                     inv.make_payment(user, payment.amount)
                     
             
-def get_directory_price(user, directory, **kwargs):
+def get_directory_price(user, directory, pricing):
     directory_price = 0
-    dps = DirectoryPricing.objects.filter(status=1).filter(duration=directory.requested_duration)
-    if dps:
-        dp = dps[0]
-        # check if user is member when membership is in place
+    if is_member(user):
         if directory.list_type == 'regular':
-            directory_price = dp.regular_price
+            return  pricing.regular_price_member
         else:
-            directory_price = dp.premium_price
-            
-    return directory_price
-    
+            return pricing.premium_price_member
+    else:
+        if directory.list_type == 'regular':
+            return  pricing.regular_price
+        else:
+            return pricing.premium_price
+                

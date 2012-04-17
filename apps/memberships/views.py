@@ -49,16 +49,19 @@ def membership_index(request):
 
 def membership_search(request, template_name="memberships/search.html"):
     query = request.GET.get('q')
-    if get_setting('site', 'global', 'searchindex') and query:
+    mem_type = request.GET.get('type')
+    total_count = Membership.objects.all().count()
+    if get_setting('site', 'global', 'searchindex') and (total_count > 1000 or query):
         members = Membership.objects.search(query, user=request.user)
+        if mem_type:
+            members = members.filter(mem_type=mem_type)
     else:
         filters = get_query_filters(request.user, 'memberships.view_membership')
         members = Membership.objects.filter(filters).distinct()
-        if not request.user.is_anonymous():
-            members = members.select_related()
-            
+        if mem_type:
+            members = members.filter(membership_type__pk=mem_type)
     types = MembershipType.objects.all()
-
+    
     EventLog.objects.log(**{
         'event_id' : 474000,
         'event_data': '%s searched by %s' % ('Membership', request.user),

@@ -4,8 +4,9 @@ from dateutil.parser import parse as dt_parse
 
 from django.contrib.auth.models import User
 
+from profiles.models import Profile
 from memberships.models import Membership, MembershipType
-from memberships.utils import csv_to_dict
+from memberships.utils import csv_to_dict, spawn_username, get_user
 
 def clean_username(un):
     # clean username
@@ -33,8 +34,6 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
     Entries that are already in the database will be marked as skipped.
     """
 
-    print 'mapping', mapping.keys()
-
     membership_dicts = []
     skipped = 0
     for csv_dict in csv_to_dict(file_path, machine_name=True):  # field mapping
@@ -45,34 +44,31 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
                 # membership['username'] = 'charliesheen'
                 m[clean_field_name(app_field)] = csv_dict.get(csv_field, '')
 
-        username = m['username']
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
+        # get user via username or email
+        if m.get('username'):
+            user = get_user(username=m.get('username'))
+        elif m.get('email'):
+            user = get_user(email=m.get('email'))
 
-            username = clean_username(username)
+        # if user; take user info
+        # if not; take form info
+        # ------------------------
 
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                user = None
-        
-        # update full name and email
         if user:
-            first_name = user.first_name
-            last_name = user.last_name
-            email = user.email
-        else:
-            first_name = m.get('firstname')
-            last_name = m.get('lastname')
-            email = m.get('email')
-        
-        if user:
+            m['username'] = user.username
             m['fullname'] = user.get_full_name()
+            m['firstname'] = user.first_name
+            m['lastname'] = user.last_name
+            m['email'] = user.email
         else:
-            if first_name or last_name:
-                m['fullname'] = "%s %s" % (first_name, last_name)
-        m['email'] = email
+            m['username'] = m.get('username') or spawn_username(m['email'])
+
+            m['fullname'] = "%s %s" % (m.get('first_name', ''), m.get('last_name', ''))
+            m['fullname'] = m.get('fullname', '').strip()
+
+            m['firstname'] = m.get('firstname', '')
+            m['lastname'] = m.get('lastname', '')
+            m['email'] = m.get('email', '')
 
         # skip importing a record if
         # membership type does not exist
