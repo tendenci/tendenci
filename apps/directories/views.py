@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.template.defaultfilters import slugify
 
 from site_settings.utils import get_setting
 from base.http import Http403
@@ -110,23 +111,114 @@ def print_view(request, slug, template_name="directories/print-view.html"):
     else:
         raise Http403
     
+
+@login_required
+def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
+    can_add_active = has_perm(request.user,'directories.add_directory')
+    
+    if not any([is_admin(request.user),
+               can_add_active,
+               get_setting('module', 'directories', 'usercanadd'),
+               (is_member(request.user) and get_setting('module', 'directories', 'directoriesrequiresmembership'))
+               ]):
+        raise Http403
+     
+    require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
+    
+    form = form_class(request.POST or None, request.FILES or None, user=request.user)
+    
+    if not require_payment:
+        del form.fields['payment_method']
+        del form.fields['list_type']
+
+    if request.method == "POST":   
+        if form.is_valid():           
+            directory = form.save(commit=False)
+            pricing = form.cleaned_data['pricing']
+
+            # resize the image that has been uploaded
+            try:
+                logo = Image.open(directory.logo.path)
+                logo.thumbnail((200,200),Image.ANTIALIAS)
+                logo.save(directory.logo.path)
+            except:
+                pass
+            
+            if directory.payment_method: 
+                directory.payment_method = directory.payment_method.lower()
+            if not directory.requested_duration:
+                directory.requested_duration = 30
+            if not directory.list_type:
+                directory.list_type = 'regular'
+            directory.activation_dt = datetime.now()
+            
+            # set the expiration date
+            directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+            
+            if not directory.slug:
+                directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
+            
+            if not can_add_active:
+                directory.status = True
+                directory.status_detail = 'pending'
+
+            # update all permissions and save the model
+            directory = update_perms_and_save(request, form, directory)
+            
+            # create invoice
+            directory_set_inv_payment(request.user, directory, pricing)
+
+            log_defaults = {
+                'event_id' : 441000,
+                'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
+                'description': '%s added' % directory._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': directory,
+            }
+            EventLog.objects.log(**log_defaults)
+            
+            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
+            
+            # send notification to administrators
+            # get admin notice recipients
+            recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': directory,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'directory_added', extra_context)
+                    
+            if directory.payment_method.lower() in ['credit card', 'cc']:
+                if directory.invoice and directory.invoice.balance > 0:
+                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
+            if can_add_active:  
+                return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
+            else:
+                return HttpResponseRedirect(reverse('directory.thank_you'))             
+
+    return render_to_response(template_name, {'form':form}, 
+        context_instance=RequestContext(request))
+    
 @login_required
 def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.html"):
     directory = get_object_or_404(Directory, pk=id)
 
-    if not has_perm(request.user,'directories.change_directory',directory):  raise Http403 
+    if not has_perm(request.user,'directories.change_directory', directory):
+        raise Http403
+    
+    form = form_class(request.POST or None, request.FILES or None, 
+                      instance=directory, 
+                      user=request.user)
+    
+    del form.fields['payment_method']
+    if not is_admin(request.user):
+        del form.fields['pricing']
+        del form.fields['list_type']
     
     if request.method == "POST":
-
-        form = form_class(request.POST, request.FILES, instance=directory, user=request.user)
-        
-        del form.fields['payment_method']
-        del form.fields['requested_duration']
-        if not is_admin(request.user):
-            del form.fields['activation_dt']
-            del form.fields['expiration_dt']
-            del form.fields['list_type']
-
         if form.is_valid():
             directory = form.save(commit=False)
 
@@ -160,14 +252,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
         return render_to_response(template_name, {'directory': directory, 'form':form}, 
             context_instance=RequestContext(request))
 
-    else:
-        form = form_class(instance=directory, user=request.user)
-        del form.fields['payment_method']
-        del form.fields['requested_duration']
-        if not is_admin(request.user):
-            del form.fields['activation_dt']
-            del form.fields['expiration_dt']
-            del form.fields['list_type']
 
     return render_to_response(template_name, {'directory': directory, 'form':form}, 
         context_instance=RequestContext(request))
@@ -204,96 +288,6 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
     return render_to_response(template_name, {'directory': directory, 'form':form}, 
         context_instance=RequestContext(request))
 
-@login_required
-def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
-    can_add_active = has_perm(request.user,'directories.add_directory')
-    
-    if not any(is_admin(request.user),
-               can_add_active,
-               get_setting('module', 'directories', 'usercanadd'),
-               (is_member(request.user) and get_setting('module', 'directories', 'directoriesrequiresmembership'))
-               ):
-        raise Http403
-     
-    require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
-    
-    form = form_class(request.POST or None, request.FILES or None, user=request.user)
-    del form.fields['expiration_dt']
-    if not can_add_active:
-        del form.fields['activation_dt']
-        del form.fields['status_detail']
-        del form.fields['status']
-    
-    if not require_payment:
-        del form.fields['payment_method']
-        del form.fields['list_type']
-
-    if request.method == "POST":   
-        if form.is_valid():           
-            directory = form.save(commit=False)
-
-            # resize the image that has been uploaded
-            try:
-                logo = Image.open(directory.logo.path)
-                logo.thumbnail((200,200),Image.ANTIALIAS)
-                logo.save(directory.logo.path)
-            except:
-                pass
-            
-            if directory.payment_method: 
-                directory.payment_method = directory.payment_method.lower()
-            if not directory.requested_duration:
-                directory.requested_duration = 30
-            if not directory.list_type:
-                directory.list_type = 'regular'
-            directory.activation_dt = datetime.now()
-            
-            # set the expiration date
-            directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
-            
-            if not can_add_active:
-                directory.status = True
-                directory.status_detail = 'pending'
-
-            # update all permissions and save the model
-            directory = update_perms_and_save(request, form, directory)
-            
-            # create invoice
-            directory_set_inv_payment(request.user, directory)
-
-            log_defaults = {
-                'event_id' : 441000,
-                'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
-                'description': '%s added' % directory._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': directory,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
-            
-            # send notification to administrators
-            # get admin notice recipients
-            recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
-            if recipients:
-                if notification:
-                    extra_context = {
-                        'object': directory,
-                        'request': request,
-                    }
-                    notification.send_emails(recipients,'directory_added', extra_context)
-                    
-            if directory.payment_method.lower() in ['credit card', 'cc']:
-                if directory.invoice and directory.invoice.balance > 0:
-                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
-            if can_add_active:  
-                return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
-            else:
-                return HttpResponseRedirect(reverse('directory.thank_you'))             
-
-    return render_to_response(template_name, {'form':form}, 
-        context_instance=RequestContext(request))
 
     
 @login_required
