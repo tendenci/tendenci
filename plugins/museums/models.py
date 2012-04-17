@@ -99,3 +99,4 @@ class Museum(TendenciBaseModel):
 
 class Photo(File):
     museum = models.ForeignKey(Museum, related_name="photos")
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")

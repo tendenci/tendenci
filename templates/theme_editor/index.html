@@ -59,6 +59,7 @@
         <td width="20%" valign="top">
             <div class='theme-selection'>
                 <p><b>{% trans "Active Theme:" %}</b> <a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{{ ACTIVE_THEME }}</a></p>
+                <p><a href="{% url theme_editor.editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Edit Your Theme's Stylesheet" %}</a></p>
                 <h4>{% trans 'Theme in Editor:' %}</h4>
                 <form method="GET" action="">
                     {{ theme_form.theme_edit }}<input type="submit" value="Change Theme in Editor"/>

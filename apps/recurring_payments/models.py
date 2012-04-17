@@ -66,6 +66,10 @@ class RecurringPayment(models.Model):
     #billing_cycle_start_dt = models.DateTimeField(_("Billing cycle start date"))
     #billing_cycle_end_dt = models.DateTimeField(_('Billing cycle end date'), blank=True, null=True)
     payment_amount = models.DecimalField(max_digits=15, decimal_places=2)
+    tax_exempt =models.BooleanField(default=1)
+    taxable = models.BooleanField(default=0)
+    tax_rate = models.DecimalField(blank=True, max_digits=5, decimal_places=4, default=0, 
+                                   help_text='Example: 0.0825')
     has_trial_period = models.BooleanField(default=0)
     trial_period_start_dt = models.DateTimeField(_('Trial period start date'), blank=True, null=True)
     trial_period_end_dt = models.DateTimeField(_('Trial period end date'), blank=True, null=True)
@@ -102,7 +106,15 @@ class RecurringPayment(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+        if self.taxable and self.tax_rate:
+            self.tax_exempt = 0
+        
         super(RecurringPayment, self).save(*args, **kwargs)
+    
+    @property   
+    def tax_rate_percentage(self):
+        return '%.2f%s' % (float(self.tax_rate * 100), '%')
+    
         
     @property
     def user_profile(self):
@@ -398,8 +410,15 @@ class RecurringPayment(models.Model):
         inv.bill_to_email = profile.email
         inv.status = True
         
-        inv.total = amount
-        inv.subtotal = inv.total
+        if self.taxable and self.tax_rate:
+            inv.tax = self.tax_rate * amount
+        else:
+            inv.tax_exempt = 1
+            inv.tax = 0
+        
+        inv.subtotal = amount
+        inv.total = inv.subtotal + inv.tax
+        
         inv.balance = inv.total
         inv.estimate = 1
         inv.status_detail = 'estimate'

@@ -169,7 +169,7 @@ class CorpMembForm(forms.ModelForm):
     
     class Meta:
         model = CorporateMembership
-        exclude = ('corp_app', 'guid', 'renewal', 'invoice', 'renew_dt', 
+        exclude = ('corp_app', 'guid', 'renewal', 'invoice', 'renew_dt', 'secret_code',
                    'approved', 'approved_denied_dt',
                    'approved_denied_user',
                    'creator_username', 'owner', 'owner_username')
@@ -207,7 +207,7 @@ class CorpMembForm(forms.ModelForm):
                         else:
                             self.fields[field_key].initial = initial
                     
-            
+         
         #self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
         
     def clean_corporate_membership_type(self):
@@ -257,9 +257,7 @@ class CorpMembForm(forms.ModelForm):
                 corporate_membership.join_dt = datetime.now()
             
             # calculate the expiration dt
-        
         corporate_membership.save()
-
         for field_obj in self.field_objs:
             if (not field_obj.field_name) and field_obj.field_type not in ['section_break', 'page_break']:
                 field_key = "field_%s" % field_obj.id

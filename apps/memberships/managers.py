@@ -58,6 +58,7 @@ class MemberAppEntryManager(TendenciBaseManager):
         from perms.utils import is_admin, is_member, is_developer
 
         sqs = kwargs.get('sqs', SearchQuerySet())
+        sqs = sqs.models(self.model)
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
@@ -70,7 +71,7 @@ class MemberAppEntryManager(TendenciBaseManager):
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-
+        
         if is_admin(user) or is_developer(user):
             sqs = sqs.all()
         else:
@@ -85,7 +86,7 @@ class MemberAppEntryManager(TendenciBaseManager):
                 status_detail=status_detail)
                 # pass
 
-        return sqs.models(self.model)
+        return sqs
 
 
 
@@ -196,7 +197,7 @@ class MembershipManager(Manager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', AnonymousUser())
         user = impersonation(user)
-
+        
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 

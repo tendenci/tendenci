@@ -12,13 +12,11 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    #('Glen Zangirolami', 'gzangirolami@schipul.com'),
     ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
     ('Kerry Gayle', 'kgayle@schipul.com'),
-    #('Loren Lugosch', 'llugosch@schipul.com'),
-    #('Nabil Bani', 'nbani@schipul.com'),
+    ('Alex Ragsdale', 'aragsdale@schipul.com')
 )
 
 MANAGERS = ADMINS
@@ -89,7 +87,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-68/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-71/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
@@ -238,6 +236,8 @@ INSTALLED_APPS = (
     'discounts',
     'metrics',
     'search',
+    'navs',
+    'pluginmanager',
     'plugin_builder',
     'navs',
     'tendenci_guide',
@@ -288,7 +288,7 @@ TINYMCE_DEFAULT_CONFIG = {
                                 image,|,pagebreak,fullscreen,codemirror",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
                                 forecolor,|,pastetext,pasteword,\
-                                removeformat,media,charmap,|,\
+                                removeformat,charmap,|,\
                                 outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",

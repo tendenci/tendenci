@@ -7,18 +7,21 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from base.fields import SlugField
 from timezones.fields import TimeZoneField
-from perms.models import TendenciBaseModel 
-from perms.object_perms import ObjectPermission
-from categories.models import CategoryItem
-from directories.managers import DirectoryManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
-from directories.module_meta import DirectoryMeta
+from base.fields import SlugField
+from perms.models import TendenciBaseModel 
+from perms.object_perms import ObjectPermission
+from perms.utils import is_admin
+from categories.models import CategoryItem
 from entities.models import Entity
 from invoices.models import Invoice
-from perms.utils import is_admin
+
+from directories.module_meta import DirectoryMeta
+from directories.managers import DirectoryManager
+from directories.choices import ADMIN_DURATION_CHOICES
+
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
@@ -54,6 +57,7 @@ class Directory(TendenciBaseModel):
      
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
+    pricing = models.ForeignKey('DirectoryPricing', null=True)
     activation_dt = models.DateTimeField(_('Activation Date/Time'), null=True, blank=True)
     expiration_dt = models.DateTimeField(_('Expiration Date/Time'), null=True, blank=True)
     invoice = models.ForeignKey(Invoice, blank=True, null=True) 
@@ -170,10 +174,12 @@ class Directory(TendenciBaseModel):
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
-    duration = models.IntegerField(blank=True)
+    duration = models.IntegerField(blank=True, choices=ADMIN_DURATION_CHOICES)
     regular_price =models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     premium_price = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    category_threshold = models.IntegerField(blank=True)
+    regular_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    premium_price_member = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    show_member_pricing = models.BooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True)
@@ -196,7 +202,6 @@ class DirectoryPricing(models.Model):
             self.owner_username=user.username
         if not self.regular_price: self.regular_price = 0
         if not self.premium_price: self.premium_price = 0
-        if not self.category_threshold: self.category_threshold = 0
             
         super(DirectoryPricing, self).save(*args, **kwargs)
 

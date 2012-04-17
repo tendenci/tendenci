@@ -9,9 +9,11 @@ from managers import ArchitectureProjectManager
 from files.models import File
 
 class ArchitectureProject(TendenciBaseModel):
-    client = models.CharField(max_length=75)
-    website = models.URLField(max_length=150)
-    slug = models.SlugField(max_length=100)
+    project_title = models.CharField(max_length=250, blank=True, null=True)
+    architect = models.CharField(max_length=250, blank=True, null=True)
+    client = models.CharField(max_length=250)
+    website = models.URLField(max_length=500)
+    slug = models.SlugField(max_length=100, unique=True)
     url = models.URLField()
     overview = models.TextField(blank=True, null=True)
     execution = models.TextField(blank=True, null=True)
@@ -19,30 +21,52 @@ class ArchitectureProject(TendenciBaseModel):
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
     categories = models.ManyToManyField('Category')
     building_types = models.ManyToManyField('BuildingType')
+    ordering = models.IntegerField(blank=True, null=True)
 
     objects = ArchitectureProjectManager()
 
     def __unicode__(self):
         return self.client
 
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.ordering is None:
+            # Append
+            try:
+                last = model.objects.order_by('-ordering')[0]
+                self.ordering = last.ordering + 1
+            except:
+                # First row
+                self.ordering = 0
+        
+        return super(ArchitectureProject, self).save(*args, **kwargs)
+
+
     class Meta:
         permissions = (("view_architectureproject","Can view architecture project"),)
         verbose_name = 'Architecture Project'
         verbose_name_plural = 'Architecture Projects'
+        ordering = ('ordering',)
+
+    def delete(self, *args, **kwargs):
+        for img in self.image_set.all():
+            img.delete()
+        return super(ArchitectureProject, self).delete(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):
         return ("architecture_project.view", [self.slug])
         
-    def featured_screenshots(self):
+    def featured_images(self):
         try:
             return self.image_set.filter(file_type='featured')
         except:
             return False
     
-    def screenshots(self):
+    def images(self):
         try:
-            return self.image_set.filter(file_type='screenshot')
+            return self.image_set.filter(file_type='image')
         except:
             return False
             
@@ -51,10 +75,16 @@ class ArchitectureProject(TendenciBaseModel):
             return self.image_set.filter(file_type='other')
         except:
             return False
-            
-    def homepage_images(self):
+
+    def sidebar_images(self):
         try:
-            return self.image_set.filter(file_type='homepage')
+            return self.image_set.filter(file_type='sidebar')
+        except:
+            return False
+
+    def logo_images(self):
+        try:
+            return self.image_set.filter(file_type='logo')
         except:
             return False
 
@@ -82,6 +112,7 @@ class BuildingType(models.Model):
 
     class Meta:
         ordering = ['title']
+        permissions = (("view_architecture_project","Can view project"),)
 
     @models.permalink
     def get_absolute_url(self):
@@ -89,16 +120,18 @@ class BuildingType(models.Model):
 
 class Image(File):
     architecture_project = models.ForeignKey(ArchitectureProject)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,
         choices=(
-            ('featured','Featured Screenshot'),
-            ('screenshot','Screenshot'),
-            ('homepage', 'Homepage Image'),
+            ('featured','Featured Image'),
+            ('image','Image'),
+            ('logo', 'Client Logo'),
+            ('sidebar', 'Sidebar Image'),
             ('other','Other'),
         ),
-        default='other',
+        default='image',
     )
     position = models.IntegerField(blank=True)
 

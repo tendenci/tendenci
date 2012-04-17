@@ -16,10 +16,12 @@ class ImportMembershipsTask(Task):
 
     def run(self, app, file_path, fields, **kwargs):
         from django.template.defaultfilters import slugify
+        from memberships.utils import get_user
 
         #get parsed membership dicts
         imported = []
         mems, stats = parse_mems_from_csv(file_path, fields)
+
         for m in mems:
             if not m['skipped']:
                 # get membership type.
@@ -48,38 +50,23 @@ class ImportMembershipsTask(Task):
                 elif payment_method in cash:
                     payment_method_id = 3
 
-                # get or create User
-                username = m['username']
-                try:
-                    user = User.objects.get(username = username)
-                except User.DoesNotExist:
+                # get or create user
+                user = get_user(username = m['username']) or \
+                    User.objects.create_user(m['username'], m['email'])
 
-                    # clean username
-                    username = clean_username(m['username'])
-
-                    try:
-                        user = User.objects.get(username = username)
-                    except User.DoesNotExist:
-                        # Maybe we should set a password here too?
-                        user = User(username = username)
-
-                # update user
-                user.first_name = m.get('firstname') or user.first_name
-                user.last_name = m.get('lastname') or user.last_name
-                user.email = m.get('email') or user.email
-                #save user
+                user.first_name = user.first_name or m['firstname']
+                user.last_name = user.last_name or m['lastname']
+                user.email = user.email or m['email']
                 user.save()
-                
+
                 # get or create profile
                 try:
                     profile = Profile.objects.get(user=user)
+                except Profile.MultipleObjectsReturned:
+                    profile = Profile.objects.filter(user =user)[0]
                 except Profile.DoesNotExist:
-                    profile = Profile.objects.create(
-                        user=user,
-                        creator=user,
-                        owner=user,
-                        owner_username = user.username,
-                    )
+                    profile = Profile.objects.create_profile(user)
+
                 # update profile
                 profile.company = m.get('company') or profile.company
                 profile.position_title = m.get('positiontitle') or profile.position_title
@@ -101,6 +88,8 @@ class ImportMembershipsTask(Task):
                 
                 profile.save()
                 
+                print user.pk
+
                 # get or create membership
                 # relation does not hold unique constraints
                 # so we assume the first hit is the correct membership

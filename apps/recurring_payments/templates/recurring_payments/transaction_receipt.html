@@ -37,6 +37,15 @@
 		margin: 0 auto;
 	}
 
+	.rp-total, .rp-total-label{
+		font-weight: bold;
+		border-top: 1px dashed #ccc;
+		padding-top: 3px;
+	}
+	.totals{
+		width: 5em;
+	}
+
 </style>
 
 
@@ -61,10 +70,6 @@
 		<div class="rp-receipt-field">{{ payment_transaction.create_dt|date }}</div>
 		<div class="clear-left"></div>
 		
-		<div class="rp-receipt-label">Amount Received</div>
-		<div class="rp-receipt-field">{{ payment_transaction.amount|format_currency }}</div>
-		<div class="clear-left"></div>
-		
 		<div class="rp-receipt-label">Card #</div>
 		<div class="rp-receipt-field">****{{ payment_profile.card_num }}</div>
 		<div class="clear-left"></div>
@@ -77,8 +82,25 @@
 		<div class="rp-receipt-field">{{ payment_transaction.recurring_payment_invoice.billing_cycle_start_dt|date:"n/j/Y" }}
 		- {{ payment_transaction.recurring_payment_invoice.billing_cycle_end_dt|date:"n/j/Y" }}
 		</div>
-		<div class="clear-left"></div>
 		
+		<div class="rp-receipt-label">&nbsp;</div>
+		<div class="rp-receipt-field">
+			<table>
+				<tr>
+					<td class="totals">Subtotal: </td><td align="right">{{ invoice.subtotal|format_currency }}</td>
+				</tr>
+				<tr>
+					<td class="totals">Tax: </td><td align="right">{{ invoice.tax|format_currency }}</td>
+				</tr>
+				<tr>
+					<td class="rp-total-label totals">Total: </td><td class="rp-total" align="right">{{ invoice.total|format_currency }}</td>
+				</tr>
+			
+			</table>
+		</div>
+		<div class="clear-left"></div>
+	
+				
 		<div class="l0"></div>
 		
 		<div style="font-weight: bold;">Billing Info</div>
