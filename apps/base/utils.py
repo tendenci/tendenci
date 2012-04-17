@@ -29,6 +29,7 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
 
+# this function is not necessary - datetime.now() *is* localized in django
 def now_localized():
     from datetime import datetime
     from timezones.utils import adjust_datetime_to_timezone

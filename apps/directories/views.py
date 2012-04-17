@@ -429,6 +429,50 @@ def pricing_search(request, template_name="directories/pricing-search.html"):
     return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
         context_instance=RequestContext(request))
 
+@login_required
+def pending(request, template_name="directories/pending.html"):
+    can_view_directories = has_perm(request.user, 'directories.view_directory')
+    can_change_directories = has_perm(request.user, 'directories.change_directory')
+    
+    if not all([can_view_directories, can_change_directories]):
+        raise Http403
+
+    directories = Directory.objects.filter(status_detail__contains='pending')
+    return render_to_response(template_name, {'directories': directories},
+            context_instance=RequestContext(request))
+    
+@login_required
+def approve(request, id, template_name="directories/approve.html"):
+    can_view_directories = has_perm(request.user, 'directories.view_directory')
+    can_change_directories = has_perm(request.user, 'directories.change_directory')
+    
+    if not all([can_view_directories, can_change_directories]):
+        raise Http403
+    
+    directory = get_object_or_404(Directory, pk=id)
+
+    if request.method == "POST":
+        directory.activation_dt = datetime.now()
+        directory.allow_anonymous_view = True
+        directory.status = True
+        directory.status_detail = 'active'
+
+        if not directory.creator:
+            directory.creator = request.user
+            directory.creator_username = request.user.username
+
+        if not directory.owner:
+            directory.owner = request.user
+            directory.owner_username = request.user.username
+
+        directory.save()
+
+        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % directory)
+
+        return HttpResponseRedirect(reverse('directory', args=[directory.slug]))
+
+    return render_to_response(template_name, {'directory': directory},
+            context_instance=RequestContext(request))
 
 def thank_you(request, template_name="directories/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
