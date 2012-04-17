@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timedelta
+from operator import or_
 
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.core.urlresolvers import reverse
@@ -7,6 +8,7 @@ from django.template.defaultfilters import floatformat
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
+from django.db.models import Q
 
 from base.template_tags import ListNode, parse_tag_kwargs
 from site_settings.utils import get_setting
@@ -254,6 +256,7 @@ class ListEventsNode(ListNode):
         user = AnonymousUser()
         limit = 3
         order = 'next_upcoming'
+        event_type = ''
 
         randomize = False
 
@@ -308,13 +311,26 @@ class ListEventsNode(ListNode):
             except:
                 order = self.kwargs['order']
 
-        # process tags
-        for tag in tags:
-            tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
+        if 'type' in self.kwargs:
+            try:
+                event_type = Variable(self.kwargs['type'])
+                event_type = event_type.resolve(context)
+            except:
+                event_type = self.kwargs['type']
 
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters).distinct()
+        if event_type:
+            items = items.filter(type__name__iexact=event_type)
+
+        if tags:  # tags is a comma delimited list
+            # this is fast; but has one hole
+            # it finds words inside of other words
+            # e.g. "event" is within "prevent"
+            tag_queries = [Q(tags__icontains=t) for t in tags]
+            tag_query = reduce(or_, tag_queries)
+            items = items.filter(tag_query)
+
         objects = []
 
         # if order is not specified it sorts by relevance
@@ -356,8 +372,8 @@ def list_events(parser, token):
            The order of the items. **Default: Next Upcoming by date**
         ``user``
            Specify a user to only show public items to all. **Default: Viewing user**
-        ``query``
-           The text to search for items. Will not affect order.
+        ``type``
+           The type of the event.
         ``tags``
            The tags required on items to be included.
         ``random``

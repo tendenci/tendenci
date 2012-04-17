@@ -8,6 +8,7 @@ class FileForm(TendenciBaseForm):
 
         fields = (
             'file',
+            'name',
             'allow_anonymous_view',
             'user_perms',
             'member_perms',
@@ -16,7 +17,10 @@ class FileForm(TendenciBaseForm):
         )
 
         fieldsets = [('', {
-                      'fields': ['file'],
+                      'fields': [
+                        'file', 
+                        'name'
+                      ],
                       'legend': ''
                       }),
 

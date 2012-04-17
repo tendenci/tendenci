@@ -1,0 +1,139 @@
+{% extends "architecture_projects/base.html" %}
+{% load base_filters %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load architecture_project_tags %}
+{% load tagging_tags %}
+
+{% block title %}
+        {{ architecture_project.client }} - {% for tech in architecture_project.building_types.all %}
+                {% if forloop.first %}{{ tech.title }}{% endif %} {% endfor %} Architecture Project
+{% endblock %}
+
+{% block meta_keywords %}
+    {% nowhitespace %}
+        architectureproject {{ architecture_project.client }}
+        {% if architecture_project.tags %}
+            {{ architecture_project.tags }}
+        {% endif %}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block meta_description %}
+    {% nowhitespace %}
+        {{ architecture_project.client }} architecture project
+        {{ architecture_project.overview|striptags|truncatewords:"50"|safe }}
+    {% endnowhitespace %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style type="text/css">
+{% include "architecture_projects/media/css/architectureproject.css" %}
+#categories { margin-bottom: 20px; }
+#categories a { color: #777; margin-right: 16px; }
+#categories a:hover { color: #A1DBEA; }
+
+#sidebar { display: none!important; }
+#content { width: 950px!important; }
+section { width: 950px!important; }
+.t { border: none!important; width: 950px!important; }
+.blue-plus { color: #a1dbea; }
+
+#cs-photos-large { margin-bottom: 20px; }
+#cs-photos-large ul { margin: 0; }
+#cs-photos-large ul li { list-style: none; }
+#cs-photos-small .thumb { float: left; margin-bottom: 14px; margin-right: 6px; }
+
+#results { float: left; width: 400px; margin-right: 20px; }
+#client { float: left; width: 200px; margin-right: 20px; }
+#overview { float: left; width: 300px; }
+</style>
+</style>
+{% endblock %}
+
+
+
+{% block body %}
+{% tags_for_object architecture_project as tags %}
+<div class="t">
+    <div class="cs-view">
+        <div class="quick-options">{% architecture_project_options request.user architecture_project %}</div>
+
+        <div id="categories">
+            <a href="{% url architecture_project.search %}"><span class="blue-plus">&#43;</span> All</a>
+            {% for cat in categories %}
+            <a href="{{ cat.get_absolute_url }}"><span class="blue-plus">&#43;</span> {{ cat|title }}</a>
+        {% endfor %}
+        </div><!--- /categories -->
+        
+        <div id="cs-photos-small" class="clearfix">
+                {% for img in architecture_project.featured_images %}
+                <div class="thumb"><a rel="cs-photos" href="#"><img alt="{{ img.description }}" height="76" width="152" src="{% image_url img size=152x76 crop=true quality=90 %}" /></a></div>
+                {% endfor %}
+                {% for img in architecture_project.images %}
+                <div class="thumb"><a rel="cs-photos" href="#"><img alt="{{ img.description }}" height="76" width="152" src="{% image_url img size=152x76 crop=true quality=90 %}" /></a></div>
+                {% endfor %}
+        </div>
+        <div id="cs-photos-large" class="clearfix">
+            <ul id="photo-urls">
+            {% for img in architecture_project.featured_images %}
+            <li><a rel="cs-photos" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="500" width="950" src="{% image_url img size=950x500 crop=true quality=90 %}" /></a></li>
+            {% endfor %}
+            {% for img in architecture_project.images %}
+            <li><a rel="cs-photos" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="500" width="950" src="{% image_url img size=950x500 crop=true quality=90 %}" /></a></li>
+            {% endfor %}
+            </ul>
+        </div>
+
+      <section id="case-study-text" class="clearfix">
+            
+            <div id="results">
+                {% if architecture_project.results %}
+                    <p>{{ architecture_project.results|safe }}</p>
+                {% endif %}
+            </div>
+
+            <div id="client">
+                {% for img in architecture_project.logo_images%}
+                <a rel="cs-photos" title="{{ img.description }}" href="{% url file img.pk %}?.jpg"><img alt="{{ img.description }}" height="inheret" width="175" src="{% url file img.pk %}{{ forloop.counter|add:"270" }}x{{ forloop.counter|add:"210" }}/" /></a>
+                {% endfor %}
+                <a class="cs-img-link" href="{{ architecture_project.get_absolute_url }}"></a>
+            </div>
+
+            <div id="overview">
+                {% if architecture_project.overview %}
+                    <p>{{ architecture_project.overview|safe }}</p>
+                {% endif %}
+            </div>
+      
+        </section><!-- /case-study-text -->
+
+        <div class="case-meta">
+            <a href="{% url architecture_project.search %}">&laquo;&nbsp;Search other architecture projects</a>
+        </div>
+        
+    </div>
+</div>
+
+
+{% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#photo-urls li').hide();
+    $('#photo-urls li:first').show();
+
+    $('#cs-photos-small .thumb a').click(function(){
+    var index = ($(this).parent().index())+1;
+    $('#cs-photos-small .thumb').show();
+    //$(this).parent().hide();
+    $('#photo-urls li').hide();
+    $('#photo-urls li:nth-child('+index+')').show();
+    });
+
+});
+</script>
+{% endblock %}

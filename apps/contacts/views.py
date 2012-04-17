@@ -69,6 +69,7 @@ def add(request, form_class=ContactForm, template_name="contacts/add.html"):
                 contact.creator_username = request.user.username
                 contact.owner = request.user
                 contact.owner_username = request.user.username
+                contact.allow_anonymous_view = False
                 contact.save()
 
                 ObjectPermission.objects.assign(contact.creator, contact) 

@@ -22,6 +22,12 @@
 		<td>{% trans "Sub Total:" %}</td>
 		<td class="td-right">{{ invoice.subtotal|format_currency }}</td>
 	</tr>
+	{% if invoice.tax %}
+	<tr>
+		<td>{% trans "Tax:" %}</td>
+		<td class="td-right">{{ invoice.tax|format_currency }}</td>
+	</tr>
+	{% endif %}
 	<tr>
 		<td>{% trans "Total:" %}</td>
 		<td class="td-right">{{ invoice.total|format_currency }}</td>

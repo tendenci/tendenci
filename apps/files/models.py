@@ -34,12 +34,15 @@ class File(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = unicode(uuid.uuid1())
 
         super(File, self).save(*args, **kwargs)
 
     def basename(self):
-        return os.path.basename(str(self.file))
+        return os.path.basename(unicode(self.file.name))
+
+    def get_name(self):
+        return self.name or self.basename()
 
     def type(self):
         ext = os.path.splitext(self.basename())[1].lower()
@@ -138,4 +141,4 @@ class File(TendenciBaseModel):
         return ("file", [self.pk, 'download'])
 
     def __unicode__(self):
-        return self.name
+        return self.get_name()

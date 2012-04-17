@@ -28,7 +28,7 @@
 	
 		<div class="pricing-item">
 			<div class="label">{% trans "Duration:" %}</div>
-			<div class="field"><b>{{ directory_pricing.duration }}</b></div>
+			<div class="field"><b>{{ directory_pricing.get_duration_display }}</b></div>
 			<div class="clear-left"></div>
 		</div>
 
@@ -45,10 +45,23 @@
 		</div>
 		
 		<div class="pricing-item">
-			<div class="label">{% trans "Category Threshold:" %}</div>
-			<div class="field"><b>{{ directory_pricing.category_threshold }}</b></div>
+			<div class="label">{% trans "Member Regular Price:" %}</div>
+			<div class="field"><b>{{ directory_pricing.regular_price_member|format_currency }}</b></div>
 			<div class="clear-left"></div>
 		</div>
+
+		<div class="pricing-item">
+			<div class="label">{% trans "Member Premium Price:" %}</div>
+			<div class="field"><b>{{ directory_pricing.premium_price_member|format_currency }}</b></div>
+			<div class="clear-left"></div>
+		</div>
+
+		<div class="pricing-item">
+			<div class="label">{% trans "Show Member Pricing:" %}</div>
+			<div class="field"><b>{{ directory_pricing.show_member_pricing }}</b></div>
+			<div class="clear-left"></div>
+		</div>
+		
 		
 		<div class="sep-line"></div>
 

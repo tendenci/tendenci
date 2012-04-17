@@ -3,8 +3,6 @@ from os.path import basename, splitext
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
 
-from perms.utils import is_admin, is_developer
-
 def get_imp_message(request, user):
     """
         Get the message to post to super users via django
@@ -58,6 +56,8 @@ def get_imp_user(username, real_user):
         Search for an impersonated user
         and return the user object
     """
+    from perms.utils import is_developer
+
     user = None
     if username == 'anonymous':
         user = AnonymousUser()
@@ -102,6 +102,7 @@ class ImpersonationMiddleware(object):
         Persists with sessions. 
     """
     def process_request(self, request):
+        from perms.utils import is_admin
         session_impersonation = False
         message = False
         

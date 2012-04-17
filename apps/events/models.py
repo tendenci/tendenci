@@ -31,6 +31,7 @@ from events.settings import (FIELD_MAX_LENGTH,
                              LABEL_MAX_LENGTH, 
                              FIELD_TYPE_CHOICES, 
                              USER_FIELD_CHOICES)
+from base.utils import localize_date
 
 
 
@@ -153,6 +154,12 @@ class Registrant(models.Model):
 
     class Meta:
         permissions = (("view_registrant", "Can view registrant"),)
+
+    def __unicode__(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_lastname_firstname()
+        else:
+            return '%s, %s' % (self.last_name, self.first_name)
 
     @property
     def lastname_firstname(self):
@@ -322,19 +329,19 @@ class RegConfPricing(models.Model):
         if not self.reg_conf.enabled or not self.status:
             return False
         if hasattr(self, 'event'):
-            if datetime.now() > self.event.end_dt:
+            if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
                 return False
         return True
     
     @property
     def registration_has_started(self):
-        if datetime.now() >= self.start_dt:
+        if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
             return True
         return False
         
     @property
     def registration_has_ended(self):
-        if datetime.now() >= self.end_dt:
+        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
     
@@ -348,9 +355,15 @@ class RegConfPricing(models.Model):
     
     @property
     def within_time(self):
-        if self.start_dt <= datetime.now() <= self.end_dt:
+        if localize_date(self.start_dt, from_tz=self.timezone) \
+            <= localize_date(datetime.now())                    \
+            <= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
+    
+    @property
+    def timezone(self):
+        return self.reg_conf.event.timezone.zone
     
 class Registration(models.Model):
 
@@ -391,10 +404,11 @@ class Registration(models.Model):
         The description will be sent to payment gateway and displayed on invoice.
         If not supplied, the default description will be generated.
         """
-        description = 'Tendenci Invoice %d for Event (%d): %s (Reg# %d).' % (
+        description = 'Tendenci Invoice %d for Event (%d): %s - %s (Reg# %d).' % (
             inv.id,
             self.event.pk,
             self.event.title,
+            self.event.start_dt.strftime('%Y-%m-%d'),
             inv.object_id,
         )
         
@@ -944,6 +958,12 @@ class CustomRegFormEntry(models.Model):
         name = ' '.join([self.get_value_of_mapped_field('first_name'), 
                          self.get_value_of_mapped_field('last_name')])
         return name.strip()
+
+    def get_lastname_firstname(self):
+        name = '%s, %s' % (self.get_value_of_mapped_field('last_name'), 
+                         self.get_value_of_mapped_field('first_name'))
+        return name.strip()
+
     
     def get_email(self):
         return self.get_value_of_mapped_field('email')

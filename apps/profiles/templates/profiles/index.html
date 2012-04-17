@@ -25,7 +25,10 @@
 
 	<div class="intro info">
 		<div class="profile-icon">
-			{% avatar user_this 128 %}
+			<a href="{% url profile.change_avatar  user_this.id %}">
+				{% avatar user_this 128 %}
+			</a>
+
 		</div>
 
 		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
@@ -92,9 +95,13 @@
 		        			{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}
 		        		{% endif %}
 
+		        		{% if membership.can_renew and membership.ma %}
+		        		<span><a href="{{ membership.ma.get_absolute_url }}">Renew Now</a></span>
+		        		{% endif %}
+
 	        		</td>
 	        		<td>
-	        			{% if membership.get_entry %}
+	        			{% if membership.get_entry.invoice %}
 	        			<a href="{% url invoice.view membership.get_entry.invoice.pk %}">
 	        				Balance ${% firstof membership.get_entry.invoice.balance  0|intcomma %}
 	        			</a>
@@ -157,7 +164,7 @@
 	    <div class="contribution info">
 
 		<h2>{% trans "Contributions" %}</h2>
-		<span class="more"> <a href="javascript:;">more &raquo;</a></span>
+		<span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">more &raquo;</a></span>
 		<div class="clear"></div>
 
 		{% for contribution in contributions|slice:":5" %}

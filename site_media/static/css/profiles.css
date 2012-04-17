@@ -1,9 +1,3 @@
-.body-copy-alerts{
-	color: red;
-}
-.body-copy-yellow{
-	background-color: yellow;
-}
 .t {
 	width: 90%;
 	margin-top: 1em;
@@ -48,11 +42,12 @@
 }
 
 .info .glyph.plus {
+    font-size: 16px;
     color: #A5E388;
 }
 
 .info .glyph.gears {
-    font-size: 1.1em; /* seemed small */
+    font-size: 16px;
     color:#CCC;
 }
 
@@ -393,10 +388,10 @@ div.admin-item {
 /* perms widget
 ------------------------------- */
 
-.selector { width: 840px; }
-.selector select { width: 640px; }
-.selector-available, .selector-chosen { float: left; width: 640px; text-align: center; margin-bottom: 5px; }
-.selector-add, .selector-remove { text-indent: 0; background-image: none;}
-.selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
-.selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
-.selector-chosen .selector-filter { display: none; }
+.edit-profile-perms .selector { width: 840px; }
+.edit-profile-perms .selector select { width: 640px; }
+.edit-profile-perms .selector-available, .edit-profile-perms .selector-chosen { float: left; width: 640px; text-align: center; margin-bottom: 5px; }
+.edit-profile-perms .selector-add, .edit-profile-perms .selector-remove { text-indent: 0; background-image: none;}
+.edit-profile-perms .selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
+.edit-profile-perms .selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
+.edit-profile-perms .selector-chosen .selector-filter { display: none; }

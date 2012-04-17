@@ -287,7 +287,11 @@ class Membership(TendenciBaseModel):
         permissions = (("view_membership","Can view membership"),)
 
     def __unicode__(self):
-        return "%s #%s" % (self.user.get_full_name(), self.member_number)
+        if self.user.get_full_name():
+            label = self.user.get_full_name()
+        else:
+            label = self.user.username
+        return "#%s %s" % (self.member_number, label)
 
     @models.permalink
     def get_absolute_url(self):
@@ -805,7 +809,7 @@ class AppField(models.Model):
     content_type = models.ForeignKey(ContentType,
         related_name="membership_app_field_set", editable=False, null=True)
     attribute_name = models.CharField(_("Attribute Name"), max_length=300)
-    label = models.CharField(_("Label"), max_length=200)
+    label = models.CharField(_("Label"), max_length=2000)
 
     description = models.TextField(_("Description"), max_length=200, blank=True)
 
@@ -828,6 +832,7 @@ class AppField(models.Model):
     unique = models.BooleanField(_("Unique"), default=False, blank=True)
     admin_only = models.BooleanField(_("Admin Only"), default=False)
     position = models.IntegerField(blank=True)
+    exportable = models.BooleanField(_("Exportable"), default=True)
 
     objects = AppFieldManager()
 
