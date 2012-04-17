@@ -150,10 +150,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.requested_duration = 30
             if not directory.list_type:
                 directory.list_type = 'regular'
-            directory.activation_dt = datetime.now()
-            
-            # set the expiration date
-            directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
             
             if not directory.slug:
                 directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
@@ -161,6 +157,11 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             if not can_add_active:
                 directory.status = True
                 directory.status_detail = 'pending'
+            else:
+                directory.activation_dt = datetime.now()
+                # set the expiration date
+                directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+                
 
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
@@ -453,6 +454,7 @@ def approve(request, id, template_name="directories/approve.html"):
 
     if request.method == "POST":
         directory.activation_dt = datetime.now()
+        directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
         directory.allow_anonymous_view = True
         directory.status = True
         directory.status_detail = 'active'

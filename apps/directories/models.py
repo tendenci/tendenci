@@ -156,8 +156,7 @@ class Directory(TendenciBaseModel):
         """
         if not is_admin(request.user):
             self.status_detail = 'paid - pending approval'
-        self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
-        self.save()
+            self.save()
 
     def age(self):
         return datetime.now() - self.create_dt

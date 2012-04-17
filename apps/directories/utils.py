@@ -19,10 +19,10 @@ def get_duration_choices(user):
                 continue
         else:
             if is_member(user):
-                prices = "%s %s/%s" % (currency_symbol,pricing.regular_price_member, 
+                prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member, 
                                             pricing.premium_price_member)
             else:
-                prices = "%s %s/%s" % (currency_symbol, pricing.regular_price, 
+                prices = "%s%s(R)/%s(P)" % (currency_symbol, pricing.regular_price, 
                                     pricing.premium_price)
             choice = (pricing.pk, '%d days for %s' % (pricing.duration, prices))
         choices.append(choice)
