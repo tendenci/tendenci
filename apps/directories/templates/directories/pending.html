@@ -1,0 +1,34 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% directory_nav request.user %}
+    <h1>{% trans "Pending Directories" %}</h1>
+    
+    <div class="directory-wrap">
+    <ul class="pending-directories">
+    {% for directory in directories %}
+        <li>
+            <a href="{{ directory.get_absolute_url }}" title="{{ directory.headline }}">{{ directory.headline|truncatewords:"10" }}</a>
+            &nbsp;&ndash;&nbsp;
+            {{ directory.create_dt|date }}&nbsp;{{ directory.create_dt|time }}
+            {% if directory.creator %}
+            by {{ directory.creator.username }}
+            {% endif %}
+            &nbsp;&ndash;&nbsp;
+            <a href="{% url directory.approve directory.pk %}">{% trans "Approve" %}</a>
+        </li>
+    {% empty %}
+        <li>{% trans "There are no pending directories." %}</li>
+    {% endfor %}
+    </div>
+    </ul>
+</div>
+{% endblock %}
