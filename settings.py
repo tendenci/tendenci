@@ -16,7 +16,8 @@ ADMINS = (
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
     ('Kerry Gayle', 'kgayle@schipul.com'),
-    ('Alex Ragsdale', 'aragsdale@schipul.com')
+    ('Alex Ragsdale', 'aragsdale@schipul.com'),
+    ('Forrest Purser', 'fpurser@schipul.com')
 )
 
 MANAGERS = ADMINS
@@ -118,8 +119,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # 'johnny.middleware.LocalStoreClearMiddleware',
-    # 'johnny.middleware.QueryCacheMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'perms.middleware.ImpersonationMiddleware',
