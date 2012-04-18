@@ -26,6 +26,7 @@ try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 def details(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directories'))
@@ -468,6 +469,19 @@ def approve(request, id, template_name="directories/approve.html"):
             directory.owner_username = request.user.username
 
         directory.save()
+        
+        # send email notification to user
+        recipients = [directory.creator.email]
+        if recipients:
+            extra_context = {
+                'object': directory,
+                'request': request,
+            }
+            try:
+                send_email_notification('directory_approved_user_notice', recipients, extra_context)
+            except:
+                pass
+
 
         messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % directory)
 
