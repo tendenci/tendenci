@@ -36,7 +36,7 @@
                     <a href="{% url auth_password_change profile.user.id %}" class="changepassword" title="Change Password">{% trans "Change Password" %}</a>
                 </li>
                 <li>
-                    <a href="{% url invoice.search %}?bill_to_email{{ user_this.email}}" title=="View invoices">{% trans "Invoices" %}</a>
+                    <a href="{% url invoice.search %}?bill_to_email={{ user_this.email}}" title=="View invoices">{% trans "Invoices" %}</a>
                 </li> 
                 <li>
                     <a href="{% url profile.edit_perms profile.user.id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
