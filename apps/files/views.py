@@ -151,20 +151,17 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
         if form.is_valid():
             file = form.save(commit=False)
-            file.name = file.file.path.split('/')[-1]
 
             # update all permissions and save the model
             file = update_perms_and_save(request, form, file)
-
-            log_defaults = {
+            EventLog.objects.log(**{
                 'event_id' : 182000,
                 'event_data': '%s (%d) edited by %s' % (file._meta.object_name, file.pk, request.user),
                 'description': '%s edited' % file._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': file,
-            }
-            EventLog.objects.log(**log_defaults)
+            })
 
             return HttpResponseRedirect(reverse('file.search'))
     else:
