@@ -14,7 +14,9 @@
 
     <h2><a href="{% url file file.pk %}">{{ file.get_name }}</a></h2>
 
-    <div class="download"><a href="{% url file file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a></div>
+    <div class="download">
+        <a title="Download {{ file.ext }}" href="{% url file file.pk 'download' %}">{% trans "Download" %} this {{ file.type }}</a>
+    </div>
 
     <div class="meta">
         <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</a></div>

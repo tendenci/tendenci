@@ -41,11 +41,14 @@ class File(TendenciBaseModel):
     def basename(self):
         return os.path.basename(unicode(self.file.name))
 
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
+
     def get_name(self):
-        return self.name or self.basename()
+        return self.name or os.path.splitext(self.basename())[0]
 
     def type(self):
-        ext = os.path.splitext(self.basename())[1].lower()
+        ext = self.ext().lower()
 
         # map file-type to extension
         types = {
