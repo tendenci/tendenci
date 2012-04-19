@@ -61,6 +61,10 @@
             {% if can_add_campaign %}
                 <li><a href="{% url campaign_monitor.campaign_generate %}">{% trans "Add Campaign" %}</a></li>
                 <li><a href="{% url campaign_monitor.campaign_sync %}">{% trans "Sync Campaigns" %}</a></li>
+                {% if cm_url %}
+                <li class="divider"></li>
+                <li><a href="{{ cm_url }}" target="_blank">{% trans "Go to Campaign Monitor" %}</a></li>
+                {% endif %}
             {% endif %}
         </ul>
     </li>
