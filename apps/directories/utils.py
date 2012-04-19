@@ -18,7 +18,7 @@ def get_duration_choices(user):
             else:
                 continue
         else:
-            if is_member(user):
+            if pricing.show_member_pricing and is_member(user):
                 prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member, 
                                             pricing.premium_price_member)
             else:
