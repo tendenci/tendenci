@@ -15,7 +15,8 @@ from files.managers import FileManager
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    return 'files/%s/%s' % (instance.content_type, filename)
+    content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(instance.content_type))
+    return 'files/%s/%s' % (content_type, filename)
 
 
 class File(TendenciBaseModel):
