@@ -64,8 +64,7 @@
             </table>
             </div>
             
-            <div class="content">{% trans "Show Member Pricing:" %} {{ dp.show_member_pricing }}</div>
-            <div class="content">{% trans "Status:" %} <b>{% if dp.status %}{% trans "Active" %}{%else%}{% trans "Inactive" %}{%endif%}</b></div>
+            <div class="content">{% trans "Show Member Pricing:" %} <strong>{{ dp.show_member_pricing }}</strong></div>
 			<div class="meta">
             	<div class="submitted">{% blocktrans with dp.create_dt|date:"long" as dp_create and dp.creator as dp_creator %} Created on {{ dp_create }} by {{ dp_creator }}{% endblocktrans %}</div>
             </div>

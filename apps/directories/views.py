@@ -418,7 +418,10 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
         EventLog.objects.log(**log_defaults)
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory_pricing)
         
-        directory_pricing.delete()
+        #directory_pricing.delete()
+        # soft delete
+        directory_pricing.status = False
+        directory_pricing.save()
             
         return HttpResponseRedirect(reverse('directory_pricing.search'))
     
@@ -426,7 +429,7 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
         context_instance=RequestContext(request))
 
 def pricing_search(request, template_name="directories/pricing-search.html"):
-    directory_pricing = DirectoryPricing.objects.all().order_by('duration')
+    directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
 
     return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
         context_instance=RequestContext(request))
