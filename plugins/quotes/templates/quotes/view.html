@@ -56,7 +56,7 @@ Quotes from {{ quote.author}} - {{ quote.quote }},
                 {% spaceless %}
                     <ul>
                       {% for tag in tags %}
-                            <li><a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a></li>
+                            <li><a href="{% url quotes %}?q=tag:{{ tag }}">{{ tag|title }}</a></li>
                         {% endfor %}
                     </ul>
                 {% endspaceless %}
