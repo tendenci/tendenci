@@ -480,6 +480,8 @@ class Registration(models.Model):
                 [self.registrant.email],  # recipient(s)
                 'event_registration_confirmation',  # template
                 {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
                     'site_label': site_label,
                     'site_url': site_url,
                     'self_reg8n': self_reg8n,

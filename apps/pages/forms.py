@@ -45,7 +45,7 @@ class PageAdminForm(TendenciBaseForm):
         self.fields['template'].choices = template_choices
 
 class PageForm(TendenciBaseForm):
-
+    header = forms.ImageField(required=False)
     content = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%'}, 
         mce_attrs={'storme_app_label':Page._meta.app_label, 
@@ -76,6 +76,7 @@ class PageForm(TendenciBaseForm):
         fieldsets = [('Page Information', {
                       'fields': ['title',
                                  'slug',
+                                 'header',
                                  'content',
                                  'tags',
                                  'template',

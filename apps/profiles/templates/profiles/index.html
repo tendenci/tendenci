@@ -45,6 +45,12 @@
 			<p>{{ city_state }}</p>
 		{% endif %}
 
+        {% if request.user == user_this or admin %}
+        {% if content_counts.invoice > 0 %}
+            <p><a href="{% url invoice.search %}?bill_to_email={{ user_this.email }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a></p>
+        {% endif %}
+        {% endif %}
+
 		<div class="clear"></div>
     </div>
 

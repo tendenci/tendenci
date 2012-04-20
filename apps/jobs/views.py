@@ -31,6 +31,7 @@ try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 
 def details(request, slug=None, template_name="jobs/view.html"):
@@ -580,6 +581,18 @@ def approve(request, id, template_name="jobs/approve.html"):
             job.owner_username = request.user.username
 
         job.save()
+        
+        # send email notification to user
+        recipients = [job.creator.email]
+        if recipients:
+            extra_context = {
+                'object': job,
+                'request': request,
+            }
+            #try:
+            send_email_notification('job_approved_user_notice', recipients, extra_context)
+            #except:
+            #    pass
 
         messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % job)
 

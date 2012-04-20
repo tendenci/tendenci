@@ -16,7 +16,8 @@ ADMINS = (
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
     ('Kerry Gayle', 'kgayle@schipul.com'),
-    ('Alex Ragsdale', 'aragsdale@schipul.com')
+    ('Alex Ragsdale', 'aragsdale@schipul.com'),
+    ('Forrest Purser', 'fpurser@schipul.com')
 )
 
 MANAGERS = ADMINS
@@ -87,7 +88,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-71/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-72/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False

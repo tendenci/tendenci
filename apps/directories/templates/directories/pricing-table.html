@@ -31,6 +31,17 @@
 				<td colspan="2">{{ dp.regular_price|format_currency }}</td>
 			{% endif %}
 		</tr>
+		{% if dp.show_member_pricing %}
+		<tr class="{% cycle 'row1' 'row2' %}">
+			<td>{% blocktrans with dp.duration as dp_duration %}{{ dp_duration  }} days Member{% endblocktrans %}</td>
+			{% if show_premium_price %}
+				<td>{{ dp.regular_price_member|format_currency }}</td>
+				<td>{{ dp.premium_price_member|format_currency }}</td>
+			{% else %}
+				<td colspan="2">{{ dp.regular_price_member|format_currency }}</td>
+			{% endif %}
+		</tr>
+		{% endif %}
 	
 	{%endfor%}
 	</table>
