@@ -134,7 +134,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
             page = update_perms_and_save(request, form, page)
             
             # handle header image
-            f = form.cleaned_data['header']
+            f = form.cleaned_data['header_image']
             if f:
                 header = HeaderImage()
                 header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
@@ -259,7 +259,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             page = update_perms_and_save(request, form, page)
             
             # handle header image
-            f = form.cleaned_data['header']
+            f = form.cleaned_data['header_image']
             if f:
                 header = HeaderImage()
                 header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
