@@ -57,6 +57,13 @@ class Group(TendenciBaseModel):
                 self.slug = slugify(name)
             
         super(Group, self).save(force_insert, force_update)
+     
+    @property    
+    def active_members(self):
+        return GroupMembership.objects.filter(
+                                            group=self,
+                                            status=1, 
+                                            status_detail='active')
 
     def is_member(self, user):
         # impersonation
