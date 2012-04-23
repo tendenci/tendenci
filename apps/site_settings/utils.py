@@ -126,9 +126,9 @@ def check_setting(scope, scope_category, name):
     
     missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
             scope_category, name, "missing"]
-    missing_key = '.'.join(exists_keys)
+    missing_key = '.'.join(missing_keys)
     
-    missing = cache.get(exists_key)
+    missing = cache.get(missing_key)
     if not missing:
         #check the db if it is not in the cache
         exists = Setting.objects.filter(scope=scope, 
