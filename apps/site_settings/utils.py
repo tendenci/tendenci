@@ -124,11 +124,24 @@ def check_setting(scope, scope_category, name):
     if setting:
         return True
     
-    #check the db if it is not in the cache
-    exists = Setting.objects.filter(scope=scope, 
-        scope_category=scope_category, name=name).exists()
+    missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
+            scope_category, name, "missing"]
+    missing_key = '.'.join(exists_keys)
     
-    return exists
+    missing = cache.get(exists_key)
+    if not missing:
+        #check the db if it is not in the cache
+        exists = Setting.objects.filter(scope=scope, 
+            scope_category=scope_category, name=name).exists()
+
+        #cache that it does not exist
+        if not exists:
+            is_set = cache.add(missing_key, True)
+            if not is_set:
+                cache.set(missing_key, True)
+
+        return exists
+    return False
 
 def get_form_list(user):
     """
