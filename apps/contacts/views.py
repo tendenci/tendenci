@@ -11,6 +11,8 @@ from contacts.forms import ContactForm
 from perms.object_perms import ObjectPermission
 from perms.utils import has_perm, has_view_perm, get_query_filters
 
+
+@login_required
 def details(request, id=None, template_name="contacts/view.html"):
     if not id: return HttpResponseRedirect(reverse('contacts'))
     contact = get_object_or_404(Contact, pk=id)
@@ -20,7 +22,6 @@ def details(request, id=None, template_name="contacts/view.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-
 
 def search(request, template_name="contacts/search.html"):
     if request.user.is_anonymous():
@@ -46,7 +47,7 @@ def search(request, template_name="contacts/search.html"):
 def search_redirect(request):
     return HttpResponseRedirect(reverse('contacts'))
 
-
+@login_required
 def print_view(request, id, template_name="contacts/print-view.html"):
     contact = get_object_or_404(Contact, pk=id)
 
