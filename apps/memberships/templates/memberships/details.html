@@ -19,9 +19,7 @@
 {% membership_nav request.user membership %}
     <h1>{% blocktrans with membership.user.get_full_name as memname %}Membership for {{ memname }}{% endblocktrans %}</h1>
     <div><a href="{{ membership.user.get_absolute_url }}">{% trans "View profile" %}</a></div>
-
     <div>{% blocktrans with membership.join_dt|date as memjoin and membership.join_dt|timesince as memtimesince%}Joined {{ memjoin }} ({{ memtimesince }}){% endblocktrans %}</div>
-
     {% if membership.expiration_dt %}
         <div>{% blocktrans with membership.expiration_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}</div>
     {% else %}

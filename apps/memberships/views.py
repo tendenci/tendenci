@@ -97,7 +97,31 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
+        
+@login_required
+def membership_delete(request, id, template_name="memberships/delete.html"):
+    """Membership delete"""
+    membership = get_object_or_404(Membership, pk=id)
+    
+    if not has_perm(request.user, 'memberships.delete_membership', membership):
+        raise Http403
+    
+    if request.method == "POST":
+        # log membership delete
+        EventLog.objects.log(**{
+            'event_id' : 473000,
+            'event_data': '%s (%d) deleted by %s' % (membership._meta.object_name, membership.pk, request.user),
+            'description': '%s deleted' % membership._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': membership,
+        })
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % membership)
+        
+        return HttpResponseRedirect(reverse('membership.search'))
 
+    return render_to_response(template_name, {'membership': membership},
+        context_instance=RequestContext(request))
 
 def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", membership_id=0, template_name="memberships/applications/details.html"):
     """
