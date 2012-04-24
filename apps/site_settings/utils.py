@@ -136,6 +136,8 @@ def check_setting(scope, scope_category, name):
 
         #cache that it does not exist
         if not exists:
+            #set to True to signify that it is missing so we do not
+            #come back into this if statement and query db again
             is_set = cache.add(missing_key, True)
             if not is_set:
                 cache.set(missing_key, True)
