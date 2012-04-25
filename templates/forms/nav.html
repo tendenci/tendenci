@@ -43,7 +43,7 @@
             {% endif %}
             <li><a href="{% url forms %}">{% trans "Search Forms" %}</a></li>
             {% if can_add_form %}
-                <li><a href="{% url form_add %}">{% trans "Add Form" %}</a></li>
+                <li><a href="{% url admin:forms_form_add %}">{% trans "Add Form" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -55,15 +55,14 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Form" %}</a></li>
                 {% endif %}
                 {% if can_edit_form %}
-                    <li><a href="{% url form_edit nav_object.pk %}">{% trans "Edit Form" %}</a></li>
-                    <li><a href="{% url form_field_update nav_object.pk %}">{% trans "Edit Form Fields" %}</a></li>
+                    <li><a href="{% url admin:forms_form_change nav_object.pk %}">{% trans "Edit Form" %}</a></li>
                 {% endif %}
                 {% if can_add_form %}
                     <li><a href="{% url form_copy nav_object.pk %}">{% trans "Copy Form" %}</a></li>
                 {% endif %}
                 {% if can_delete_form %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url form_delete nav_object.pk %}">{% trans "Delete Form" %}</a></li>
+                    <li><a class="delete" href="{% url admin:forms_form_delete nav_object.pk %}">{% trans "Delete Form" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}
