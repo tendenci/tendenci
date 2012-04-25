@@ -8,7 +8,7 @@ html {
 	position:fixed;
 	top:0;
 	left:0;
-	background:#6A120D;
+	background:#01437D;
 	color:#ebebeb;
 	height:30px;
 	z-index:99999!important;
@@ -20,7 +20,7 @@ html {
 }
 
 #admin-bar ul li a.admin-logo {
-	background:#6A120D;
+	background:#01437D;
 }
 
 #admin-bar ul {
@@ -32,7 +32,7 @@ html {
 	line-height:16px;
 	font-family:Verdana, Geneva, sans-serif;
 	color:#ebebeb;
-	background:#6A120D;
+	background:#01437D;
 }
 
 #admin-bar li {
@@ -49,9 +49,9 @@ html {
 	font-size:12px;
 	line-height:16px;
 	font-family:Verdana, Geneva, sans-serif;
-	background:#6A120D;
+	background:#01437D;
 	text-decoration:none;
-	border-right:1px solid #4B0D09;
+	border-right:1px solid #01437D;
 	color:#ebebeb;
 }
 
@@ -65,19 +65,19 @@ html {
 	font-size:12px;
 	line-height:14px;
 	margin:0;
-	border-bottom:1px solid #4B0D09;
+	border-bottom:1px solid #01437D;
 }
 
 #admin-bar li li a {
-	background:#810D00;
-	border-bottom:1px dashed #4B0D09;
+	background:#15ACB7;
+	border-bottom:1px dashed #01437D;
 	border-right:none;
 	padding:4px 8px;
 	text-decoration: none;
 }
 
 #admin-bar li li a.setting {
-    border-bottom:1px dashed #4B0D09;
+    border-bottom:1px dashed #01437D;
     height: 16px;
     width: 16px;
 }
@@ -87,18 +87,18 @@ html {
 }
 
 #admin-bar li li.app a {
-	background:#810D00;
+	background:#15ACB7;
 	border-bottom:none;
 	border-right:none;
 	font-weight:bold;
 }
 
 #admin-bar li li a:hover {
-	background:#6A120D;
+	background:#01437D;
 }
 
 #admin-bar .app-list ul {
-	border-bottom:1px dashed #4B0D09;
+	border-bottom:1px dashed #01437D;
 	height:24px;
 	background:none;
 	max-width: 250px;
@@ -130,7 +130,7 @@ html {
 }
 
 #admin-bar .sub {
-	background:#810D00;
+	background:#15ACB7;
 	position:absolute;
 	left:-999em;
 	display:none;
@@ -156,7 +156,7 @@ html {
 
 #admin-bar li li {
 	float:none;
-	background:#6A120D;
+	background:#01437D;
 }
 
 #admin-bar li.right {
@@ -176,14 +176,14 @@ html {
 #admin-bar li #admin-search-box {
 	margin:3px 0 0;
 	padding:0 4px 0 0;
-	border-right:1px solid #4B0D09;
+	border-right:1px solid #01437D;
 	font-size:12px;
 }
 
 #admin-bar #admin-search-box input#admin-search-submit {
 	border: none;
 	color:#eee;
-	background-color:#6A120D;
+	background-color:#01437D;
 }
 
 /*Alt color for admin-bar
@@ -195,10 +195,10 @@ html {
 	
 /* Old styles for deprecated bottom bar
 	
-	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #6A120D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
-	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #6A120D; }
+	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
+	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #01437D; }
 	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
-	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #6A120D; text-decoration: none; border-right: 1px solid #4B0D09; color: #ebebeb; }
+	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #01437D; text-decoration: none; border-right: 1px solid #01437D; color: #ebebeb; }
 	#bottom-admin-bar li.noClick { padding: 5px 8px 6px 8px; }
 	#bottom-admin-bar li#feedback-menu { float: right; }
 	#bottom-admin-bar a#feedback {
