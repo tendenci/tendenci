@@ -764,9 +764,12 @@ class App(TendenciBaseModel):
         """
         from django.contrib.contenttypes.models import ContentType
 
+        items = {}
+        if user.is_anonymous():
+            return items
+
         user_ct = ContentType.objects.get_for_model(user)
 
-        items = {}
         for field in self.fields.filter(content_type=user_ct):
             if field.field_type == 'first-name':
                 items['field_%s' % field.pk] = user.first_name
