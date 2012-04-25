@@ -27,7 +27,7 @@
     <div class="edit-links">
     <ul>
         <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ membership.pk }}&source={{ membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
-        <li><a class="edit-link" href="#">{% trans "Edit" %}</a></li>        
+        <li><a class="edit-link" href="{% url membership.edit membership.pk %}">{% trans "Edit" %}</a></li>        
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>

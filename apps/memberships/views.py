@@ -21,7 +21,8 @@ from event_logs.models import EventLog
 from base.http import Http403
 from base.utils import send_email_notification
 #from user_groups.models import GroupMembership
-from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
+from perms.utils import (update_perms_and_save, is_admin, is_member,
+    is_developer, get_query_filters)
 from perms.utils import has_perm
 #from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
@@ -31,12 +32,14 @@ from files.models import File
 from imports.utils import render_excel
 from djcelery.models import TaskMeta
 
-from memberships.models import App, AppEntry, Membership, \
-    MembershipType, Notice, AppField, MembershipImport
-from memberships.forms import AppCorpPreForm, \
-    MemberApproveForm, ReportForm, EntryEditForm, ExportForm, AppEntryForm
-from memberships.utils import is_import_valid, prepare_chart_data, \
-    get_days, get_over_time_stats, get_status_filter, get_membership_stats
+from memberships.models import (App, AppEntry, Membership,
+    MembershipType, Notice, AppField, MembershipImport)
+from memberships.forms import (AppCorpPreForm, MembershipForm,
+    MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
+    AppEntryForm)
+from memberships.utils import (is_import_valid, prepare_chart_data,
+    get_days, get_over_time_stats, get_status_filter,
+    get_membership_stats)
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
@@ -97,6 +100,45 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
+        
+@login_required
+def membership_edit(request, id, form_class=MembershipForm, template_name="memberships/edit.html"):
+    """Membership edit.
+    """
+    membership = get_object_or_404(Membership, pk=id)
+    
+    if not has_perm(request.user, 'memberships.change_membership', membership):
+        raise Http403
+    
+    if request.method == "POST":
+        form = form_class(request.POST, instance=membership, user=request.user)
+        
+        if form.is_valid():
+            membership = form.save(commit=False)
+            
+            # update all permissions and save the model
+            membership = update_perms_and_save(request, form, membership)
+            
+            # log membership details view
+            EventLog.objects.log(**{
+                'event_id' : 472000,
+                'event_data': '%s (%d) edited by %s' % (membership._meta.object_name, membership.pk, request.user),
+                'description': '%s edited' % membership._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': membership,
+            })
+            
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
+            
+            return redirect('membership.details', membership.pk)
+    else:
+        form = form_class(instance=membership, user=request.user)
+    
+    return render_to_response(template_name, {
+        'membership': membership,
+        'form': form,
+    }, context_instance=RequestContext(request))
         
 @login_required
 def membership_delete(request, id, template_name="memberships/delete.html"):
