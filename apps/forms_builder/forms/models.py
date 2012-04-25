@@ -102,7 +102,7 @@ class Form(TendenciBaseModel):
     admin_link_view.short_description = ""
 
     def admin_link_export(self):
-        url = reverse("admin:form_export", args=(self.id,))
+        url = reverse("admin:forms_form_export", args=(self.id,))
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""

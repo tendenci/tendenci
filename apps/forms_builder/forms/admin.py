@@ -80,10 +80,10 @@ class FormAdmin(admin.ModelAdmin):
         extra_urls = patterns("", 
             url("^export/(?P<form_id>\d+)/$", 
                 self.admin_site.admin_view(self.export_view), 
-                name="form_export"),
+                name="forms_form_export"),
             url("^file/(?P<field_entry_id>\d+)/$", 
                 self.admin_site.admin_view(self.file_view), 
-                name="form_file"),
+                name="forms_form_file"),
         )
         return extra_urls + urls
 
@@ -128,7 +128,7 @@ class FormAdmin(admin.ModelAdmin):
             value = field_entry.value.encode("utf-8")
             # Create download URL for file fields.
             if field_entry.field_id in file_field_ids:
-                url = reverse("admin:form_file", args=(field_entry.id,))
+                url = reverse("admin:forms_form_file", args=(field_entry.id,))
                 value = request.build_absolute_uri(url)
             # Only use values for fields that currently exist for the form.
             try:
