@@ -1,5 +1,4 @@
 import os
-#import sys
 import hashlib
 from hashlib import md5
 from datetime import datetime, timedelta
@@ -10,7 +9,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-#from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -20,11 +18,8 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from base.http import Http403
 from base.utils import send_email_notification
-#from user_groups.models import GroupMembership
-from perms.utils import (update_perms_and_save, is_admin, is_member,
-    is_developer, get_query_filters)
+from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
 from perms.utils import has_perm
-#from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
@@ -175,8 +170,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     app = get_object_or_404(App, slug=slug)
     if not app.allow_view_by(user):
         raise Http403
-    
-    
+
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
     is_corp_ind = False
@@ -261,9 +255,9 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             app, 
             request.POST or None, 
             request.FILES or None, 
-            user=user, 
-            corporate_membership=corporate_membership,
-            initial=initial_dict,
+            user = user, 
+            corporate_membership = corporate_membership,
+            initial = initial_dict or app.get_initial_info(user),
         )
 
     if request.method == "POST":

@@ -726,7 +726,7 @@ class AppEntryForm(forms.ModelForm):
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
                 'error_messages':{'required':'CAPTCHA is required'}
-                })
+            })
 
 
     def save(self, **kwargs):

@@ -366,7 +366,7 @@ class Membership(TendenciBaseModel):
     def get_app_initial(self, app):
         """
         Get a dictionary of membership application
-        initial values.  Used for prefilling out membership
+        initial values.  Used for pre-filling out membership
         application forms. Useful for renewals.
         """
 
@@ -756,6 +756,26 @@ class App(TendenciBaseModel):
         init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
 
         return dict(init_kwargs)
+
+    def get_initial_info(self, user):
+        """
+        Get initial user information and populate.
+        Return an initial-dictionary with fn, ln, and email.
+        """
+        from django.contrib.contenttypes.models import ContentType
+
+        user_ct = ContentType.objects.get_for_model(user)
+
+        items = {}
+        for field in self.fields.filter(content_type=user_ct):
+            if field.field_type == 'first-name':
+                items['field_%s' % field.pk] = user.first_name
+            elif field.field_type == 'last-name':
+                items['field_%s' % field.pk] = user.last_name
+            elif field.field_type == 'email':
+                items['field_%s' % field.pk] = user.email
+
+        return items
     
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True
