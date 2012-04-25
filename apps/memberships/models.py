@@ -365,20 +365,16 @@ class Membership(TendenciBaseModel):
 
     def get_app_initial(self, app):
         """
-        Get a dictionary of membership application
-        initial values.  Used for pre-filling out membership
-        application forms. Useful for renewals.
+        Return a dictionary of application answers.
+        Get answers from the last time they filled out this application.
         """
 
-        # get the last application entry filled out by this member
+        kwargs = {}
+        entries = self.user.appentry_set.filter(app=app).order_by('-pk')
+        if entries:
+            kwargs = dict([(f.field.pk, f.value) for f in entries[0].fields.all()])
 
-        try:
-            entry = self.user.entries.filter(app=app).order_by('-pk')[0]
-            init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
-        except IndexError:
-            init_kwargs = {}
-
-        return dict(init_kwargs)
+        return kwargs
 
     def archive(self, user=None):
         """
