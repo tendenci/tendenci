@@ -31,7 +31,6 @@
         <h2>{{ news.headline }}</h2>
         <div class="content">
         	{{ news.body|safe }} 
-			{% if news.source %}<p>{% trans "Source:" %} {{ news.source|urlize }}</p>{% endif %}
 	         <div class="contact">
 		         {% if news.first_name and news.last_name %}
 		         	<div>{{ news.first_name }} {{ news.last_name }}</div>
