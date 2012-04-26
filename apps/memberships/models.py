@@ -407,9 +407,12 @@ class Membership(TendenciBaseModel):
         not within their renewal period.
         """
 
-        memberships = cls.objects.filter(user=user)
-
         in_contract = []
+
+        if user.is_anonymous():
+            return in_contract
+
+        memberships = cls.objects.filter(user=user)
         for membership in memberships:
             if not membership.can_renew():
                 in_contract.append(membership.membership_type)
