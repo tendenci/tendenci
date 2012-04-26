@@ -21,6 +21,7 @@ from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save
 from event_logs.models import EventLog
 
+@login_required
 def index(request, template_name="wp_importer/index.html"):
     if request.method == 'POST':
         form = BlogImportForm(request.POST, request.FILES)
