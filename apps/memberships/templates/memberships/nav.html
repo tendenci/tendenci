@@ -61,9 +61,6 @@
                 {% if can_view_memb or allow_view %}
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Membership" %}</a></li>
                     <li><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
-                    {% if can_delete %}
-                        <li><a href="{% url membership.delete nav_object.pk %}">{% trans "Delete Membership" %}</a></li>
-                    {% endif %}
                     {% if membership.entries.all %}
                         <li class="divider"></li>
                         {% for entry in nav_object.entries.all %}
