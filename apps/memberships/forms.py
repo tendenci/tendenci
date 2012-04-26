@@ -1041,7 +1041,6 @@ class MembershipForm(TendenciBaseForm):
             'member_number',
             'membership_type',
             'user',
-            'directory',
             'renewal',
             'subscribe_dt',
             'expire_dt',
@@ -1066,7 +1065,6 @@ class MembershipForm(TendenciBaseForm):
                     'renewal',
                     'payment_method',
                     'ma',
-                    'directory',
                     'send_notice',
                 ],
                 'legend': ''
