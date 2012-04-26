@@ -5,7 +5,9 @@ urlpatterns = patterns("memberships.views",
     # memberships
     url(r"^$", "membership_index", name="membership.index"),
     url(r"^search/$", "membership_search", name="membership.search"),
-    url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
+    url(r"^(?P<id>\d+)/$", "membership_details", name="membership.details"),
+    url(r"^(?P<id>\d+)/delete/$", "membership_delete", name="membership.delete"),
+    url(r"^(?P<id>\d+)/edit/$", "membership_edit", name="membership.edit"),
 
     # notices
     (r'^notices/', include('memberships.notices.urls')),

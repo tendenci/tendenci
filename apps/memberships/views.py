@@ -1,5 +1,4 @@
 import os
-#import sys
 import hashlib
 from hashlib import md5
 from datetime import datetime, timedelta
@@ -10,7 +9,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
-#from django.contrib.contenttypes.models import ContentType, ContentTypeManager
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -20,10 +18,8 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from base.http import Http403
 from base.utils import send_email_notification
-#from user_groups.models import GroupMembership
 from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
 from perms.utils import has_perm
-#from invoices.models import Invoice
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
@@ -31,12 +27,14 @@ from files.models import File
 from imports.utils import render_excel
 from djcelery.models import TaskMeta
 
-from memberships.models import App, AppEntry, Membership, \
-    MembershipType, Notice, AppField, MembershipImport
-from memberships.forms import AppCorpPreForm, \
-    MemberApproveForm, ReportForm, EntryEditForm, ExportForm, AppEntryForm
-from memberships.utils import is_import_valid, prepare_chart_data, \
-    get_days, get_over_time_stats, get_status_filter, get_membership_stats
+from memberships.models import (App, AppEntry, Membership,
+    MembershipType, Notice, AppField, MembershipImport)
+from memberships.forms import (AppCorpPreForm, MembershipForm,
+    MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
+    AppEntryForm)
+from memberships.utils import (is_import_valid, prepare_chart_data,
+    get_days, get_over_time_stats, get_status_filter,
+    get_membership_stats)
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
@@ -97,7 +95,70 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
+        
+@login_required
+def membership_edit(request, id, form_class=MembershipForm, template_name="memberships/edit.html"):
+    """Membership edit.
+    """
+    membership = get_object_or_404(Membership, pk=id)
+    
+    if not has_perm(request.user, 'memberships.change_membership', membership):
+        raise Http403
+    
+    if request.method == "POST":
+        form = form_class(request.POST, instance=membership, user=request.user)
+        
+        if form.is_valid():
+            membership = form.save(commit=False)
+            
+            # update all permissions and save the model
+            membership = update_perms_and_save(request, form, membership)
+            
+            # log membership details view
+            EventLog.objects.log(**{
+                'event_id' : 472000,
+                'event_data': '%s (%d) edited by %s' % (membership._meta.object_name, membership.pk, request.user),
+                'description': '%s edited' % membership._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': membership,
+            })
+            
+            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
+            
+            return redirect('membership.details', membership.pk)
+    else:
+        form = form_class(instance=membership, user=request.user)
+    
+    return render_to_response(template_name, {
+        'membership': membership,
+        'form': form,
+    }, context_instance=RequestContext(request))
+        
+@login_required
+def membership_delete(request, id, template_name="memberships/delete.html"):
+    """Membership delete"""
+    membership = get_object_or_404(Membership, pk=id)
+    
+    if not has_perm(request.user, 'memberships.delete_membership', membership):
+        raise Http403
+    
+    if request.method == "POST":
+        # log membership delete
+        EventLog.objects.log(**{
+            'event_id' : 473000,
+            'event_data': '%s (%d) deleted by %s' % (membership._meta.object_name, membership.pk, request.user),
+            'description': '%s deleted' % membership._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': membership,
+        })
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % membership)
+        
+        return HttpResponseRedirect(reverse('membership.search'))
 
+    return render_to_response(template_name, {'membership': membership},
+        context_instance=RequestContext(request))
 
 def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", membership_id=0, template_name="memberships/applications/details.html"):
     """
@@ -109,8 +170,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     app = get_object_or_404(App, slug=slug)
     if not app.allow_view_by(user):
         raise Http403
-    
-    
+
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
     is_corp_ind = False
@@ -169,13 +229,8 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # exclude corp. reps, creator and owner - they should be able to add new
             is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
 
-        # deny access to renew memberships
         if all(is_only_a_member):
             initial_dict = membership.get_app_initial(app)
-            if not membership.can_renew():
-                return render_to_response("memberships/applications/no-renew.html", {
-                    "app": app, "user":user, "membership": membership}, 
-                    context_instance=RequestContext(request))
 
     pending_entries = []
 
@@ -191,14 +246,19 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 entry_time__gte = user.memberships.get_membership().subscribe_dt
             )
 
-    app_entry_form = AppEntryForm(
-            app, 
-            request.POST or None, 
-            request.FILES or None, 
-            user=user, 
-            corporate_membership=corporate_membership,
-            initial=initial_dict,
-        )
+    try:
+        app_entry_form = AppEntryForm(
+                app, 
+                request.POST or None, 
+                request.FILES or None, 
+                user = user, 
+                corporate_membership = corporate_membership,
+                initial = initial_dict or app.get_initial_info(user),
+            )
+    except Exception as e:
+        return render_to_response("memberships/applications/no-renew.html", {
+            "app": app, "user":user, "memberships": user.memberships.all()}, 
+            context_instance=RequestContext(request))
 
     if request.method == "POST":
         if app_entry_form.is_valid():

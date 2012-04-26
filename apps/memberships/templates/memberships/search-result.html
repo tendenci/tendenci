@@ -2,7 +2,8 @@
 <div class="wrap-search-item">
     <div class="search-item">
         <div>
-        <h2><a href="{% url profile membership.user %}">{{ membership }}</a> {% if membership.user.email %}({{ membership.user.email }}){% endif %}</h2>
+        <h2><a href="{% url membership.details membership.pk %}">{{ membership }}</a></h2>
+        <p><strong>User:</strong> <a href="{% url profile membership.user %}">{{ membership.user }} {% if membership.user.email %}({{ membership.user.email }}){% endif %}</a></p>
         <p><strong>Membership Type:</strong> {{ membership.membership_type }}</p>
         
         </div>

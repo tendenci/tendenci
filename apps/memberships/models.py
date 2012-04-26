@@ -271,7 +271,7 @@ class Membership(TendenciBaseModel):
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
-    payment_method = models.ForeignKey(PaymentMethod, null=True)
+    payment_method = models.ForeignKey(PaymentMethod, blank=True, null=True)
     ma = models.ForeignKey("App", null=True)
     send_notice = models.BooleanField(default=True)
     
@@ -365,20 +365,16 @@ class Membership(TendenciBaseModel):
 
     def get_app_initial(self, app):
         """
-        Get a dictionary of membership application
-        initial values.  Used for prefilling out membership
-        application forms. Useful for renewals.
+        Return a dictionary of application answers.
+        Get answers from the last time they filled out this application.
         """
 
-        # get the last application entry filled out by this member
+        kwargs = {}
+        entries = self.user.appentry_set.filter(app=app).order_by('-pk')
+        if entries:
+            kwargs = dict([(f.field.pk, f.value) for f in entries[0].fields.all()])
 
-        try:
-            entry = self.user.entries.filter(app=app).order_by('-pk')[0]
-            init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
-        except IndexError:
-            init_kwargs = {}
-
-        return dict(init_kwargs)
+        return kwargs
 
     def archive(self, user=None):
         """
@@ -401,8 +397,24 @@ class Membership(TendenciBaseModel):
             arch.archive_user = user
         arch.save()
 
-    def get_join_dt(self):
-        pass
+    @classmethod
+    def types_in_contract(cls, user):
+        """
+        Return a list of membership types that this
+        user is still in contract with.
+
+        This means that their a member and they are
+        not within their renewal period.
+        """
+
+        memberships = cls.objects.filter(user=user)
+
+        in_contract = []
+        for membership in memberships:
+            if not membership.can_renew():
+                in_contract.append(membership.membership_type)
+
+        return in_contract
     
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True
@@ -756,6 +768,29 @@ class App(TendenciBaseModel):
         init_kwargs = [(f.field.pk, f.value) for f in entry.fields.all()]
 
         return dict(init_kwargs)
+
+    def get_initial_info(self, user):
+        """
+        Get initial user information and populate.
+        Return an initial-dictionary with fn, ln, and email.
+        """
+        from django.contrib.contenttypes.models import ContentType
+
+        items = {}
+        if user.is_anonymous():
+            return items
+
+        user_ct = ContentType.objects.get_for_model(user)
+
+        for field in self.fields.filter(content_type=user_ct):
+            if field.field_type == 'first-name':
+                items['field_%s' % field.pk] = user.first_name
+            elif field.field_type == 'last-name':
+                items['field_%s' % field.pk] = user.last_name
+            elif field.field_type == 'email':
+                items['field_%s' % field.pk] = user.email
+
+        return items
     
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True
@@ -1085,6 +1120,8 @@ class AppEntry(TendenciBaseModel):
             judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
         else:
             judge, judge_pk, judge_username = None, int(), unicode()
+
+        # more than 1 membership of the same type cannot exist
 
         # if membership; then renewal; create archive
         membership = user.memberships.get_membership()

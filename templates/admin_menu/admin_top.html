@@ -209,13 +209,6 @@
                 </div>
             </div>
         </li>
-        {# special link for valentines day #}
-        {% if TODAY|date:"n/j" in "2/7,2/8,2/9,2/10,2/11,2/12,2/13,2/14,2/15,2/16,2/17" %}
-            <li><a style="color:#F8C7CD;" href="http://tendenci.com/valentine/" target="_blank">
-                <span style="color:#F8C7CD;" class="glyph heading">&#78;</span>
-                &nbsp;&nbsp;<span style="text-decoration: underline;">{% trans "Happy Valentine's Day! Love, Tendenci" %}</span></a></li>
-        {% endif %}
-        
         {% if CUSTOM_TEMPLATE %}
             <li><a href="#">{% trans "Using Custom Template" %}</a>
                 <div class="sub">
@@ -230,7 +223,7 @@
             </li>
         {% endif %}
         
-    	<li class="right"><a href="/accounts/logout">{% trans "Logout" %}</a></li>
+    	<li class="right"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
     	<li class="right"><a href="/profiles">{{ user.username }}</a></li>
     	<!-- <li class="right search"><a href="#">Search</a>
         	<div class="sub">

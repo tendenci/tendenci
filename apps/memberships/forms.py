@@ -17,18 +17,22 @@ from django.core.files.storage import FileSystemStorage
 
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
-
 from perms.utils import is_admin
+from base.fields import SplitDateTimeField
 
-from corporate_memberships.models import CorporateMembership, AuthorizedDomain
+from corporate_memberships.models import (CorporateMembership,
+    AuthorizedDomain)
 from user_groups.models import Group
 from perms.forms import TendenciBaseForm
 
-from memberships.models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
-from memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
+from memberships.models import (Membership, MembershipType, Notice, App,
+    AppEntry, AppField, AppFieldEntry)
+from memberships.fields import (TypeExpMethodField, PriceInput,
+    NoticeTimeTypeField)
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from memberships.utils import csv_to_dict, is_import_valid
-from memberships.widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
+from memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
+    NoticeTimeTypeWidget)
 
 from memberships.utils import get_notice_token_help_text
 
@@ -604,8 +608,6 @@ class EntryEditForm(forms.ModelForm):
 
         return self.instance
 
-
-
 class AppEntryForm(forms.ModelForm):
 
     class Meta:
@@ -637,13 +639,17 @@ class AppEntryForm(forms.ModelForm):
         self.types_field = app.membership_types
         self.user = kwargs.pop('user', None) or AnonymousUser
         self.corporate_membership = kwargs.pop('corporate_membership', None) # id; not object
-        
+
+        super(AppEntryForm, self).__init__(*args, **kwargs)
+
         if is_admin(self.user):
             self.form_fields = app.fields.visible()
         else:
             self.form_fields = app.fields.non_admin_visible()
 
-        super(AppEntryForm, self).__init__(*args, **kwargs)
+        # exclude membership types you are in contract with [not within renewal period]
+        exclude_types = Membership.types_in_contract(self.user)
+        exclude_types = [t.pk for t in exclude_types]  # only pks
 
         CLASS_AND_WIDGET = {
             'text': ('CharField', None),
@@ -682,15 +688,20 @@ class AppEntryForm(forms.ModelForm):
 
             if "choices" in arg_names:
                 if field.field_type == 'membership-type':
-                    if not self.corporate_membership:
-                        choices = [type.name for type in app.membership_types.all()]
-                        choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
-                        field_args["choices"] = zip(choices, choices_with_price)
-                    else:
+
+                    if self.corporate_membership:
                         membership_type = self.corporate_membership.corporate_membership_type.membership_type 
                         choices = [membership_type.name]
                         choices_with_price = ['%s $%s' % (membership_type.name, membership_type.price)]
                         field_args["choices"] = zip(choices, choices_with_price)
+                    else:
+                        choices = [type.name for type in app.membership_types.exclude(pk__in=exclude_types)]
+                        choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.exclude(pk__in=exclude_types)]
+                        field_args["choices"] = zip(choices, choices_with_price)
+
+                        if not field_args['choices']:
+                            raise Exception('There are no membership types available for you in this application.')
+
                 elif field.field_type == 'corporate_membership_id' and self.corporate_membership:
                     field_args["choices"] = ((self.corporate_membership.id, self.corporate_membership.name),)
                 else:
@@ -722,7 +733,7 @@ class AppEntryForm(forms.ModelForm):
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
                 'error_messages':{'required':'CAPTCHA is required'}
-                })
+            })
 
 
     def save(self, **kwargs):
@@ -1007,3 +1018,72 @@ class ReportForm(forms.Form):
     
     membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
     membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
+    
+class MembershipForm(TendenciBaseForm):
+    STATUS_CHOICES = (
+        ('active','Active'),
+        ('inactive','Inactive'),
+        ('pending','Pending'),
+    )
+    
+    status_detail = forms.ChoiceField(
+        choices=STATUS_CHOICES)
+    subscribe_dt = SplitDateTimeField(label=_('Subscribe Date'))
+    expire_dt = SplitDateTimeField(label=_('Expiration Date'),
+        required=False)
+    ma = forms.ModelChoiceField(label=_('Application'),
+        queryset=App.objects.all())
+    
+    class Meta:
+        model = Membership
+        
+        fields = (
+            'member_number',
+            'membership_type',
+            'user',
+            'directory',
+            'renewal',
+            'subscribe_dt',
+            'expire_dt',
+            'payment_method',
+            'ma',
+            'send_notice',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
+        
+        fieldsets = [
+            ('Membership Details', {
+                'fields': [
+                    'membership_type',
+                    'user',
+                    'member_number',
+                    'subscribe_dt',
+                    'expire_dt',
+                    'renewal',
+                    'payment_method',
+                    'ma',
+                    'directory',
+                    'send_notice',
+                ],
+                'legend': ''
+            }),
+            ('Permissions', {
+                'fields': [
+                    'allow_anonymous_view',
+                    'user_perms',
+                    'member_perms',
+                    'group_perms',
+                ],
+                'classes': ['permissions'],
+            }),
+            ('Administrator Only', {
+                'fields': [
+                    'syndicate',
+                    'status',
+                    'status_detail'], 
+                'classes': ['admin-only'],
+            })]
