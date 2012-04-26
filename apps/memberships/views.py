@@ -229,13 +229,8 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # exclude corp. reps, creator and owner - they should be able to add new
             is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
 
-        # deny access to renew memberships
         if all(is_only_a_member):
             initial_dict = membership.get_app_initial(app)
-            if not membership.can_renew():
-                return render_to_response("memberships/applications/no-renew.html", {
-                    "app": app, "user":user, "membership": membership}, 
-                    context_instance=RequestContext(request))
 
     pending_entries = []
 
@@ -251,14 +246,19 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 entry_time__gte = user.memberships.get_membership().subscribe_dt
             )
 
-    app_entry_form = AppEntryForm(
-            app, 
-            request.POST or None, 
-            request.FILES or None, 
-            user = user, 
-            corporate_membership = corporate_membership,
-            initial = initial_dict or app.get_initial_info(user),
-        )
+    try:
+        app_entry_form = AppEntryForm(
+                app, 
+                request.POST or None, 
+                request.FILES or None, 
+                user = user, 
+                corporate_membership = corporate_membership,
+                initial = initial_dict or app.get_initial_info(user),
+            )
+    except Exception as e:
+        return render_to_response("memberships/applications/no-renew.html", {
+            "app": app, "user":user, "memberships": user.memberships.all()}, 
+            context_instance=RequestContext(request))
 
     if request.method == "POST":
         if app_entry_form.is_valid():

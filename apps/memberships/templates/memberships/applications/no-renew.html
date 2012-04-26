@@ -13,11 +13,59 @@
 {% endblock %}
 
 {% block body %}
+
+<style type="text/css">
+
+.content {
+    overflow: visible;
+}
+
+.membership-wrap {
+    background-color: white;
+    border: 1px solid #DDD;
+    margin: 15px 0;
+    -moz-box-shadow: 0 0 4px #DDD;
+    -webkit-box-shadow: 0 0 4px #DDD;
+    box-shadow: 0 0 4px #DDD;
+}
+
+#container p {
+    margin: 0;
+}
+
+.membership-period {
+    margin-top: 10px;
+}
+
+.renew-period {
+    color: #777;
+    margin-top: 5px;
+}
+
+</style>
+
+
 <div class="t">
     
     <h1 style="margin-bottom:15px;">{% trans "Membership Application" %}</h1>
+
+    <p>You are a member of every ({{ memberships.count }}) membership type available in this application.</p>
+    <p>This application will be available starting at your next renewal period.</p>
+
+
+    {% for membership in memberships %}
+
+        <div class="membership-wrap">
+
+            <div><strong>{{ membership.member_number }} {{ membership.membership_type }}</strong></div>
+            <div class="membership-period">{{ membership.subscribe_dt|date:"N n, Y" }} - {{ membership.expire_dt|date:"N n, Y" }}</div>
+            <div class="renew-period">Renew between {{ membership.get_renewal_period_dt.0|date:"N n, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N n, Y" }}</div>
+
+        </div>
+
+    {% endfor %}
     
-    <div style="margin-bottom:3px;">
+    <!-- <div style="margin-bottom:3px;">
         {% trans "We apologize, you must be within your renewal period to view this application." %}
     </div>
     <div style="margin-bottom:12px;">
@@ -31,6 +79,7 @@
     <div>
         {% blocktrans with user.email as user_email %}You will be notified at {{ user_email }}. {% endblocktrans %}
         <a style="font-size:.8em;" href="{% url profile.edit user.pk %}">{% trans "edit email" %}</a>
-    </div>
+    </div> -->
+
 </div>
 {% endblock %}

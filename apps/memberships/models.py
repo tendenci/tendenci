@@ -397,8 +397,24 @@ class Membership(TendenciBaseModel):
             arch.archive_user = user
         arch.save()
 
-    def get_join_dt(self):
-        pass
+    @classmethod
+    def types_in_contract(cls, user):
+        """
+        Return a list of membership types that this
+        user is still in contract with.
+
+        This means that their a member and they are
+        not within their renewal period.
+        """
+
+        memberships = cls.objects.filter(user=user)
+
+        in_contract = []
+        for membership in memberships:
+            if not membership.can_renew():
+                in_contract.append(membership.membership_type)
+
+        return in_contract
     
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True
@@ -1104,6 +1120,8 @@ class AppEntry(TendenciBaseModel):
             judge, judge_pk, judge_username = self.judge, self.judge.pk, self.judge.username
         else:
             judge, judge_pk, judge_username = None, int(), unicode()
+
+        # more than 1 membership of the same type cannot exist
 
         # if membership; then renewal; create archive
         membership = user.memberships.get_membership()
