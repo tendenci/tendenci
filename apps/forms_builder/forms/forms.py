@@ -199,6 +199,8 @@ class FormAdminForm(TendenciBaseForm):
                   'completion_url',
                   'email_from',
                   'email_copies',
+                  'custom_payment',
+                  'payment_methods',
                   'user_perms',
                   'member_perms',
                   'group_perms',

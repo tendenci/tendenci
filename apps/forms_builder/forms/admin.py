@@ -19,7 +19,8 @@ from django.utils.translation import ugettext_lazy as _
 from event_logs.models import EventLog
 from perms.utils import is_admin, update_perms_and_save
 
-from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
+from forms_builder.forms.models import (Form, Field, FormEntry, 
+    FieldEntry, Pricing)
 from forms_builder.forms.settings import UPLOAD_ROOT
 from forms_builder.forms.forms import FormAdminForm, FormForField
 
@@ -28,17 +29,19 @@ fs = FileSystemStorage(location=UPLOAD_ROOT)
 class FieldAdminForm(FormForField):
     class Meta:
         model = Field
-
     
 class FieldAdmin(admin.TabularInline):
     model = Field    
     form = FieldAdminForm
     extra = 0
     ordering = ("position",)
+    
+class PricingAdmin(admin.TabularInline):
+    model = Pricing
 
 class FormAdmin(admin.ModelAdmin):
 
-    inlines = (FieldAdmin,)
+    inlines = (FieldAdmin, PricingAdmin)
     list_display = ("title", "id", "intro", "email_from", "email_copies", 
         "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
@@ -47,18 +50,51 @@ class FormAdmin(admin.ModelAdmin):
         "email_copies")
 #    radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = (
-        (None, {"fields": ("title", "slug", "intro", "response", "completion_url")}),
-        (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
-        ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
-            'user_perms',
-            'member_perms',
-            'group_perms',
-        )}),
-        ('Publishing Status', {'fields': (
-            'status',
-            'status_detail'
-        )}),
+        (None, {
+            "fields": (
+                "title",
+                "slug",
+                "intro",
+                "response",
+                "completion_url"
+            )
+        }),
+        (_("Email"), {
+            "fields": (
+                'subject_template',
+                "email_from",
+                "email_copies",
+                "send_email",
+                "email_text"
+            )
+        }),
+        (_("Payments"), {
+            "fields":(
+                "custom_payment",
+                "payment_methods",
+            )
+        }),
+        ('Permissions', {
+            'fields': (
+                'allow_anonymous_view',
+            )
+        }),
+        ('Advanced Permissions', {
+            'classes': (
+                'collapse',
+            ),
+            'fields': (
+                'user_perms',
+                'member_perms',
+                'group_perms',
+            )
+        }),
+        ('Publishing Status', {
+            'fields': (
+                'status',
+                'status_detail'
+            )
+        }),
     )
     
     form = FormAdminForm
