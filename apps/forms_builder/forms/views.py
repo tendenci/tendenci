@@ -244,7 +244,7 @@ def copy(request, id):
     EventLog.objects.log(**log_defaults)
     
     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
-    return redirect('admin:forms_form_change', new_form.pk)
+    return redirect('form_edit', new_form.pk)
 
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
