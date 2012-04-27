@@ -215,7 +215,6 @@ class FormAdminForm(TendenciBaseForm):
         else:
             self.fields['intro'].widget.mce_attrs['app_instance_id'] = 0
             self.fields['response'].widget.mce_attrs['app_instance_id'] = 0
-        self.fields['payment_methods'].required = False
 
 
     def clean_slug(self):
