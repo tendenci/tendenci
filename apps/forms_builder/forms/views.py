@@ -214,7 +214,7 @@ def copy(request, id):
         creator_username = request.user.username,
         owner = request.user,
         owner_username = request.user.username,
-        status = False,
+        status = True,
         status_detail = 'draft',
         )
     
