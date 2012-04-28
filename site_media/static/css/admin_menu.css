@@ -9,9 +9,10 @@ html {
 	top:0;
 	left:0;
 	background:#01437D;
-	color:#ebebeb;
+	color:#fff;
 	height:30px;
 	z-index:99999!important;
+	opacity: .95;
 }
 
 #admin-bar .admin-logo img {
@@ -31,7 +32,7 @@ html {
 	font-size:12px;
 	line-height:16px;
 	font-family:Verdana, Geneva, sans-serif;
-	color:#ebebeb;
+	color:#fff;
 	background:#01437D;
 }
 
@@ -51,8 +52,8 @@ html {
 	font-family:Verdana, Geneva, sans-serif;
 	background:#01437D;
 	text-decoration:none;
-	border-right:1px solid #01437D;
-	color:#ebebeb;
+	border-right:1px solid #0B254B;
+	color:#fff;
 }
 
 #admin-bar h4 a {
@@ -69,8 +70,8 @@ html {
 }
 
 #admin-bar li li a {
-	background:#15ACB7;
-	border-bottom:1px dashed #01437D;
+	background:#01437D;
+	border-bottom:1px dashed #0B254B;
 	border-right:none;
 	padding:4px 8px;
 	text-decoration: none;
@@ -87,14 +88,14 @@ html {
 }
 
 #admin-bar li li.app a {
-	background:#15ACB7;
+	background:#01437D;
 	border-bottom:none;
 	border-right:none;
 	font-weight:bold;
 }
 
 #admin-bar li li a:hover {
-	background:#01437D;
+	background:#15ACB7;
 }
 
 #admin-bar .app-list ul {
@@ -130,7 +131,7 @@ html {
 }
 
 #admin-bar .sub {
-	background:#15ACB7;
+	background:#01437D;
 	position:absolute;
 	left:-999em;
 	display:none;
@@ -195,10 +196,17 @@ html {
 	
 /* Old styles for deprecated bottom bar
 	
+<<<<<<< Updated upstream
 	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
 	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #01437D; }
 	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
 	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #01437D; text-decoration: none; border-right: 1px solid #01437D; color: #ebebeb; }
+=======
+	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #fff; height: 26px; z-index: 99999 !important; }
+	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #fff; background: #01437D; }
+	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
+	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #01437D; text-decoration: none; border-right: 1px solid #0B254B; color: #fff; }
+>>>>>>> Stashed changes
 	#bottom-admin-bar li.noClick { padding: 5px 8px 6px 8px; }
 	#bottom-admin-bar li#feedback-menu { float: right; }
 	#bottom-admin-bar a#feedback {
