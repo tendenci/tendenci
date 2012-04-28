@@ -15,5 +15,6 @@ urlpatterns = patterns('articles',
     url(r'^%s/edit/meta/(?P<id>\d+)/$' % urlpath, 'views.edit_meta', name="article.edit.meta"),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'views.delete', name="article.delete"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='article.feed'),
+    url(r'^%s/export/$' % urlpath, 'views.export', name='article.export'),
     url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'views.index', name="article"),
 )

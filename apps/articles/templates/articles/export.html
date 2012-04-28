@@ -1,0 +1,29 @@
+{% extends "articles/base.html" %}
+{% load article_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% article_nav request.user %}
+
+    <div class="article-wrap">
+
+        <h1>Articles Export</h1>
+
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" value="Download the CSV" />
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

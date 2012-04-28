@@ -4,6 +4,7 @@
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user articles.add_article as can_add_article %}
+{% is_admin user as admin %}
 
 {% if nav_object %}
     {% has_perm user articles.view_article nav_object as can_view_article %}
@@ -42,6 +43,9 @@
             <li><a href="{% url articles %}">{% trans "Latest" %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</a></li>
             {% if can_add_article %}
                 <li><a href="{% url article.add %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></li>
+            {% endif %}
+            {% if admin %}
+                <li><a href="{% url article.export %}">{% trans "Export" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
@@ -7,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.db.models import Count
+from django.forms.models import model_to_dict
 
 from base.http import Http403
 from perms.utils import (update_perms_and_save, get_notice_recipients,
@@ -16,6 +18,7 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from theme.shortcuts import themed_response as render_to_response
+from imports.utils import render_excel
 
 from articles.models import Article
 from articles.forms import ArticleForm
@@ -280,3 +283,57 @@ def articles_report(request):
     return render_to_response('reports/articles.html', 
             {'stats': stats}, 
             context_instance=RequestContext(request))
+            
+@login_required
+def export(request, template_name="articles/export.html"):
+    """Export Articles"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        articles = Article.objects.filter(status=1)
+        file_name = "articles.xls"
+        fields = [
+            'guid',
+            'slug',
+            'timezone',
+            'headline',
+            'summary',
+            'body',
+            'source',
+            'first_name',
+            'last_name',
+            'phone',
+            'fax',
+            'email',
+            'website',
+            'release_dt',
+            'syndicate',
+            'featured',
+            'design_notes',
+            'tags',
+            'enclosure_url',
+            'enclosure_type',
+            'enclosure_length',
+            'not_official_content',
+            'entity',
+            '\n',
+        ]
+        
+        data_row_list = []
+        for article in articles:
+            data_row = []
+            article_d = model_to_dict(article)
+            for field in fields:
+                if field != '\n':
+                    value = unicode(article_d[field]).replace(os.linesep, ' ').rstrip()
+                    data_row.append(value)
+            data_row.append('\n')
+            data_row_list.append(data_row)
+            
+        return render_excel(file_name, fields, data_row_list)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
