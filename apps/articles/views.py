@@ -295,7 +295,6 @@ def export(request, template_name="articles/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        articles = Article.objects.filter(status=1)
         file_name = "articles.xls"
         fields = [
             'guid',
@@ -328,11 +327,9 @@ def export(request, template_name="articles/export.html"):
             # evaluate the result and render the results page
             result = TendenciExportTask()
             response = result.run(Article, fields, file_name)
-            print response
             return response
         else:
             result = TendenciExportTask.delay(Article, fields, file_name)
-            print result.task_id
             return redirect('export.status', result.task_id)
         
     return render_to_response(template_name, {
