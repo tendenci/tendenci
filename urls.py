@@ -67,6 +67,7 @@ urlpatterns = patterns('',
     (r'^contributions/', include('contributions.urls')),
     (r'^theme-editor/', include('theme_editor.urls')),
     (r'^contact/', include('form_builder.urls')),
+    (r'^exports/', include('exports.urls')),
     (r'^sitemap.xml', include('sitemaps.urls')),
 
     (r'^subscribers/', include('subscribers.urls')),

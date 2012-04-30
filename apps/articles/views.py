@@ -2,13 +2,14 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import get_object_or_404
-from django.template import RequestContext
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.conf import settings
 from django.db.models import Count
 from django.forms.models import model_to_dict
+from django.shortcuts import get_object_or_404, redirect
+from django.template import RequestContext
+from django.http import HttpResponseRedirect
 
 from base.http import Http403
 from perms.utils import (update_perms_and_save, get_notice_recipients,
@@ -19,6 +20,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from theme.shortcuts import themed_response as render_to_response
 from imports.utils import render_excel
+from exports.tasks import TendenciExportTask
 
 from articles.models import Article
 from articles.forms import ArticleForm
@@ -319,21 +321,20 @@ def export(request, template_name="articles/export.html"):
             'enclosure_length',
             'not_official_content',
             'entity',
-            '\n',
         ]
         
-        data_row_list = []
-        for article in articles:
-            data_row = []
-            article_d = model_to_dict(article)
-            for field in fields:
-                if field != '\n':
-                    value = unicode(article_d[field]).replace(os.linesep, ' ').rstrip()
-                    data_row.append(value)
-            data_row.append('\n')
-            data_row_list.append(data_row)
-            
-        return render_excel(file_name, fields, data_row_list)
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = TendenciExportTask()
+            response = result.run(Article, fields, file_name)
+            print response
+            return response
+        else:
+            result = TendenciExportTask.delay(Article, fields, file_name)
+            print result.task_id
+            return redirect('export.status', result.task_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
+
