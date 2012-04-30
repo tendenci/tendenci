@@ -10,7 +10,6 @@ django.jQuery('document').ready(function() {
             'Payments',
             'Photologue',
             'Photos',
-            'Pluginmanager',
             'Plugin_Builder',
             'Social_Auth',
             'Sites',
