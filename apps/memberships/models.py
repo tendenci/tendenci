@@ -302,6 +302,17 @@ class Membership(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(Membership, self).save(*args, **kwargs)
 
+    def get_name(self):
+
+        user = self.user
+        profile = user.get_profile()
+
+        name = "%s %s" % (user.first_name, user.last_name)
+        name = name.strip()
+
+        return profile.display_name or name or user.email or user.username
+
+
     def get_entry(self):
         try:  # membership was created when entry was approved
             #entry = self.entries.get(decision_dt=self.create_dt)

@@ -1,12 +1,11 @@
 {% load i18n %}
 <div class="wrap-search-item">
     <div class="search-item">
-        <div>
-        <h2><a href="{% url membership.details membership.pk %}">{{ membership }}</a></h2>
-        <p><strong>User:</strong> <a href="{% url profile membership.user %}">{{ membership.user }} {% if membership.user.email %}({{ membership.user.email }}){% endif %}</a></p>
+
+        <h2><a href="{% url membership.details membership.pk %}">{{ membership.get_name }}</a></h2>
+        <p><a href="{% url profile membership.user %}">{{ membership.user.username }} {{ membership.user.email }}</a></p>
         <p><strong>Membership Type:</strong> {{ membership.membership_type }}</p>
-        
-        </div>
+
         {% if membership.entries.all %}
         <div>
             <h2>{% trans "Application Entries" %}:</h2>
