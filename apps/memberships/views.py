@@ -51,11 +51,13 @@ def membership_search(request, template_name="memberships/search.html"):
     total_count = Membership.objects.all().count()
     if get_setting('site', 'global', 'searchindex') and (total_count > 1000 or query):
         members = Membership.objects.search(query, user=request.user)
+        members = members.exclude(status_detail='expired')
         if mem_type:
             members = members.filter(mem_type=mem_type)
     else:
         filters = get_query_filters(request.user, 'memberships.view_membership')
         members = Membership.objects.filter(filters).distinct()
+        members = members.exclude(status_detail='expired')
         if mem_type:
             members = members.filter(membership_type__pk=mem_type)
     types = MembershipType.objects.all()
