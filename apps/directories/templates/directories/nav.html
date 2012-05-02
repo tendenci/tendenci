@@ -46,6 +46,7 @@
             {% endif %}
              {% if admin %}
                 <li><a href="{% url directory.pending %}">{% trans "Pending" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL 'directories' %}</a></li>
+                <li><a href="{% url directory.export %}">{% trans "Export" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL 'directories' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

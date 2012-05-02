@@ -9,6 +9,7 @@ if not urlpath:
 urlpatterns = patterns('directories',                  
     url(r'^%s/$' % urlpath, 'views.search', name="directories"),
     url(r'^%s/search/$' % urlpath, 'views.search_redirect', name="directory.search"),
+    url(r'^%s/export/$' % urlpath, 'views.export', name="directory.export"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'views.print_view', name="directory.print_view"),
     url(r'^%s/add/$' % urlpath, 'views.add', name="directory.add"),
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'views.edit', name="directory.edit"),
