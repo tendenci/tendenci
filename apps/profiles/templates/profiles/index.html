@@ -101,7 +101,7 @@
 		        		</a>
 
 		        		{% if membership.can_renew and membership.ma %}
-		        		<span><a href="{{ membership.ma.get_absolute_url }}">Renew Now</a></span>
+		        		<span><a href="{{ membership.ma.get_absolute_url }}?username={{ user_this }}">Renew Now</a></span>
 		        		{% endif %}
 	        		</td>
 	        		<td>
