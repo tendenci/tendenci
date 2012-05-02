@@ -67,6 +67,10 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Membership" %}</a></li>
                     <li><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
                 {% endif %}
+                {% if can_edit_memb %}
+                    <li class="divider"></li>
+                    <li><a href="{% url membership.edit membership.pk %}">{% trans "Edit Membership" %}</a></li>
+                {% endif %}
             </ul>
             {% endif %}
         {% endif %}
