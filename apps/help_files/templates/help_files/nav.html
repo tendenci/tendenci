@@ -48,6 +48,7 @@
             {% if admin %}
                 <li><a href="{% url admin:help_files_helpfile_add %}">{% trans "Admin Add" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a></li>
                 <li><a href="{% url admin:help_files_request_changelist %}">{% trans "Requests List" %}</a></li>
+                <li><a href="{% url help_files.export %}">{% trans "Export" %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

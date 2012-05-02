@@ -1,17 +1,21 @@
 from django.template.context import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
-from perms.utils import has_perm, is_admin, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
+from perms.utils import (has_perm, is_admin, update_perms_and_save,
+    get_notice_recipients, has_view_perm, get_query_filters)
+from exports.tasks import TendenciExportTask
 
-from help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
+from help_files.models import (HelpFile_Topics, Topic, HelpFile, 
+    HelpFileMigration, Request)
 from help_files.forms import RequestForm, HelpFileForm
 
 try:
@@ -249,6 +253,7 @@ def redirects(request, id):
             return HttpResponsePermanentRedirect(reverse('help_files'))
     except:
         return HttpResponsePermanentRedirect(reverse('help_files'))
+        
 
 def requests(request, template_name="help_files/request_list.html"):
     """
@@ -262,3 +267,40 @@ def requests(request, template_name="help_files/request_list.html"):
     return render_to_response(template_name, {
         'requests': requests,
         }, context_instance=RequestContext(request))
+
+
+@login_required
+def export(request, template_name="help_files/export.html"):
+    """Export Help Files"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "help_files.xls"
+        fields = [
+            'slug',
+            'topics',
+            'question',
+            'answer',
+            'level',
+            'is_faq',
+            'is_featured',
+            'is_video',
+            'syndicate',
+            'view_totals',
+        ]
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = TendenciExportTask()
+            response = result.run(HelpFile, fields, file_name)
+            return response
+        else:
+            result = TendenciExportTask.delay(HelpFile, fields, file_name)
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
