@@ -87,19 +87,29 @@
 		{% endif %}
 		</h2>
 
+		{% if memberships %}
+    	<table>
         {% for membership in memberships %}
-
-        	<table>
         		<tr>
-        			<td>{{ membership.member_number }} {{ membership.membership_type }}</td>
+        			<td>
+        				<a href="{% url membership.details membership.pk %}">
+        				{{ membership.member_number }} {{ membership.membership_type }}
+        				<a/>
+        			</td>
         			<td>
 
+        				{% comment %}
         				{% if membership.get_entry %}
 	        				<a href="{{ membership.get_entry.get_absolute_url }}">
 		        				{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}</a>
 		        		{% else %}
 		        			{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}
 		        		{% endif %}
+		        		{% endcomment %}
+
+		        		
+		        		{{ membership.subscribe_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+		        		</a>
 
 		        		{% if membership.can_renew and membership.ma %}
 		        		<span><a href="{{ membership.ma.get_absolute_url }}">Renew Now</a></span>
@@ -116,11 +126,11 @@
 	        			{% endif %}
 	        		</td>
         		</tr>
-        	</table>
-
-        {% empty %}
-            <p>Not a member.</p>
         {% endfor %}
+    	</table>
+    	{% else %}
+        <p>Not a member.</p>
+    	{% endif %}
 
     </div>
 
