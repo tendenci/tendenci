@@ -57,29 +57,21 @@
 
         <div class="membership-wrap">
 
-            <div><strong>{{ membership.member_number }} {{ membership.membership_type }}</strong></div>
-            <div class="membership-period">{{ membership.subscribe_dt|date:"N n, Y" }} - {{ membership.expire_dt|date:"N n, Y" }}</div>
+            <div><strong><a href="{% url membership.details membership.pk %}">
+                {{ membership.member_number }} {{ membership.membership_type }}
+            </a></strong></div>
+
+            <div class="membership-period">{{ membership.subscribe_dt|date:"N n, Y" }} - {% firstof membership.expire_dt|date:"N n, Y" "Forever" %}</div>
+
+            {% if membership.get_renewal_period_dt.1 %}
             <div class="renew-period">Renew between {{ membership.get_renewal_period_dt.0|date:"N n, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N n, Y" }}</div>
+            {% else %}
+            <div class="renew-period">This membership never expires. There is no renewal period.</div>
+            {% endif %}
 
         </div>
 
     {% endfor %}
-    
-    <!-- <div style="margin-bottom:3px;">
-        {% trans "We apologize, you must be within your renewal period to view this application." %}
-    </div>
-    <div style="margin-bottom:12px;">
-    {% blocktrans with membership.get_renewal_period_dt.0|timeuntil as time_until_renew and membership.get_renewal_period_dt.0|date as renewper %}
-        Your renewal period starts in 
-        {{ time_until_renew }} 
-        on {{ renewper }}.
-    {% endblocktrans %}
-    </div>
-
-    <div>
-        {% blocktrans with user.email as user_email %}You will be notified at {{ user_email }}. {% endblocktrans %}
-        <a style="font-size:.8em;" href="{% url profile.edit user.pk %}">{% trans "edit email" %}</a>
-    </div> -->
 
 </div>
 {% endblock %}
