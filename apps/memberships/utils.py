@@ -450,3 +450,8 @@ def get_membership_stats():
     
     return (sorted(summary, key=lambda x:x['type'].name),
         (total_active, total_pending, total_expired, total_total))
+
+class NoMembershipTypes(Exception):
+    pass
+
+

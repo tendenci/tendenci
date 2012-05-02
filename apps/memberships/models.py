@@ -342,7 +342,7 @@ class Membership(TendenciBaseModel):
         """
         if not self.expire_dt or not isinstance(self.expire_dt, datetime):
             return (None, None)
-        
+
         start_dt = self.expire_dt - timedelta(days=self.membership_type.renewal_period_start)
         end_dt = self.expire_dt + timedelta(days=self.membership_type.renewal_period_end)
         
@@ -774,7 +774,7 @@ class App(TendenciBaseModel):
 
     def get_initial_info(self, user):
         """
-        Get initial user information and populate.
+        Get initial user information from user/profile and populate.
         Return an initial-dictionary with fn, ln, and email.
         """
         from django.contrib.contenttypes.models import ContentType
