@@ -40,8 +40,6 @@ class ArticleForm(TendenciBaseForm):
             'tags',
             'allow_anonymous_view',
             'syndicate',
-            'featured',
-            'not_official_content',
             'user_perms',
             'member_perms',
             'group_perms',
@@ -59,8 +57,6 @@ class ArticleForm(TendenciBaseForm):
                                  'website',
                                  'release_dt',
                                  'timezone',
-                                 'featured',
-                                 'not_official_content'
                                  ],
                       'legend': ''
                       }),
