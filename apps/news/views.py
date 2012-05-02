@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.conf import settings
 
 from site_settings.utils import get_setting 
 from base.http import Http403
@@ -13,6 +14,7 @@ from meta.forms import MetaForm
 from perms.utils import (get_notice_recipients, has_perm, is_admin,
     update_perms_and_save, get_query_filters)
 from theme.shortcuts import themed_response as render_to_response
+from exports.tasks import TendenciExportTask
 
 from news.models import News
 from news.forms import NewsForm
@@ -237,3 +239,51 @@ def delete(request, id, template_name="news/delete.html"):
 
     return render_to_response(template_name, {'news': news}, 
         context_instance=RequestContext(request))
+
+@login_required
+def export(request, template_name="news/export.html"):
+    """Export News"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "news.xls"
+        fields = [
+            'guid',
+            'timezone',
+            'slug',
+            'headline',
+            'summary',
+            'body',
+            'source',
+            'first_name',
+            'last_name',
+            'phone',
+            'fax',
+            'email',
+            'website',
+            'release_dt',
+            'syndicate',
+            'design_notes',
+            'enclosure_url',
+            'enclosure_type',
+            'enclosure_length',
+            'use_auto_timestamp',
+            'tags',
+            'entity',
+        ]
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = TendenciExportTask()
+            response = result.run(News, fields, file_name)
+            return response
+        else:
+            result = TendenciExportTask.delay(News, fields, file_name)
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

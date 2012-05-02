@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^edit/meta/(?P<id>\d+)/$', 'news.views.edit_meta', name="news.edit.meta"),
     url(r'^delete/(?P<id>\d+)/$', 'news.views.delete', name="news.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='news.feed'),
+    url(r'^export/$', 'news.views.export', name='news.export'),
     url(r'^(?P<slug>[\w\-\/]+)/$', 'news.views.index', name="news.view"),
 )
