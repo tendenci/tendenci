@@ -12,7 +12,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
-<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %}  {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}" href="{% url directory.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %}  {% firstof MODULE_DIRECTORIES_LABEL_PLURAL trans 'Directories' %}" href="{% url directory.feed %}" />
 {% endblock %}
 
 {% block body %}

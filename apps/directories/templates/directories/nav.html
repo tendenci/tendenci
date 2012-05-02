@@ -44,7 +44,7 @@
             {% if user.is_authenticated %}
                 <li><a href="{% url directory.add %}">{% trans "Add" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</a></li>
             {% endif %}
-             {% if admin %}
+            {% if admin %}
                 <li><a href="{% url directory.pending %}">{% trans "Pending" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL 'directories' %}</a></li>
                 <li><a href="{% url directory.export %}">{% trans "Export" %} {% firstof MODULE_DIRECTORIES_LABEL_PLURAL 'directories' %}</a></li>
             {% endif %}

@@ -6,11 +6,13 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse
+from django.conf import settings
 
 from base.http import Http403
 from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters
 from event_logs.models import EventLog
 from theme.shortcuts import themed_response as render_to_response
+from exports.tasks import TendenciExportTask
 
 from discounts.models import Discount, DiscountUse
 from discounts.forms import DiscountForm, DiscountCodeForm
@@ -180,3 +182,35 @@ def discounted_price(request, form_class=DiscountCodeForm):
     return HttpResponse(
         "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
         mimetype="text/html")
+        
+@login_required
+def export(request, template_name="discounts/export.html"):
+    """Export Discounts"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "discounts.xls"
+        fields = [
+            'discount_code',
+            'start_dt',
+            'end_dt',
+            'never_expires',
+            'value',
+            'cap',
+        ]
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = TendenciExportTask()
+            response = result.run(Discount, fields, file_name)
+            return response
+        else:
+            result = TendenciExportTask.delay(Discount, fields, file_name)
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

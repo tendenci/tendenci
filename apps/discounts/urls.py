@@ -6,5 +6,6 @@ urlpatterns = patterns('discounts',
     url(r'^detail/(?P<id>\d+)/$', 'views.detail', name="discount.detail"),
     url(r'^edit/(?P<id>\d+)/$', 'views.edit', name="discount.edit"),
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="discount.delete"),
-    url(r'^discounted_price/$', 'views.discounted_price', name='discount.discounted_price')
+    url(r'^discounted_price/$', 'views.discounted_price', name='discount.discounted_price'),
+    url(r'^export/$', 'views.export', name='discount.export'),
 )
