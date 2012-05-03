@@ -646,6 +646,33 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         }, context_instance=RequestContext(request))
 
 @login_required
+def application_entries_print(request, id=None, template_name="memberships/entries/print-details.html"):
+    """
+    Displays the print details of a membership application entry.
+    """
+
+    if not id:
+        return redirect(reverse('membership.application_entries_search'))
+    
+    entry = get_object_or_404(AppEntry, id=id)
+    if not entry.allow_view_by(request.user):
+        raise Http403
+
+    # log entry view
+    EventLog.objects.log(**{
+        'event_id' : 1085001,
+        'event_data': '%s (%d) print viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
+        'description': '%s print viewed' % entry._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': entry,
+    })
+
+    return render_to_response(template_name, {
+        'entry': entry,
+        }, context_instance=RequestContext(request))
+
+@login_required
 def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
     """
     Edit membership application entry page.
