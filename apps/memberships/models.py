@@ -1502,6 +1502,26 @@ class AppEntry(TendenciBaseModel):
         for field in fields:
             field.execute_function(self)
 
+    @property
+    def items(self):
+        """
+        Returns a dictionary of entry fields.
+        """
+        return self.get_items()
+
+    def get_items(self, slugify_label=True):
+        items = {}
+        entry = self
+
+        if entry:
+            for field in entry.fields.all():
+                label = field.field.label
+                if slugify_label:
+                    label = slugify(label).replace('-','_')
+                items[label] = field.value
+
+        return items
+
 class AppFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a membership application.
