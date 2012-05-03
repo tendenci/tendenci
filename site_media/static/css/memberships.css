@@ -178,7 +178,13 @@
 	float: left;
 }
 
-.result-content .member-name {
+.result-content a {
+	color: black;
+	text-decoration: underline;
+}
+
+.result-content .member-name,
+.result-content .member-email {
 	margin-bottom: 3px;
 }
 

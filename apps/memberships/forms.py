@@ -208,7 +208,7 @@ class MembershipTypeForm(forms.ModelForm):
     class Meta:
         model = MembershipType
         fields = (
-                  'app',
+                  #'app',
                   'name',
                   'price',
                   'admin_fee',

@@ -25,6 +25,9 @@
         <div class="result-content">
             <div class="member-name">{{ entry.name }}</div>
             <div class="member-email">{{ entry.email }}</div>
+            <div class="member-period">
+            <a href="{% url membership.edit entry.membership.pk %}">{{ entry.membership.subscribe_dt|date:"M j, Y" }} - {% firstof entry.membership.expire_dt|date:"M j, Y" "Forever" %}</a>
+            </div>
         </div>
 
         {% if entry.is_pending %}

@@ -195,36 +195,28 @@ html {
 
 	
 /* Old styles for deprecated bottom bar
-	
-<<<<<<< Updated upstream
-	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #ebebeb; height: 26px; z-index: 99999 !important; }
-	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #ebebeb; background: #01437D; }
-	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
-	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #01437D; text-decoration: none; border-right: 1px solid #01437D; color: #ebebeb; }
-=======
-	#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #fff; height: 26px; z-index: 99999 !important; }
-	#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #fff; background: #01437D; }
-	#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
-	#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #01437D; text-decoration: none; border-right: 1px solid #0B254B; color: #fff; }
->>>>>>> Stashed changes
-	#bottom-admin-bar li.noClick { padding: 5px 8px 6px 8px; }
-	#bottom-admin-bar li#feedback-menu { float: right; }
-	#bottom-admin-bar a#feedback {
-		  background: #2260dd;
-		  color: #fff;
- 		 font-family: Verdana, Geneva, sans-serif;
-		  font-size: 12px;
-		  font-weight: bold;
-		  line-height: 1;
-		  padding: 6px 0 8px 0;
-		  text-align: center;
-  		  text-shadow: 0px -1px 1px #2c4d93;
-		  width: 150px; }
-	#bottom-admin-bar li a#feedback:hover {
-	  background: #1d4ab4;
-	  cursor: pointer;
-	}
-	*/
+#bottom-admin-bar { width: 100%; position: fixed; bottom: 0; left: 0; background: #01437D; color: #fff; height: 26px; z-index: 99999 !important; }
+#bottom-admin-bar ul { margin: 0; padding: 0; list-style: none; position: static; font-size: 11px; line-height: 14px; font-family: Verdana, Geneva, sans-serif; color: #fff; background: #01437D; }
+#bottom-admin-bar li { background: none; list-style: none; float: left; margin: 0; padding: 0; }
+#bottom-admin-bar a { display: block; padding: 4px 8px 6px 8px; font-size: 11px; line-height: 16px; font-family: Verdana, Geneva, sans-serif; background: #01437D; text-decoration: none; border-right: 1px solid #0B254B; color: #fff; }
+#bottom-admin-bar li.noClick { padding: 5px 8px 6px 8px; }
+#bottom-admin-bar li#feedback-menu { float: right; }
+#bottom-admin-bar a#feedback {
+	  background: #2260dd;
+	  color: #fff;
+		 font-family: Verdana, Geneva, sans-serif;
+	  font-size: 12px;
+	  font-weight: bold;
+	  line-height: 1;
+	  padding: 6px 0 8px 0;
+	  text-align: center;
+		  text-shadow: 0px -1px 1px #2c4d93;
+	  width: 150px; }
+#bottom-admin-bar li a#feedback:hover {
+  background: #1d4ab4;
+  cursor: pointer;
+}
+*/
 
 	
 /* Admin CSS for hover links on content */

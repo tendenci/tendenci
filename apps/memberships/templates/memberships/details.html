@@ -25,13 +25,13 @@
         Subscribed since {{ memjoin }} ({{ memtimesince }}){% endblocktrans %}
         </p>
         <p>
-        {% if membership.expiration_dt %}
-            {% blocktrans with membership.expiration_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}
+        {% if membership.expire_dt %}
+            {% blocktrans with membership.expire_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}
         {% else %}
             {% trans "Never expires" %}
         {% endif %}
         </p>
-        <p><strong>{% trans "Membership Type" %}:</strong> {{ membership.memership_type }}</p>
+        <p><strong>{% trans "Membership Type" %}:</strong> {{ membership.membership_type }}</p>
         <p><strong>{% trans "Member Number" %}:</strong> {{ membership.member_number }}</p>
     </div>
 </div>

@@ -57,7 +57,10 @@
     
 
         {% if entry.is_approved %}
-        <div id="member-number">{{ entry.membership.member_number }}</div>
+        <div id="member-number">
+            {{ entry.membership.member_number }}
+            <div style="float:right">{{ entry.membership.subscribe_dt|date:"M j, Y" }} - {% firstof entry.membership.expire_dt|date:"M j, Y" "Forever" %}</div>
+        </div>
         {% endif %}
 
     	{% for field in entry.fields.all %}

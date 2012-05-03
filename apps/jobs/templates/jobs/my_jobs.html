@@ -13,14 +13,14 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
-<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}" href="{% url job.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans 'My' %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}" href="{% url job.feed %}" />
 {% endblock %}
 
 {% block body %}
 <div class="t">
 {% job_nav request.user %}
-    <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "List" %}</h1>  
-
+    <h1>{% trans "My" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "List" %}</h1>
+    
     {% job_search %}
     <span><em>{{ jobs|length }} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "Found" %}</em></span>
     {% autopaginate jobs 10 %}
