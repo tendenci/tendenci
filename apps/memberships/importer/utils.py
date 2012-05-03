@@ -19,11 +19,15 @@ def clean_username(un):
     # hard truncate
     return un[:30]
     
-def clean_field_name(name):
-    name = name.lower()
-    name = name.replace('-', '_')
-    name = name.replace(' ', '_')
-    return name
+def clean_field_name(field):
+
+    if 'email' in field:
+        field = 'email'
+
+    field = field.lower()
+    field = field.replace('-', '_')
+    field = field.replace(' ', '_')
+    return field
 
 def parse_mems_from_csv(file_path, mapping, parse_range=None):
     """
