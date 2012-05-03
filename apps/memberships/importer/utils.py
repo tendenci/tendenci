@@ -50,7 +50,10 @@ def parse_mems_from_csv(file_path, mapping, parse_range=None):
 
         # get user via username or email
         if m.get('username'):
-            user = get_user(username=m.get('username'))
+            # truncate the username at 30 since it if doesn't exist and is longer than 30
+            # it will get truncated on insert. This way a subsequent import will match the username
+            # correctly if the same 30+ length username is used
+            user = get_user(username=m.get('username')[:30])
         elif m.get('email'):
             user = get_user(email=m.get('email'))
 
