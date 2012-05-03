@@ -1,19 +1,22 @@
 {% load i18n %}
 <div class="wrap-search-item">
-    <div class="search-item">
+<div class="search-item">
 
-        <h2><a href="{% url membership.details membership.pk %}">{{ membership.get_name }}</a></h2>
-        <p><a href="{% url profile membership.user %}">{{ membership.user.username }} {{ membership.user.email }}</a></p>
-        <p><strong>Membership Type:</strong> {{ membership.membership_type }}</p>
+    <h2><a href="{% url profile membership.user %}">{{ membership.get_name }}</a></h2>
 
-        {% if membership.entries.all %}
-        <div>
-            <h2>{% trans "Application Entries" %}:</h2>
-            {% for entry in membership.entries.all %}
-                <a href="{% url membership.application_entries entry.pk %}">{{ entry }}</a><br>
-            {% endfor %}
-        </div>
-        {% endif %}
+    <div class="type-and-period">
+        <div><a href="{% url membership.details membership.pk %}">{{ membership.membership_type }}</a></div>
+        <div>{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}</div>
     </div>
-    {% include 'memberships/meta.html' %}
+
+    {% if membership.entries.all %}
+    <div>
+        <h2>{% trans "Application Entries" %}:</h2>
+        {% for entry in membership.entries.all %}
+            <div><a href="{% url membership.application_entries entry.pk %}">{{ entry }} - {{ entry.status_msg }}</a></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% include 'memberships/meta.html' %}
 </div>
