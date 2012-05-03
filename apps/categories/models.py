@@ -137,3 +137,8 @@ class CategoryItem(models.Model):
     category = models.ForeignKey(Category, related_name='%(class)s_category',null=True)
     parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True)
     object = generic.GenericForeignKey('content_type', 'object_id')
+    
+    def __unicode__(self):
+        if self.category:
+            return self.category.name
+        return ""

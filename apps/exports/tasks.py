@@ -1,7 +1,7 @@
 import os
 from django.forms.models import model_to_dict
-from django.db.models.fields.related import ManyToManyField
-from django.db.models import ForeignKey
+from django.db.models.fields.related import ManyToManyField, ForeignKey
+from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
 from imports.utils import render_excel
@@ -25,6 +25,9 @@ class TendenciExportTask(Task):
                         value = ["%s" % obj for obj in f.value_from_object(item)]
                     if isinstance(f, ForeignKey):
                         value = getattr(item, f.name)
+                    if isinstance(f, generic.GenericRelation):
+                        generics = f.value_from_object(item).all()
+                        value = ["%s" % obj for obj in generics]
                     else:
                         value = f.value_from_object(item)
                     d[f.name] = value

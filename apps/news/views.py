@@ -273,6 +273,7 @@ def export(request, template_name="news/export.html"):
             'use_auto_timestamp',
             'tags',
             'entity',
+            'categories',
         ]
         
         if not settings.CELERY_IS_ACTIVE:
