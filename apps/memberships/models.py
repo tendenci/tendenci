@@ -374,19 +374,6 @@ class Membership(TendenciBaseModel):
         # assert that we're within the renewal period
         return (datetime.now() >= start_dt and datetime.now() <= end_dt)
 
-    def get_app_initial(self, app):
-        """
-        Return a dictionary of application answers.
-        Get answers from the last time they filled out this application.
-        """
-
-        kwargs = {}
-        entries = self.user.appentry_set.filter(app=app).order_by('-pk')
-        if entries:
-            kwargs = dict([(f.field.pk, f.value) for f in entries[0].fields.all()])
-
-        return kwargs
-
     def archive(self, user=None):
         """
         Copy self to the MembershipArchive table
@@ -785,26 +772,34 @@ class App(TendenciBaseModel):
 
     def get_initial_info(self, user):
         """
-        Get initial user information from user/profile and populate.
-        Return an initial-dictionary with fn, ln, and email.
+        Get initial information to pre-populate application.
+        First look for a previously submitted application.
+        Else get initial user information from user/profile and populate.
+        Return an initial-dictionary.
         """
         from django.contrib.contenttypes.models import ContentType
 
-        items = {}
+        initial = {}
         if user.is_anonymous():
-            return items
+            return initial
 
+        # querying for previously submitted forms
+        entries = user.appentry_set.filter(app=self).order_by('-pk')
+        if entries:
+            initial = dict([(f.field.pk, f.value) for f in entries[0].fields.all()])
+            return initial
+
+        # getting fn, ln, em from user/profile record
         user_ct = ContentType.objects.get_for_model(user)
-
         for field in self.fields.filter(content_type=user_ct):
             if field.field_type == 'first-name':
-                items['field_%s' % field.pk] = user.first_name
+                initial['field_%s' % field.pk] = user.first_name
             elif field.field_type == 'last-name':
-                items['field_%s' % field.pk] = user.last_name
+                initial['field_%s' % field.pk] = user.last_name
             elif field.field_type == 'email':
-                items['field_%s' % field.pk] = user.email
+                initial['field_%s' % field.pk] = user.email
 
-        return items
+        return initial
     
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True

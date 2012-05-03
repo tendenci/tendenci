@@ -242,8 +242,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
         elif all(is_only_a_member):
             # get info from last time this app was filled out
-            initial_dict = membership.get_app_initial(app)
-
+            initial_dict = app.get_initial_info(user)
 
     pending_entries = []
 
@@ -266,8 +265,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 request.FILES or None, 
                 user = user, 
                 corporate_membership = corporate_membership,
-                # get initial info from user/profile record
-                initial = initial_dict or app.get_initial_info(user),
+                initial = initial_dict
             )
     except NoMembershipTypes as e:
 
