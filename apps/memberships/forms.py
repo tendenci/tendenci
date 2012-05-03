@@ -30,7 +30,7 @@ from memberships.models import (Membership, MembershipType, Notice, App,
 from memberships.fields import (TypeExpMethodField, PriceInput,
     NoticeTimeTypeField)
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from memberships.utils import csv_to_dict, is_import_valid
+from memberships.utils import csv_to_dict, is_import_valid, NoMembershipTypes
 from memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
     NoticeTimeTypeWidget)
 
@@ -644,12 +644,12 @@ class AppEntryForm(forms.ModelForm):
 
         if is_admin(self.user):
             self.form_fields = app.fields.visible()
+            exclude_types = []
         else:
             self.form_fields = app.fields.non_admin_visible()
-
-        # exclude membership types you are in contract with [not within renewal period]
-        exclude_types = Membership.types_in_contract(self.user)
-        exclude_types = [t.pk for t in exclude_types]  # only pks
+            # exclude membership types you are in contract with [not within renewal period]
+            exclude_types = Membership.types_in_contract(self.user)
+            exclude_types = [t.pk for t in exclude_types]  # only pks
 
         CLASS_AND_WIDGET = {
             'text': ('CharField', None),
@@ -699,8 +699,9 @@ class AppEntryForm(forms.ModelForm):
                         choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.exclude(pk__in=exclude_types)]
                         field_args["choices"] = zip(choices, choices_with_price)
 
-                        if not field_args['choices']:
-                            raise Exception('There are no membership types available for you in this application.')
+                        if not is_admin(self.user):
+                            if not field_args['choices']:
+                                raise NoMembershipTypes('There are no membership types available for you in this application.')
 
                 elif field.field_type == 'corporate_membership_id' and self.corporate_membership:
                     field_args["choices"] = ((self.corporate_membership.id, self.corporate_membership.name),)

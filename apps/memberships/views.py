@@ -34,7 +34,7 @@ from memberships.forms import (AppCorpPreForm, MembershipForm,
     AppEntryForm)
 from memberships.utils import (is_import_valid, prepare_chart_data,
     get_days, get_over_time_stats, get_status_filter,
-    get_membership_stats)
+    get_membership_stats, NoMembershipTypes)
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
@@ -230,8 +230,20 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # exclude corp. reps, creator and owner - they should be able to add new
             is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
 
-        if all(is_only_a_member):
+        if is_admin(user):
+            username = request.GET.get('username',unicode())
+            if username:
+                try:
+                    registrant = User.objects.get(username=username)
+                    # get info from last time this app was filled out
+                    initial_dict = app.get_initial_info(registrant)
+                except:
+                    pass
+
+        elif all(is_only_a_member):
+            # get info from last time this app was filled out
             initial_dict = membership.get_app_initial(app)
+
 
     pending_entries = []
 
@@ -254,9 +266,15 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 request.FILES or None, 
                 user = user, 
                 corporate_membership = corporate_membership,
+                # get initial info from user/profile record
                 initial = initial_dict or app.get_initial_info(user),
             )
-    except Exception as e:
+    except NoMembershipTypes as e:
+
+        print e
+
+        # non-admin has no membership-types available in this application
+        # let them know to wait for their renewal period before trying again
         return render_to_response("memberships/applications/no-renew.html", {
             "app": app, "user":user, "memberships": user.memberships.all()}, 
             context_instance=RequestContext(request))
