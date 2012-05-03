@@ -326,8 +326,11 @@ class ListEventsNode(ListNode):
         if tags:  # tags is a comma delimited list
             # this is fast; but has one hole
             # it finds words inside of other words
-            # e.g. "event" is within "prevent"
-            tag_queries = [Q(tags__icontains=t) for t in tags]
+            # e.g. "prev" is within "prevent"
+            tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
+            tag_queries += [Q(tags__icontains=t.strip()+",") for t in tags]
+            tag_queries += [Q(tags__icontains=", "+t.strip()) for t in tags]
+            tag_queries += [Q(tags__icontains=","+t.strip()) for t in tags]
             tag_query = reduce(or_, tag_queries)
             items = items.filter(tag_query)
 
