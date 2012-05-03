@@ -131,9 +131,11 @@ class ListNode(Node):
             # it finds words inside of other words
             # e.g. "prev" is within "prevent"
             tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
-            tag_queries += [Q(tags__icontains=t.strip()+",") for t in tags]
-            tag_queries += [Q(tags__icontains=", "+t.strip()) for t in tags]
-            tag_queries += [Q(tags__icontains=","+t.strip()) for t in tags]
+            tag_queries += [Q(tags__istartswith=t.strip()+",") for t in tags]
+            tag_queries += [Q(tags__iendswith=", "+t.strip()) for t in tags]
+            tag_queries += [Q(tags__iendswith=","+t.strip()) for t in tags]
+            tag_queries += [Q(tags__icontains=", "+t.strip()+",") for t in tags]
+            tag_queries += [Q(tags__icontains=","+t.strip()+",") for t in tags]
             tag_query = reduce(or_, tag_queries)
             items = items.filter(tag_query)
 
