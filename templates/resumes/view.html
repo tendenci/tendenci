@@ -24,6 +24,12 @@
     <div class="resume-wrap">
 			
         <h1>{{ resume.title }}</h1>
+        
+        {% if resume.resume_url %}
+        <div id="resume-link">
+        <a href="{{ resume.resume_url }}" target="_blank">View {% if resume.contact_name %}{{ resume.contact_name }}'s resume {% else %} this resume's{% endif %} website &raquo;</a>
+        </div>
+        {% endif %}
 
         {% if resume.description %}
                 <div class="section-block">
