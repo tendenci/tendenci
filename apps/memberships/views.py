@@ -58,7 +58,7 @@ def membership_search(request, template_name="memberships/search.html"):
         members = Membership.objects.filter(filters).distinct()
         if mem_type:
             members = members.filter(membership_type__pk=mem_type)
-    members = members.exclude(status_detail='expired')
+        members = members.exclude(status_detail='expired')
     types = MembershipType.objects.all()
     
     EventLog.objects.log(**{
