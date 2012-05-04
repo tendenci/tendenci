@@ -1380,8 +1380,8 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     for c_regt in cancelled_registrants:
         if c_regt.custom_reg_form_entry:
             c_regt.assign_mapped_fields()
-            if not regt.name:
-                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+            if not c_regt.name:
+                c_regt.last_name = c_regt.name = c_regt.custom_reg_form_entry.__unicode__()
         
     return render_to_response(template_name, {
         'event': event,
