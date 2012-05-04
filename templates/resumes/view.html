@@ -27,7 +27,7 @@
         
         {% if resume.resume_url %}
         <div id="resume-link">
-        <a href="{{ resume.resume_url }}" target="_blank">View {% if resume.contact_name %}{{ resume.contact_name }}'s resume {% else %} this resume's{% endif %} website &raquo;</a>
+        <a href="{{ resume.resume_url }}" target="_blank">{% trans "View" %} {% if resume.contact_name %}{{ resume.contact_name }}'s {% trans "resume" %} {% else %} {% trans "this resume's" %}{% endif %} {% trans "website" %} &raquo;</a>
         </div>
         {% endif %}
 
