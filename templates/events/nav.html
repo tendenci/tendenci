@@ -55,6 +55,7 @@
             {% endif %}
             {% if admin %}
                 <li><a href="{% url event.pending %}">{% trans "Pending Events" %}</a></li>
+                <li><a href="{% url event.export %}">{% trans "Export Events" %}</a></li>
             {% endif %}
             {% if can_edit_event %}
                 <li><a href="{% url event.types %}">{% trans "Event Types" %}</a></li>

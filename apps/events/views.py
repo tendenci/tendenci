@@ -19,6 +19,7 @@ from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
 from django.forms.models import BaseModelFormSet
+from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from base.http import Http403
@@ -51,6 +52,7 @@ from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import (get_active_addons, get_available_addons, 
     get_addons_for_list)
+from events.tasks import EventsExportTask
 
 from notification import models as notification
     
@@ -2421,3 +2423,27 @@ def enable_addon(request, event_id, addon_id):
     messages.add_message(request, messages.SUCCESS, "Successfully enabled the %s" % addon.title)
         
     return redirect('event.list_addons', event.id)
+
+@login_required
+def export(request, template_name="events/export.html"):
+    """Export Events"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "invoices.xls"
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = EventsExportTask()
+            response = result.run()
+            return response
+        else:
+            result = EventsExportTask.delay()
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
