@@ -80,6 +80,7 @@ class EventsExportTask(Task):
         events = Event.objects.filter(status=1)
         max_speakers = events.annotate(num_speakers=Count('speaker')).aggregate(Max('num_speakers'))['num_speakers__max']
         max_organizers = events.annotate(num_organizers=Count('organizer')).aggregate(Max('num_organizers'))['num_organizers__max']
+        max_pricings = events.annotate(num_pricings=Count('registration_configuration__regconfpricing')).aggregate(Max('num_pricings'))['num_pricings__max']
         file_name = 'events.xls'
         data_row_list = []
         
@@ -136,7 +137,7 @@ class EventsExportTask(Task):
                         data_row.append('')
                         
             if event.organizer_set.all():
-                # speaker setup
+                # organizer setup
                 for organizer in event.organizer_set.all():
                     organizer_d = model_to_dict(organizer)
                     for field in organizer_fields:
@@ -144,10 +145,26 @@ class EventsExportTask(Task):
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
             
-            # fill out the rest of the speaker columns
+            # fill out the rest of the organizer columns
             if event.organizer_set.all().count() < max_organizers:
                 for i in range(0, max_organizers - event.organizer_set.all().count()):
                     for field in organizer_fields:
+                        data_row.append('')
+            
+            reg_conf = event.registration_configuration
+            if reg_conf and reg_conf.regconfpricing_set.all():
+                # pricing setup
+                for pricing in reg_conf.regconfpricing_set.all():
+                    pricing_d = model_to_dict(pricing)
+                    for field in pricing_fields:
+                        value = pricing_d[field]
+                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        data_row.append(value)
+            
+            # fill out the rest of the pricing columns
+            if reg_conf and reg_conf.regconfpricing_set.all().count() < max_pricings:
+                for i in range(0, max_pricings - reg_conf.regconfpricing_set.all().count()):
+                    for field in pricing_fields:
                         data_row.append('')
             
             data_row.append('\n') # append a new line to make a new row
@@ -159,5 +176,7 @@ class EventsExportTask(Task):
             fields = fields + ["speaker %s %s" % (i, f) for f in speaker_fields]
         for i in range(0, max_organizers):
             fields = fields + ["organizer %s %s" % (i, f) for f in organizer_fields]
+        for i in range(0, max_pricings):
+            fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
         fields.append('\n')
         return render_excel(file_name, fields, data_row_list)
