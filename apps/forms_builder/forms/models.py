@@ -148,7 +148,8 @@ class Field(models.Model):
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        order_with_respect_to = "form"
+        #order_with_respect_to = "form"
+        ordering = ('position',)
     
     def __unicode__(self):
         return self.label
