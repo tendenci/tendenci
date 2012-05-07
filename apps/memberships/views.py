@@ -115,7 +115,8 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
         if form.is_valid():
             membership = form.save(commit=False)
 
-            if membership.expire_dt < datetime.now():
+
+            if membership.expire_dt and membership.expire_dt < datetime.now():
                 membership.status_detail = 'expired'
 
             # update all permissions and save the model
@@ -132,7 +133,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                     group=membership.membership_type.group
                 ).delete()
             # -----
-            
+
             # log membership details view
             EventLog.objects.log(**{
                 'event_id' : 472000,
@@ -142,7 +143,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                 'request': request,
                 'instance': membership,
             })
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
             
             return redirect('membership.details', membership.pk)

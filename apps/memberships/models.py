@@ -440,7 +440,7 @@ class MembershipArchive(TendenciBaseModel):
     A reference to the newest (non-archived) membership is 
     included via the 'membership' field.
     """
-    membership = models.ForeignKey('Membership')
+    membership = models.ForeignKey('Membership', null=True, default=None)
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     user = models.ForeignKey(User)
@@ -467,6 +467,32 @@ class MembershipArchive(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s #%s" % (self.user.get_full_name(), self.member_number)
+
+    @classmethod
+    def archive(cls, membership, **kwargs):
+        """
+        Create archive record
+        Delete membership record
+        """
+        arch = cls()
+        exclude_list = ['id']
+        # create archive record
+        for field_name in cls._meta.get_all_field_names():
+            if field_name not in exclude_list:
+                try:
+                    setattr(arch, field_name, getattr(membership, field_name))
+                except AttributeError:
+                    pass  # field not available in membership
+
+        arch.membership_create_dt = membership.create_dt
+        arch.membership_update_dt = membership.update_dt
+        arch.save()
+
+        # delete membership
+        membership.delete()
+
+        return arch
+
         
 class MembershipImport(models.Model):
     app = models.ForeignKey('App')
