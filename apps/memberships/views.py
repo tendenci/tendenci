@@ -34,7 +34,7 @@ from memberships.forms import (AppCorpPreForm, MembershipForm,
     AppEntryForm)
 from memberships.utils import (is_import_valid, prepare_chart_data,
     get_days, get_over_time_stats, get_status_filter,
-    get_membership_stats)
+    get_membership_stats, NoMembershipTypes)
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
@@ -58,6 +58,7 @@ def membership_search(request, template_name="memberships/search.html"):
         members = Membership.objects.filter(filters).distinct()
         if mem_type:
             members = members.filter(membership_type__pk=mem_type)
+        members = members.exclude(status_detail='expired')
     types = MembershipType.objects.all()
     
     EventLog.objects.log(**{
@@ -229,8 +230,20 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # exclude corp. reps, creator and owner - they should be able to add new
             is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
 
-        if all(is_only_a_member):
-            initial_dict = membership.get_app_initial(app)
+        if is_admin(user):
+            username = request.GET.get('username',unicode())
+            if username:
+                try:
+                    registrant = User.objects.get(username=username)
+                    # get info from last time this app was filled out
+                    initial_dict = app.get_initial_info(registrant)
+                except:
+                    pass
+
+        elif all(is_only_a_member):
+            # get info from last time this app was filled out
+            initial_dict = app.get_initial_info(user)
+
 
     pending_entries = []
 
@@ -253,9 +266,14 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 request.FILES or None, 
                 user = user, 
                 corporate_membership = corporate_membership,
-                initial = initial_dict or app.get_initial_info(user),
+                initial = initial_dict
             )
-    except Exception as e:
+    except NoMembershipTypes as e:
+
+        print e
+
+        # non-admin has no membership-types available in this application
+        # let them know to wait for their renewal period before trying again
         return render_to_response("memberships/applications/no-renew.html", {
             "app": app, "user":user, "memberships": user.memberships.all()}, 
             context_instance=RequestContext(request))
@@ -625,6 +643,33 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     return render_to_response(template_name, {
         'entry': entry,
         'form': form,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def application_entries_print(request, id=None, template_name="memberships/entries/print-details.html"):
+    """
+    Displays the print details of a membership application entry.
+    """
+
+    if not id:
+        return redirect(reverse('membership.application_entries_search'))
+    
+    entry = get_object_or_404(AppEntry, id=id)
+    if not entry.allow_view_by(request.user):
+        raise Http403
+
+    # log entry view
+    EventLog.objects.log(**{
+        'event_id' : 1085001,
+        'event_data': '%s (%d) print viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
+        'description': '%s print viewed' % entry._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': entry,
+    })
+
+    return render_to_response(template_name, {
+        'entry': entry,
         }, context_instance=RequestContext(request))
 
 @login_required

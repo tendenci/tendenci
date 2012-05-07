@@ -2,6 +2,7 @@ from django.template import Library, TemplateSyntaxError, Variable
 
 from base.template_tags import ListNode, parse_tag_kwargs
 from jobs.models import Job
+from django.db.models import Q
 
 register = Library()
 
@@ -56,7 +57,7 @@ def job_pricing_table(context):
     premium_jp = JobPricing.objects.filter(status=1).filter(premium_price__gt=0)
     if premium_jp:
         show_premium_price = True
-    member_jp = JobPricing.objects.filter(status=1).filter(premium_price_member__gt=0)
+    member_jp = JobPricing.objects.filter(status=1).filter(show_member_pricing=True).filter(Q(premium_price_member__gt=0) | Q(regular_price_member__gt=0))
     if member_jp:
         show_member_price = True
     context.update({

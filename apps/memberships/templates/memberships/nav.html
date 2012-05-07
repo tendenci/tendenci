@@ -37,16 +37,21 @@
             <div>
             <ul class="dropdown-menu">
         {% endif %}
+            <li><a href="{% url membership.search %}">{% trans "Search" %}</a></li> 
+            <li><a href="{% url membership.application_entries_search %}?status=pending">{% trans "Pending" %}</a></li>
+
+            {% if admin %}
+            <li><a href="{% url membership.application_entries_search %}">{% trans "Entries" %}</a></li>
+            {% endif %}
+
             {% if can_edit_setting %}
             <li><a href="{% url settings.index "module" "memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url membership.search %}">{% trans "Search All Members" %}</a></li> 
+
             {% if admin %}
-            <li><a href="{% url membership.application_entries_search %}?status=pending">{% trans "Pending Members" %}</a></li>
-            <li><a href="{% url membership.application_entries_search %}">{% trans "Membership Entries" %}</a></li>
             <li class="divider"></li>
-            <li><a href="{% url admin:memberships_app_changelist %}">{% trans "Membership Applications" %}</a></li>
-            <li><a href="{% url admin:memberships_membershiptype_changelist %}">{% trans "Membership Types" %}</a></li>
+            <li><a href="{% url admin:memberships_app_changelist %}">{% trans "Applications" %}</a></li>
+            <li><a href="{% url admin:memberships_membershiptype_changelist %}">{% trans "Types" %}</a></li>
             <li><a href="{% url admin:memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
             <li class="divider"></li>
             <li><a href="{% url membership_import %}">{% trans "Import" %}</a></li>
@@ -61,12 +66,14 @@
                 {% if can_view_memb or allow_view %}
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Membership" %}</a></li>
                     <li><a href="{{ nav_object.user.get_absolute_url }}">{% trans "View User Profile" %}</a></li>
-                    {% if membership.entries.all %}
-                        <li class="divider"></li>
-                        {% for entry in nav_object.entries.all %}
-                        <li><a href="{% url membership.application_entries entry.pk %}">{% trans "View Entry" %} {{ forloop.counter }}</a></li>
-                        {% endfor %}
-                    {% endif %}
+                {% endif %}
+                {% if can_edit_memb %}
+                    <li class="divider"></li>
+                    <li><a href="{% url membership.edit membership.pk %}">{% trans "Edit Membership" %}</a></li>
+                {% endif %}
+                {% if can_edit_memb %}
+                    <li class="divider"></li>
+                    <li><a href="{% url membership.edit membership.pk %}">{% trans "Edit Membership" %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}

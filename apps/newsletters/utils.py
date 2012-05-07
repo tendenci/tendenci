@@ -88,7 +88,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
         if start_dt:
             jobs = jobs.filter(activation_dt__gt=start_dt)
         jobs = jobs.filter(status_detail='active', status=True, allow_anonymous_view=True)
-        jobs = jobs.order_by("list_type")
+        jobs = jobs.order_by('status_detail','list_type','-post_dt')
         job_content = render_to_string('newsletters/jobs_list.txt', 
                                        {'jobs': jobs,
                                         'start_dt': start_dt,

@@ -34,6 +34,7 @@ urlpatterns = patterns("memberships.views",
     # entries
     url(r"^entries/$", "application_entries", name="membership.application_entries"),
     url(r"^entries/(?P<id>\d+)/$", "application_entries", name="membership.application_entries"),
+    url(r"^entries/print/(?P<id>\d+)/$", "application_entries_print", name="membership.application_entries_print"),
     url(r"^entries/edit/(?P<id>\d+)/$", "entry_edit", name="membership.entry_edit"),
     url(r"^entries/delete/(?P<id>\d+)/$", "entry_delete", name="membership.entry_delete"),
     url(r"^entries/search/$", "application_entries_search", name="membership.application_entries_search"),

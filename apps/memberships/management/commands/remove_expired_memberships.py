@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
 	"""
+	Set the status detail of the membership to expired.
+	Remove the user from the [privileged] group.
 	example: python manage.py remove_expired_memberships
 	"""
 	def handle(self, *args, **kwargs):

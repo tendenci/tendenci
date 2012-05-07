@@ -4,8 +4,8 @@ from os.path import splitext
 from django import forms
 
 from perms.forms import TendenciBaseForm
-from models import Staff
-from files.models import File
+from models import Staff, StaffFile
+#from files.models import File
 from tinymce.widgets import TinyMCE
 
 ALLOWED_LOGO_EXT = (
@@ -59,7 +59,7 @@ class StaffForm(TendenciBaseForm):
 
 class FileForm(forms.ModelForm):
     class Meta:
-        model = File
+        model = StaffFile
         fields = (
             'file',
             'description',
