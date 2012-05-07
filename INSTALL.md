@@ -48,6 +48,7 @@ There are multiple themes available to use in `/templates/themes/`. You can inst
     python manage.py set_theme bulletpoints
 
 Now you can test your site by running the command locally:
+
     python manage.py runserver 0:8000
 
 
