@@ -6,8 +6,8 @@ Make sure you have Python 2.6 or 2.7 installed. Other versions of Python are not
 Our preferred way is to use virtualenv with virtualenvwrapper to create an isolated Python environment. 
 
 + Install virtualenv
-    - `pip install virtualenv`
-    - `pip install virtualenvwrapper`
+    - `sudo pip install virtualenv`
+    - `sudo pip install virtualenvwrapper`
     
 + Add the following lines to your .bashrc and restart your shell
 
