@@ -1,5 +1,6 @@
 import os
 from django.forms.models import model_to_dict
+from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from django.forms.models import model_to_dict
@@ -55,13 +56,10 @@ class EventsExportTask(Task):
             'bind_reg_form_to_conf_only',
         ]
         speaker_fields = [
-            'user',
             'name',
             'description',
         ]
         organizer_fields = [
-            'event',
-            'user',
             'name',
             'description',
         ]
@@ -80,12 +78,14 @@ class EventsExportTask(Task):
         ]
         
         events = Event.objects.filter(status=1)
+        max_speakers = events.annotate(num_speakers=Count('speaker')).aggregate(Max('num_speakers'))['num_speakers__max']
+        max_organizers = events.annotate(num_organizers=Count('organizer')).aggregate(Max('num_organizers'))['num_organizers__max']
         file_name = 'events.xls'
         data_row_list = []
         
         for event in events:
             data_row = []
-            
+            speaker_count = 0
             # event setup
             event_d = model_to_dict(event)
             for field in event_fields:
@@ -120,10 +120,44 @@ class EventsExportTask(Task):
                     value = unicode(value).replace(os.linesep, ' ').rstrip()
                     data_row.append(value)
             
+            if event.speaker_set.all():
+                # speaker setup
+                for speaker in event.speaker_set.all():
+                    speaker_d = model_to_dict(speaker)
+                    for field in speaker_fields:
+                        value = speaker_d[field]
+                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        data_row.append(value)
+            
+            # fill out the rest of the speaker columns
+            if event.speaker_set.all().count() < max_speakers:
+                for i in range(0, max_speakers - event.speaker_set.all().count()):
+                    for field in speaker_fields:
+                        data_row.append('')
+                        
+            if event.organizer_set.all():
+                # speaker setup
+                for organizer in event.organizer_set.all():
+                    organizer_d = model_to_dict(organizer)
+                    for field in organizer_fields:
+                        value = organizer_d[field]
+                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        data_row.append(value)
+            
+            # fill out the rest of the speaker columns
+            if event.organizer_set.all().count() < max_organizers:
+                for i in range(0, max_organizers - event.organizer_set.all().count()):
+                    for field in organizer_fields:
+                        data_row.append('')
+            
             data_row.append('\n') # append a new line to make a new row
             data_row_list.append(data_row)
         
         fields = event_fields + ["place %s" % f for f in place_fields]
         fields = fields + ["config %s" % f for f in configuration_fields]
+        for i in range(0, max_speakers):
+            fields = fields + ["speaker %s %s" % (i, f) for f in speaker_fields]
+        for i in range(0, max_organizers):
+            fields = fields + ["organizer %s %s" % (i, f) for f in organizer_fields]
         fields.append('\n')
         return render_excel(file_name, fields, data_row_list)
