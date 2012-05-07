@@ -60,7 +60,7 @@
             {% if can_edit_event %}
                 <li><a href="{% url event.types %}">{% trans "Event Types" %}</a></li>
             {% endif %}
-            <li><a href="{% url event.ics %}" id="event_export_link">{% trans "Export All Events" %}</a></li>
+            <li><a href="{% url event.ics %}" id="event_export_link">{% trans "Events ICS" %}</a></li>
         </ul>
         {% if nav_object %}
             {% if can_view_event or can_edit_event %}
