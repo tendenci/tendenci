@@ -671,7 +671,21 @@ class CorporateMembership(TendenciBaseModel):
                 items[label] = field.value
 
         return items
-        
+
+class Creator(models.Model):
+    """
+    An anonymous user can create a corporate membership. 
+    This table allows us to collect some contact info for admin 
+    to contact them.
+    Once the corporate membership is approved, if not found in db, 
+    a user record will be created based on this info and will be 
+    associated to the corporate membership as creator and dues rep. 
+    """
+    first_name = models.CharField(_('Contact first name') , max_length=30, blank=True)
+    last_name = models.CharField(_('Contact last name') , max_length=30, blank=True)
+    email = models.EmailField(_('Contact e-mail address'))
+    hash = models.CharField(max_length=32)
+       
 class AuthorizedDomain(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="auth_domains")
     name = models.CharField(max_length=100)
