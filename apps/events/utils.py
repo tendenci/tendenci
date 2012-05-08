@@ -834,50 +834,27 @@ def get_pricing(user, event, pricing=None):
 
 def count_event_spots_taken(event):
     """
-    Count the number of spots taken in an event
+    Return current event attendance
+    Not counting canceled registrants
     """
-    registrations = Registration.objects.filter(event=event)
-    count = 0
-
-    for reg in registrations:
-        count += reg.registrant_set.filter(cancel_dt__isnull=True).count()
-    
-    return count
-
-
-def update_event_spots_taken(event):
-    """
-    Update the index registration count for 
-    an event
-    """
-    from events.search_indexes import EventIndex
-    from events.models import Event
-
-    event_index = EventIndex(Event)
-    event.spots_taken = count_event_spots_taken(event)
-    event_index.update_object(event)
-
-    return event.spots_taken
+    return Registration.objects.filter(
+        event=event,
+        registrant__cancel_dt__isnull=True
+    ).count()
 
 
 def get_event_spots_taken(event):
     """
-    Get the index registration count for
-    an event
+    Get registration count for event
     """
-    from haystack.query import SearchQuerySet
-    from events.models import Event
-    sqs = SearchQuerySet().models(Event)
-    sqs = sqs.filter(primary_key=event.pk)
+    # this method once used index to cache
+    # the value and avoid database hits
+    # we can review this method once we're
+    # using memecache
 
-    try:
-        spots_taken = sqs[0].spots_taken
-        if not spots_taken:
-            spots_taken = update_event_spots_taken(event)
-        return spots_taken
-    except IndexError:
-        return update_event_spots_taken(event)
-    return 0
+    # return spots taken, append property [store in memory]
+    event.spots_taken = getattr(event, 'spots_taken', count_event_spots_taken(event))
+    return event.spots_taken
 
 
 def registration_earliest_time(event, pricing=None):
