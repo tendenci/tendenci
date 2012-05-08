@@ -242,6 +242,8 @@ class CorporateMembership(TendenciBaseModel):
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
+    anonymous_creator = models.ForeignKey('Creator', related_name="anonymous_creator", null=True)
+    
     corp_app = models.ForeignKey("CorpApp")
     
     perms = generic.GenericRelation(ObjectPermission,
