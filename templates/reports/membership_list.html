@@ -23,6 +23,7 @@
             <th>{% trans "Type" %}</th>
             <th>{% trans "Subscription" %}</th>
             <th>{% trans "Expiration" %}</th>
+            <th>{% trans "Invoice" %}</th>
         </tr>
         {% for mem in mems %}
             <tr class="{% cycle 'odd' '' %}">
@@ -34,6 +35,7 @@
                 <td>{{ mem.membership_type }}</td>
                 <th>{{ mem.subscribe_dt }}</th>
                 <th>{{ mem.expire_dt }}</th>
+                <td>{% if mem.get_entry.invoice.pk %}<a href="{% url invoice.view mem.get_entry.invoice.pk %}">{{ mem.get_entry.invoice.pk }}</a>{% else %} - {% endif %}</td>
             </tr>
         {% endfor %}
     </table>
