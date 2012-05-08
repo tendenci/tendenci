@@ -1302,7 +1302,7 @@ class AppEntry(TendenciBaseModel):
 
         return user_set.items()
 
-    def spawn_username(self, *args):
+    def spawn_username(self, *args, **kwargs):
         """
         Join arguments to create username [string].
         Find similiar usernames; auto-increment newest username.
@@ -1311,10 +1311,12 @@ class AppEntry(TendenciBaseModel):
         if not args:
             raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
 
-        max_length = 4
+
+        max_length = kwargs.get('max_length', 9)
+        delimiter = kwargs.get('delimiter','')
 
         un = ' '.join(args)             # concat args into one string
-        un = re.sub('\s+','_',un)       # replace spaces w/ underscores
+        un = re.sub('\s+',delimiter,un) # replace spaces w/ delimiter (default: no-space)
         un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
         un = un.strip('_.- ')           # strip funny-characters from sides
         un = un[:max_length].lower()    # keep max length and lowercase username
