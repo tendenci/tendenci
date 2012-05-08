@@ -1,8 +1,10 @@
 # encoding: utf-8
 import datetime
+import os
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from django.utils import simplejson
 
 class Migration(DataMigration):
 
@@ -10,7 +12,15 @@ class Migration(DataMigration):
         ''' Insert default nav information '''
         from django.core.management import call_command
         call_command("loaddata", "nav.json")
-        call_command("loaddata", "navitem.json")
+        
+        # call_command("loaddata", "navitem.json")
+        # Doesn't call loaddata command because the schema changed when newwindow was added
+        path = os.path.split(os.path.abspath(os.path.dirname(__file__)))[0]
+        nav_items_file = open(os.path.join(path,'fixtures', 'navitem.json'), 'r')
+        nav_items = simplejson.loads(nav_items_file.read())
+
+        for item in nav_items:
+            nav_item = orm.NavItem.objects.get_or_create(**item['fields'])
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration.")
