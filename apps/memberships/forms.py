@@ -1023,10 +1023,9 @@ class ReportForm(forms.Form):
 class MembershipForm(TendenciBaseForm):
     STATUS_CHOICES = (
         ('active','Active'),
-        ('inactive','Inactive'),
-        ('pending','Pending'),
+        ('expired','Expired'),
     )
-    
+
     status_detail = forms.ChoiceField(
         choices=STATUS_CHOICES)
     subscribe_dt = SplitDateTimeField(label=_('Subscribe Date'))

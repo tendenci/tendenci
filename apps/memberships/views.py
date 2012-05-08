@@ -99,8 +99,10 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         
 @login_required
 def membership_edit(request, id, form_class=MembershipForm, template_name="memberships/edit.html"):
-    """Membership edit.
     """
+    Membership edit.
+    """
+    from user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
     
     if not has_perm(request.user, 'memberships.change_membership', membership):
@@ -108,12 +110,27 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     
     if request.method == "POST":
         form = form_class(request.POST, instance=membership, user=request.user)
-        
+
         if form.is_valid():
             membership = form.save(commit=False)
-            
+
+            if membership.expire_dt < datetime.now():
+                membership.status_detail = 'expired'
+
             # update all permissions and save the model
             membership = update_perms_and_save(request, form, membership)
+
+            # add or remove from group -----
+            is_groupy = (membership.status and (membership.status_detail == 'active'))
+
+            if is_groupy:  # should be in group; make sure they're in
+                membership.membership_type.group.add_user(membership.user)
+            else:  # should not be in group; make sure they're out
+                GroupMembership.objects.filter(
+                    member=membership.user,
+                    group=membership.membership_type.group
+                ).delete()
+            # -----
             
             # log membership details view
             EventLog.objects.log(**{
