@@ -991,8 +991,8 @@ def membership_export(request):
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
 
             label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail']
-            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail']
+            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail','Invoice Number','Invoice Amount','Invoice Balance']
+            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail','invoice','invoice_total','invoice_balance']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
@@ -1002,6 +1002,7 @@ def membership_export(request):
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
+                invoice = memb.get_entry().invoice
                 for field in fields:
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
@@ -1045,6 +1046,12 @@ def membership_export(request):
                         else: value = ''
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
+                    elif field == 'invoice':
+                        value = unicode(invoice.id)
+                    elif field == 'invoice_total':
+                        value = unicode(invoice.total)
+                    elif field == 'invoice_balance':
+                        value = unicode(invoice.balance)
                     else:
                         value = getattr(memb, field, '')
 
