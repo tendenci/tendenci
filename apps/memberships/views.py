@@ -342,8 +342,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
                 # get user from the membership since it's null in the entry
                 entry.user = entry.membership.user
-
-                membership_total = Membership.objects.filter(status=True, status_detail='active').count()
     
                 # send "approved" notification
                 Notice.send_notice(
@@ -562,15 +560,12 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         form = MemberApproveForm(entry, request.POST)
         if form.is_valid():
 
-            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
-
             status = request.POST.get('status', '')
             approve = (status.lower() == 'approve') or (status.lower() == 'approve renewal')
 
             entry.judge = request.user
 
             if approve:
-
                 user_pk = int(form.cleaned_data['users'])
                 if user_pk:
                     entry.user = User.objects.get(pk=user_pk)
