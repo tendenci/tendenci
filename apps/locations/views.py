@@ -12,9 +12,11 @@ from django.contrib import messages
 from base.http import Http403
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
-from perms.utils import has_perm, has_view_perm, update_perms_and_save, get_query_filters
+from perms.utils import (is_admin, has_perm, has_view_perm,
+    update_perms_and_save, get_query_filters)
 from perms.decorators import admin_required
 from theme.shortcuts import themed_response as render_to_response
+from exports.tasks import TendenciExportTask
 
 from locations.models import Location, LocationImport
 from locations.forms import LocationForm
@@ -24,7 +26,6 @@ from locations.importer.utils import is_import_valid, parse_locs_from_csv
 from locations.importer.tasks import ImportLocationsTask
 from files.models import File
 from djcelery.models import TaskMeta
-
 
 def index(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
@@ -359,3 +360,46 @@ def locations_import_status(request, task_id, template_name='locations/import-co
             'now': datetime.now(),
         }, context_instance=RequestContext(request))
 
+@login_required
+def export(request, template_name="locations/export.html"):
+    """Export Locations"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "locations.xls"
+        fields = [
+            'guid',
+            'location_name',
+            'description',
+            'contact',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'country',
+            'phone',
+            'fax',
+            'email',
+            'website',
+            'latitude',
+            'longitude',
+            'hq',
+            'entity',
+        ]
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = TendenciExportTask()
+            response = result.run(Location, fields, file_name)
+            return response
+        else:
+            result = TendenciExportTask.delay(Location, fields, file_name)
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

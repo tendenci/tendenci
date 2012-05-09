@@ -613,7 +613,6 @@ def approve(request, id, template_name="jobs/approve.html"):
 def thank_you(request, template_name="jobs/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
-
 @login_required
 def export(request, template_name="jobs/export.html"):
     """Export Jobs"""
