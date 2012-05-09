@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load base_filters %}
 
 <div class="wrap-search-item">
     <div class="search-item location-search-item">
@@ -15,9 +16,9 @@
         <div class="details">
             <p>{{ location.address }} <br />{{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
             <p>{{ location.phone }}</p>
-            <p>{{ location.email }}</p>
+            <p>{{ location.email|obfuscate_email }}</p>
             {% if location.distance %}<p>{{ location.distance|floatformat }} {% trans "miles away" %}</p>{% endif %}
-            <p>{{ location.description|striptags|truncatewords:20|safe }}</p>
+            <p>{{ location.description|striptags|linebreaks|truncatewords:20|safe }}</p>
         </div>
         <div style="clear:both;"><!--ie-bug--></div>
     </div>
