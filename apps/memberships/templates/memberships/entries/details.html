@@ -59,7 +59,7 @@
         </div>
         {% endif %}
 
-    	{% for field in entry.fields.all %}
+    	{% for field in entry.ordered_fields %}
     		{% if field.field.field_type == 'FileField' %}
             <div class="field">
                 <div class="label">{{ field.field.label }}</div>

@@ -1562,6 +1562,9 @@ class AppEntry(TendenciBaseModel):
 
         return items
 
+    def ordered_fields(self):
+        return self.fields.all().order_by('field__position')
+
 class AppFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a membership application.
