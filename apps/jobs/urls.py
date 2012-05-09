@@ -26,5 +26,6 @@ urlpatterns = patterns('jobs',
     url(r'^%s/pending/$' % urlpath, 'views.pending', name="job.pending"),
     url(r'^%s/approve/(?P<id>\d+)/$' % urlpath, 'views.approve', name="job.approve"),
     url(r'^%s/thank-you/$' % urlpath, 'views.thank_you', name="job.thank_you"),
+    url(r'^%s/export/$' % urlpath, 'views.export', name="job.export"),
     url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'views.details', name="job"),
 )
