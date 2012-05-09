@@ -7,8 +7,9 @@ from django.core.files.storage import FileSystemStorage
 from django.forms.fields import ChoiceField
 #from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_str
+from django.contrib.auth.models import User
 
-#from captcha.fields import CaptchaField
+from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
 
 from memberships.fields import PriceInput
@@ -16,6 +17,7 @@ from models import (CorporateMembershipType,
                     CorpApp, 
                     CorpField, 
                     CorporateMembership, 
+                    Creator,
                     CorporateMembershipRep, 
                     CorpMembRenewEntry)
 from corporate_memberships.utils import (get_corpapp_default_fields_list, 
@@ -169,10 +171,13 @@ class CorpMembForm(forms.ModelForm):
     
     class Meta:
         model = CorporateMembership
-        exclude = ('corp_app', 'guid', 'renewal', 'invoice', 'renew_dt', 'secret_code',
+        exclude = ('corp_app', 'guid', 'renewal', 'invoice', 
+                   'renew_dt', 'secret_code',
                    'approved', 'approved_denied_dt',
                    'approved_denied_user',
-                   'creator_username', 'owner', 'owner_username')
+                   'creator_username', 
+                   'owner', 'owner_username',
+                   'anonymous_creator')
         
     def __init__(self, corp_app, field_objs, *args, **kwargs):
         """
@@ -238,9 +243,7 @@ class CorpMembForm(forms.ModelForm):
         """
         corporate_membership = super(CorpMembForm, self).save(commit=False)
         corporate_membership.corp_app = self.corp_app
-        
-        corporate_membership.owner = user
-        corporate_membership.owner_username = user.username
+        creator_owner = user
         
         if not self.instance.pk:
             mode = 'add'
@@ -248,13 +251,26 @@ class CorpMembForm(forms.ModelForm):
             mode = 'edit'
             
         if mode == 'add':
-            corporate_membership.creator = user
-            corporate_membership.creator_username = user.username
+            anonymous_creator = kwargs.get('creator', None)
+            if anonymous_creator:
+                corporate_membership.anonymous_creator = anonymous_creator
+            if not isinstance(creator_owner, User):
+                # if anonymous is creating the corporate membership
+                # temporarily use the first admin, the creator will be assigned 
+                # back to the real user on approval
+                tmp_user = User.objects.filter(is_staff=1, is_active=1)[0]
+                creator_owner = tmp_user
+                
+            corporate_membership.creator = creator_owner
+            corporate_membership.creator_username = creator_owner.username
             
             if not is_admin(user):
                 corporate_membership.status = 1
                 corporate_membership.status_detail = 'pending'
                 corporate_membership.join_dt = datetime.now()
+
+        corporate_membership.owner = creator_owner
+        corporate_membership.owner_username = creator_owner.username
             
             # calculate the expiration dt
         corporate_membership.save()
@@ -281,7 +297,19 @@ class CorpMembForm(forms.ModelForm):
             update_auth_domains(corporate_membership, self.cleaned_data['authorized_domains'])
         
         return corporate_membership
+  
     
+class CreatorForm(forms.ModelForm):
+    
+    class Meta:
+        model = Creator
+        fields=('first_name',
+                'last_name',
+                'email', )
+        
+    def __init__(self, *args, **kwargs):
+        super(CreatorForm, self).__init__(*args, **kwargs)
+        self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
     
 class CorpMembRepForm(forms.ModelForm):
     user_display = forms.CharField(max_length=100, required=False,

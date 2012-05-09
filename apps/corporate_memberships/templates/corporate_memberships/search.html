@@ -82,7 +82,7 @@
 		// delete confirmation
 		$('.delete').click(function(){
 			var delete_corp_memb = confirm('Permenantly delete {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL 'Corporate Membership' %}?');	// confirm
-			if(delete_corp_memb) $(this).parents('.corpmember-box').find('form[name="corp-memb-delete"]').submit() // delete: if OK
+			if(delete_corp_memb) $(this).parents('.wrap-search-item').find('form[name="corp-memb-delete"]').submit(); // delete: if OK
 			return false;	// cancel
 		});
 	});

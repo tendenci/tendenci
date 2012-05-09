@@ -2,6 +2,7 @@ import os
 from datetime import datetime, date
 import csv
 import operator
+from hashlib import md5
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
@@ -25,11 +26,13 @@ from event_logs.models import EventLog
 from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
                                           CorporateMembershipType,
                                           CorporateMembershipRep, 
+                                          Creator,
                                           CorpMembRenewEntry, 
                                           IndivMembRenewEntry,
                                           CorpFieldEntry,
                                           AuthorizedDomain)
 from corporate_memberships.forms import (CorpMembForm, 
+                                         CreatorForm,
                                          CorpMembRepForm, 
                                          RosterSearchForm, 
                                          CorpMembRenewForm,
@@ -55,7 +58,28 @@ from corporate_memberships.settings import use_search_index, allow_anonymous_sea
 from site_settings.utils import get_setting
 
 
-def add(request, slug, template="corporate_memberships/add.html"):
+def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
+    corp_app = get_object_or_404(CorpApp, slug=slug)
+    form = CreatorForm(request.POST or None)
+    
+    if request.method == "POST":
+        if form.is_valid():
+            creator = form.save()
+            hash = md5('%d.%s' % (creator.id, creator.email)).hexdigest()
+            creator.hash = hash
+            creator.save()
+            
+            # redirect to add
+            return HttpResponseRedirect(reverse('corp_memb.anonymous_add', args=[slug, hash]))
+    
+    context = {"form": form,
+               'corp_app': corp_app}
+    return render_to_response(template, context, RequestContext(request))
+    
+    
+    
+
+def add(request, slug=None, hash=None, template="corporate_memberships/add.html"):
     """
         add a corporate membership
         admin - active
@@ -64,18 +88,22 @@ def add(request, slug, template="corporate_memberships/add.html"):
     corp_app = get_object_or_404(CorpApp, slug=slug)
     user_is_admin = is_admin(request.user)
     
-    # if app requires login and they are not logged in, 
-    # prompt them to log in and redirect them back to this add page
-    if not request.user.is_authenticated():
-        messages.add_message(request, messages.INFO, 'Please log in or sign up to the site before signing up the corporate membership.')
-        return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), reverse('corp_memb.add', args=[corp_app.slug])))
-    
     if not user_is_admin and corp_app.status <> 1 and corp_app.status_detail <> 'active':
         raise Http403
 
-    #if not has_perm(request.user,'corporate_memberships.view_corpapp',corp_app):
-    #    raise Http403
-    
+    creator = None
+    if not request.user.is_authenticated():
+#        # if app requires login and they are not logged in, 
+#        # prompt them to log in and redirect them back to this add page
+#        messages.add_message(request, messages.INFO, 'Please log in or sign up to the site before signing up the corporate membership.')
+#        return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), reverse('corp_memb.add', args=[corp_app.slug])))
+        # anonymous user - check if they have entered contact info
+        if hash:
+            [creator] = Creator.objects.filter(hash=hash)[:1] or [None]
+        if not creator:
+            # anonymous user - redirect them to enter their contact email before processing
+            return HttpResponseRedirect(reverse('corp_memb.add_pre', args=[slug]))
+
     field_objs = corp_app.fields.filter(visible=1)
     if not user_is_admin:
         field_objs = field_objs.filter(admin_only=0)
@@ -109,7 +137,12 @@ def add(request, slug, template="corporate_memberships/add.html"):
     
     if request.method == "POST":
         if form.is_valid():
-            corporate_membership = form.save(request.user)
+            if creator:
+                corporate_membership = form.save(request.user, creator=creator)
+            else:
+                corporate_membership = form.save(request.user)
+            if creator:
+                corporate_membership.anonymous_creator = creator
             
             # calculate the expiration
             corp_memb_type = corporate_membership.corporate_membership_type
@@ -128,13 +161,17 @@ def add(request, slug, template="corporate_memberships/add.html"):
             corporate_membership.save()
             
             # assign object permissions
-            corp_memb_update_perms(corporate_membership)
+            if not creator:
+                corp_memb_update_perms(corporate_membership)
             
             # email to user who created the corporate membership
             # include the secret code in the email if authentication_method == 'secret_code'
             
             # send notification to user
-            recipients = [request.user.email]
+            if creator:
+                recipients = [creator.email]
+            else:
+                recipients = [request.user.email]
             extra_context = {
                 'object': corporate_membership,
                 'request': request,
@@ -147,6 +184,7 @@ def add(request, slug, template="corporate_memberships/add.html"):
             extra_context = {
                 'object': corporate_membership,
                 'request': request,
+                'creator': creator
             }
             send_email_notification('corp_memb_added', recipients, extra_context)
             
@@ -174,7 +212,7 @@ def add(request, slug, template="corporate_memberships/add.html"):
     context = {"corp_app": corp_app, "field_objs": field_objs, 'form':form}
     return render_to_response(template, context, RequestContext(request))
 
-@login_required
+
 def add_conf(request, id, template="corporate_memberships/add_conf.html"):
     """
         add a corporate membership
