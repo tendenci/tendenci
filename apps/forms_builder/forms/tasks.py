@@ -41,9 +41,14 @@ class FormsExportTask(Task):
             'position',
             'default',
         ]
+        pricing_fields = [
+            'label',
+            'price',
+        ]
         
         forms = Form.objects.filter(status=1)
         max_fields = forms.annotate(num_fields=Count('fields')).aggregate(Max('num_fields'))['num_fields__max']
+        max_pricings = forms.annotate(num_pricings=Count('pricing')).aggregate(Max('num_pricings'))['num_pricings__max']
         file_name = 'forms.xls'
         data_row_list = []
         
@@ -52,7 +57,10 @@ class FormsExportTask(Task):
             # form setup
             form_d = model_to_dict(form)
             for field in form_fields:
-                value = None
+                if field == 'payment_methods':
+                    value = [m.human_name for m in form.payment_methods.all()]
+                else:
+                    value = form_d[field]
                 value = unicode(value).replace(os.linesep, ' ').rstrip()
                 data_row.append(value)
                 
@@ -60,15 +68,30 @@ class FormsExportTask(Task):
                 # field setup
                 for field in form.fields.all():
                     field_d = model_to_dict(field)
-                    for field in field_fields:
-                        value = field_d[field]
+                    for f in field_fields:
+                        value = field_d[f]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
                         data_row.append(value)
             
             # fill out the rest of the field columns
             if form.fields.all().count() < max_fields:
                 for i in range(0, max_fields - form.fields.all().count()):
-                    for field in field_fields:
+                    for f in field_fields:
+                        data_row.append('')
+                        
+            if form.pricing_set.all():
+                # field setup
+                for pricing in form.pricing_set.all():
+                    pricing_d = model_to_dict(pricing)
+                    for f in pricing_fields:
+                        value = pricing_d[f]
+                        value = unicode(value).replace(os.linesep, ' ').rstrip()
+                        data_row.append(value)
+            
+            # fill out the rest of the field columns
+            if form.pricing_set.all().count() < max_pricings:
+                for i in range(0, max_pricings - form.pricing_set.all().count()):
+                    for f in pricing_fields:
                         data_row.append('')
             
             data_row.append('\n') # append a new line to make a new row
@@ -77,5 +100,7 @@ class FormsExportTask(Task):
         fields = form_fields
         for i in range(0, max_fields):
             fields = fields + ["field %s %s" % (i, f) for f in field_fields]
+        for i in range(0, max_pricings):
+            fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
         fields.append('\n')
         return render_excel(file_name, fields, data_row_list)
