@@ -40,6 +40,7 @@ from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
 
 from notification import models as notification
+from notification.utils import send_welcome_email
 
 
 def membership_index(request):
@@ -165,9 +166,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     """
     Display a built membership application and handle submission.
     """
+
     if not slug: raise Http404
     user = request.user
-    
+
     app = get_object_or_404(App, slug=slug)
     if not app.allow_view_by(user):
         raise Http403
@@ -269,7 +271,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 initial = initial_dict
             )
     except NoMembershipTypes as e:
-
         print e
 
         # non-admin has no membership-types available in this application
@@ -318,6 +319,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
             if not entry.approval_required():
 
+                entry.user, created = entry.get_or_create_user()
+                if created:
+                    send_welcome_email(entry.user)
+
                 entry.approve()
 
                 # silence old memberships within renewal period
@@ -336,26 +341,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                     membership=entry.membership,
                     membership_type=entry.membership_type,
                 )
-    
-                if not user.is_authenticated():
-                    from django.core.mail import send_mail
-                    from django.utils.http import int_to_base36
-                    from django.contrib.auth.tokens import default_token_generator
-                    from site_settings.utils import get_setting
-                    token_generator = default_token_generator
-    
-                    site_url = get_setting('site', 'global', 'siteurl')
-                    site_name = get_setting('site', 'global', 'sitedisplayname')
-    
-                    # send new user account welcome email (notification)
-                    notification.send_emails([entry.user.email],'user_welcome', {
-                        'site_url': site_url,
-                        'site_name': site_name,
-                        'uid': int_to_base36(entry.user.id),
-                        'user': entry.user,
-                        'username': entry.user.username,
-                        'token': token_generator.make_token(entry.user),
-                    })
     
                 # log - entry approval
                 EventLog.objects.log(**{
@@ -563,25 +548,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                         'email': entry.email,
                         'password': hashlib.sha1(entry.email).hexdigest()[:6]
                     })
-
-                    from django.core.mail import send_mail
-                    from django.utils.http import int_to_base36
-                    from django.contrib.auth.tokens import default_token_generator
-                    from site_settings.utils import get_setting
-                    token_generator = default_token_generator
-
-                    site_url = get_setting('site', 'global', 'siteurl')
-                    site_name = get_setting('site', 'global', 'sitedisplayname')
-
-                    # send new user account welcome email (notification)
-                    notification.send_emails([entry.user.email],'user_welcome', {
-                        'site_url': site_url,
-                        'site_name': site_name,
-                        'uid': int_to_base36(entry.user.id),
-                        'user': entry.user,
-                        'username': entry.user.username,
-                        'token': token_generator.make_token(entry.user),
-                    })
+                    send_welcome_email(entry.user)
 
                 # update application, user, 
                 # group, membership, and archive

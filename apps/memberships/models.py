@@ -1097,6 +1097,29 @@ class AppEntry(TendenciBaseModel):
 
         return expire_dt
 
+    def get_or_create_user(self):
+        """
+        Return a user that's newly created or already existed.
+        """
+        created = False
+
+        # get user -------------
+        if self.user:
+            user = self.user
+        elif self.suggested_users():
+            user_pk, user_label = self.suggested_users()[0]
+            user = User.objects.get(pk=user_pk)
+        else:
+            created = True
+            user = User.objects.create_user(**{
+                'username': self.spawn_username(self.first_name[0], self.last_name),
+                'email': self.email,
+                'password': hashlib.sha1(self.email).hexdigest()[:6]
+            })
+
+        return user, created
+
+
     def approve(self):
         """
         # Create membership/archive membership
@@ -1112,17 +1135,7 @@ class AppEntry(TendenciBaseModel):
         """
 
         # get user -------------
-        if self.user and self.user.is_authenticated():
-            user = self.user
-        elif self.suggested_users():
-            user_pk, user_label = self.suggested_users()[0]
-            user = User.objects.get(pk=user_pk)
-        else:
-            user = User.objects.create_user(**{
-                'username': self.spawn_username(self.first_name, self.last_name),
-                'email': self.email,
-                'password': hashlib.sha1(self.email).hexdigest()[:6]
-            })
+        user, created = self.get_or_create_user()
 
         # get judge --------------
         if self.judge and self.judge.is_authenticated():
@@ -1276,6 +1289,10 @@ class AppEntry(TendenciBaseModel):
             Grouping Example:
                 grouping=[('first_name', 'last_name', 'email)]
                 (first_name AND last_name AND email)
+
+            TODO: I don't like the assumption that we should
+            suggest the authenticated user. Tempted to take it out
+            and add the auth_user after the call.
         """
         user_set = {}
 
