@@ -2432,9 +2432,6 @@ def export(request, template_name="events/export.html"):
         raise Http403
     
     if request.method == 'POST':
-        # initilize initial values
-        file_name = "invoices.xls"
-        
         if not settings.CELERY_IS_ACTIVE:
             # if celery server is not present 
             # evaluate the result and render the results page

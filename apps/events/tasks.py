@@ -86,7 +86,6 @@ class EventsExportTask(Task):
         
         for event in events:
             data_row = []
-            speaker_count = 0
             # event setup
             event_d = model_to_dict(event)
             for field in event_fields:
