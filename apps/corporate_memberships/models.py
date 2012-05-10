@@ -573,6 +573,14 @@ class CorporateMembership(TendenciBaseModel):
             # assign object permissions
             corp_memb_update_perms(self)
             
+            # update invoice creator/owner
+            if self.invoice:
+                self.invoice.creator = assign_to_user
+                self.invoice.creator_username = assign_to_user.username
+                self.invoice.owner = assign_to_user
+                self.invoice.owner_username = assign_to_user.username
+                self.invoice.save()
+            
             return create_new, assign_to_user.username, params.get('password', '')
         
         return False, None, None

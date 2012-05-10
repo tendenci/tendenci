@@ -1,3 +1,4 @@
+import operator
 from uuid import uuid4
 from os.path import join
 from datetime import datetime
@@ -8,6 +9,7 @@ from django.forms.fields import ChoiceField
 #from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_str
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
@@ -310,6 +312,65 @@ class CreatorForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreatorForm, self).__init__(*args, **kwargs)
         self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
+        
+        
+class CorpApproveForm(forms.Form):
+
+    users = forms.ChoiceField(
+        label='Assign creator/owner to this corporate membership',
+        choices=[],
+        widget=forms.RadioSelect,
+        )
+    
+    def suggested_users(self, first_name='', last_name='', email=''):
+        """
+            Generate list of suggested users based on the given info.
+            It queries (first name and last name) or (email) if provided. 
+        """
+        user_set = {}
+        
+        qAnd = []
+        query = None
+        
+        if email:
+            query = Q(email=email)
+        if first_name:
+            qAnd.append(Q(first_name=first_name))
+        if last_name:
+            qAnd.append(Q(last_name=last_name))
+            
+        if qAnd:
+            if query:
+                query = reduce(operator.and_, qAnd) | query
+            else:
+                query = reduce(operator.and_, qAnd) 
+
+        if query:
+            users = User.objects.filter(query).order_by('last_name')
+    
+            for u in users:
+                user_set[u.pk] = '%s %s %s %s ' % (u.first_name, u.last_name, u.username, u.email)
+
+        return user_set.items()
+    
+    def __init__(self, *args, **kwargs):
+        corp_memb = kwargs.pop('corporate_membership')
+        super(CorpApproveForm, self).__init__(*args, **kwargs)
+        
+        if corp_memb.is_join_pending and corp_memb.anonymous_creator:
+            suggested_users = self.suggested_users(first_name=corp_memb.anonymous_creator.first_name,
+                                                   last_name=corp_memb.anonymous_creator.last_name,
+                                                   email=corp_memb.anonymous_creator.email)
+            suggested_users.append((0, 'Create new user for %s %s %s' % (
+                                                  corp_memb.anonymous_creator.first_name,
+                                                  corp_memb.anonymous_creator.last_name,
+                                                  corp_memb.anonymous_creator.email                       
+                                                                         )))
+            self.fields['users'].choices = suggested_users
+            self.fields['users'].initial = 0
+        else:
+            self.fields.pop('users')
+    
     
 class CorpMembRepForm(forms.ModelForm):
     user_display = forms.CharField(max_length=100, required=False,

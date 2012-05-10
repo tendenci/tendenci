@@ -33,6 +33,7 @@ from corporate_memberships.models import (CorpApp, CorpField, CorporateMembershi
                                           AuthorizedDomain)
 from corporate_memberships.forms import (CorpMembForm, 
                                          CreatorForm,
+                                         CorpApproveForm,
                                          CorpMembRepForm, 
                                          RosterSearchForm, 
                                          CorpMembRenewForm,
@@ -538,70 +539,84 @@ def approve(request, id, template="corporate_memberships/approve.html"):
                                                 join_dt=corporate_membership.join_dt,
                                                 renew_dt=corporate_membership.create_dt)
         
+    approve_form = CorpApproveForm(request.POST or None, corporate_membership=corporate_membership)
     if request.method == "POST":
-        msg = ''
-        if 'approve' in request.POST:
-            if renew_entry:
-                # approve the renewal
-                corporate_membership.approve_renewal(request)
-               
-                msg = 'Corporate membership "%s" renewal has been APPROVED.' % corporate_membership.name
-                
-                event_id = 682002
-                event_data = '%s (%d) renewal approved by %s' % (corporate_membership._meta.object_name, 
-                                                                 corporate_membership.pk, request.user)
-                event_description = '%s renewal approved' % corporate_membership._meta.object_name
-                
-            else:
-                # approve join
-                corporate_membership.approve_join(request)
-                
-                msg = 'Corporate membership "%s" has been APPROVED.' % corporate_membership.name
-                event_id = 682001
-                event_data = '%s (%d) approved by %s' % (corporate_membership._meta.object_name, 
-                                                        corporate_membership.pk, request.user)
-                event_description = '%s approved' % corporate_membership._meta.object_name
-        else:
-            if 'disapprove' in request.POST:
+        if approve_form.is_valid():
+            msg = ''
+            if 'approve' in request.POST:
                 if renew_entry:
-                    # deny the renewal
-                    corporate_membership.disapprove_renewal(request)
+                    # approve the renewal
+                    corporate_membership.approve_renewal(request)
+                   
+                    msg = 'Corporate membership "%s" renewal has been APPROVED.' % corporate_membership.name
                     
-                    msg = 'Corporate membership "%s" renewal has been DENIED.' % corporate_membership.name
-                    event_id = 682004
-                    event_data = '%s (%d) renewal denied by %s' % (corporate_membership._meta.object_name, 
-                                                                 corporate_membership.pk, request.user)
-                    event_description = '%s renewal denied' % corporate_membership._meta.object_name
+                    event_id = 682002
+                    event_data = '%s (%d) renewal approved by %s' % (corporate_membership._meta.object_name, 
+                                                                     corporate_membership.pk, request.user)
+                    event_description = '%s renewal approved' % corporate_membership._meta.object_name
+                    
                 else:
-                    # deny join
-                    corporate_membership.disapprove_join(request)
-                    msg = 'Corporate membership "%s" has been DENIED.' % corporate_membership.name
-                    event_id = 682003
-                    event_data = '%s (%d) denied by %s' % (corporate_membership._meta.object_name, 
-                                                        corporate_membership.pk, request.user)
-                    event_description = '%s denied' % corporate_membership._meta.object_name
+                    # approve join
+                    params = {'create_new': True,
+                              'assign_to_user': None}
+                    if approve_form.fields and corporate_membership.anonymous_creator:
+                        user_pk = int(approve_form.cleaned_data['users'])
+                        if user_pk:
+                            try:
+                                params['assign_to_user'] = User.objects.get(pk=user_pk)
+                                params['create_new'] = False
+                            except User.DoesNotExist:
+                                pass  
+
+                    corporate_membership.approve_join(request, **params)
+                    
+                    msg = 'Corporate membership "%s" has been APPROVED.' % corporate_membership.name
+                    event_id = 682001
+                    event_data = '%s (%d) approved by %s' % (corporate_membership._meta.object_name, 
+                                                            corporate_membership.pk, request.user)
+                    event_description = '%s approved' % corporate_membership._meta.object_name
+            else:
+                if 'disapprove' in request.POST:
+                    if renew_entry:
+                        # deny the renewal
+                        corporate_membership.disapprove_renewal(request)
+                        
+                        msg = 'Corporate membership "%s" renewal has been DENIED.' % corporate_membership.name
+                        event_id = 682004
+                        event_data = '%s (%d) renewal denied by %s' % (corporate_membership._meta.object_name, 
+                                                                     corporate_membership.pk, request.user)
+                        event_description = '%s renewal denied' % corporate_membership._meta.object_name
+                    else:
+                        # deny join
+                        corporate_membership.disapprove_join(request)
+                        msg = 'Corporate membership "%s" has been DENIED.' % corporate_membership.name
+                        event_id = 682003
+                        event_data = '%s (%d) denied by %s' % (corporate_membership._meta.object_name, 
+                                                            corporate_membership.pk, request.user)
+                        event_description = '%s denied' % corporate_membership._meta.object_name
+                    
+            if msg:      
+                messages.add_message(request, messages.SUCCESS, msg)
                 
-        if msg:      
-            messages.add_message(request, messages.INFO, msg)
-            
-            # log an event
-            log_defaults = {
-                'event_id' : event_id,
-                'event_data': event_data,
-                'description': event_description,
-                'user': request.user,
-                'request': request,
-                'instance': corporate_membership,
-            }
-            EventLog.objects.log(**log_defaults)
-                
-        return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
+                # log an event
+                log_defaults = {
+                    'event_id' : event_id,
+                    'event_data': event_data,
+                    'description': event_description,
+                    'user': request.user,
+                    'request': request,
+                    'instance': corporate_membership,
+                }
+                EventLog.objects.log(**log_defaults)
+                    
+            return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
     
     
     context = {"corporate_membership": corporate_membership,
                'renew_entry': renew_entry,
                'indiv_renew_entries': indiv_renew_entries,
                'new_expiration_dt': new_expiration_dt,
+               'approve_form': approve_form,
                }
     return render_to_response(template, context, RequestContext(request))
     
