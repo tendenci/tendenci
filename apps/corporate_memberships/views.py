@@ -676,33 +676,44 @@ def search(request, template_name="corporate_memberships/search.html"):
     
     query = request.GET.get('q', None)
     
-    filter_and, filter_or = CorporateMembership.get_search_filter(request.user)
-    q_obj = None
-    if filter_and:
-        q_obj = Q(**filter_and)
-    if filter_or:
-        q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
-        if q_obj:
-            q_obj = reduce(operator.and_, [q_obj, q_obj_or])
-        else:
-            q_obj = q_obj_or
-    
-    if get_setting('site', 'global', 'searchindex') and query:
-        corp_members = CorporateMembership.objects.search(query, user=request.user)
-        if q_obj:
-            corp_members = corp_members.filter(q_obj)
-        corp_members = corp_members.order_by('name_exact')
+    if query == 'is_pending:true' and is_admin(request.user):
+        # pending list only for admins
+        pending_rew_entry_ids = CorpMembRenewEntry.objects.filter(
+                                    status_detail__in=['pending', 'paid - pending approval']
+                                    ).values_list('id', flat=True)
+        q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
+        if pending_rew_entry_ids:
+            q_obj = q_obj | Q(renew_entry_id__in=pending_rew_entry_ids)
+        corp_members = CorporateMembership.objects.filter(q_obj)
     else:
-        if q_obj:
-            corp_members = CorporateMembership.objects.filter(q_obj)
-        else:
-            corp_members = CorporateMembership.objects.all()
     
-#        if request.user.is_authenticated():
-#            corp_members = corp_members.select_related()
+        filter_and, filter_or = CorporateMembership.get_search_filter(request.user)
+        q_obj = None
+        if filter_and:
+            q_obj = Q(**filter_and)
+        if filter_or:
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+            if q_obj:
+                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+            else:
+                q_obj = q_obj_or
+        
+        if get_setting('site', 'global', 'searchindex') and query:
+            corp_members = CorporateMembership.objects.search(query, user=request.user)
+            if q_obj:
+                corp_members = corp_members.filter(q_obj)
+            corp_members = corp_members.order_by('name_exact')
+        else:
+            if q_obj:
+                corp_members = CorporateMembership.objects.filter(q_obj)
+            else:
+                corp_members = CorporateMembership.objects.all()
+        
+    #        if request.user.is_authenticated():
+    #            corp_members = corp_members.select_related()
             
         
-        corp_members = corp_members.order_by('name')
+    corp_members = corp_members.order_by('name')
     
     log_defaults = {
         'event_id': 684000,
