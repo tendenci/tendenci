@@ -29,7 +29,8 @@ from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
 from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
-from corporate_memberships.utils import dues_rep_emails_list
+from corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
+from imports.utils import get_unique_username
 
 
 FIELD_CHOICES = (
@@ -241,6 +242,8 @@ class CorporateMembership(TendenciBaseModel):
     payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True, default=None)
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    
+    anonymous_creator = models.ForeignKey('Creator', null=True)
     
     corp_app = models.ForeignKey("CorpApp")
     
@@ -506,6 +509,8 @@ class CorporateMembership(TendenciBaseModel):
         self.status_detail = 'active'
         self.save()
         
+        created, username, password = self.handle_anonymous_creator(**kwargs)
+             
         # send an email to dues reps
         recipients = dues_rep_emails_list(self)
         recipients.append(self.creator.email)
@@ -513,6 +518,9 @@ class CorporateMembership(TendenciBaseModel):
             'object': self,
             'request': request,
             'invoice': self.invoice,
+            'created': created,
+            'username': username,
+            'password': password
         }
         send_email_notification('corp_memb_join_approved', recipients, extra_context)
     
@@ -523,7 +531,60 @@ class CorporateMembership(TendenciBaseModel):
         self.status = 1
         self.status_detail = 'disapproved'
         self.save()
-                            
+        
+    def handle_anonymous_creator(self, **kwargs):
+        """
+        Handle the anonymous creator on approval and disapproval.
+        
+        """
+        if self.anonymous_creator:
+            create_new = kwargs.get('create_new', False)
+            assign_to_user = kwargs.get('assign_to_user', None)
+            
+            params = {'first_name': self.anonymous_creator.first_name,
+                      'last_name': self.anonymous_creator.last_name,
+                      'email': self.anonymous_creator.email}
+            
+            if assign_to_user and not isinstance(assign_to_user, User):
+                create_new = True
+            
+            if not create_new and not assign_to_user:
+                
+                [my_user] = User.objects.filter(**params).order_by('-is_active')[:1] or [None]
+                if my_user:
+                    assign_to_user = my_user
+                else:
+                    create_new = True
+            if create_new:
+                params.update({
+                               'password': User.objects.make_random_password(length=8),
+                               'is_active': True})
+                assign_to_user = User(**params)
+                assign_to_user.username = get_unique_username(assign_to_user)
+                assign_to_user.set_password(assign_to_user.password)
+                assign_to_user.save() 
+                    
+            self.creator = assign_to_user
+            self.creator_username = assign_to_user.username
+            self.owner = assign_to_user
+            self.owner_username = assign_to_user.username
+            self.save()
+            
+            # assign object permissions
+            corp_memb_update_perms(self)
+            
+            # update invoice creator/owner
+            if self.invoice:
+                self.invoice.creator = assign_to_user
+                self.invoice.creator_username = assign_to_user.username
+                self.invoice.owner = assign_to_user
+                self.invoice.owner_username = assign_to_user.username
+                self.invoice.save()
+            
+            return create_new, assign_to_user.username, params.get('password', '')
+        
+        return False, None, None
+                                          
                 
     def is_rep(self, this_user):
         """
@@ -671,7 +732,21 @@ class CorporateMembership(TendenciBaseModel):
                 items[label] = field.value
 
         return items
-        
+
+class Creator(models.Model):
+    """
+    An anonymous user can create a corporate membership. 
+    This table allows us to collect some contact info for admin 
+    to contact them.
+    Once the corporate membership is approved, if not found in db, 
+    a user record will be created based on this info and will be 
+    associated to the corporate membership as creator and dues rep. 
+    """
+    first_name = models.CharField(_('Contact first name') , max_length=30, blank=True)
+    last_name = models.CharField(_('Contact last name') , max_length=30, blank=True)
+    email = models.EmailField(_('Contact e-mail address'))
+    hash = models.CharField(max_length=32, default='')
+       
 class AuthorizedDomain(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="auth_domains")
     name = models.CharField(max_length=100)
