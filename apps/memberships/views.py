@@ -100,8 +100,10 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         
 @login_required
 def membership_edit(request, id, form_class=MembershipForm, template_name="memberships/edit.html"):
-    """Membership edit.
     """
+    Membership edit.
+    """
+    from user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
     
     if not has_perm(request.user, 'memberships.change_membership', membership):
@@ -109,13 +111,29 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     
     if request.method == "POST":
         form = form_class(request.POST, instance=membership, user=request.user)
-        
+
         if form.is_valid():
             membership = form.save(commit=False)
-            
+
+
+            if membership.expire_dt and membership.expire_dt < datetime.now():
+                membership.status_detail = 'expired'
+
             # update all permissions and save the model
             membership = update_perms_and_save(request, form, membership)
-            
+
+            # add or remove from group -----
+            is_groupy = (membership.status and (membership.status_detail == 'active'))
+
+            if is_groupy:  # should be in group; make sure they're in
+                membership.membership_type.group.add_user(membership.user)
+            else:  # should not be in group; make sure they're out
+                GroupMembership.objects.filter(
+                    member=membership.user,
+                    group=membership.membership_type.group
+                ).delete()
+            # -----
+
             # log membership details view
             EventLog.objects.log(**{
                 'event_id' : 472000,
@@ -125,7 +143,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                 'request': request,
                 'instance': membership,
             })
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
             
             return redirect('membership.details', membership.pk)
@@ -330,8 +348,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
                 # get user from the membership since it's null in the entry
                 entry.user = entry.membership.user
-
-                membership_total = Membership.objects.filter(status=True, status_detail='active').count()
     
                 # send "approved" notification
                 Notice.send_notice(
@@ -530,15 +546,12 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         form = MemberApproveForm(entry, request.POST)
         if form.is_valid():
 
-            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
-
             status = request.POST.get('status', '')
             approve = (status.lower() == 'approve') or (status.lower() == 'approve renewal')
 
             entry.judge = request.user
 
             if approve:
-
                 user_pk = int(form.cleaned_data['users'])
                 if user_pk:
                     entry.user = User.objects.get(pk=user_pk)
@@ -610,6 +623,33 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     return render_to_response(template_name, {
         'entry': entry,
         'form': form,
+        }, context_instance=RequestContext(request))
+
+@login_required
+def application_entries_print(request, id=None, template_name="memberships/entries/print-details.html"):
+    """
+    Displays the print details of a membership application entry.
+    """
+
+    if not id:
+        return redirect(reverse('membership.application_entries_search'))
+    
+    entry = get_object_or_404(AppEntry, id=id)
+    if not entry.allow_view_by(request.user):
+        raise Http403
+
+    # log entry view
+    EventLog.objects.log(**{
+        'event_id' : 1085001,
+        'event_data': '%s (%d) print viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
+        'description': '%s print viewed' % entry._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': entry,
+    })
+
+    return render_to_response(template_name, {
+        'entry': entry,
         }, context_instance=RequestContext(request))
 
 @login_required
@@ -941,8 +981,8 @@ def membership_export(request):
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
 
             label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail']
-            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail']
+            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail','Invoice Number','Invoice Amount','Invoice Balance']
+            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail','invoice','invoice_total','invoice_balance']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
@@ -952,6 +992,7 @@ def membership_export(request):
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
+                invoice = memb.get_entry().invoice
                 for field in fields:
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
@@ -995,6 +1036,12 @@ def membership_export(request):
                         else: value = ''
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
+                    elif field == 'invoice':
+                        value = unicode(invoice.id)
+                    elif field == 'invoice_total':
+                        value = unicode(invoice.total)
+                    elif field == 'invoice_balance':
+                        value = unicode(invoice.balance)
                     else:
                         value = getattr(memb, field, '')
 

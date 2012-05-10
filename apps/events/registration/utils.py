@@ -5,7 +5,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
-from events.utils import get_event_spots_taken, update_event_spots_taken
+from events.utils import get_event_spots_taken
 from events.models import Event, RegConfPricing, Registration, Registrant
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.forms import FormForCustomRegForm
@@ -257,8 +257,4 @@ def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
                 discount=discount,
                 invoice=invoice,
             )
-    
-    # update the spots taken on this event
-    update_event_spots_taken(event)
-    
     return reg8n

@@ -9,7 +9,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **kwargs):
 		from datetime import datetime
 		from dateutil.relativedelta import relativedelta
-		from memberships.models import Membership, MembershipType
+		from memberships.models import Membership, MembershipType, MembershipArchive
 		from user_groups.models import GroupMembership
 
 		for membership_type in MembershipType.objects.all():
@@ -18,16 +18,19 @@ class Command(BaseCommand):
 			# get expired memberships out of grace period
 			memberships = Membership.objects.filter(
 				membership_type=membership_type,
-				expire_dt__lt=datetime.now() + relativedelta(days=grace_period)
+				expire_dt__lt=datetime.now()
 			)
 
 			for membership in memberships:
-				# update status detail
-				membership.status_detail = 'expired'
-				membership.save()
+		        # update status detail
+		        membership.status_detail = 'expired'
+		        membership.save()
 
-				# remove from group
-				GroupMembership.objects.filter(
-					member=membership.user, 
-					group=membership_type.group
-				).delete()
+		        # remove from group
+		        GroupMembership.objects.filter(
+		            member=membership.user, 
+		            group=membership.membership_type.group
+		        ).delete()
+
+				if membership.expire_dt < datetime.now()+relativedelta(days=grace_period):
+					MembershipArchive.archive(membership)

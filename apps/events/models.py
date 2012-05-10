@@ -840,6 +840,41 @@ class Event(TendenciBaseModel):
         if self.image:
             return self.image.file
         return None
+
+    def date_range(self, start_date, end_date):
+        for n in range((end_date - start_date).days):
+            yield start_date + timedelta(n)
+
+    def date_spans(self):
+        """
+        Returns a list of date spans.
+        e.g. s['start_dt'], s['end_dt'], s['same_date']
+        """
+
+        if self.on_weekend:
+            same_date = self.start_dt.date() == self.end_dt.date()
+            yield {'start_dt':self.start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+            return
+
+        start_dt = self.start_dt
+        end_dt = None
+
+        for date in self.date_range(self.start_dt, self.end_dt + timedelta(days=1)):
+
+            if date.weekday() == 0:  # monday
+                start_dt = date
+            elif date.weekday() == 4:  # friday
+                end_dt = date
+
+            if start_dt and end_dt:
+                same_date = start_dt.date() == end_dt.date()
+                yield {'start_dt':start_dt, 'end_dt':end_dt, 'same_date':same_date}
+                start_dt = end_dt = None  # reset
+
+        if start_dt and not end_dt:
+            same_date = start_dt.date() == self.end_dt.date()
+            yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+
     
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)

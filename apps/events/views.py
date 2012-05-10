@@ -44,7 +44,7 @@ from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet)
 from events.utils import (save_registration, email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
-    get_event_spots_taken, update_event_spots_taken, get_ievent,
+    get_event_spots_taken, get_ievent,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
 from events.addons.forms import RegAddonForm
@@ -1070,8 +1070,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 and event_price > 0
                 
                 if reg8n_created:
-                    # update the spots taken on this event
-                    update_event_spots_taken(event)
                     registrants = reg8n.registrant_set.all().order_by('id')
                     for registrant in registrants:
                         #registrant.assign_mapped_fields()
@@ -1363,9 +1361,6 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'registrant':registrant,
                         'user_is_registrant': user_is_registrant,
                     })
-            
-            # update the spots taken on this event
-            update_event_spots_taken(event)
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
@@ -1380,8 +1375,8 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     for c_regt in cancelled_registrants:
         if c_regt.custom_reg_form_entry:
             c_regt.assign_mapped_fields()
-            if not regt.name:
-                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+            if not c_regt.name:
+                c_regt.last_name = c_regt.name = c_regt.custom_reg_form_entry.__unicode__()
         
     return render_to_response(template_name, {
         'event': event,
@@ -1462,9 +1457,6 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     'registrant':registrant,
                     'user_is_registrant': user_is_registrant,
                 })
-
-            # update the spots taken on this event
-            update_event_spots_taken(event)
 
         # back to invoice
         return HttpResponseRedirect(

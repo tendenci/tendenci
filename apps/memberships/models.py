@@ -440,7 +440,7 @@ class MembershipArchive(TendenciBaseModel):
     A reference to the newest (non-archived) membership is 
     included via the 'membership' field.
     """
-    membership = models.ForeignKey('Membership')
+    membership = models.ForeignKey('Membership', null=True, default=None)
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     user = models.ForeignKey(User)
@@ -467,6 +467,32 @@ class MembershipArchive(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s #%s" % (self.user.get_full_name(), self.member_number)
+
+    @classmethod
+    def archive(cls, membership, **kwargs):
+        """
+        Create archive record
+        Delete membership record
+        """
+        arch = cls()
+        exclude_list = ['id']
+        # create archive record
+        for field_name in cls._meta.get_all_field_names():
+            if field_name not in exclude_list:
+                try:
+                    setattr(arch, field_name, getattr(membership, field_name))
+                except AttributeError:
+                    pass  # field not available in membership
+
+        arch.membership_create_dt = membership.create_dt
+        arch.membership_update_dt = membership.update_dt
+        arch.save()
+
+        # delete membership
+        membership.delete()
+
+        return arch
+
         
 class MembershipImport(models.Model):
     app = models.ForeignKey('App')
@@ -1319,7 +1345,7 @@ class AppEntry(TendenciBaseModel):
 
         return user_set.items()
 
-    def spawn_username(self, *args):
+    def spawn_username(self, *args, **kwargs):
         """
         Join arguments to create username [string].
         Find similiar usernames; auto-increment newest username.
@@ -1328,10 +1354,12 @@ class AppEntry(TendenciBaseModel):
         if not args:
             raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
 
-        max_length = 4
+
+        max_length = kwargs.get('max_length', 9)
+        delimiter = kwargs.get('delimiter','')
 
         un = ' '.join(args)             # concat args into one string
-        un = re.sub('\s+','_',un)       # replace spaces w/ underscores
+        un = re.sub('\s+',delimiter,un) # replace spaces w/ delimiter (default: no-space)
         un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
         un = un.strip('_.- ')           # strip funny-characters from sides
         un = un[:max_length].lower()    # keep max length and lowercase username
@@ -1398,14 +1426,21 @@ class AppEntry(TendenciBaseModel):
         If auto-approve; approve entry; send emails; log.
         """
         from notification import models as notification
+        from notification.utils import send_welcome_email
 
         if self.is_renewal:
             # if auto-approve renews
             if not self.membership_type.renewal_require_approval:
+                self.user, created = self.get_or_create_user()
+                if created:
+                    send_welcome_email(self.user)
                 self.approve()
         else:
             # if auto-approve joins
             if not self.membership_type.require_approval:
+                self.user, created = self.get_or_create_user()
+                if created:
+                    send_welcome_email(self.user)
                 self.approve()
 
         if self.is_approved:
@@ -1533,6 +1568,9 @@ class AppEntry(TendenciBaseModel):
                 items[label] = field.value
 
         return items
+
+    def ordered_fields(self):
+        return self.fields.all().order_by('field__position')
 
 class AppFieldEntry(models.Model):
     """
