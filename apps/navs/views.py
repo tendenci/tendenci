@@ -20,6 +20,7 @@ from pages.models import Page
 from navs.models import Nav, NavItem
 from navs.forms import NavForm, PageSelectForm, ItemForm
 from navs.utils import cache_nav
+from navs.tasks import NavsExportTask
 
 @login_required
 def search(request, template_name="navs/search.html"):
@@ -220,3 +221,24 @@ def page_select(request, form_class=PageSelectForm):
     return HttpResponse(json.dumps({
                 "error": True
             }), mimetype="text/plain")
+
+@login_required
+def export(request, template_name="navs/export.html"):
+    """Export Navs"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results page
+            result = NavsExportTask()
+            response = result.run()
+            return response
+        else:
+            result = NavsExportTask.delay()
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
