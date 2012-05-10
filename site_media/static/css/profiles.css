@@ -1,6 +1,4 @@
 .t {
-	width: 90%;
-	margin-top: 1em;
     position: relative;
 }
 
@@ -24,6 +22,15 @@
 
 #t-profile div.intro.info p {
     margin: 0;
+}
+
+#t-profile #module-tabs {
+    margin-bottom: 0;
+}
+
+#t-view {
+    padding-top: 10px;
+    background-color: white;
 }
 
 .contact.info h2 {

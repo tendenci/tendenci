@@ -50,8 +50,14 @@ friends = False
 # view profile  
 @login_required 
 def index(request, username='', template_name="profiles/index.html"):
+    """
+    Show profile of username passed.  If no username is passed
+    then redirect to username of person logged in.
+    """
+
     if not username:
-        username = request.user.username
+        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
     user_this = get_object_or_404(User, username=username)
 
     try:

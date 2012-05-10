@@ -19,16 +19,16 @@
 {% endblock %}
 
 {% block body %}
-<div class="t"><div id="t-profile"><div id="t-view">
+<div class="t"><div id="t-profile">
 
 	{% users_nav request.user user_this %}
 
+	<div id="t-view">
 	<div class="intro info">
 		<div class="profile-icon">
 			<a href="{% url profile.change_avatar  user_this.id %}">
 				{% avatar user_this 128 %}
 			</a>
-
 		</div>
 
 		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>

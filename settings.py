@@ -57,6 +57,7 @@ TIME_ZONE = 'US/Central'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 LANGUAGES = (
+    ('en', u'English'),
     ('en-us', u'English'),
     ('es', u'Espanol'),
 )

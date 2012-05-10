@@ -40,6 +40,7 @@ from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
 
 from notification import models as notification
+from notification.utils import send_welcome_email
 
 
 def membership_index(request):
@@ -99,8 +100,10 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         
 @login_required
 def membership_edit(request, id, form_class=MembershipForm, template_name="memberships/edit.html"):
-    """Membership edit.
     """
+    Membership edit.
+    """
+    from user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
     
     if not has_perm(request.user, 'memberships.change_membership', membership):
@@ -108,13 +111,29 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     
     if request.method == "POST":
         form = form_class(request.POST, instance=membership, user=request.user)
-        
+
         if form.is_valid():
             membership = form.save(commit=False)
-            
+
+
+            if membership.expire_dt and membership.expire_dt < datetime.now():
+                membership.status_detail = 'expired'
+
             # update all permissions and save the model
             membership = update_perms_and_save(request, form, membership)
-            
+
+            # add or remove from group -----
+            is_groupy = (membership.status and (membership.status_detail == 'active'))
+
+            if is_groupy:  # should be in group; make sure they're in
+                membership.membership_type.group.add_user(membership.user)
+            else:  # should not be in group; make sure they're out
+                GroupMembership.objects.filter(
+                    member=membership.user,
+                    group=membership.membership_type.group
+                ).delete()
+            # -----
+
             # log membership details view
             EventLog.objects.log(**{
                 'event_id' : 472000,
@@ -124,7 +143,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                 'request': request,
                 'instance': membership,
             })
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
             
             return redirect('membership.details', membership.pk)
@@ -165,9 +184,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
     """
     Display a built membership application and handle submission.
     """
+
     if not slug: raise Http404
     user = request.user
-    
+
     app = get_object_or_404(App, slug=slug)
     if not app.allow_view_by(user):
         raise Http403
@@ -269,7 +289,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 initial = initial_dict
             )
     except NoMembershipTypes as e:
-
         print e
 
         # non-admin has no membership-types available in this application
@@ -318,6 +337,10 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
             if not entry.approval_required():
 
+                entry.user, created = entry.get_or_create_user()
+                if created:
+                    send_welcome_email(entry.user)
+
                 entry.approve()
 
                 # silence old memberships within renewal period
@@ -325,8 +348,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
                 # get user from the membership since it's null in the entry
                 entry.user = entry.membership.user
-
-                membership_total = Membership.objects.filter(status=True, status_detail='active').count()
     
                 # send "approved" notification
                 Notice.send_notice(
@@ -336,26 +357,6 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                     membership=entry.membership,
                     membership_type=entry.membership_type,
                 )
-    
-                if not user.is_authenticated():
-                    from django.core.mail import send_mail
-                    from django.utils.http import int_to_base36
-                    from django.contrib.auth.tokens import default_token_generator
-                    from site_settings.utils import get_setting
-                    token_generator = default_token_generator
-    
-                    site_url = get_setting('site', 'global', 'siteurl')
-                    site_name = get_setting('site', 'global', 'sitedisplayname')
-    
-                    # send new user account welcome email (notification)
-                    notification.send_emails([entry.user.email],'user_welcome', {
-                        'site_url': site_url,
-                        'site_name': site_name,
-                        'uid': int_to_base36(entry.user.id),
-                        'user': entry.user,
-                        'username': entry.user.username,
-                        'token': token_generator.make_token(entry.user),
-                    })
     
                 # log - entry approval
                 EventLog.objects.log(**{
@@ -545,15 +546,12 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         form = MemberApproveForm(entry, request.POST)
         if form.is_valid():
 
-            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
-
             status = request.POST.get('status', '')
             approve = (status.lower() == 'approve') or (status.lower() == 'approve renewal')
 
             entry.judge = request.user
 
             if approve:
-
                 user_pk = int(form.cleaned_data['users'])
                 if user_pk:
                     entry.user = User.objects.get(pk=user_pk)
@@ -563,25 +561,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                         'email': entry.email,
                         'password': hashlib.sha1(entry.email).hexdigest()[:6]
                     })
-
-                    from django.core.mail import send_mail
-                    from django.utils.http import int_to_base36
-                    from django.contrib.auth.tokens import default_token_generator
-                    from site_settings.utils import get_setting
-                    token_generator = default_token_generator
-
-                    site_url = get_setting('site', 'global', 'siteurl')
-                    site_name = get_setting('site', 'global', 'sitedisplayname')
-
-                    # send new user account welcome email (notification)
-                    notification.send_emails([entry.user.email],'user_welcome', {
-                        'site_url': site_url,
-                        'site_name': site_name,
-                        'uid': int_to_base36(entry.user.id),
-                        'user': entry.user,
-                        'username': entry.user.username,
-                        'token': token_generator.make_token(entry.user),
-                    })
+                    send_welcome_email(entry.user)
 
                 # update application, user, 
                 # group, membership, and archive
@@ -1001,8 +981,8 @@ def membership_export(request):
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
 
             label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail']
-            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail']
+            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail','Invoice Number','Invoice Amount','Invoice Balance']
+            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail','invoice','invoice_total','invoice_balance']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
@@ -1012,6 +992,7 @@ def membership_export(request):
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
+                invoice = memb.get_entry().invoice
                 for field in fields:
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
@@ -1055,6 +1036,12 @@ def membership_export(request):
                         else: value = ''
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
+                    elif field == 'invoice':
+                        value = unicode(invoice.id)
+                    elif field == 'invoice_total':
+                        value = unicode(invoice.total)
+                    elif field == 'invoice_balance':
+                        value = unicode(invoice.balance)
                     else:
                         value = getattr(memb, field, '')
 

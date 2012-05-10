@@ -123,6 +123,30 @@ class GroupMembership(models.Model):
         verbose_name = "Group Membership"
         verbose_name_plural = "Group Memberships"
 
+    @classmethod
+    def add_to_group(cls, *kwargs):
+        """
+        Easily add someone to a group, we're setting basic defaults
+        e.g. GroupMembership.add_to_group(member=member, group=group)
+        """
+        member = kwargs['member']
+        group = kwargs['group']
+        editor = kwargs.get('editor', member)
+        status = kwargs.get('status', True)
+        status_detail = kwargs.get('status_detail', 'active')
+
+        return cls.objects.create(
+            group=group,
+            member=member,
+            creator=editor,
+            creator_username=editor.username,
+            owner=editor,
+            owner_username=editor.username,
+            status=status,
+            status_detail=status_detail
+        )
+
+
 class ImportFile(File):
     group = models.ForeignKey(Group)
     
