@@ -21,7 +21,7 @@
     <h1>{% firstof SITE_GLOBAL_SITEPRIMARYKEYWORDS SITE_GLOBAL_SITEDISPLAYNAME %} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %}</h1>
 
     {% article_search %}
-    <span><em>{{ articles|length }} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Articles' %} {% trans "Found" %}</em></span>
+    <span><em>{{ articles|length }} {% firstof MODULE_ARTICLES_LABEL_PLURAL 'Article Search' %} {% trans "Found" %}</em></span>
     {% autopaginate articles 10 %}
     
     <div class="articles-wrap">

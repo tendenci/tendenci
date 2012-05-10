@@ -27,7 +27,8 @@ def _update_apps(instance=None, created=False):
     from pluginmanager import plugin_apps
     settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS)
     app_cache.loaded = False # clear cache
-    call_command('syncdb', interactive=False, migrate_all=True)
+    call_command('syncdb', interactive=False, migrate_all=False)
+    call_command('migrate', interacte=False)
     call_command('touch_settings')
     # update the site settings (in database) if any
     if instance:

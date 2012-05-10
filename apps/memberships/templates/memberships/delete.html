@@ -1,0 +1,33 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete Membership" %} - {{ membership.title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/delete.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% membership_nav user membership %}
+    <h1>{% trans "Membership Delete Page" %}</h1>
+
+    <div class="info" style="margin: 10px 0px 10px 0px;">
+        <h2><a href="{{ membership.get_absolute_url }}">{{ membership }}</a></h2>
+    </div>
+    <div class="delete-prompt"> 
+        {% trans "Are you sure you want to permanently delete this" %} {% trans 'Membership' %}?
+    </div>
+    <div class="delete-form">
+        <form name="membership-delete" method="POST" action="{% url membership.delete membership.pk %}">{% csrf_token %}
+            <input type="hidden" name="action" value="delete">
+            <input type="submit" name="submit" value="{% trans 'Confirm Delete' %}">
+        </form>
+    </div>
+    <div class="back-item"><a href="{{ membership.get_absolute_url }}">&laquo; {% trans "Back to this" %} {% trans 'Membership' %} - {{ membership }}</a></div>
+    <div class="back-search"><a href="{% url membership.search %}">&laquo; {% trans "Back to all" %} {% trans 'Memberships' %} </a></div>
+</div>
+{% endblock %}

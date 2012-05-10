@@ -1,12 +1,15 @@
 import os
 import shutil
+import sys
 from tempfile import mkstemp
+
 from shutil import move
 from os import remove, close
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
+from django.utils.importlib import import_module
 
 from theme.utils import get_theme_root
 from theme_editor.models import ThemeFileVersion
@@ -25,19 +28,29 @@ ALLOWED_EXTENSIONS = (
     '.less',
 )
 
-def copy(path_to_file, file, FROM_ROOT=TEMPLATES_ROOT, TO_ROOT=THEME_ROOT, plugin=None):
-    """
-        Copies a file and all associated directories into TO_ROOT
+# At compile time, cache the directories to search.
+fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
+app_templates = {}
+for app in settings.INSTALLED_APPS:
+    try:
+        mod = import_module(app)
+    except ImportError, e:
+        raise ImproperlyConfigured('ImportError %s: %s' % (app, e.args[0]))
+    template_dir = os.path.join(os.path.dirname(mod.__file__), 'templates')
+    if os.path.isdir(template_dir):
+        app_templates[app] = template_dir.decode(fs_encoding)
+
+def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
+    """Copies a file and all associated directories into TO_ROOT
     """
     try:
         os.makedirs(os.path.join(TO_ROOT, "templates", path_to_file))
     except OSError:
         pass
-    full_filename = os.path.join(path_to_file, file)
-    if plugin:
-        FROM_ROOT = os.path.join(settings.PROJECT_ROOT, "plugins", plugin, 'templates')
-    shutil.copy(os.path.join(FROM_ROOT, full_filename), os.path.join(TO_ROOT, "templates", full_filename))
-
+    
+    filecopy = os.path.join(TO_ROOT, "templates", path_to_file, filename)
+    shutil.copy(full_filename, filecopy)
+    
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not
@@ -52,7 +65,7 @@ def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
     current_file = os.path.join(ROOT_DIR, query_string)
     return os.path.isfile(current_file)
 
-def get_dir_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
+def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
     """
     Get a list of directories from within
     the theme folder based on the present
@@ -61,18 +74,7 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     the dir_list.
     """
     dir_list = []
-    if pwd.startswith("plugins.") and include_plugins:
-        plugin_name = pwd.split('plugins.')[1].split('/')[0]
-        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
-            plugin_name, 'templates', pwd.split('plugins.')[1])
-    else:
-        current_dir = os.path.join(ROOT_DIR, pwd)
-    
-    if include_plugins and not pwd:
-        import pluginmanager
-        plugins = pluginmanager.plugin_apps(())
-        for plugin in plugins:
-            dir_list.append(plugin)
+    current_dir = os.path.join(ROOT_DIR, pwd)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:
@@ -81,7 +83,7 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
                 dir_list.append(os.path.join(pwd,item))
     return sorted(dir_list)
 
-def get_file_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
+def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
     """
     Get a list of files from within
     the theme folder based on the present
@@ -89,13 +91,7 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT, include_plugins=False):
     """
     file_list = []
     others_list = []
-    if pwd.startswith("plugins.") and include_plugins:
-        plugin_name = pwd.split('plugins.')[1].split('/')[0]
-        current_dir = os.path.join(settings.PROJECT_ROOT, "plugins",
-            plugin_name, 'templates', pwd.split('plugins.')[1])
-    else:
-        current_dir = os.path.join(ROOT_DIR, pwd)
-    
+    current_dir = os.path.join(ROOT_DIR, pwd)
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
         for item in item_list:

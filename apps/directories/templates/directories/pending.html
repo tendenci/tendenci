@@ -18,6 +18,9 @@
         <li>
             <a href="{{ directory.get_absolute_url }}" title="{{ directory.headline }}">{{ directory.headline|truncatewords:"10" }}</a>
             &nbsp;&ndash;&nbsp;
+            {% if directory.status_detail == 'paid - pending approval' %}
+            Paid on
+            {% endif %}
             {{ directory.create_dt|date }}&nbsp;{{ directory.create_dt|time }}
             {% if directory.creator %}
             by {{ directory.creator.username }}

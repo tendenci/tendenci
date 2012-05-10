@@ -26,6 +26,7 @@ try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 def details(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directories'))
@@ -150,10 +151,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.requested_duration = 30
             if not directory.list_type:
                 directory.list_type = 'regular'
-            directory.activation_dt = datetime.now()
-            
-            # set the expiration date
-            directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
             
             if not directory.slug:
                 directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
@@ -161,6 +158,11 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             if not can_add_active:
                 directory.status = True
                 directory.status_detail = 'pending'
+            else:
+                directory.activation_dt = datetime.now()
+                # set the expiration date
+                directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+                
 
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
@@ -416,7 +418,10 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
         EventLog.objects.log(**log_defaults)
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory_pricing)
         
-        directory_pricing.delete()
+        #directory_pricing.delete()
+        # soft delete
+        directory_pricing.status = False
+        directory_pricing.save()
             
         return HttpResponseRedirect(reverse('directory_pricing.search'))
     
@@ -424,7 +429,7 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
         context_instance=RequestContext(request))
 
 def pricing_search(request, template_name="directories/pricing-search.html"):
-    directory_pricing = DirectoryPricing.objects.all().order_by('duration')
+    directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
 
     return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
         context_instance=RequestContext(request))
@@ -453,6 +458,7 @@ def approve(request, id, template_name="directories/approve.html"):
 
     if request.method == "POST":
         directory.activation_dt = datetime.now()
+        directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
         directory.allow_anonymous_view = True
         directory.status = True
         directory.status_detail = 'active'
@@ -466,6 +472,19 @@ def approve(request, id, template_name="directories/approve.html"):
             directory.owner_username = request.user.username
 
         directory.save()
+        
+        # send email notification to user
+        recipients = [directory.creator.email]
+        if recipients:
+            extra_context = {
+                'object': directory,
+                'request': request,
+            }
+            try:
+                send_email_notification('directory_approved_user_notice', recipients, extra_context)
+            except:
+                pass
+
 
         messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % directory)
 

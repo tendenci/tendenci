@@ -5,7 +5,9 @@ urlpatterns = patterns("memberships.views",
     # memberships
     url(r"^$", "membership_index", name="membership.index"),
     url(r"^search/$", "membership_search", name="membership.search"),
-    url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
+    url(r"^(?P<id>\d+)/$", "membership_details", name="membership.details"),
+    url(r"^(?P<id>\d+)/delete/$", "membership_delete", name="membership.delete"),
+    url(r"^(?P<id>\d+)/edit/$", "membership_edit", name="membership.edit"),
 
     # notices
     (r'^notices/', include('memberships.notices.urls')),
@@ -27,10 +29,12 @@ urlpatterns = patterns("memberships.views",
     url(r'^reports/expired_members/$', 'report_expired_members', name='reports-expired-members'),
     url(r'^reports/members_summary/$', 'report_members_summary', name='reports-members-summary'),
     url(r'^reports/members_over_time/$', 'report_members_over_time', name='reports-members-over-time'),
+    url(r'^reports/members_stats/$', 'report_members_stats', name='reports-members-stats'),
 
     # entries
     url(r"^entries/$", "application_entries", name="membership.application_entries"),
     url(r"^entries/(?P<id>\d+)/$", "application_entries", name="membership.application_entries"),
+    url(r"^entries/print/(?P<id>\d+)/$", "application_entries_print", name="membership.application_entries_print"),
     url(r"^entries/edit/(?P<id>\d+)/$", "entry_edit", name="membership.entry_edit"),
     url(r"^entries/delete/(?P<id>\d+)/$", "entry_delete", name="membership.entry_delete"),
     url(r"^entries/search/$", "application_entries_search", name="membership.application_entries_search"),

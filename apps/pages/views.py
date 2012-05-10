@@ -1,8 +1,12 @@
+import os
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.files import File
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
@@ -17,8 +21,9 @@ from categories.forms import CategoryForm
 from categories.models import Category
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
+from files.models import file_directory
 
-from pages.models import Page
+from pages.models import Page, HeaderImage
 from pages.forms import PageForm
 
 try:
@@ -120,13 +125,26 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
     }
 
     if request.method == "POST":
-        form = form_class(request.POST, instance=page, user=request.user)
+        form = form_class(request.POST, request.FILES, instance=page, user=request.user)
         metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             page = form.save(commit=False)
             # update all permissions and save the model
             page = update_perms_and_save(request, form, page)
+            
+            # handle header image
+            f = form.cleaned_data['header_image']
+            if f:
+                header = HeaderImage()
+                header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
+                header.creator = request.user
+                header.creator_username = request.user.username
+                header.owner = request.user
+                header.owner_username = request.user.username
+                filename = "%s-%s" % (page.slug, f.name)
+                header.file.save(filename, f)
+                page.header_image = header
             
             #save meta
             meta = metaform.save()
@@ -231,7 +249,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
     content_type = get_object_or_404(ContentType, app_label='pages',model='page')
     
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        form = form_class(request.POST, request.FILES, user=request.user)
         metaform = meta_form_class(request.POST, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
@@ -239,6 +257,19 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             
             # add all permissions and save the model
             page = update_perms_and_save(request, form, page)
+            
+            # handle header image
+            f = form.cleaned_data['header_image']
+            if f:
+                header = HeaderImage()
+                header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
+                header.creator = request.user
+                header.creator_username = request.user.username
+                header.owner = request.user
+                header.owner_username = request.user.username
+                filename = "%s-%s" % (page.slug, f.name)
+                header.file.save(filename, f)
+                page.header_image = header
             
             #save meta
             meta = metaform.save()

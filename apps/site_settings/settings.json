@@ -1,7 +1,7 @@
 [
 	{
         "default_value": "", 
-        "description": "A list of email addresses that receive ALL admin notices from the site. Comma delimited.", 
+        "description": "Enter the email address(es), separated by commas, that will receive ALL admin notices from the site.", 
         "data_type": "string", 
         "update_dt": "2011-01-19 15:11:59", 
         "input_type": "text", 
@@ -34,8 +34,8 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "Schipul Intranet", 
-        "description": "The name of your site. Shows up in majority of the title tags and is used for SEO (Search Engine Optimization).", 
+        "default_value": "Tendenci Intranet", 
+        "description": "Enter how you'd like your organization's name displayed on the website. This also is inserted in the title tags and is used for SEO (Search Engine Optimization).", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -52,7 +52,7 @@
     }, 
     {
         "default_value": "CST", 
-        "description": "Time Zone of the site.", 
+        "description": "Enter the Time Zone of your site.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -68,7 +68,7 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "http://intranet.schipul.net", 
+        "default_value": "http://tendenci.com", 
         "description": "The main URL of your site. This is used to generate links within the software so it is important that it remains the same.", 
         "data_type": "string", 
         "update_dt": "2011-01-19 15:39:33", 
@@ -102,7 +102,7 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "bleblanc@schipul.com", 
+        "default_value": "bleblanc@tendenci.com", 
         "description": "E-mail address of the person that appears in the signature of the contact form submission email.", 
         "data_type": "string", 
         "update_dt": "2011-01-06 15:46:41", 
@@ -120,7 +120,7 @@
     }, 
     {
         "default_value": "Jennifer Brooks", 
-        "description": "Name of the site administrator.", 
+        "description": "Name of your site owner or primary site administrator.", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
         "input_type": "text", 
@@ -136,8 +136,8 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "jbrooks@schipul.com", 
-        "description": "E-Mail address of the site administrator.", 
+        "default_value": "jbrooks@tendenci.com", 
+        "description": "E-Mail address of your site owner or primary site administrator.", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
         "input_type": "text", 
@@ -154,7 +154,7 @@
     }, 
     {
         "default_value": "Webmaster", 
-        "description": "Name of the webmaster.", 
+        "description": "Name of Your webmaster.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -170,8 +170,8 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "eschipul@schipul.com", 
-        "description": "E-Mail address of the webmaster.", 
+        "default_value": "support@tendenci.com", 
+        "description": "E-Mail address of your webmaster.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -188,7 +188,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "The address of the website or business.", 
+        "description": "The primary, physical address of your website or business.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -205,7 +205,7 @@
     }, 
     {
         "default_value": "AuthorizeNet", 
-        "description": "Merchant Account is the entity where the client has their merchant account for online processing. Check out the help file on <a href='http://tendenci.com/help-files/setup-online-payment-tendenci-t5-site/'>how to set up online payment</a>.", 
+        "description": "If you have a merchant account, enter the name of the merchant account service provider. Check out the help file on <a href='http://tendenci.com/help-files/setup-online-payment-tendenci-t5-site/'>how to set up online payment</a>.", 
         "data_type": "string", 
         "update_dt": "2011-04-28 13:59:53", 
         "input_type": "text", 
@@ -222,7 +222,7 @@
     }, 
     {
         "default_value": "false", 
-        "description": "Merchant Tes tModeis a true false variable to turn  atesting environment on.  If true, any orders that are submitted will not proceed to the MerchantAccount.", 
+        "description": "The Merchant Account Test Mode Feature is currently not available.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "select", 
@@ -239,7 +239,7 @@
     }, 
     {
         "default_value": "true", 
-        "description": "Merchant Auto Redirect is a true false variable.  If true, any orders that are submitted will proceed to the MerchantAcount", 
+        "description": "The Merchant Auto Redirect feature is currently not available.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "select", 
@@ -256,7 +256,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "Merchant Logo stores the logo for use when redirected to a different site.", 
+        "description": "Optional: Provide a link to the Merchant Logo to be used when redirected to a different site.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -290,7 +290,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "Merchant CC Accepted displays what credit cards are accepted by the merchant.", 
+        "description": "Merchant CC Accepted displays what credit cards are accepted by the merchant. ie Visa, Mastercard, Amex", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -307,7 +307,7 @@
     }, 
     {
         "default_value": "", 
-        "description": "Keywords that show up in the keywords meta tag, Page titles and other locations on many modules.", 
+        "description": "Keywords that your site will automatically populate within the keywords meta tag, Page titles and other locations on many modules.", 
         "data_type": "string", 
         "update_dt": "2010-12-01 14:10:00", 
         "input_type": "text", 
@@ -324,7 +324,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "Keywords that show up in the keywords meta tag, Page titles and other locations on many modules.", 
+        "description": "Secondary Keywords that your site will automatically populate within keywords meta tag, Page titles and other locations on many modules.", 
         "data_type": "string", 
         "update_dt": "2010-12-01 14:10:00", 
         "input_type": "text", 
@@ -341,7 +341,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "CompanyTax ID Number is the company's tax id number", 
+        "description": "CompanyTax ID Number is Your Organization's tax id number", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -358,7 +358,7 @@
     }, 
     {
         "default_value": "false", 
-        "description": "Site uses captcha for forms", 
+        "description": "Select true if you want to include Captcha codes on your forms and false to turn them off.  This effects all forms site-wide.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "select", 
@@ -375,7 +375,7 @@
     }, 
     {
         "default_value": "USD", 
-        "description": "Currency the site is using.", 
+        "description": "Currency your site is using.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
@@ -425,14 +425,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "DO-NOT-REPLY-TENDENCI@schipul.net", 
-        "description": "When the system sends out emails this address will be shown as the sender.", 
+        "default_value": "DO-NOT-REPLY-TENDENCI@tendenci.com", 
+        "description": "Enter the address that will be shown as the sender when the system sends out emails.", 
         "data_type": "string", 
         "update_dt": "2011-02-24 14:22:04", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "siteemailnoreplyaddress", 
-        "value": "DO-NOT-REPLY-TENDENCI@schipul.net", 
+        "value": "DO-NOT-REPLY-TENDENCI@tendenci.com", 
         "label": "No-Reply Address", 
         "input_value": " ", 
         "parent_id": 0, 
@@ -443,7 +443,7 @@
     }, 
     {
         "default_value": "en-US", 
-        "description": "Set the language for words around tendenci that are translated.", 
+        "description": "Select the language for your site to translate. Most words will be translated.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "select", 
@@ -460,11 +460,11 @@
     }, 
     {
         "default_value": "false", 
-        "description": "Hide Tabs is a bit field defining whether or not to hide the tabs in ALL modules.  0=show 1=hide", 
+        "description": "The hide tabs feature is currently unavailable. We'll update you when this changes.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-12 17:19:14", 
         "input_type": "select", 
-        "client_editable": true, 
+        "client_editable": false, 
         "name": "hidetabs", 
         "value": "false", 
         "label": "Hide Tabs", 
@@ -476,7 +476,7 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "http://www.schipul.com/policy/", 
+        "default_value": "http://www.tendenci.com/policy/", 
         "description": "Link or text containing your site policies.", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
@@ -494,7 +494,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "These are the API Credentials required to access the ConstantContact.com API.  It consist of the account username, account password, and developer API key in this format (e.g. username:password:key).", 
+        "description": "These are the API Credentials required to access the ConstantContact.com API.  It requires additional customization to integrate with your site, please contact support@tendenci.com if you'd like this for an estimate.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:14", 
         "input_type": "text", 
@@ -511,14 +511,14 @@
     }, 
     {
         "default_value": " ", 
-        "description": "This is the URL specific profile ID for Google Analytics.", 
+        "description": "Enter your Google Analytics UA number to start tracking. Ex: UA-12345678-9", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "semgoogleanalyticsprofileid", 
         "value": "", 
-        "label": "SEM Google Analytics Profile ID", 
+        "label": "Google Analytics UA Number", 
         "input_value": "", 
         "parent_id": 0, 
         "scope": "site", 
@@ -596,7 +596,7 @@
     },
     {
         "default_value": "", 
-        "description": "This is a setting to demonstrate form_list.", 
+        "description": "This is a list of all the current forms available on your site.", 
         "data_type": "string", 
         "update_dt": "2010-08-13 09:33:29", 
         "input_type": "select", 
@@ -613,7 +613,7 @@
     },
     {
         "default_value": "", 
-        "description": "This is a setting to demonstrate file input.", 
+        "description": "This is a demonstration to show you how Tendenci file uploads work.", 
         "data_type": "file", 
         "update_dt": "2010-08-13 09:33:29", 
         "input_type": "file", 

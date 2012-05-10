@@ -15,18 +15,24 @@
 {% endblock %}
 
 {% block body %}
-<div class="membership-wrap">
+<div class="t">
 {% membership_nav request.user membership %}
     <h1>{% blocktrans with membership.user.get_full_name as memname %}Membership for {{ memname }}{% endblocktrans %}</h1>
-    <div><a href="{{ membership.user.get_absolute_url }}">{% trans "View profile" %}</a></div>
-
-    <div>{% blocktrans with membership.join_dt|date as memjoin and membership.join_dt|timesince as memtimesince%}Joined {{ memjoin }} ({{ memtimesince }}){% endblocktrans %}</div>
-
-    {% if membership.expiration_dt %}
-        <div>{% blocktrans with membership.expiration_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}</div>
-    {% else %}
-        <div>{% trans "Never expires" %}</div>
-    {% endif %}
-
+    <div class="membership-wrap">
+        <p><a href="{{ membership.user.get_absolute_url }}">{% trans "View profile" %}</a></p>
+        <p>
+        {% blocktrans with membership.subscribe_dt|date as memjoin and membership.subscribe_dt|timesince as memtimesince%}
+        Subscribed since {{ memjoin }} ({{ memtimesince }}){% endblocktrans %}
+        </p>
+        <p>
+        {% if membership.expire_dt %}
+            {% blocktrans with membership.expire_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}
+        {% else %}
+            {% trans "Never expires" %}
+        {% endif %}
+        </p>
+        <p><strong>{% trans "Membership Type" %}:</strong> {{ membership.membership_type }}</p>
+        <p><strong>{% trans "Member Number" %}:</strong> {{ membership.member_number }}</p>
+    </div>
 </div>
 {% endblock %}

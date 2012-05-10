@@ -138,6 +138,9 @@ div.id_expiration_dt .field input#id_release_dt_1 {
 	margin-bottom: 10px;
 }
 
+#resume-link {
+    text-align: right;    
+}
 
 /* Resume Print View
  ------------------------- */

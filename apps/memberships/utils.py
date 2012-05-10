@@ -12,7 +12,8 @@ from django.template.defaultfilters import slugify
 from django.db.models import Q
 
 from perms.utils import has_perm, is_admin
-from memberships.models import App, AppField, Membership, MembershipType
+from memberships.models import (App, AppField, AppEntry, Membership,
+    MembershipType)
 from corporate_memberships.models import CorporateMembership
 
 
@@ -367,7 +368,8 @@ def get_notice_token_help_text(notice=None):
                 """
               
     return help_text
-        
+
+
 def spawn_username(*args):
     """
     Join arguments to create username [string].
@@ -420,5 +422,36 @@ def get_user(**kwargs):
 
     return user
 
+def get_membership_stats():
+    now = datetime.now()
+    summary = []
+    types = MembershipType.objects.all()
+    total_active = 0
+    total_pending = 0
+    total_expired = 0
+    total_total = 0
+    for mem_type in types:
+        mems = Membership.objects.filter(membership_type = mem_type)
+        active = mems.filter(status_detail='active', expire_dt__gt=now)
+        expired = mems.filter(status_detail='active', expire_dt__lte=now)
+        pending = AppEntry.objects.filter(app__membership_types=mem_type, is_approved__isnull=True)
+        total_all = active.count() + pending.count() + expired.count()
+        total_active += active.count()
+        total_pending += pending.count()
+        total_expired += expired.count()
+        total_total += total_all
+        summary.append({
+            'type':mem_type,
+            'active':active.count(),
+            'pending':pending.count(),
+            'expired':expired.count(),
+            'total':total_all,
+        })
     
+    return (sorted(summary, key=lambda x:x['type'].name),
+        (total_active, total_pending, total_expired, total_total))
+
+class NoMembershipTypes(Exception):
+    pass
+
 

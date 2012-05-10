@@ -87,7 +87,10 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     }
     EventLog.objects.log(**log_defaults)
     
-    groupmemberships = GroupMembership.objects.filter(group=group).order_by('member__last_name')
+    groupmemberships = GroupMembership.objects.filter(group=group, 
+                                                      status=True, 
+                                                      status_detail='active'
+                                                      ).order_by('member__last_name')
     #members = group.members.all()
     count_members = len(groupmemberships)
     

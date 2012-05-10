@@ -1,8 +1,8 @@
 from django import forms
 
 from perms.forms import TendenciBaseForm
-from models import CaseStudy
-from files.models import File
+from models import CaseStudy, Image
+# from files.models import File
 from tinymce.widgets import TinyMCE
 
 class CaseStudyForm(TendenciBaseForm):
@@ -39,7 +39,7 @@ class CaseStudyForm(TendenciBaseForm):
 
 class FileForm(forms.ModelForm):
     class Meta:
-        model = File
+        model = Image
         fields = (
             'file',
             'description',

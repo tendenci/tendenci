@@ -1,6 +1,4 @@
 .t {
-	width: 90%;
-	margin-top: 1em;
     position: relative;
 }
 
@@ -24,6 +22,15 @@
 
 #t-profile div.intro.info p {
     margin: 0;
+}
+
+#t-profile #module-tabs {
+    margin-bottom: 0;
+}
+
+#t-view {
+    padding-top: 10px;
+    background-color: white;
 }
 
 .contact.info h2 {
@@ -77,14 +84,25 @@
     width: 100%;
 }
 
+.membership.info table tr td {
+    padding: 15px 0;
+}
+
 .membership.info table tr td:first-child {
     text-align: right;
-    width: 130px;
+    width: 110px;
     padding-right: 20px;
+    white-space: nowrap;
+    padding-left: 20px;
 }
 
 .membership.info table tr td:last-child {
     text-align: right;
+    padding-right: 20px;
+}
+
+.membership.info table tr:nth-child(odd) {
+    background-color: #F9F9F9;
 }
 
 .group.info {
@@ -106,10 +124,16 @@
     width: 100%;
 }
 
+.group.info table tr td {
+    padding: 15px 20px;
+}
+
 .group.info table tr td:first-child {
-    text-align: right;
-    width: 130px;
-    padding-right: 20px;
+    padding-left: 75px;
+}
+
+.group.info table tr:nth-child(odd) {
+    background-color: #F9F9F9;
 }
 
 .contribution.info {

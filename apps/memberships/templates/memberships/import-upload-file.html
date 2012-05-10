@@ -18,6 +18,7 @@
     
     <h1>{% trans "Membership Import Upload File" %}</h1>
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ datetime.now }}</p>
+
     <p>
         {% trans "Download the template (.xls or .csv). Populate the template with your information. Upload your updated spread sheet. Review and adjust settings." %}
     </p>
@@ -28,6 +29,8 @@
         <a href="#">{% trans ".csv Template" %}</a>
     </div>
     
+    <p><strong>Please verify that your member <a href="/settings/module/memberships/">privacy settings</a> are correct before importing.</strong></p>
+
     <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
     {% if form.non_field_errors %}
         {{ form.non_field_errors }}

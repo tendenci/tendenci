@@ -9,7 +9,7 @@ from site_settings.utils import get_setting
 
 def get_duration_choices(user):
     currency_symbol = get_setting('site', 'global', 'currencysymbol')
-    pricings = DirectoryPricing.objects.filter(status=1).order_by('duration')
+    pricings = DirectoryPricing.objects.filter(status=True).order_by('duration')
     choices = []
     for pricing in pricings:
         if pricing.duration == 0:
@@ -18,11 +18,11 @@ def get_duration_choices(user):
             else:
                 continue
         else:
-            if is_member(user):
-                prices = "%s %s/%s" % (currency_symbol,pricing.regular_price_member, 
+            if pricing.show_member_pricing and is_member(user):
+                prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member, 
                                             pricing.premium_price_member)
             else:
-                prices = "%s %s/%s" % (currency_symbol, pricing.regular_price, 
+                prices = "%s%s(R)/%s(P)" % (currency_symbol, pricing.regular_price, 
                                     pricing.premium_price)
             choice = (pricing.pk, '%d days for %s' % (pricing.duration, prices))
         choices.append(choice)

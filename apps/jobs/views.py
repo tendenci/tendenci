@@ -31,6 +31,7 @@ try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 
 def details(request, slug=None, template_name="jobs/view.html"):
@@ -61,7 +62,8 @@ def details(request, slug=None, template_name="jobs/view.html"):
 
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
-
+    my_jobs = request.GET.get('my_jobs', False)
+    
     if get_setting('site', 'global', 'searchindex') and query:
         jobs = Job.objects.search(query, user=request.user)
     else:
@@ -69,9 +71,14 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
-
+    
     jobs = jobs.order_by('status_detail','list_type','-post_dt')
-
+    
+    # filter for "my jobs"
+    if my_jobs and not request.user.is_anonymous():
+        template_name = "jobs/my_jobs.html"
+        jobs = jobs.filter(creator_username=request.user.username)
+    
     log_defaults = {
         'event_id': 254000,
         'event_data': '%s searched by %s' % ('Job', request.user),
@@ -580,6 +587,18 @@ def approve(request, id, template_name="jobs/approve.html"):
             job.owner_username = request.user.username
 
         job.save()
+        
+        # send email notification to user
+        recipients = [job.creator.email]
+        if recipients:
+            extra_context = {
+                'object': job,
+                'request': request,
+            }
+            #try:
+            send_email_notification('job_approved_user_notice', recipients, extra_context)
+            #except:
+            #    pass
 
         messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % job)
 

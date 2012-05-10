@@ -7,9 +7,9 @@
         {% with job.category_set as job_cat %}
         {% if job_cat.category %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url job.search %}?q=category:{{ job_cat.category }}">{{ job_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url jobs %}?q=category:{{ job_cat.category }}">{{ job_cat.category }}</a>
             {% if job_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url job.search %}?q=sub_category:{{ job_cat.sub_category }}">{{ job_cat.sub_category }}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url jobs %}?q=sub_category:{{ job_cat.sub_category }}">{{ job_cat.sub_category }}</a>
             {% endif %}
         </div>
         {% endif %}
@@ -19,7 +19,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in job.tags|tag_split %}
-                <a href="{% url job.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url jobs %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

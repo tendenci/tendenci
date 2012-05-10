@@ -67,6 +67,11 @@
     
     {% if opt_object.can_renew %}
         <a href="{% url corp_memb.renew opt_object.id %}" style="background-color:yellow;">{% trans "Renew" %}</a>
+    {% else %}
+    	{% if opt_object.is_expired and is_admin %}
+    	 <a href="{% url corp_memb.renew opt_object.id %}" style="background-color:yellow;">{% trans "Admin: Renew" %}</a>
+
+    	{% endif %}
     {% endif %}
 {% endif %}
 

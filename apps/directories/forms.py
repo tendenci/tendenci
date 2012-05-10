@@ -183,7 +183,8 @@ class DirectoryForm(TendenciBaseForm):
         if self.fields.has_key('pricing'):
             self.fields['pricing'].choices = get_duration_choices(self.user)
         
-        fields_to_pop = []    
+        # expiration_dt = activation_dt + requested_duration
+        fields_to_pop = ['expiration_dt']    
         if not is_admin(self.user):
             fields_to_pop += [
                 'slug',
@@ -194,7 +195,6 @@ class DirectoryForm(TendenciBaseForm):
                 'group_perms',
                 'post_dt',
                 'activation_dt',
-                'expiration_dt',
                 'syndicate',
                 'status',
                 'status_detail'
