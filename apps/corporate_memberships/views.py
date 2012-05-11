@@ -181,7 +181,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
             send_email_notification('corp_memb_added_user', recipients, extra_context)
                         
             # send notification to administrators
-            recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+            recipients = get_notice_recipients('module', 'corporate_memberships', 'corporatemembershiprecipients')
             extra_context = {
                 'object': corporate_membership,
                 'request': request,
@@ -441,7 +441,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                     corporate_membership.approve_renewal(request)
                 else:
                     # send a notice to admin
-                    recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+                    recipients = get_notice_recipients('module', 'corporate_memberships', 'corporatemembershiprecipients')
                     
                     send_email_notification('corp_memb_renewed', recipients, extra_context)
                     

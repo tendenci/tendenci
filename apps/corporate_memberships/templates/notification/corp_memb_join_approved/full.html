@@ -31,6 +31,8 @@
 	{% else %}
 	Your login username: <strong>{{ object.creator_username }}</strong>
 	{% endif %}
+	<br />
+	To log into the site, visit <a href="{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}">{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}</a>
 </p>
 {% endif %}
 <p>{% trans "Thanks!" %}</p>

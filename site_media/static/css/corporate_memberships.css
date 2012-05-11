@@ -100,4 +100,11 @@ div.forms div.form-field input.timepicker{
 #corp-import em{
 	font-weight: bold;
  }
+ .opt-link{
+ 	padding-left: 6px;
+ }
+  .opt-link:hover{
+ 	color: #03447F;
+ }
+ 
 	

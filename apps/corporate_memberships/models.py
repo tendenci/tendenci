@@ -372,7 +372,7 @@ class CorporateMembership(TendenciBaseModel):
             
         
         # send notification to administrators
-        recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+        recipients = get_notice_recipients('module', 'corporate_memberships', 'corporatemembershiprecipients')
         if recipients:
             if notification:
                 extra_context = {

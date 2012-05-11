@@ -108,7 +108,21 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
                                                       model=corp_memb._meta.module_name)
             inv.object_id = corp_memb.id
         inv.title = "Corporate Membership Invoice"
-        inv.bill_to = corp_memb.name
+        if not user.is_anonymous():
+            inv.bill_to = '%s %s' % (user.first_name, user.last_name)
+            inv.bill_to_first_name = user.first_name
+            inv.bill_to_last_name = user.last_name
+            inv.bill_to_email = user.email
+        else:
+            if corp_memb.anonymous_creator:
+                cmc = corp_memb.anonymous_creator
+                inv.bill_to = '%s %s' % (cmc.first_name, cmc.last_name)
+                inv.bill_to_first_name = cmc.first_name
+                inv.bill_to_last_name = cmc.last_name
+                inv.bill_to_email = cmc.email
+            else:
+                inv.bill_to = corp_memb.name 
+            
         inv.bill_to_company = corp_memb.name
         inv.bill_to_address = corp_memb.address
         inv.bill_to_city = corp_memb.city
@@ -116,7 +130,6 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.bill_to_zip_code = corp_memb.zip
         inv.bill_to_country = corp_memb.country
         inv.bill_to_phone = corp_memb.phone
-        inv.bill_to_email = corp_memb.email
         inv.ship_to = corp_memb.name
         inv.ship_to_company = corp_memb.name
         inv.ship_to_address = corp_memb.address
