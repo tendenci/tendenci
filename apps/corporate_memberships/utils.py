@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
+from dateutil.relativedelta import relativedelta
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from memberships.models import AppField, Membership
@@ -524,5 +525,5 @@ def last_n_month(n):
         Get the first day of the last n months.
     """
     now = datetime.now()
-    last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
-    return last
+    last = now - relativedelta(months=n)
+    return datetime(day=1, month=last.month, year=last.year)
