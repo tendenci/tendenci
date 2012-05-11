@@ -28,7 +28,7 @@ from payments.models import PaymentMethod
 from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
-from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
+from corporate_memberships.settings import use_search_index
 from corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
 from imports.utils import get_unique_username
 
@@ -279,6 +279,13 @@ class CorporateMembership(TendenciBaseModel):
         if is_admin(user): return None, None
         
         filter_and, filter_or = None, None
+        
+        allow_anonymous_search = get_setting('module', 
+                                     'corporate_memberships', 
+                                     'anonymoussearchcorporatemembers')
+        allow_member_search = get_setting('module', 
+                                  'corporate_memberships', 
+                                  'membersearchcorporatemembers')
         
         if allow_anonymous_search or (allow_member_search and is_member(user)):
             filter_and =  {'status':1,

@@ -55,7 +55,7 @@ from perms.utils import get_notice_recipients
 from base.utils import send_email_notification
 from files.models import File
 from profiles.models import Profile
-from corporate_memberships.settings import use_search_index, allow_anonymous_search, allow_member_search
+from corporate_memberships.settings import use_search_index
 from site_settings.utils import get_setting
 
 
@@ -671,6 +671,10 @@ def view(request, id, template="corporate_memberships/view.html"):
 
 
 def search(request, template_name="corporate_memberships/search.html"):
+    allow_anonymous_search = get_setting('module', 
+                                     'corporate_memberships', 
+                                     'anonymoussearchcorporatemembers')
+
     if not request.user.is_authenticated() and not allow_anonymous_search:
         raise Http403
     
