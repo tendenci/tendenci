@@ -44,6 +44,9 @@
             {% if can_add_story %}
                 <li><a href="{% url story.add %}">{% trans "Add Story" %}</a></li>
             {% endif %}
+            {% if admin %}
+                <li><a href="{% url story.export %}">{% trans "Export Stories" %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_story or can_edit_story %}

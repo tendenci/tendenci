@@ -10,10 +10,11 @@ from django.contrib import messages
 
 from base.http import Http403
 from perms.utils import (has_perm, update_perms_and_save,
-    get_query_filters, has_view_perm)
+    get_query_filters, has_view_perm, is_admin)
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
+from exports.tasks import TendenciExportTask
 
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
@@ -228,6 +229,40 @@ def upload(request, id, form_class=UploadStoryImageForm,
     return render_to_response(template_name, {'form':form, 'story': story}, 
             context_instance=RequestContext(request))
     
-            
-            
-            
+@login_required
+def export(request, template_name="stories/export.html"):
+    """Export Stories"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "stories.xls"
+        fields = [
+            'guid',
+            'title',
+            'content',
+            'syndicate',
+            'full_story_link',
+            'start_dt',
+            'end_dt',
+            'expires',
+            'ncsortorder',
+            'entity',
+            'tags',
+            'categories',
+        ]
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results storie
+            result = TendenciExportTask()
+            response = result.run(Story, fields, file_name)
+            return response
+        else:
+            result = TendenciExportTask.delay(Story, fields, file_name)
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
