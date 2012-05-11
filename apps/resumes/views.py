@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.conf import settings
 
 from base.http import Http403
 from base.utils import now_localized
@@ -17,6 +18,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
+from exports.tasks import TendenciExportTask
 
 from resumes.models import Resume
 from resumes.forms import ResumeForm
@@ -295,3 +297,72 @@ def approve(request, id, template_name="resumes/approve.html"):
 
 def thank_you(request, template_name="resumes/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+@login_required
+def export(request, template_name="resumes/export.html"):
+    """Export Resumes"""
+    
+    if not is_admin(request.user):
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "resumes.xls"
+        fields = [
+            'guid',
+            'title',
+            'slug',
+            'description',
+            'location',
+            'skills',
+            'experience',
+            'education',
+            'is_agency',
+            'list_type',
+            'requested_duration',
+            'activation_dt',
+            'expiration_dt',
+            'resume_url',
+            'syndicate',
+            'contact_name',
+            'contact_address',
+            'contact_address2',
+            'contact_city',
+            'contact_state',
+            'contact_zip_code',
+            'contact_country',
+            'contact_phone',
+            'contact_phone2',
+            'contact_fax',
+            'contact_email',
+            'contact_website',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_member_view',
+            'allow_anonymous_edit',
+            'allow_user_edit',
+            'allow_member_edit',
+            'create_dt',
+            'update_dt',
+            'creator',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail',
+            'meta',
+            'tags',
+        ]
+        
+        if not settings.CELERY_IS_ACTIVE:
+            # if celery server is not present 
+            # evaluate the result and render the results resume
+            result = TendenciExportTask()
+            response = result.run(Resume, fields, file_name)
+            return response
+        else:
+            result = TendenciExportTask.delay(Resume, fields, file_name)
+            return redirect('export.status', result.task_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
