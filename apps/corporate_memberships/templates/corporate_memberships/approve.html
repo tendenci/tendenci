@@ -85,7 +85,7 @@
 <div class="t">
 {% corpmemb_nav request.user corporate_membership %} 
 
-     <h1>{% trans "Approve / Disapprove Corporate Membership" %}</h1>
+     <h1>{% trans "Corporate Membership Submission" %}</h1>
      {% if corporate_membership.is_pending %}
      <div class="alert-message fade in" data-alert="alert" align="center">
      	<strong>Pending</strong>
@@ -94,7 +94,7 @@
      
 	<table>
 		<tr>
-			<td>Name:</td>
+			<td>Corp. Name:</td>
 			<td>
 			<strong><a href="{% url corp_memb.view corporate_membership.id %}" target="_blank">{{ corporate_membership.name }}</a></strong>
 			</td>
