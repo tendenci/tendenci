@@ -4,6 +4,7 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
+from perms.models import TendenciBaseModel
 from imports.utils import render_excel
 
 class TendenciExportTask(Task):
@@ -13,6 +14,24 @@ class TendenciExportTask(Task):
     
     def run(self, model, fields, file_name, **kwargs):
         """Create the xls file"""
+        if issubclass(model, TendenciBaseModel):
+            fields = fields + [
+                'allow_anonymous_view',
+                'allow_user_view',
+                'allow_member_view',
+                'allow_anonymous_edit',
+                'allow_user_edit',
+                'allow_member_edit',
+                'create_dt',
+                'update_dt',
+                'creator',
+                'creator_username',
+                'owner',
+                'owner_username',
+                'status',
+                'status_detail',
+            ]
+            
         items = model.objects.filter(status=1)
         data_row_list = []
         for item in items:

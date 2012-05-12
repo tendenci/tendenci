@@ -1,12 +1,11 @@
 import os
-from django.forms.models import model_to_dict
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
-from django.forms.models import model_to_dict
 from celery.task import Task
 from celery.registry import tasks
 from imports.utils import render_excel
+from exports.utils import full_model_to_dict
 from events.models import Event
 
 class EventsExportTask(Task):
@@ -34,6 +33,20 @@ class EventsExportTask(Task):
             'external_url',
             'image',
             'tags',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_member_view',
+            'allow_anonymous_edit',
+            'allow_user_edit',
+            'allow_member_edit',
+            'create_dt',
+            'update_dt',
+            'creator',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail',
         ]
         place_fields = [
             'name',
@@ -87,7 +100,7 @@ class EventsExportTask(Task):
         for event in events:
             data_row = []
             # event setup
-            event_d = model_to_dict(event)
+            event_d = full_model_to_dict(event, fields=event_fields)
             for field in event_fields:
                 value = None
                 if field == 'entity':
@@ -103,7 +116,7 @@ class EventsExportTask(Task):
                 
             if event.place:
                 # place setup
-                place_d = model_to_dict(event.place)
+                place_d = full_model_to_dict(event.place)
                 for field in place_fields:
                     value = place_d[field]
                     value = unicode(value).replace(os.linesep, ' ').rstrip()
@@ -111,7 +124,7 @@ class EventsExportTask(Task):
             
             if event.registration_configuration:
                 # config setup
-                conf_d = model_to_dict(event.registration_configuration)
+                conf_d = full_model_to_dict(event.registration_configuration)
                 for field in configuration_fields:
                     if field == "payment_method":
                         value = event.registration_configuration.payment_method.all()
@@ -123,7 +136,7 @@ class EventsExportTask(Task):
             if event.speaker_set.all():
                 # speaker setup
                 for speaker in event.speaker_set.all():
-                    speaker_d = model_to_dict(speaker)
+                    speaker_d = full_model_to_dict(speaker)
                     for field in speaker_fields:
                         value = speaker_d[field]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
@@ -138,7 +151,7 @@ class EventsExportTask(Task):
             if event.organizer_set.all():
                 # organizer setup
                 for organizer in event.organizer_set.all():
-                    organizer_d = model_to_dict(organizer)
+                    organizer_d = full_model_to_dict(organizer)
                     for field in organizer_fields:
                         value = organizer_d[field]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
@@ -154,7 +167,7 @@ class EventsExportTask(Task):
             if reg_conf and reg_conf.regconfpricing_set.all():
                 # pricing setup
                 for pricing in reg_conf.regconfpricing_set.all():
-                    pricing_d = model_to_dict(pricing)
+                    pricing_d = full_model_to_dict(pricing)
                     for field in pricing_fields:
                         value = pricing_d[field]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()

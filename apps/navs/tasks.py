@@ -1,12 +1,11 @@
 import os
-from django.forms.models import model_to_dict
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
-from django.forms.models import model_to_dict
 from celery.task import Task
 from celery.registry import tasks
 from imports.utils import render_excel
+from exports.utils import full_model_to_dict
 from navs.models import Nav
 
 class NavsExportTask(Task):
@@ -20,6 +19,20 @@ class NavsExportTask(Task):
             'title',
             'description',
             'megamenu',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_member_view',
+            'allow_anonymous_edit',
+            'allow_user_edit',
+            'allow_member_edit',
+            'create_dt',
+            'update_dt',
+            'creator',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail',
         ]
         nav_item_fields = [
             'label',
@@ -40,7 +53,7 @@ class NavsExportTask(Task):
         for nav in navs:
             data_row = []
             # nav setup
-            nav_d = model_to_dict(nav)
+            nav_d = full_model_to_dict(nav)
             for field in nav_fields:
                 value = nav_d[field]
                 value = unicode(value).replace(os.linesep, ' ').rstrip()
@@ -49,7 +62,7 @@ class NavsExportTask(Task):
             if nav.navitem_set.all():
                 # nav_item setup
                 for nav_item in nav.navitem_set.all():
-                    nav_item_d = model_to_dict(nav_item)
+                    nav_item_d = full_model_to_dict(nav_item)
                     for field in nav_item_fields:
                         value = nav_item_d[field]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()

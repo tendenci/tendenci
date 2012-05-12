@@ -1,12 +1,11 @@
 import os
-from django.forms.models import model_to_dict
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
-from django.forms.models import model_to_dict
 from celery.task import Task
 from celery.registry import tasks
 from imports.utils import render_excel
+from exports.utils import full_model_to_dict
 from forms_builder.forms.models import Form
 
 class FormsExportTask(Task):
@@ -29,6 +28,20 @@ class FormsExportTask(Task):
             'completion_url',
             'custom_payment',
             'payment_methods',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_member_view',
+            'allow_anonymous_edit',
+            'allow_user_edit',
+            'allow_member_edit',
+            'create_dt',
+            'update_dt',
+            'creator',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail',
         ]
         field_fields = [
             'label',
@@ -55,7 +68,7 @@ class FormsExportTask(Task):
         for form in forms:
             data_row = []
             # form setup
-            form_d = model_to_dict(form)
+            form_d = full_model_to_dict(form)
             for field in form_fields:
                 if field == 'payment_methods':
                     value = [m.human_name for m in form.payment_methods.all()]
@@ -67,7 +80,7 @@ class FormsExportTask(Task):
             if form.fields.all():
                 # field setup
                 for field in form.fields.all():
-                    field_d = model_to_dict(field)
+                    field_d = full_model_to_dict(field)
                     for f in field_fields:
                         value = field_d[f]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
@@ -82,7 +95,7 @@ class FormsExportTask(Task):
             if form.pricing_set.all():
                 # field setup
                 for pricing in form.pricing_set.all():
-                    pricing_d = model_to_dict(pricing)
+                    pricing_d = full_model_to_dict(pricing)
                     for f in pricing_fields:
                         value = pricing_d[f]
                         value = unicode(value).replace(os.linesep, ' ').rstrip()
