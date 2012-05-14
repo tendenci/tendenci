@@ -180,10 +180,24 @@ def membership_delete(request, id, template_name="memberships/delete.html"):
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
 
-def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", membership_id=0, template_name="memberships/applications/details.html"):
+def download_template(request, slug=''):
+    """
+    Return a csv [download response] of the application specified via slug
+    """
+    from memberships.utils import make_csv
+    return make_csv(slug=slug)
+
+def application_details(request, template_name="memberships/applications/details.html", **kwargs):
     """
     Display a built membership application and handle submission.
     """
+
+    slug = kwargs.get('slug')
+    cmb_id = kwargs.get('cmb_id')
+    imv_id = kwargs.get('imv_id', 0)
+    imv_guid = kwargs.get('imv_guid')
+    secret_hash = kwargs.get('secret_hash', '')
+    membership_id = kwargs.get('membership_id', 0)
 
     if not slug: raise Http404
     user = request.user
@@ -792,13 +806,14 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             interactive = cleaned_data['interactive']
             override = cleaned_data['override']
             key = cleaned_data['key']
-            
+
             memport = MembershipImport.objects.create(
                 app=app,
                 interactive=interactive,
                 override=override,
                 key=key,
-                creator=request.user)
+                creator=request.user
+            )
             
             csv = File.objects.save_files_for_instance(request, memport)[0]
             
@@ -885,14 +900,14 @@ def membership_import_confirm(request, id):
                 # if celery server is not present 
                 # evaluate the result and render the results page
                 result = ImportMembershipsTask()
-                memberships, stats = result.run(memport.pk, cleaned_data)
+                memberships, stats = result.run(memport, cleaned_data)
                 return render_to_response('memberships/import-confirm.html', {
                     'memberships': memberships,
                     'stats': stats,
                     'datetime': datetime,
                 }, context_instance=RequestContext(request))
             else:
-                result = ImportMembershipsTask.delay(memport.pk, cleaned_data)
+                result = ImportMembershipsTask.delay(memport, cleaned_data)
             
             return redirect('membership_import_status', result.task_id)
     else:
@@ -965,7 +980,7 @@ def membership_join_report(request):
                     'mem_stat': mem_stat,
                 },
                 context_instance=RequestContext(request))
-    
+
 
 def membership_export(request):
     from django.template.defaultfilters import slugify

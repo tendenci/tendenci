@@ -18,13 +18,17 @@ from memberships.importer.utils import (parse_mems_from_csv,
 
 class ImportMembershipsTask(Task):
 
-    def run(self, memport_id, fields, **kwargs):
+    def run(self, memport, fields, **kwargs):
         from django.template.defaultfilters import slugify
         from memberships.utils import get_user
 
+        app = memport.app
+        key = memport.key
+        file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
+
         #get parsed membership dicts
         imported = []
-        mems, stats = parse_mems_from_csv(file_path, fields)
+        mems, stats = parse_mems_from_csv(file_path, fields, key)
 
         for m in mems:
             if not m['skipped']:

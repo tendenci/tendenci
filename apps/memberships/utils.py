@@ -451,6 +451,53 @@ def get_membership_stats():
     return (sorted(summary, key=lambda x:x['type'].name),
         (total_active, total_pending, total_expired, total_total))
 
+def make_csv(**kwargs):
+    """
+    Make a CSV file 
+    """
+    from django.template.defaultfilters import slugify
+    from imports.utils import render_excel
+
+    slug = kwargs.get('slug')
+
+    if not slug:
+        raise Http404
+
+    try:
+        app = App.objects.get(slug=slug)
+    except App.DoesNotExist, App.MultipleObjectsReturned:
+        raise Http404
+
+    file_name = "%s.csv" % slugify(app.name)
+
+    exclude_params = (
+        'horizontal-rule',
+        'header',
+    )
+
+    fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
+    labels = [field.label for field in fields]
+
+    extra_labels = [
+        'User Name',
+        'Member Number',
+        'Join Date',
+        'Renew Date',
+        'Expiration Date',
+        'Status',
+        'Status Detail',
+        'Invoice Number',
+        'Invoice Amount',
+        'Invoice Balance'
+    ]
+
+    labels.extend(extra_labels)
+
+    data = ['' for l in labels]
+
+    return render_excel(file_name, labels, [], '.csv')
+
+
 class NoMembershipTypes(Exception):
     pass
 
