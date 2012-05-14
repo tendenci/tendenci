@@ -636,19 +636,48 @@ def password_change_done(request, id, template_name='registration/password_chang
 def _user_events(from_date):
     return User.objects.all()\
                 .filter(eventlog__create_dt__gte=from_date)\
-                .annotate(event_count=Count('eventlog__pk'))\
-                .order_by('-event_count')
+                .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required
-def user_activity_report(request):
+def user_activity_report(request, template_name='reports/user_activity.html'):
     now = datetime.now()
-    users30days = _user_events(now-timedelta(days=10))[:10]
-    users60days = _user_events(now-timedelta(days=60))[:10]
-    users90days = _user_events(now-timedelta(days=90))[:10]
-    return render_to_response(
-                'reports/user_activity.html', 
-                {'users30days': users30days,'users60days': users60days,'users90days': users90days,},  
-                context_instance=RequestContext(request))
+    users30days = _user_events(now-timedelta(days=10))
+    users60days = _user_events(now-timedelta(days=60))
+    users90days = _user_events(now-timedelta(days=90))
+    
+    # get sort order
+    sort = request.GET.get('sort', 'events')
+    if sort == 'username':
+        users30days = users30days.order_by('username')
+        users60days = users60days.order_by('username')
+        users90days = users90days.order_by('username')
+    elif sort == 'last_name':
+        users30days = users30days.order_by('last_name')
+        users60days = users60days.order_by('last_name')
+        users90days = users90days.order_by('last_name')
+    elif sort == 'first_name':
+        users30days = users30days.order_by('first_name')
+        users60days = users60days.order_by('first_name')
+        users90days = users90days.order_by('first_name')
+    elif sort == 'email':
+        users30days = users30days.order_by('email')
+        users60days = users60days.order_by('email')
+        users90days = users90days.order_by('email')
+    elif sort == 'events':
+        users30days = users30days.order_by('-event_count')
+        users60days = users60days.order_by('-event_count')
+        users90days = users90days.order_by('-event_count')
+        
+    # top 10 only
+    users30days = users30days[:10]
+    users60days = users60days[:10]
+    users90days = users90days[:10]
+    
+    return render_to_response(template_name, {
+        'users30days': users30days,
+        'users60days': users60days,
+        'users90days': users90days,
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -674,10 +703,9 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
     elif sort == 'phone':
         users = users.order_by('profile__phone')
     
-    return render_to_response(
-                template_name, 
-                {'users': users},  
-                context_instance=RequestContext(request))
+    return render_to_response(template_name, {
+        'users': users
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
