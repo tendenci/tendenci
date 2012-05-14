@@ -15,15 +15,15 @@
     {% autopaginate mems 50 %}
     <table>
         <tr>
-            <th>#</th>
-            <th>{% trans "Username" %}</th>
-            <th>{% trans "Fullname" %}</th>
-            <th>{% trans "Email" %}</th>
-            <th>{% trans "Application" %}</th>
-            <th>{% trans "Type" %}</th>
-            <th>{% trans "Subscription" %}</th>
-            <th>{% trans "Expiration" %}</th>
-            <th>{% trans "Invoice" %}</th>
+            <th><a href="{% url reports-active-members %}?sort=number" >#</a></th>
+            <th><a href="{% url reports-active-members %}?sort=username" >{% trans "Username" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=full_name" >{% trans "Fullname" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=email" >{% trans "Email" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=application" >{% trans "Application" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=type" >{% trans "Type" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=subscription" >{% trans "Subscription" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=expiration" >{% trans "Expiration" %}</a></th>
+            <th><a href="{% url reports-active-members %}?sort=invoice" >{% trans "Invoice" %}</a></th>
         </tr>
         {% for mem in mems %}
             <tr class="{% cycle 'odd' '' %}">
@@ -35,7 +35,11 @@
                 <td>{{ mem.membership_type }}</td>
                 <th>{{ mem.subscribe_dt }}</th>
                 <th>{{ mem.expire_dt }}</th>
-                <td>{% if mem.get_entry.invoice.pk %}<a href="{% url invoice.view mem.get_entry.invoice.pk %}">{{ mem.get_entry.invoice.pk }}</a>{% else %} - {% endif %}</td>
+                <td>
+                    {% if mem.get_entry.invoice.pk %}
+                    <a href="{% url invoice.view mem.get_entry.invoice.pk %}">{{ mem.get_entry.invoice.pk }}</a>
+                    {% else %} - {% endif %}
+                </td>
             </tr>
         {% endfor %}
     </table>

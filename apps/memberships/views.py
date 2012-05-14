@@ -1083,6 +1083,27 @@ def membership_join_report_pdf(request):
 def report_active_members(request, template_name='reports/membership_list.html'):
     mems = Membership.objects.filter(expire_dt__gt = datetime.now())
     
+    # get sort order
+    sort = request.GET.get('sort', 'number')
+    if sort == 'number':
+        mems = mems.order_by('member_number')
+    elif sort == 'username':
+        mems = mems.order_by('user__username')
+    elif sort == 'full_name':
+        mems = mems.order_by('user__first_name', 'user__last_name')
+    elif sort == 'email':
+        mems = mems.order_by('user__email')
+    elif sort == 'app':
+        mems = mems.order_by('ma')
+    elif sort == 'type':
+        mems = mems.order_by('membership_type')
+    elif sort == 'subscription':
+        mems = mems.order_by('subscribe_dt')
+    elif sort == 'expiration':
+        mems = mems.order_by('expire_dt')
+    elif sort == 'invoice':
+        mems = mems.order_by('invoice')
+    
     return render_to_response(template_name, {
             'mems':mems,
             'active':True,

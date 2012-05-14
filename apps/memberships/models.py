@@ -319,7 +319,6 @@ class Membership(TendenciBaseModel):
             entry = self.entries.filter(is_approved=True).order_by('decision_dt')[0]
         except (ObjectDoesNotExist, MultipleObjectsReturned, IndexError) as e:
             entry = None
-
         return entry
 
     @property
