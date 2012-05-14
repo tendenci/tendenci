@@ -652,14 +652,30 @@ def user_activity_report(request):
 
 
 @staff_member_required
-def admin_users_report(request):
+def admin_users_report(request, template_name='reports/admin_users.html'):
     filters = {
         'is_staff': 1,
         'is_active': 1,
     }
     users = User.objects.all().filter(**filters)
+    
+    # get sort order
+    sort = request.GET.get('sort', 'id')
+    if sort == 'id':
+        users = users.order_by('pk')
+    elif sort == 'username':
+        users = users.order_by('username')
+    elif sort == 'last_name':
+        users = users.order_by('last_name')
+    elif sort == 'first_name':
+        users = users.order_by('first_name')
+    elif sort == 'email':
+        users = users.order_by('email')
+    elif sort == 'phone':
+        users = users.order_by('profile__phone')
+    
     return render_to_response(
-                'reports/admin_users.html', 
+                template_name, 
                 {'users': users},  
                 context_instance=RequestContext(request))
 
@@ -688,7 +704,7 @@ def admin_list(request, template_name='profiles/admin_list.html'):
     # only admins can edit this list
     if not is_admin(request.user):
         raise Http403
-
+    
     filters = {
         'status':1,
         'status_detail':'active',

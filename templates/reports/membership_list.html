@@ -16,8 +16,8 @@
     <table>
         <tr>
             {% if active %}
-            <th><a href="{% url reports-active-members %}?sort=number" >#</a></th>
-            <th><a href="{% url reports-active-members %}?sort=username" >{% trans "Username" %}</a></th>
+            <th>#</a></th>
+            <th><a href="{% url reports-active-members %}?sort=username" >{% trans "Username" %}</th>
             <th><a href="{% url reports-active-members %}?sort=full_name" >{% trans "Fullname" %}</a></th>
             <th><a href="{% url reports-active-members %}?sort=email" >{% trans "Email" %}</a></th>
             <th><a href="{% url reports-active-members %}?sort=application" >{% trans "Application" %}</a></th>
@@ -26,7 +26,7 @@
             <th><a href="{% url reports-active-members %}?sort=expiration" >{% trans "Expiration" %}</a></th>
             <th><a href="{% url reports-active-members %}?sort=invoice" >{% trans "Invoice" %}</a></th>
             {% else %}
-            <th><a href="{% url reports-expired-members %}?sort=number" >#</a></th>
+            <th>#</th>
             <th><a href="{% url reports-expired-members %}?sort=username" >{% trans "Username" %}</a></th>
             <th><a href="{% url reports-expired-members %}?sort=full_name" >{% trans "Fullname" %}</a></th>
             <th><a href="{% url reports-expired-members %}?sort=email" >{% trans "Email" %}</a></th>
