@@ -40,6 +40,7 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
     
     if not is_admin(user):
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
+    corporate_membership_types = corporate_membership_types.order_by('order')
     currency_symbol = get_setting("site", "global", "currencysymbol")
     
     for cmt in corporate_membership_types:
