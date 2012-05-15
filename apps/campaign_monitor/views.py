@@ -497,3 +497,28 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
     return render_to_response(template_name,
         {'form':form},
         context_instance=RequestContext(request))
+
+@login_required
+def campaign_delete(request, campaign_id, template_name="campaign_monitor/campaigns/delete.html"):
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+
+    if not has_perm(request.user,'campaign_monitor.delete_campaign'):
+        raise Http403  
+        
+    if request.method == "POST":
+            
+        try:
+        (campaign_id = campaign.campaign_id).delete()
+        except BadRequest, e:
+            messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+            return redirect(campaign)
+        except Exception, e:
+            messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+            return redirect(campaign)
+            
+        campaign.delete()
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted campaign.')
+        return redirect("campaign_monitor.campaign_index")
+    
+    return render_to_response(template_name, {'campaign': campaign}, 
+            context_instance=RequestContext(request))
