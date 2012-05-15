@@ -992,7 +992,9 @@ def membership_export(request):
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
-                invoice = memb.get_entry().invoice
+                invoice = None
+                if memb.get_entry():
+                    invoice = memb.get_entry().invoice
                 for field in fields:
                     field_name = slugify(field.label).replace('-','_')
                     value = ''
@@ -1037,11 +1039,20 @@ def membership_export(request):
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
                     elif field == 'invoice':
-                        value = unicode(invoice.id)
+                        if invoice:
+                            value = unicode(invoice.id)
+                        else:
+                            value = ""
                     elif field == 'invoice_total':
-                        value = unicode(invoice.total)
+                        if invoice:
+                            value = unicode(invoice.total)
+                        else:
+                            value = ""
                     elif field == 'invoice_balance':
-                        value = unicode(invoice.balance)
+                        if invoice:
+                            value = unicode(invoice.balance)
+                        else:
+                            value = ""
                     else:
                         value = getattr(memb, field, '')
 

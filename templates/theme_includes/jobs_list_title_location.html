@@ -1,0 +1,16 @@
+{% load theme_tags %}
+{% load job_tags %}
+{% load i18n %}
+
+<section id="events-list">
+    <h3>{% firstof MODULE_JOBS_LABEL "Jobs" %}</h3>
+    {% list_jobs as jobs_list limit=3 %}
+        {% for job in jobs_list %}
+        <h4><a href="{{ job.get_absolute_url }}">{{ job.title }}</a></h4>
+        <p>{{ job.location }} {{ job.description|safe|truncatewords:"10" }}</p>
+    {% empty %}
+        <h4>{% if admin %}<a href="{% url job.add %}">{% trans "Add your first job" %}</a>{% else %}<a href="#">{% trans "Great New Job" %}</a>{% endif %}</h4>
+        <p>{% trans "Houston: A new job opening is available..." %}</p>
+    {% endfor %}
+</section>
+{% theme_setting setting_name %}

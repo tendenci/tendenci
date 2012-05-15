@@ -1425,14 +1425,21 @@ class AppEntry(TendenciBaseModel):
         If auto-approve; approve entry; send emails; log.
         """
         from notification import models as notification
+        from notification.utils import send_welcome_email
 
         if self.is_renewal:
             # if auto-approve renews
             if not self.membership_type.renewal_require_approval:
+                self.user, created = self.get_or_create_user()
+                if created:
+                    send_welcome_email(self.user)
                 self.approve()
         else:
             # if auto-approve joins
             if not self.membership_type.require_approval:
+                self.user, created = self.get_or_create_user()
+                if created:
+                    send_welcome_email(self.user)
                 self.approve()
 
         if self.is_approved:
