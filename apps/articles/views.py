@@ -263,13 +263,13 @@ def delete(request, id, template_name="articles/delete.html"):
 
 @staff_member_required
 def articles_report(request):
-    stats= EventLog.objects.filter(event_id=435000)\
+    article_type = ContentType.objects.get(app_label="articles", model="article")
+    stats= EventLog.objects.filter(event_id=435000, content_type=article_type)\
                     .values('content_type', 'object_id', 'headline')\
                     .annotate(count=Count('pk'))\
                     .order_by('-count')
     for item in stats:
         ct = ContentType.objects.get_for_id(item['content_type'])
-        assert ct.model_class() == Article
         try:
             article = Article.objects.get(pk=item['object_id'])
             item['article'] = article
