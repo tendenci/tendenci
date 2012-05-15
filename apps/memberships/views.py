@@ -1084,10 +1084,8 @@ def report_active_members(request, template_name='reports/membership_list.html')
     mems = Membership.objects.filter(expire_dt__gt = datetime.now())
     
     # get sort order
-    sort = request.GET.get('sort', 'number')
-    if sort == 'number':
-        mems = mems.order_by('member_number')
-    elif sort == 'username':
+    sort = request.GET.get('sort', 'subscribe_dt')
+    if sort == 'username':
         mems = mems.order_by('user__username')
     elif sort == 'full_name':
         mems = mems.order_by('user__first_name', 'user__last_name')
@@ -1102,8 +1100,16 @@ def report_active_members(request, template_name='reports/membership_list.html')
     elif sort == 'expiration':
         mems = mems.order_by('expire_dt')
     elif sort == 'invoice':
-        mems = mems.order_by('invoice')
-    
+        # since we need to sort by a related field with the proper
+        # conditions we'll need to bring the sorting to the python level
+        for mem in mems:
+            mem.valid_invoice = None
+            if mem.get_entry():
+                if mem.get_entry().invoice:
+                    mem.valid_invoice = mem.get_entry().invoice.pk
+        
+        mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
+        
     return render_to_response(template_name, {
             'mems':mems,
             'active':True,
@@ -1114,10 +1120,8 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     mems = Membership.objects.filter(expire_dt__lt = datetime.now())
     
     # get sort order
-    sort = request.GET.get('sort', 'number')
-    if sort == 'number':
-        mems = mems.order_by('member_number')
-    elif sort == 'username':
+    sort = request.GET.get('sort', 'expire_dt')
+    if sort == 'username':
         mems = mems.order_by('user__username')
     elif sort == 'full_name':
         mems = mems.order_by('user__first_name', 'user__last_name')
@@ -1132,7 +1136,15 @@ def report_expired_members(request, template_name='reports/membership_list.html'
     elif sort == 'expiration':
         mems = mems.order_by('expire_dt')
     elif sort == 'invoice':
-        mems = mems.order_by('invoice')
+        # since we need to sort by a related field with the proper
+        # conditions we'll need to bring the sorting to the python level
+        for mem in mems:
+            mem.valid_invoice = None
+            if mem.get_entry():
+                if mem.get_entry().invoice:
+                    mem.valid_invoice = mem.get_entry().invoice.pk
+        
+        mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
     
     return render_to_response(template_name, {
             'mems':mems,

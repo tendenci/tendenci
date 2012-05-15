@@ -265,9 +265,9 @@ class Membership(TendenciBaseModel):
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     user = models.ForeignKey(User, related_name="memberships")
-    directory = models.ForeignKey(Directory, blank=True, null=True) 
+    directory = models.ForeignKey(Directory, blank=True, null=True)
     renewal = models.BooleanField(default=False)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True) 
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
