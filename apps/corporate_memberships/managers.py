@@ -12,23 +12,13 @@ class CorporateMembershipManager(Manager):
         from corporate_memberships.models import CorporateMembership
         from perms.utils import is_admin
 
-        user = kwargs.get('user', None)
-        if user.is_anonymous():
-            return SearchQuerySet().models().none()
-
-        is_an_admin = is_admin(user)
-
         sqs = SearchQuerySet().models(CorporateMembership)
 
         if query:
             sqs = sqs.filter(content=sqs.query.clean(query))
         else:
             sqs = sqs.all()
-
-        if not is_an_admin:
-            # reps__contain
-            sqs = sqs.filter(Q(content='rep\:%s' % user.username) |
-                             Q(creator=user) |
-                             Q(owner=user)).filter(status_detail='active')
-
+            
+        # the filter logic for the permission is handled in the search view
+        
         return sqs
