@@ -508,7 +508,7 @@ def campaign_delete(request, campaign_id, template_name="campaign_monitor/campai
     if request.method == "POST":
             
         try:
-        (campaign_id = campaign.campaign_id).delete()
+            CSC(campaign_id = campaign.campaign_id).delete()
         except BadRequest, e:
             messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
             return redirect(campaign)
