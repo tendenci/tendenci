@@ -262,12 +262,22 @@ def delete(request, id, template_name="articles/delete.html"):
 
 
 @staff_member_required
-def articles_report(request):
+def articles_report(request, template_name='reports/articles.html'):
     article_type = ContentType.objects.get(app_label="articles", model="article")
     stats= EventLog.objects.filter(event_id=435000, content_type=article_type)\
                     .values('content_type', 'object_id', 'headline')\
                     .annotate(count=Count('pk'))\
                     .order_by('-count')
+    
+    # get sort order
+    sort = request.GET.get('sort', 'viewed')
+    if sort == 'viewed':
+        stats = stats.order_by('-count')
+    elif sort == 'name':
+        stats = stats.order_by('headline')
+    elif sort == 'created':
+        stats = stats.order_by('create_dt')
+    
     for item in stats:
         ct = ContentType.objects.get_for_id(item['content_type'])
         try:
@@ -276,7 +286,11 @@ def articles_report(request):
             item['per_day'] = item['count'] * 1.0 / article.age().days
         except Article.DoesNotExist:
             pass
-        
-    return render_to_response('reports/articles.html', 
-            {'stats': stats}, 
-            context_instance=RequestContext(request))
+            
+    # special sort option
+    if sort == 'day':
+        stats = sorted(stats, key=lambda item: item['per_day'], reverse=True)
+    
+    return render_to_response(template_name,{
+        'stats': stats
+    },context_instance=RequestContext(request))
