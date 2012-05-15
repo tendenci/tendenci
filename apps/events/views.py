@@ -1606,8 +1606,8 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         sqs = SearchQuerySet().models(Registrant).filter(event_pk=event.id)
         sqs = sqs.auto_query(sqs.query.clean(query))
         registrants = sqs.order_by("-update_dt")
-        active_registrants = sqs.auto_query(sqs.query.clean("is:active")).order_by("-update_dt")
-        canceled_registrants = sqs.auto_query(sqs.query.clean("is:canceled")).order_by("-update_dt")
+        active_registrants = Registrant.objects.filter(registration__event=event).filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = Registrant.objects.filter(registration__event=event).exclude(cancel_dt=None).order_by("-update_dt")
         
     
             

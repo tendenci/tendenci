@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
+from dateutil.relativedelta import relativedelta
 from site_settings.utils import get_setting
 from perms.utils import is_admin
 from memberships.models import AppField, Membership
@@ -39,6 +40,7 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
     
     if not is_admin(user):
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
+    corporate_membership_types = corporate_membership_types.order_by('order')
     currency_symbol = get_setting("site", "global", "currencysymbol")
     
     for cmt in corporate_membership_types:
@@ -107,7 +109,21 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
                                                       model=corp_memb._meta.module_name)
             inv.object_id = corp_memb.id
         inv.title = "Corporate Membership Invoice"
-        inv.bill_to = corp_memb.name
+        if not user.is_anonymous():
+            inv.bill_to = '%s %s' % (user.first_name, user.last_name)
+            inv.bill_to_first_name = user.first_name
+            inv.bill_to_last_name = user.last_name
+            inv.bill_to_email = user.email
+        else:
+            if corp_memb.anonymous_creator:
+                cmc = corp_memb.anonymous_creator
+                inv.bill_to = '%s %s' % (cmc.first_name, cmc.last_name)
+                inv.bill_to_first_name = cmc.first_name
+                inv.bill_to_last_name = cmc.last_name
+                inv.bill_to_email = cmc.email
+            else:
+                inv.bill_to = corp_memb.name 
+            
         inv.bill_to_company = corp_memb.name
         inv.bill_to_address = corp_memb.address
         inv.bill_to_city = corp_memb.city
@@ -115,7 +131,6 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.bill_to_zip_code = corp_memb.zip
         inv.bill_to_country = corp_memb.country
         inv.bill_to_phone = corp_memb.phone
-        inv.bill_to_email = corp_memb.email
         inv.ship_to = corp_memb.name
         inv.ship_to_company = corp_memb.name
         inv.ship_to_address = corp_memb.address
@@ -524,5 +539,5 @@ def last_n_month(n):
         Get the first day of the last n months.
     """
     now = datetime.now()
-    last = datetime(day=1, month=(now.month-n)%12, year=now.year-(now.month-n)/12)
-    return last
+    last = now - relativedelta(months=n)
+    return datetime(day=1, month=last.month, year=last.year)

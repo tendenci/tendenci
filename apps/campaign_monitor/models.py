@@ -225,13 +225,14 @@ if cm_api_key and cm_client_id:
     def sync_cm_subscriber(sender, instance=None, created=False, **kwargs):
         """Subscribe the subscriber to the campaign monitor list
         """
+        from django.core.validators import email_re
+
         (name, email) = get_name_email(instance)
-            
-        if email:
+        if email_re.match(email):
             add_list = True
             add_subscriber = True
             list_map = None
-                
+
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
@@ -275,9 +276,10 @@ if cm_api_key and cm_client_id:
     def delete_cm_subscriber(sender, instance=None, **kwargs):
         """Delete the subscriber from the campaign monitor list
         """
-        (name, email) = get_name_email(instance)
-        
-        if email:
+        from django.core.validators import email_re
+
+        (name, email) = get_name_email(instance)        
+        if email_re.match(email):
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id

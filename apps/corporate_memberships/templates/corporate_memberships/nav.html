@@ -47,9 +47,7 @@
             <li><a href="{% url settings.index "module" "corporate_memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url corp_memb.index %}">{% trans 'Index Page' %}</a></li>
-            {% if user.is_authenticated %}
             <li>{% corp_memb_render_add_links %}</li>
-            {% endif %}
 
             <li><a href="{% url corp_memb.search %}">{% trans "Search All" %}</a></li> 
             {% if admin %}

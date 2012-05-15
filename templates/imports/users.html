@@ -1,4 +1,4 @@
-{% extends "imports/base.html" %}
+{% extends "imports/base-wide.html" %}
 {% load i18n %}
 {% load dashboard_tags %}
 
@@ -15,19 +15,17 @@
 	
 <div class="imports">
 <h1>{% trans "Import Users" %}</h1>
-<p>{% trans "Download the template (.xls or .csv). Populate the template with your information. Upload your updated spread sheet. Review and adjust settings.  Preview import." %}
+<p>
+{% trans "<strong>Download</strong> and <strong>fill in</strong> spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong>, and then <strong>submit</strong>." %}
 </p>
 
-<h2>{% trans "Download: " %}<span style="font-size:12px;font-weight:normal;text-transform:none;">{% trans "(**skip if you already have your spread sheet ready)" %}</span></h2>
 <div class="download-csv">
-<img src="/site_media/static/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
-<div class="item-right">
-	<p><a href="{% url import.download_user_upload_template_xls %}">{% trans ".xls Template" %}</a> <span>(recommended)</span></p>
-	<p>-- OR --</p>
-	<p><a href="{% url import.download_user_upload_template_csv %}">{% trans ".csv Template" %}</a></p>
-	
-</div>
-<div class="clear-both"></div>
+	<img src="/site_media/static/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+	<div class="item-right">
+		<p style="margin-bottom:0;"><a href="{% url import.download_user_upload_template_csv %}">{% trans "Download template" %}</a></p>
+		<p style="margin-top:0;">{% trans "Fill in with your user information."%}</p>
+	</div>
+	<div class="clear-both"></div>
 </div>
 
 
@@ -35,54 +33,47 @@
 	{{ form.non_field_errors }}
 {% endif %}
 
-<form class="import" action="." method="post" enctype="multipart/form-data" >{% csrf_token %}
+<form class="import" action="." method="post" enctype="multipart/form-data" >
+	{% csrf_token %}
+	<div class="select-file">{{ form.file }}</div>
+	<div class="wrap">
+		<div class="column1">
+		<div class="user-settings">
 
-<div class="select-file">
-	<h2>{% trans "Upload Your Spread Sheet " %}</h2>
-	<p>{{ form.file }}</p>
-</div>
+		<h2>{% trans "Make Users " %}</h2>
+		{{form.interactive}}
 
-<div class="wrap">
-
-<div class="column1">
-
-	<div class="user-settings">
-	<h2>{% trans "Make Users " %}</h2>
-
-	{{form.interactive}}
-
-	<h2>{% trans "Update" %} </h2>
-	{{form.override}}
+		<h2>{% trans "Update" %} </h2>
+		{{form.override}}
 	
 	</div>
-
-</div> <!-- column1 -->
+</div>
 
 
 <div class="column2">
-
 	<div class="duplicates">
-	{% blocktrans with form.key as form_key %}<h2>Identify Duplicates by  </h2>
-	<p>{{ form_key }}</p>{% endblocktrans %}
+	{% blocktrans with form.key as form_key %}
+		<h2>Identify Duplicates by</h2>
+		{{ form_key }}
+	{% endblocktrans %}
 	</div>
-	
+
 	<div class="usergroup">
-	<h2>{% trans "Add Users to Group" %}  </h2>
-	<div class="usergroup-field">
-	{{ form.group }}
-	</div>
-	
+		<h2>{% trans "Add Users to Group" %}  </h2>
+		<div class="usergroup-field">
+		{{ form.group }}
+		</div>
+		
 		<div class="reset-group">{{form.clear_group_membership}}
-		<label for="clear-user-group">{% trans "Reset group before importing" %} <br />
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{% trans "(existing group members will be deleted)" %} </label>
+			<label for="clear-user-group">{% trans "Delete members in group before importing" %}</label>
 		</div>
 	</div>
 
-</div> <!-- column2 -->
+</div>
 <div class="clear-both"></div>
 
 <div>
-<input type="submit" class="submit-btn"  name="submit" value="Preview Import">
+	<input type="submit" class="submit-btn"  name="submit" value="Preview Import">
 </div>
 <div class="clear-both"></div>
 </div>

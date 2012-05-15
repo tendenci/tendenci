@@ -1,4 +1,5 @@
 import os.path
+import subprocess
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
@@ -35,6 +36,7 @@ def index(request, template_name="wp_importer/index.html"):
                 result = WPImportTask.delay(file_name, request.user)
                 #uncomment the next line if there is no celery server yet.
                 #result.wait()
+                subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
                 
                 return redirect("wp_importer.views.detail", result.task_id)
                 

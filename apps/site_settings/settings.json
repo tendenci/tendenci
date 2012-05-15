@@ -511,7 +511,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "Enter your Google Analytics UA number to start tracking. Ex: UA-12345678-9", 
+        "description": "Enter your Google Analytics web stats tracking UA number to start tracking stats on your website. You will need to first sign up at <a target='_blank' href='http://www.google.com/analytics/'>http://www.google.com/analytics/</a>. Ex: UA-12345678-9", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
         "input_type": "text", 
@@ -528,7 +528,7 @@
     }, 
     {
         "default_value": " ", 
-        "description": "The Google API key is used to integrate with Google tools (e.g. GeoCoding) We can continue to benefit from Google tools with 1 API key per domain.", 
+        "description": "The Google API key is used to integrate with Google tools (e.g. GeoCoding).", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
         "input_type": "text", 

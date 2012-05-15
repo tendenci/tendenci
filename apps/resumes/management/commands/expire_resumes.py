@@ -2,6 +2,7 @@ import commands
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from datetime import datetime
+from django.core.management import call_command
 
 class Command(BaseCommand):
     """
@@ -13,3 +14,4 @@ class Command(BaseCommand):
             if resume.expiration_dt < datetime.now():
                 resume.status_detail = 'expired'
                 resume.save()
+        call_command('update_index', *["resumes"])

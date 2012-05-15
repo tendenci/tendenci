@@ -1,0 +1,16 @@
+{% load theme_tags %}
+{% load event_tags %}
+{% load i18n %}
+
+<section id="events-list">
+    <h3>{% trans "Upcoming Event" %}</h3>
+    {% list_events as events_list limit=5 %}
+    {% for event in events_list %}
+        <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+        <p>{{ event.start_dt }}</p>
+    {% empty %}
+        <h4>{% if admin %}<a href="{% url event.add %}">{% trans "Add your first event" %}</a>{% else %}<a href="#">{% trans "Great Event" %}</a>{% endif %}</h4>
+        <p>{% now "b" %} 28th</p>
+    {% endfor %}
+</section>
+{% theme_setting setting_name %}
