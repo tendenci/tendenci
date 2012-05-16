@@ -91,6 +91,16 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         if file_form.is_valid():
             if file_form.save(request, default_file, ROOT_DIR=theme_root):
                 message = "Successfully updated %s" % current_file
+                
+                log_defaults = {
+                    'event_id' : 1110000,
+                    'event_data': '%s viewed by %s' % (current_file, request.user),
+                    'description': 'theme editor file viewed',
+                    'user': request.user,
+                    'request': request,
+                    'instance': None,
+                }
+                EventLog.objects.log(**log_defaults)
             else:
                 message = "Cannot update"
             request.user.message_set.create(message=_(message))
@@ -206,6 +216,16 @@ def copy_to_theme(request, app=None):
     
     messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
     
+    log_defaults = {
+        'event_id' : 1110200,
+        'event_data': '%s copied by %s' % (full_filename, request.user),
+        'description': 'theme editor file copied to theme',
+        'user': request.user,
+        'request': request,
+        'instance': None,
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return redirect('theme_editor.original_templates')
 
 
@@ -247,6 +267,16 @@ def delete_file(request):
     
     messages.add_message(request, messages.INFO, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
     
+    log_defaults = {
+        'event_id' : 1110300,
+        'event_data': '%s deleted by %s' % (full_filename, request.user),
+        'description': 'theme editor file deleted',
+        'user': request.user,
+        'request': request,
+        'instance': None,
+    }
+    EventLog.objects.log(**log_defaults)
+    
     return redirect('theme_editor.editor')
     
 def upload_file(request, template_name="theme_editor/upload.html"):
@@ -275,6 +305,17 @@ def upload_file(request, template_name="theme_editor/upload.html"):
                     "success":True
                 }
                 messages.add_message(request, messages.INFO, ('Successfully uploaded %s.' % (upload.name)))
+                
+                log_defaults = {
+                    'event_id' : 1110100,
+                    'event_data': '%s uploaded by %s' % (full_filename, request.user),
+                    'description': 'theme editor file upload',
+                    'user': request.user,
+                    'request': request,
+                    'instance': None,
+                }
+                EventLog.objects.log(**log_defaults)
+                
                 return HttpResponse(json.dumps(response), mimetype='application/json')
     else:
         form = UploadForm()
