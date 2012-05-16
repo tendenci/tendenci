@@ -113,7 +113,7 @@ var ImageDialog = {
 		var n = ed.selection.getNode();
 
 		n = this.n;
-
+        
 		var img_src = $(".edit_src").attr("src");
 		var img_title = nl.edit_title.value;
 		var img_align = nl.edit_align.value;
@@ -121,7 +121,31 @@ var ImageDialog = {
 		var img_hspace = nl.edit_hspace.value;
 		var img_width = nl.edit_width.value;
 		var img_height = nl.edit_height.value;
-
+        var img_ratio = $(nl.edit_ratio).is(':checked');
+        
+        var url_parts = img_src.split('/');
+        var img_id = url_parts[2];
+        
+        if(img_ratio){
+            // get original dimensions of image from image list
+            var orig_height = $('#file_'+img_id+'_height').val();
+            var orig_width = $('#file_'+img_id+'_width').val();
+            var old_height = this.getAttrib(n, 'height');
+            var old_width = this.getAttrib(n, 'width');
+            
+            // maintain proportions
+            if(img_width > old_width){
+                // Resize with width
+                img_height = parseInt(orig_height * img_width / orig_width);
+            }else{
+                // Resize with height instead
+                img_width = parseInt(orig_width * img_height / orig_height);
+            }
+        }
+        
+        // update url to correct size
+        img_src = url_parts[0] + '/' + url_parts[1] + '/' + url_parts[2] + '/' + img_width + 'x' + img_height;
+        
 		// set the styles
 		ed.dom.setStyle(n, 'float', nl.edit_float.value);
 		ed.dom.setStyle(n, 'margin-top', nl.edit_top_margin.value + 'px');
