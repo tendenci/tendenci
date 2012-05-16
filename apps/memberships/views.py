@@ -856,8 +856,12 @@ def membership_import_preview(request, id):
             app = memport.app
 
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-            memberships, stats = parse_mems_from_csv(file_path, cleaned_data, memport.key)
-            
+            memberships, stats = parse_mems_from_csv(
+                file_path, 
+                cleaned_data, 
+                membership_import=memport
+            )
+
             # return the form to use it for the confirm view
             template_name = 'memberships/import-preview.html'
             return render_to_response(template_name, {

@@ -28,7 +28,11 @@ class ImportMembershipsTask(Task):
 
         #get parsed membership dicts
         imported = []
-        mems, stats = parse_mems_from_csv(file_path, fields, key)
+        mems, stats = parse_mems_from_csv(
+            file_path, 
+            fields, 
+            membership_import=memport
+        )
 
         for m in mems:
             if not m['skipped']:
@@ -36,7 +40,7 @@ class ImportMembershipsTask(Task):
                 # this should not throw DNE errors
                 # otherwise it should have been marked skipped.
                 membership_type = MembershipType.objects.get(name=m['membershiptype'])
-                
+
                 # initialize dates
                 join_dt = m['joindt']
                 renew_dt = m['renewdt']
@@ -62,11 +66,6 @@ class ImportMembershipsTask(Task):
                 user = get_user(username = m['username']) or \
                     User.objects.create_user(m['username'], m['email'])
 
-                user.first_name = user.first_name or m['firstname']
-                user.last_name = user.last_name or m['lastname']
-                user.email = user.email or m['email']
-                user.save()
-
                 # get or create profile
                 try:
                     profile = Profile.objects.get(user=user)
@@ -75,42 +74,10 @@ class ImportMembershipsTask(Task):
                 except Profile.DoesNotExist:
                     profile = Profile.objects.create_profile(user)
 
-                # update profile
-                if memport.override == 0:
-                    if not profile.company:
-                        profile.company = m.get('company') or profile.company
-                    if not profile.position_title:
-                        profile.position_title = m.get('positiontitle') or profile.position_title
-                    if not profile.address:
-                        profile.address = m.get('mailingaddress') or profile.address
-                    if not profile.address2:
-                        profile.address2 = m.get('address2') or profile.address2
-                    if not profile.city:
-                        profile.city = m.get('city') or profile.city
-                    if not profile.state:
-                        profile.state = m.get('state') or profile.state
-                    if not profile.zipcode:
-                        profile.zipcode = m.get('zipcode') or profile.zipcode
-                    if not profile.country:
-                        profile.country = m.get('county') or profile.county
-                    if not profile.address_type:
-                        profile.address_type = m.get('addresstype') or profile.address_type
-                    if not profile.work_phone:
-                        profile.work_phone = m.get('workphone') or profile.work_phone
-                    if not profile.home_phone:
-                        profile.home_phone = m.get('homephone') or profile.home_phone
-                    if not profile.mobile_phone:
-                        profile.mobile_phone = m.get('mobilephone') or profile.mobile_phone
-                    if profile.email:
-                        profile.email = user.email
-                    if not profile.email2:
-                        profile.email2 = m.get('email2') or profile.email2
-                    if not profile.url:
-                        profile.url = m.get('website') or profile.url
-                    if not profile.dob:
-                        if m.get('dob'):
-                            profile.dob = dt_parse(m.get('dob')) or datetime.now()
-                else:
+                if memport.override:
+                    user.first_name = m.get('firstname') or user.first_name
+                    user.last_name = m.get('lastname') or user.last_name
+                    user.email = m['email'] or user.email
                     profile.company = m.get('company') or profile.company
                     profile.position_title = m.get('positiontitle') or profile.position_title
                     profile.address = m.get('mailingaddress') or profile.address
@@ -128,10 +95,29 @@ class ImportMembershipsTask(Task):
                     profile.url = m.get('website') or profile.url
                     if m.get('dob'):
                         profile.dob = dt_parse(m.get('dob')) or datetime.now()
-                
+                else:
+                    user.first_name = user.first_name or m['firstname']
+                    user.last_name = user.last_name or m['lastname']
+                    user.email = user.email or m['email']
+                    profile.company = profile.company or m.get('company')
+                    profile.position_title = profile.position_title or m.get('positiontitle')
+                    profile.address = profile.address or m.get('mailingaddress')
+                    profile.address2 = profile.address2 or m.get('address2')
+                    profile.city = profile.city or m.get('city')
+                    profile.state = profile.state or m.get('state')
+                    profile.zipcode = profile.zipcode or m.get('zipcode')
+                    profile.country = profile.county or m.get('county')
+                    profile.address_type = profile.address_type or m.get('addresstype')
+                    profile.work_phone = profile.work_phone or m.get('workphone')
+                    profile.home_phone = profile.home_phone or m.get('homephone')
+                    profile.mobile_phone = profile.mobile_phone or m.get('mobilephone')
+                    profile.email = user.email or m.get('email')
+                    profile.email2 = profile.email2 or m.get('email2')
+                    profile.url = profile.url or m.get('website')
+                    profile.dob = profile.dob or dt_parse(m.get('dob')) or datetime.now()
+
+                user.save()
                 profile.save()
-                
-                print user.pk
 
                 # get or create membership
                 # relation does not hold unique constraints

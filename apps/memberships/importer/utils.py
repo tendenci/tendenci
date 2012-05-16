@@ -54,17 +54,28 @@ def clean_field_name(field):
     field = field.replace(' ', '_')
     return field
 
-def parse_mems_from_csv(file_path, mapping, key, parse_range=None):
+def parse_mems_from_csv(file_path, mapping, **kwargs):
     """
-    Parse membership entries from a csv file.
-    An extra field called columns can be passed in for field mapping
-    parse_range is the range of rows to be parsed from the csv.
-    Entries without a Membership Type will be marked as skipped.
-    Entries that are already in the database will be marked as skipped.
+    Returns membership dictionary and stats dictionary
+
+    stats:
+        all, added, skipped
+
+    memberships:
+        username, fn, ln, email, 
+        join dt, renew dt, expire dt, 
+        added, skipped, renewal
     """
+
+    membership_import = kwargs['membership_import']
+
+    key = membership_import.key
+    override = membership_import.override
+
     csv_dicts = csv_to_dict(file_path, machine_name=True)
     membership_dicts = []
     skipped = 0
+
     for csv_dict in csv_dicts:  # field mapping
         m = {}
         for app_field, csv_field in mapping.items():
@@ -72,101 +83,93 @@ def parse_mems_from_csv(file_path, mapping, key, parse_range=None):
                 # membership['username'] = 'charliesheen'
                 m[clean_field_name(app_field)] = csv_dict.get(csv_field, '')
 
+        user_keys = ['username', 'firstname', 'lastname', 'email']
+        for user_key in user_keys:
+            m[user_key] = m.get(user_key, '')
+
+        null_date = datetime(1951, 1, 1)
+        date_keys = ['joindate', 'renewdate', 'expiredate', 'joindt', 'renewdt', 'expiredt']
+        for date_key in date_keys:
+            m[date_key] = m.get(date_key)
+
+        user = None
+        m['skipped'] = False  # skip in no type
+        m['renewal'] = bool(m['renewdate'])
+
         # get user via username or email
-        if m.get('username'):
+        if m['username']:
             # truncate the username at 30 since it if doesn't exist and is longer than 30
             # it will get truncated on insert. This way a subsequent import will match the username
             # correctly if the same 30+ length username is used
-            user = get_user(username=m.get('username')[:30])
-        elif m.get('email'):
-            user = get_user(email=m.get('email'))
-
-        # if user; take user info
-        # if not; take form info
-        # ------------------------
+            user = get_user(username=m['username'][:30])
+        elif m['email']:
+            user = get_user(email=m['email'])
 
         if user:
-            m['username'] = user.username
-            m['fullname'] = user.get_full_name()
-            m['firstname'] = user.first_name
-            m['lastname'] = user.last_name
-            m['email'] = user.email
-        else:
-            m['username'] = m.get('username') or spawn_username(m['email'])
+            if override:
+                m['username'] = m['username'] or user.username
+                m['firstname'] = m['firstname'] or user.first_name
+                m['lastname'] = m['lastname'] or user.last_name
+                m['email'] = m['email'] or user.email
+            else:
+                m['username'] = user.username or m['username']
+                m['firstname'] = user.first_name or m['firstname']
+                m['lastname'] = user.last_name or m['lastname']
+                m['email'] = user.email or m['email']
 
-            m['fullname'] = "%s %s" % (m.get('first_name', ''), m.get('last_name', ''))
-            m['fullname'] = m.get('fullname', '').strip()
+        m['fullname'] = "%s %s" % (m.get('firstname', ''), m.get('lastname', ''))
+        m['fullname'] = m['fullname'].strip()
 
-            m['firstname'] = m.get('firstname', '')
-            m['lastname'] = m.get('lastname', '')
-            m['email'] = m.get('email', '')
-
-        # skip importing a record if
-        # membership type does not exist
-        # membership record already exists
-
-        #check if should be skipped or not
-        m['skipped'] = False
         try:
             membership_type = MembershipType.objects.get(name = m['membershiptype'])
         except:
-            # no memtype
             membership_type = None
             m['skipped'] = True
             skipped = skipped + 1
         
         if membership_type and user:
-            # already exists
-            mem_type_exists = Membership.objects.filter(user=user, membership_type=membership_type).exists()
-            if mem_type_exists:
-                m['skipped'] = True
-                skipped = skipped + 1
+
+            membership_exists = Membership.objects.filter(
+                user=user, membership_type=membership_type).exists()
+
+            if membership_exists:
+                if not override:
+                    m['skipped'] = True
+                    skipped = skipped + 1
             elif is_duplicate(csv_dict, csv_dicts, key):
                 m['skipped'] = True
                 skipped = skipped + 1
-        
-        # detect if renewal
-        m['renewal'] = bool(m.get('renewdate'))
 
-        #update the dates
-        try:
-            join_dt = dt_parse(m['joindate'])
-        except:
-            join_dt = None
-        try:
-            renew_dt = dt_parse(m['renewdate'])
-        except:
-            renew_dt = None
-        
-        # tendenci 4 null date: 1951-01-01
-        tendenci4_null_date = datetime(1951,1,1,0,0,0)
-        if join_dt and join_dt <= tendenci4_null_date:
-            join_dt = None
-        if renew_dt and renew_dt <= tendenci4_null_date:
-            renew_dt = None
-        
-        subscribe_dt = join_dt or datetime.now()
-        
-        try:
-            expire_dt = dt_parse(m['expiredate'])
-        except:
+        if m['joindate']:
+            dt = dt_parse(m['joindate'])
+            if dt > null_date:
+                m['joindt'] = dt
+
+        if m['renewdate']:
+            dt = dt_parse(m['renewdate'])
+            if dt > null_date:
+                m['renewdt'] = dt
+
+        if m['expiredate']:
+            m['expiredt'] = dt_parse(m['expiredate'])
+
+        if not m['expiredt']:
             if membership_type:
-                expire_dt = membership_type.get_expiration_dt(join_dt=join_dt, renew_dt=renew_dt, renewal=m.get('renewal'))
-            else:
-                expire_dt = None
-        
-        m['joindt'] = join_dt
-        m['renewdt'] = renew_dt
-        m['expiredt'] = expire_dt
-        m['subscribedt'] = subscribe_dt
-        
+                m['expiredt'] = membership_type.get_expiration_dt(
+                    join_dt=m['joindt'], 
+                    renew_dt=m['renewdt'], 
+                    renewal=m['renewal']
+                )
+
+        m['subscribedt'] = ['joindt'] or datetime.now()
         membership_dicts.append(m)
-    
+
     total = len(membership_dicts)
     stats = {
         'all': total,
         'skipped': skipped,
         'added': total-skipped,
-        }
+    }
+
     return membership_dicts, stats
     
