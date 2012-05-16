@@ -5,8 +5,8 @@
     <input type="hidden" name="filename" value="{{ file.name }}" />
     <input type="hidden" name="file_url" value="{{ file.get_absolute_url }}" />
     <input type="hidden" name="file_download_url" value="{{ file.get_absolute_download_url }}" />
-    <input type="hidden" name="file_width" value="{{ file.image_dimensions|first }}" />
-    <input type="hidden" name="file_height" value="{{ file.image_dimensions|last }}" />
+    <input type="hidden" name="file_width" id="file_{{ file.pk }}_width" value="{{ file.image_dimensions|first }}" />
+    <input type="hidden" name="file_height" id="file_{{ file.pk }}_height" value="{{ file.image_dimensions|last }}" />
 
     <div class="badge">
         <div class="icon"><img src="{{ file.icon }}" /></div>
