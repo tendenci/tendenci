@@ -298,8 +298,7 @@ class Membership(TendenciBaseModel):
         return ('membership.details', [self.pk])
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or unicode(uuid.uuid1())
         super(Membership, self).save(*args, **kwargs)
 
     def get_name(self):
@@ -314,8 +313,7 @@ class Membership(TendenciBaseModel):
 
 
     def get_entry(self):
-        try:  # membership was created when entry was approved
-            #entry = self.entries.get(decision_dt=self.create_dt)
+        try:
             entry = self.entries.filter(is_approved=True).order_by('decision_dt')[0]
         except (ObjectDoesNotExist, MultipleObjectsReturned, IndexError) as e:
             entry = None
