@@ -11,16 +11,17 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 
-# local 
+# local
+from base.http import Http403
+from perms.utils import has_perm
+from event_logs.models import EventLog
+
 from theme.utils import get_theme
 from theme_editor.models import ThemeFileVersion
 from theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
 from theme_editor.utils import get_dir_list, get_file_list, get_file_content
 from theme_editor.utils import qstr_is_file, qstr_is_dir, copy
 from theme_editor.utils import handle_uploaded_file, app_templates
-
-from base.http import Http403
-from perms.utils import has_perm
 
 DEFAULT_FILE = 'templates/homepage.html'
 
@@ -94,11 +95,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
                 
                 log_defaults = {
                     'event_id' : 1110000,
-                    'event_data': '%s viewed by %s' % (current_file, request.user),
-                    'description': 'theme editor file viewed',
+                    'event_data': '%s updated by %s' % (current_file, request.user),
+                    'description': 'theme file edited',
                     'user': request.user,
                     'request': request,
-                    'instance': None,
+                    'source': 'theme_editor',
                 }
                 EventLog.objects.log(**log_defaults)
             else:
@@ -219,10 +220,10 @@ def copy_to_theme(request, app=None):
     log_defaults = {
         'event_id' : 1110200,
         'event_data': '%s copied by %s' % (full_filename, request.user),
-        'description': 'theme editor file copied to theme',
+        'description': 'theme file copied to theme',
         'user': request.user,
         'request': request,
-        'instance': None,
+        'source': 'theme_editor',
     }
     EventLog.objects.log(**log_defaults)
     
@@ -270,10 +271,10 @@ def delete_file(request):
     log_defaults = {
         'event_id' : 1110300,
         'event_data': '%s deleted by %s' % (full_filename, request.user),
-        'description': 'theme editor file deleted',
+        'description': 'theme file deleted',
         'user': request.user,
         'request': request,
-        'instance': None,
+        'source': 'theme_editor',
     }
     EventLog.objects.log(**log_defaults)
     
@@ -309,10 +310,10 @@ def upload_file(request, template_name="theme_editor/upload.html"):
                 log_defaults = {
                     'event_id' : 1110100,
                     'event_data': '%s uploaded by %s' % (full_filename, request.user),
-                    'description': 'theme editor file upload',
+                    'description': 'theme file upload',
                     'user': request.user,
                     'request': request,
-                    'instance': None,
+                    'source': 'theme_editor',
                 }
                 EventLog.objects.log(**log_defaults)
                 
