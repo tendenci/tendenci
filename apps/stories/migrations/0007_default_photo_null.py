@@ -3,17 +3,32 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from django.db import connection, transaction
+
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        for story in orm.Story.objects.all():
+        """The query needs to be raw because the Story model
+        overrrode the photo field with a function to reference the 
+        original photo field and image field.
+        """
+        story_qs = orm.Story.objects.raw('SELECT id, photo, image_id FROM stories_story')
+        cursor = connection.cursor()
+        
+        for story in story_qs:
+            print story.photo, story.image
             if not story.image:
                 story.image = None
                 story.save()
+            if not story.photo:
+                # use SQL because the model does not reference the db field for 'photo'
+                cursor.execute('UPDATE stories_story SET photo=NULL WHERE id=%s'%story.id)
+                transaction.commit_unless_managed()
     
     def backwards(self, orm):
-        raise RuntimeError("Cannot reverse this migration.")
+        """This migration can't be reversed, pass it instead."""
+        pass
 
     models = {
         'auth.group': {
