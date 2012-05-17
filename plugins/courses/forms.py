@@ -140,7 +140,7 @@ class AnswerForm(forms.Form):
                 c_label = "%s. %s" % (choice['letter'], choice['answer'].answer)
                 choices.append((choice['answer'].pk, c_label))
         else:
-            label = "%s" % self.question.question
+            label = "%s. %s" % (self.question.number, self.question.question)
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
