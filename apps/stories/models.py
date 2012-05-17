@@ -44,10 +44,10 @@ class Story(TendenciBaseModel):
     expires = models.BooleanField(_('Expires'), default=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
     entity = models.ForeignKey(Entity,null=True)
-    photo = models.FileField(max_length=260, upload_to=file_directory, 
-        help_text=_('Photo that represents this story.'), null=True, blank=True)
+    photo = models.FileField(max_length=260, upload_to=file_directory,
+        help_text=_('Photo that represents this story.'), null=True, default=None)
     image = models.ForeignKey('StoryPhoto', 
-        help_text=_('Photo that represents this story.'), null=True, blank=True)
+        help_text=_('Photo that represents this story.'), null=True, default=None)
     tags = TagField(blank=True, default='')
 
     categories = generic.GenericRelation(CategoryItem,
@@ -72,9 +72,10 @@ class Story(TendenciBaseModel):
         return 'stories'
 
     def photo(self):
-        if self.image.file:
-            return self.image.file
-
+        if self.image:
+            if self.image.file:
+                return self.image.file
+        
         if self.pk:  # in db
             photo_qs = Story.objects.raw('SELECT id, photo FROM stories_story WHERE id = %s' % self.pk)
             if photo_qs:
