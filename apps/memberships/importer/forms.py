@@ -19,11 +19,10 @@ OVERRIDE_CHOICES = (
 )
 
 KEY_CHOICES = (
-    ('email','Email'),
-    ('first_name,last_name,email','First Name and Last Name and Email'),
-    ('first_name,last_name,phone','First Name and Last Name and Phone'),
-    ('first_name,last_name,company','First Name and Last Name and Company'),
     ('username','Username'),
+    ('member_number', 'Member Number'),
+    ('email','Email'),
+    ('first_name,last_name,email','First Name, Last Name and Email'),
 )
 
 class UploadForm(forms.Form):

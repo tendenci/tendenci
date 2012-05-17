@@ -66,6 +66,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         join dt, renew dt, expire dt, 
         added, skipped, renewal
     """
+    from base.utils import is_blank
 
     membership_import = kwargs['membership_import']
 
@@ -87,23 +88,33 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         for user_key in user_keys:
             m[user_key] = m.get(user_key, '')
 
+
+
         null_date = datetime(1951, 1, 1)
         date_keys = ['joindate', 'renewdate', 'expiredate', 'joindt', 'renewdt', 'expiredt']
         for date_key in date_keys:
             m[date_key] = m.get(date_key)
 
-        user = None
-        m['skipped'] = False  # skip in no type
+        m['skipped'] = False  # skip if no type
         m['renewal'] = bool(m['renewdate'])
 
-        # get user via username or email
-        if m['username']:
-            # truncate the username at 30 since it if doesn't exist and is longer than 30
-            # it will get truncated on insert. This way a subsequent import will match the username
-            # correctly if the same 30+ length username is used
+        user_kwargs = {}
+        for i in key.split(','):
+            user_kwargs[i] = m[i.replace('_','')]
+
+        if 'username' in kwargs:
+            kwargs['username'] = kwargs['username'][:30]
+
+        user = None
+        if not is_blank(user_kwargs):
+            if key == 'member_number':
+                membership = Membership.objects.first(**user_kwargs)
+                user = membership.user
+            else:
+                user = get_user(**user_kwargs)
+
+        if not user and m['username']:
             user = get_user(username=m['username'][:30])
-        elif m['email']:
-            user = get_user(email=m['email'])
 
         if user:
             if override:
@@ -126,7 +137,13 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
             membership_type = None
             m['skipped'] = True
             skipped = skipped + 1
-        
+
+        if not m['skipped']:
+            if not user and not m['email']:
+                # email required to create user
+                m['skipped'] = True
+                skipped = skipped + 1
+
         if membership_type and user:
 
             membership_exists = Membership.objects.filter(
@@ -161,7 +178,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
                     renewal=m['renewal']
                 )
 
-        m['subscribedt'] = ['joindt'] or datetime.now()
+        m['subscribedt'] = m['joindt'] or datetime.now()
         membership_dicts.append(m)
 
     total = len(membership_dicts)
