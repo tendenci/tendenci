@@ -75,24 +75,22 @@ class Group(TendenciBaseModel):
         add a user to the group; check for duplicates
         return (user, created)
         """
+        from django.db import IntegrityError
 
-        # check if user in group
-        in_group = GroupMembership.objects.filter(group=self, member=user).exists()
-        if in_group: return (user, False)  # user, created
-
-        # if user not in group; insert into group
-        GroupMembership.objects.create(**{
-            'group': self,
-            'member': user,
-            'creator_id': kwargs.get('creator_id') or user.pk,
-            'creator_username': kwargs.get('creator_username') or user.username,
-            'owner_id': kwargs.get('owner_id') or user.pk,
-            'owner_username': kwargs.get('owner_username') or user.username,
-            'status': kwargs.get('status') or True,
-            'status_detail': kwargs.get('status_detail') or 'active',
-        })
-
-        return (user, True)  # user, created
+        try:
+            GroupMembership.objects.create(**{
+                'group': self,
+                'member': user,
+                'creator_id': kwargs.get('creator_id') or user.pk,
+                'creator_username': kwargs.get('creator_username') or user.username,
+                'owner_id': kwargs.get('owner_id') or user.pk,
+                'owner_username': kwargs.get('owner_username') or user.username,
+                'status': kwargs.get('status') or True,
+                'status_detail': kwargs.get('status_detail') or 'active',
+            })
+            return user, True  # created
+        except IntegrityError:
+            return user, False
 
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
