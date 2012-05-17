@@ -901,8 +901,6 @@ def membership_import_confirm(request, id):
             cleaned_data = form.cleaned_data
             
             if not settings.CELERY_IS_ACTIVE:
-                # if celery server is not present 
-                # evaluate the result and render the results page
                 result = ImportMembershipsTask()
                 memberships, stats = result.run(memport, cleaned_data)
                 return render_to_response('memberships/import-confirm.html', {

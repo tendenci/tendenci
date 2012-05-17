@@ -404,21 +404,15 @@ def spawn_username(*args):
 
 def get_user(**kwargs):
     """
-    Get user via single keyword argument.
-    Example: get_user(username=username)
-    Only works with unique fields e.g. id, username
+    Returns first user that matches filters.
+    If no user is found then a non type object is returned.
     """
-    for k, v in kwargs.items():
-
-        try:
-            user = User.objects.get(**{k:v})
-        except User.MultipleObjectsReturned:
-            user = User.objects.filter(**{k:v})[0]
-        except User.DoesNotExist:
-            user = None
-
-        if user:
-            break  # get out of for loop
+    try:
+        user = User.objects.get(**kwargs)
+    except User.MultipleObjectsReturned:
+        user = User.objects.filter(**kwargs)[0]
+    except User.DoesNotExist:
+        user = None
 
     return user
 
