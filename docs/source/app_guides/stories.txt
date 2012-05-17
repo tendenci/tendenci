@@ -1,9 +1,6 @@
 Stories
 =======
 
-Overview
---------
-
 Stories are a great way to add dynamic content around your site. Stories can be used for:
 
 - Homepage rotators/slideshows
