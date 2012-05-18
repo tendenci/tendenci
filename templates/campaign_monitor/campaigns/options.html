@@ -21,9 +21,7 @@
 	{% endif %}
     
     {% if can_delete %}
-        {% comment %}
-        <a class="option-link delete" href="#">{% trans "Delete" %}</a>
-        {% endcomment %}
+        <a class="option-link delete" href="/campaign_monitor/campaigns/delete/{{ opt_object.campaign_id }}">{% trans "Delete" %}</a>
     {% endif %}
 
 </div>

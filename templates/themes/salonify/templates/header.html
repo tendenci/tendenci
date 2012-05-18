@@ -22,9 +22,9 @@ PR Firm Theme - header.html
                         <span>Logged in as <a href="/profiles/">{{ request.user }}</a> | <a href="/accounts/logout/">Logout</a></span>
                         {% else %}
                         <form method="post" action="/accounts/login/" style="margin-bottom: 6px;">{% csrf_token %}
-                            <input title="username" id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="padding: 4px; color:#007799; text-transform: uppercase;" />
-                            <input title="password" value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="padding: 4px; color:#007799; text-transform: uppercase;" />
-                            <input name="submit" type="submit" value="LOGIN" style="display: none;" />
+                            <input title="username" id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="padding: 4px; color:#007799;" />
+                            <input title="password" value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="padding: 4px; color:#007799;" />
+                            <input name="submit" type="submit" value="LOGIN" />
                         </form>
                         <p>Not a Member? Join <a href="#">Here</a></p>
                         {% endif %}

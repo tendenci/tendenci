@@ -1,0 +1,4 @@
+Articles
+========
+
+Here will be a basic overview of the structure of the Articles app.

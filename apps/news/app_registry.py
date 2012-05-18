@@ -24,7 +24,7 @@ class NewsRegistry(CoreRegistry):
 
     url = {
         'add': lazy_reverse('news.add'),
-        'search': lazy_reverse('news.search'),
+        'search': lazy_reverse('news'),
     }
 
 site.register(News, NewsRegistry)

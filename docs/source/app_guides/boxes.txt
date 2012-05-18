@@ -1,0 +1,6 @@
+Boxes
+=====
+
+Boxes are specialized areas that are added to your theme. You can add HTML content to a box via a WYSIWYG. Boxes can be included based on their ID or based on tags.
+
+To use boxes, they must be added to your theme.

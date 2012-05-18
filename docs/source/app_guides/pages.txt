@@ -1,0 +1,6 @@
+Pages
+=====
+
+Pages are the most basic type of content. The main fields are Title, Content, and URL Path.
+
+You can add tags to pages. You can also select a template for that page. For more about these templates, see :doc:`../templating/custom_templates`.

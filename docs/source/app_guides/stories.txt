@@ -1,0 +1,17 @@
+Stories
+=======
+
+Stories are a great way to add dynamic content around your site. Stories can be used for:
+
+- Homepage rotators/slideshows
+- Sponors rotators
+- Featured content
+
+A story consists of the following basic fields:
+
+- Title
+- Description
+- Image
+- Link (internal or external)
+
+Stories can be set to activate and expire based on a start and end date. Stories may also be set to never expire.
