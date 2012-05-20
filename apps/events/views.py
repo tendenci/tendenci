@@ -1778,7 +1778,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         if registrant.custom_reg_form_entry:
             registrant.name = registrant.custom_reg_form_entry.__unicode__()
         else:
-            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+            if registrant.first_name or registrant.last_name:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
     
     return render_to_response(template_name, {
         'event':event,

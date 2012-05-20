@@ -169,6 +169,14 @@ class Registrant(models.Model):
         if fn and ln:
             return ', '.join([ln, fn])
         return fn or ln
+        
+    def get_name(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_name()
+        else:
+            if self.first_name or self.last_name:
+                return self.first_name + ' ' + self.last_name
+        return None
 
     @classmethod
     def event_registrants(cls, event=None):

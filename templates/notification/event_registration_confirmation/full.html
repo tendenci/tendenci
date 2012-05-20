@@ -22,7 +22,7 @@
                     {% for registrant in registrants %}
                             <div>
                             {% if registrant.name %}
-                                    {{ registrant.name }}
+                                {{ registrant.name }}
                             {% else %}
                                 {% trans "Guest #" %}{{ forloop.counter0 }}
                             {% endif %}
