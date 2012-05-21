@@ -19,6 +19,9 @@
                     {% if reg.email %}
                         ({{ reg.email }})
                     {% endif %}
+					{% if reg.user %}
+						</a>
+					{% endif %}
                     {% if reg.custom_reg_form_entry %}
                     {% with reg.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
                         {% for field in roster_field_list %}
@@ -28,9 +31,6 @@
                         {% endfor %}
                     {% endwith %}
                     {% endif %}
-					{% if reg.user %}
-						</a>
-					{% endif %}
 				</td>
 				<td class="td-right">
 				    {{ reg.amount|format_currency }}

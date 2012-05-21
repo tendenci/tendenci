@@ -172,15 +172,6 @@
                 {% else %}
                     {% trans "Guest #" %}{{ forloop.counter0 }}
                 {% endif %}
-                {% if registrant.custom_reg_form_entry %}
-                {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
-                    {% for field in roster_field_list %}
-                        {% if field.value %}
-                            <div>{{ field.label }}: {{ field.value }}</div>
-                        {% endif %}
-                    {% endfor %}
-                {% endwith %}
-                {% endif %}
                 </span>
                 {% if registrant.cancel_dt %}
                     <span class="cancel-notice2">
@@ -194,6 +185,15 @@
                           <a href="{% url event.cancel_registrant event.pk registrant.hash %}">{% trans "Cancel" %}</a>
                       {% endif %}
                     {% endif %}
+                {% endif %}
+                {% if registrant.custom_reg_form_entry %}
+                {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                    {% for field in roster_field_list %}
+                        {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
                 {% endif %}
             </td>
             <td class="td-right">

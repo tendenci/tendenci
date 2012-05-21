@@ -236,6 +236,25 @@ class Registrant(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
+            
+    def initialize_fields(self):
+        """Similar to assign_mapped_fields but more direct and saves the registrant
+        """
+        if self.custom_reg_form_entry:
+            self.first_name = self.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            self.last_name = self.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            self.mail_name = self.custom_reg_form_entry.get_value_of_mapped_field('mail_name')
+            self.address = self.custom_reg_form_entry.get_value_of_mapped_field('address')
+            self.city = self.custom_reg_form_entry.get_value_of_mapped_field('city')
+            self.state = self.custom_reg_form_entry.get_value_of_mapped_field('state')
+            self.zip = self.custom_reg_form_entry.get_value_of_mapped_field('zip')
+            self.country = self.custom_reg_form_entry.get_value_of_mapped_field('country')
+            self.phone = self.custom_reg_form_entry.get_value_of_mapped_field('phone')
+            self.email = self.custom_reg_form_entry.get_value_of_mapped_field('email')
+            self.groups = self.custom_reg_form_entry.get_value_of_mapped_field('groups')
+            self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
+            self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
+            self.save()
         
     def assign_mapped_fields(self):
         """
