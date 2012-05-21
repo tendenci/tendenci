@@ -1578,7 +1578,7 @@ class AppFieldEntry(models.Model):
     """
     entry = models.ForeignKey("AppEntry", related_name="fields")
     field = models.ForeignKey("AppField", related_name="field")
-    value = models.CharField(max_length=200)
+    value = models.CharField(max_length=2000)
 
     class Meta:
         verbose_name = _("Application Field Entry")
