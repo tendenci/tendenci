@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
@@ -614,7 +617,9 @@ def add_registration(*args, **kwargs):
 def create_registrant_from_form(*args, **kwargs):
     """
     Create the registrant
-    Args are split up below into the appropriate attributes
+    Args are split up below into the appropriate attributes.
+    NOTE: When updating this be sure to check with the anonymous registration
+    impementation of events in the registration module.
     """
     # arguments were getting kinda long
     # moved them to an unpacked version

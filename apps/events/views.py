@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 import calendar
 from datetime import datetime
