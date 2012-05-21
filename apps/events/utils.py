@@ -656,7 +656,8 @@ def create_registrant_from_form(*args, **kwargs):
                     registrant.state = user_profile.state
                     registrant.zip = user_profile.zipcode
                     registrant.country = user_profile.country
-                    registrant.company_name = user_profile.company
+                    if not registrant.company_name:
+                        registrant.company_name = user_profile.company
                     registrant.position_title = user_profile.position_title
                 
     registrant.save()

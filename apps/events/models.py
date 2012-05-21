@@ -254,7 +254,9 @@ class Registrant(models.Model):
             self.groups = self.custom_reg_form_entry.get_value_of_mapped_field('groups')
             self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
             self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
-            self.save()
+        if self.first_name or self.last_name:
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+        self.save()
         
     def assign_mapped_fields(self):
         """
