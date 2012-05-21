@@ -125,7 +125,7 @@ function update_id_fields(row, new_position)
     // Are there other element types...? Add here.
 }
 
-// Replace "Add another question" link in inline with new window blank question add form.
+// Replace "Add another question" link in inline with blank question add form link.
 jQuery(function($) { 
     $(".ui-sortable tr:last").find('a').replaceWith('<a href="/admin/courses/question/add">Add a Question</a>');
 });

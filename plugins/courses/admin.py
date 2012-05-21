@@ -39,7 +39,7 @@ class QuestionAdmin(admin.ModelAdmin):
     view_on_site.short_description = 'view'
     
     def response_change(self, request, obj, post_url_continue=None):
-        return redirect('/admin/courses/course/%s' % obj.course.pk)
+        return redirect('courses.questions', obj.pk)
     
     def response_add(self, request, obj, post_url_continue=None):
         return redirect('/admin/courses/course/%s' % obj.course.pk)
@@ -85,6 +85,7 @@ class CourseAdmin(admin.ModelAdmin):
     )
     form = CourseForm
     actions = []
+    add_form_template = "courses/admin/add_form.html"
 
     class Media:
         js = (
