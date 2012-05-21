@@ -21,17 +21,17 @@
 
                     {% for registrant in registrants %}
                             <div>
-                            {% if registrant.name %}
-                                {{ registrant.name }}
+                            {% if registrant.get_name %}
+                                {{ registrant.get_name }}
                             {% else %}
                                 {% trans "Guest #" %}{{ forloop.counter0 }}
                             {% endif %}
                             {% if registrant.custom_reg_form_entry %}
                             {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
                             {% for field in roster_field_list %}
-                            {% if field.value %}
-                            <div>{{ field.label }}: {{ field.value }}</div>
-                            {% endif %}
+                                {% if field.value %}
+                                <div>{{ field.label }}: {{ field.value }}</div>
+                                {% endif %}
                             {% endfor %}
                             {% endwith %}
                             {% endif %}

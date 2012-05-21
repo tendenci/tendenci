@@ -1019,9 +1019,12 @@ class CustomRegFormEntry(models.Model):
 
     
     def get_name(self):
-        name = ' '.join([self.get_value_of_mapped_field('first_name'), 
-                         self.get_value_of_mapped_field('last_name')])
-        return name.strip()
+        first_name = self.get_value_of_mapped_field('first_name')
+        last_name = self.get_value_of_mapped_field('last_name')
+        if first_name or last_name:
+            name = ' '.join([first_name, last_name])
+            return name.strip()
+        return ''
 
     def get_lastname_firstname(self):
         name = '%s, %s' % (self.get_value_of_mapped_field('last_name'), 
