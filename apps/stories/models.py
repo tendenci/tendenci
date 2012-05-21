@@ -39,6 +39,7 @@ class Story(TendenciBaseModel):
     content = models.TextField(blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'))
     full_story_link = models.CharField(_('Full Story Link'), max_length=300, blank=True)
+    link_title = models.CharField(_('Link Title'), max_length=200, blank=True)
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
