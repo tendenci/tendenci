@@ -1,24 +1,21 @@
 import re
 from datetime import datetime
 from dateutil.parser import parse as dt_parse
-
-from django.contrib.auth.models import User
-from profiles.models import Profile
-
-from profiles.models import Profile
 from memberships.models import Membership, MembershipType
-from memberships.utils import csv_to_dict, spawn_username, get_user
+from memberships.utils import csv_to_dict, get_user
+
 
 def clean_username(un):
     # clean username
     un = re.sub(r'[^a-zA-Z0-9._@]+', '', un)
-    
+
     # soft truncate
     if len(un) > 30:
         un = un.split('@')[0]  # pray for email address
 
     # hard truncate
     return un[:30]
+
 
 def is_duplicate(csv_dict, csv_dicts, key):
     """Check for duplicates of the element in the same csv file.
@@ -44,6 +41,7 @@ def is_duplicate(csv_dict, csv_dicts, key):
         return True
     return False
 
+
 def clean_field_name(field):
 
     if 'email' in field:
@@ -54,6 +52,7 @@ def clean_field_name(field):
     field = field.replace(' ', '_')
     return field
 
+
 def parse_mems_from_csv(file_path, mapping, **kwargs):
     """
     Returns membership dictionary and stats dictionary
@@ -62,8 +61,8 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         all, added, skipped
 
     memberships:
-        username, fn, ln, email, 
-        join dt, renew dt, expire dt, 
+        username, fn, ln, email,
+        join dt, renew dt, expire dt,
         added, skipped, renewal
     """
     from base.utils import is_blank
@@ -75,6 +74,8 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
 
     csv_dicts = csv_to_dict(file_path, machine_name=True)
     membership_dicts = []
+
+    updated = 0
     skipped = 0
 
     for csv_dict in csv_dicts:  # field mapping
@@ -88,8 +89,6 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         for user_key in user_keys:
             m[user_key] = m.get(user_key, '')
 
-
-
         null_date = datetime(1951, 1, 1)
         date_keys = ['joindate', 'renewdate', 'expiredate', 'joindt', 'renewdt', 'expiredt']
         for date_key in date_keys:
@@ -100,7 +99,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
 
         user_kwargs = {}
         for i in key.split(','):
-            user_kwargs[i] = m[i.replace('_','')]
+            user_kwargs[i] = m[i.replace('_', '')]
 
         if 'username' in kwargs:
             kwargs['username'] = kwargs['username'][:30]
@@ -132,14 +131,14 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         m['fullname'] = m['fullname'].strip()
 
         try:
-            membership_type = MembershipType.objects.get(name = m['membershiptype'])
+            membership_type = MembershipType.objects.get(name=m['membershiptype'])
         except:
             membership_type = None
             m['skipped'] = True
             skipped = skipped + 1
 
         if not m['skipped']:
-            if not user and not m['email']:
+            if not user or not m['email']:
                 # email required to create user
                 m['skipped'] = True
                 skipped = skipped + 1
@@ -150,10 +149,10 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
                 user=user, membership_type=membership_type).exists()
 
             if membership_exists:
-                if not override:
-                    m['skipped'] = True
-                    skipped = skipped + 1
-            elif is_duplicate(csv_dict, csv_dicts, key):
+                updated = updated + 1
+
+            # if duplicate within file
+            if is_duplicate(csv_dict, csv_dicts, key):
                 m['skipped'] = True
                 skipped = skipped + 1
 
@@ -173,8 +172,8 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         if not m['expiredt']:
             if membership_type:
                 m['expiredt'] = membership_type.get_expiration_dt(
-                    join_dt=m['joindt'], 
-                    renew_dt=m['renewdt'], 
+                    join_dt=m['joindt'],
+                    renew_dt=m['renewdt'],
                     renewal=m['renewal']
                 )
 
@@ -185,8 +184,8 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
     stats = {
         'all': total,
         'skipped': skipped,
-        'added': total-skipped,
+        'added': total - (updated + skipped),
+        'updated': updated,
     }
 
     return membership_dicts, stats
-    

@@ -1,20 +1,14 @@
 import os
 from datetime import datetime
 from dateutil.parser import parse as dt_parse
-
 from django.contrib.auth.models import User
 from django.conf import settings
-
 from celery.task import Task
-from celery.registry import tasks
-
 from profiles.models import Profile
-
 from corporate_memberships.models import CorporateMembership
-from memberships.models import (AppEntry, AppField, AppFieldEntry, 
-    MembershipType, Membership, MembershipImport)
-from memberships.importer.utils import (parse_mems_from_csv,
-    clean_username)
+from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
+from memberships.importer.utils import parse_mems_from_csv, clean_field_name
+
 
 class ImportMembershipsTask(Task):
 
@@ -23,16 +17,13 @@ class ImportMembershipsTask(Task):
         from memberships.utils import get_user
 
         app = memport.app
-        key = memport.key
-        interactive = memport.interactive
-
         file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
 
         #get parsed membership dicts
         imported = []
         mems, stats = parse_mems_from_csv(
-            file_path, 
-            fields, 
+            file_path,
+            fields,
             membership_import=memport
         )
 
@@ -42,48 +33,32 @@ class ImportMembershipsTask(Task):
                 membership_type = MembershipType.objects.get(name=m['membershiptype'])
 
                 # initialize dates
-                join_dt = m['joindt']
-                renew_dt = m['renewdt']
                 expire_dt = m['expiredt']
                 subscribe_dt = m['subscribedt']
 
-                credit_cards = ('cc','credit','creditcard')
-                checks = ('check',)
-                cash = ('cash',)
+                payment_methods = {
+                    'cc': 1,
+                    'credit': 1,
+                    'credit card': 1,
+                    'check': 2,
+                    'cash': 3
+                }
 
-                # determine payment method id
-                # this assumes that the default payment methods are used.
-                payment_method = slugify(m.get('paymentmethod', '')).replace('-','')
-                payment_method_id = None
-                if payment_method in credit_cards:
-                    payment_method_id = 1
-                elif payment_method in checks:
-                    payment_method_id = 2
-                elif payment_method in cash:
-                    payment_method_id = 3
+                # get payment method id; assumes default payment methods
+                payment_method = slugify(m.get('paymentmethod', '')).replace('-', '')
+                payment_method_id = payment_methods.get(payment_method)
 
                 user = get_user(username=m['username'])
 
                 if not user:
-                    if not m['username']:
-                        if m['firstname'] or m['lastname']:
-                            m['username'] = spawn_username(
-                                m['firstname'],
-                                m['lastname'],
-                            )
-                        elif m['email']:
-                            m['username'] = spawn_username(
-                                m['email']
-                            )
                     if m['username'] and m['email']:
                         user = User.objects.create_user(m['username'], m['email'])
-                        user.is_active = bool(interactive)
 
                 # get or create profile
                 try:
                     profile = Profile.objects.get(user=user)
                 except Profile.MultipleObjectsReturned:
-                    profile = Profile.objects.filter(user =user)[0]
+                    profile = Profile.objects.filter(user=user)[0]
                 except Profile.DoesNotExist:
                     profile = Profile.objects.create_profile(user)
 
@@ -170,21 +145,18 @@ class ImportMembershipsTask(Task):
                     except CorporateMembership.DoesNotExist:
                         pass
 
-
                 entry = membership.get_entry()
-                entry_created = False
 
                 if not entry:
-                    entry_created = True
                     entry = AppEntry.objects.create(
-                        app = app,
-                        user = membership.user,
-                        entry_time = datetime.now(),
-                        membership = membership,  # pk required here
-                        is_renewal = membership.renewal,
-                        is_approved = True,
-                        decision_dt = membership.subscribe_dt,
-                        judge = membership.creator,
+                        app=app,
+                        user=membership.user,
+                        entry_time=datetime.now(),
+                        membership=membership,  # pk required here
+                        is_renewal=membership.renewal,
+                        is_approved=True,
+                        decision_dt=membership.subscribe_dt,
+                        judge=membership.creator,
                         creator=membership.creator,
                         creator_username=membership.creator_username,
                         owner=membership.owner,
@@ -192,21 +164,53 @@ class ImportMembershipsTask(Task):
                         allow_anonymous_view=False,
                     )
 
-                if entry_created:  # create entry fields
-                    for key, value in fields.items():
-                        app_fields = AppField.objects.filter(app=app, field_name=key)
-                        if app_fields and m.get(key):
+                entry_dict = {}  # entry pk and value
+                field_dict = {}
+                for field in entry.fields.all():
+                    entry_dict[field.field.label] = {
+                        'item': field,
+                        'field': field.field,
+                        'value': field.value.strip()
+                        }
+                    field_dict[field.field.label] = field.field
 
-                            try:
-                                value = unicode(m.get(unicode(key)))
-                            except (UnicodeDecodeError) as e:
-                                value = ''
+                # get a concise list of all app fields
+                app_fields = AppField.objects.filter(app=app)
+                for field in app_fields:
 
-                            AppFieldEntry.objects.create(
-                                entry=entry,
-                                field=app_fields[0],
-                                value=value,
-                            )
+                    entry_field = entry_dict.get(field.label, {})
+
+                    entry_dict[field.label] = {
+                        'item': entry_field.get('item'),  # default: None
+                        'field': entry_field.get('field'),  # default: None
+                        'value': entry_field.get('value', u'').strip()
+                    }
+                    field_dict[field.label] = field
+
+                # [finally] loop through all entry items
+                # setting values from csv and saving entry items
+                for k, d in entry_dict.items():
+
+                    entry_item = d['item'] or AppFieldEntry()
+                    field_name = clean_field_name(k).replace('_', '').strip()
+                    imported_value = m.get(field_name, u'').strip()
+
+                    if not entry_item.pk:
+                        entry_item.entry = entry
+                        entry_item.field = field_dict[k]
+
+                    if memport.override:
+                        # update all fields (if csv has value)
+                        entry_item.value = imported_value or d['value']
+                    else:
+                        # update blank fields
+                        entry_item.value = d['value'] or imported_value
+
+                    # save will either create or update
+                    # depending if a pk is available
+                    entry_item.save()
+
+                print m['memberid']
 
                 # update membership number
                 if not membership.member_number:
@@ -218,5 +222,5 @@ class ImportMembershipsTask(Task):
 
                 # append to imported list
                 imported.append(membership)
-                
+
         return imported, stats
