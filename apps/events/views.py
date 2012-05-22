@@ -1244,7 +1244,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             updated = False
             if custom_reg_form:
                 for form in formset.forms:
-                    form.save(reg8n.event)
+                    entry = form.save(reg8n.event)
+                    for reg in entry.registrants.all():
+                        reg.initialize_fields()
                 updated = True
             else:
                 instances = formset.save()
