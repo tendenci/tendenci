@@ -87,6 +87,11 @@ def registration_pricing_and_button(context, event, user):
     # see get_pricing
     q_pricing = get_pricing(user, event, pricing=pricing)
     
+    default_pricing = []
+    for p in q_pricing:
+        if 'default' in p:
+            default_pricing = p
+
     # spots taken
     if limit > 0:
         spots_taken = get_event_spots_taken(event)
@@ -107,6 +112,7 @@ def registration_pricing_and_button(context, event, user):
         'reg_ended': reg_ended,
         'earliest_time': earliest_time,
         'pricing': q_pricing,
+        'default_pricing': default_pricing,
         'user': user,
         'is_registrant': is_registrant,
         'anonpricing': anonpricing,

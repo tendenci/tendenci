@@ -26,7 +26,6 @@ function update_form_fields(form, original_form, form_number, total, remove) {
             rep_form_number = form_number - 1;
         }
     }
-
     // update the class attributes
     form.find('div[class]').each(function() {
         var _class= $(this).attr('class').replace(search, replacement);   
@@ -53,7 +52,17 @@ function update_form_fields(form, original_form, form_number, total, remove) {
             id = 'id_' + newFor;
         $(this).attr('for', id);
     });
-
+    
+  
+    // remove mceEditor and display the textarea - because it doesn't work on clone
+    if (!remove) {
+	    form.find('.mceEditor').each(function() {
+	    	var $this = $(this);
+	    	$this.parent('.field').find('textarea').show();
+	    	$this.remove();
+	    });
+    }
+    
     // update the form field values with
     // the original forms
     if (original_form) {
@@ -77,7 +86,16 @@ function clone_form(selector, type) {
     var form_functions_clone = form_functions.clone(true);
     var total = parseInt($('#' + type + '-TOTAL_FORMS').val());
     var form_number = current_element.find('input[name="form-number"]').val();
-
+	// check if we have mceEditor
+	var textarea_id;
+	var myEditor = $(new_element).find('.mceEditor');
+	if (myEditor){
+		var mytextarea = myEditor.parent('.field').find('textarea');
+		if (mytextarea){
+			textarea_id = mytextarea.attr('id');
+		}
+	}
+	
     new_element = update_form_fields(
         new_element, 
         current_element, 
@@ -94,6 +112,24 @@ function clone_form(selector, type) {
     new_element.hide();
     current_element.after(new_element);
     new_element.fadeIn(200);
+    
+    // Add mce Editor
+    if (myEditor){
+    	if (textarea_id){
+    	var search = '-' + (form_number) + '-';
+    	var replacement = '-' + (parseInt(form_number) + 1) + '-';
+    	var new_textarea_id = textarea_id.replace(search, replacement);
+    	
+    	// it's weird, the new id has to add id_ in front of the original one
+    	// id_speaker-1-description
+    	if (new_textarea_id.substr(0, 3) !='id_'){
+    		new_textarea_id = 'id_' + new_textarea_id;
+    	}
+    	tinyMCE.execCommand('mceAddControl', false, new_textarea_id);
+    	tinyMCE.triggerSave();
+      }
+    }
+    
 
     // make sure all forms can delete
     new_element.before(form_functions_clone);
@@ -281,17 +317,19 @@ $(document).ready(function(){
         });
     }
 
-    $('div.formset-add a').click(function() { 
+    $('div.formset-add a').click(function(e) { 
         var params = get_formset_and_prefix($(this));
         clone_form('div.' + params.form_set + ':visible:last', params.prefix);
-        return false;
+        e.preventDefault();
+        //return false;
     });
 
-    $('div.formset-delete a').click(function() { 
+    $('div.formset-delete a').click(function(e) { 
         var params = get_formset_and_prefix($(this));
         var selector = 'div.' + params.form_set;
         var current_form = $(this).closest('div.formset-functions').prev();
         delete_form(current_form, selector, params.prefix);
-        return false;
+        e.preventDefault();
+        //return false;
     });
 });

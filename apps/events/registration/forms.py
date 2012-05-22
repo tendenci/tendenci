@@ -10,6 +10,7 @@ from captcha.fields import CaptchaField
 from discounts.models import Discount
 from perms.utils import is_admin
 from site_settings.utils import get_setting
+from memberships.models import Membership
 
 from events.models import RegConfPricing, PaymentMethod, Registrant
 
@@ -132,7 +133,7 @@ class RegistrantForm(forms.Form):
         if memberid:# memberid takes priority over email
             memberships = Membership.objects.filter(member_number=memberid)
             if memberships:
-                user = membership[0].user
+                user = memberships[0].user
         elif email:
             users = User.objects.filter(email=email)
             if users:

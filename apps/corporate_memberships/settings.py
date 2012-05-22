@@ -16,9 +16,3 @@ if use_search_index in ('true', True):
     use_search_index = True
 else:
     use_search_index = False
-allow_anonymous_search = get_setting('module', 
-                                     'corporate_memberships', 
-                                     'anonymoussearchcorporatemembers')
-allow_member_search = get_setting('module', 
-                                  'corporate_memberships', 
-                                  'membersearchcorporatemembers')

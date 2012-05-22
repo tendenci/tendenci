@@ -162,6 +162,7 @@ def create_registrant(form, event, reg8n, **kwargs):
         user = form.get_user()
         if not user.is_anonymous():
             registrant.user = user
+        registrant.initialize_fields()
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
@@ -184,7 +185,8 @@ def create_registrant(form, event, reg8n, **kwargs):
                 registrant.state = user_profile.state
                 registrant.zip = user_profile.zipcode
                 registrant.country = user_profile.country
-                registrant.company_name = user_profile.company
+                if not registrant.company_name:
+                    registrant.company_name = user_profile.company
                 registrant.position_title = user_profile.position_title
                 
     registrant.save()

@@ -48,3 +48,5 @@ plugins/apps.json
 /themes/thinksmart/templates/header.html
 /themes/thinksmart/templates/nav.html
 /themes/thinksmart/templates/sidebar.html
+
+docs/build/

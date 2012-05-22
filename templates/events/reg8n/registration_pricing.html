@@ -80,7 +80,11 @@
                         {% if anonpricing %}
                         <input class="registration-green-button" type="button" value="{% trans 'Register' %}" onClick="location.href='{% url event.anon_multi_register event.pk %}'" />
                         {% else %}
-                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                            {% if not default_pricing %}
+                                <input class="registration-green-button" type="button" value="{% trans 'Login to Register' %}" onClick="location.href='/accounts/login/?next={{ request.path }}'" />
+                            {% else %}
+                                <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                     </form>

@@ -220,20 +220,4 @@
     });
     
 })(django.jQuery);
-</script>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('.field_function').hide();
-        $('.function_params').hide();
-        $('.field_type').change(function(data){
-                if ($(this).find("select option:selected").text() == "Checkbox"){
-                    $(this).parent().find(".field_function").show();
-                    $(this).parent().find(".function_params").show();
-                } else {
-                    $(this).parent().find(".field_function").hide();
-                    $(this).parent().find(".function_params").hide();
-                }
-            });
-    });
-</script>
+</script>  

@@ -1,0 +1,46 @@
+Events
+======
+
+Tendenci offers robust Event management and registration capabilities. You can add events to your website to be displayed on a calendar or a list view.
+
+Events can allow for registration. Different pricing options can be set for different levels of registration. For example, you may have
+
+- Early Bird Rate
+- Member Rate
+- Member Table Rate (multiple registrants included)
+- At-the-door Rate
+
+All of these pricing options (and any others you might think up), can be configured to have a start and end time, and can be made only available members of your site or possibly only people in certain groups.
+
+Adding an Event
+---------------
+
+Basic Event details
+~~~~~~~~~~~~~~~~~~~
+
+These are things like start and end times.
+
+
+Speakers
+~~~~~~~~
+
+You can add one or many speakers to be listed on your event page. Speakers include a name, photo, and bio.
+
+
+Registration options
+~~~~~~~~~~~~~~~~~~~~
+
+You can configure how many people can register for the event. Start and end times for registration are controlled in the pricings.
+
+
+Event Registration Pricing
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Different pricing options can be set for different levels of registration. For example, you may have
+
+- Early Bird Rate
+- Member Rate
+- Member Table Rate (multiple registrants included)
+- At-the-door Rate
+
+All of these pricing options (and any others you might think up), can be configured to have a start and end time, and can be made only available members of your site or possibly only people in certain groups.

@@ -41,7 +41,7 @@
 			
 			<div style="float: right;">
 				{% if corporate_membership.real_time_status_detail == 'active' %}
-				<a href="{% url membership.application_details_corp_pre corporate_membership.corp_app.memb_app.slug corporate_membership.pk %}">{% trans "Join under this corporation" %}</a>
+				<a href="{% url membership.application_details_corp_pre corporate_membership.corp_app.memb_app.slug corporate_membership.pk %}" title="Join under this corporation">{% trans "Join under this corporation" %}</a>
 				{% endif %}
 				
 	    		

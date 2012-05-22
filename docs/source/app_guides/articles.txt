@@ -1,0 +1,4 @@
+Articles
+========
+
+Articles are great for publishing content to your site.

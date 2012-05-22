@@ -40,7 +40,13 @@
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td width="17%" nowrap>{% trans "Name:" %}</td>
-                  <td width="83%"><b>{{ request.user.get_full_name }}</b></td>
+                  <td width="83%"><b>
+                  	{% if creator %}
+                  	{{ creator.first_name }} {{ creator.last_name }}
+                  	{% else %}
+                  	{{ request.user.get_full_name }}
+                  	{% endif %}
+                  	</b></td>
                 </tr>
                 <tr>
                   <td width="17%" nowrap>{% trans "Title:" %}</td>
@@ -56,16 +62,24 @@
                 </tr>
                 <tr>
                   <td width="17%" nowrap>{% trans "Email:" %}</td>
-                  <td width="83%"><b>{{ profile.email }}</b></td>
+                  <td width="83%"><b>
+                  	{% if creator %}
+                  	{{ creator.email }}
+                  	{% else %}
+                  	{{ profile.email }}
+                  	{% endif %}
+                  	</b></td>
                 </tr>
               </table>              <p>                  <br>
                 {% trans "To view the complete application, go to:" %}
                 <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}</strong>
                 {% if object.status_detail == 'pending' and object.payment_method != 'cc' %}
                 	<p>{% trans "To approve the application, go to:" %}
-                	<strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.edit object.pk %}</strong></p>
+                	<strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.approve object.pk %}</strong></p>
                 {% endif %}
+              {% if not creator %}
               <p>{% trans "For more on the person who submitted the application, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
+              {% endif %}
               <p>{% trans "If you have received this in error, please contact the webmaster below." %}</p>
               <p>{% trans "Thanks!" %}</p>
               <p>{{ SITE_GLOBAL_SITECONTACTNAME }}<br>

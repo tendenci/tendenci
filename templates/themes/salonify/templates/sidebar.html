@@ -1,0 +1,33 @@
+{% load theme_tags %}
+
+            <div id="home-sidebar">
+                <div class="space" id="space_1">
+                    {% space_include MODULE_THEME_SPACE_8 %}
+                </div>
+
+                {% if not request.user.is_authenticated %}
+                <div id="sidebar-login">
+                    <h3>Member Login</h3>
+                    <form method="post" action="/accounts/login/" style="margin-bottom: 6px;">{% csrf_token %}
+                        <input title="username" id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="padding: 4px; color:#007799; margin-bottom: 10px;" />
+                        <input title="password" value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="padding: 4px; color:#007799; margin-bottom: 10px;" />
+                        <input name="submit" type="submit" value="LOGIN" /><br />
+                    </form>
+                </div>
+                {% endif %}
+
+                <div class="space" id="space_6">
+                    {% space_include MODULE_THEME_SPACE_6 %}
+                </div>
+                
+                <div class="space" id="space_7">
+                    {% space_include MODULE_THEME_SPACE_7 %}
+                </div>
+
+                <div id="connect">
+                    <h3>Connect With Us</h3>
+                    <a class="connect-links" id="facebook" href="#">Facebook</a>
+                    <a class="connect-links" id="twitter" href="#">Twitter</a>
+                    <a class="connect-links" id="flickr" href="#">Flickr</a>
+                </div><!-- /connect -->
+            </div><!-- /#home-sidebar -->

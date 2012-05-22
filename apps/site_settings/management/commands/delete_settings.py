@@ -28,7 +28,8 @@ class Command(BaseCommand):
 
 				try:
 					setting = Setting.objects.get(scope=scope, scope_category=scope_category, name=name)
-					message = 'Deleting %s:%s:%s' % (setting.scope, setting.scope_category, setting.name)
+					setting.delete()
+					message = 'Deleted %s:%s:%s' % (setting.scope, setting.scope_category, setting.name)
 				except Setting.DoesNotExist:
 					message = "Does Not Exist %s:%s:%s" % (scope, scope_category, name)
 				except Setting.MultipleObjectsReturned:

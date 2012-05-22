@@ -104,18 +104,18 @@ class QuestionFormset(forms.models.BaseInlineFormSet):
     """Validate that the total score for all questions are above 0
     """
     
-    def clean(self):
-        if any(self.errors):
+#    def clean(self):
+#        if any(self.errors):
             # Don't bother validating the formset unless each form is valid on its own
-            return
-        score = 0
-        for i in range(0, self.total_form_count()):
-            form = self.forms[i]
-            if form.cleaned_data:
-                score += form.cleaned_data['point_value']
-        
-        if score == 0:
-            raise forms.ValidationError(_(u"Total points for all questions must be greater than 0"))
+#            return
+#        score = 0
+#        for i in range(0, self.total_form_count()):
+#            form = self.forms[i]
+#            if form.cleaned_data:
+#                score += form.cleaned_data['point_value']
+#        
+#        if score == 0:
+#            raise forms.ValidationError(_(u"Total points for all questions must be greater than 0"))
 
 class AnswerForm(forms.Form):
     """Create a form based on a given question
@@ -140,7 +140,7 @@ class AnswerForm(forms.Form):
                 c_label = "%s. %s" % (choice['letter'], choice['answer'].answer)
                 choices.append((choice['answer'].pk, c_label))
         else:
-            label = "%s" % self.question.question
+            label = "%s. %s" % (self.question.number, self.question.question)
         
         super(AnswerForm, self).__init__(*args, **kwargs)
         
