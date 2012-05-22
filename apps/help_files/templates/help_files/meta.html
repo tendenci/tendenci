@@ -8,7 +8,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in help_file.tags|tag_split %}
-                <a href="{% url help_file.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url help_files %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

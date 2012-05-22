@@ -1,6 +1,8 @@
 {% load base_filters %}
 {% load i18n %}
 
+<!--<a href="">{% trans 'View Registration' %}</a>-->
+
 {% with obj.registrant_set.all as registrants %}
 	{% if registrants %}
 		{% for reg in registrants %}
@@ -9,17 +11,26 @@
 					{% if reg.user %}
 						<a href="{% url profile reg.user.username %}">
 					{% endif %}
-					{% if reg.first_name or reg.last_name or reg.email %}
-						{{ reg.first_name }} {{ reg.last_name }}
-						{% if reg.email %} 
-							({{ reg.email }})
-						{% endif %}
-					{% else %}
-						{% trans "Registrant" %} {{ forloop.counter }} {% trans "(name not available)" %}
-					{% endif %}
+					{% if reg.get_name %}
+                        {{ reg.get_name }}
+                    {% else %}
+                        {% trans "Guest #" %}{{ forloop.counter0 }}
+                    {% endif %}
+                    {% if reg.email %}
+                        ({{ reg.email }})
+                    {% endif %}
 					{% if reg.user %}
 						</a>
 					{% endif %}
+                    {% if reg.custom_reg_form_entry %}
+                    {% with reg.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                        {% for field in roster_field_list %}
+                            {% if field.value %}
+                                <div>{{ field.label }}: {{ field.value }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                    {% endif %}
 				</td>
 				<td class="td-right">
 				    {{ reg.amount|format_currency }}

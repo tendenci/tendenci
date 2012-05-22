@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 import calendar
 from datetime import datetime
@@ -44,7 +47,7 @@ from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet)
 from events.utils import (save_registration, email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
-    get_event_spots_taken, update_event_spots_taken, get_ievent,
+    get_event_spots_taken, get_ievent,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
 from events.addons.forms import RegAddonForm
@@ -155,12 +158,9 @@ def search(request, redirect=False, template_name="events/search.html"):
     query = request.GET.get('q', None)
     event_type = request.GET.get('event_type', None)
     start_dt = request.GET.get('start_dt', None)
-    if isinstance(start_dt, unicode):
-        start_dt = datetime.strptime(
-            start_dt,
-            '%Y-%m-%d'
-        )
-    else:
+    try:
+        start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+    except:
         start_dt = datetime.now()
 
     if has_index and query:
@@ -594,7 +594,7 @@ def add(request, year=None, month=None, day=None, \
         form=Reg8nConfPricingForm, 
         extra=1
     )
-    
+
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
@@ -1058,8 +1058,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 and event_price > 0
                 
                 if reg8n_created:
-                    # update the spots taken on this event
-                    update_event_spots_taken(event)
                     registrants = reg8n.registrant_set.all().order_by('id')
                     for registrant in registrants:
                         #registrant.assign_mapped_fields()
@@ -1350,9 +1348,6 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'registrant':registrant,
                         'user_is_registrant': user_is_registrant,
                     })
-            
-            # update the spots taken on this event
-            update_event_spots_taken(event)
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
@@ -1367,8 +1362,8 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     for c_regt in cancelled_registrants:
         if c_regt.custom_reg_form_entry:
             c_regt.assign_mapped_fields()
-            if not regt.name:
-                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+            if not c_regt.name:
+                c_regt.last_name = c_regt.name = c_regt.custom_reg_form_entry.__unicode__()
         
     return render_to_response(template_name, {
         'event': event,
@@ -1449,9 +1444,6 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     'registrant':registrant,
                     'user_is_registrant': user_is_registrant,
                 })
-
-            # update the spots taken on this event
-            update_event_spots_taken(event)
 
         # back to invoice
         return HttpResponseRedirect(
@@ -1601,8 +1593,8 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         sqs = SearchQuerySet().models(Registrant).filter(event_pk=event.id)
         sqs = sqs.auto_query(sqs.query.clean(query))
         registrants = sqs.order_by("-update_dt")
-        active_registrants = sqs.auto_query(sqs.query.clean("is:active")).order_by("-update_dt")
-        canceled_registrants = sqs.auto_query(sqs.query.clean("is:canceled")).order_by("-update_dt")
+        active_registrants = Registrant.objects.filter(registration__event=event).filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = Registrant.objects.filter(registration__event=event).exclude(cancel_dt=None).order_by("-update_dt")
         
     
             
@@ -1773,7 +1765,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         if registrant.custom_reg_form_entry:
             registrant.name = registrant.custom_reg_form_entry.__unicode__()
         else:
-            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+            if registrant.first_name or registrant.last_name:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
     
     return render_to_response(template_name, {
         'event':event,

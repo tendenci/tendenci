@@ -24,7 +24,7 @@ class FormRegistry(CoreRegistry):
     }
 
     url = {
-        'add': lazy_reverse('form_add'),
+        'add': lazy_reverse('admin:forms_form_add'),
         'search': lazy_reverse('forms'),
         'list': lazy_reverse('forms'),
     }

@@ -102,7 +102,7 @@ class Form(TendenciBaseModel):
     admin_link_view.short_description = ""
 
     def admin_link_export(self):
-        url = reverse("admin:form_export", args=(self.id,))
+        url = reverse("admin:forms_form_export", args=(self.id,))
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
@@ -148,7 +148,8 @@ class Field(models.Model):
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        order_with_respect_to = "form"
+        #order_with_respect_to = "form"
+        ordering = ('position',)
     
     def __unicode__(self):
         return self.label

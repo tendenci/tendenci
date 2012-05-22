@@ -195,6 +195,12 @@ div.forms .page-select ul {
 	line-height:24px;
 }
 
+.nav-item-detail .nav-item-field-checkbox label {
+	width:140px;
+	float:left;
+	line-height:24px;
+}
+
 .nav-item-detail table label.small-label {
 	width:36px;
 }
@@ -202,6 +208,12 @@ div.forms .page-select ul {
 .nav-item-detail table input {
 	float:left;
 	width:150px;
+}
+
+.nav-item-detail .nav-item-field-checkbox input {
+	width:20px;
+	height:20px;
+	clear: left;
 }
 
 .nav-item-label {
@@ -219,7 +231,7 @@ a.nav-item-label:hover span.helpertext {
 	display:inline;
 }
 
-.nav-item-field {
+.nav-item-field, .nav-item-field-checkbox {
 	padding:5px;
 }
 

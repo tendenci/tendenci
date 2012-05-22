@@ -284,7 +284,6 @@ a:hover{text-decoration: none; color:#000;}
 /* content */
 
 .content {
-	overflow: hidden;
 	margin:0 0 20px 0;
 	padding-top: 20px;
 	}

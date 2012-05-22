@@ -13,7 +13,7 @@
         {% if tags %}
         <div class="tags"><strong>Tags: </strong>
             {% for tag in tags %}
-                <a href="{% url trainings.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url trainings %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

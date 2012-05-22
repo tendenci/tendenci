@@ -72,7 +72,7 @@
                                 {% endif %}
                                 <label class="small-label">{{ form.label.label }}</label>
                                 {{ form.label }}
-                            </div>
+                            </div> 
                         </div>
                         </td>
                         <td>
@@ -93,6 +93,11 @@
                                 {% endif %}
                                 <label>{{ form.css.label }}</label>
                                 {{ form.css }}
+                            </div>
+                            <div class="nav-item-field-checkbox">
+                            {{ form.new_window }}
+                            
+                            <label>{{ form.new_window.label }}</label>
                             </div>
                         </td>
                         </tr>
@@ -141,8 +146,14 @@
                     <label>{% trans 'CSS Class' %}</label>
                     <input id="id_form-0-css" type="text" name="form-0-css" maxlength="100" /> 
                 </div> 
+                <div class="nav-item-field-checkbox">
+                <input id="id_form-0-new_window" type="checkbox" name="form-0-new_window"><label>{% trans 'Open in a new window' %}</label>
+                </div>
+                </td>
+                <td>
                 </td>
                 </tr>
+                
                 </table>
                 <div style="display: none;" >
                     <div class="ordering">

@@ -64,6 +64,7 @@ class ItemForm(forms.ModelForm):
             'level',
             'page',
             'url',
+            'new_window',
             )
     
     def __init__(self, *args, **kwargs):

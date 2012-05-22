@@ -63,7 +63,7 @@ def category(request, id, template_name="architecture_projects/search.html"):
     "List of architecture projects by category"
     category = get_object_or_404(Category, pk=id)
     filters = get_query_filters(request.user, 'architecture_projects.view_architectureproject')
-    architecture_projects = ArchitectureProject.objects.filter(filters).filter(categories=category).order_by('-create_dt')
+    architecture_projects = ArchitectureProject.objects.filter(filters).filter(categories=category).order_by('-ordering')
 
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()
@@ -76,7 +76,7 @@ def building_type(request, id, template_name="architecture_projects/search.html"
     "List of architecture projects by building_type"
     building_type = get_object_or_404(BuildingType, pk=id)
     filters = get_query_filters(request.user, 'architecture_projects.view_architectureproject')
-    architecture_projects = ArchitectureProject.objects.filter(filters).filter(building_types=building_type).order_by('-create_dt')
+    architecture_projects = ArchitectureProject.objects.filter(filters).filter(building_types=building_type).order_by('-ordering')
 
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()

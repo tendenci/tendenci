@@ -7,7 +7,7 @@ from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 from discounts.models import Discount, DiscountUse
 
-from events.utils import get_event_spots_taken, update_event_spots_taken
+from events.utils import get_event_spots_taken
 from events.models import Event, RegConfPricing, Registration, Registrant
 from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
 from events.forms import FormForCustomRegForm
@@ -164,6 +164,7 @@ def create_registrant(form, event, reg8n, **kwargs):
         user = form.get_user()
         if not user.is_anonymous():
             registrant.user = user
+        registrant.initialize_fields()
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
@@ -186,7 +187,8 @@ def create_registrant(form, event, reg8n, **kwargs):
                 registrant.state = user_profile.state
                 registrant.zip = user_profile.zipcode
                 registrant.country = user_profile.country
-                registrant.company_name = user_profile.company
+                if not registrant.company_name:
+                    registrant.company_name = user_profile.company
                 registrant.position_title = user_profile.position_title
                 
     registrant.save()
@@ -259,8 +261,4 @@ def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
                 discount=discount,
                 invoice=invoice,
             )
-    
-    # update the spots taken on this event
-    update_event_spots_taken(event)
-    
     return reg8n

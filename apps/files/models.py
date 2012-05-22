@@ -15,7 +15,8 @@ from files.managers import FileManager
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    return 'files/%s/%s' % (instance.content_type, filename)
+    content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(instance.content_type))
+    return 'files/%s/%s' % (content_type, filename)
 
 
 class File(TendenciBaseModel):
@@ -41,11 +42,14 @@ class File(TendenciBaseModel):
     def basename(self):
         return os.path.basename(unicode(self.file.name))
 
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
+
     def get_name(self):
-        return self.name or self.basename()
+        return self.name or os.path.splitext(self.basename())[0]
 
     def type(self):
-        ext = os.path.splitext(self.basename())[1].lower()
+        ext = self.ext().lower()
 
         # map file-type to extension
         types = {

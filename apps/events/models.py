@@ -169,6 +169,14 @@ class Registrant(models.Model):
         if fn and ln:
             return ', '.join([ln, fn])
         return fn or ln
+        
+    def get_name(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_name()
+        else:
+            if self.first_name or self.last_name:
+                return self.first_name + ' ' + self.last_name
+        return None
 
     @classmethod
     def event_registrants(cls, event=None):
@@ -228,6 +236,27 @@ class Registrant(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
+            
+    def initialize_fields(self):
+        """Similar to assign_mapped_fields but more direct and saves the registrant
+        """
+        if self.custom_reg_form_entry:
+            self.first_name = self.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            self.last_name = self.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            self.mail_name = self.custom_reg_form_entry.get_value_of_mapped_field('mail_name')
+            self.address = self.custom_reg_form_entry.get_value_of_mapped_field('address')
+            self.city = self.custom_reg_form_entry.get_value_of_mapped_field('city')
+            self.state = self.custom_reg_form_entry.get_value_of_mapped_field('state')
+            self.zip = self.custom_reg_form_entry.get_value_of_mapped_field('zip')
+            self.country = self.custom_reg_form_entry.get_value_of_mapped_field('country')
+            self.phone = self.custom_reg_form_entry.get_value_of_mapped_field('phone')
+            self.email = self.custom_reg_form_entry.get_value_of_mapped_field('email')
+            self.groups = self.custom_reg_form_entry.get_value_of_mapped_field('groups')
+            self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
+            self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
+        if self.first_name or self.last_name:
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+        self.save()
         
     def assign_mapped_fields(self):
         """
@@ -480,6 +509,8 @@ class Registration(models.Model):
                 [self.registrant.email],  # recipient(s)
                 'event_registration_confirmation',  # template
                 {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
                     'site_label': site_label,
                     'site_url': site_url,
                     'self_reg8n': self_reg8n,
@@ -838,6 +869,41 @@ class Event(TendenciBaseModel):
         if self.image:
             return self.image.file
         return None
+
+    def date_range(self, start_date, end_date):
+        for n in range((end_date - start_date).days):
+            yield start_date + timedelta(n)
+
+    def date_spans(self):
+        """
+        Returns a list of date spans.
+        e.g. s['start_dt'], s['end_dt'], s['same_date']
+        """
+
+        if self.on_weekend:
+            same_date = self.start_dt.date() == self.end_dt.date()
+            yield {'start_dt':self.start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+            return
+
+        start_dt = self.start_dt
+        end_dt = None
+
+        for date in self.date_range(self.start_dt, self.end_dt + timedelta(days=1)):
+
+            if date.weekday() == 0:  # monday
+                start_dt = date
+            elif date.weekday() == 4:  # friday
+                end_dt = date
+
+            if start_dt and end_dt:
+                same_date = start_dt.date() == end_dt.date()
+                yield {'start_dt':start_dt, 'end_dt':end_dt, 'same_date':same_date}
+                start_dt = end_dt = None  # reset
+
+        if start_dt and not end_dt:
+            same_date = start_dt.date() == self.end_dt.date()
+            yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+
     
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
@@ -955,9 +1021,12 @@ class CustomRegFormEntry(models.Model):
 
     
     def get_name(self):
-        name = ' '.join([self.get_value_of_mapped_field('first_name'), 
-                         self.get_value_of_mapped_field('last_name')])
-        return name.strip()
+        first_name = self.get_value_of_mapped_field('first_name')
+        last_name = self.get_value_of_mapped_field('last_name')
+        if first_name or last_name:
+            name = ' '.join([first_name, last_name])
+            return name.strip()
+        return ''
 
     def get_lastname_firstname(self):
         name = '%s, %s' % (self.get_value_of_mapped_field('last_name'), 

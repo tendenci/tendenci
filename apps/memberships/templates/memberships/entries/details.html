@@ -18,12 +18,7 @@
 
 {% block body %}
 <style type="text/css">
-    .entry-edit {
-        float: right;
-    }
-    .entry-delete {
-        float: right;
-    }
+    .entry-link { float: right; margin-left: 6px; }
 </style>
 
 <div class="t">
@@ -43,8 +38,9 @@
 
         <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
             {% if admin %}
-            <a class="entry-delete" href="{% url membership.entry_delete entry.pk %}">{% trans "Delete" %}&nbsp;</a>
-            <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit" %}&nbsp;</a>
+            <a class="entry-link" href="{% url membership.entry_delete entry.pk %}">{% trans "Delete" %}</a>
+            <a class="entry-link" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit" %}</a>
+            <a class="entry-link" href="{% url membership.application_entries_print entry.pk %}">{% trans "Print" %}</a>
             {% endif %}
         </div>
 
@@ -57,10 +53,13 @@
     
 
         {% if entry.is_approved %}
-        <div id="member-number">{{ entry.membership.member_number }}</div>
+        <div id="member-number">
+            {{ entry.membership.member_number }}
+            <div style="float:right">{{ entry.membership.subscribe_dt|date:"M j, Y" }} - {% firstof entry.membership.expire_dt|date:"M j, Y" "Forever" %}</div>
+        </div>
         {% endif %}
 
-    	{% for field in entry.fields.all %}
+    	{% for field in entry.ordered_fields %}
     		{% if field.field.field_type == 'FileField' %}
             <div class="field">
                 <div class="label">{{ field.field.label }}</div>

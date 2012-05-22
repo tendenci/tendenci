@@ -15,5 +15,6 @@ urlpatterns = patterns('campaign_monitor',
     url(r'^campaigns/$', 'views.campaign_index', name="campaign_monitor.campaign_index"),
     url(r'^campaigns/sync/$', 'views.campaign_sync', name="campaign_monitor.campaign_sync"),
     url(r'^campaigns/generate/$', 'views.campaign_generate', name="campaign_monitor.campaign_generate"),
+    url(r'^campaigns/delete/(?P<campaign_id>[\w\-\/]+)/$', 'views.campaign_delete', name="campaign_monitor.campaign_delete"),
     url(r'^campaigns/(?P<campaign_id>[\w\-\/]+)/$', 'views.campaign_view', name="campaign_monitor.campaign_view"),
 )

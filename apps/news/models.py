@@ -66,7 +66,7 @@ class News(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("news.view", [self.slug])
+        return ("news.detail", [self.slug])
     
     def save(self, *args, **kwargs):
         if not self.id:

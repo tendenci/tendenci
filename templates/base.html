@@ -12,13 +12,25 @@
 
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/" />
     {% block meta_canonical_url %}{% endblock %} 
-    <link href="{{ STATIC_URL }}css/global_tendenci.css?71" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/global_tendenci.css?77" rel="stylesheet" type="text/css" />
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
     {% block extra_head %}{% endblock %}
     <link href="{{ LOCAL_STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
     {% if admin %}
         <link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />
         <link href="{{ LOCAL_STATIC_URL }}css/theme_bar.css" rel="stylesheet" type="text/css" />
+    {% endif %}
+    {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
     {% endif %}
 </head> 
 

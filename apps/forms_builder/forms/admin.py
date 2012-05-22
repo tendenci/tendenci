@@ -66,7 +66,9 @@ class FormAdmin(admin.ModelAdmin):
     class Media:
         js = (
             '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
-            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            #'%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            #'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
+            'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js',
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
             '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
         )
@@ -80,10 +82,10 @@ class FormAdmin(admin.ModelAdmin):
         extra_urls = patterns("", 
             url("^export/(?P<form_id>\d+)/$", 
                 self.admin_site.admin_view(self.export_view), 
-                name="form_export"),
+                name="forms_form_export"),
             url("^file/(?P<field_entry_id>\d+)/$", 
                 self.admin_site.admin_view(self.file_view), 
-                name="form_file"),
+                name="forms_form_file"),
         )
         return extra_urls + urls
 
@@ -110,35 +112,35 @@ class FormAdmin(admin.ModelAdmin):
                 file_field_ids.append(field.id)
         entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
         columns.append(unicode(entry_time_name))
+        columns.append(unicode("Pricing"))
+        columns.append(unicode("Price"))
+        columns.append(unicode("Payment Method"))
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each  
         # entry as a row.
-        current_entry = None
-        current_row = None
-        values = FieldEntry.objects.filter(entry__form=form
-            ).order_by("-entry__id").select_related(depth=1)
-        for field_entry in values:
-            if field_entry.entry_id != current_entry:
-                # New entry, write out the current row and start a new one.
-                current_entry = field_entry.entry_id
-                if current_row is not None:
-                    csv.writerow(current_row)
-                current_row = [""] * len(columns)
-                current_row[-1] = field_entry.entry.entry_time
-            value = field_entry.value.encode("utf-8")
-            # Create download URL for file fields.
-            if field_entry.field_id in file_field_ids:
-                url = reverse("admin:form_file", args=(field_entry.id,))
-                value = request.build_absolute_uri(url)
-            # Only use values for fields that currently exist for the form.
-            try:
-                current_row[field_indexes[field_entry.field_id]] = value
-            except KeyError:
-                pass
-        # Write out the final row.
-        if current_row is not None:
-            csv.writerow(current_row)
-        return response        
+        entries = FormEntry.objects.filter(form=form).order_by('pk')
+        for entry in entries:
+            values = FieldEntry.objects.filter(entry=entry)
+            row = [""] * len(columns)
+            row[-4] = entry.entry_time
+            if entry.pricing:
+                row[-3] = entry.pricing.label
+                row[-2] = entry.pricing.price
+            row[-1] = entry.payment_method
+            for field_entry in values:
+                value = field_entry.value.encode("utf-8")
+                # Create download URL for file fields.
+                if field_entry.field_id in file_field_ids:
+                    url = reverse("admin:forms_form_file", args=(field_entry.id,))
+                    value = request.build_absolute_uri(url)
+                # Only use values for fields that currently exist for the form.
+                try:
+                    row[field_indexes[field_entry.field_id]] = value
+                except KeyError:
+                    pass
+            # Write out the row.
+            csv.writerow(row)
+        return response
 
     def file_view(self, request, field_entry_id):
         """

@@ -12,10 +12,14 @@
 {% block body %}
 <div class="t">
     <div class="page-wrap">
+        {% if page.header_image %}<div class="page-header">
+            <img src="{{ page.header_image.get_absolute_url }}" />
+        </div>{% endif %}
 
 		{% if page.title %}
         <h1>{{ page.title }}</h1> 
 		{% endif %}
+        
         <div class="content">{{ page.content|safe }}</div>
         {% include "pages/meta.html" %}
     </div>

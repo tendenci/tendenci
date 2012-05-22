@@ -464,6 +464,10 @@ class TypeForm(forms.ModelForm):
 
 
 class PlaceForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Place._meta.app_label, 
+        'storme_model':Place._meta.module_name.lower()}))
     label = 'Location Information'
     class Meta:
         model = Place
@@ -476,6 +480,10 @@ class SponsorForm(forms.ModelForm):
 
 
 class SpeakerForm(BetterModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Speaker._meta.app_label, 
+        'storme_model':Speaker._meta.module_name.lower()}))
     label = 'Speaker'
     file = forms.FileField(required=False)
 
@@ -500,6 +508,10 @@ class SpeakerForm(BetterModelForm):
 
 
 class OrganizerForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Organizer._meta.app_label, 
+        'storme_model':Organizer._meta.module_name.lower()}))
     label = 'Organizer'
 
     class Meta:

@@ -163,46 +163,46 @@
 	    	<div style="font-weight: bold;">{% trans "Registrants" %} ... ({{ registrants_count }})</div>
 	    {% endif %}
     	<table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
-    		{% for registrant in registrants %}
-    		<tr>
-    			<td>
-    				<span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-					{% if registrant.name %}
-		                    {{ registrant.name }}
-		            {% else %}
-		            	{% trans "Guest #" %}{{ forloop.counter0 }}
-		            {% endif %}
-		            {% if registrant.custom_reg_form_entry %}
-		            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
-					{% for field in roster_field_list %}
-					{% if field.value %}
-					<div>{{ field.label }}: {{ field.value }}</div>
-					{% endif %}
-					{% endfor %}
-					{% endwith %}
-					{% endif %}
-		            </span>
-					{% if registrant.cancel_dt %}
-						<span class="cancel-notice2">
-							{% blocktrans with registrant.cancel_dt|date_short as cancel_date %} Canceled on {{ cancel_date }}{% endblocktrans %}
-						</span>
-					{% else %}
-	                    {% if registration.reg_conf_price.quantity == 1 %}
-						  {% if user.is_authenticated %}
-					          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">{% trans "Cancel" %}</a>
-					      {% else %}
-					          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">{% trans "Cancel" %}</a>
-					      {% endif %}
-	                    {% endif %}
-					{% endif %}
-    			</td>
-    			<td class="td-right">
-					<span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-							{{ registrant.amount|format_currency }}
-					</span>
-    			</td>
-    		</tr>
-    		{% endfor %}
+        {% for registrant in registrants %}
+        <tr>
+            <td>
+                <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
+                {% if registrant.name %}
+                    {{ registrant.name }}
+                {% else %}
+                    {% trans "Guest #" %}{{ forloop.counter0 }}
+                {% endif %}
+                </span>
+                {% if registrant.cancel_dt %}
+                    <span class="cancel-notice2">
+                        {% blocktrans with registrant.cancel_dt|date_short as cancel_date %} Canceled on {{ cancel_date }}{% endblocktrans %}
+                    </span>
+                {% else %}
+                    {% if registration.reg_conf_price.quantity == 1 %}
+                      {% if user.is_authenticated %}
+                          <a href="{% url event.cancel_registrant event.pk registrant.pk %}">{% trans "Cancel" %}</a>
+                      {% else %}
+                          <a href="{% url event.cancel_registrant event.pk registrant.hash %}">{% trans "Cancel" %}</a>
+                      {% endif %}
+                    {% endif %}
+                {% endif %}
+                {% if registrant.custom_reg_form_entry %}
+                {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                    {% for field in roster_field_list %}
+                        {% if field.value %}
+                            <div>{{ field.label }}: {{ field.value }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
+                {% endif %}
+            </td>
+            <td class="td-right">
+                <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
+                        {{ registrant.amount|format_currency }}
+                </span>
+            </td>
+        </tr>
+        {% endfor %}
     	</table>
         
 		<div class="register-more">

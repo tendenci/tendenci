@@ -5,7 +5,9 @@ urlpatterns = patterns("memberships.views",
     # memberships
     url(r"^$", "membership_index", name="membership.index"),
     url(r"^search/$", "membership_search", name="membership.search"),
-    url(r"^memberships/(?P<id>\d+)/$", "membership_details", name="membership.details"),
+    url(r"^(?P<id>\d+)/$", "membership_details", name="membership.details"),
+    url(r"^(?P<id>\d+)/delete/$", "membership_delete", name="membership.delete"),
+    url(r"^(?P<id>\d+)/edit/$", "membership_edit", name="membership.edit"),
 
     # notices
     (r'^notices/', include('memberships.notices.urls')),
@@ -32,6 +34,7 @@ urlpatterns = patterns("memberships.views",
     # entries
     url(r"^entries/$", "application_entries", name="membership.application_entries"),
     url(r"^entries/(?P<id>\d+)/$", "application_entries", name="membership.application_entries"),
+    url(r"^entries/print/(?P<id>\d+)/$", "application_entries_print", name="membership.application_entries_print"),
     url(r"^entries/edit/(?P<id>\d+)/$", "entry_edit", name="membership.entry_edit"),
     url(r"^entries/delete/(?P<id>\d+)/$", "entry_delete", name="membership.entry_delete"),
     url(r"^entries/search/$", "application_entries_search", name="membership.application_entries_search"),
@@ -44,6 +47,8 @@ urlpatterns = patterns("memberships.views",
 
     # application
     url(r"^confirmation/(?P<hash>[\w]+)/$", "application_confirmation", name="membership.application_confirmation"),
+
+    url(r"^(?P<slug>[\w\-]+)/template/$", "download_template", name="membership.download_template"),
     url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)?/?$", "application_details", name="membership.application_details"),
     url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<imv_id>\d+)/(?P<imv_guid>[\d\w-]+)/$", "application_details", name="membership.application_details_via_corp_domain"),
     url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<secret_hash>[\d\w]+)$", "application_details", name="membership.application_details_via_corp_secret_code"),

@@ -7,6 +7,7 @@ if "notification" in settings.INSTALLED_APPS:
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
         notification.create_notice_type("directory_added", _("Directory Added"), _("A directory has been added."))
+        notification.create_notice_type("directory_approved_user_notice", _("Directory Approved User Notice"), _("A directory has been approved - user notice."))
         #notification.create_notice_type("directory_edited", _("Directory Edited"), _("A directory has been edited."))
         notification.create_notice_type("directory_deleted", _("Directory Deleted"), _("A directory has been deleted"))
 
