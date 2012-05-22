@@ -13,4 +13,3 @@ urlpatterns = patterns('',
     url(r'^export/$', 'news.views.export', name='news.export'),
     url(r'^(?P<slug>[\w\-\/]+)/$', 'news.views.detail', name="news.detail"),
 )
->>>>>>> sprint-5.0.78
