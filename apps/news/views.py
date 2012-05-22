@@ -22,7 +22,7 @@ try:
 except:
     notification = None
 
-def index(request, slug=None, template_name="news/view.html"):
+def detail(request, slug=None, template_name="news/view.html"):
     if not slug: return HttpResponseRedirect(reverse('news.search'))
     news = get_object_or_404(News, slug=slug)
     
@@ -71,6 +71,9 @@ def search(request, template_name="news/search.html"):
 
     return render_to_response(template_name, {'search_news':news}, 
         context_instance=RequestContext(request))
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('news'))
 
 def print_view(request, slug, template_name="news/print-view.html"):
     news = get_object_or_404(News, slug=slug)

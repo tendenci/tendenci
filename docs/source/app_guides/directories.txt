@@ -1,0 +1,13 @@
+Directories
+===========
+
+Directories are listings for businesses or other services on your website. You can allow Directories to be purchased to be displayed for a preset amount of time.
+
+Based on different settings, you can allow logged in users or members of your site to post Directories, which will be added to a pending queue for administrator approval.
+
+
+
+Directory Pricing
+~~~~~~~~~~~~~~~~~
+
+Directories can have different price options for posting based on the length of time they are posted.

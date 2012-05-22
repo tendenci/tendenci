@@ -1,0 +1,62 @@
+.. highlight:: django
+
+Custom Templates
+================
+
+In the :doc:`../app_guides/pages` app on your Tendenci site, you can select a custom template to use to display your page. This is useful when constructing pages for special occasions or for creating targeted landing pages for marketing efforts.
+
+The first step is to create the custom template. Custom templates replace the ``default.html`` template when a page is loaded. Copy that template and rename it as ``default-`` then your custom template name, using -'s instead of spaces or underscores. An example would be ``default-blue-background.html`` or ``default-google-landing-page.html``. Your custom template can include template code to dynamically pull in content from other apps, as well as rearranging the elements on the page or removing certain elements. Once your template file is created, add it to the theme directory as you would with other template files.
+
+These templates will appear in the dropdown on the page add and edit screen. Select the template there, and your page will then use it instead of the normal ``default.html`` template.
+
+Best Practices
+--------------
+
+If your intentions are to only change the content of the page and not the surrounding elements like the header, sidebar, or nav, there is a best practice for utilizing the ``default.html`` file without having to have multiple places to update when that file changes.
+
+In your ``default.html`` file, locate the following code:
+::
+
+    {% block body %}{{ block.super }}{% endblock body %}
+
+You can wrap this code in another block that we can use for our custom page. That code would look like this:
+
+.. code-block:: django
+   :emphasize-lines: 1,3
+
+   {% block custom_body %}
+   {% block body %}{{ block.super }}{% endblock body %}
+   {% endblock custom_body %}
+
+Then, in your new template file, ``default-custom-name.html``, we will add the following code from our ``pages/view.html`` with a couple of changes. We will replace the beginning of the code with ``{% extends "pages/base.html" %}`` and replace our main block with ``{% block custom_body %}``.
+
+.. code-block:: django
+   :emphasize-lines: 1,12,25
+
+   {% extends "pages/base.html" %}
+   
+   {% block title %}{{ page.get_title }}{% endblock %}
+   {% block meta_description %}{{ page.get_description }}{% endblock %}
+   {% block meta_keywords %}{{ page.get_keywords }}{% endblock %}
+   {% block meta_canonical_url %}<link rel="canonical" href="{{ page.get_canonical_url }}" />{% endblock %}
+   {% block extra_head %}
+   {{ block.super }}
+   <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
+   {% endblock %}
+   
+   {% block custom_body %}
+   <div class="t">
+       <div class="page-wrap">
+           {% if page.title %}
+           <h1>{{ page.title }}</h1> 
+           {% endif %}
+           <div class="content">{{ page.content|safe }}</div>
+           
+           <!-- Insert custom template code here -->
+           
+           {% include "pages/meta.html" %}
+       </div>
+   </div>
+   {% endblock custom_body %}
+
+Now the custom template will only affect the interior area of a page, so we can create pages that use other Tendenci template tags. This is great for creating pages with rss feeds or other dynamic content like upcoming events and news.

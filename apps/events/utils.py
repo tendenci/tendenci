@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
@@ -614,7 +617,9 @@ def add_registration(*args, **kwargs):
 def create_registrant_from_form(*args, **kwargs):
     """
     Create the registrant
-    Args are split up below into the appropriate attributes
+    Args are split up below into the appropriate attributes.
+    NOTE: When updating this be sure to check with the anonymous registration
+    impementation of events in the registration module.
     """
     # arguments were getting kinda long
     # moved them to an unpacked version
@@ -633,6 +638,7 @@ def create_registrant_from_form(*args, **kwargs):
         user = form.get_user()
         if not user.is_anonymous():
             registrant.user = user
+        registrant.initialize_fields()
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
@@ -655,7 +661,8 @@ def create_registrant_from_form(*args, **kwargs):
                     registrant.state = user_profile.state
                     registrant.zip = user_profile.zipcode
                     registrant.country = user_profile.country
-                    registrant.company_name = user_profile.company
+                    if not registrant.company_name:
+                        registrant.company_name = user_profile.company
                     registrant.position_title = user_profile.position_title
                 
     registrant.save()

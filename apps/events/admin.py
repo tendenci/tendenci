@@ -3,7 +3,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
 
-from events.models import CustomRegForm, CustomRegField
+from events.models import CustomRegForm, CustomRegField, Registrant
 from events.forms import CustomRegFormAdminForm, CustomRegFormForField 
 from event_logs.models import EventLog
 
@@ -24,6 +24,7 @@ class EventAdmin(admin.ModelAdmin):
 
 #admin.site.register(Event, EventAdmin)
 #admin.site.register(Type)
+admin.site.register(Registrant)
 
 class CustomRegFieldAdminForm(CustomRegFormForField):
     class Meta:
