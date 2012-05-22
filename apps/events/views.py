@@ -158,12 +158,9 @@ def search(request, redirect=False, template_name="events/search.html"):
     query = request.GET.get('q', None)
     event_type = request.GET.get('event_type', None)
     start_dt = request.GET.get('start_dt', None)
-    if isinstance(start_dt, unicode):
-        start_dt = datetime.strptime(
-            start_dt,
-            '%Y-%m-%d'
-        )
-    else:
+    try:
+        start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+    except:
         start_dt = datetime.now()
 
     if has_index and query:
