@@ -6,7 +6,7 @@
     
     {% if featured_news %}
     {% for news_item in featured_news|slice:":1" %}
-        <p>{{ news_item.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url news.view news_item.slug %}">Read more</a>
+        <p>{{ news_item.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url news.detail news_item.slug %}">Read more</a>
     {% endfor %}
     {% else %}
         <p>Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. {% if request.user.is_authenticated %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endif %}</p> <a class="readmore" href="/">Read more</a>
@@ -18,7 +18,7 @@
         {% for news_item in featured_news %}
             {% if forloop.first %}
             {% else %}
-            <li><a href="{% url news.view news_item.slug %}">{{ news_item.headline|truncatewords:4|safe }}</a></li>
+            <li><a href="{% url news.detail news_item.slug %}">{{ news_item.headline|truncatewords:4|safe }}</a></li>
             {% endif %}
         {% endfor %}
         {% else %}
