@@ -594,7 +594,7 @@ def add(request, year=None, month=None, day=None, \
         form=Reg8nConfPricingForm, 
         extra=1
     )
-    
+
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
