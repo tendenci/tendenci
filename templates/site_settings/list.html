@@ -10,7 +10,7 @@
 {% endblock%}
 
 {% block body %}
-{% settings_nav request.user %}
+{% settings_nav request.user scope_category %}
 <form class="settings-form" method="post" enctype="multipart/form-data">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Update Settings" name="submit" />
