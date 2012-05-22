@@ -51,7 +51,7 @@
         </div>
         {% include "news/meta.html" %}
 		<br />
-        {% url news.view news.pk as the_url %}
+        {% url news.detail news.pk as the_url %}
         <p>{% fb_like_button_iframe the_url %}</p>
     </div>
 
