@@ -404,21 +404,15 @@ def spawn_username(*args):
 
 def get_user(**kwargs):
     """
-    Get user via single keyword argument.
-    Example: get_user(username=username)
-    Only works with unique fields e.g. id, username
+    Returns first user that matches filters.
+    If no user is found then a non type object is returned.
     """
-    for k, v in kwargs.items():
-
-        try:
-            user = User.objects.get(**{k:v})
-        except User.MultipleObjectsReturned:
-            user = User.objects.filter(**{k:v})[0]
-        except User.DoesNotExist:
-            user = None
-
-        if user:
-            break  # get out of for loop
+    try:
+        user = User.objects.get(**kwargs)
+    except User.MultipleObjectsReturned:
+        user = User.objects.filter(**kwargs)[0]
+    except User.DoesNotExist:
+        user = None
 
     return user
 
@@ -450,6 +444,53 @@ def get_membership_stats():
     
     return (sorted(summary, key=lambda x:x['type'].name),
         (total_active, total_pending, total_expired, total_total))
+
+def make_csv(**kwargs):
+    """
+    Make a CSV file 
+    """
+    from django.template.defaultfilters import slugify
+    from imports.utils import render_excel
+
+    slug = kwargs.get('slug')
+
+    if not slug:
+        raise Http404
+
+    try:
+        app = App.objects.get(slug=slug)
+    except App.DoesNotExist, App.MultipleObjectsReturned:
+        raise Http404
+
+    file_name = "%s.csv" % slugify(app.name)
+
+    exclude_params = (
+        'horizontal-rule',
+        'header',
+    )
+
+    fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
+    labels = [field.label for field in fields]
+
+    extra_labels = [
+        'User Name',
+        'Member Number',
+        'Join Date',
+        'Renew Date',
+        'Expiration Date',
+        'Status',
+        'Status Detail',
+        'Invoice Number',
+        'Invoice Amount',
+        'Invoice Balance'
+    ]
+
+    labels.extend(extra_labels)
+
+    data = ['' for l in labels]
+
+    return render_excel(file_name, labels, [], '.csv')
+
 
 class NoMembershipTypes(Exception):
     pass

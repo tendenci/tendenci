@@ -2,24 +2,91 @@
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load styled_forms %}
 {% load i18n %}
 
 {% block title %}Import Memberships from CSV file{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/memberships.css">
 {% endblock %}
 
 {% block body %}
+<div class="t">
 <div id="import-wrap">
     
-    <h1>{% trans "Membership Import Upload File" %}</h1>
+    <h1>{% trans "Import Membership" %}</h1>
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ datetime.now }}</p>
-    <p><strong>Please verify that your member <a href="/settings/module/memberships/">privacy settings</a> are correct before importing.</strong></p>
-    <form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Import .csv File'>
+
+    <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong>, and then <strong>submit</strong>." %}</p>
+
+    <p style="margin-top:0;">Please review your membership <a href="{% url settings.index 'module' 'memberships' %}">privacy settings</a> before importing.</p>
+
+
+	<form method='post' action='{% url membership_import_upload_file %}' enctype="multipart/form-data">
+
+		{% csrf_token %}
+
+	    <div class="download-template">
+	        <img src="/site_media/static/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+
+	        <div class="link form">
+		        <a href="#">{% trans "Download Template" %}</a>
+			    <div>{{ form.app }}</div>
+		    </div>
+	    </div>
+	    <div class="clear"></div>
+
+	    <div class="choose-file">{{ form.csv }}</div>
+
+	    <div class="import-options">
+	    	<div class="checkbox-fields">
+				<div class="make-users">
+					<strong>Make users</strong>
+					<div>{{ form.interactive }}</div>
+				</div>
+				<div class="update">
+					<strong>Update</strong>
+					<div>{{ form.override }}</div>
+				</div>
+	    	</div>
+	    	<div class="dropdown-fields">
+	    		<strong>Identify duplicates by</strong>
+	    		<div>{{ form.key }}</div>
+	    	</div>
+	    	<div class="clear"></div>
+	    </div>
+
+		<div class="preview-btn"><input type="submit" value="Preview Import"></div>
     </form>
+
+</div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+<script src="{{ LOCAL_STATIC_URL }}js/jquery-ui-1.8.20.custom.min.js"></script>
+<script src="{{ LOCAL_STATIC_URL }}js/jquery.slugify.js"></script>
+<script>
+
+	var change_template_link = function(){
+
+		var template_link = $('.link.form a');
+		var opt_text = $('.link.form select option:selected').text();
+
+		// slugify text
+		opt_text = opt_text.toLowerCase();
+		opt_text = opt_text.replace(/[^a-zA-Z0-9]+/g,'-');
+
+		template_link.effect('highlight', {}, 2000);
+		template_link.attr('href', '/memberships/'+  opt_text +'/template');
+	};
+
+ 	change_template_link();  // set template link
+	$('.link.form select').change(function(){
+		change_template_link();
+	});
+</script>
+{% endblock %}
+

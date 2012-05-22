@@ -12,7 +12,6 @@ from django.contrib import messages
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.template.defaultfilters import slugify
 
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
@@ -39,12 +38,12 @@ from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
 
-from notification import models as notification
 from notification.utils import send_welcome_email
 
 
 def membership_index(request):
     return HttpResponseRedirect(reverse('membership.search'))
+
 
 def membership_search(request, template_name="memberships/search.html"):
     query = request.GET.get('q')
@@ -61,9 +60,9 @@ def membership_search(request, template_name="memberships/search.html"):
             members = members.filter(membership_type__pk=mem_type)
         members = members.exclude(status_detail='expired')
     types = MembershipType.objects.all()
-    
+
     EventLog.objects.log(**{
-        'event_id' : 474000,
+        'event_id': 474000,
         'event_data': '%s searched by %s' % ('Membership', request.user),
         'description': '%s searched' % 'Membership',
         'user': request.user,
@@ -72,7 +71,7 @@ def membership_search(request, template_name="memberships/search.html"):
     })
 
     return render_to_response(template_name, {'members': members, 'types': types},
-        context_instance=RequestContext(request))  
+        context_instance=RequestContext(request))
 
 
 @login_required
@@ -81,13 +80,13 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     Membership details.
     """
     membership = get_object_or_404(Membership, pk=id)
-    
+
     if not has_perm(request.user, 'memberships.view_membership', membership):
         raise Http403
 
     # log membership details view
     EventLog.objects.log(**{
-        'event_id' : 475000,
+        'event_id': 475000,
         'event_data': '%s (%d) viewed by %s' % (membership._meta.object_name, membership.pk, request.user),
         'description': '%s viewed' % membership._meta.object_name,
         'user': request.user,
@@ -97,7 +96,8 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
-        
+
+
 @login_required
 def membership_edit(request, id, form_class=MembershipForm, template_name="memberships/edit.html"):
     """
@@ -105,16 +105,15 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     """
     from user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
-    
+
     if not has_perm(request.user, 'memberships.change_membership', membership):
         raise Http403
-    
+
     if request.method == "POST":
         form = form_class(request.POST, instance=membership, user=request.user)
 
         if form.is_valid():
             membership = form.save(commit=False)
-
 
             if membership.expire_dt and membership.expire_dt < datetime.now():
                 membership.status_detail = 'expired'
@@ -136,7 +135,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
 
             # log membership details view
             EventLog.objects.log(**{
-                'event_id' : 472000,
+                'event_id': 472000,
                 'event_data': '%s (%d) edited by %s' % (membership._meta.object_name, membership.pk, request.user),
                 'description': '%s edited' % membership._meta.object_name,
                 'user': request.user,
@@ -145,28 +144,29 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
             })
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
-            
+
             return redirect('membership.details', membership.pk)
     else:
         form = form_class(instance=membership, user=request.user)
-    
+
     return render_to_response(template_name, {
         'membership': membership,
         'form': form,
     }, context_instance=RequestContext(request))
-        
+
+
 @login_required
 def membership_delete(request, id, template_name="memberships/delete.html"):
     """Membership delete"""
     membership = get_object_or_404(Membership, pk=id)
-    
+
     if not has_perm(request.user, 'memberships.delete_membership', membership):
         raise Http403
-    
+
     if request.method == "POST":
         # log membership delete
         EventLog.objects.log(**{
-            'event_id' : 473000,
+            'event_id': 473000,
             'event_data': '%s (%d) deleted by %s' % (membership._meta.object_name, membership.pk, request.user),
             'description': '%s deleted' % membership._meta.object_name,
             'user': request.user,
@@ -174,18 +174,34 @@ def membership_delete(request, id, template_name="memberships/delete.html"):
             'instance': membership,
         })
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % membership)
-        
+
         return HttpResponseRedirect(reverse('membership.search'))
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
 
-def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None, secret_hash="", membership_id=0, template_name="memberships/applications/details.html"):
+
+def download_template(request, slug=''):
+    """
+    Return a csv [download response] of the application specified via slug
+    """
+    from memberships.utils import make_csv
+    return make_csv(slug=slug)
+
+
+def application_details(request, template_name="memberships/applications/details.html", **kwargs):
     """
     Display a built membership application and handle submission.
     """
 
-    if not slug: raise Http404
+    slug = kwargs.get('slug')
+    cmb_id = kwargs.get('cmb_id')
+    imv_id = kwargs.get('imv_id', 0)
+    imv_guid = kwargs.get('imv_guid')
+    secret_hash = kwargs.get('secret_hash', '')
+
+    if not slug:
+        raise Http404
     user = request.user
 
     app = get_object_or_404(App, slug=slug)
@@ -194,14 +210,12 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
     # if this app is for corporation individuals, redirect them to corp-pre page if
     # they have not passed the security check.
-    is_corp_ind = False
     corporate_membership = None
     if hasattr(app, 'corp_app') and app.corp_app:
         if not cmb_id:
             # redirect them to the corp_pre page
             return redirect(reverse('membership.application_details_corp_pre', args=[app.slug]))
-        
-        is_corp_ind = True
+
         corporate_membership = get_object_or_404(CorporateMembership, id=cmb_id)
         # check if they have verified their email or entered the secret code
         is_verified = False
@@ -214,44 +228,41 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
                 if indiv_veri.verified:
                     is_verified = True
             except IndivMembEmailVeri8n.DoesNotExist:
-                pass 
-                                                              
+                pass
+
         elif app.corp_app.authentication_method == 'secret_code':
-            tmp_secret_hash = md5('%s%s' % (corporate_membership.secret_code, 
+            tmp_secret_hash = md5('%s%s' % (corporate_membership.secret_code,
                                     request.session.get('corp_hash_random_string', ''))).hexdigest()
             if secret_hash == tmp_secret_hash:
                 is_verified = True
-                                        
-        
+
         if not is_verified:
-            return redirect(reverse('membership.application_details_corp_pre', args=[slug]))       
+            return redirect(reverse('membership.application_details_corp_pre', args=[slug]))
 
     # log application details view
     EventLog.objects.log(**{
-        'event_id' : 655000,
+        'event_id': 655000,
         'event_data': '%s (%d) viewed by %s' % (app._meta.object_name, app.pk, user),
         'description': '%s viewed' % app._meta.object_name,
         'user': user,
         'request': request,
         'instance': app,
     })
-        
 
     initial_dict = {}
     if hasattr(user, 'memberships'):
-        membership = user.memberships.get_membership()
         is_only_a_member = [
             is_developer(user) == False,
             is_admin(user) == False,
             is_member(user) == True,
         ]
-        
+
         if corporate_membership:
             # exclude corp. reps, creator and owner - they should be able to add new
-            is_only_a_member.append(corporate_membership.allow_edit_by(user)==False)
+            is_only_a_member.append(corporate_membership.allow_edit_by(user) == False)
 
         if is_admin(user):
-            username = request.GET.get('username',unicode())
+            username = request.GET.get('username', unicode())
             if username:
                 try:
                     registrant = User.objects.get(username=username)
@@ -264,29 +275,28 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # get info from last time this app was filled out
             initial_dict = app.get_initial_info(user)
 
-
     pending_entries = []
 
     if hasattr(user, 'appentry_set'):
         pending_entries = user.appentry_set.filter(
-            is_approved__isnull = True,  # pending   
+            is_approved__isnull=True  # pending
         )
 
         # if an application entry was submitted
         # after your current membership was created
         if user.memberships.get_membership():
             pending_entries.filter(
-                entry_time__gte = user.memberships.get_membership().subscribe_dt
+                entry_time__gte=user.memberships.get_membership().subscribe_dt
             )
 
     try:
         app_entry_form = AppEntryForm(
-                app, 
-                request.POST or None, 
-                request.FILES or None, 
-                user = user, 
-                corporate_membership = corporate_membership,
-                initial = initial_dict
+                app,
+                request.POST or None,
+                request.FILES or None,
+                user=user,
+                corporate_membership=corporate_membership,
+                initial=initial_dict
             )
     except NoMembershipTypes as e:
         print e
@@ -294,7 +304,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
         # non-admin has no membership-types available in this application
         # let them know to wait for their renewal period before trying again
         return render_to_response("memberships/applications/no-renew.html", {
-            "app": app, "user":user, "memberships": user.memberships.all()}, 
+            "app": app, "user": user, "memberships": user.memberships.all()},
             context_instance=RequestContext(request))
 
     if request.method == "POST":
@@ -317,18 +327,18 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             # send "joined" notification
             Notice.send_notice(
                 entry=entry,
-                request = request,
+                request=request,
                 emails=entry.email,
                 notice_type='join',
                 membership_type=entry.membership_type,
             )
-            
+
             if entry_invoice.total == 0:
                 if not entry_invoice.is_tendered:
-                    entry_invoice.tender(request.user) 
+                    entry_invoice.tender(request.user)
 
             # online payment
-            if entry_invoice.total>0 and entry.payment_method and entry.payment_method.is_online:
+            if entry_invoice.total > 0 and entry.payment_method and entry.payment_method.is_online:
 
                 return HttpResponseRedirect(reverse(
                     'payments.views.pay_online',
@@ -348,19 +358,19 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
                 # get user from the membership since it's null in the entry
                 entry.user = entry.membership.user
-    
+
                 # send "approved" notification
                 Notice.send_notice(
-                    request = request,
+                    request=request,
                     emails=entry.email,
                     notice_type='approve',
                     membership=entry.membership,
                     membership_type=entry.membership_type,
                 )
-    
+
                 # log - entry approval
                 EventLog.objects.log(**{
-                    'event_id' : 1082101,
+                    'event_id': 1082101,
                     'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
                     'description': '%s viewed' % entry._meta.object_name,
                     'user': user,
@@ -370,7 +380,7 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
 
             # log - entry submission
             EventLog.objects.log(**{
-                'event_id' : 1081000,
+                'event_id': 1081000,
                 'event_data': '%s (%d) submitted by %s' % (entry._meta.object_name, entry.pk, request.user),
                 'description': '%s viewed' % entry._meta.object_name,
                 'user': user,
@@ -381,11 +391,12 @@ def application_details(request, slug=None, cmb_id=None, imv_id=0, imv_guid=None
             return redirect(entry.confirmation_url)
 
     return render_to_response(template_name, {
-            'app': app, 
-            'app_entry_form': app_entry_form, 
+            'app': app,
+            'app_entry_form': app_entry_form,
             'pending_entries': pending_entries,
             }, context_instance=RequestContext(request))
-    
+
+
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
 
     try:
@@ -395,11 +406,10 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
 
     if not hasattr(app, 'corp_app'):
         raise Http404
-    
+
     if not app.corp_app:
         raise Http404
-        
-    
+
     form = AppCorpPreForm(request.POST or None)
     if is_admin(request.user) or app.corp_app.authentication_method == 'admin':
         del form.fields['secret_code']
@@ -409,16 +419,16 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
         if cmb_id:
             form.fields['corporate_membership_id'].initial = cmb_id
         form.auth_method = 'corporate_membership_id'
-        
+
     elif app.corp_app.authentication_method == 'email':
         del form.fields['corporate_membership_id']
         del form.fields['secret_code']
         form.auth_method = 'email'
-    else: # secret_code
+    else:  # secret_code
         del form.fields['corporate_membership_id']
         del form.fields['email']
         form.auth_method = 'secret_code'
-        
+
     if request.method == "POST":
         if form.is_valid():
             # find the corporate_membership_id and redirect to membership.application_details
@@ -426,7 +436,7 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                 corporate_membership_id = form.cleaned_data['corporate_membership_id']
             else:
                 corporate_membership_id = form.corporate_membership_id
-                
+
                 if form.auth_method == 'email':
                     corp_memb = CorporateMembership.objects.get(pk=corporate_membership_id)
                     try:
@@ -444,7 +454,7 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                         if request.user and not request.user.is_anonymous():
                             indiv_veri.creator = request.user
                         indiv_veri.save()
-                        
+
                     # send an email to the user to verify the email address
                     # then redirect them to the verification conf page
                     # they'll need to follow the instruction in the email
@@ -458,12 +468,12 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                             'request': request,
                         }
                         send_email_notification('membership_corp_indiv_verify_email', recipients, extra_context)
-                        
+
                         return redirect(reverse('membership.email__to_verify_conf'))
                     else:
                         # the email address is verified
-                        return redirect(reverse('membership.application_details_via_corp_domain', 
-                                                args=[app.slug, 
+                        return redirect(reverse('membership.application_details_via_corp_domain',
+                                                args=[app.slug,
                                                 indiv_veri.corporate_membership.id,
                                                 indiv_veri.pk,
                                                 indiv_veri.guid]))
@@ -473,22 +483,23 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
                     request.session['corp_hash_random_string'] = random_string
                     secret_code = form.cleaned_data['secret_code']
                     secret_hash = md5('%s%s' % (secret_code, random_string)).hexdigest()
-                    return redirect(reverse('membership.application_details_via_corp_secret_code', 
-                                            args=[app.slug, 
+                    return redirect(reverse('membership.application_details_via_corp_secret_code',
+                                            args=[app.slug,
                                                 corporate_membership_id,
                                                 secret_hash]))
-                
-            
+
             return redirect(reverse('membership.application_details', args=[app.slug, corporate_membership_id]))
-    
+
     c = {'app': app, "form": form}
-    return render_to_response(template_name, c, 
+    return render_to_response(template_name, c,
         context_instance=RequestContext(request))
-    
+
+
 def email_to_verify_conf(request, template_name="memberships/applications/email_to_verify_conf.html"):
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         context_instance=RequestContext(request))
-    
+
+
 def verify_email(request, id=0, guid=None, template_name="memberships/applications/verify_email.html"):
     indiv_veri = get_object_or_404(IndivMembEmailVeri8n, id=id, guid=guid)
     if not indiv_veri.verified:
@@ -497,14 +508,14 @@ def verify_email(request, id=0, guid=None, template_name="memberships/applicatio
         if request.user and not request.user.is_anonymous():
             indiv_veri.updated_by = request.user
             indiv_veri.save()
-            
+
     # let them continue to sign up for membership
-    return redirect(reverse('membership.application_details_via_corp_domain', 
+    return redirect(reverse('membership.application_details_via_corp_domain',
                             args=[indiv_veri.corporate_membership.corp_app.memb_app.slug,
                                   indiv_veri.corporate_membership.id,
                                   indiv_veri.pk,
                                   indiv_veri.guid]))
-    
+
 
 def application_confirmation(request, hash=None, template_name="memberships/entries/details.html"):
     """
@@ -516,8 +527,9 @@ def application_confirmation(request, hash=None, template_name="memberships/entr
 
     entry = get_object_or_404(AppEntry, hash=hash)
 
-    return render_to_response(template_name, {'is_confirmation':True, 'entry': entry},
+    return render_to_response(template_name, {'is_confirmation': True, 'entry': entry},
         context_instance=RequestContext(request))
+
 
 @login_required
 def application_entries(request, id=None, template_name="memberships/entries/details.html"):
@@ -527,14 +539,14 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
     if not id:
         return redirect(reverse('membership.application_entries_search'))
-    
+
     entry = get_object_or_404(AppEntry, id=id)
     if not entry.allow_view_by(request.user):
         raise Http403
 
     # log entry view
     EventLog.objects.log(**{
-        'event_id' : 1085000,
+        'event_id': 1085000,
         'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
         'description': '%s viewed' % entry._meta.object_name,
         'user': request.user,
@@ -563,7 +575,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     })
                     send_welcome_email(entry.user)
 
-                # update application, user, 
+                # update application, user,
                 # group, membership, and archive
                 entry.approve()
 
@@ -585,7 +597,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 # log entry approved
                 EventLog.objects.log(**{
-                    'event_id' : 1085000,
+                    'event_id': 1085000,
                     'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, request.user),
                     'description': '%s approved' % entry._meta.object_name,
                     'user': request.user,
@@ -598,8 +610,8 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 # send "disapproved" notification
                 Notice.send_notice(
-                    entry = entry,
-                    request = request,
+                    entry=entry,
+                    request=request,
                     emails=entry.email,
                     notice_type='disapprove',
                     membership_type=entry.membership_type,
@@ -607,7 +619,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
 
                 # log entry disapproved
                 EventLog.objects.log(**{
-                    'event_id' : 1082102,
+                    'event_id': 1082102,
                     'event_data': '%s (%d) disapproved by %s' % (entry._meta.object_name, entry.pk, request.user),
                     'description': '%s disapproved' % entry._meta.object_name,
                     'user': request.user,
@@ -625,6 +637,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
         'form': form,
         }, context_instance=RequestContext(request))
 
+
 @login_required
 def application_entries_print(request, id=None, template_name="memberships/entries/print-details.html"):
     """
@@ -633,14 +646,14 @@ def application_entries_print(request, id=None, template_name="memberships/entri
 
     if not id:
         return redirect(reverse('membership.application_entries_search'))
-    
+
     entry = get_object_or_404(AppEntry, id=id)
     if not entry.allow_view_by(request.user):
         raise Http403
 
     # log entry view
     EventLog.objects.log(**{
-        'event_id' : 1085001,
+        'event_id': 1085001,
         'event_data': '%s (%d) print viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
         'description': '%s print viewed' % entry._meta.object_name,
         'user': request.user,
@@ -652,6 +665,7 @@ def application_entries_print(request, id=None, template_name="memberships/entri
         'entry': entry,
         }, context_instance=RequestContext(request))
 
+
 @login_required
 def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
     """
@@ -660,11 +674,11 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
     entry = get_object_or_404(AppEntry, id=id)  # exists
 
     if not is_admin(request.user):
-        raise Http303  # not permitted
+        raise Http403  # not permitted
 
     # log entry view
     EventLog.objects.log(**{
-        'event_id' : 1085000,
+        'event_id': 1085000,
         'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
         'description': '%s viewed' % entry._meta.object_name,
         'user': request.user,
@@ -678,8 +692,8 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
             entry = form.save()
 
             messages.add_message(
-                request, 
-                messages.INFO, 
+                request,
+                messages.INFO,
                 'Entry Sucessfully Updated',
             )
 
@@ -692,21 +706,22 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
         'entry': entry,
         'form': form,
         }, context_instance=RequestContext(request))
-        
+
+
 @login_required
 def entry_delete(request, id=0, template_name="memberships/entries/delete.html"):
     """
     Delete membership application entry.
     """
     entry = get_object_or_404(AppEntry, id=id)  # exists
-    
+
     if not is_admin(request.user):
-        raise Http303  # not permitted
+        raise Http403  # not permitted
 
     if request.method == "POST":
         # log entry delete
         EventLog.objects.log(**{
-            'event_id' : 1080000,
+            'event_id': 1080000,
             'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
             'description': '%s viewed' % entry._meta.object_name,
             'user': request.user,
@@ -715,12 +730,13 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
         })
         messages.add_message(request, messages.INFO, "Deleted %s" % entry)
         entry.delete()
-        
+
         return redirect("membership.application_entries_search")
-    
+
     return render_to_response(template_name, {
-        'entry':entry,
+        'entry': entry,
     }, context_instance=RequestContext(request))
+
 
 @login_required
 def application_entries_search(request, template_name="memberships/entries/search.html"):
@@ -748,7 +764,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
 
     # log entry search view
     EventLog.objects.log(**{
-        'event_id' : 1084000,
+        'event_id': 1084000,
         'event_data': '%s listed by %s' % ('Membership Entries', request.user),
         'description': '%s listed' % 'Membership Entries',
         'user': request.user,
@@ -757,21 +773,22 @@ def application_entries_search(request, template_name="memberships/entries/searc
     })
 
     return render_to_response(template_name, {
-        'entries':entries,
-        'apps':apps,
-        'types':types,
+        'entries': entries,
+        'apps': apps,
+        'types': types,
         }, context_instance=RequestContext(request))
 
 
-@login_required    
+@login_required
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
     if not is_admin(request.user):
         raise Http403
     notice = get_object_or_404(Notice, pk=id)
-    
+
     return render_to_response(template_name, {
-        'notice':notice,
+        'notice': notice,
         }, context_instance=RequestContext(request))
+
 
 @login_required
 def membership_import_upload(request, template_name='memberships/import-upload-file.html'):
@@ -783,17 +800,26 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
 
     if not is_admin(request.user):
         raise Http403
-        
+
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             cleaned_data = form.cleaned_data
             app = cleaned_data['app']
-            
-            memport = MembershipImport.objects.create(app=app, creator=request.user)
-            
+            interactive = cleaned_data['interactive']
+            override = cleaned_data['override']
+            key = cleaned_data['key']
+
+            memport = MembershipImport.objects.create(
+                app=app,
+                interactive=interactive,
+                override=override,
+                key=key,
+                creator=request.user
+            )
+
             csv = File.objects.save_files_for_instance(request, memport)[0]
-            
+
             file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
 
             import_valid, import_errs = is_import_valid(file_path)
@@ -809,9 +835,10 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         form = UploadForm()
 
     return render_to_response(template_name, {
-        'form':form,
-        'datetime':datetime,
+        'form': form,
+        'datetime': datetime,
         }, context_instance=RequestContext(request))
+
 
 @login_required
 def membership_import_preview(request, id):
@@ -821,39 +848,43 @@ def membership_import_preview(request, id):
     """
     if not is_admin(request.user):
         raise Http403
-    
+
     memport = get_object_or_404(MembershipImport, pk=id)
-    
+
     if request.method == 'POST':
         form = ImportMapForm(request.POST, memport=memport)
-        
+
         if form.is_valid():
             #show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
-            app = memport.app
 
             file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-            memberships, stats = parse_mems_from_csv(file_path, cleaned_data)
-            
+            memberships, stats = parse_mems_from_csv(
+                file_path,
+                cleaned_data,
+                membership_import=memport
+            )
+
             # return the form to use it for the confirm view
             template_name = 'memberships/import-preview.html'
             return render_to_response(template_name, {
-                'memberships':memberships,
-                'stats':stats,
-                'memport':memport,
-                'form':form,
+                'memberships': memberships,
+                'stats': stats,
+                'memport': memport,
+                'form': form,
                 'datetime': datetime,
             }, context_instance=RequestContext(request))
 
     else:
         form = ImportMapForm(memport=memport)
-    
+
     template_name = 'memberships/import-map-fields.html'
     return render_to_response(template_name, {
-        'form':form,
-        'memport':memport,
-        'datetime':datetime,
+        'form': form,
+        'memport': memport,
+        'datetime': datetime,
         }, context_instance=RequestContext(request))
+
 
 @login_required
 def membership_import_confirm(request, id):
@@ -864,55 +895,52 @@ def membership_import_confirm(request, id):
     """
     if not is_admin(request.user):
         raise Http403
-    
+
     memport = get_object_or_404(MembershipImport, pk=id)
-    
+
     if request.method == "POST":
         form = ImportMapForm(request.POST, memport=memport)
-        
+
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            app = memport.app
-            file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-            
+
             if not settings.CELERY_IS_ACTIVE:
-                # if celery server is not present 
-                # evaluate the result and render the results page
                 result = ImportMembershipsTask()
-                memberships, stats = result.run(app, file_path, cleaned_data)
+                memberships, stats = result.run(memport, cleaned_data)
                 return render_to_response('memberships/import-confirm.html', {
                     'memberships': memberships,
                     'stats': stats,
                     'datetime': datetime,
                 }, context_instance=RequestContext(request))
             else:
-                result = ImportMembershipsTask.delay(app, file_path, cleaned_data)
-            
+                result = ImportMembershipsTask.delay(memport, cleaned_data)
+
             return redirect('membership_import_status', result.task_id)
     else:
         return redirect('membership_import_preview', memport.id)
 
+
 @login_required
-def membership_import_status(request, task_id, template_name = 'memberships/import-confirm.html'):
+def membership_import_status(request, task_id, template_name='memberships/import-confirm.html'):
     """
     Checks if a membership import is completed.
     """
     if not is_admin(request.user):
         raise Http403
-        
+
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         #tasks database entries are not created at once.
         task = None
-    
+
     if task and task.status == "SUCCESS":
-        
+
         memberships, stats = task.result
-        
+
         return render_to_response(template_name, {
             'memberships': memberships,
-            'stats':stats,
+            'stats': stats,
             'datetime': datetime,
         }, context_instance=RequestContext(request))
     else:
@@ -921,10 +949,10 @@ def membership_import_status(request, task_id, template_name = 'memberships/impo
             'datetime': datetime,
         }, context_instance=RequestContext(request))
 
-#REPORTS
-    
+
 def _membership_joins(from_date):
     return Membership.objects.filter(subscribe_dt__gte=from_date)
+
 
 @staff_member_required
 def membership_join_report(request):
@@ -937,18 +965,18 @@ def membership_join_report(request):
         if form.is_valid():
             if form.cleaned_data['membership_type']:
                 mem_type = form.cleaned_data['membership_type']
-                mems = mems.filter(membership_type = form.cleaned_data['membership_type'])
+                mems = mems.filter(membership_type=form.cleaned_data['membership_type'])
             if form.cleaned_data['membership_status']:
                 mem_stat = form.cleaned_data['membership_status']
                 if form.cleaned_data['membership_status'] == 'ACTIVE':
-                    mems = mems.filter(expire_dt__gte = now, subscribe_dt__lte = now)
+                    mems = mems.filter(expire_dt__gte=now, subscribe_dt__lte=now)
                 else:
-                    mems = mems.exclude(expire_dt__gte = now, subscribe_dt__lte = now)
+                    mems = mems.exclude(expire_dt__gte=now, subscribe_dt__lte=now)
     else:
         form = ReportForm()
-    mems30days = mems.filter(subscribe_dt__gte = now-timedelta(days=30))
-    mems60days = mems.filter(subscribe_dt__gte = now-timedelta(days=60))
-    mems90days = mems.filter(subscribe_dt__gte = now-timedelta(days=90))
+    mems30days = mems.filter(subscribe_dt__gte=now - timedelta(days=30))
+    mems60days = mems.filter(subscribe_dt__gte=now - timedelta(days=60))
+    mems90days = mems.filter(subscribe_dt__gte=now - timedelta(days=90))
     return render_to_response(
                 'reports/membership_joins.html', {
                     'mems30days': mems30days,
@@ -959,14 +987,14 @@ def membership_join_report(request):
                     'mem_stat': mem_stat,
                 },
                 context_instance=RequestContext(request))
-    
+
 
 def membership_export(request):
     from django.template.defaultfilters import slugify
 
     template_name = 'memberships/export.html'
     form = ExportForm(request.POST or None, user=request.user)
-    
+
     if request.method == 'POST':
         if form.is_valid():
             app = form.cleaned_data['app']
@@ -981,9 +1009,9 @@ def membership_export(request):
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
 
             label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name','Member Number','Join Date','Renew Date','Expiration Date','Status','Status Detail','Invoice Number','Invoice Amount','Invoice Balance']
-            extra_field_names = ['user','member_number','join_dt','renew_dt','expire_dt','status','status_detail','invoice','invoice_total','invoice_balance']
-            
+            extra_field_labels = ['User Name', 'Member Number', 'Join Date', 'Renew Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
+            extra_field_names = ['user', 'member_number', 'join_dt', 'renew_dt', 'expire_dt', 'status', 'status_detail', 'invoice', 'invoice_total', 'invoice_balance']
+
             label_list.extend(extra_field_labels)
             label_list.append('\n')
 
@@ -996,10 +1024,10 @@ def membership_export(request):
                 if memb.get_entry():
                     invoice = memb.get_entry().invoice
                 for field in fields:
-                    field_name = slugify(field.label).replace('-','_')
+                    field_name = slugify(field.label).replace('-', '_')
                     value = ''
-                    
-                    if field.field_type in ['first-name','last-name','email','membership-type','payment-method','corporate_membership_id']:
+
+                    if field.field_type in ['first-name', 'last-name', 'email', 'membership-type', 'payment-method', 'corporate_membership_id']:
                         if field.field_type == 'first-name':
                             value = memb.user.first_name
                         elif field.field_type == 'last-name':
@@ -1013,29 +1041,33 @@ def membership_export(request):
                                 value = memb.payment_method.human_name
                         elif field.field_type == 'corporate_membership_id':
                             value = memb.corporate_membership_id
-                    
-                    if field_entry_d.has_key(field_name):
+
+                    if field_entry_d in field_name:
                         value = field_entry_d[field_name]
-                        
+
                     if value == None:
                         value = ''
 
-                    if type(value) in (bool,int,long):
+                    if type(value) in (bool, int, long):
                         value = unicode(value)
 
                     value = value.replace(',', ' ')
                     data_row.append(value)
-                
+
                 for field in extra_field_names:
 
                     if field == 'user':
                         value = memb.user.username
                     elif field == 'join_dt':
-                        if memb.renewal: value = ''
-                        else: value = memb.subscribe_dt
+                        if memb.renewal:
+                            value = ''
+                        else:
+                            value = memb.subscribe_dt
                     elif field == 'renew_dt':
-                        if memb.renewal: value = memb.subscribe_dt
-                        else: value = ''
+                        if memb.renewal:
+                            value = memb.subscribe_dt
+                        else:
+                            value = ''
                     elif field == 'expire_dt':
                         value = memb.expire_dt or 'never expire'
                     elif field == 'invoice':
@@ -1056,19 +1088,20 @@ def membership_export(request):
                     else:
                         value = getattr(memb, field, '')
 
-                    if type(value) in (bool,int,long):
+                    if type(value) in (bool, int, long):
                         value = unicode(value)
 
                     data_row.append(value)
 
                 data_row.append('\n')
                 data_row_list.append(data_row)
-                
+
             return render_excel(file_name, label_list, data_row_list, '.csv')
-                    
+
     return render_to_response(template_name, {
-            'form':form
+            'form': form
             }, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def membership_join_report_pdf(request):
@@ -1081,60 +1114,65 @@ def membership_join_report_pdf(request):
         mems = mems.filter(membership_type=mem_type)
     if mem_stat:
         if mem_stat == 'ACTIVE':
-            mems = mems.filter(expire_dt__gte = now, subscribe_dt__lte = now)
+            mems = mems.filter(expire_dt__gte=now, subscribe_dt__lte=now)
         else:
-            mems = mems.exclude(expire_dt__gte = now, subscribe_dt__lte = now)
-    mems = mems.filter(subscribe_dt__gte = now-timedelta(days=int(days)))
-    report = ReportNewMems(queryset = mems)
+            mems = mems.exclude(expire_dt__gte=now, subscribe_dt__lte=now)
+    mems = mems.filter(subscribe_dt__gte=now - timedelta(days=int(days)))
+    report = ReportNewMems(queryset=mems)
     resp = HttpResponse(mimetype='application/pdf')
     report.generate_by(PDFGenerator, filename=resp)
     return resp
-    
+
+
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
-    mems = Membership.objects.filter(expire_dt__gt = datetime.now())
-    
+    mems = Membership.objects.filter(expire_dt__gt=datetime.now())
+
     return render_to_response(template_name, {
-            'mems':mems,
-            'active':True,
+            'mems': mems,
+            'active': True,
             }, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_expired_members(request, template_name='reports/membership_list.html'):
-    mems = Membership.objects.filter(expire_dt__lt = datetime.now())
-    
+    mems = Membership.objects.filter(expire_dt__lt=datetime.now())
+
     return render_to_response(template_name, {
-            'mems':mems,
-            'active':False,
+            'mems': mems,
+            'active': False,
             }, context_instance=RequestContext(request))
-            
-@staff_member_required            
+
+
+@staff_member_required
 def report_members_summary(request, template_name='reports/membership_summary.html'):
     days = get_days(request)
-    
+
     chart_data = prepare_chart_data(days)
-    
+
     return render_to_response(template_name, {
                 'chart_data': chart_data,
                 'date_range': (days[0], days[-1]),
             }, context_instance=RequestContext(request))
-            
+
+
 @staff_member_required
 def report_members_over_time(request, template_name='reports/membership_over_time.html'):
     stats = get_over_time_stats()
-    
+
     return render_to_response(template_name, {
         'stats': stats,
     }, context_instance=RequestContext(request))
-    
-@staff_member_required 
+
+
+@staff_member_required
 def report_members_stats(request, template_name='reports/membership_stats.html'):
     """Shows a report of memberships per membership type.
     """
-    
-    summary,total = get_membership_stats()
-    
+
+    summary, total = get_membership_stats()
+
     return render_to_response(template_name, {
-        'summary':summary,
-        'total':total,
+        'summary': summary,
+        'total': total,
         }, context_instance=RequestContext(request))
