@@ -8,7 +8,7 @@
     
     {% if featured_news %}
     {% for news_item in featured_news %}
-        <p>{{ news_item.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url news.detail news_item.slug %}">Read more</a>
+        <p>{{ news_item.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{{ news_item.get_absolute_url }}">Read more</a>
     {% endfor %}
     {% else %}
         <p>Tendenci supports great news updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. {% if request.user.is_authenticated %}<a href="/news/add/">Add your first news item</a> to take the place of these examples.{% endif %}</p> <a class="readmore" href="/">Read more</a>
@@ -18,7 +18,7 @@
     <h2>Articles</h2>
     {% if featured_articles %}
     {% for art in featured_articles %}
-        <p>{{ art.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{% url article art.slug %}">Read more</a>
+        <p>{{ art.body|striptags|truncatewords:30|safe }}</p> <a class="readmore" href="{{ art.get_absolute_url }}">Read more</a>
     {% endfor %}
     {% else %}
         <p>Tendenci supports great article updates for your members and website visitors. You can pull extra details from the latest news, while showing other news items to the side. {% if request.user.is_authenticated %}<a href="/articles/add/">Add your first article</a> to take the place of these examples.{% endif %}</p> <a href="/">Read more</a>
