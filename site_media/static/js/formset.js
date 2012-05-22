@@ -53,10 +53,6 @@ function update_form_fields(form, original_form, form_number, total, remove) {
         $(this).attr('for', id);
     });
     
-    // if (tinyMCE.getInstanceById('id_speaker-0-description')){
-    	// tinyMCE.execCommand('mceFocus', false, 'id_speaker-0-description');  
-    	// console.log(tinyMCE.execCommand('mceRemoveControl', false, 'id_speaker-0-description'));
-    // }
   
     // remove mceEditor and display the textarea - because it doesn't work on clone
     if (!remove) {
@@ -67,7 +63,6 @@ function update_form_fields(form, original_form, form_number, total, remove) {
 	    });
     }
     
-   console.log(original_form.find('textarea'));
     // update the form field values with
     // the original forms
     if (original_form) {
