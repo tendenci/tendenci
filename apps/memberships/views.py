@@ -1042,13 +1042,11 @@ def membership_export(request):
                         elif field.field_type == 'corporate_membership_id':
                             value = memb.corporate_membership_id
 
-                    if field_entry_d in field_name:
+                    if field_name in field_entry_d:
                         value = field_entry_d[field_name]
 
-                    if value == None:
-                        value = ''
-
-                    if type(value) in (bool, int, long):
+                    value = value or u''
+                    if type(value) in (bool, int, long, None):
                         value = unicode(value)
 
                     value = value.replace(',', ' ')
