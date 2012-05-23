@@ -235,6 +235,10 @@
 	{% endif %}
 	
 	<div>{{ registrant.phone }}</div>
+	
+	{% if registrant.comments %}
+	<div>{{ registrant.comments }}</div>
+	{% endif %}
 	</td>
 
 	<td> <!-- title & company -->

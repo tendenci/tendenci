@@ -869,6 +869,9 @@ class RegistrantForm(forms.Form):
     #username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = forms.EmailField()
+    comments = forms.CharField(max_length=300, 
+                               widget=forms.Textarea,
+                               required=False)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)

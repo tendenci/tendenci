@@ -213,6 +213,14 @@
 							</div>
 							{% endif %}	
 							
+							{% if form.comments %}
+							<div class="form-field">
+								<div class="error">{{ form.comments.errors }}</div>
+								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Comments" %}</div>
+								<div class="field">{{ form.comments }}</div>
+							</div>
+							{% endif %}
+							
 							
 							{% endif %}	
 							

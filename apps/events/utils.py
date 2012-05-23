@@ -646,6 +646,7 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.email = form.cleaned_data.get('email', '')
         registrant.phone = form.cleaned_data.get('phone', '')
         registrant.company_name = form.cleaned_data.get('company_name', '')
+        registrant.comments = form.cleaned_data.get('comments', '')
     
         if registrant.email:
             users = User.objects.filter(email=registrant.email)

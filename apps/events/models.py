@@ -144,6 +144,9 @@ class Registrant(models.Model):
 
     position_title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
+    
+    meal_option = models.CharField(max_length=200, default='')
+    comments = models.TextField(default='')
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
 
