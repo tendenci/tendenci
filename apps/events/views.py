@@ -54,6 +54,8 @@ from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import (get_active_addons, get_available_addons, 
     get_addons_for_list)
+from user_groups.models import GroupMembership
+from memberships.models import MembershipType
 
 from notification import models as notification
     
@@ -1700,6 +1702,25 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     num_registrants_who_paid = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
+    
+    # assign is_member attribute to registrants
+    # avoid to use is_member(user) function for the performance reason
+    member_group_ids = MembershipType.objects.filter(
+                            status=1, 
+                            status_detail='active'
+                            ).values_list('id', flat=True)
+    member_userids = GroupMembership.objects.filter(
+                            group__id__in=member_group_ids).filter(member__in=[
+                            reg.user for reg in registrants if reg.user]
+                            ).filter(
+                            status=1, 
+                            status_detail='active'
+                            ).values_list('member__id', flat=True)
+    for reg in registrants:
+        if reg.user and reg.user.id in member_userids:
+            reg.is_member = True
+        else:
+            reg.is_member = False
 
     return render_to_response(template_name, {
         'event':event, 
