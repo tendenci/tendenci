@@ -320,7 +320,7 @@ class RegConfPricing(models.Model):
     """
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
     
-    title = models.CharField(max_length=50, blank=True)
+    title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
     
@@ -334,9 +334,9 @@ class RegConfPricing(models.Model):
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
     end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
     
-    allow_anonymous = models.BooleanField(_("Public can use"))
-    allow_user = models.BooleanField(_("Signed in user can use"))
-    allow_member = models.BooleanField(_("All members can use"))
+    allow_anonymous = models.BooleanField(_("Public can use this pricing"))
+    allow_user = models.BooleanField(_("Signed in user can use this pricing"))
+    allow_member = models.BooleanField(_("All members can use this pricing"))
     
     status = models.BooleanField(default=True)
     
