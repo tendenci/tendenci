@@ -723,7 +723,8 @@ def add(request, year=None, month=None, day=None, \
         else:  # if not post request
             event_init = {}
 
-            today = datetime.today()
+            # default to 30 days from now
+            mydate = datetime.now()+timedelta(days=30)
             offset = timedelta(hours=2)
             
             if all((year, month, day)):
@@ -738,8 +739,8 @@ def add(request, year=None, month=None, day=None, \
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
             else:
-                start_dt = datetime.now()
-                end_dt = datetime.now() + offset
+                start_dt = mydate
+                end_dt = start_dt + offset
                 
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
@@ -755,7 +756,6 @@ def add(request, year=None, month=None, day=None, \
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf', 
                                          reg_form_queryset=reg_form_queryset,)
-            
             # form sets
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),

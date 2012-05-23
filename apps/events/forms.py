@@ -309,8 +309,10 @@ class EventForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Event._meta.app_label, 
         'storme_model':Event._meta.module_name.lower()}))
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), 
+                                  initial=datetime.now()+timedelta(days=30))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), 
+                                initial=datetime.now()+timedelta(days=30, hours=2))
     
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
@@ -379,7 +381,6 @@ class EventForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
-
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -531,13 +532,15 @@ class PaymentForm(forms.ModelForm):
 class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
     
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
+        kwargs.update({'initial': {'start_dt':datetime.now(),
+                                   'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         

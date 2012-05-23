@@ -332,7 +332,7 @@ class RegConfPricing(models.Model):
                                  help_text="You'll have the chance to edit the selected form")
     
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
-    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(hours=6))
+    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
     
     allow_anonymous = models.BooleanField(_("Public can use"))
     allow_user = models.BooleanField(_("Signed in user can use"))
@@ -734,8 +734,8 @@ class Event(TendenciBaseModel):
     description = models.TextField(blank=True)
 
     all_day = models.BooleanField()
-    start_dt = models.DateTimeField(default=datetime.now())
-    end_dt = models.DateTimeField(default=datetime.now()+timedelta(hours=2))
+    start_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30))
+    end_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30, hours=2))
     timezone = TimeZoneField(_('Time Zone'))
 
     place = models.ForeignKey('Place', null=True)
