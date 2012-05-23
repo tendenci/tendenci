@@ -269,11 +269,14 @@ def articles_report(request):
                     .order_by('-count')
     for item in stats:
         ct = ContentType.objects.get_for_id(item['content_type'])
-        assert ct.model_class() == Article
+        #assert ct.model_class() == Article
         try:
             article = Article.objects.get(pk=item['object_id'])
             item['article'] = article
-            item['per_day'] = item['count'] * 1.0 / article.age().days
+            if article.age().days > 0:
+                item['per_day'] = item['count'] * 1.0 / article.age().days
+            else:
+                item['per_day'] = item['count'] * 1.0
         except Article.DoesNotExist:
             pass
         
