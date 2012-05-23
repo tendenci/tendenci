@@ -332,7 +332,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 1
             else:
                 user_edit.is_active = 0
-               
+
             profile.save()
             user_edit.save()
             

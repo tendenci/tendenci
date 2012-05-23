@@ -46,8 +46,9 @@ def settings_options(context, user, setting):
     return context
 
 @register.inclusion_tag("site_settings/nav.html", takes_context=True)
-def settings_nav(context, user):
+def settings_nav(context, user, scope_category=None):
     context.update({
-        "user": user
+        "user": user, 
+        'scope_category': scope_category
     })
     return context

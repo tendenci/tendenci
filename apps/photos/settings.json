@@ -49,23 +49,6 @@
         "scope_category": "photos", 
         "store": false, 
         "updated_by": ""
-    }, 
-    {
-        "default_value": "Descending", 
-        "description": "Determines the order of the photo albums. Examples: Descending - newest on top, Static - you drag and drop the photo albums into the order that you desire. ", 
-        "data_type": "string", 
-        "update_dt": "2010-08-12 17:19:12", 
-        "input_type": "text", 
-        "client_editable": true, 
-        "name": "order", 
-        "value": "Descending, Static", 
-        "label": "Order", 
-        "input_value": "", 
-        "parent_id": 0, 
-        "scope": "module", 
-        "scope_category": "photos", 
-        "store": true, 
-        "updated_by": ""
     },
     {
 		"name": "photoordering", 
