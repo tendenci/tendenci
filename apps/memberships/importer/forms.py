@@ -1,10 +1,7 @@
 import os
-
 from django import forms
-from django.forms.widgets import HiddenInput
 from django.template.defaultfilters import slugify
 from django.conf import settings
-
 from memberships.utils import csv_to_dict
 from memberships.models import AppField, App
 
@@ -19,18 +16,19 @@ OVERRIDE_CHOICES = (
 )
 
 KEY_CHOICES = (
-    ('username','Username'),
+    ('username', 'Username'),
     ('member_number', 'Member Number'),
-    ('email','Email'),
-    ('first_name,last_name,email','First Name, Last Name and Email'),
+    ('email', 'Email'),
+    ('first_name,last_name,email', 'First Name, Last Name and Email'),
 )
+
 
 class UploadForm(forms.Form):
     """
     CSV upload form for membership imports
     """
     app = forms.ModelChoiceField(
-        label='Application', 
+        label='Application',
         queryset=App.objects.all(),
         empty_label=None
     )
@@ -45,29 +43,29 @@ class UploadForm(forms.Form):
     )
     key = forms.ChoiceField(initial="email", choices=KEY_CHOICES)
     csv = forms.FileField(label='')
-    
-    
+
+
 class ImportMapForm(forms.Form):
-    
+
     def __init__(self, *args, **kwargs):
         memport = kwargs.pop('memport')
         super(ImportMapForm, self).__init__(*args, **kwargs)
-        
+
         app = memport.app
         file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-        
+
         csv = csv_to_dict(file_path)
 
         # choices list
         choices = csv[0].keys()
-        machine_choices = [slugify(c).replace('-','') for c in choices]
+        machine_choices = [slugify(c).replace('-', '') for c in choices]
         choice_tuples = zip(machine_choices, choices)
 
-        choice_tuples.insert(0, ('',''))  # insert blank option; top option
+        choice_tuples.insert(0, ('', ''))  # insert blank option; top option
         choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
 
         app_fields = AppField.objects.filter(app=app)
-        
+
         native_fields = [
             'User Name',
             'Membership Type',
@@ -84,7 +82,7 @@ class ImportMapForm(forms.Form):
         ]
 
         for native_field in native_fields:
-            native_field_machine = slugify(native_field).replace('-','')
+            native_field_machine = slugify(native_field).replace('-', '')
 
             self.fields[native_field_machine] = forms.ChoiceField(**{
                 'label': native_field,
@@ -97,19 +95,18 @@ class ImportMapForm(forms.Form):
             if native_field_machine in machine_choices:
                 self.fields[native_field_machine].initial = native_field_machine
 
-        self.fields['username'].required = True
         self.fields['membershiptype'].required = True
 
         for app_field in app_fields:
             for csv_row in csv:
-            
-                app_field_machine = slugify(app_field.label).replace('-','')
+
+                app_field_machine = slugify(app_field.label).replace('-', '')
 
                 if slugify(app_field_machine) == 'membershiptype':
                     continue  # skip membership type
 
                 self.fields[app_field_machine] = forms.ChoiceField(**{
-                    'label':app_field.label,
+                    'label': app_field.label,
                     'choices': choice_tuples,
                     'required': False,
                 })
