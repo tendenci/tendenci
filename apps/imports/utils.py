@@ -1,6 +1,5 @@
 import os
 import datetime
-import uuid
 import re
 from django.contrib.auth.models import User
 from django.db import models
@@ -11,40 +10,42 @@ from django.core.validators import email_re
 
 import xlrd
 from xlwt import Workbook, XFStyle
-from user_groups.models import Group, GroupMembership
+from user_groups.models import GroupMembership
 from profiles.models import Profile
 
 
 # number rows to process per request
-ROWS_TO_PROCESS = 10 
+ROWS_TO_PROCESS = 10
 
 # field.__class__.__name__
 # DateTimeField
-user_fields = [field for field in User._meta.fields if field.editable and (not field.__class__==AutoField)]
+user_fields = [field for field in User._meta.fields if field.editable and (not field.__class__ == AutoField)]
 user_field_names = [smart_str(field.name) for field in user_fields]
 user_field_types = [field.__class__.__name__ for field in user_fields]
 field_type_dict = dict(zip(user_field_names, user_field_types))
 user_fields = None
 user_field_types = None
 
-profile_fields = [field for field in Profile._meta.fields if field.editable and (not field.__class__==AutoField)]
-profile_field_names =  [smart_str(field.name) for field in profile_fields]
-profile_field_types =  [field.__class__.__name__ for field in profile_fields]
+profile_fields = [field for field in Profile._meta.fields if field.editable and (not field.__class__ == AutoField)]
+profile_field_names = [smart_str(field.name) for field in profile_fields]
+profile_field_types = [field.__class__.__name__ for field in profile_fields]
 field_type_dict.update(dict(zip(profile_field_names, profile_field_types)))
 profile_fields = None
 profile_field_types = None
+
 
 def handle_uploaded_file(f, file_path):
     destination = open(file_path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
-    
+
+
 def get_user_import_settings(request, id):
-    if not request.session.has_key(id):
-        return None
-    
     d = {}
+
+    if not id in request.session:
+        return d
 
     d['file_name'] = (request.session[id]).get('file_name', '')
     d['interactive'] = request.session[id].get('interactive', '')
@@ -52,47 +53,25 @@ def get_user_import_settings(request, id):
     d['key'] = request.session[id].get('key', '')
     d['group'] = request.session[id].get('group', '')
     d['clear_group_membership'] = request.session[id].get('clear_group_membership', '')
-    
-    try:
-        d['interactive'] = int(d['interactive'])
-        if d['interactive'] == 1:
-            d['interactive'] = True
-        else:
-            d['interactive'] = False
-    except:
-        d['interactive'] = False
-        
-    try:
-        d['override'] = int(d['override'])
-        if d['override'] == 1:
-            d['override'] = True
-        else:
-            d['override'] = False
-    except:
-        d['override'] = False
+
+    d['interactive'] = d.get('interactive') or False
+    d['override'] = d.get('override') or False
+    d['clear_group_membership'] = d.get('clear_group_membership') or False
+
     if d['override']:
         d['str_update'] = 'Override All Fields'
     else:
         d['str_update'] = 'Update Blank Fields'
-        
-    try:
-        d['clear_group_membership'] = int(d['clear_group_membership'])
-        if d['clear_group_membership'] == 1:
-            d['clear_group_membership'] = True
-        else:
-            d['clear_group_membership'] = False
-    except:
-        d['clear_group_membership'] = False
-    
-            
+
     return d
+
 
 def render_excel(filename, title_list, data_list, file_extension='.xls'):
     if file_extension == '.csv':
         str_out = ','.join(title_list)
-        
+
         for row_item_list in data_list:
-            for i in range (0, len(row_item_list)):
+            for i in range(0, len(row_item_list)):
                 if row_item_list[i]:
                     if isinstance(row_item_list[i], datetime.datetime):
                         row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')
@@ -101,7 +80,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                     elif isinstance(row_item_list[i], datetime.time):
                         row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
             str_out += ','.join(row_item_list)
-        
+
         content_type = "application/text"
     else:
         import StringIO
@@ -110,7 +89,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
         export_sheet = export_wb.add_sheet('Sheet1')
         col_idx = 0
         for col_title in title_list:
-            export_sheet.write(0, col_idx, col_title)
+            export_sheet.write(0, col_idx, "%s" % col_title)
             col_idx += 1
         row_idx = 1
         for row_item_list in data_list:
@@ -145,33 +124,34 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
         output.seek(0)
         str_out = output.getvalue()
         content_type = 'application/vnd.ms-excel'
-        
+
     response = HttpResponse(str_out)
     response['Content-Type'] = content_type
-    response['Content-Disposition'] = 'attachment; filename='+filename
+    response['Content-Disposition'] = 'attachment; filename=' + filename
     return response
 
 
 def user_import_process(request, setting_dict, preview=True, id=''):
-    """ This function processes each row and store the data in the user_object_dict. 
-        Then it updates the database if preview=False.
+    """
+    This function processes each row and store the data in the user_object_dict.
+    Then it updates the database if preview=False.
     """
     key_list = setting_dict['key'].split(',')
     # key(s)- user field(s) or profile fields(s)? that is import to identify
     key_user_list = [key for key in key_list if key in user_field_names]
     key_profile_list = [key for key in key_list if key in profile_field_names]
-    
+
     setting_dict['total'] = request.session[id].get('total',  0)
     setting_dict['count_insert'] = 0
     setting_dict['count_update'] = 0
     setting_dict['count_invalid'] = 0
-    
+
     data_dict_list = request.session[id].get('data_dict_list',  [])
     data_dict_list_len = len(data_dict_list)
-    
+
     user_obj_list = []
     invalid_list = []
-    
+
     start = 0
     if not preview:
         finish = start + ROWS_TO_PROCESS
@@ -179,41 +159,40 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             finish = data_dict_list_len
     else:
         finish = data_dict_list_len
-        
-    
-    for r in  range(start, finish):
+
+    for r in range(start, finish):
         user_object_dict = {}
         if not preview:
             user_import_dict = {}
-        identity_user_dict = {} # used to look up the User
-        identity_profile_dict = {} # used to look up the Profile
+        identity_user_dict = {}  # used to look up the User
+        identity_profile_dict = {}  # used to look up the Profile
         missing_keys = []
-        
+
         data_dict = data_dict_list[r]
-        
-        missing_keys = [key for key in data_dict.keys() if key in key_list and data_dict[key]=='']
-        
+
+        missing_keys = [key for key in data_dict.keys() if key in key_list and data_dict[key] == '']
+
         for key in data_dict.keys():
             user_object_dict[key] = data_dict[key]
-            
-            if key in key_list and data_dict[key] <> '':
+
+            if key in key_list and data_dict[key] != '':
                 if key in key_user_list:
-                    identity_user_dict[key] =  data_dict[key]
+                    identity_user_dict[key] = data_dict[key]
                 if key in key_profile_list:
-                    identity_profile_dict[key] =  data_dict[key]
-        
-        user_object_dict['ROW_NUM'] = data_dict['ROW_NUM'] 
-            
+                    identity_profile_dict[key] = data_dict[key]
+
+        user_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
+
         if missing_keys:
             user_object_dict['ERROR'] = 'Missing key: %s.' % (', '.join(missing_keys))
             user_object_dict['IS_VALID'] = False
             setting_dict['count_invalid'] += 1
             if not preview:
-                invalid_list.append({'ROW_NUM':user_object_dict['ROW_NUM'],
-                                     'ERROR':user_object_dict['ERROR']})
+                invalid_list.append({'ROW_NUM': user_object_dict['ROW_NUM'],
+                                     'ERROR': user_object_dict['ERROR']})
         else:
             user_object_dict['IS_VALID'] = True
-            
+
             # the keys could be the fields in both User and Profile tables
             user = get_user_by_key(identity_user_dict, identity_profile_dict)
             if user:
@@ -222,7 +201,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
                 else:
                     user_import_dict['ACTION'] = 'update'
                 setting_dict['count_update'] += 1
-                
+
                 if preview:
                     populate_user_dict(user, user_object_dict, setting_dict)
             else:
@@ -232,7 +211,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
                 else:
                     user_import_dict['ACTION'] = 'insert'
                 setting_dict['count_insert'] += 1
-                
+
             if not preview:
                 user = do_user_import(request, user, user_object_dict, setting_dict)
                 user_import_dict['user'] = user
@@ -241,25 +220,24 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
         if preview:
             user_obj_list.append(user_object_dict)
-            
+
     if not preview:
         if finish < data_dict_list_len:
             # not finished yet, store some data in the session
             count_insert = request.session[id].get('count_insert',  0) + setting_dict['count_insert']
             count_update = request.session[id].get('count_update',  0) + setting_dict['count_update']
-            
+
             setting_dict['is_completed'] = False
-            
-          
-            for r in  range(start, finish):
+
+            for r in range(start, finish):
                 # remove those already processed rows
                 data_dict_list.remove(data_dict_list[0])
-                
+
             d = request.session[id]
             d.update({'is_completed': False,
                       'count_insert': count_insert,
                       'count_update': count_update,
-                      'data_dict_list':data_dict_list})
+                      'data_dict_list': data_dict_list})
             request.session[id] = d
         else:
             setting_dict['is_completed'] = True
@@ -268,12 +246,13 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             d = request.session[id]
             d.update({'is_completed': True})
             request.session[id] = d
-                
+
     return user_obj_list, invalid_list
 
+
 def get_user_by_key(identity_user_dict, identity_profile_dict):
-    user = None  
-    
+    user = None
+
     if identity_user_dict and identity_profile_dict:
         users = User.objects.filter(**identity_user_dict)
         profiles = Profile.objects.filter(user__in=users).filter(**identity_profile_dict)
@@ -287,8 +266,9 @@ def get_user_by_key(identity_user_dict, identity_profile_dict):
         profiles = Profile.objects.filter(**identity_profile_dict)
         if profiles:
             user = profiles[0].user
-            
+
     return user
+
 
 def do_user_import(request, user, user_object_dict, setting_dict):
     """
@@ -303,7 +283,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     for field in user_field_names:
         if field == 'password' or field == 'username' or (not insert and field in setting_dict['key']):
             continue
-        if user_object_dict.has_key(field):
+        if field in user_object_dict:
             if override:
                 setattr(user, field, user_object_dict[field])
             else:
@@ -331,8 +311,10 @@ def do_user_import(request, user, user_object_dict, setting_dict):
 
     # loop through user properties; truncate at max_length
     for key, value in user.__dict__.items():
-        try: max_length = User._meta.get_field_by_name(key)[0].max_length
-        except FieldDoesNotExist as e: max_length = None
+        try:
+            max_length = User._meta.get_field_by_name(key)[0].max_length
+        except FieldDoesNotExist:
+            max_length = None
         if max_length:  # truncate per max_length field attribute
             setattr(user, key, value[:max_length])
 
@@ -340,22 +322,24 @@ def do_user_import(request, user, user_object_dict, setting_dict):
     if user.username and user.email:
 
         # insert/update record
-        if insert: user.save(force_insert=True)
-        else: user.save(force_update=True)
+        if insert:
+            user.save(force_insert=True)
+        else:
+            user.save(force_update=True)
 
         try:  # get or create
             profile = user.get_profile()
         except Profile.DoesNotExist:
-            profile = Profile.objects.create(user=user, 
-               creator=request.user, 
+            profile = Profile.objects.create(user=user,
+               creator=request.user,
                creator_username=request.user.username,
-               owner=request.user, 
-               owner_username=request.user.username, 
+               owner=request.user,
+               owner_username=request.user.username,
                email=user.email
             )
 
         for field in profile_field_names:
-            if user_object_dict.has_key(field):
+            if field in user_object_dict:
 
                 if override:
                     setattr(profile, field, user_object_dict[field])
@@ -376,13 +360,14 @@ def do_user_import(request, user, user_object_dict, setting_dict):
                 gm.group = setting_dict['group']
                 gm.creator_id = request.user.id
                 gm.creator_username = request.user.username
-                gm.owner_id =  request.user.id
+                gm.owner_id = request.user.id
                 gm.owner_username = request.user.username
-                gm.status =1
+                gm.status = 1
                 gm.status_detail = 'active'
                 gm.save()
 
     return user
+
 
 def get_unique_username(user):
 
@@ -408,17 +393,17 @@ def get_unique_username(user):
         user.username = '%s%s' % (user.username, str(num))
 
     return user.username
-                     
+
 
 # populate user object to its dictionary, so we can display to the preview page
 def populate_user_dict(user, user_dict, import_setting_list):
-    if not user_dict.has_key('first_name'):
+    if not 'first_name' in user_dict:
         user_dict['first_name'] = user.first_name
-    if not user_dict.has_key('last_name'):
+    if not 'last_name' in user_dict:
         user_dict['last_name'] = user.last_name
-    if not user_dict.has_key('email'):
+    if not 'email' in user_dict:
         user_dict['email'] = user.email
-    if not user_dict.has_key('username'):
+    if not 'username' in user_dict:
         user_dict['username'] = user.username
     if not import_setting_list['override']:
         if user.first_name:
@@ -431,26 +416,27 @@ def populate_user_dict(user, user_dict, import_setting_list):
             user_dict['username'] = user.username
     if not user_dict['username']:
         user_dict['username'] = user.username
-                      
-    
+
+
 def get_header_list(file_path):
     if not os.path.isfile(file_path):
-        raise NameError, "%s is not a valid file." % file_path
+        raise NameError("%s is not a valid file." % file_path)
+
     header_list = []
     book = xlrd.open_workbook(file_path)
     sheet = book.sheet_by_index(0)
     for col in range(0, sheet.ncols):
-        col_item = sheet.cell_value(rowx=0, colx = col)
+        col_item = sheet.cell_value(rowx=0, colx=col)
         header_list.append(col_item)
     return header_list
+
 
 def get_header_list_from_content(file_content, file_name):
     header_list = []
     if file_content and len(file_name) > 4:
         file_ext = file_name[-4:].lower()
-        
+
         if file_ext == '.csv':
-            import csv
             line_return_index = file_content.find('\n')
             header_list = ((file_content[:line_return_index]).strip('\r')).split(',')
         else:
@@ -466,30 +452,30 @@ def get_header_list_from_content(file_content, file_name):
 
 def extract_from_excel(file_path):
     if not os.path.isfile(file_path):
-        raise NameError, "%s is not a valid file." % file_path
-    
+        raise NameError("%s is not a valid file." % file_path)
+
     file_ext = (file_path[-4:]).lower()
-    if file_ext <> '.csv' and file_ext <> '.xls':
-        raise NameError, "%s is not a valid file type (should be either .csv or .xls)." % file_path
-    
+    if file_ext != '.csv' and file_ext != '.xls':
+        raise NameError("%s is not a valid file type (should be either .csv or .xls)." % file_path)
+
     fields = []
     data_list = []
-    
+
     if file_ext == '.csv':
         import csv
         import dateutil.parser as dparser
-        
+
         data = csv.reader(open(file_path))
-        
+
         # read the column header
         fields = data.next()
         fields = [smart_str(field) for field in fields]
-        
+
         r = 1
         for row in data:
             item = dict(zip(fields, row))
             for key in item.keys():
-                if field_type_dict.has_key(key) and field_type_dict[key] == 'DateTimeField':
+                if key in field_type_dict and field_type_dict[key] == 'DateTimeField':
                     item[key] = dparser.parser(item[key])
             item['ROW_NUM'] = r + 1
             data_list.append(item)
@@ -498,14 +484,14 @@ def extract_from_excel(file_path):
         book = xlrd.open_workbook(file_path)
         nsheets = book.nsheets
         nrows = book.sheet_by_index(0).nrows
-        
+
         # get the fields from the first row
         for i in range(0, nsheets):
             sh = book.sheet_by_index(i)
             for c in range(0, sh.ncols):
                 col_item = sh.cell_value(rowx=0, colx=c)
                 fields.append(smart_str(col_item))
-         
+
         # get the data - skip the first row
         for r in  range(1, nrows):
             row = []
@@ -516,25 +502,14 @@ def extract_from_excel(file_path):
                     cell_value = cell.value
                     if cell.ctype == xlrd.XL_CELL_DATE:
                         date_tuple = xlrd.xldate_as_tuple(cell_value, book.datemode)
-                        cell_value = datetime.date(date_tuple[0],date_tuple[1],date_tuple[2])
-                    elif cell.ctype in (2,3) and int(cell_value) == cell_value:
+                        cell_value = datetime.date(date_tuple[0], date_tuple[1], date_tuple[2])
+                    elif cell.ctype in (2, 3) and int(cell_value) == cell_value:
                         # so for zipcode 77079, we don't end up with 77079.0
                         cell_value = int(cell_value)
                     row.append(cell_value)
-                   
+
             item = dict(zip(fields, row))
             item['ROW_NUM'] = r + 1
             data_list.append(item)
-      
+
     return data_list
-                    
-                
-                
-                
-                
-        
-                
-            
-        
- 
-    
