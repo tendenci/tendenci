@@ -240,7 +240,6 @@ INSTALLED_APPS = (
     'search',
     'navs',
     'pluginmanager',
-    'plugin_builder',
     'navs',
     'tendenci_guide',
     # celery task system, must stay at the bottom
