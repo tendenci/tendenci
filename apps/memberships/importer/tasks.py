@@ -7,6 +7,7 @@ from celery.task import Task
 from profiles.models import Profile
 from corporate_memberships.models import CorporateMembership
 from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
+from memberships.utils import spawn_username
 from memberships.importer.utils import parse_mems_from_csv, clean_field_name
 
 
@@ -50,9 +51,9 @@ class ImportMembershipsTask(Task):
 
                 user = get_user(username=m['username'])
 
-                if not user:
-                    if m['username'] and m['email']:
-                        user = User.objects.create_user(m['username'], m['email'])
+                if not user:  # then email
+                    m['username'] = spawn_username(m['email'])
+                    user = User.objects.create_user(m['username'], m['email'])
 
                 # get or create profile
                 try:
@@ -209,8 +210,6 @@ class ImportMembershipsTask(Task):
                     # save will either create or update
                     # depending if a pk is available
                     entry_item.save()
-
-                print m['memberid']
 
                 # update membership number
                 if not membership.member_number:
