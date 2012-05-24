@@ -369,7 +369,7 @@ def export(request, template_name="locations/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "locations.xls"
+        file_name = "locations.csv"
         fields = [
             'guid',
             'location_name',

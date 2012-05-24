@@ -252,7 +252,7 @@ def export(request, template_name="news/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "news.xls"
+        file_name = "news.csv"
         fields = [
             'guid',
             'timezone',

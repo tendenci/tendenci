@@ -386,7 +386,7 @@ def export(request, template_name="pages/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "pages.xls"
+        file_name = "pages.csv"
         fields = [
             'guid',
             'title',

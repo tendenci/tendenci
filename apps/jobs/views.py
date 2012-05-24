@@ -622,7 +622,7 @@ def export(request, template_name="jobs/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "jobs.xls"
+        file_name = "jobs.csv"
         fields = [
             'guid',
             'title',
