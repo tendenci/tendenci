@@ -135,7 +135,7 @@ class MembershipType(TendenciBaseModel):
 
     class Meta:
         verbose_name = "Membership Type"
-        permissions = (("view_membershiptype", "Can view membership type"))
+        permissions = (("view_membershiptype", "Can view membership type"),)
 
     def __unicode__(self):
         return self.name
