@@ -47,12 +47,12 @@ def get_user_import_settings(request, id):
     if not id in request.session:
         return d
 
-    d['file_name'] = (request.session[id]).get('file_name', '')
-    d['interactive'] = request.session[id].get('interactive', '')
-    d['override'] = request.session[id].get('override', '')
-    d['key'] = request.session[id].get('key', '')
-    d['group'] = request.session[id].get('group', '')
-    d['clear_group_membership'] = request.session[id].get('clear_group_membership', '')
+    d['file_name'] = (request.session[id]).get('file_name', u'')
+    d['interactive'] = request.session[id].get('interactive', u'')
+    d['override'] = request.session[id].get('override', u'')
+    d['key'] = request.session[id].get('key', u'')
+    d['group'] = request.session[id].get('group', u'')
+    d['clear_group_membership'] = request.session[id].get('clear_group_membership', u'')
 
     d['interactive'] = d.get('interactive') or False
     d['override'] = d.get('override') or False

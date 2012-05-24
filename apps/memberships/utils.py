@@ -192,28 +192,31 @@ def prepare_chart_data(days, height=300):
 
     # normalize height
     try:
-        kH = height*1.0/max_count
+        kH = height * 1.0 / max_count
     except Exception:
         kH = 1.0
     for d in data:
-        d['height'] = int(d['count']*kH)
-        
+        d['height'] = int(d['count'] * kH)
+
     return data
+
 
 def month_days(year, month):
     "Returns iterator for days in selected month"
     day = date(year, month, 1)
     while day.month == month:
         yield day
-        day += timedelta(days=1) 
+        day += timedelta(days=1)
+
 
 def get_days(request):
     "returns a list of days in a month"
     now = date.today()
     year = int(request.GET.get('year') or str(now.year))
     month = int(request.GET.get('month') or str(now.month))
-    days = list(month_days(year, month)) 
+    days = list(month_days(year, month))
     return days
+
 
 def has_app_perm(user, perm, obj=None):
     """
@@ -228,13 +231,14 @@ def has_app_perm(user, perm, obj=None):
     else:
         return False
 
+
 def get_over_time_stats():
     """
     Returns membership statistics over time.
-        Last Month 
-        Last 3 Months 
-        Last 6 Months 
-        Last 9 Months 
+        Last Month
+        Last 3 Months
+        Last 6 Months
+        Last 9 Months
         Last 12 Months
         Year to Date
     """
@@ -254,7 +258,7 @@ def get_over_time_stats():
         start_dt = time[1]
         d = {}
         active_mems = Membership.objects.filter(expire_dt__gt=start_dt)
-        d['new'] = active_mems.filter(subscribe_dt__gt=start_dt).count() #just joined in that time period
+        d['new'] = active_mems.filter(subscribe_dt__gt=start_dt).count()  # just joined in that time period
         d['renewing'] = active_mems.filter(renewal=True).count()
         d['active'] = active_mems.count()
         d['time'] = time[0]
@@ -263,13 +267,15 @@ def get_over_time_stats():
         d['order'] = time[2]
         stats.append(d)
 
-    return sorted(stats, key=lambda x:x['order'])
+    return sorted(stats, key=lambda x: x['order'])
+
 
 def months_back(n):
     """Return datetime minus n months"""
     from dateutil.relativedelta import relativedelta
 
     return date.today() + relativedelta(months=-n)
+
 
 def get_status_filter(status):
     if status == "pending":
@@ -281,6 +287,7 @@ def get_status_filter(status):
     else:
         return Q()
 
+
 def get_app_field_labels(app):
     """Get a list of field labels for this app.
     """
@@ -288,8 +295,9 @@ def get_app_field_labels(app):
     fields = app.fields.all().order_by('position')
     for field in fields:
         labels_list.append(field.label)
-        
+
     return labels_list
+
 
 def get_notice_token_help_text(notice=None):
     """Get the help text for how to add the token in the email content,
@@ -300,32 +308,32 @@ def get_notice_token_help_text(notice=None):
         membership_types = [notice.membership_type]
     else:
         membership_types = MembershipType.objects.filter(status=1, status_detail='active')
-    
+
     # get a list of apps from membership types
-    apps_list = []    
+    apps_list = []
     for mt in membership_types:
         apps = App.objects.filter(membership_types=mt)
         if apps:
             apps_list.extend(apps)
-            
+
     apps_list = set(apps_list)
     apps_len = len(apps_list)
-     
+
     # render the tokens
     help_text += '<div style="margin: 1em 10em;">'
     help_text += """
                 <div style="margin-bottom: 1em;">
                 You can use tokens to display member info or site specific information.
                 A token is composed of a field label or label lower case with underscore (_)
-                instead of spaces, wrapped in 
+                instead of spaces, wrapped in
                 {{ }} or [ ]. <br />
                 For example, token for "First Name" field: {{ first_name }}
-                </div> 
+                </div>
                 """
-                
+
     help_text += '<div id="toggle_token_view"><a href="javascript:;">Click to view available tokens</a></div>'
     help_text += '<div id="notice_token_list">'
-    if apps_list: 
+    if apps_list:
         for app in apps_list:
             if apps_len > 1:
                 help_text += '<div style="font-weight: bold;">%s</div>' % app.name
@@ -336,7 +344,7 @@ def get_notice_token_help_text(notice=None):
             help_text += "</ul>"
     else:
         help_text += '<div>No field tokens because there is no applications.</div>'
-            
+
     other_labels = ['membernumber',
                     'membershiptype',
                     'membershiplink',
@@ -352,12 +360,9 @@ def get_notice_token_help_text(notice=None):
     for label in other_labels:
         help_text += '<li>{{ %s }}</li>' % label
     help_text += "</ul>"
-        
     help_text += "</div>"
-         
-        
     help_text += "</div>"
-    
+
     help_text += """
                 <script>
                     $(document).ready(function() {
@@ -368,7 +373,7 @@ def get_notice_token_help_text(notice=None):
                     });
                 </script>
                 """
-              
+
     return help_text
 
 
@@ -386,21 +391,21 @@ def spawn_username(*args):
     max_length = 8
 
     un = ' '.join(args)             # concat args into one string
-    un = re.sub('\s+','_',un)       # replace spaces w/ underscores
-    un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
+    un = re.sub('\s+', '_', un)       # replace spaces w/ underscores
+    un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
     un = un.strip('_.- ')           # strip funny-characters from sides
     un = un[:max_length].lower()    # keep max length and lowercase username
 
-    others = [] # find similiar usernames
+    others = []  # find similiar usernames
     for u in User.objects.filter(username__startswith=un):
         if u.username.replace(un, '0').isdigit():
-            others.append(int(u.username.replace(un,'0')))
+            others.append(int(u.username.replace(un, '0')))
 
     if others and 0 in others:
         # the appended digit will compromise the username length
         # there would have to be more than 99,999 duplicate usernames
         # to kill the database username max field length
-        un = '%s%s' % (un, str(max(others)+1))
+        un = '%s%s' % (un, str(max(others) + 1))
 
     return un.lower()
 
