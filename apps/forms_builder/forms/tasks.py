@@ -4,8 +4,7 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
-from imports.utils import render_excel
-from exports.utils import full_model_to_dict
+from exports.utils import full_model_to_dict, render_csv
 from forms_builder.forms.models import Form
 
 class FormsExportTask(Task):
@@ -62,7 +61,7 @@ class FormsExportTask(Task):
         forms = Form.objects.filter(status=1)
         max_fields = forms.annotate(num_fields=Count('fields')).aggregate(Max('num_fields'))['num_fields__max']
         max_pricings = forms.annotate(num_pricings=Count('pricing')).aggregate(Max('num_pricings'))['num_pricings__max']
-        file_name = 'forms.xls'
+        file_name = 'forms.csv'
         data_row_list = []
         
         for form in forms:
@@ -107,7 +106,6 @@ class FormsExportTask(Task):
                     for f in pricing_fields:
                         data_row.append('')
             
-            data_row.append('\n') # append a new line to make a new row
             data_row_list.append(data_row)
         
         fields = form_fields
@@ -115,5 +113,4 @@ class FormsExportTask(Task):
             fields = fields + ["field %s %s" % (i, f) for f in field_fields]
         for i in range(0, max_pricings):
             fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
-        fields.append('\n')
         return render_excel(file_name, fields, data_row_list)

@@ -19,7 +19,7 @@ def export(request, template_name="boxes/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "boxs.xls"
+        file_name = "boxes.csv"
         fields = [
             'title',
             'content',

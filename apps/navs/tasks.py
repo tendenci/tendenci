@@ -4,8 +4,7 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
-from imports.utils import render_excel
-from exports.utils import full_model_to_dict
+from exports.utils import full_model_to_dict, render_csv
 from navs.models import Nav
 
 class NavsExportTask(Task):
@@ -47,7 +46,7 @@ class NavsExportTask(Task):
         
         navs = Nav.objects.filter(status=1)
         max_nav_items = navs.annotate(num_navitems=Count('navitem')).aggregate(Max('num_navitems'))['num_navitems__max']
-        file_name = 'navs.xls'
+        file_name = 'navs.csv'
         data_row_list = []
         
         for nav in navs:
@@ -74,11 +73,9 @@ class NavsExportTask(Task):
                     for field in nav_item_fields:
                         data_row.append('')
             
-            data_row.append('\n') # append a new line to make a new row
             data_row_list.append(data_row)
         
         fields = nav_fields
         for i in range(0, max_nav_items):
             fields = fields + ["nav_item %s %s" % (i, f) for f in nav_item_fields]
-        fields.append('\n')
-        return render_excel(file_name, fields, data_row_list)
+        return render_csv(file_name, fields, data_row_list)

@@ -507,7 +507,7 @@ def export(request, template_name="directories/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "directories.xls"
+        file_name = "directories.csv"
         fields = [
             'guid',
             'slug',

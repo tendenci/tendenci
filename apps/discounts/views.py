@@ -192,7 +192,7 @@ def export(request, template_name="discounts/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "discounts.xls"
+        file_name = "discounts.csv"
         fields = [
             'discount_code',
             'start_dt',

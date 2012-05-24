@@ -194,7 +194,7 @@ def export(request, template_name="invoices/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "invoices.xls"
+        file_name = "invoices.csv"
         fields = [
             'guid',
             'object_type',

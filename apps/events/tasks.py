@@ -4,8 +4,7 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
-from imports.utils import render_excel
-from exports.utils import full_model_to_dict
+from exports.utils import full_model_to_dict, render_csv
 from events.models import Event
 
 class EventsExportTask(Task):
@@ -94,7 +93,7 @@ class EventsExportTask(Task):
         max_speakers = events.annotate(num_speakers=Count('speaker')).aggregate(Max('num_speakers'))['num_speakers__max']
         max_organizers = events.annotate(num_organizers=Count('organizer')).aggregate(Max('num_organizers'))['num_organizers__max']
         max_pricings = events.annotate(num_pricings=Count('registration_configuration__regconfpricing')).aggregate(Max('num_pricings'))['num_pricings__max']
-        file_name = 'events.xls'
+        file_name = 'events.csv'
         data_row_list = []
         
         for event in events:
@@ -179,7 +178,6 @@ class EventsExportTask(Task):
                     for field in pricing_fields:
                         data_row.append('')
             
-            data_row.append('\n') # append a new line to make a new row
             data_row_list.append(data_row)
         
         fields = event_fields + ["place %s" % f for f in place_fields]
@@ -190,5 +188,4 @@ class EventsExportTask(Task):
             fields = fields + ["organizer %s %s" % (i, f) for f in organizer_fields]
         for i in range(0, max_pricings):
             fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
-        fields.append('\n')
         return render_excel(file_name, fields, data_row_list)
