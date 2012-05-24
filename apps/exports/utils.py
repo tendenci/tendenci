@@ -1,3 +1,10 @@
+import datetime
+import csv
+from StringIO import StringIO
+
+from django.http import HttpResponse
+
+
 def full_model_to_dict(instance, fields=None, exclude=None):
     """
     Returns a dictionay for an intance's model fields.
@@ -24,3 +31,28 @@ def full_model_to_dict(instance, fields=None, exclude=None):
         else:
             data[f.name] = f.value_from_object(instance)
     return data
+
+def render_csv(filename, title_list, data_list):
+    
+    output = StringIO("")
+    #output = open('eggs.csv', 'wb')
+    csv_writer = csv.writer(output)
+    
+    csv_writer.writerow(title_list)
+    
+    for row_item_list in data_list:
+        for i in range (0, len(row_item_list)):
+            if row_item_list[i]:
+                row_item_list[i] = row_item_list[i].encode("utf-8")
+                if isinstance(row_item_list[i], datetime.datetime):
+                    row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')
+                elif isinstance(row_item_list[i], datetime.date):
+                    row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
+                elif isinstance(row_item_list[i], datetime.time):
+                    row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
+        csv_writer.writerow(row_item_list)
+    
+    response = HttpResponse(output.getvalue())
+    response['Content-Type'] = "application/text"
+    response['Content-Disposition'] = 'attachment; filename='+filename
+    return response

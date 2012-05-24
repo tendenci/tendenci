@@ -5,7 +5,7 @@ from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
 from perms.models import TendenciBaseModel
-from imports.utils import render_excel
+from exports.utils import render_csv
 
 class TendenciExportTask(Task):
     """Export Task for Celery
@@ -56,11 +56,9 @@ class TendenciExportTask(Task):
             data_row = []
             for field in fields:
                 # clean the derived values into unicode
-                value = unicode(d[field]).replace(os.linesep, ' ').rstrip()
+                value = unicode(d[field]).rstrip()
                 data_row.append(value)
             
-            data_row.append('\n') # append a new line to make a new row
             data_row_list.append(data_row)
         
-        fields.append('\n') # append a new line to mark new row
-        return render_excel(file_name, fields, data_row_list)
+        return render_csv(file_name, fields, data_row_list)
