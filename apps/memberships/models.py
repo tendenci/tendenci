@@ -3,7 +3,6 @@ import operator
 import hashlib
 import uuid
 import time
-from hashlib import md5
 from functools import partial
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -13,7 +12,7 @@ from django.db.models.query_utils import Q
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
@@ -21,7 +20,7 @@ from django.contrib.contenttypes import generic
 from base.utils import day_validate
 from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
-from perms.utils import get_notice_recipients, is_member, is_admin, has_perm
+from perms.utils import get_notice_recipients, is_admin, has_perm
 from perms.object_perms import ObjectPermission
 from invoices.models import Invoice
 from directories.models import Directory
@@ -78,28 +77,29 @@ FIELD_FUNCTIONS = (
     ("Group", _("Subscribe to Group")),
 )
 
+
 class MembershipType(TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
     price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
         help_text="Set 0 for free membership.")
-    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2, 
+    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2,
         blank=True, default=0, null=True, help_text="Set 0 for free membership.")
     # for first time processing
     admin_fee = models.DecimalField(_('Admin Fee'),
         max_digits=15, decimal_places=2, blank=True, default=0, null=True,
         help_text="Admin fee for the first time processing")
-    
+
     group = models.ForeignKey(Group, related_name="membership_types",
         help_text="Members joined will be added to this group")
-    
+
     require_approval = models.BooleanField(_('Require Approval'), default=1)
     allow_renewal = models.BooleanField(_('Allow Renewal'), default=1)
     renewal = models.BooleanField(_('Renewal Only'), default=0)
     renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=1)
 
-    order = models.IntegerField(_('Order'), default=0, 
+    order = models.IntegerField(_('Order'), default=0,
         help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
 
