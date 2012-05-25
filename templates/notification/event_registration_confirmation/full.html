@@ -18,24 +18,23 @@
             {% trans "Registration Complete." %}
             <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
-
                     {% for registrant in registrants %}
-                            <div>
-                            {% if registrant.name %}
-                                    {{ registrant.name }}
-                            {% else %}
-                                {% trans "Guest #" %}{{ forloop.counter0 }}
-                            {% endif %}
-                            {% if registrant.custom_reg_form_entry %}
-                            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
-                            {% for field in roster_field_list %}
+                        <div>
+                        {% if registrant.get_name %}
+                            {{ registrant.get_name }}
+                        {% else %}
+                            {% trans "Guest #" %}{{ forloop.counter0 }}
+                        {% endif %}
+                        {% if registrant.custom_reg_form_entry %}
+                        {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                        {% for field in roster_field_list %}
                             {% if field.value %}
                             <div>{{ field.label }}: {{ field.value }}</div>
                             {% endif %}
-                            {% endfor %}
-                            {% endwith %}
-                            {% endif %}
-                            </div>
+                        {% endfor %}
+                        {% endwith %}
+                        {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
         {% else %}
@@ -48,26 +47,25 @@
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             {% if for_admin %}
                 {% trans "Almost Registered. Payment is still required." %}
-                            <div style="font-size:1.0em; margin-top:5px;">
+                <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
-
                     {% for registrant in registrants %}
-                            <div>
-                            {% if registrant.name %}
-                                    {{ registrant.name }}
-                            {% else %}
-                                {% trans "Guest #" %}{{ forloop.counter0 }}
-                            {% endif %}
-                            {% if registrant.custom_reg_form_entry %}
-                            {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
-                            {% for field in roster_field_list %}
+                        <div>
+                        {% if registrant.get_name %}
+                            {{ registrant.get_name }}
+                        {% else %}
+                            {% trans "Guest #" %}{{ forloop.counter0 }}
+                        {% endif %}
+                        {% if registrant.custom_reg_form_entry %}
+                        {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
+                        {% for field in roster_field_list %}
                             {% if field.value %}
                             <div>{{ field.label }}: {{ field.value }}</div>
                             {% endif %}
-                            {% endfor %}
-                            {% endwith %}
-                            {% endif %}
-                            </div>
+                        {% endfor %}
+                        {% endwith %}
+                        {% endif %}
+                        </div>
                     {% endfor %}
                 </div>
             {% else %}

@@ -26,7 +26,7 @@ class Course(TendenciBaseModel):
     recipients = models.CharField(_(u'Recipients'), help_text=_(u"Emails, separated by commas, that will receive notices about this course's attempts."), max_length=200, blank=True)
     can_retry = models.BooleanField(_(u'Allow Retries'), default=True)
     retries = models.IntegerField(_(u'Retries'), help_text=_(u'Number of retries allowed (0, means unlimited)'), default=0)
-    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=_(u'Number of hours before another retry'), default=0)
+    retry_interval = models.IntegerField(_(u'Retry Interval'), help_text=_(u'Number of hours before another retry is allowed'), default=0)
     passing_score = models.DecimalField(_(u'Passing Score'),
                         help_text=u'out of 100%',
                         max_digits=5,
@@ -110,6 +110,20 @@ class Question(models.Model):
                 'answer':answers[i]
             })
         return cl
+    
+    def save(self, *args, **kwargs):
+        model = self.__class__
+        
+        if self.number is None:
+            # Append
+            try:
+                last = model.objects.order_by('-number')[0]
+                self.number = last.number + 1
+            except IndexError:
+                # First row
+                self.number = 0
+        
+        return super(Question, self).save(*args, **kwargs)
         
 class Answer(models.Model):
     """Represents an Answer choice for a question.

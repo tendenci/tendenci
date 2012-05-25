@@ -128,7 +128,7 @@ header { position: relative; margin: 10px 0;
     #login { .grid(9); margin: 0 0 44px 0; height: 28px; padding: 0; text-align: right;
         form {display: block;}
         input[type="text"], input[type="password"] { font-size: 14px; width: 120px; }
-        input[type="submit"] { font-size: 12px; font-weight: bold; background-color: @complimentary; padding: 4px 10px; border: 0; }
+        input[type="submit"] { font-size: 12px; font-weight: bold; background-color: @primary; padding: 4px 10px; border: 0; }
         span { color: @primary; }
     }
 }
@@ -238,6 +238,7 @@ colors, heights, and borders can be overridden */
 ------------------------------ */
 #sidebar { .grid(3);
     #upcoming-events { width: 100%; margin: 0; float: right; }
+    #sidebar-login input[type="submit"] { font-size: 12px; font-weight: bold; color: @primary; padding: 4px 10px; border: 0; background-color: #000; }
 }
 
 /* ------------------------------

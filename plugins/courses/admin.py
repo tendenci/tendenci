@@ -13,14 +13,19 @@ from courses.forms import CourseForm, QuestionForm, QuestionFormset
 class CourseAttemptAdmin(admin.ModelAdmin):
     list_display = ['course', 'user', 'score', 'create_dt']
     
-class AnswerInline(admin.StackedInline):
+class AnswerInline(admin.TabularInline):
     model = Answer
+    extra = 2
     
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [
         AnswerInline,
     ]
+    
     list_display = ['question', 'course', 'view_on_site']
+    ordering = ['course']
+    list_filter = ['course']
+    fields = ['course', 'question', 'point_value']
     
     def view_on_site(self, obj):
         link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
@@ -34,13 +39,17 @@ class QuestionAdmin(admin.ModelAdmin):
     view_on_site.short_description = 'view'
     
     def response_change(self, request, obj, post_url_continue=None):
-        return redirect('courses.questions', obj.course.pk)
+        return redirect('courses.questions', obj.pk)
+    
+    def response_add(self, request, obj, post_url_continue=None):
+        return redirect('/admin/courses/course/%s' % obj.course.pk)
 
 class QuestionInline(admin.TabularInline):
     model = Question
     form = QuestionForm
     formset = QuestionFormset
-
+    extra = 0
+    
 class CourseAdmin(admin.ModelAdmin):
     inlines = [
         QuestionInline,
@@ -76,11 +85,19 @@ class CourseAdmin(admin.ModelAdmin):
     )
     form = CourseForm
     actions = []
+    add_form_template = "courses/admin/add_form.html"
 
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            #'%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            #'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js',
+            'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js',
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/admin/courses-inline-ordering.js' % settings.STATIC_URL,
         )
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
     def edit_link(self, obj):
         link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:courses_course_change', args=[obj.pk])

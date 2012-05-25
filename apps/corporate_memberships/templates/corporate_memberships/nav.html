@@ -46,7 +46,9 @@
             {% if can_edit_setting %}
             <li><a href="{% url settings.index "module" "corporate_memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
+            {% if admin %}
             <li><a href="{% url corp_memb.index %}">{% trans 'Index Page' %}</a></li>
+            {% endif %}
             <li>{% corp_memb_render_add_links %}</li>
 
             <li><a href="{% url corp_memb.search %}">{% trans "Search All" %}</a></li> 

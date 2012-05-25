@@ -144,6 +144,9 @@ class Registrant(models.Model):
 
     position_title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
+    
+    meal_option = models.CharField(max_length=200, default='')
+    comments = models.TextField(default='')
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
 
@@ -169,6 +172,14 @@ class Registrant(models.Model):
         if fn and ln:
             return ', '.join([ln, fn])
         return fn or ln
+        
+    def get_name(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_name()
+        else:
+            if self.first_name or self.last_name:
+                return self.first_name + ' ' + self.last_name
+        return None
 
     @classmethod
     def event_registrants(cls, event=None):
@@ -228,7 +239,28 @@ class Registrant(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
-        
+
+    def initialize_fields(self):
+        """Similar to assign_mapped_fields but more direct and saves the registrant
+        """
+        if self.custom_reg_form_entry:
+            self.first_name = self.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            self.last_name = self.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            self.mail_name = self.custom_reg_form_entry.get_value_of_mapped_field('mail_name')
+            self.address = self.custom_reg_form_entry.get_value_of_mapped_field('address')
+            self.city = self.custom_reg_form_entry.get_value_of_mapped_field('city')
+            self.state = self.custom_reg_form_entry.get_value_of_mapped_field('state')
+            self.zip = self.custom_reg_form_entry.get_value_of_mapped_field('zip')
+            self.country = self.custom_reg_form_entry.get_value_of_mapped_field('country')
+            self.phone = self.custom_reg_form_entry.get_value_of_mapped_field('phone')
+            self.email = self.custom_reg_form_entry.get_value_of_mapped_field('email')
+            self.groups = self.custom_reg_form_entry.get_value_of_mapped_field('groups')
+            self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
+            self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
+        if self.first_name or self.last_name:
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+        self.save()
+
     def assign_mapped_fields(self):
         """
         Assign the value of the mapped fields from custom registration form to this registrant
@@ -237,7 +269,7 @@ class Registrant(models.Model):
             user_fields = [item[0] for item in USER_FIELD_CHOICES]
             for field in user_fields:
                 setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
-                
+
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
 
@@ -251,21 +283,21 @@ class RegistrationConfiguration(models.Model):
     # TODO: set widget here instead of within form class
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
     payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
-    
+
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
-    
+
     # custom reg form
     use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
-    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
                                  verbose_name=_("Custom Registration Form"),
                                  related_name='regconfs',
                                  help_text="You'll have the chance to edit the selected form")
     # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
     bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=((True, 'Use one form for all pricings'), 
+                                 choices=((True, 'Use one form for all pricings'),
                                           (False, 'Use separate form for each pricing')),
                                  default=True)
 
@@ -291,7 +323,7 @@ class RegConfPricing(models.Model):
     """
     reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
     
-    title = models.CharField(max_length=50, blank=True)
+    title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
     
@@ -303,11 +335,11 @@ class RegConfPricing(models.Model):
                                  help_text="You'll have the chance to edit the selected form")
     
     start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
-    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(hours=6))
+    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
     
-    allow_anonymous = models.BooleanField(_("Public can use"))
-    allow_user = models.BooleanField(_("Signed in user can use"))
-    allow_member = models.BooleanField(_("All members can use"))
+    allow_anonymous = models.BooleanField(_("Public can use this pricing"))
+    allow_user = models.BooleanField(_("Signed in user can use this pricing"))
+    allow_member = models.BooleanField(_("All members can use this pricing"))
     
     status = models.BooleanField(default=True)
     
@@ -705,8 +737,8 @@ class Event(TendenciBaseModel):
     description = models.TextField(blank=True)
 
     all_day = models.BooleanField()
-    start_dt = models.DateTimeField(default=datetime.now())
-    end_dt = models.DateTimeField(default=datetime.now()+timedelta(hours=2))
+    start_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30))
+    end_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30, hours=2))
     timezone = TimeZoneField(_('Time Zone'))
 
     place = models.ForeignKey('Place', null=True)
@@ -992,9 +1024,12 @@ class CustomRegFormEntry(models.Model):
 
     
     def get_name(self):
-        name = ' '.join([self.get_value_of_mapped_field('first_name'), 
-                         self.get_value_of_mapped_field('last_name')])
-        return name.strip()
+        first_name = self.get_value_of_mapped_field('first_name')
+        last_name = self.get_value_of_mapped_field('last_name')
+        if first_name or last_name:
+            name = ' '.join([first_name, last_name])
+            return name.strip()
+        return ''
 
     def get_lastname_firstname(self):
         name = '%s, %s' % (self.get_value_of_mapped_field('last_name'), 

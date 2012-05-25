@@ -1,0 +1,22 @@
+Memberships
+===========
+
+
+
+Notices
+~~~~~~~
+
+Notices are predetermined emails sent to members or membership applicants. They can be sent out based on the following criteria:
+
+- # if days
+- before, after, or at time of
+- Join, Renewal, Expiration, Approval, and Disapproval dates
+
+The Join date is set when they apply. You may want to set up notices to go out:
+
+- 7 days before expiration to remind members to renew
+- At time of (0 days) Approval, letting them know they have been accepted
+- 15 days after Approval, again touching base and thanking them for joining
+- 7 days after expiration, to see if they still want to renew (usually they can based on the Membership Type grace period)
+
+Notices cannot be sent manually. Notices are more geared towards information related to a single member (their join date, their expiration date) and not really members on a whole. If several members are expiring at once, they will all receive an individual notice with information relevant to them. There is a list of available "tokens" that can be used to in the Notice Email content that are replaced with info relevant to that person.

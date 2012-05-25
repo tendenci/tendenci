@@ -67,7 +67,7 @@ def redirect_for_view(content_type, id):
               "WHERE t4_id = %s"
 
     if content_type == 'news':
-        redirect_name = 'news.view'
+        redirect_name = 'news.detail'
         sql = "SELECT slug FROM mig_news_news_t4_to_t5 as mig " \
               "JOIN news_news as nw on nw.id = mig.t5_id "\
               "WHERE t4_id = %s"

@@ -32,36 +32,6 @@ jQuery(function($) {
     //    description
     //    horizontal-rule
 
-    // function: toggle label field
-    var manage_label_field = function(){
-    	var selected_value = $(this).find(":selected").val();
-    	var selected_text = $(this).find(":selected").text();
-    	var fieldset = $(this).parents("fieldset");
-
-    	// toggle label field
-    	if (selected_value == "description"){
-            fieldset.find(".label").hide();
-    	}
-    	else {
-    		fieldset.find(".label").show();
-    	}
-    };
-
-    // function: toggle description field
-    var manage_description_field = function(){
-    	var selected_value = $(this).find(":selected").val();
-    	var selected_text = $(this).find(":selected").text();
-    	var fieldset = $(this).parents("fieldset");
-
-    	// toggle description field
-    	if (selected_value == "description"){
-            fieldset.find(".description").show();
-    	}
-    	else {
-    		fieldset.find(".description").hide();
-    	}
-    };
-
     // function; hide all fields (display label)
     var hide_fields = function(){
 
@@ -149,7 +119,7 @@ jQuery(function($) {
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
     	// toggle choices field
-    	if (in_list(selected_value, hide_triggers)){
+    	if (in_list(selected_value, extra_hide_triggers)){
             fieldset.find(".choices").show("fast");
     	}
     	else {
@@ -164,11 +134,11 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
 
-        extra_hide_triggers = ['description']
+        extra_hide_triggers = ['description', 'horizontal-rule', 'header']
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
-    	// toggle the 
-        if (in_list(selected_value, hide_triggers)){
+    	// toggle help text field 
+        if (in_list(selected_value, extra_hide_triggers)){
             fieldset.find(".help_text").hide("fast");
     	}
     	else {
@@ -184,15 +154,37 @@ jQuery(function($) {
     	var selected_text = $dd.find(":selected").text();
     	var fieldset = $dd.parents("fieldset");
 
-        extra_hide_triggers = ['check-box','file-uploader','description']
+        extra_hide_triggers = ['check-box','file-uploader','description', 'horizontal-rule', 'header']
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
-    	// toggle the
-        if (in_list(selected_value, hide_triggers)){
+    	// toggle default value field
+        if (in_list(selected_value, extra_hide_triggers)){
             fieldset.find(".default_value").hide("fast");
     	}
     	else {
     		fieldset.find(".default_value").show("fast");
+    	}
+
+    }
+    
+    var manage_special_functionality = function(){
+
+        var $dd = $(this); // drop-down
+    	var selected_value = $dd.find(":selected").val();
+    	var selected_text = $dd.find(":selected").text();
+    	var fieldset = $dd.parents("fieldset");
+
+        extra_hide_triggers = ['check-box']
+        all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
+
+    	// toggle the special functionality and group fields
+        if (in_list(selected_value, extra_hide_triggers)){
+            fieldset.find(".field_function").show("fast");
+            fieldset.find(".function_params").show("fast");
+    	}
+    	else {
+    		fieldset.find(".field_function").hide("fast");
+    		fieldset.find(".function_params").hide("fast");
     	}
 
     }
@@ -208,8 +200,7 @@ jQuery(function($) {
         extra_hide_triggers = []
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
-    	// toggle the
-        // removed check-box
+    	// toggle the required checkbox
     	if (in_list(selected_value, hide_triggers)){
             element.hide("fast");
     	}
@@ -231,7 +222,7 @@ jQuery(function($) {
         var hide_triggers = ['text','paragraph-text','email'];
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
-    	// toggle the
+    	// toggle the unique checkbox
         if (in_list(selected_value, hide_triggers)){
             element.show("fast");
     	}
@@ -254,12 +245,12 @@ jQuery(function($) {
         var hide_triggers = [];
         all_hide_triggers = hide_triggers.concat(extra_hide_triggers)
 
-        // toggle the
+        // toggle the admin only checkbox
         if (in_list(selected_value, hide_triggers)){
-            element.show("fast");
+            element.hide("fast");
         }
         else {
-            element.hide("fast");
+            element.show("fast");
         }
     }
 
@@ -289,6 +280,7 @@ jQuery(function($) {
         .each(manage_choice_field).live('change', manage_choice_field)
         .each(manage_help_text).live('change', manage_help_text)
         .each(manage_default_value).live('change', manage_default_value)
+        .each(manage_special_functionality).live('change', manage_special_functionality)
         .each(manage_required_checkbox).live('change', manage_required_checkbox)
         .each(manage_unique_checkbox).live('change', manage_unique_checkbox)
         .each(manage_admin_checkbox).live('change', manage_admin_checkbox)

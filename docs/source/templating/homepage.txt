@@ -1,0 +1,31 @@
+Homepage Template
+=================
+
+The ``homepage.html`` template is rendered for the homepage. The following blocks are available.
+
+Blocks
+------
+
+``extra_head``
+    Contains meta information, CSS, and JS that needs to be included in the ``<head>`` element of the document.
+
+``html_body``
+    Required. Loads in the main ``<body>`` element of the document.
+
+``extra_body``
+    Loads on at the end of the document just before ``</body>``.
+
+``body_ids``
+    This pulls in as the id attribute to the ``<body>`` element. While it is singular, it is recommended to only use one value. A typical value for this is 'home'.
+
+``body_classes``
+    Loads in to the class attribute of the ``body`` element.
+
+``title``
+    Loads into the ``<title>`` element in the document.
+
+``meta_keywords``
+    Loads into the content attribute of the ``<meta name="keywords" />`` element in the document.
+
+``meta_description``
+    Loads into the content attribute of the ``<meta name="description" />`` element in the document.

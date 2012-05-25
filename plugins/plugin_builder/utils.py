@@ -9,7 +9,8 @@ from django.core.management.color import color_style
 from django.utils.encoding import smart_str
 from django.conf import settings
 
-TEMPLATE_ROOT = os.path.join(settings.PROJECT_ROOT, 'templates', 'plugin_builder')
+BUILDER_ROOT = os.path.abspath(os.path.dirname(__file__))
+TEMPLATE_ROOT = os.path.join(BUILDER_ROOT, 'templates', 'plugin_builder')
 
 def render_to_plugin(temp, plugin, extra={}):
     """

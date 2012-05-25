@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
@@ -9,8 +12,9 @@ from decimal import Decimal
 
 from profiles.models import Profile
 from site_settings.utils import get_setting
-from events.models import Registration, Event, RegistrationConfiguration
-from events.models import Registrant, RegConfPricing, CustomRegForm
+from events.models import (Event, Place, Speaker, Organizer,
+    Registration, RegistrationConfiguration, Registrant, RegConfPricing,
+    CustomRegForm, Addon, AddonOption)
 from events.forms import FormForCustomRegForm
 from user_groups.models import Group
 from perms.utils import is_member, is_admin, get_query_filters
@@ -553,8 +557,12 @@ def add_registration(*args, **kwargs):
     
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
-    discount = kwargs.get('discount', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    
+    # apply discount if any
+    discount = reg_form.get_discount()
+    if discount:
+        admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
     
     reg8n_attrs = {
         "event": event,
@@ -569,10 +577,20 @@ def add_registration(*args, **kwargs):
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
     
+    discount_applied = False
     for form in registrant_formset.forms:
-        amount = event_price
-        if not count % price.quantity == 0:
+        if count % price.quantity == 0:
+            amount = event_price
+            # apply the discount to the first registrant only
+            if not discount_applied:
+                if discount:
+                    amount = event_price - Decimal(discount.value)
+                    if amount < 0:
+                        amount = 0
+                discount_applied = True
+        else:
             amount = Decimal('0.00')
+            
         if not form in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
@@ -602,11 +620,10 @@ def add_registration(*args, **kwargs):
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
     
     if discount:
-        for i in range(0, count):
-            DiscountUse.objects.create(
-                    discount=discount,
-                    invoice=invoice,
-                )
+        DiscountUse.objects.create(
+                discount=discount,
+                invoice=invoice,
+            )
     
     return (reg8n, created)
 
@@ -614,7 +631,9 @@ def add_registration(*args, **kwargs):
 def create_registrant_from_form(*args, **kwargs):
     """
     Create the registrant
-    Args are split up below into the appropriate attributes
+    Args are split up below into the appropriate attributes.
+    NOTE: When updating this be sure to check with the anonymous registration
+    impementation of events in the registration module.
     """
     # arguments were getting kinda long
     # moved them to an unpacked version
@@ -633,12 +652,14 @@ def create_registrant_from_form(*args, **kwargs):
         user = form.get_user()
         if not user.is_anonymous():
             registrant.user = user
+        registrant.initialize_fields()
     else:
         registrant.first_name = form.cleaned_data.get('first_name', '')
         registrant.last_name = form.cleaned_data.get('last_name', '')
         registrant.email = form.cleaned_data.get('email', '')
         registrant.phone = form.cleaned_data.get('phone', '')
         registrant.company_name = form.cleaned_data.get('company_name', '')
+        registrant.comments = form.cleaned_data.get('comments', '')
     
         if registrant.email:
             users = User.objects.filter(email=registrant.email)
@@ -655,7 +676,8 @@ def create_registrant_from_form(*args, **kwargs):
                     registrant.state = user_profile.state
                     registrant.zip = user_profile.zipcode
                     registrant.country = user_profile.country
-                    registrant.company_name = user_profile.company
+                    if not registrant.company_name:
+                        registrant.company_name = user_profile.company
                     registrant.position_title = user_profile.position_title
                 
     registrant.save()
@@ -933,58 +955,108 @@ def clean_price(price, user):
 def copy_event(event, user):
     #copy event
     new_event = Event.objects.create(
-            title = event.title,
-            entity = event.entity,
-            description = event.description,
-            place = event.place,
-            timezone = event.timezone,
-            type = event.type,
-            all_day = event.all_day,
-            private = event.private,
-            password = event.password,
-            allow_anonymous_view = False,
-            allow_user_view = event.allow_user_view,
-            allow_member_view = event.allow_member_view,
-            allow_anonymous_edit = event.allow_anonymous_edit,
-            allow_user_edit = event.allow_user_edit,
-            allow_member_edit = event.allow_member_edit,
-            creator = user,
-            creator_username = user.username,
-            owner = user,
-            owner_username = user.username,
-            status = event.status,
-            status_detail = event.status_detail,
+        title = event.title,
+        entity = event.entity,
+        description = event.description,
+        timezone = event.timezone,
+        type = event.type,
+        all_day = event.all_day,
+        private = event.private,
+        password = event.password,
+        allow_anonymous_view = False,
+        allow_user_view = event.allow_user_view,
+        allow_member_view = event.allow_member_view,
+        allow_anonymous_edit = event.allow_anonymous_edit,
+        allow_user_edit = event.allow_user_edit,
+        allow_member_edit = event.allow_member_edit,
+        creator = user,
+        creator_username = user.username,
+        owner = user,
+        owner_username = user.username,
+        status = event.status,
+        status_detail = event.status_detail,
+    )
+        
+    #copy place
+    place = event.place
+    if place:
+        new_place = Place.objects.create(
+            name = place.name,
+            description = place.description,
+            address = place.address,
+            city = place.city,
+            state = place.state,
+            zip = place.zip,
+            country = place.country,
+            url = place.url,
         )
-    #associate speakers
+        new_event.place = new_place
+        new_event.save()
+    
+    #copy speakers
     for speaker in event.speaker_set.all():
-        speaker.event.add(new_event)
-    #associate organizers
+        new_speaker = Speaker.objects.create(
+            user = speaker.user,
+            name = speaker.name,
+            description = speaker.description,
+        )
+        new_speaker.event.add(new_event)
+        
+    #copy organizers
     for organizer in event.organizer_set.all():
-        organizer.event.add(new_event)
+        new_organizer = Organizer.objects.create(
+            user = organizer.user,
+            name = organizer.name,
+            description = organizer.description,
+        )
+        new_organizer.event.add(new_event)
+        
     #copy registration configuration
     old_regconf = event.registration_configuration
-    new_regconf = RegistrationConfiguration.objects.create(
-        payment_required = old_regconf.payment_required,
-        limit = old_regconf.limit,
-        enabled = old_regconf.enabled,
-        is_guest_price = old_regconf.is_guest_price,
-    )
-    new_regconf.payment_method = old_regconf.payment_method.all()
-    new_regconf.save()
-    new_event.registration_configuration = new_regconf
-    new_event.save()
-    #copy regconf pricings
-    for pricing in old_regconf.regconfpricing_set.filter(status=True):
-        new_pricing = RegConfPricing.objects.create(
-            reg_conf = new_regconf,
-            title = pricing.title,
-            quantity = pricing.quantity,
-            group = pricing.group,
-            price = pricing.price,
-            allow_anonymous = pricing.allow_anonymous,
-            allow_user = pricing.allow_user,
-            allow_member = pricing.allow_member,
+    if old_regconf:
+        new_regconf = RegistrationConfiguration.objects.create(
+            payment_required = old_regconf.payment_required,
+            limit = old_regconf.limit,
+            enabled = old_regconf.enabled,
+            is_guest_price = old_regconf.is_guest_price,
         )
+        new_regconf.payment_method = old_regconf.payment_method.all()
+        new_regconf.save()
+        new_event.registration_configuration = new_regconf
+        new_event.save()
+    
+        #copy regconf pricings
+        for pricing in old_regconf.regconfpricing_set.filter(status=True):
+            new_pricing = RegConfPricing.objects.create(
+                reg_conf = new_regconf,
+                title = pricing.title,
+                quantity = pricing.quantity,
+                group = pricing.group,
+                price = pricing.price,
+                allow_anonymous = pricing.allow_anonymous,
+                allow_user = pricing.allow_user,
+                allow_member = pricing.allow_member,
+            )
+        
+    #copy addons
+    for addon in event.addon_set.all():
+        new_addon = Addon.objects.create(
+            event = new_event,
+            title = addon.title,
+            price = addon.price,
+            group = addon.group,
+            allow_anonymous = addon.allow_anonymous,
+            allow_user = addon.allow_user,
+            allow_member = addon.allow_member,
+            status = addon.status,
+        )
+        # copy addon options
+        for option in addon.options.all():
+            new_option = AddonOption.objects.create(
+                addon = new_addon,
+                title = option.title,
+            )
+    
     return new_event
 
 def get_active_days(event):

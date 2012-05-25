@@ -211,6 +211,20 @@ class MembershipManager(Manager):
 
         return sqs.models(self.model)
 
+    def first(self, **kwargs):
+        """
+        Returns first instance that matches filters.
+        If no instance is found then a none type object is returned.
+        """
+        try:
+            instance = self.get(**kwargs)
+        except self.model.MultipleObjectsReturned:
+            instance = self.filter(**kwargs)[0]
+        except self.model.DoesNotExist:
+            instance = None
+
+        return instance
+
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
         Use Django Haystack search index
@@ -254,5 +268,3 @@ class MembershipManager(Manager):
                 silenced_memberships.append(membership)
 
         return silenced_memberships
-
-

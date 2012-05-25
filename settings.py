@@ -89,7 +89,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-75/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-77/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
@@ -103,6 +103,7 @@ ADMIN_MEDIA_PREFIX = '/site_media/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=m$t0__=51^w@_tbazonjm4+fg@0+ic#bx^3rj)zc$a6i'
+SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TirkVEFplu2sd3DIli6"
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -198,8 +199,8 @@ INSTALLED_APPS = (
     'pages',
     'events',
     'photos',
-    'corporate_memberships',
     'memberships',
+    'corporate_memberships',
     'entities',
     'locations',
     'site_settings',
@@ -240,7 +241,6 @@ INSTALLED_APPS = (
     'search',
     'navs',
     'pluginmanager',
-    'plugin_builder',
     'navs',
     'tendenci_guide',
     # celery task system, must stay at the bottom

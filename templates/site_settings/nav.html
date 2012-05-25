@@ -22,4 +22,26 @@
         </ul>
         </div>
     </li>
+    {% if scope_category %}
+   		{% if scope_category == 'events' %}
+	   		{% if MODULE_EVENTS_ENABLED %}
+		    <li><a href="{% url events %}">{% firstof MODULE_EVENTS_LABEL trans 'Events' %}</a></li>
+		    {% endif %}
+   		{% endif %}
+   		{% if scope_category == 'articles' %}
+   			{% if MODULE_ARTICLES_ENABLED %}
+		    <li><a href="{% url articles %}">{% firstof MODULE_ARTICLES_LABEL trans 'Articles' %}</a></li>
+		    {% endif %}
+		{% endif %}
+		{% if scope_category == 'news' %}    
+		    {% if MODULE_NEWS_ENABLED %}
+		    <li><a href="{% url news %}">{% firstof MODULE_NEWS_LABEL trans 'News' %}</a></li>
+		    {% endif %}
+		{% endif %}
+		{% if scope_category == 'pages' %}    
+		    {% if MODULE_PAGES_ENABLED %}
+		    <li><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
+		    {% endif %}
+		{% endif %}
+    {% endif %}
 </ul>

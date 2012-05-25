@@ -502,3 +502,21 @@ def fieldify(str):
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
+
+def is_blank(item):
+    """
+    Check if values inside list are blank
+    Check if values inside dictionary are blank.
+    """
+    if isinstance(item, dict):
+        l = item.values()
+    elif isinstance(item, list):
+        l = item
+    elif isinstance(item, basestring):
+        l = list(item)
+
+    # return not bool([i for i in l if i.strip)
+    return not bool(''.join(l).strip())
+
+    raise Exception
+
