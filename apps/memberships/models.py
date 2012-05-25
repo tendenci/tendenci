@@ -1257,6 +1257,9 @@ class AppEntry(TendenciBaseModel):
             membership.owner = user
             membership.owner_username = user.username
             membership.save()
+            
+            # populate the member number to profile
+            membership.populate_user_member_id()
 
         try: # get membership
             membership = Membership.objects.get(**{
