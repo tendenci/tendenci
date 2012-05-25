@@ -1,3 +1,5 @@
+"""ANONYMOUS EVENT REGISTRATION VIEWS"""
+
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _

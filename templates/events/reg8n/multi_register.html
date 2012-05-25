@@ -135,7 +135,7 @@
 							</td>
                         </tr>
                         <tr class="line-on-top discount-summary">
-							<td><div id="total-label">{% trans "Total" %}</div></td>
+							<td><div id="final-label">{% trans "Total" %}</div></td>
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
 								<span id="final-amount">{{ total_price|floatformat:2 }}</span>
@@ -307,7 +307,7 @@
 {% endblock %}
 
 {% block extra_body %}
-<script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
+<script src="{{ LOCAL_STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript">
     {% include 'events/reg8n/include/register-registrant.js' %}
     {% include 'events/addons/register-addon.js' %}
