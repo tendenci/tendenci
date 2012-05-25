@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 import calendar
 from datetime import datetime
@@ -8,7 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http import QueryDict
@@ -24,18 +27,19 @@ from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
 from perms.utils import (has_perm, get_notice_recipients, is_admin,
-    update_perms_and_save, get_administrators)
+    get_query_filters, update_perms_and_save, get_administrators, has_view_perm)
 from event_logs.models import EventLog
 from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
+from theme.shortcuts import themed_response as render_to_response
 
 from events.search_indexes import EventIndex
 from events.models import (Event, RegistrationConfiguration,
     Registration, Registrant, Speaker, Organizer, Type, PaymentMethod,
-    RegConfPricing, Addon, AddonOption, CustomRegForm, CustomRegFormEntry,
-    CustomRegField, CustomRegFieldEntry)
+    RegConfPricing, Addon, AddonOption, RegAddon, CustomRegForm,
+    CustomRegFormEntry, CustomRegField, CustomRegFieldEntry)
 from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
@@ -43,18 +47,17 @@ from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet)
 from events.utils import (save_registration, email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
-    get_event_spots_taken, update_event_spots_taken, get_ievent,
+    get_event_spots_taken, get_ievent,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
 from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import (get_active_addons, get_available_addons, 
     get_addons_for_list)
+from user_groups.models import GroupMembership
+from memberships.models import MembershipType
 
-try:
-    from notification import models as notification
-except:
-    notification = None
+from notification import models as notification
     
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """
@@ -98,57 +101,87 @@ def event_custom_reg_form_list(request, event_id,
                'reg_conf': reg_conf,
                'regconfpricings': regconfpricings}
     return render_to_response(template_name, context, RequestContext(request))
-    
-    
-def index(request, id=None, template_name="events/view.html"):
+
+def details(request, id=None, template_name="events/view.html"):
 
     if not id:
         return HttpResponseRedirect(reverse('event.month'))
 
     event = get_object_or_404(Event, pk=id)
     
+    days = []
     if not event.on_weekend:
         days = get_active_days(event)
-    else:
-        days = []
-    
-    if has_perm(request.user, 'events.view_event', event):
 
-        EventLog.objects.log(
-            event_id=175000,  # view event
-            event_data='%s (%d) viewed by %s' %
-                (event._meta.object_name, event.pk, request.user),
-            description='%s viewed' % event._meta.object_name,
-            user=request.user,
-            request=request,
-            instance=event
-        )
-
-        speakers = event.speaker_set.all().order_by('pk')
-        try:
-            organizer = event.organizer_set.all().order_by('pk')[0]
-        except:
-            organizer = None
-
-        return render_to_response(template_name, {
-            'days':days,
-            'event': event,
-            'speakers': speakers,
-            'organizer': organizer,
-            'now': datetime.now(),
-            },
-            context_instance=RequestContext(request))
-    else:
+    if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
 
+    EventLog.objects.log(
+        event_id=175000,  # view event
+        event_data='%s (%d) viewed by %s' %
+            (event._meta.object_name, event.pk, request.user),
+        description='%s viewed' % event._meta.object_name,
+        user=request.user,
+        request=request,
+        instance=event
+    )
 
-def search(request, template_name="events/search.html"):
+    speakers = event.speaker_set.all().order_by('pk')
+    organizers = event.organizer_set.all().order_by('pk') or None
+
+    organizer = None
+    if organizers:
+        organizer = organizers[0]
+
+    return render_to_response(template_name, {
+        'days':days,
+        'event': event,
+        'speakers': speakers,
+        'organizer': organizer,
+        'now': datetime.now(),
+        'addons': event.addon_set.filter(status=True),
+    }, context_instance=RequestContext(request))
+
+
+def month_redirect(request):
+    return HttpResponseRedirect(reverse('event.month'))
+
+
+def search(request, redirect=False, template_name="events/search.html"):
+    """
+    This page lists out all the upcoming events starting
+    from today.  If a search index is available, this page
+    also provides the option to search through events.
+    """
+    if redirect:
+        return HttpResponseRedirect(reverse('events'))
+
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    if query:
+    event_type = request.GET.get('event_type', None)
+    start_dt = request.GET.get('start_dt', None)
+    try:
+        start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+    except:
+        start_dt = datetime.now()
+
+    if has_index and query:
+        event_type_obj = Type.objects.filter(slug=event_type)
+        if event_type_obj:
+            query = "%s type:%s" % (query, event_type_obj[0].name)
         events = Event.objects.search(query, user=request.user)
+        events = events.filter(start_dt__gte=start_dt)
     else:
-        # load upcoming events only by default
-        events = Event.objects.search(date_range=(datetime.now(), None), user=request.user)
+        filters = get_query_filters(request.user, 'events.view_event')
+        events = Event.objects.filter(filters).distinct()
+        events = events.filter(start_dt__gte=start_dt)
+        if event_type:
+            events = events.filter(type__slug=event_type)
+        if request.user.is_authenticated():
+            events = events.select_related()
+
+    events = events.order_by('start_dt')
+    types = Type.objects.all().order_by('name')
 
     EventLog.objects.log(
         event_id=174000,  # searched event
@@ -161,13 +194,11 @@ def search(request, template_name="events/search.html"):
 
     return render_to_response(
         template_name,
-        {'events': events, 'now': datetime.now()},
+        {'events': events,'types': types, 'now': datetime.now(), 'event_type': event_type, 'start_dt': start_dt},
         context_instance=RequestContext(request)
     )
 
-
 def icalendar(request):
-    import re
     from events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -199,7 +230,6 @@ def icalendar(request):
     return response
 
 def icalendar_single(request, id):
-    import re
     from events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -245,7 +275,7 @@ def print_view(request, id, template_name="events/print-view.html"):
         instance = event
     )
 
-    if has_perm(request.user,'events.view_event',event):
+    if has_view_perm(request.user,'events.view_event',event):
         return render_to_response(template_name, {'event': event}, 
             context_instance=RequestContext(request))
     else:
@@ -566,7 +596,7 @@ def add(request, year=None, month=None, day=None, \
         form=Reg8nConfPricingForm, 
         extra=1
     )
-    
+
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
@@ -695,7 +725,8 @@ def add(request, year=None, month=None, day=None, \
         else:  # if not post request
             event_init = {}
 
-            today = datetime.today()
+            # default to 30 days from now
+            mydate = datetime.now()+timedelta(days=30)
             offset = timedelta(hours=2)
             
             if all((year, month, day)):
@@ -710,8 +741,8 @@ def add(request, year=None, month=None, day=None, \
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
             else:
-                start_dt = datetime.now()
-                end_dt = datetime.now() + offset
+                start_dt = mydate
+                end_dt = start_dt + offset
                 
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
@@ -727,7 +758,6 @@ def add(request, year=None, month=None, day=None, \
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf', 
                                          reg_form_queryset=reg_form_queryset,)
-            
             # form sets
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),
@@ -837,7 +867,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     
     # set up pricing
     try:
-        price, price_pk, amount = clean_price(request.POST['price'], request.user)
+        pricing, pricing_pk, amount = clean_price(request.POST['price'], request.user)
     except:
         return multi_register_redirect(request, event, _('Please choose a price.'))
     
@@ -845,13 +875,13 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     event_price = amount
     
     # get all pricing
-    pricing = RegConfPricing.objects.filter(
+    pricings = RegConfPricing.objects.filter(
         reg_conf=event.registration_configuration,
         status=True,
     )
     
     # check is this person is qualified to see this pricing and event_price
-    qualified_pricing = get_pricing(request.user, event, pricing=pricing)
+    qualified_pricing = get_pricing(request.user, event, pricing=pricings)
     qualifies = False
     # custom registration form
     # use the custom registration form if pricing is associated with a custom reg form
@@ -859,7 +889,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     reg_conf=event.registration_configuration
 
     for q_price in qualified_pricing:
-        if price.pk == q_price['price'].pk:
+        if pricing.pk == q_price['price'].pk:
             qualifies = True
             
     if not qualifies:
@@ -871,7 +901,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
         else:
-            custom_reg_form = price.reg_form
+            custom_reg_form = pricing.reg_form
 
     # check if this post came from the pricing form
     # and modify the request method
@@ -883,7 +913,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         request.POST = QueryDict({})
 
     # check if it is still open based on dates
-    reg_started = registration_has_started(event, pricing=pricing)
+    reg_started = registration_has_started(event, pricing=pricings)
     if not reg_started:
         return multi_register_redirect(request, event, _('Registration has been closed.'))     
 
@@ -906,8 +936,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         RF,
         formset=RegistrantBaseFormSet,
         can_delete=True,
-        max_num=price.quantity,
-        extra=(price.quantity - 1)
+        max_num=pricing.quantity,
+        extra=(pricing.quantity - 1)
     )
     
     # get available addons
@@ -921,7 +951,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     )
     
     # update the amount of forms based on quantity
-    total_regt_forms = price.quantity
+    total_regt_forms = pricing.quantity
     
     # REGISTRANT formset
     post_data = request.POST or None
@@ -978,7 +1008,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.method == 'POST' and 'submit' in request.POST:
         reg_form = RegistrationForm(
             event,
-            price,
+            pricing,
             event_price,
             request.POST, 
             user=request.user,
@@ -987,7 +1017,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     else:
         reg_form = RegistrationForm(
             event,
-            price,
+            pricing,
             event_price,
             user=request.user
         )
@@ -1008,17 +1038,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     if event_price != reg_form.cleaned_data['amount_for_admin']:
                         admin_notes = "Price has been overriden for this registration. "
                     event_price = reg_form.cleaned_data['amount_for_admin']
-                
-                # apply discount if any
-                discount = reg_form.get_discount()
-                if discount:
-                    event_price = event_price - discount.value
-                    if event_price < 0:
-                        event_price = 0
-                    admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
-                    #messages.add_message(request, messages.INFO,
-                    #    'Your discount of $%s has been added.' % discount.value
-                    #)
                     
                 reg8n, reg8n_created = add_registration(
                     request, 
@@ -1026,10 +1045,9 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     reg_form, 
                     registrant,
                     addon_formset,
-                    price,
+                    pricing,
                     event_price,
                     admin_notes=admin_notes,
-                    discount=discount,
                     custom_reg_form=custom_reg_form,
                 )
                 
@@ -1042,14 +1060,19 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 and event_price > 0
                 
                 if reg8n_created:
-                    # update the spots taken on this event
-                    update_event_spots_taken(event)
+                    registrants = reg8n.registrant_set.all().order_by('id')
+                    for registrant in registrants:
+                        #registrant.assign_mapped_fields()
+                        if registrant.custom_reg_form_entry:
+                            registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                        else:
+                            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
 
                     if is_credit_card_payment:
                         # online payment
                         # get invoice; redirect to online pay
                         # email the admins as well
-                        email_admins(event, event_price, self_reg8n, reg8n)
+                        email_admins(event, event_price, self_reg8n, reg8n, registrants)
                         
                         return HttpResponseRedirect(reverse(
                             'payments.views.pay_online',
@@ -1059,6 +1082,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                         # offline payment:
                         # send email; add message; redirect to confirmation
                         primary_registrant = reg8n.registrant
+                        
                         if primary_registrant and  primary_registrant.email:
                             notification.send_emails(
                                 [primary_registrant.email],
@@ -1068,6 +1092,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                     'SITE_GLOBAL_SITEURL': site_url,
                                     'self_reg8n': self_reg8n,
                                     'reg8n': reg8n,
+                                    'registrants': registrants,
                                     'event': event,
                                     'price': event_price,
                                     'is_paid': reg8n.invoice.balance == 0
@@ -1075,7 +1100,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                                 True, # save notice in db
                             )                            
                             #email the admins as well
-                            email_admins(event, event_price, self_reg8n, reg8n)
+                            email_admins(event, event_price, self_reg8n, reg8n, registrants)
                         
                     # log an event
                     log_defaults = {
@@ -1109,12 +1134,12 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         deleted = False
         if form.data.get('registrant-%d-DELETE' % count, False):
             deleted = True
-        if count % price.quantity == 0:
+        if count % pricing.quantity == 0:
             price_list.append({'price': event_price, 'deleted':deleted})
         else:
             price_list.append({'price': 0.00 , 'deleted':deleted})
         if not deleted:
-            if price.quantity > 1:
+            if pricing.quantity > 1:
                 total_price = event_price
             else:
                 total_price += event_price
@@ -1137,7 +1162,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         'free_event': free_event,
         'price_list':price_list,
         'total_price':total_price,
-        'price': price,
+        'price': pricing,
         'reg_form':reg_form,
         'custom_reg_form': custom_reg_form,
         'registrant': registrant,
@@ -1162,7 +1187,6 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
     
     custom_reg_form = None
     reg_conf = reg8n.event.registration_configuration
-    #reg_conf = reg8n.reg_conf_price.reg_conf
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
@@ -1209,7 +1233,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             updated = False
             if custom_reg_form:
                 for form in formset.forms:
-                    form.save(reg8n.event)
+                    entry = form.save(reg8n.event)
+                    for reg in entry.registrants.all():
+                        reg.initialize_fields()
                 updated = True
             else:
                 instances = formset.save()
@@ -1326,13 +1352,10 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'registrant':registrant,
                         'user_is_registrant': user_is_registrant,
                     })
-            
-            # update the spots taken on this event
-            update_event_spots_taken(event)
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
-            args=[event.pk, registrant.hash])
+            args=[event.pk, registration.registrant.hash])
         )
         
     for regt in registrants:
@@ -1343,8 +1366,8 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
     for c_regt in cancelled_registrants:
         if c_regt.custom_reg_form_entry:
             c_regt.assign_mapped_fields()
-            if not regt.name:
-                regt.last_name = regt.name = regt.custom_reg_form_entry.__unicode__()
+            if not c_regt.name:
+                c_regt.last_name = c_regt.name = c_regt.custom_reg_form_entry.__unicode__()
         
     return render_to_response(template_name, {
         'event': event,
@@ -1372,17 +1395,6 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         except:
             raise Http404
     elif hash:
-#        sqs = SearchQuerySet()
-#        sqs = sqs.models(Registrant)
-#        sqs = sqs.filter(event_pk=event.pk)
-#        sqs = sqs.auto_query(sqs.query.clean(hash))
-#        sqs = sqs.order_by("-update_dt")
-#
-#        try:
-#            registrant = sqs[0].object
-#        except:
-#            raise Http404
-
         sqs = Registrant.objects.filter(registration__event=event)
         sqs = sqs.order_by("-update_dt")
 
@@ -1398,13 +1410,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
     if registrant.cancel_dt:
         raise Http404
 
-
     if request.method == "POST":
         # check if already canceled. if so, do nothing
         if not registrant.cancel_dt:
             user_is_registrant = False
-            if not request.user.is_anonymous() and registrant.user:
-                if request.user.id == registrant.user.id:
+            if request.user.is_authenticated() and registrant.user:
+                if request.user == registrant.user:
                     user_is_registrant = True
 
             registrant.cancel_dt = datetime.now()
@@ -1438,9 +1449,6 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     'user_is_registrant': user_is_registrant,
                 })
 
-            # update the spots taken on this event
-            update_event_spots_taken(event)
-
         # back to invoice
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', args=[event.pk, registrant.hash]))
@@ -1463,7 +1471,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     from events.utils import next_month, prev_month
 
     if type: # redirect to /events/month/ if type does not exist
-        if not Type.objects.search('slug:%s' % type):
+        if not Type.objects.filter(slug=type).exists():
             return HttpResponseRedirect(reverse('event.month'))
 
     # default/convert month and year
@@ -1472,7 +1480,7 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
     else:
         month, year = datetime.now().month, datetime.now().year
     
-    if year <= 1900:
+    if year <= 1900 or year >= 9999:
         raise Http404
 
     calendar.setfirstweekday(calendar.SUNDAY)
@@ -1510,15 +1518,14 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
     year = int(year)
-    if year < 1900:
+    if year <= 1900:
         raise Http404
     
     return render_to_response(template_name, {
         'date': datetime(year=int(year), month=int(month), day=int(day)),
         'now':datetime.now(),
         'type':None,
-        }, 
-        context_instance=RequestContext(request))
+    }, context_instance=RequestContext(request))
 
 @login_required
 def types(request, template_name='events/types/index.html'):
@@ -1577,37 +1584,23 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     event = get_object_or_404(Event, pk=event_id)
     
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http403
+            
     if not query:
         # pull directly from db
         sqs = Registrant.objects.filter(registration__event=event)
-        registrants = Registrant.objects.search(
-                                    user=request.user, 
-                                    sqs=sqs,
-                                    direct_db=1
-                                    ).order_by("-update_dt")
-        sqs_active = sqs.filter(cancel_dt=None)
-        active_registrants = Registrant.objects.search(
-                                    user=request.user, 
-                                    sqs=sqs_active,
-                                    direct_db=1
-                                    ).order_by("-update_dt")
-                                    
-        sqs_canceled = sqs.exclude(cancel_dt=None)
-        canceled_registrants = Registrant.objects.search(
-                                    user=request.user, 
-                                    sqs=sqs_canceled,
-                                    direct_db=1
-                                    ).order_by("-update_dt")
-        
+        registrants = sqs.order_by("-update_dt")
+        active_registrants = sqs.filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = sqs.exclude(cancel_dt=None).order_by("-update_dt")
     else:
-        registrants = Registrant.objects.search(
-            query, user=request.user, event=event).order_by("-update_dt")
-
-        active_registrants = Registrant.objects.search(
-            "is:active", user=request.user, event=event).order_by("-update_dt")
+        sqs = SearchQuerySet().models(Registrant).filter(event_pk=event.id)
+        sqs = sqs.auto_query(sqs.query.clean(query))
+        registrants = sqs.order_by("-update_dt")
+        active_registrants = Registrant.objects.filter(registration__event=event).filter(cancel_dt=None).order_by("-update_dt")
+        canceled_registrants = Registrant.objects.filter(registration__event=event).exclude(cancel_dt=None).order_by("-update_dt")
+        
     
-        canceled_registrants = Registrant.objects.search(
-            "is:canceled", user=request.user, event=event).order_by("-update_dt")
             
     for reg in registrants:
         if hasattr(reg, 'object'): reg = reg.object
@@ -1696,6 +1689,25 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     num_registrants_who_paid = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
+    
+    # assign is_member attribute to registrants
+    # avoid to use is_member(user) function for the performance reason
+    member_group_ids = MembershipType.objects.filter(
+                            status=1, 
+                            status_detail='active'
+                            ).values_list('id', flat=True)
+    member_userids = GroupMembership.objects.filter(
+                            group__id__in=member_group_ids).filter(member__in=[
+                            reg.user for reg in registrants if reg.user]
+                            ).filter(
+                            status=1, 
+                            status_detail='active'
+                            ).values_list('member__id', flat=True)
+    for reg in registrants:
+        if reg.user and reg.user.id in member_userids:
+            reg.is_member = True
+        else:
+            reg.is_member = False
 
     return render_to_response(template_name, {
         'event':event, 
@@ -1776,7 +1788,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         if registrant.custom_reg_form_entry:
             registrant.name = registrant.custom_reg_form_entry.__unicode__()
         else:
-            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+            if registrant.first_name or registrant.last_name:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
     
     return render_to_response(template_name, {
         'event':event,
@@ -2273,7 +2286,7 @@ def pending(request, template_name="events/pending.html"):
     if not is_admin(request.user):
         raise Http403
         
-    events = Event.objects.search(status=False, status_detail='pending')
+    events = Event.objects.filter(status=False, status_detail='pending').order_by('start_dt')
     
     return render_to_response(template_name, {
         'events': events,
@@ -2302,6 +2315,20 @@ def approve(request, event_id, template_name="events/approve.html"):
     return render_to_response(template_name, {
         'event': event,
         }, context_instance=RequestContext(request))
+
+@login_required
+def list_addons(request, event_id, template_name="events/addons/list.html"):
+    """List addons of an event"""
+    
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_view_perm(request.user,'events.view_event', event):
+        raise Http404
+    
+    return render_to_response(template_name, {
+        'event':event,
+        'addons':event.addon_set.all(),
+    }, context_instance=RequestContext(request))
 
 @login_required
 def add_addon(request, event_id, template_name="events/addons/add.html"):
@@ -2337,7 +2364,8 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
         'formset': formset,
         'event':event,
     }, context_instance=RequestContext(request))    
-    
+
+@login_required
 def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.html"):
     """Edit addon for an event"""
     event = get_object_or_404(Event, pk=event_id)
@@ -2368,4 +2396,31 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
         'event':event,
     }, context_instance=RequestContext(request))
     
+@login_required
+def disable_addon(request, event_id, addon_id):
+    """delete addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+    
+    addon = get_object_or_404(Addon, pk=addon_id)
+    addon.delete() # this just renders it inactive to not cause deletion of already existing regaddons
+    messages.add_message(request, messages.SUCCESS, "Successfully disabled the %s" % addon.title)
+        
+    return redirect('event.list_addons', event.id)
 
+@login_required
+def enable_addon(request, event_id, addon_id):
+    """delete addon for an event"""
+    event = get_object_or_404(Event, pk=event_id)
+    
+    if not has_perm(request.user,'events.change_event', event):
+        raise Http404
+    
+    addon = get_object_or_404(Addon, pk=addon_id)
+    addon.status = True
+    addon.save()
+    messages.add_message(request, messages.SUCCESS, "Successfully enabled the %s" % addon.title)
+        
+    return redirect('event.list_addons', event.id)

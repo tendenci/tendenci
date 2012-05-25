@@ -3,6 +3,7 @@
 {% load user_group_tags %}
 {% load base_tags %}
 {% load base_filters %}
+{% load search_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }}{% trans "Search" %}{% endblock %}
@@ -17,28 +18,24 @@
 <div class="t">
  <div class="t-group">
  <div class="t-search">
- {% user_group_nav request.user %}
- <h1>{{ MODULE_USER_GROUPS_LABEL }} {% trans "Search" %}</h1>
- 	{% group_search %}
+
+    {% user_group_nav request.user %}
+    <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %}</h1>  
+
+    {% group_search %}
+    <span><em>{{ groups|length }} {% firstof MODULE_USERGROUPS_LABEL_PLURAL 'User Groups' %} {% trans "Found" %}</em></span>
     {% autopaginate groups 10 %}
 
-	<div class="groups-wrap">
+    <div class="groups-wrap">
     {% for group in groups %}
-        {% with group.object as group %}
-            {% include 'user_groups/search-result.html' %}
-		{% endwith %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+            {% search_result group %}
+    {% empty %}
+
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
  </div>
 </div>
 </div>
-{% endblock %}
-
-{% block extra_body %}
-
-	
 {% endblock %}

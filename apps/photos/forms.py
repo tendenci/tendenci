@@ -25,7 +25,7 @@ class PhotoAdminForm(TendenciBaseForm):
             'caption',
             'tags',
             'allow_anonymous_view',
-            'syndicate',
+            #'syndicate',
             'status',
             'status_detail',
             'license',

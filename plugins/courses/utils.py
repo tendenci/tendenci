@@ -1,6 +1,17 @@
 from datetime import datetime, timedelta
+from django.core.validators import email_re
 
 from courses.models import CourseAttempt
+
+def get_course_recipients(course):
+    c_recipients = [r.strip() for r in course.recipients.split(',')]
+    
+    recipients = []
+    for recipient in list(set(c_recipients)):
+        if email_re.match(recipient):
+            recipients.append(recipient)
+            
+    return recipients
 
 def can_retry(course, user):
     """
@@ -11,6 +22,8 @@ def can_retry(course, user):
     the user can retry or not. The 2nd is a date where the user may be able to retry.
     The 2nd will be None if the user has exhausted all his/her retries.
     """
+    if not course.can_retry:
+        return (False, None)
     attempts = CourseAttempt.objects.filter(course=course, user=user).order_by("-create_dt")
     if attempts:
         if course.retries == 0 or attempts.count() <= course.retries:

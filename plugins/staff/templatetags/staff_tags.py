@@ -22,6 +22,7 @@ def staff_search(context):
 
 class ListStaffNode(ListNode):
     model = Staff
+    perms = 'staff.view_staff'
 
 
 @register.tag

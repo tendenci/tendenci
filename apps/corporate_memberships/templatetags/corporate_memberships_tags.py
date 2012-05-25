@@ -16,7 +16,7 @@ def render_corp_field(request, field_obj, form):
         if field_obj.display_only:
             field = None
         else:
-            field = eval("form['%s']" % field_name)
+            field = form[field_name]
     return {'request':request, 'field_obj':field_obj, 'field':field}
 
 
@@ -117,7 +117,7 @@ class AllowEditCorpNode(Node):
 @register.tag
 def allow_edit_corp(parser, token):
     """
-        {% allow_view_corp corp_memb user as allow_view %}
+        {% allow_edit_corp corp_memb user as allow_edit %}
     """
     bits  = token.split_contents()
     

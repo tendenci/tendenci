@@ -12,13 +12,12 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    #('Glen Zangirolami', 'gzangirolami@schipul.com'),
     ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
     ('Kerry Gayle', 'kgayle@schipul.com'),
-    #('Loren Lugosch', 'llugosch@schipul.com'),
-    #('Nabil Bani', 'nbani@schipul.com'),
+    ('Alex Ragsdale', 'aragsdale@schipul.com'),
+    ('Forrest Purser', 'fpurser@schipul.com')
 )
 
 MANAGERS = ADMINS
@@ -58,6 +57,7 @@ TIME_ZONE = 'US/Central'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 LANGUAGES = (
+    ('en', u'English'),
     ('en-us', u'English'),
     ('es', u'Espanol'),
 )
@@ -71,8 +71,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
-THEME_DIR = os.path.join(PROJECT_ROOT, 'themes')
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
@@ -88,11 +86,14 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 
 # URL that handles the media served from STATIC_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
-STATIC_URL = '/site_media/static/'
+LOCAL_STATIC_URL = '/site_media/static/'
+
+# Added 2012-03-01 to use cloudfront CDN
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-77/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
-AVATAR_DEFAULT_URL = STATIC_URL + '/images/icons/default-user-80.jpg'
+AVATAR_DEFAULT_URL = STATIC_URL + 'images/icons/default-user-80.jpg'
 AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -109,7 +110,7 @@ TEMPLATE_LOADERS = (
     'theme.template_loaders.load_template_source',
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    #'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -192,13 +193,14 @@ INSTALLED_APPS = (
     'dashboard',
     'profiles',
     'articles',
+    'jobs',
     'news',
     'stories',
     'pages',
     'events',
     'photos',
-    'corporate_memberships',
     'memberships',
+    'corporate_memberships',
     'entities',
     'locations',
     'site_settings',
@@ -218,7 +220,6 @@ INSTALLED_APPS = (
     'categories',
     'contributions',
     'theme_editor',
-    'jobs',
     'styled_forms',
     'form_builder',
     'newsletters',
@@ -238,7 +239,8 @@ INSTALLED_APPS = (
     'discounts',
     'metrics',
     'search',
-    'plugin_builder',
+    'navs',
+    'pluginmanager',
     'navs',
     'tendenci_guide',
     # celery task system, must stay at the bottom
@@ -263,10 +265,15 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # -------------------------------------- #
+# THEMES
+# -------------------------------------- #
+THEMES_DIR = os.path.join(PROJECT_ROOT, 'themes')
+
+# -------------------------------------- #
 #    TINYMCE
 # -------------------------------------- #
 TINYMCE_JS_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static', 'tinymce')
-TINYMCE_JS_URL = STATIC_URL + 'tinymce/tiny_mce.js'
+TINYMCE_JS_URL = LOCAL_STATIC_URL + 'tinymce/tiny_mce.js'
 TINYMCE_SPELLCHECKER = False
 TINYMCE_COMPRESSOR = False
 
@@ -283,7 +290,7 @@ TINYMCE_DEFAULT_CONFIG = {
                                 image,|,pagebreak,fullscreen,codemirror",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
                                 forecolor,|,pastetext,pasteword,\
-                                removeformat,media,charmap,|,\
+                                removeformat,charmap,|,\
                                 outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",
@@ -316,6 +323,7 @@ TINYMCE_DEFAULT_CONFIG = {
 # -------------------------------------- #
 CACHE_DIR = PROJECT_ROOT + "/cache"
 CACHE_BACKEND = "file://" + CACHE_DIR + "?timeout=604800"   # 7 days
+CACHE_PRE_KEY = "TENDENCI"
 
 # --------------------------------------#
 # CELERY

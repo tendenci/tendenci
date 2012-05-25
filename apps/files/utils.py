@@ -1,9 +1,12 @@
 import Image
-from os import stat
-from cStringIO import StringIO
-from django.core.cache import cache as django_cache
 from stat import ST_MODE
+from os import stat
 from os.path import exists
+from cStringIO import StringIO
+
+from django.core.cache import cache as django_cache
+from django.conf import settings
+
 from base.utils import image_rescale
 
 
@@ -28,12 +31,13 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
             'cache': cache,
             'quality': quality,
             'unique_key': unique_key,
-    
         }
         binary = build_image(file, size, pre_key, **kwargs)
 
-    try: return Image.open(StringIO(binary))
-    except: return ''
+    try:
+        return Image.open(StringIO(binary))
+    except:
+        return ''
 
 
 def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
@@ -45,11 +49,12 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         quality = int(quality)
     except:
         quality = 90
-    
-    if hasattr(file,'path'):
+
+
+    if hasattr(file,'path') and exists(file.path):
         image = Image.open(file.path) # get image
     else:
-        image = Image.open(file.name) # get image
+        return None
 
     # handle infamous error
     # IOError: cannot write mode P as JPEG
@@ -104,11 +109,13 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key):
 
     # e.g. file_image.1294851570.200x300 file_image.<file-system-modified-time>.<width>x<height>
     if unique_key:
-        key = '.'.join((pre_key, unique_key, str_size, str_crop))
+        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop))
     else:
         if hasattr(file,'path'):
-            key = '.'.join((pre_key, str(stat(file.path).st_mtime), file.name, str_size, str_crop))
+            key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(stat(file.path).st_mtime), file.name, str_size, str_crop))
         else:
-            key = '.'.join((pre_key, str(stat(file.name).st_mtime), file.name, str_size, str_crop))
+            key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(stat(file.name).st_mtime), file.name, str_size, str_crop))
+    # Remove spaces so key is valid for memcached
+    key = key.replace(" ","_")
 
     return key

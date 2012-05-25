@@ -12,8 +12,8 @@ from base.utils import now_localized
 from models import Service
 from forms import ServiceForm
 from perms.object_perms import ObjectPermission
-from perms.utils import get_notice_recipients, is_admin
-from perms.utils import has_perm
+from perms.utils import get_notice_recipients, is_admin, get_query_filters, update_perms_and_save, has_perm, has_view_perm
+from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -23,11 +23,11 @@ try:
 except:
     notification = None
 
-def index(request, slug=None, template_name="services/view.html"):
+def details(request, slug=None, template_name="services/view.html"):
     if not slug: return HttpResponseRedirect(reverse('service.search'))
     service = get_object_or_404(Service, slug=slug)
     
-    if has_perm(request.user,'services.view_service',service):
+    if has_view_perm(request.user,'services.view_service',service):
         log_defaults = {
             'event_id' : 355000,
             'event_data': '%s (%d) viewed by %s' % (service._meta.object_name, service.pk, request.user),
@@ -36,15 +36,23 @@ def index(request, slug=None, template_name="services/view.html"):
             'request': request,
             'instance': service,
         }
-        #EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(**log_defaults)
         return render_to_response(template_name, {'service': service}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
 
 def search(request, template_name="services/search.html"):
+    """Search view for Services plugin"""
     query = request.GET.get('q', None)
-    services = Service.objects.search(query, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and query:
+        services = Service.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'services.view_service')
+        services = Service.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            services = services.select_related()
+
     services = services.order_by('-create_dt')
 
     log_defaults = {
@@ -55,25 +63,29 @@ def search(request, template_name="services/search.html"):
         'request': request,
         'source': 'services'
     }
-    #EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(**log_defaults)
     
     return render_to_response(template_name, {'services':services}, 
         context_instance=RequestContext(request))
 
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('services'))
+
+
 def print_view(request, slug, template_name="services/print-view.html"):
     service = get_object_or_404(Service, slug=slug)    
 
-    log_defaults = {
-        'event_id' : 355001,
-        'event_data': '%s (%d) viewed by %s' % (service._meta.object_name, service.pk, request.user),
-        'description': '%s viewed - print view' % service._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': service,
-    }
-    #EventLog.objects.log(**log_defaults)
-       
-    if has_perm(request.user,'services.view_service', service):
+    if has_view_perm(request.user,'services.view_service', service):
+        log_defaults = {
+            'event_id' : 355001,
+            'event_data': '%s (%d) viewed by %s' % (service._meta.object_name, service.pk, request.user),
+            'description': '%s viewed - print view' % service._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': service,
+        }
+        EventLog.objects.log(**log_defaults)
         return render_to_response(template_name, {'service': service}, 
             context_instance=RequestContext(request))
     else:
@@ -94,30 +106,7 @@ def add(request, form_class=ServiceForm, template_name="services/add.html"):
             now = now_localized()
             service.expiration_dt = now + timedelta(days=service.requested_duration)
 
-            # set up the user information
-            if request.user.is_authenticated():
-                service.creator = request.user
-                service.creator_username = request.user.username
-                service.owner = request.user
-                service.owner_username = request.user.username
-
-            # set up user permission
-            if request.user.is_authenticated():
-                service.allow_user_view, service.allow_user_edit = form.cleaned_data['user_perms']
-            else:
-                service.allow_anonymous_view = False
-                service.allow_user_view = False
-                service.allow_user_edit = False
-
-            service.save() # get pk
-
-            if request.user.is_authenticated():
-                # assign permissions for selected groups
-                ObjectPermission.objects.assign_group(form.cleaned_data['group_perms'], service)
-                # assign creator permissions
-                ObjectPermission.objects.assign(service.creator, service)
-
-            service.save() # update search-index w/ permissions
+            service = update_perms_and_save(request, form, service)
 
             log_defaults = {
                 'event_id' : 351000,
@@ -127,7 +116,7 @@ def add(request, form_class=ServiceForm, template_name="services/add.html"):
                 'request': request,
                 'instance': service,
             }
-            #EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(**log_defaults)
 
             if request.user.is_authenticated():
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % service)
@@ -227,7 +216,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="services/edit-met
 
 @login_required
 def delete(request, id, template_name="services/delete.html"):
-    service = get_object_or_404(service, pk=id)
+    service = get_object_or_404(Service, pk=id)
 
     if has_perm(request.user,'services.delete_service'):   
         if request.method == "POST":

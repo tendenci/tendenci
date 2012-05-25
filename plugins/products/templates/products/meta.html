@@ -15,9 +15,9 @@
                 <div class="meta-left">
                     {% if product.category %}
                     <div class="categories">
-                        <strong>{% trans "Category:" %} </strong><a href="{% url products.search %}?q=category:{{ product.category }}">{{ product.category }}</a>
+                        <strong>{% trans "Category:" %} </strong><a href="{% url products %}?q=category:{{ product.category }}">{{ product.category }}</a>
                     {% if product.subcategory %}
-                        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url products.search %}?q=subcategory:{{ product.subcategory }}">{{ product.subcategory }}</a>
+                        | <strong>{% trans "Sub Category:" %} </strong><a href="{% url products %}?q=subcategory:{{ product.subcategory }}">{{ product.subcategory }}</a>
                     {% endif %} 
                     </div>
                     {% endif %}
@@ -26,7 +26,7 @@
                     <div class="tags">
                         {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
                         {% for tag in nonhash_tags %}
-                            <a href="{% url products.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                            <a href="{% url products %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                         
                         {% if hash_tags and can_edit %}

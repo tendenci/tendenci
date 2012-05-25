@@ -22,6 +22,7 @@ def attorneys_search(context):
 
 class ListAttorneyNode(ListNode):
     model = Attorney
+    perms = 'attorneys.view_attorney'
 
 
 @register.tag

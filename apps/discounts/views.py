@@ -2,22 +2,30 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
 from django.http import HttpResponse
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, is_admin
+from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters
 from event_logs.models import EventLog
+from theme.shortcuts import themed_response as render_to_response
+
 from discounts.models import Discount, DiscountUse
 from discounts.forms import DiscountForm, DiscountCodeForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):
+    if not has_perm(request.user, 'discounts.view_discount'):
+        raise Http403
+
+    filters = get_query_filters(request.user, 'discounts.view_discount')
+    discounts = Discount.objects.filter(filters).distinct()
     query = request.GET.get('q', None)
-    discounts = Discount.objects.search(query, user=request.user)
-    
+    if query:
+        discounts = discounts.filter(discount_code__icontains=query)
+
     log_defaults = {
         'event_id' : 1010400,
         'event_data': '%s searched by %s' % ('Discount', request.user),
@@ -145,7 +153,7 @@ def delete(request, id, template_name="discounts/delete.html"):
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
         discount.delete()
         
-        return redirect('discount.search')
+        return redirect('discounts')
 
     return render_to_response(template_name, {'discount': discount}, 
         context_instance=RequestContext(request))

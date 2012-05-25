@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
-from perms.utils import is_admin
+from perms.utils import is_admin, has_perm
 from invoices.managers import InvoiceManager
 
 from event_logs.models import EventLog
@@ -89,6 +89,9 @@ class Invoice(models.Model):
     
     objects = InvoiceManager()
     
+    class Meta:
+        permissions = (("view_invoice","Can view invoice"),)
+    
     def __unicode__(self):
         return u'%s' % (self.title)
     
@@ -143,6 +146,9 @@ class Invoice(models.Model):
     def allow_view_by(self, user2_compare, guid=''):
         if is_admin(user2_compare):
             return True
+        
+        if has_perm(user2_compare, 'invoices.view_invoice'):
+            return True
 
         if self.guid == guid:
             return True
@@ -163,6 +169,9 @@ class Invoice(models.Model):
             boo = True
         else:
             if user2_compare and user2_compare.id > 0: 
+                if has_perm(user2_compare, 'invoices.change_invoice'):
+                    return True
+        
                 if self.creator == user2_compare or self.owner == user2_compare:
                     if self.status == 1:
                         # user can only edit a non-tendered invoice

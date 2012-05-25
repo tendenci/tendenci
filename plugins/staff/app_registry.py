@@ -1,5 +1,5 @@
 from registry import site
-from registry.base import PluginRegistry
+from registry.base import PluginRegistry, lazy_reverse
 
 from models import Staff
 
@@ -20,6 +20,12 @@ class StaffRegistry(PluginRegistry):
             'search':('1080400','CC55EE'),
             'view':('1080500','55AACC'),
         }
+    }
+
+    url = {
+        'add': lazy_reverse('admin:staff_staff_add'),
+        'search': lazy_reverse('staff'),
+        'list': lazy_reverse('staff'),
     }
 
 site.register(Staff, StaffRegistry)

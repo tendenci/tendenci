@@ -427,7 +427,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return unicode('')
+            return unicode()
 
         args = [photo.pk, self.size]
         if self.crop:
@@ -480,19 +480,18 @@ class ImageURL(Node):
     def render(self, context):
         file = self.file.resolve(context)
 
+        if file and file.pk:
+            args = [file.pk, self.size]
+            if self.crop:
+                args.append("crop")
+            if self.quality:
+                args.append(self.quality)
+            url = reverse('file', args=args)
+            return url
         # return empty unicode string
-        if not file.pk:
-            return unicode('')
+        return unicode('')
 
-        args = [file.pk, self.size]
-        if self.crop:
-            args.append("crop")
-        if self.quality:
-            args.append(self.quality)
-        url = reverse('file', args=args)
-        return url
 
-  
 @register.tag
 def image_url(parser, token):
     """
@@ -589,3 +588,12 @@ def do_hash_tags_for_object(parser, token):
     
 register.tag('tags_strip_hash', do_non_hash_tags_for_object)
 register.tag('tags_hash_tags', do_hash_tags_for_object)
+
+@register.inclusion_tag("base/meta_creator_owner.html")
+def meta_creator_owner(obj):
+    return {'obj': obj}
+
+@register.inclusion_tag("base/stock_image_url.html", takes_context=True)
+def stock_image_url(context, size):
+    context.update({'size': size})
+    return context

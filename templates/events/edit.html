@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
-<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -66,6 +66,11 @@
     	$(document).ready(function() {
     		
 	    	// for custom registration form options
+	    	
+	    	{% if not MODULE_EVENTS_CUSTOMREGFORMENABLED  %}
+	    		$('.id_regconf-use_custom_reg').hide();
+	    		$(".regconfpricing_formset div[class$='reg_form']").hide();
+	    	{% else %}
 	    	
 	    	{% if MODULE_EVENTS_ANONYMOUSMEMBERPRICING %}
 		    $('#one-or-separate-form input[type="radio"]')[1].disabled=true;
@@ -128,7 +133,7 @@
 	        	}
 		    });
 		    
-		    
+		 {% endif %}
 		    
 	    });
 	    

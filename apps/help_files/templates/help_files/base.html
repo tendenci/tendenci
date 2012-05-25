@@ -1,0 +1,4 @@
+{% extends "site_base.html" %}
+
+{% block title %}{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}, FAQ, and Help Guides{% endblock %}
+{% block meta_description %}{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}, FAQ, and Help Guides including video help broken down by Top {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}, separate {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} Topics, and other helpful tips from {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblock %}

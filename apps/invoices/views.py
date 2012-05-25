@@ -1,13 +1,17 @@
 from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.conf import settings
+
 from base.http import Http403
-from invoices.models import Invoice
-from invoices.forms import AdminNotesForm, AdminAdjustForm
-from perms.utils import is_admin
+from theme.shortcuts import themed_response as render_to_response
+from perms.utils import is_admin, has_perm
 from event_logs.models import EventLog
 from notification.utils import send_notifications
+from site_settings.utils import get_setting
+
+from invoices.models import Invoice
+from invoices.forms import AdminNotesForm, AdminAdjustForm
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -15,7 +19,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
 
     if not invoice.allow_view_by(request.user, guid): raise Http403
     
-    if is_admin(request.user):
+    if is_admin(request.user) or has_perm(request.user, 'invoices.change_invoice'):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
@@ -60,11 +64,15 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
     
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
-    if query:
+    bill_to_email = request.GET.get('bill_to_email', None)
+
+    if get_setting('site', 'global', 'searchindex') and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()
-    if is_admin(request.user):
+        if bill_to_email:
+            invoices = invoices.filter(bill_to_email=bill_to_email)
+    if is_admin(request.user) or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
         if request.user.is_authenticated():
@@ -72,7 +80,7 @@ def search(request, template_name="invoices/search.html"):
             invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
-    
+
     return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
         context_instance=RequestContext(request))
     
@@ -82,7 +90,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     original_total = invoice.total
     original_balance = invoice.balance
 
-    if not is_admin(request.user): raise Http403
+    if not (is_admin(request.user) or has_perm(request.user, 'invoices.change_invoice')): raise Http403
     
     if request.method == "POST":
         form = form_class(request.POST, instance=invoice)
@@ -144,7 +152,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
     
-    if not is_admin(request.user): raise Http403
+    if not (is_admin(request.user) or has_perm(request.user, 'invoices.change_invoice')): raise Http403
     
     from accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)

@@ -1,0 +1,16 @@
+Template Structure
+==================
+
+Here is an overview of the template structure.
+
+Files and Folders
+-----------------
+
+- media
+  - css
+  - js
+  - img
+- templates
+  - homepage.html
+  - default.html
+

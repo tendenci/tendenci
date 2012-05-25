@@ -1,0 +1,13 @@
+{% load base_tags %}
+        <ul>
+        <li class="cs-search-item">
+            <div class="cs-item">
+                {% for img in architecture_project.featured_images %}
+                        {% if forloop.first %}
+                    <a class="cs-img-link" href="{{ architecture_project.get_absolute_url }}"><img alt="{{ img.description }}" height="130" width="180" src="{% image_url img size=180x130 crop=true quality=90 %}" /></a>
+                    {% endif %}
+                {% endfor %}
+                <h2><a href="{{ architecture_project.get_absolute_url }}" title="{{ architecture_project.client }}">{{ architecture_project.client }}</a></h2>
+            </div>
+        </li>
+        </ul>

@@ -25,7 +25,7 @@
                 <input type="submit" value="{% trans 'Confirm Delete' %}" />
             </form>
         </div>
-        <div class="back-search"><a href="{% url discount.search %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_DISCOUNT_LABEL 'discounts' %} </a></div>
+        <div class="back-search"><a href="{% url discounts %}">&laquo; {% trans "Back to all" %} {% firstof MODULE_DISCOUNT_LABEL 'discounts' %} </a></div>
     </div>
 </div>
 {% endblock %}

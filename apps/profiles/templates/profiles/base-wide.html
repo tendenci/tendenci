@@ -1,0 +1,6 @@
+{% extends "base-wide.html" %}
+
+{% block title %}{% firstof 
+MODULE_USERS_LABEL 'Profile' %} - {% endblock %}
+
+{% block messages %}{{ block.super }}{% endblock %}

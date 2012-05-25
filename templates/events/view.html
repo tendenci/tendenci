@@ -93,21 +93,26 @@
             </div>
             {% endif %}
             
-            {% if event.addon_set.all %}
+            {% if addons %}
                 <hr/>
+                <h2 class="addons-title">{% trans "Addons" %}</h2>
                 <div class="addons-wrap">
-                {% for addon in event.addon_set.all %}
-                    <div class="addon">
-                    <strong>{% trans "Addon" %}</strong> {{ addon.title }}
-                        {% if can_edit %}<a href="{% url event.edit_addon event.pk addon.pk %}">Edit</a>{% endif %}
-                        <br/>Price: {{ addon.price }}
+                    {% for addon in addons %}
+                        <h2>{{ addon.title }}</h2>
+                        <table class="addon-detail">
+                        <tr><td><strong>Price</strong></td><td>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }}</td></tr>
                         {% if addon.options.all %}
+                        <tr>
+                            <td><strong>Options</strong></td>
+                            <td>
                             {% for op in addon.options.all %}
-                                <br/>{{ op.title }}: {{ op.choices }}
+                            {{ op.title }}{% if not forloop.last%}, {% endif %}
                             {% endfor %}
+                            </td>
+                        </tr>
                         {% endif %}
-                    </div>
-                {% endfor %}
+                        </table>
+                    {% endfor %}
                 </div>
             {% endif %}
             
@@ -116,26 +121,17 @@
 		<div class="vitals">
             <div class="time-period">
                 <h4 class="vital-header">{% trans "When?" %}</h4>
-                {% ifequal event.start_dt|date:"M j, Y" event.end_dt|date:"M j, Y" %}
-                <div class="line">{{ event.start_dt|date:"l, M. j, Y" }}</div> 
-                {% else %}
-                    {% if event.on_weekend %}
-                    <div class="line">{{ event.start_dt|date:"l, M. j" }} - {{ event.end_dt|date:"l, M. j, Y" }}</div>
+
+                {% for span in event.date_spans %}
+
+                    {% if span.same_date %}
+                        <div class="line">{{ span.start_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
                     {% else %}
-                        {% for range in days %}
-                            <div class="line">
-                            {% ifequal range.0|date:"M j, Y" range.1|date:"M j, Y" %}
-                                {{ range.0|date:"l, M. j, Y" }}
-                            {% else %}
-                                {{ range.0|date:"l, M. j" }} - {{ range.1|date:"l, M. j, Y" }}
-                            {% endifequal %}
-                            {% if not forloop.last %}
-                                and
-                            {% endif %}
-                            </div>
-                        {% endfor %}
+                        <div class="line">{{ span.start_dt|date:"D, M. j" }} - {{ span.end_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
                     {% endif %}
-                {% endifequal %}
+
+                {% endfor %}
+
                 <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }} {{ event.timezone }}</div>
             </div>
 

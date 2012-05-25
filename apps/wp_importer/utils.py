@@ -36,6 +36,9 @@ def get_posts(item, uri_parser, user):
     alreadyThere = False
     link = unicode(item.find('link').contents[0])
     slug = uri_parser.parse(link).path.strip('/')
+    if not slug:
+        # if no slug, grab the post id
+        slug = unicode(item.find('wp:post_id').contents[0])
 
     for article in Article.objects.all():
         if article.slug == slug[:100]:

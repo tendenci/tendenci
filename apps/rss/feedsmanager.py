@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.syndication.views import Feed
 from django.conf import settings
 
@@ -13,9 +15,12 @@ class SubFeed(Feed):
 
     def item_link(self, item):
         return ''
-    
+
     def item_author_name(self, item):
         return ''
+
+    def item_pubdate(self, item):
+        return datetime.now()
 
 _feeds_cache = []
 def get_all_feeds():

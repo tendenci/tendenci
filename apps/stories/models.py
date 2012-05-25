@@ -1,12 +1,13 @@
 import uuid
-import re
-import os
 
 from parse_uri import ParseUri
 
 from django.db import models
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
+
+from perms.object_perms import ObjectPermission
+from categories.models import CategoryItem
 from site_settings.utils import get_setting
 from tagging.fields import TagField
 from files.models import File, file_directory
@@ -14,19 +15,19 @@ from perms.models import TendenciBaseModel
 from stories.managers import StoryManager
 from entities.models import Entity
 
-# Create your models here.
+
 class Story(TendenciBaseModel):
     """
     A Story is used across a site to add linked image content to a specific design area.
     The basic features of a Story include:
-    
+
     - Title
     - Description (accepts HTML)
     - Image
     - Link
-    
+
     Stories also include tags and a start and end time for automatic expiration.
-    
+
     Stories use the Tendenci Base Model.
     """
 
@@ -35,21 +36,30 @@ class Story(TendenciBaseModel):
     content = models.TextField(blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'))
     full_story_link = models.CharField(_('Full Story Link'), max_length=300, blank=True)
+    link_title = models.CharField(_('Link Title'), max_length=200, blank=True)
     start_dt = models.DateTimeField(_('Start Date/Time'), null=True, blank=True)
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
-    entity = models.ForeignKey(Entity,null=True)
-    photo = models.FileField(max_length=260, upload_to=file_directory, 
-        help_text=_('Photo that represents this story.'), null=True, blank=True)
-    image = models.ForeignKey('StoryPhoto', 
-        help_text=_('Photo that represents this story.'), null=True, blank=True)
+    entity = models.ForeignKey(Entity, null=True)
+    photo = models.FileField(max_length=260, upload_to=file_directory,
+        help_text=_('Photo that represents this story.'), null=True, default=None)
+    image = models.ForeignKey('StoryPhoto',
+        help_text=_('Photo that represents this story.'), null=True, default=None)
     tags = TagField(blank=True, default='')
+
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = StoryManager()
 
     class Meta:
-        permissions = (("view_story","Can view story"),)
+        permissions = (("view_story", "Can view story"),)
         verbose_name_plural = "stories"
 
     def __unicode__(self):
@@ -60,8 +70,9 @@ class Story(TendenciBaseModel):
         return 'stories'
 
     def photo(self):
-        if self.image.file:
-            return self.image.file
+        if self.image:
+            if self.image.file:
+                return self.image.file
 
         if self.pk:  # in db
             photo_qs = Story.objects.raw('SELECT id, photo FROM stories_story WHERE id = %s' % self.pk)
@@ -73,13 +84,14 @@ class Story(TendenciBaseModel):
         return None
 
     def get_absolute_url(self):
-        url = ("story", [self.pk])
+        from django.core.urlresolvers import reverse
+        url = reverse("story", args=[self.pk])
         if self.full_story_link:
             url = self.full_story_link
             parsed_url = ParseUri().parse(url)
-    
+
             if not parsed_url.protocol:  # if relative URL
-                url = '%s%s' % (get_setting('site','global','siteurl'), url)
+                url = '%s%s' % (get_setting('site', 'global', 'siteurl'), url)
 
         return url
 
@@ -91,23 +103,34 @@ class Story(TendenciBaseModel):
 
         if photo_upload and self.pk:
             image = StoryPhoto(
-                        creator = self.creator,
-                        creator_username = self.creator_username,
-                        owner = self.owner,
-                        owner_username = self.owner_username
+                        creator=self.creator,
+                        creator_username=self.creator_username,
+                        owner=self.owner,
+                        owner_username=self.owner_username
                     )
 
             image.file.save(photo_upload.name, photo_upload)  # save file row
             image.save()  # save image row
 
-            if self.image: self.image.delete()  # delete image and file row
+            if self.image:
+                self.image.delete()  # delete image and file row
             self.image = image  # set image
 
             self.save()
 
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
+
+
 class StoryPhoto(File):
-    
+
     @property
     def content_type(self):
         return 'stories'
-    

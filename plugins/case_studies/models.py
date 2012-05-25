@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from managers import CaseStudyManager
@@ -19,6 +21,10 @@ class CaseStudy(TendenciBaseModel):
     tags = TagField(blank=True, help_text=_('Tags separated by commas. E.g Tag1, Tag2, Tag3'))
     services = models.ManyToManyField('Service')
     technologies = models.ManyToManyField('Technology')
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = CaseStudyManager()
 
@@ -29,6 +35,11 @@ class CaseStudy(TendenciBaseModel):
         permissions = (("view_casestudy","Can view case study"),)
         verbose_name = 'Case Study'
         verbose_name_plural = 'Case Studies'
+
+    def delete(self, *args, **kwargs):
+        for img in self.image_set.all():
+            img.delete()
+        return super(CaseStudy, self).delete(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):
@@ -89,6 +100,7 @@ class Technology(models.Model):
 
 class Image(File):
     case_study = models.ForeignKey(CaseStudy)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,

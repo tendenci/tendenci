@@ -16,19 +16,33 @@
 {% block body %}
 <div class="t-print">
 
-	<div class='hide-this'>
-		<h1>{% trans "Print View" %}</h1>
+  <div class="hide-this">
+    <h1>{% trans "Print View" %}</h1>
 
-		<div class="guide">
-			<div><a href="{{ event.get_absolute_url }}">&laquo; {% trans "Back to regular event view" %}</a></div>
-			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
-		</div>
-	</div>
+    <div class="guide">
+      <div><a href="{{ event.get_absolute_url }}">&laquo; {% trans "Back to regular event view" %}</a></div>
+    </div>
+  </div>
 
     <div class="event-wrap">
         <h2>{{ event.title }}</h2>
-        <div class="content">{{ event.description|safe }}</div>
-    </div>
+      <div class="content"><p>{{ event.description|safe }}</p>
+        {% if event.place.name or event.place.address %}
+          <p><strong>Location:</strong> 
+          {% if event.place.name %}
+              {{ event.place.name }}<br />
+          {% endif %}
+          {% if event.place.address %}
+              {{ event.place.address }}<br />
+          {% endif %}
+          {{ event.place.city }}
+          {% if event.place.city and event.place.state %}, {% endif %}
+            {{ event.place.state }} {{ event.place.zip }}</p>
+        {% endif %} 
+        <strong>Date:</strong> {{ event.start_dt }} - {{ event.end_dt }}
+
+          </div>
+  </div>
 
 </div>
-{% endblock %}
+{% endblock %}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​

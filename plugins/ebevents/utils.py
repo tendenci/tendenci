@@ -15,7 +15,8 @@ EVENTBOOKING_XML_URL = getattr(settings, 'EVENTBOOKING_XML_URL', DEFAULT_URL)
 
 def get_event_by_id(id, **kwargs):
     event = {}
-    cache_key = 'event_booking_event_detail_%s' % id
+    keys = [settings.CACHE_PRE_KEY, 'event_booking_event_detail_%s' % id]
+    cache_key = '.'.join(keys)
     xml_url = '%s&mode=detail&event_id=%s' % (EVENTBOOKING_XML_URL, id)
 
     # pull from cache
@@ -172,8 +173,8 @@ def get_event_by_id(id, **kwargs):
     
     for e in elements:
         try:
-            event[e] = eval("node.%s.string" % e) 
-            event[e + '_caption'] = eval("node.%s['caption']" %e)
+            event[e] = (getattr(node, e)).string
+            event[e + '_caption'] = (getattr(node, e))['caption']
         except:
             event[e]= ''
             event[e + '_caption'] = ''

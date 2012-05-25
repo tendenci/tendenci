@@ -8,6 +8,8 @@ register = Library()
 
 class ListProductsNode(ListNode):
     model = Product
+    perms = 'products.view_product'
+
 
 @register.inclusion_tag("products/search-form.html", takes_context=True)
 def product_search(context):

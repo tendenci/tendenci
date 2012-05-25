@@ -1,0 +1,25 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% directory_nav request.user %}
+    <h1>{% trans "Approve" %} {% firstof MODULE_DIRECTORIES_LABEL 'Directory' %}</h1>
+    
+    <div class="directory-wrap">
+    <p><a href="{{ directory.get_absolute_url }}" title="{{ directory.headline }}">{{ directory.headline }}</a></p>
+    <p>{% trans "Are you sure you want to approve this" %} {% firstof MODULE_DIRECTORIES_LABEL 'directory' %} posting?</p>
+    <form action="{% url directory.approve directory.pk %}" method="post">{% csrf_token %}
+    <div class="forms">
+        <input type="submit" value="Yes, approve it." /> or <a href="javascript:history.go(-1);">{% trans "Cancel" %}</a>
+    </div>
+    </form>
+    </div>
+</div>
+{% endblock %}

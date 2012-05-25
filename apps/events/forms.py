@@ -1,6 +1,6 @@
 import re
 import imghdr
-from os.path import splitext
+from os.path import splitext, basename
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -309,10 +309,13 @@ class EventForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Event._meta.app_label, 
         'storme_model':Event._meta.module_name.lower()}))
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), 
+                                  initial=datetime.now()+timedelta(days=30))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), 
+                                initial=datetime.now()+timedelta(days=30, hours=2))
     
     photo_upload = forms.FileField(label=_('Photo'), required=False)
+    remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -329,6 +332,7 @@ class EventForm(TendenciBaseForm):
             'type',
             'external_url',
             'photo_upload',
+            'tags',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -346,6 +350,7 @@ class EventForm(TendenciBaseForm):
                                  'type',
                                  'external_url',
                                  'photo_upload',
+                                 'tags',
                                  ],
                       'legend': ''
                       }),
@@ -372,6 +377,10 @@ class EventForm(TendenciBaseForm):
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
+        if self.instance.image:
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+        else:
+            self.fields.pop('remove_photo')
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -405,6 +414,12 @@ class EventForm(TendenciBaseForm):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
+
+    def save(self, *args, **kwargs):
+        event = super(EventForm, self).save(*args, **kwargs)
+        if self.cleaned_data.get('remove_photo'):
+            event.image = None
+        return event
 
 class TypeChoiceField(forms.ModelChoiceField):
 
@@ -450,6 +465,10 @@ class TypeForm(forms.ModelForm):
 
 
 class PlaceForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Place._meta.app_label, 
+        'storme_model':Place._meta.module_name.lower()}))
     label = 'Location Information'
     class Meta:
         model = Place
@@ -462,6 +481,10 @@ class SponsorForm(forms.ModelForm):
 
 
 class SpeakerForm(BetterModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Speaker._meta.app_label, 
+        'storme_model':Speaker._meta.module_name.lower()}))
     label = 'Speaker'
     file = forms.FileField(required=False)
 
@@ -486,6 +509,10 @@ class SpeakerForm(BetterModelForm):
 
 
 class OrganizerForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Organizer._meta.app_label, 
+        'storme_model':Organizer._meta.module_name.lower()}))
     label = 'Organizer'
 
     class Meta:
@@ -505,13 +532,15 @@ class PaymentForm(forms.ModelForm):
 class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
     
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
+        kwargs.update({'initial': {'start_dt':datetime.now(),
+                                   'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
@@ -840,6 +869,9 @@ class RegistrantForm(forms.Form):
     #username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = forms.EmailField()
+    comments = forms.CharField(max_length=300, 
+                               widget=forms.Textarea,
+                               required=False)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -858,8 +890,8 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['first_name']
 
         # detect markup
-        markup_pattern = re.compile('<[^>]*?>', re.I and re.M)
-        markup = markup_pattern.search(data)
+        pattern = re.compile('<[^>]*?>', re.I and re.M)
+        markup = pattern.search(data)
         if markup:
             raise forms.ValidationError("Markup is not allowed in the name field")
 
@@ -1021,6 +1053,7 @@ class PendingEventForm(EventForm):
             'type',
             'external_url',
             'photo_upload',
+            'tags',
             )
         
         fieldsets = [('Event Information', {
@@ -1033,6 +1066,7 @@ class PendingEventForm(EventForm):
                                  'type',
                                  'external_url',
                                  'photo_upload',
+                                 'tags',
                                  ],
                       'legend': ''
                       }),
@@ -1064,6 +1098,7 @@ class AddonForm(BetterModelForm):
                 'fields': [
                     'title',
                     'price',
+                    'group',
                 ],'legend': ''
             }),
             ('Permissions', {
@@ -1082,4 +1117,4 @@ class AddonForm(BetterModelForm):
 class AddonOptionForm(forms.ModelForm):
     class Meta:
         model = AddonOption
-        fields = ('title', 'choices')
+        fields = ('title',)

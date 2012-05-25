@@ -1,0 +1,102 @@
+{% extends "directories/base.html" %}
+{% load pagination_tags %}
+{% load directory_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Directory Pricing List" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+<style>
+	.pricing-wrap{
+		margin-bottom: 1em;
+		width: 400px;
+	}
+	.pricing-wrap th{
+		text-align: left;
+		border-bottom: 1px dashed #ccc;
+	}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% directory_pricing_nav request.user %}
+    <h1>{% trans "Directory Pricing List" %}</h1>  
+
+    {% autopaginate directory_pricings 10 %}
+	
+	<div class="directories-wrap">
+    {% for dp in directory_pricings %}
+    	{% has_perm user directories.view_directorypricing dp as can_view %}
+    	{% if can_view %}
+		<div class="directory-wrap-search">
+
+			<div class="options options-search">
+                <div class="quick-options">
+					{% directory_pricing_options request.user dp %} 	       
+                </div>
+			</div>
+
+            <h2><a href="{% url directory_pricing.view dp.pk %}">{% trans "Duration:" %} {{ dp.get_duration_display }}</a></h2>
+            
+            <div class="pricing-wrap" >
+            <table width="70%">
+            	<tr>
+            		<th>&nbsp;</th>
+            		<th>Regular</th>
+            		<th>Premium</th>
+            	</tr>
+            	<tr>
+            		<td>Non-member</td>
+            		<td>{{ dp.regular_price|format_currency }}</td>
+            		<td>{{ dp.premium_price|format_currency }}</td>
+            	</tr>
+            	<tr>
+            		<td>Member</td>
+            		<td>{{ dp.regular_price_member|format_currency }}</td>
+            		<td>{{ dp.premium_price_member|format_currency }}</td>
+            	</tr>
+            </table>
+            </div>
+            
+            <div class="content">{% trans "Show Member Pricing:" %} <strong>{{ dp.show_member_pricing }}</strong></div>
+			<div class="meta">
+            	<div class="submitted">{% blocktrans with dp.create_dt|date:"long" as dp_create and dp.creator as dp_creator %} Created on {{ dp_create }} by {{ dp_creator }}{% endblocktrans %}</div>
+            </div>
+
+            <!-- delete-directory form -->
+            <form name="directory-pricing-delete" method="POST" action="{% url directory_pricing.delete dp.pk %}">{% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+            </form>
+		</div>
+		{% endif %}
+	
+	{% empty %}
+		<div>{% trans "0 Results Found" %}</div>
+    {% endfor %}
+	</div>
+
+    {% paginate %}
+</div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+
+			// delete confirmation
+			$('.delete').click(function(){
+				var delete_directory_pricing = confirm('Permenantly delete this directory price?');	// confirm
+				if(delete_directory_pricing) $(this).parents('.directory-wrap-search').find('form[name="directory-pricing-delete"]').submit() // delete: if OK
+				return false;	// cancel
+			});
+		});
+    </script>
+    
+{% endblock %}

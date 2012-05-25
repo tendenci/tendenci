@@ -5,12 +5,17 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import has_perm
+from perms.utils import has_perm, get_query_filters
 from event_logs.models import EventLog
 from attorneys.models import Attorney
+from attorneys.utils import get_vcard_content
 
 def index(request, template_name='attorneys/index.html'):
-    attorneys = Attorney.objects.search(query=None, user=request.user)
+    if get_setting('site', 'global', 'searchindex'):
+        attorneys = Attorney.objects.search(query=None, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'attorneys.view_attorney')
+        attorneys = Attorney.objects.filter(filters).distinct()
     attorneys = attorneys.order_by('ordering','create_dt')
     
     log_defaults = {
@@ -23,17 +28,25 @@ def index(request, template_name='attorneys/index.html'):
     }
     EventLog.objects.log(**log_defaults)
     
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
         {
             'attorneys':attorneys,
         },
         context_instance=RequestContext(request))
-
+    
 def search(request, template_name='attorneys/search.html'):
     category = request.GET.get('category', None)
     q = request.GET.get('q', None)
     
-    attorneys = Attorney.objects.search(query=q, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and q:
+        attorneys = Attorney.objects.search(query=q, user=request.user)
+        
+    else:
+        filters = get_query_filters(request.user, 'attorneys.view_attorney')
+        attorneys = Attorney.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            attorneys = attorneys.select_related()
+    
     attorneys = attorneys.order_by('ordering','create_dt')
     
     if category:
@@ -76,4 +89,14 @@ def detail(request, slug=None, template_name='attorneys/detail.html'):
             'attorney': attorney,
         },
         context_instance=RequestContext(request))
-        
+
+def vcard(request, slug):
+    """
+    Method for returning single downloadable vcard
+    """
+    attorney = get_object_or_404(Attorney, slug=slug)
+    output = get_vcard_content(attorney)
+    filename = "%s.vcf" % (attorney.slug)
+    response = HttpResponse(output, mimetype="text/x-vCard")
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return response

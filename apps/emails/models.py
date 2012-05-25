@@ -36,6 +36,7 @@ class Email(TendenciBaseModel):
     def send(self, fail_silently=False):
         recipient_list = []
         recipient_bcc_list = []
+        headers = {}
         if self.recipient:
             recipient_list = self.recipient.split(',')
             recipient_list = [recipient.strip() for recipient in recipient_list \
@@ -49,13 +50,19 @@ class Email(TendenciBaseModel):
             recipient_bcc_list = self.recipient_bcc.split(',')
             recipient_bcc_list = [recipient_bcc.strip() for recipient_bcc in recipient_bcc_list if \
                                    recipient_bcc.strip() <> '']
+            
+        if self.reply_to:
+            headers['Reply-To'] = self.reply_to
+        if self.sender_display:
+            headers['From'] = '%s<%s>' % (self.sender_display, self.sender)
+            
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
                                self.body,
                                self.sender,
                                recipient_list,
                                recipient_bcc_list,
-                               headers={'Reply-To':self.reply_to} )
+                               headers=headers )
             if self.content_type == 'html' or self.content_type == 'text/html':
                 msg.content_subtype = 'html'
             msg.send(fail_silently=fail_silently)

@@ -32,5 +32,39 @@
         "scope_category": "staff", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "Staff", 
+        "description": "The singular name of the plugin.", 
+        "data_type": "string",
+        "update_dt": "2012-03-07 12:36:31",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "label", 
+        "value": "Staff", 
+        "label": "Label", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "staff", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "Staff", 
+        "description": "The plural name of the plugin.", 
+        "data_type": "string",
+        "update_dt": "2012-03-07 12:36:35",
+        "input_type": "text",
+        "client_editable": true, 
+        "name": "label_plural", 
+        "value": "Staff", 
+        "label": "Label (Plural)", 
+        "input_value": "", 
+        "parent_id": 0,
+        "scope": "module",
+        "scope_category": "staff", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -9,13 +9,17 @@ from django.contrib import messages
 
 from base.http import Http403
 from base.utils import now_localized
-from resumes.models import Resume
-from resumes.forms import ResumeForm
 from perms.object_perms import ObjectPermission
-from perms.utils import update_perms_and_save, get_notice_recipients, is_admin, has_perm
+from perms.utils import (update_perms_and_save, get_notice_recipients,
+    is_admin, has_perm, has_view_perm, get_query_filters)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
+from site_settings.utils import get_setting
+from theme.shortcuts import themed_response as render_to_response
+
+from resumes.models import Resume
+from resumes.forms import ResumeForm
 
 try:
     from notification import models as notification
@@ -26,7 +30,7 @@ def index(request, slug=None, template_name="resumes/view.html"):
     if not slug: return HttpResponseRedirect(reverse('resume.search'))
     resume = get_object_or_404(Resume, slug=slug)
     
-    if has_perm(request.user,'resumes.view_resume',resume):
+    if has_view_perm(request.user,'resumes.view_resume',resume):
         log_defaults = {
             'event_id' : 355000,
             'event_data': '%s (%d) viewed by %s' % (resume._meta.object_name, resume.pk, request.user),
@@ -42,22 +46,41 @@ def index(request, slug=None, template_name="resumes/view.html"):
         raise Http403
 
 def search(request, template_name="resumes/search.html"):
+    """
+    This page lists out all resumes from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through resumes.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    resumes = Resume.objects.search(query, user=request.user)
+
+    if has_index and query:
+        resumes = Resume.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'resumes.view_resume')
+        resumes = Resume.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            resumes = resumes.select_related()
     resumes = resumes.order_by('-create_dt')
 
-    log_defaults = {
+    EventLog.objects.log(**{
         'event_id' : 354000,
         'event_data': '%s searched by %s' % ('Resume', request.user),
         'description': '%s searched' % 'Resume',
         'user': request.user,
         'request': request,
         'source': 'resumes'
-    }
-    EventLog.objects.log(**log_defaults)
+    })
     
     return render_to_response(template_name, {'resumes':resumes}, 
         context_instance=RequestContext(request))
+
+def search_redirect(request):
+    """
+    Redirects back to '/resumes/.' This catches links and
+    bookmarks and sends them to the new list/search location.
+    """
+    return HttpResponseRedirect(reverse('resumes'))
 
 def print_view(request, slug, template_name="resumes/print-view.html"):
     resume = get_object_or_404(Resume, slug=slug)    
@@ -72,7 +95,7 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
     }
     EventLog.objects.log(**log_defaults)
        
-    if has_perm(request.user,'resumes.view_resume',resume):
+    if has_view_perm(request.user,'resumes.view_resume',resume):
         return render_to_response(template_name, {'resume': resume}, 
             context_instance=RequestContext(request))
     else:

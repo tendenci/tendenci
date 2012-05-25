@@ -4,6 +4,12 @@
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% load adminmedia %}{% admin_media_prefix %}css/dashboard.css" />{% endblock %}
 
 {% block extrahead %}
+<script>
+	var custom_reg_form_disabled = true;
+	{% if MODULE_EVENTS_CUSTOMREGFORMENABLED  %}
+	custom_reg_form_disabled = false;
+	{% endif %}
+</script>
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script> 
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script> 
 <script type="text/javascript" src="{{ STATIC_URL }}js/admin-module-toggle.js"></script>

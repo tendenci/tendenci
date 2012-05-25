@@ -13,12 +13,12 @@
 <table style="width: 80%;">
 <tr>
 	<th>{% trans "#" %}</th>
-	<th>{% trans "Username" %}</th>
-	<th>{% trans "UserId" %}</th>
-	<th>{% trans "Lastname" %}</th>
-	<th>{% trans "Firstname" %}</th>
-	<th>{% trans "Email" %}</th>
-	<th>{% trans "Phone" %}</th>
+	<th><a href="{% url reports-admin-users %}?sort=username" >{% trans "Username" %}</a></th>
+	<th><a href="{% url reports-admin-users %}?sort=id" >{% trans "UserId" %}</a></th>
+	<th><a href="{% url reports-admin-users %}?sort=last_name" >{% trans "Lastname" %}</a></th>
+	<th><a href="{% url reports-admin-users %}?sort=first_name" >{% trans "Firstname" %}</a></th>
+	<th><a href="{% url reports-admin-users %}?sort=email" >{% trans "Email" %}</a></th>
+	<th><a href="{% url reports-admin-users %}?sort=phone" >{% trans "Phone" %}</a></th>
 </tr>
 {% for user in users %}
 <tr class="{% cycle 'odd' '' %}">

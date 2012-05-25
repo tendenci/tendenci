@@ -1,48 +1,47 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from base.http import Http403
 from base.utils import now_localized
+from event_logs.models import EventLog
+from meta.models import Meta as MetaTags
+from meta.forms import MetaForm
+from site_settings.utils import get_setting
+from perms.utils import (get_notice_recipients, is_admin, is_developer,
+    update_perms_and_save, is_member, has_perm, get_query_filters,
+    has_view_perm)
+from categories.forms import CategoryForm, CategoryForm2
+from categories.models import Category
+from theme.shortcuts import themed_response as render_to_response
 
 from jobs.models import Job, JobPricing
 from jobs.forms import JobForm, JobPricingForm
 from jobs.utils import job_set_inv_payment, get_job_unique_slug
 
-from event_logs.models import EventLog
-from meta.models import Meta as MetaTags
-from meta.forms import MetaForm
-from site_settings.utils import get_setting
-
-from perms.utils import get_notice_recipients, is_admin, update_perms_and_save, has_perm
-
-from categories.forms import CategoryForm, CategoryForm2
-from categories.models import Category
-
 try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 
-def index(request, slug=None, template_name="jobs/view.html"):
+def details(request, slug=None, template_name="jobs/view.html"):
     if not slug:
-        return HttpResponseRedirect(reverse('job.search'))
-    job = get_object_or_404(Job, slug=slug)
+        return HttpResponseRedirect(reverse('jobs'))
+    job = get_object_or_404(Job.objects.select_related(), slug=slug)
 
-    # non-admin can not view the non-active content
-    # status=0 has been taken care of in the has_perm function
-    if (job.status_detail).lower() != 'active' and (not is_admin(request.user)):
-        raise Http403
+    can_view = has_view_perm(request.user, 'jobs.view_job', job)
 
-    if has_perm(request.user, 'jobs.view_job', job):
+    if can_view:
         log_defaults = {
             'event_id': 255000,
             'event_data': '%s (%d) viewed by %s' % (
@@ -63,14 +62,23 @@ def index(request, slug=None, template_name="jobs/view.html"):
 
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
-    jobs = Job.objects.search(query, user=request.user)
+    my_jobs = request.GET.get('my_jobs', False)
+    
+    if get_setting('site', 'global', 'searchindex') and query:
+        jobs = Job.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'jobs.view_job')
+        jobs = Job.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            jobs = jobs.select_related()
+    
     jobs = jobs.order_by('status_detail','list_type','-post_dt')
     
-    if len(jobs) <= 0:
-        # try without ordering by status_detail
-        jobs = Job.objects.search(query, user=request.user)
-        jobs = jobs.order_by('list_type','-post_dt')
-
+    # filter for "my jobs"
+    if my_jobs and not request.user.is_anonymous():
+        template_name = "jobs/my_jobs.html"
+        jobs = jobs.filter(creator_username=request.user.username)
+    
     log_defaults = {
         'event_id': 254000,
         'event_data': '%s searched by %s' % ('Job', request.user),
@@ -85,20 +93,26 @@ def search(request, template_name="jobs/search.html"):
         context_instance=RequestContext(request))
 
 
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('jobs'))
+
+
 def print_view(request, slug, template_name="jobs/print-view.html"):
     job = get_object_or_404(Job, slug=slug)
 
-    log_defaults = {
-        'event_id': 255001,
-        'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
-        'description': '%s viewed - print view' % job._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': job,
-    }
-    EventLog.objects.log(**log_defaults)
+    can_view = has_view_perm(request.user, 'jobs.view_job', job)
 
-    if has_perm(request.user, 'jobs.view_job', job):
+    if can_view:
+        log_defaults = {
+            'event_id': 255001,
+            'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
+            'description': '%s viewed - print view' % job._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': job,
+        }
+        EventLog.objects.log(**log_defaults)
+
         return render_to_response(template_name, {'job': job},
             context_instance=RequestContext(request))
     else:
@@ -135,7 +149,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 
             # set it to pending if the user is anonymous or not an admin
             if not can_add_active:
-                job.status = 0
+                #job.status = 1
                 job.status_detail = 'pending'
 
             # list types and duration
@@ -226,6 +240,12 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
     else:
+        # Redirect user w/perms to create pricing if none exist
+        pricings = JobPricing.objects.all()
+        if not pricings and has_perm(request.user, 'jobs.add_jobpricing'):
+            messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label')))
+            return HttpResponseRedirect(reverse('job_pricing.add'))
+
         form = form_class(user=request.user)
         initial_category_form_data = {
             'app_label': 'jobs',
@@ -256,8 +276,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
         
     form = form_class(request.POST or None,
                         instance=job,
-                        user=request.user,
-                        prefix='job')
+                        user=request.user)
     
     #setup categories
     content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
@@ -531,18 +550,26 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
     return render_to_response(template_name, {'job_pricings': job_pricings},
         context_instance=RequestContext(request))
 
-
+@login_required
 def pending(request, template_name="jobs/pending.html"):
-    if not is_admin(request.user):
+    can_view_jobs = has_perm(request.user, 'jobs.view_job')
+    can_change_jobs = has_perm(request.user, 'jobs.change_job')
+    
+    if not all([can_view_jobs, can_change_jobs]):
         raise Http403
-    jobs = Job.objects.filter(status=0, status_detail__contains='pending')
+
+    jobs = Job.objects.filter(status_detail__contains='pending')
     return render_to_response(template_name, {'jobs': jobs},
             context_instance=RequestContext(request))
 
-
+@login_required
 def approve(request, id, template_name="jobs/approve.html"):
-    if not is_admin(request.user):
+    can_view_jobs = has_perm(request.user, 'jobs.view_job')
+    can_change_jobs = has_perm(request.user, 'jobs.change_job')
+    
+    if not all([can_view_jobs, can_change_jobs]):
         raise Http403
+    
     job = get_object_or_404(Job, pk=id)
 
     if request.method == "POST":
@@ -560,6 +587,18 @@ def approve(request, id, template_name="jobs/approve.html"):
             job.owner_username = request.user.username
 
         job.save()
+        
+        # send email notification to user
+        recipients = [job.creator.email]
+        if recipients:
+            extra_context = {
+                'object': job,
+                'request': request,
+            }
+            #try:
+            send_email_notification('job_approved_user_notice', recipients, extra_context)
+            #except:
+            #    pass
 
         messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % job)
 

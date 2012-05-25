@@ -1,9 +1,10 @@
+from django.db.models import signals
 from haystack import indexes
 from haystack import site
 from recurring_payments.models import RecurringPayment
+from search.indexes import CustomSearchIndex
 
-
-class RecurringPaymentIndex(indexes.SearchIndex):
+class RecurringPaymentIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     user = indexes.CharField(model_attr='user', faceted=True)
     user_object = indexes.CharField(model_attr='user', faceted=True)
@@ -23,5 +24,6 @@ class RecurringPaymentIndex(indexes.SearchIndex):
         
     def index_queryset(self):
         return RecurringPayment.objects.all().order_by('user')
+    
 
 site.register(RecurringPayment, RecurringPaymentIndex)

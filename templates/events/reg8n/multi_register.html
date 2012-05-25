@@ -10,6 +10,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
 {% endblock %}
 
 {% block body %}
@@ -113,7 +114,7 @@
                             <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
                             <td width="50%" align="right">
                                 <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="item-price">{{ form.cleaned_data.addon.price|floatformat:2 }}</span>
+                                <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -134,7 +135,7 @@
 							</td>
                         </tr>
                         <tr class="line-on-top discount-summary">
-							<td><div id="total-label">{% trans "Total" %}</div></td>
+							<td><div id="final-label">{% trans "Total" %}</div></td>
 							<td align="right">
 								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
 								<span id="final-amount">{{ total_price|floatformat:2 }}</span>
@@ -212,6 +213,14 @@
 							</div>
 							{% endif %}	
 							
+							{% if form.comments %}
+							<div class="form-field">
+								<div class="error">{{ form.comments.errors }}</div>
+								<div class="label{% if forloop_counter == 1 %} required{% endif %}">{% trans "Comments" %}</div>
+								<div class="field">{{ form.comments }}</div>
+							</div>
+							{% endif %}
+							
 							
 							{% endif %}	
 							
@@ -241,6 +250,8 @@
                 <div class="addon-forms">
                     {% include 'events/addons/formset.html' %}
                 </div>
+            {% else %}
+                {{ addon_formset.management_form }}
             {% endif %}
 			
             <div class="add-registrant-box">
@@ -257,21 +268,14 @@
                      <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrant_set(this, 'registrant'); return false;">
                     {% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
                 {% endif %}
-                <h3>{% blocktrans %}Choose an addon for your registrants{% endblocktrans %}:</h3>
-                <div id="addon-choices">
-                    {% for addon in addons %}
-                    <div>
-                    <input type="radio" name="add-addons" value="{{ addon.pk }}" price="{{ addon.price }}" title="{{ addon.title }}" >
-                        {{ addon.title }} ({{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ addon.price }})
-                    </div>
-                    {% empty %}
-                        No addons available.<br />
-                    {% endfor %}
-                </div>
-                <div>
-                    {% trans 'How many?' %}<input id="add-addons-number" type="text" value="1" /><input id="add-addons-button" type="button" value="Add"/>
-                </div>
             </div>
+            
+            {% if addons %}
+                <div class="add-addons-box">
+                {% include 'events/addons/addon-add-box.html' %}
+                </div>
+            {% endif %}
+            
             <div class="clear"></div>
             {% if reg_form.free_event %}
                 {{ reg_form.payment_method }}
@@ -282,7 +286,7 @@
                     <div class="field">{{ reg_form.payment_method }}</div>
                 </div>
             {% endif %}
-                        
+            
             {% if reg_form.captcha %}
                 <div class="form-field">
                     <div class="error">{{ reg_form.captcha.errors }}</div>
@@ -303,10 +307,11 @@
 {% endblock %}
 
 {% block extra_body %}
-<script src="{{ STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
+<script src="{{ LOCAL_STATIC_URL }}js/events-registration-summary.js" type="text/javascript"></script>
 <script type="text/javascript">
     {% include 'events/reg8n/include/register-registrant.js' %}
-    {% include 'events/reg8n/include/register-addon.js' %}
+    {% include 'events/addons/register-addon.js' %}
     {% include 'events/reg8n/include/register.js' %}
 </script>
+{{ block.super }}
 {% endblock %}

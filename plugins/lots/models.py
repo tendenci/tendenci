@@ -15,15 +15,15 @@ class Map(File):
         permissions = (("view_map","Can view map"),)
         
     def __unicode__(self):
-        return self.name
+        return self.get_name()
         
     @property
     def content_type(self):
         return 'lots'
     
-    def height_for_900(self):
-        width, height = self.image_dimensions()
-        new_height = height*900/width
+    def height_for(self, new_width):
+        iwidth, iheight = self.image_dimensions()
+        new_height = iheight*new_width/iwidth
         return new_height
     
 class Lot(TendenciBaseModel):

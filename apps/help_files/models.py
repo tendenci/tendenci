@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from entities.models import Entity
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
@@ -36,9 +38,13 @@ class HelpFile(TendenciBaseModel):
     is_faq = models.BooleanField()
     is_featured = models.BooleanField()
     is_video = models.BooleanField()
-    syndicate = models.BooleanField(_('Include in RSS feed'),)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     view_totals = models.PositiveIntegerField(default=0)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = HelpFileManager()
 
     class Meta:
@@ -55,6 +61,18 @@ class HelpFile(TendenciBaseModel):
         "Template helper: {% if file.level_is.basic %}..."
         return dict([i, self.level==i] for i in HelpFile.LEVELS)
 
+
+class HelpFile_Topics(models.Model):
+    """
+    This table is created automatically by the Many To 
+    Many Relationship. It is added here to use in the 
+    views to help optimize for certain queries.
+    """
+    helpfile = models.ForeignKey(HelpFile)
+    topic = models.ForeignKey(Topic)
+
+    class Meta:
+        managed = False
 
 class Request(models.Model):
     question = models.TextField()

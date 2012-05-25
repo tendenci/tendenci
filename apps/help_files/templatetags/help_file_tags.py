@@ -26,6 +26,7 @@ def help_file_search(context):
 
 class ListHelpFilesNode(ListNode):
     model = HelpFile
+    perms = 'help_files.view_helpfile'
 
 
 @register.tag
@@ -44,7 +45,7 @@ def list_helpfiles(parser, token):
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
-           The order of the items. **Default: Latest Releast Date**
+           The order of the items. **Default: Latest Created**
         ``user``
            Specify a user to only show public items to all. **Default: Viewing user**
         ``query``
@@ -76,6 +77,6 @@ def list_helpfiles(parser, token):
     kwargs = parse_tag_kwargs(bits)
 
     if 'order' not in kwargs:
-        kwargs['order'] = '-release_dt'
+        kwargs['order'] = '-create_dt'
 
     return ListHelpFilesNode(context_var, *args, **kwargs)

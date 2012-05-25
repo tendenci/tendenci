@@ -111,6 +111,12 @@
 	.registrant-contact-info{
 		border-top: 1px dotted #ccc !important;
 	}
+	.member{
+		background-image: url({{ STATIC_URL }}images/icons/member.gif); 
+		/*background-image: url({{ STATIC_URL }}images/icons/member_16x16.png);*/
+		background-repeat: no-repeat;
+		padding-left: 16px;
+	}
 
 </style>
 
@@ -138,6 +144,7 @@
 	.canceled .attended-checkbox div {
 		background-color: silver;
 	}
+	
 
 </style>
 
@@ -215,6 +222,7 @@
 	{% if registrant.user %}
 	<div title="View {{ registrant.first_name}}'s profile">
         <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
+        {% if registrant.is_member %}<span class="member" title="Member">&nbsp;</span>{% endif %}
     </div>
 	{% else %}
 	<div title="{{ registrant.name }} does not have a user-account">
@@ -225,7 +233,12 @@
 	{% endif %}
 	</div>
 	{% endif %}
+	
 	<div>{{ registrant.phone }}</div>
+	
+	{% if registrant.comments %}
+	<div>{{ registrant.comments }}</div>
+	{% endif %}
 	</td>
 
 	<td> <!-- title & company -->
@@ -243,6 +256,7 @@
 
 
 {% with registrant.additional_registrants as additionals %}
+{% with registrant.registration.regaddon_set.all as regaddons %}
 
 {% if registrant.registration.invoice.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
@@ -258,7 +272,6 @@
 	{% endfor %}
 	{% endif %}	
   	
-    	
     {% if additionals %}
         <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "additional registrants:" %}</a> 
 	    {% for reg in additionals %}
@@ -271,6 +284,14 @@
 	    	</a>
 	    {% endfor %}
     {% endif %}
+    {% if regaddons %}
+        <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "addons:" %}</a> 
+	    {% for regaddon in regaddons %}
+	    	{{ regaddon.addon.title }}
+            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
+	    {% endfor %}
+    {% endif %}
+    
     {% if request.user.is_admin %}
         {% if registrant.registration.invoice.admin_notes %}
             {% trans "admin notes: " %}{{ registrant.registration.invoice.admin_notes }}
@@ -288,7 +309,7 @@
     </td>
 </tr>
 
-
+{% endwith %}
 {% endwith %}
 
 {% endfor %}

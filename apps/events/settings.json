@@ -100,5 +100,22 @@
         "scope_category": "events", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "false", 
+        "description": "Custom registration form is enabled or not.", 
+        "data_type": "boolean", 
+        "update_dt": "2012-02-08 11:07:11", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "customregformenabled", 
+        "value": "false", 
+        "label": "Custom Registration Form Enabled", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "events", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

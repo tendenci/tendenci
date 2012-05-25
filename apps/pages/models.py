@@ -2,20 +2,27 @@ import uuid
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from base.fields import SlugField
-from perms.models import TendenciBaseModel
-from pages.managers import PageManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
+from categories.models import CategoryItem
+
+from base.fields import SlugField
+from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from entities.models import Entity
+from files.models import File
+
+from pages.managers import PageManager
 from pages.module_meta import PageMeta
 
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
-    slug = SlugField(_('URL Path'), unique=True)  
+    slug = SlugField(_('URL Path'), unique=True)
+    header_image = models.ForeignKey('HeaderImage', null=True)
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
@@ -27,6 +34,14 @@ class Page(TendenciBaseModel):
     entity = models.ForeignKey(Entity,null=True)
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
+    
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     class Meta:
         permissions = (("view_page","Can view page"),)
@@ -51,3 +66,16 @@ class Page(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
+    
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
+
+class HeaderImage(File):
+    pass

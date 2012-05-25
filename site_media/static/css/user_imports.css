@@ -1,6 +1,7 @@
-/*--imports---------*/
-.imports{
-	width: 550px;
+
+
+.imports {
+	background-color: white;
 }
 .imports h2{
 	font-size: 12pt;
@@ -25,8 +26,8 @@ label.block {
 }
 
 div.wrap {
-	width: 97%;
-	border: 1px solid silver;
+	border-top: 1px solid silver;
+	border-top: 1px solid #EEE;
 }
 select {
 	margin-bottom: 5px;
@@ -34,6 +35,12 @@ select {
 
 /* =misc-settings
 --------------------------------------- */
+
+.user-settings {
+	/*border-right: 1px solid silver;*/
+	padding: 20px;
+}
+
 div.user-settings h2 {
 	margin: 5px;
 }
@@ -58,7 +65,7 @@ div.user-settings label {
 /* =download-csv
 --------------------------------------- */
 div.download-csv {
-	margin-bottom: 2em;
+	margin: 20px 10px 0 10px;
 }
 div.download-csv img {
 	float: left;
@@ -101,14 +108,6 @@ form.import input.submit-btn {
 div.usergroup {
 	clear: both;
 }
-div.column2 div.duplicates h2 {
-	margin-top: 0;
-	
-}
-div.column2 div.usergroup p {
-	margin:0;
-	margin-top: 2px;
-}
 div.usergroup label {
 	display: inline;
 }
@@ -118,17 +117,15 @@ div.usergroup input {
 
 div.column1 {
 	float: left;
-	margin: 10px;
+	margin: 0 10px 10px;
 }
+
 div.column2 {
 	float: left;
-	margin: 10px 10px 5px 0;
-	padding-left: 15px;
-	border-left: 1px solid silver;
+	margin: 0 10px 10px;
 }
 div.column2 h2 {
-	margin: 0;
-	margin-top: 8px;
+	margin: 5px 0 0;
 }
 div.column2 p {
 	margin: 0 0 5px 0;
@@ -136,21 +133,21 @@ div.column2 p {
 div.column2 select {
 	margin: 0;
 }
+
+.column2 .duplicates {
+	padding: 20px 0 26px;
+}
+
 div.column2 .reset-group{
-	margin: 3px 0;
+	margin: 8px 0 0;
 }
 
 /* =select-file
 --------------------------------------- */
-div.select-file h2 {
-	margin:0;
-}
-div.select-file p {
-	margin: 0;
-}
 div.select-file input {
-	font-size: 18px;
-	margin-bottom: 10px;
+	font-size: 16px;
+
+	margin: 10px 0 20px 10px;
 }
 
 /* =csv-icon */

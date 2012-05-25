@@ -5,15 +5,21 @@
     <div class="search-item course-search-item">
         <h2><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
         <div class="content">
-            <p><b>DEADLINE:</b> {{ course.deadline }}</p>
             {{ course.content|striptags|truncatewords:40|safe  }}
+            {% if course.deadline %}
+                <div>
+                    <strong>DEADLINE:</strong> {{ course.deadline }}
+                </div>
+            {% endif %}
         </div>
         <div class="user-options">
             {% course_user_status course request.user %}
             {% if request.user.is_authenticated %}
                 {% if has_passed %}
-                    <p><a href="{% url courses.user_certificate course.pk request.user.pk %}">
-                    {% trans "View Certificate" %}</a></p>
+                    <div>
+                    <a href="{% url courses.user_certificate course.pk request.user.pk %}">
+                    {% trans "View Certificate" %}</a>
+                    </div>
                 {% else %}
                     {% if course.is_closed and not admin %}
                     <p>{% trans "The deadline has passed and this course is now closed." %}</p>

@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.conf import settings
@@ -90,10 +91,7 @@ class Setting(models.Model):
             from site_settings.cache import SETTING_PRE_KEY
             
             # delete the cache for all the settings to reset the context
-            key = [SETTING_PRE_KEY, 'all.settings']
-            key = '.'.join(key)
-            cache.delete(key)
-            # delete and set cache for single key and save the value in the database
             delete_all_settings_cache()
+            # delete and set cache for single key and save the value in the database
             delete_setting_cache(self.scope, self.scope_category, self.name)
             cache_setting(self.scope, self.scope_category, self.name, self)

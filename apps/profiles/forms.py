@@ -141,7 +141,6 @@ class ProfileForm(TendenciBaseForm):
                   'interactive', 
                   'allow_anonymous_view',
                   'admin_notes',
-                  'entity',
                   'security_level',
                   'status',
                   'status_detail',
@@ -288,7 +287,7 @@ class UserPermissionForm(forms.ModelForm):
         # only display the permissions for the apps in APPS
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
-        content_types = ContentType.objects.filter(app_label__in=APPS)
+        content_types = ContentType.objects.exclude(app_label='auth')
         
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
     
@@ -353,12 +352,9 @@ class ValidatingPasswordChangeForm(auth.forms.PasswordChangeForm):
         password1 = self.cleaned_data.get('new_password1')
         password_regex = get_setting('module', 'users', 'password_requirements_regex')
         password_requirements = get_setting('module', 'users', 'password_text')
-        print password_regex
-        print password_requirements
         if password_regex:
             # At least MIN_LENGTH long
             # "^(?=.{8,})(?=.*[0-9=]).*$"
-            print re.match(password_regex, password1)
             if not re.match(password_regex, password1):
                 raise forms.ValidationError(mark_safe("The new password does not meet the requirements </li><li>%s" % password_requirements))
 

@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+from decimal import Decimal
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.conf import settings
@@ -36,7 +37,11 @@ class RecurringPaymentEmailNotices(object):
         self.admin_emails = self.get_admin_emails() 
 
     def get_admin_emails(self):
-        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')
+        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')   
+        payment_admins = get_setting('module', 'payments', 'paymentrecipients')
+        if payment_admins:
+            payment_admins = payment_admins.split(',')
+            admin_emails += payment_admins
             
         if admin_emails:
             admin_emails = ','.join(admin_emails)
@@ -78,11 +83,16 @@ class RecurringPaymentEmailNotices(object):
         self.email.recipient = self.admin_emails
         if self.email.recipient:
             template_name = "recurring_payments/email_admins_transaction.html"
+            user_in_texas = False
+            if payment_transaction.payment.state:
+                if payment_transaction.payment.state.lower() in ['texas', 'tx']:
+                    user_in_texas = True
             try:
                 email_content = render_to_string(template_name, 
                                                {'pt':payment_transaction,
                                                 'site_display_name': self.site_display_name,
-                                                'site_url': self.site_url
+                                                'site_url': self.site_url,
+                                                'user_in_texas': user_in_texas
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
@@ -337,6 +347,21 @@ def api_rp_setup(data):
     description = data.get('description', '')
     url = data.get('url')
     payment_amount = data.get('amount', '')
+    taxable = data.get('taxable', 0)
+    if taxable in ('True', 'true', '1', 1): 
+        taxable = 1
+    else: 
+        taxable = 0
+    try:
+        tax_rate = Decimal(data.get('tax_rate', 0))
+        if tax_rate > 1: tax_rate = 0
+    except:
+        tax_rate = 0
+    tax_exempt = data.get('tax_exempt', 0)
+    if tax_exempt in ('True', 'true', '1', 1): 
+        tax_exempt = 1
+    else: 
+        tax_exempt = 0
     try:
         payment_amount = Decimal(payment_amount)
     except:
@@ -403,6 +428,9 @@ def api_rp_setup(data):
     rp.description = description
     rp.url = url
     rp.payment_amount = payment_amount
+    rp.taxable = taxable
+    rp.tax_rate = tax_rate
+    rp.tax_exempt = tax_exempt
     rp.customer_profile_id = cp_id
     rp.billing_start_dt = billing_cycle_start_dt
     
@@ -450,7 +478,7 @@ def api_rp_setup(data):
                                     recurring_payment_invoice=rp_invoice,
                                     payment_profile_id=pp_id,
                                     trans_type='auth_capture',
-                                    amount=payment_amount,
+                                    amount=rp_invoice.invoice.total,
                                     status=True)
     payment = payment_update_from_response(payment, direct_response_str)
     payment.mark_as_paid()
@@ -535,7 +563,7 @@ def api_add_rp(data):
     for key, value in data.items():
         if key in ALLOWED_FIELES:
             if hasattr(rp, key):
-                exec('rp.%s="%s"' % (key, value))
+                setattr(rp, key, value)
             
     if rp.billing_start_dt:
         try:

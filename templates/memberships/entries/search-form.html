@@ -1,6 +1,0 @@
-{% load humanize %}
-<form class="search-form" action="{% url membership.application_entries_search %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="Search" />
-<div class="total-results">{{ entries|length|intcomma }} total results</div>
-</form>

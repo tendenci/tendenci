@@ -7,23 +7,31 @@ from django.utils.importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import slugify
+from django.contrib.contenttypes import generic
+from django.utils.safestring import mark_safe
+
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
 from base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
-
+from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
 from invoices.models import Invoice
 from memberships.models import MembershipType, App, Membership
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
-from perms.utils import is_admin
+from perms.utils import is_admin, is_member
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
 from payments.models import PaymentMethod
+from perms.object_perms import ObjectPermission
 
 from base.utils import send_email_notification
+from corporate_memberships.settings import use_search_index
+from corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
+from imports.utils import get_unique_username
 
 
 FIELD_CHOICES = (
@@ -177,9 +185,9 @@ class CorporateMembershipType(TendenciBaseModel):
                 if not mt.fixed_option1_year:
                     mt.fixed_option1_year = now.year
                     
-                mt.fixed_option1_day = day_validate(datetime(mt.fixed_expiration_year,
-                                                                  mt.fixed_expiration_month, 1),
-                                                                    mt.fixed_option1_day)
+                mt.fixed_option1_day = day_validate(datetime(mt.fixed_option1_year,
+                                                                  mt.fixed_option2_month, 1),
+                                                                    mt.fixed_option2_day)
                     
                 return datetime(mt.fixed_option1_year, mt.fixed_option1_month,
                                 mt.fixed_option1_day)
@@ -236,14 +244,24 @@ class CorporateMembership(TendenciBaseModel):
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
+    anonymous_creator = models.ForeignKey('Creator', null=True)
+    
     corp_app = models.ForeignKey("CorpApp")
+    
+    perms = generic.GenericRelation(ObjectPermission,
+                                      object_id_field="object_id",
+                                      content_type_field="content_type")
     
     objects = CorporateMembershipManager()
     
     class Meta:
         permissions = (("view_corporatemembership", "Can view corporate membership"),)
-        verbose_name = _("Corporate Member")
-        verbose_name_plural = _("Corporate Members")
+        if get_setting('module', 'corporate_memberships', 'label'):
+            verbose_name = get_setting('module', 'corporate_memberships', 'label')
+            verbose_name_plural = get_setting('module', 'corporate_memberships', 'label_plural')
+        else:
+            verbose_name = _("Corporate Member")
+            verbose_name_plural = _("Corporate Members")
     
     def __unicode__(self):
         return "%s" % (self.name)
@@ -256,6 +274,38 @@ class CorporateMembership(TendenciBaseModel):
     @property   
     def module_name(self):
         return self._meta.module_name
+    
+    @staticmethod
+    def get_search_filter(user):
+        if is_admin(user): return None, None
+        
+        filter_and, filter_or = None, None
+        
+        allow_anonymous_search = get_setting('module', 
+                                     'corporate_memberships', 
+                                     'anonymoussearchcorporatemembers')
+        allow_member_search = get_setting('module', 
+                                  'corporate_memberships', 
+                                  'membersearchcorporatemembers')
+        
+        if allow_anonymous_search or (allow_member_search and is_member(user)):
+            filter_and =  {'status':1,
+                           'status_detail':'active'}
+        else:
+            if user.is_authenticated():
+                filter_or = {'creator': user,
+                             'owner': user}
+                if use_search_index:
+                    filter_or.update({'reps': user})
+                else:
+                    filter_or.update({'reps__user': user})
+            else:
+                filter_and = {'allow_anonymous_view':True,}
+                
+                
+        return filter_and, filter_or
+        
+        
     
     def assign_secret_code(self):
         if not self.secret_code:
@@ -326,16 +376,11 @@ class CorporateMembership(TendenciBaseModel):
         if self.renew_entry_id:
             self.approve_renewal(request)
         else:
-            if (self.status_detail).lower() <> 'active':
-                self.status_detail = 'active'
-            self.approved = 1
-            self.approved_denied_dt = datetime.now()
-            if not request.user.is_anonymous():
-                self.approved_denied_user = request.user
-            self.save()
+            self.approve_join(request)
+            
         
         # send notification to administrators
-        recipients = get_notice_recipients('module', 'corporatememberships', 'corporatemembershiprecipients')
+        recipients = get_notice_recipients('module', 'corporate_memberships', 'corporatemembershiprecipients')
         if recipients:
             if notification:
                 extra_context = {
@@ -370,6 +415,8 @@ class CorporateMembership(TendenciBaseModel):
                 # 1) archive corporate membership
                 self.archive(request.user)
                 
+                user = request.user
+                
                 # 2) update the corporate_membership record with the renewal info from renew_entry
                 self.renewal = True
                 self.corporate_membership_type = renew_entry.corporate_membership_type
@@ -378,7 +425,8 @@ class CorporateMembership(TendenciBaseModel):
                 self.renew_dt = renew_entry.create_dt
                 self.approved = True
                 self.approved_denied_dt = datetime.now()
-                self.approved_denied_user = request.user
+                if user and (not user.is_anonymous()):
+                    self.approved_denied_user = user
                 self.status = 1
                 self.status_detail = 'active'
                 
@@ -392,7 +440,6 @@ class CorporateMembership(TendenciBaseModel):
                 renew_entry.save()
                 
                 # 3) approve the individual memberships
-                user = request.user
                 if user and not user.is_anonymous():
                     user_id = user.id
                     username = user.username
@@ -439,6 +486,8 @@ class CorporateMembership(TendenciBaseModel):
                         })
                 # email dues reps that corporate membership has been approved
                 recipients = dues_rep_emails_list(self)
+                if not recipients and self.creator:
+                    recipients = [self.creator.email]
                 extra_context = {
                     'object': self,
                     'request': request,
@@ -462,10 +511,26 @@ class CorporateMembership(TendenciBaseModel):
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
-        self.approved_denied_user = request.user
+        if not request.user.is_anonymous():
+            self.approved_denied_user = request.user
         self.status = 1
         self.status_detail = 'active'
         self.save()
+        
+        created, username, password = self.handle_anonymous_creator(**kwargs)
+             
+        # send an email to dues reps
+        recipients = dues_rep_emails_list(self)
+        recipients.append(self.creator.email)
+        extra_context = {
+            'object': self,
+            'request': request,
+            'invoice': self.invoice,
+            'created': created,
+            'username': username,
+            'password': password
+        }
+        send_email_notification('corp_memb_join_approved', recipients, extra_context)
     
     def disapprove_join(self, request, **kwargs):
         self.approved = False
@@ -474,7 +539,60 @@ class CorporateMembership(TendenciBaseModel):
         self.status = 1
         self.status_detail = 'disapproved'
         self.save()
-                            
+        
+    def handle_anonymous_creator(self, **kwargs):
+        """
+        Handle the anonymous creator on approval and disapproval.
+        
+        """
+        if self.anonymous_creator:
+            create_new = kwargs.get('create_new', False)
+            assign_to_user = kwargs.get('assign_to_user', None)
+            
+            params = {'first_name': self.anonymous_creator.first_name,
+                      'last_name': self.anonymous_creator.last_name,
+                      'email': self.anonymous_creator.email}
+            
+            if assign_to_user and not isinstance(assign_to_user, User):
+                create_new = True
+            
+            if not create_new and not assign_to_user:
+                
+                [my_user] = User.objects.filter(**params).order_by('-is_active')[:1] or [None]
+                if my_user:
+                    assign_to_user = my_user
+                else:
+                    create_new = True
+            if create_new:
+                params.update({
+                               'password': User.objects.make_random_password(length=8),
+                               'is_active': True})
+                assign_to_user = User(**params)
+                assign_to_user.username = get_unique_username(assign_to_user)
+                assign_to_user.set_password(assign_to_user.password)
+                assign_to_user.save() 
+                    
+            self.creator = assign_to_user
+            self.creator_username = assign_to_user.username
+            self.owner = assign_to_user
+            self.owner_username = assign_to_user.username
+            self.save()
+            
+            # assign object permissions
+            corp_memb_update_perms(self)
+            
+            # update invoice creator/owner
+            if self.invoice:
+                self.invoice.creator = assign_to_user
+                self.invoice.creator_username = assign_to_user.username
+                self.invoice.owner = assign_to_user
+                self.invoice.owner_username = assign_to_user.username
+                self.invoice.save()
+            
+            return create_new, assign_to_user.username, params.get('password', '')
+        
+        return False, None, None
+                                          
                 
     def is_rep(self, this_user):
         """
@@ -483,12 +601,17 @@ class CorporateMembership(TendenciBaseModel):
         if this_user.is_anonymous(): return False
         reps = self.reps.all()
         for rep in reps:
-            if rep.id == this_user.id:
+            if rep.user.id == this_user.id:
                 return True
         return False
     
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True
+        
+        if get_setting('module', 
+                     'corporate_memberships', 
+                     'anonymoussearchcorporatemembers'):
+            return True
         
         if not this_user.is_anonymous():
             if self.is_rep(this_user): return True
@@ -511,6 +634,19 @@ class CorporateMembership(TendenciBaseModel):
                     if this_user.id == self.owner.id: return True
                 
         return False
+    
+    @property
+    def obj_perms(self):
+        t = '<span class="perm-%s">%s</span>'
+ 
+        if get_setting('module', 
+                     'corporate_memberships', 
+                     'anonymoussearchcorporatemembers'):
+            value = t % ('public','Public')
+        else:
+            value = t % ('private','Private')
+
+        return mark_safe(value)
     
     
     def get_renewal_period_dt(self):
@@ -592,15 +728,51 @@ class CorporateMembership(TendenciBaseModel):
         field_names.remove('id')
         
         for name in field_names:
-            exec("corp_memb_archive.%s=self.%s" % (name, name))
+            setattr(corp_memb_archive, name, getattr(self, name))
             
         corp_memb_archive.corporate_membership = self
         corp_memb_archive.corp_memb_create_dt = self.create_dt
         corp_memb_archive.corp_memb_update_dt = self.update_dt
-        corp_memb_archive.archive_user = user
+        if user and (not user.is_anonymous()):
+            corp_memb_archive.archive_user = user
         corp_memb_archive.save()
+
+    @property
+    def entry_items(self):
+        """
+        Returns a dictionary of entry items from
+        the approved entry that is associated with this membership.
+        """
+        return self.get_entry_items()
         
-        
+    
+    def get_entry_items(self, slugify_label=True):
+        items = {}
+        entry = self
+
+        if entry:
+            for field in entry.fields.all():
+                label = field.field.label
+                if slugify_label:
+                    label = slugify(label).replace('-','_')
+                items[label] = field.value
+
+        return items
+
+class Creator(models.Model):
+    """
+    An anonymous user can create a corporate membership. 
+    This table allows us to collect some contact info for admin 
+    to contact them.
+    Once the corporate membership is approved, if not found in db, 
+    a user record will be created based on this info and will be 
+    associated to the corporate membership as creator and dues rep. 
+    """
+    first_name = models.CharField(_('Contact first name') , max_length=30, blank=True)
+    last_name = models.CharField(_('Contact last name') , max_length=30, blank=True)
+    email = models.EmailField(_('Contact e-mail address'))
+    hash = models.CharField(max_length=32, default='')
+       
 class AuthorizedDomain(models.Model):
     corporate_membership = models.ForeignKey("CorporateMembership", related_name="auth_domains")
     name = models.CharField(max_length=100)
@@ -856,8 +1028,11 @@ class CorpField(models.Model):
                     return "Never Expire"
                 if self.field_name == 'reps':
                     # get representatives
-                    return CorporateMembershipRep.objects.filter(corporate_membership=corporate_membership).order_by('user')
-                return eval("%s.%s" % (self.object_type, self.field_name))
+                    return CorporateMembershipRep.objects.filter(
+                                    corporate_membership=corporate_membership).order_by('user')
+                if self.object_type == 'corporate_membership' and hasattr(corporate_membership, 
+                                                                          self.field_name):
+                    return getattr(corporate_membership, self.field_name)
             else:
                 entry = self.field.filter(corporate_membership=corporate_membership)
                 

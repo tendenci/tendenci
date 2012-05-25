@@ -171,7 +171,10 @@ def receipt(request, id, guid, template_name="donations/receipt.html"):
 @login_required  
 def search(request, template_name="donations/search.html"):
     query = request.GET.get('q', None)
-    donations = Donation.objects.search(query)
+    if get_setting('site', 'global', 'searchindex') and query:
+        donations = Donation.objects.search(query)
+    else:
+        donations = Donation.objects.all()
 
     log_defaults = {
         'event_id' : 514000,

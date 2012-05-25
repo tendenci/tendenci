@@ -17,6 +17,7 @@ def video_options(context, user, video):
 
 class ListVideosNode(ListNode):
     model = Video
+    perms = 'videos.view_video'
 
 
 @register.tag

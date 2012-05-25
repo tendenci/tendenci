@@ -1,25 +1,31 @@
 import os
+import simplejson as json
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseServerError
+from django.http import (HttpResponseRedirect, HttpResponse, Http404,
+    HttpResponseServerError)
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.middleware.csrf import get_token as csrf_get_token
 
-import simplejson as json
 from base.http import Http403
+from site_settings.utils import get_setting
+from perms.decorators import admin_required
+from perms.object_perms import ObjectPermission
+from perms.utils import (update_perms_and_save, has_perm, has_view_perm,
+    get_query_filters)
+from event_logs.models import EventLog
+from theme.shortcuts import themed_response as render_to_response
+
+from files.cache import FILE_IMAGE_PRE_KEY
 from files.models import File
 from files.utils import get_image
 from files.forms import FileForm, MostViewedForm
-from perms.decorators import admin_required
-from perms.object_perms import ObjectPermission
-from perms.utils import update_perms_and_save, has_perm
-from event_logs.models import EventLog
-from files.cache import FILE_IMAGE_PRE_KEY
 
 
-def index(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/view.html"):
+def details(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/details.html"):
     from files.search_indexes import FileIndex
     if not id: return HttpResponseRedirect(reverse('file.search'))
 
@@ -28,7 +34,7 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         quality = int(quality)
 
     file = get_object_or_404(File, pk=id)
-    if not has_perm(request.user, 'files.view_file', file):
+    if not has_view_perm(request.user, 'files.view_file', file):
         raise Http403
 
     # check 'if public'
@@ -36,15 +42,11 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         if not request.user.is_authenticated():
             raise Http403
 
-    # we either have the name in our database
-    # or we pull the name straight off of the file
-    file_name = file.name or file.file.name
-
     # get image binary
     try:
         data = file.file.read()
         file.file.close()
-    except:
+    except IOError:  # no such file or directory
         raise Http404
 
     # log downloads and views
@@ -87,7 +89,7 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
-        response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
+        response['Content-Disposition'] = '%s filename=%s'% (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
         return response
@@ -98,24 +100,38 @@ def index(request, id=None, size=None, crop=False, quality=90, download=False, t
     else: raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
+    response['Content-Disposition'] = '%s filename=%s'% (attachment, file.get_name())
     return response
 
 def search(request, template_name="files/search.html"):
+    """
+    This page lists out all files from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through files.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    files = File.objects.search(query, user=request.user)
 
-    if not query:
-        files = files.order_by('-update_dt')
+    if has_index and query:
+        files = File.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'files.view_file', perms_field=False)
+        files = File.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            files = files.select_related()
+    files = files.order_by('-update_dt')
 
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('files'))
 
 def print_view(request, id, template_name="files/print-view.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not has_perm(request.user,'files.view_file',file):
+    if not has_view_perm(request.user,'files.view_file',file):
         raise Http403
 
     return render_to_response(template_name, {'file': file}, 
@@ -138,16 +154,14 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
             # update all permissions and save the model
             file = update_perms_and_save(request, form, file)
-
-            log_defaults = {
+            EventLog.objects.log(**{
                 'event_id' : 182000,
                 'event_data': '%s (%d) edited by %s' % (file._meta.object_name, file.pk, request.user),
                 'description': '%s edited' % file._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': file,
-            }
-            EventLog.objects.log(**log_defaults)
+            })
 
             return HttpResponseRedirect(reverse('file.search'))
     else:

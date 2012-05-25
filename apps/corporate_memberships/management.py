@@ -38,6 +38,8 @@ if "notification" in settings.INSTALLED_APPS:
                                         _("A corporate membership has been renewed."))
         notification.create_notice_type("corp_memb_renewed_user", _("Corporate Membership Renewal User Notice"), 
                                         _("A corporate membership has been renewed - notice to user."))
+        notification.create_notice_type("corp_memb_join_approved", _("Corporate Membership Approved"), 
+                                        _("A new corporate membership has been approved."))
         notification.create_notice_type("corp_memb_renewal_approved", _("Corporate Membership Renewal Approved"), 
                                         _("The corporate membership renewal has been approved."))
         notification.create_notice_type("corp_memb_paid", _("Payment Received for Corporate Membership"), 

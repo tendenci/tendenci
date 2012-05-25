@@ -90,10 +90,6 @@
 		{% if MODULE_DIRECTORIES_ENABLED %}
     	<li class="directories"><a href="{% url directory.search %}"><span>{% trans "Directories" %}</span></a></li>
 		{% endif %}
-		
-		{% if MODULE_JOBS_ENABLED %}
-    	<li class="jobs"><a href="{% url job.search %}"><span>{%  trans "Jobs" %}</span></a></li>
-		{% endif %}
 
  		{% if MODULE_RESUMES_ENABLED %}
     	<li class="resumes"><a href="{% url resume.search %}"><span>{%  trans "Resumes" %}</span></a></li>
@@ -228,10 +224,10 @@
 	    <li><a href="/settings/module/theme_editor/">Change Themes</a></li>
 	    <li><a href="/settings/module/theme/">Theme Settings</a></li>
 	    {% endif %}
-		<li><a href="{% url theme_editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Update Styles" %}</a></li>
-		<li><a href="{% url theme_editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
-		<li><a href="{% url theme_editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
-    	<li><a href="{% url theme_editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
+		<li><a href="{% url theme_editor.editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Update Styles" %}</a></li>
+		<li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
+		<li><a href="{% url theme_editor.editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
+    	<li><a href="{% url theme_editor.editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
     </ul>
     </div>
     {% endif %}

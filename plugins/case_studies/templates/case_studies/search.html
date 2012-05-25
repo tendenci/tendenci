@@ -2,6 +2,7 @@
 {% load pagination_tags %}
 {% load case_study_tags %}
 {% load perm_tags %}
+{% load base_filters %}
 
 {% block title %}Case Studies{% endblock %}
 
@@ -50,7 +51,7 @@
     <div class="cs-search-wrap clearfix">
         {% for case_study in case_studies %}
         <ul>
-        {% with case_study.object as case_study %}
+        {% with case_study|get_object as case_study %}
         <li class="cs-search-item">
             <div class="cs-item">
                 {% for img in case_study.featured_screenshots %}

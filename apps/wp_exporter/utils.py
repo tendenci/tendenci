@@ -10,7 +10,6 @@ from pages.models import Page
 from articles.models import Article
 from news.models import News
 from events.models import Event
-from jobs.models import Job
 from resumes.models import Resume
     
 
@@ -190,19 +189,23 @@ def encode_news(xml, offset=0):
     return offset
         
 def encode_jobs(xml, offset=0):
-    jobs = Job.objects.filter(status=True)
-    ct = ContentType.objects.get_for_model(Job)
-    for job in jobs:
-        offset = offset+1
-        content = job.description
-        content += "\n <h2>Location:</h2> %s" % job.location
-        content += "\n <h2>Required Experience:</h2> %s" % job.experience
-        content += "\n <h2>Required Skills:</h2> %s" % job.skills
-        content += "\n <h2>Required Computer Skills:</h2> %s" % job.computer_skills
-        content += "\n <h2>Required Education:</h2> %s" % job.education
-        encode_item(xml, offset, job, ct, title=job.title, content=content)
+    try:
+        from jobs.models import Job
+        jobs = Job.objects.filter(status=True)
+        ct = ContentType.objects.get_for_model(Job)
+        for job in jobs:
+            offset = offset+1
+            content = job.description
+            content += "\n <h2>Location:</h2> %s" % job.location
+            content += "\n <h2>Required Experience:</h2> %s" % job.experience
+            content += "\n <h2>Required Skills:</h2> %s" % job.skills
+            content += "\n <h2>Required Computer Skills:</h2> %s" % job.computer_skills
+            content += "\n <h2>Required Education:</h2> %s" % job.education
+            encode_item(xml, offset, job, ct, title=job.title, content=content)
+    except ImportError:
+        pass
     return offset
-        
+
 def encode_events(xml, offset=0):
     events = Event.objects.filter(status=True)
     ct = ContentType.objects.get_for_model(Event)

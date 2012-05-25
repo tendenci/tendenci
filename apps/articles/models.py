@@ -2,11 +2,14 @@ import uuid
 from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from base.fields import SlugField
 from timezones.fields import TimeZoneField
 from perms.models import TendenciBaseModel 
+from perms.object_perms import ObjectPermission
+from categories.models import CategoryItem
 from articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
@@ -28,7 +31,7 @@ class Article(TendenciBaseModel):
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
-    syndicate = models.BooleanField(_('Include in RSS feed'),)
+    syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     featured = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
     tags = TagField(blank=True)
@@ -44,10 +47,19 @@ class Article(TendenciBaseModel):
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = ArticleManager()
 
     class Meta:
         permissions = (("view_article","Can view article"),)
+        verbose_name = "Article"
+        verbose_name_plural = "Articles"
 
     def get_meta(self, name):
         """
@@ -71,3 +83,13 @@ class Article(TendenciBaseModel):
     
     def age(self):
         return datetime.now() - self.create_dt
+
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items

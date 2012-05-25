@@ -1,5 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
+
+from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from trainings.managers import TrainingManager, CompletionManager
@@ -24,6 +27,11 @@ class Training(TendenciBaseModel):
     points = models.DecimalField(_(u'Points'), max_digits=4, decimal_places=1, help_text=u'Try to round to the nearest .5', blank=False, default=1,)
     core_training = models.BooleanField(blank=True, default=0)
     source_id = models.CharField(_(u'Migration Id'), help_text=u'Migration ID used for migrating from other systems.', blank=True, null=True, max_length=200, default=u'',)
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = TrainingManager()
     
     def __unicode__(self):
@@ -43,6 +51,11 @@ class Completion(TendenciBaseModel):
     feedback = models.TextField(_(u'Feedback'), help_text=u'Comments about the training.', blank=True, default=u'',)
     finish_dt = models.DateTimeField(_('Completion Date'), null=True, blank=False)
     training = models.ForeignKey('Training', blank=False)
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = CompletionManager()
     
     def __unicode__(self):

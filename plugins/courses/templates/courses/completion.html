@@ -19,6 +19,7 @@
     <div class="course-wrap">
         <h1>{{ course.title }}</h1>
         <div class="status">
+            <p>Passing Score: {{ course.passing_score }} %</p>
             {% if has_passed %}
                 <p>
                     {% if for_admin %}
@@ -51,7 +52,10 @@
                         {% trans "Date" %}: {{ attempt.create_dt }}
                     </p>
                     <p>
-                        {% trans "Score" %}: {{ attempt.score }}
+                        {% trans "Score" %}: {{ attempt.score }} %
+                    </p>
+                    <p>
+                        {% trans "Status" %}: {% if attempt.passed %}PASSED{% else %}FAILED{% endif %}
                     </p>
                 </div>
             {% endfor %}

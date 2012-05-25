@@ -9,64 +9,67 @@
 {% block extra_head %}
 {{ block.super }}
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css" />
+<style type="text/css">
+
+body {
+	background-color: #EEE;
+}
+
+@media print {
+	#admin-bar {
+		display: none;
+	}
+}
+
+</style>
 {% endblock %}
 
 {% block body %}
 <div class="t-print">
 
-	<div class='hide-this'>
-		<h1>{% trans "Print View" %}</h1>
-
-		<div class="guide">
-			<div><a href="{{ resume.get_absolute_url }}">&laquo; {% trans "Back to regular resume view" %}</a></div>
-			<div>{% trans "Your printed page will look <em>something</em> like this." %}</div>
-		</div>
-	</div>
-
      <div class="resume-wrap">
         <h2>{{ resume.title }}</h2>
 		<h2>{% trans "Resume Information" %}</h2>
 
-{% if resume.description %}
+		{% if resume.description %}
 		<div class="section-block">
 			<div class="label">{% trans "Description" %}</div>
 			<div class="value">{{ resume.description|safe }}</div>
 		</div>
-{% endif %}
+		{% endif %}
 
-{% if resume.location %}
+		{% if resume.location %}
 		<div class="section-block">
 			<div class="label">{% trans "Location" %}</div>
 			<div class="value">{{ resume.location }}</div>
 			<div class="clear"></div>
 		</div>
-{% endif %}
+		{% endif %}
 
-
-{% if resume.experience %}
+		{% if resume.experience %}
 		<div class="section-block">
 			<div class="label">{% trans "Experience" %}</div>
 			<div class="value">{{ resume.experience }}</div>
 		</div>
-{% endif %}
+		{% endif %}
 
-{% if resume.skills %}
+		{% if resume.skills %}
 		<div class="section-block">
 			<div class="label">{% trans "Skills" %}</div>
 			<div class="value">{{ resume.skills }}</div>
 		</div>
-{% endif %}
+		{% endif %}
 
-{% if resume.education %}
+		{% if resume.education %}
 		<div class="section-block">
 			<div class="label">{% trans "Education" %}</div>
 			<div class="value">{{ resume.education }}</div>
 			<div class="clear"></div>
 		</div>
-{% endif %}
+		{% endif %}
 
+		{% if resume.contact_name %}
 		<h2>{% trans "Contact Information" %}</h2>
-{% if resume.contact_name %}
 		<div class="contact-wrap">
 			<div>{{ resume.contact_name }}</div>
 			<div>{{ resume.contact_phone }}</div>
@@ -74,7 +77,7 @@
 			<div>{{ resume.contact_fax }}</div>
 			<div><a href="">{{ resume.contact_email|urlize }}</a></div>
 		</div>
-{% endif %}
+		{% endif %}
     </div>
 
 </div>

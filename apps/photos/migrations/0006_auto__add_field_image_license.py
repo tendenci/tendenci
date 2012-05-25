@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Image.license'
-        db.add_column('photos_image', 'license', self.gf('django.db.models.fields.related.ForeignKey')(related_name='license', to=orm['photos.License']), keep_default=False)
+        db.add_column('photos_image', 'license', self.gf('django.db.models.fields.related.ForeignKey')(related_name='license', to=orm['photos.License'], null=True), keep_default=False)
 
 
     def backwards(self, orm):

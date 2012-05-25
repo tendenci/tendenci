@@ -4,10 +4,14 @@ from datetime import timedelta
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.contenttypes import generic
 
+from site_settings.utils import get_setting
+from categories.models import CategoryItem
 from tagging.fields import TagField
 from base.fields import SlugField
 from perms.models import TendenciBaseModel
+from perms.object_perms import ObjectPermission
 from jobs.managers import JobManager
 from entities.models import Entity
 from tinymce import models as tinymce_models
@@ -49,7 +53,7 @@ class Job(TendenciBaseModel):
     start_dt = models.DateTimeField(null=True, blank=True)  # date job starts(defined by job poster)
 
     job_url = models.CharField(max_length=300, blank=True)  # link to other (fuller) job posting
-    syndicate = models.BooleanField(blank=True)
+    syndicate = models.BooleanField(_('Include in RSS feed'), blank=True, default=True)
     design_notes = models.TextField(blank=True)
 
     #TODO: foreign
@@ -77,10 +81,19 @@ class Job(TendenciBaseModel):
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
 
+    categories = generic.GenericRelation(CategoryItem,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = JobManager()
 
     class Meta:
         permissions = (("view_job", "Can view job"),)
+        verbose_name = "Job"
+        verbose_name_plural = "Jobs"
 
     def get_meta(self, name):
         """
@@ -156,6 +169,16 @@ class Job(TendenciBaseModel):
     @property
     def opt_module_name(self):
         return self._meta.module_name
+
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
 
 
 class JobPricing(models.Model):

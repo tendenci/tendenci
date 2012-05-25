@@ -79,7 +79,7 @@ class SearchView(object):
         if self.query:
             return self.form.search()
         
-        return []
+        return self.form.search()
     
     def build_page(self):
         """
@@ -104,6 +104,7 @@ class SearchView(object):
         
         Must return a dictionary.
         """
+        # TODO: Add the selected models so they can be shown in the H1
         return {}
     
     def create_response(self):

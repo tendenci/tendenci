@@ -1,42 +1,15 @@
-{% load payments_tags %}
-{% load i18n %}
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>{% trans "Payment receipt page" %}</title>
-<link rel="stylesheet" href="{{ THEME_URL }}media/css/style.css" type="text/css" media="screen" /> 
-<style>
-	#payment-receipt{
-		width: 700px;
-		margin: 4em auto;
-		border: 1px solid silver;
-		padding: 1em;
-		background-color: #fff;
-	}
-
-	h3{
- 		margin-top: 1em;
- 		margin-bottom: 0.5em;
- 	}
-
-</style>
-</head>
-<body>
-
-<div id="payment-receipt">
-    {% payment_thankyou_display request payment %}
-	
-	 <p>&nbsp;</p>
-	 <p>&nbsp;</p>
-	 <p><a href="{{ SITE_GLOBAL_SITEURL }}" class="links">{% trans "Home Page" %}</a></p>
-	 
-
+<title>Payment Thank You</title>
+<body> 
+<p>Processing...please wait.</p>
 <script language="javascript">
     window.location = "{{ SITE_GLOBAL_SITEURL }}{% url payment.receipt payment.id payment.guid %}";
 </script>
 
-</div> 
+
 </body>
 </html>

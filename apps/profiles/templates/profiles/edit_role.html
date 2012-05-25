@@ -1,0 +1,36 @@
+{% extends "profiles/base.html" %}
+{% load profile_tags %}
+{% load styled_forms %}
+
+{% block title %}Edit Group Membership{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+{% endblock %}
+
+{% block body %}
+    <div class="t">
+        {% users_nav request.user membership.member %}
+        <h1>Edit Group Membership Role</h1>
+        <div class="profile-wrap">
+            <h2>User: <a href="{{ membership.member.get_absolute_url }}">
+                {{ membership.member.get_full_name }} ({{ membership.member.username}})</a>
+            </h2>
+            <h2>
+                Group: <a href="{{ membership.group.get_absolute_url }}">{{ membership.group }} ({{ membership.group.name }})</a>
+            </h2>
+            <form action="." method="post">{% csrf_token %}
+                <div class="forms">
+                    {{ form|styled_form }}
+                    <input type="submit" value="Save" />
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+{% endblock %}

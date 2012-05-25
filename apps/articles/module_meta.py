@@ -23,8 +23,9 @@ class ArticleMeta():
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
-        category = Category.objects.get_for_object(object, 'category')
-        subcategory = Category.objects.get_for_object(object, 'subcategory')
+        category_set = object.category_set
+        category = category_set.get('category', '')
+        subcategory = category_set.get('sub_category', '')
 
         creator_name = '%s %s' % (
             object.creator.first_name, 
@@ -74,8 +75,9 @@ class ArticleMeta():
 
         ### Assign variables -----------------------  
         primary_keywords = get_setting('site','global','siteprimarykeywords')
-        category = Category.objects.get_for_object(object, 'category')
-        subcategory = Category.objects.get_for_object(object, 'subcategory')
+        category_set = object.category_set
+        category = category_set.get('category', '')
+        subcategory = category_set.get('sub_category', '')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
         creator_name = '%s %s' % (

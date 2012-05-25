@@ -1,0 +1,207 @@
+{% extends "profiles/base-wide.html" %}
+{% load avatar_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load profile_tags %}
+{% load contribution_tags %}
+{% load membership_tags %}
+{% load humanize %}
+{% load i18n %}
+
+{% block title %}Profile {% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+{% endblock %}
+
+{% block body %}
+<div class="t"><div id="t-profile">
+
+	{% users_nav request.user user_this %}
+
+	<div id="t-view">
+	<div class="intro info">
+		<div class="profile-icon">
+			<a href="{% url profile.change_avatar  user_this.id %}">
+				{% avatar user_this 128 %}
+			</a>
+		</div>
+
+		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+
+		{% if profile.company %}
+			<p>{{ profile.company }}</p>
+		{% endif %}
+
+		{% if profile.position_title %}
+			<p>{{ profile.position_title }}</p>
+		{% endif %}
+
+		{% if city_state %}
+			<p>{{ city_state }}</p>
+		{% endif %}
+
+        {% if request.user == user_this or admin %}
+        {% if content_counts.invoice > 0 %}
+            <p><a href="{% url invoice.search %}?bill_to_email={{ user_this.email }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a></p>
+        {% endif %}
+        {% endif %}
+
+		<div class="clear"></div>
+    </div>
+
+    <div class="contact info">
+
+		<h2>Contact Information</h2>
+
+		<table>
+			<tr>
+				<td>Email</td>
+				<td>{{ user_this.email }}</td>
+			</tr>
+			<tr>
+				<td>Phone</td>
+				<td>{% firstof profile.phone profile.phone2 %}</td>
+			</tr>
+			<tr>
+				<td>Website</td>
+				<td>{{ profile.url }}</td>
+			</tr>
+			<tr>
+				<td>Address</td>
+				<td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
+			</tr>
+	    </table>
+
+    </div>
+
+    <div class="membership info">
+
+		<h2>Memberships 
+		{% if request.user == user_this or admin %}
+		<a title="Join membership" href="{% url profile.add_membership user_this.username %}" class="glyph plus">+</a>
+		{% endif %}
+		</h2>
+
+		{% if memberships %}
+    	<table>
+        {% for membership in memberships %}
+        		<tr>
+        			<td>
+        				<a href="{% url membership.details membership.pk %}">
+        				{{ membership.member_number }} {{ membership.membership_type }}
+        				<a/>
+        			</td>
+        			<td>
+		        		{{ membership.subscribe_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+		        		</a>
+
+		        		{% if membership.can_renew and membership.ma %}
+		        		<span><a href="{{ membership.ma.get_absolute_url }}?username={{ user_this }}">Renew Now</a></span>
+		        		{% endif %}
+	        		</td>
+	        		<td>
+	        			{% if membership.get_entry.invoice %}
+	        			<a href="{% url invoice.view membership.get_entry.invoice.pk %}">
+	        				Balance ${% firstof membership.get_entry.invoice.balance  0|intcomma %}
+	        			</a>
+	        			{% else %}
+	        				Balance ${{ 0|intcomma }}
+	        			{% endif %}
+	        		</td>
+        		</tr>
+        {% endfor %}
+    	</table>
+    	{% else %}
+        <p>Not a member.</p>
+    	{% endif %}
+
+    </div>
+
+    <div class="group info">
+
+		<h2>Groups
+		{% if request.user = user_this or admin %}
+		<a title="Join or leave group" href="{% url profile.edit_groups user_this.username %}" class="glyph gears">S</a>
+		{% endif %}
+		</h2>
+		
+		{% if group_memberships %}
+			<table>
+			{% for gm in group_memberships %}
+				<tr>
+					<td>
+						{% if admin %}
+							<a href="{% url group.edituser gm.group.slug user_this.pk %}">
+								{% firstof gm.role 'Member' %}
+							</a>
+						{% else %}
+							{% firstof gm.role 'Member' %}
+						{% endif %} of
+
+						<a href="{% url group.detail gm.group.slug %}">
+							{% firstof gm.group.label gm.group.name %}
+						</a>
+					</td>
+				</tr>
+			{% endfor %}
+			</table>
+		{% else %}
+			<p>Not in any groups.</p>
+		{% endif %}
+
+    </div>
+
+	{% latest_contributions user_this as contributions %}
+	{% if  contributions %}
+
+	    <div class="contribution info">
+
+		<h2>{% trans "Contributions" %}</h2>
+		<span class="more"> <a href="{% url contribution.search %}?q={{ user_this.username }}">more &raquo;</a></span>
+		<div class="clear"></div>
+
+		{% for contribution in contributions|slice:":5" %}
+			<div class="item">
+				{% if contribution.object.get_absolute_url %}
+					<a href="{{ contribution.object.get_absolute_url }}">{{ contribution.content_type.name|capfirst }}: {{ contribution.title|truncatewords_html:8|slice:":-4" }}</a> <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+				{% else %}
+					{{ contribution.title }} <span class="create-dt">{{ contribution.create_dt|date:"long" }}</span>
+				{% endif %}
+			</div>
+		{% endfor %}
+
+	    </div>
+
+	{% else %}
+
+		{% if admin %}
+		<div class="contribution info no-contribs">
+			{{ request.user.first_name }}, this person has not made any contributions yet.
+		</div>
+		{% endif %}
+
+	{% endif %}
+
+	{% include "profiles/meta.html" %}
+
+</div></div></div>
+
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
+<script type="text/javascript">
+var iconrow = new dropdown({
+	container:	'more-options-wrap',
+	trigger:	'more-options-trigger',
+	target:		'more-options-target'
+});
+</script>
+
+{% endblock %}

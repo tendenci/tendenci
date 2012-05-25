@@ -36,25 +36,22 @@
     	</div>
     	
     	<h1>{{ group.name }}</h1>
+    	{% if can_edit %}
         <div class="group-section">
             <p>{% blocktrans %}This group currently has {{ count_members }} members.{% endblocktrans %}</p>
             <p>{% blocktrans with group.groupsubscription_set.all.count as count %}This group currently has {{ count }} subscribers.{% endblocktrans %}</p>
-            {% if can_edit %}
-                <h3>Export</h3>
-                <p><a href="{% url group.member_export group.slug %}">{% trans "Export all members" %}</a></p>
-                <p><a href="{% url group.subscriber_export group.slug %}">{% trans "Export all subscribers" %}</a></p>
-                <p><a href="{% url group.all_export group.slug %}">{% trans "Export all members and subscribers" %}</a></p>
-                <h3>Import</h3>
-                <p><a href="{% url group.subscriber_import group.slug %}">{% trans "Import subscribers" %}</a></p>
-            {% endif %}
-            <!-- <p><a href="">View all members</a>. <a href="">View editors only</a></p>
-            <p><a href="">Add/Remove Members of this Group</a></p>
-            <p><a href="">Export members</a> to a CSV(excel) or XML.</p> -->
+            <h3>Export</h3>
+            <p><a href="{% url group.member_export group.slug %}">{% trans "Export all members" %}</a></p>
+            <p><a href="{% url group.subscriber_export group.slug %}">{% trans "Export all subscribers" %}</a></p>
+            <p><a href="{% url group.all_export group.slug %}">{% trans "Export all members and subscribers" %}</a></p>
+            <h3>Import</h3>
+            <p><a href="{% url group.subscriber_import group.slug %}">{% trans "Import subscribers" %}</a></p>
         </div>
-    
+        {% endif %}
+
         <h2>{% trans "Group Information" %}</h2>
         <div class="group-section">
-            <p>{% trans "Type" %}: {{ group.type|capfirst }}</p>
+            {% if group.type %}<p>{% trans "Type" %}: {{ group.type|capfirst }}</p>{% endif %}
             <!-- <p>This group is displayed as an option in the Users Module</p> -->
             {% if group.allow_self_add %}
             <p>{% trans "Users can add themselves to this group" %}</p>
@@ -62,9 +59,12 @@
             {% if group.allow_self_remove %}
             <p>{% trans "Users can remove themselves from this group" %}</p>
             {% endif %}
+            {% if can_edit %}
             <p><a href="{% url group.edit_perms group.pk %}">{% trans "Edit Security Permissions for Group Members" %}</a></p>
+            {% endif %}
         </div>
-    
+
+        {% if can_edit %}
         <h2>{% trans "Group Contact" %}</h2>
         <div class="group-section">
             {% if group.email_recipient %}
@@ -74,7 +74,7 @@
                 <p>{% trans "There is no email recipient set for this group."  %}  <a href="{% url group.edit group.slug %}">{% trans "Edit group." %}</a></p>
             {% endif %}
         </div>
-    
+
         <h2>{% trans "Group Members" %}</h2>
         {% if not groupmemberships %}
         <p>{% trans "This group has no members" %}</p>
@@ -124,6 +124,9 @@
         {% paginate %}
         {% endif %}
         {% endwith %}
+
+        {% endif %}
+        
         {% include "user_groups/meta.html" %}
     </div>
 </div>

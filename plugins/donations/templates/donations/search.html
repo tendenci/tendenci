@@ -25,7 +25,7 @@
 	
 	<div class="donations-wrap">
     {% for donation in donations %}
-		{% with donation.object as donation %}
+		{% with donation|get_object as donation %}
     	{% has_perm user donations.view_donation donation as can_view %}
     	{% if can_view %}
 		<div class="donation-wrap-search">

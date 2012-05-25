@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load pagination_tags %}
 {% load photo_tags %}
+{% load search_tags %}
 {% load perm_tags %}
 {% load humanize %}
 
@@ -93,19 +94,17 @@
 
 
 	{% photo_set_search %}
+	<span><em>{{ photo_sets|length }} {% trans 'Photo Sets' %} {% trans "Found" %}</em></span>
     {% autopaginate photo_sets %}
 
     {% if photo_sets %}
 
         {% for photo_set in photo_sets %}
-        {% with photo_set.object as photo_set %}
-            {% include 'photos/photo-set/search-result.html' %}
-        {% endwith %}
+            {% search_result photo_set %}
         {% endfor %}
 
         {% paginate %}
     {% else %}
-    <p>{% trans "No photo sets were found." %}</p>
     {% endif %}
 
 </div>

@@ -1,4 +1,5 @@
 from django.template import Library
+from django.conf import settings
 
 register = Library()
 
@@ -12,7 +13,7 @@ def payment_thankyou_display(request, payment):
     else:
         obj = payment.invoice.get_object()
 
-        print 'obj', obj._meta.app_label
+        #print 'obj', obj._meta.app_label
 
         if obj:
             from django.template.loader import render_to_string
@@ -40,3 +41,8 @@ def payment_thankyou_display(request, payment):
             "obj": obj, 
             'obj_header': obj_header,
             'obj_display':obj_display}
+    
+@register.inclusion_tag('payments/stripe/js_stripe_key.html', takes_context=True)
+def set_stripe_key(context):
+    context["STRIPE_PUBLISHABLE_KEY"] = settings.STRIPE_PUBLISHABLE_KEY
+    return context

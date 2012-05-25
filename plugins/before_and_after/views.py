@@ -6,7 +6,7 @@ from haystack.query import SearchQuerySet
 from base.http import Http403
 import simplejson
 
-from perms.utils import has_perm
+from perms.utils import has_perm, get_query_filters
 from site_settings.utils import get_setting
 from before_and_after.models import BeforeAndAfter, Category, PhotoSet, Subcategory
 from event_logs.models import EventLog
@@ -25,7 +25,13 @@ def search(request, template_name='before_and_after/search.html'):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
     
-    bnas = BeforeAndAfter.objects.search(query=q, user=request.user)
+    if get_setting('site', 'global', 'searchindex') and q:
+        bnas = BeforeAndAfter.objects.search(query=q, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'before_and_after.view_beforeandafter')
+        bnas = BeforeAndAfter.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            bnas = bnas.select_related()
     bnas = bnas.order_by('-ordering','-create_dt')
     
     if category:

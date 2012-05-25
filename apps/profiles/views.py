@@ -19,7 +19,7 @@ from base.decorators import ssl_required
 
 from perms.object_perms import ObjectPermission
 from perms.utils import (has_perm, is_admin, update_perms_and_save,
-    get_notice_recipients)
+    get_notice_recipients, get_query_filters)
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -50,8 +50,14 @@ friends = False
 # view profile  
 @login_required 
 def index(request, username='', template_name="profiles/index.html"):
+    """
+    Show profile of username passed.  If no username is passed
+    then redirect to username of person logged in.
+    """
+
     if not username:
-        username = request.user.username
+        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
     user_this = get_object_or_404(User, username=username)
 
     try:
@@ -67,10 +73,10 @@ def index(request, username='', template_name="profiles/index.html"):
     content_counts = {'total':0, 'invoice':0}
     from django.db.models import Q
     from invoices.models import Invoice
-    inv_count = Invoice.objects.filter(Q(creator=user_this) | (Q(owner=user_this))).count()
+    inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
-    
+
     # owners
     additional_owner_ids = ObjectPermission.objects.users_with_perms('profiles.change_profile', profile)
     additional_owners = []
@@ -102,10 +108,22 @@ def index(request, username='', template_name="profiles/index.html"):
         'instance': profile,
     }
     EventLog.objects.log(**log_defaults)
- 
+
+    state_zip = ' '.join([s for s in (profile.state, profile.zipcode) if s])
+    city_state = ', '.join([s for s in (profile.city, profile.state) if s])
+    city_state_zip = ', '.join([s for s in (profile.city, state_zip, profile.country) if s])
+
+    can_edit = has_perm(request.user, 'profiles.change_profile', user_this)
+
+    if not can_edit:
+        can_edit = request.user == user_this
+
     return render_to_response(template_name, {
+        'can_edit': can_edit,
         "user_this": user_this,
         "profile":profile,
+        'city_state': city_state,
+        'city_state_zip': city_state_zip,
         'content_counts': content_counts,
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
@@ -127,8 +145,15 @@ def search(request, template_name="profiles/search.html"):
             raise Http403
 
     query = request.GET.get('q', None)
-    profiles = Profile.objects.search(query, user=request.user)
-    profiles = profiles.order_by('last_name_exact')
+    if get_setting('site', 'global', 'searchindex') and query:
+        profiles = Profile.objects.search(query, user=request.user)
+        profiles = profiles.order_by('last_name_exact')
+    else:
+        filters = get_query_filters(request.user, 'profiles.view_profile')
+        profiles = Profile.objects.filter(filters).distinct()
+        profiles = profiles.order_by('user__last_name')
+        if request.user.is_authenticated():
+            profiles = profiles.select_related()
 
     log_defaults = {
         'event_id' : 124000,
@@ -195,15 +220,14 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                 interactive = int(interactive)
             except:
                 interactive = 0
-                
-            if interactive == 1:
-                new_user.is_active = 1
-            else:
-                new_user.is_active = 0
+
+            new_user.is_active = interactive
 
             profile.save()
             new_user.save()
-            
+
+            ObjectPermission.objects.assign(new_user, profile)
+
             log_defaults = {
                 'event_id' : 121000,
                 'event_data': '%s (%d) added by %s' % (new_user._meta.object_name, new_user.pk, request.user),
@@ -308,7 +332,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 1
             else:
                 user_edit.is_active = 0
-               
+
             profile.save()
             user_edit.save()
             
@@ -612,28 +636,76 @@ def password_change_done(request, id, template_name='registration/password_chang
 def _user_events(from_date):
     return User.objects.all()\
                 .filter(eventlog__create_dt__gte=from_date)\
-                .annotate(event_count=Count('eventlog__pk'))\
-                .order_by('-event_count')
+                .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required
-def user_activity_report(request):
+def user_activity_report(request, template_name='reports/user_activity.html'):
     now = datetime.now()
-    users30days = _user_events(now-timedelta(days=10))[:10]
-    users60days = _user_events(now-timedelta(days=60))[:10]
-    users90days = _user_events(now-timedelta(days=90))[:10]
-    return render_to_response(
-                'reports/user_activity.html', 
-                {'users30days': users30days,'users60days': users60days,'users90days': users90days,},  
-                context_instance=RequestContext(request))
+    users30days = _user_events(now-timedelta(days=10))
+    users60days = _user_events(now-timedelta(days=60))
+    users90days = _user_events(now-timedelta(days=90))
+    
+    # get sort order
+    sort = request.GET.get('sort', 'events')
+    if sort == 'username':
+        users30days = users30days.order_by('username')
+        users60days = users60days.order_by('username')
+        users90days = users90days.order_by('username')
+    elif sort == 'last_name':
+        users30days = users30days.order_by('last_name')
+        users60days = users60days.order_by('last_name')
+        users90days = users90days.order_by('last_name')
+    elif sort == 'first_name':
+        users30days = users30days.order_by('first_name')
+        users60days = users60days.order_by('first_name')
+        users90days = users90days.order_by('first_name')
+    elif sort == 'email':
+        users30days = users30days.order_by('email')
+        users60days = users60days.order_by('email')
+        users90days = users90days.order_by('email')
+    elif sort == 'events':
+        users30days = users30days.order_by('-event_count')
+        users60days = users60days.order_by('-event_count')
+        users90days = users90days.order_by('-event_count')
+        
+    # top 10 only
+    users30days = users30days[:10]
+    users60days = users60days[:10]
+    users90days = users90days[:10]
+    
+    return render_to_response(template_name, {
+        'users30days': users30days,
+        'users60days': users60days,
+        'users90days': users90days,
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def admin_users_report(request):
-    users = User.objects.all().filter(is_superuser=True)
-    return render_to_response(
-                'reports/admin_users.html', 
-                {'users': users},  
-                context_instance=RequestContext(request))
+def admin_users_report(request, template_name='reports/admin_users.html'):
+    filters = {
+        'is_staff': 1,
+        'is_active': 1,
+    }
+    users = User.objects.all().filter(**filters)
+    
+    # get sort order
+    sort = request.GET.get('sort', 'id')
+    if sort == 'id':
+        users = users.order_by('pk')
+    elif sort == 'username':
+        users = users.order_by('username')
+    elif sort == 'last_name':
+        users = users.order_by('last_name')
+    elif sort == 'first_name':
+        users = users.order_by('first_name')
+    elif sort == 'email':
+        users = users.order_by('email')
+    elif sort == 'phone':
+        users = users.order_by('profile__phone')
+    
+    return render_to_response(template_name, {
+        'users': users
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -660,7 +732,7 @@ def admin_list(request, template_name='profiles/admin_list.html'):
     # only admins can edit this list
     if not is_admin(request.user):
         raise Http403
-
+    
     filters = {
         'status':1,
         'status_detail':'active',

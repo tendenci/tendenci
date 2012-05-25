@@ -1,4 +1,6 @@
-<form class="search-form" action="{% url file.search %}" method="get">
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url files %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 <input class="btn" type="submit" value="Search Files" />
 </form>
+{% endif %}

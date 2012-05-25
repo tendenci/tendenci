@@ -231,3 +231,14 @@
 	height: 10px;
 	width: 100%;
 }
+
+/* perms widget
+------------------------------- */
+
+.edit-group-perms .selector { width: 840px; }
+.edit-group-perms .selector select { width: 640px; }
+.edit-group-perms .selector-available, .edit-group-perms .selector-chosen { float: left; width: 640px; text-align: center; margin-bottom: 5px; }
+.edit-group-perms .selector-add, .edit-group-perms .selector-remove { text-indent: 0; background-image: none;}
+.edit-group-perms .selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
+.edit-group-perms .selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
+.edit-group-perms .selector-chosen .selector-filter { display: none; }

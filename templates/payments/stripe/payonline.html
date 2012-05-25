@@ -1,0 +1,139 @@
+{% extends "payments/base.html" %}
+{% load payments_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+<style>
+	.forms label{
+		display: inline-block;
+		width: 10em;
+		text-align: right;
+	}
+	.basic-info div{
+		margin: 5px 0;
+	}
+	#total-amount{
+		font-weight: bold;
+		margin-top: 1em;
+		font-size: 1.2em;
+	}
+	.well{
+		width: 90%;
+	}
+	.errors{
+		background-color: #ffebe8;
+		border: 2px solid #ff8b78;
+		margin-bottom: 20px;
+		margin-left: 110px;
+		padding: 10px;
+		width: 75%;
+	}
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="well basic-info">
+	<div>Invoice #: {{ payment.invoice.id }}</div>
+	<div>Description: {{ payment.description }}</div>
+	<div id="total-amount">Total: {{ payment.amount|format_currency }}</div>
+</div>
+
+
+<div class="forms">
+	
+{% if form.errors.values %}
+    <div class="errors">
+        <ul>
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+           
+            {{ billing_info_form.non_field_errors }}
+            {% for field in billing_info_form %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label_tag }}  &ndash; {{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            
+        </ul>
+    </div>
+{% endif %}
+
+<div id="card-errors"></div>
+
+<p>Please fill out the fields below</p>
+
+
+<form action="" method="POST" id="payment-form">
+	<h3>Payment Information</h3>
+    <p class="form-row">
+        <label for="id_card_number" class="required">Card Number:</label>
+        {{ form.card_number }}
+        <span class="error">{{ form.card_number.errors }}</span>
+    </p>
+    <p class="form-row">
+        <label for="id_card_cvc" class="required">Card Code:</label>
+         {{ form.card_cvc }} {{ form.card_cvc.help_text|safe }}
+          <span class="error">{{ form.card_cvc.errors }}</span>
+    </p>
+    <p class="form-row">
+        <label class="required">Expiration Date:</label>
+         {{ form.card_expiry_month }}
+        <span> / </span>
+         {{ form.card_expiry_year }} (mm/yyyy)
+         <span class="error">{{ form.card_expiry_month.errors }}</span>
+         <span class="error">{{ form.card_expiry_year.errors }}</span>
+    </p>
+    
+    
+    
+    <h3>Billing Information</h3>
+    {% for field in billing_info_form %}
+     <p class="form-row">
+     	{% if field.name == 'state' %}
+     		<label for="id_{{ field.name }}">{{ field.label }}:</label>
+	         {{ field }} <span>Zip</span> {{ billing_info_form.zip }}
+	          <span class="error">{{ field.errors }}</span>
+	          <span class="error">{{ billing_info_form.zip.errors }}</span>
+     	{% else %}
+     		{% if field.name != 'zip' %}
+	        <label for="id_{{ field.name }}">{{ field.label }}:</label>
+	         {{ field }}
+	          <span class="error">{{ field.errors }}</span>
+          	{% endif %}
+        {% endif %}
+    </p>
+    
+    {% endfor %}
+    
+    {# billing_info_form.as_p #}
+    
+    <button type="submit" class="submit-button">Submit Payment</button>
+    
+    <div id="submit-loader" style="font-style:italic; font-size:0.9em; margin-top: 1em; display:none;">
+    	<img src="{{ STATIC_URL }}images/ajax-loader.gif" alt=""/> loading...
+    </div>
+</form>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+
+    {{ block.super }}
+{% set_stripe_key %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/stripe_payment.js"></script>
+{% endblock %}

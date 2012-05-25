@@ -68,7 +68,8 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
     else:
         form = build_settings_form(request.user, settings)()
         
-    return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
+    return render_to_response(template_name, {'form': form, 
+                                              'scope_category': scope_category }, context_instance=RequestContext(request))
 
 
 def index(request, template_name="site_settings/settings.html"):

@@ -20,7 +20,7 @@ class Entity(TendenciBaseModel):
     summary = models.TextField(blank=True)
     notes = models.TextField(blank=True)
     admin_notes = models.TextField(_('Admin Notes'), blank=True)
-    
+
     objects = EntityManager()
 
     class Meta:

@@ -1,8 +1,9 @@
 from rss.feedsmanager import SubFeed
-from haystack.query import SearchQuerySet
 from site_settings.utils import get_setting
-from jobs.models import Job
+from perms.utils import PUBLIC_FILTER
 from sitemaps import TendenciSitemap
+
+from jobs.models import Job
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Jobs' % get_setting('site','global','sitedisplayname')
@@ -10,14 +11,17 @@ class LatestEntriesFeed(SubFeed):
     description =  "Latest Jobs by %s" % get_setting('site','global','sitedisplayname')
 
     def items(self):
-        sqs = SearchQuerySet().filter(can_syndicate=True).models(Job).order_by('-create_dt')[:20]
-        return [sq.object for sq in sqs]
+        items = Job.objects.filter(**PUBLIC_FILTER).filter(syndicate=True).order_by('-update_dt')[:20]
+        return items
     
     def item_title(self, item):
         return item.title
 
     def item_description(self, item):
         return item.description
+
+    def item_pubdate(self, item):
+        return item.update_dt
 
     def item_link(self, item):
         return item.get_absolute_url()
@@ -28,8 +32,8 @@ class JobSitemap(TendenciSitemap):
     priority = 0.5
     
     def items(self):     
-        sqs = SearchQuerySet().models(Job).order_by('-create_dt')
-        return [sq.object for sq in sqs]
-                                        
+        items = Job.objects.filter(**PUBLIC_FILTER).order_by('-update_dt')
+        return items
+
     def lastmod(self, obj):
-        return obj.create_dt
+        return obj.update_dt

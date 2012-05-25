@@ -9,7 +9,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
-<script type="text/javascript" src="{{ STATIC_URL }}tinymce/tiny_mce.js"></script>
+<script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -21,7 +21,7 @@
     <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Edit" %}</h1>
 
     <div class="page-wrap">
-        <form action="{% url page.edit page.pk %}" method="post">{% csrf_token %}
+        <form action="{% url page.edit page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
     	<div class="forms">
 			{{ form|styled_form }}
             <fieldset class="boxy-grey" >

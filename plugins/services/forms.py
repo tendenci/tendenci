@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
 from models import Service
-from perms.utils import is_admin
+from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -165,6 +165,10 @@ class ServiceForm(TendenciBaseForm):
             fields_to_pop += [
                 'status',
                 'status_detail'
+            ]
+        if not is_developer(self.user):
+            fields_to_pop += [
+                'status',
             ]
         for f in list(set(fields_to_pop)):
             if f in self.fields: self.fields.pop(f)

@@ -30,7 +30,7 @@
     <div class="form-wrap">
         <h1>{{ form.title }}</h1>
         <p>{{ form.intro|safe|urlize|linebreaks }}</p>
-    
+
     	<div class="form-builder-wrap">
         	<form method="post" enctype="multipart/form-data">{% csrf_token %}
             <div style="display:none">
@@ -44,4 +44,13 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+		$(document).ready(function(){
+			$('.custom-price').closest('label').attr('for', '');
+		});
+    </script>
 {% endblock %}

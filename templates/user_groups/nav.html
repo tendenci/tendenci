@@ -42,7 +42,7 @@
             {% if can_edit_setting %}
                 <li><a href="{% url settings.index "module" "groups" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            <li><a href="{% url group.search %}">{% trans "Search Groups" %}</a></li>
+            <li><a href="{% url groups %}">{% trans "Group List" %}</a></li>
             {% if can_add_group %}
                 <li><a href="{% url group.add %}">{% trans "Add Group" %}</a></li>
             {% endif %}
@@ -58,7 +58,7 @@
                 {% endif %}
                 {% endif %}
                 {% if can_edit_group %}
-                    <li><a href="{% url group.edit nav_object.pk %}">{% trans "Edit Group" %}</a></li>
+                    <li><a href="{% url group.edit nav_object.slug %}">{% trans "Edit Group" %}</a></li>
                     <a href="{% url group.edit_perms nav_object.id %}">{% trans "Edit Permissions" %}</a></li>
                 {% endif %}
                 {% if group.type != "membership" %}

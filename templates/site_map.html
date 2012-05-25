@@ -1,4 +1,5 @@
 {% extends "default.html" %}
+{% load nav_tags %}
 {% load i18n %}
 
 {% block title %}{{ block.super }} {% trans "Site Map" %}{% endblock%}
@@ -6,4 +7,8 @@
 {% block body %}
     <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Sitemap" %}</h1>
     {% include "nav.html" %}
+    {% list_navs as nav_sitemap_list limit=100 %}
+    {% for nav in nav_sitemap_list %}
+        {% nav nav.pk %}
+    {% endfor %}
 {% endblock %}

@@ -59,6 +59,7 @@ def directory_pricing_table(context):
 
 class ListDirectoriesNode(ListNode):
     model = Directory
+    perms = 'directories.view_directory'
 
 
 @register.tag
@@ -109,6 +110,6 @@ def list_directories(parser, token):
     kwargs = parse_tag_kwargs(bits)
 
     if 'order' not in kwargs:
-        kwargs['order'] = 'headline_exact'
+        kwargs['order'] = 'headline'
 
     return ListDirectoriesNode(context_var, *args, **kwargs)

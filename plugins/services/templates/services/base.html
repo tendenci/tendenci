@@ -1,7 +1,7 @@
 {% extends "site_base.html" %}
 
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Service Listings for {{SITE_GLOBAL_SITEDISPLAYNAME }} - employment opportunities and service openings{% endblock %}
-{% block meta_description %}Service search page for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} listing service openings and employment opportunities{% endblock %}
-{% block meta_keywords %}Employment Search, Service Search, {{SITE_GLOBAL_SITEDISPLAYNAME }}, Employment, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} services, employment opportunities, employment, hiring, staffing, agencies{% endblock %}
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {% firstof MODULE_SERVICES_LABEL 'Service' %} Listings for {{SITE_GLOBAL_SITEDISPLAYNAME }} - employment opportunities and service openings{% endblock %}
+{% block meta_description %}{% firstof MODULE_SERVICES_LABEL 'Service' %} search page for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} listing service openings and employment opportunities{% endblock %}
+{% block meta_keywords %}Employment Search, {% firstof MODULE_SERVICES_LABEL 'Service' %} Search, {{SITE_GLOBAL_SITEDISPLAYNAME }}, Employment, {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }} services, employment opportunities, employment, hiring, staffing, agencies{% endblock %}
 
 {% block messages %}{{ block.super }}{% endblock %}

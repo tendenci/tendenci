@@ -150,6 +150,7 @@ def photo_set_search(context):
 
 class ListPhotosNode(ListNode):
     model = Image
+    perms = 'photos.view_image'
 
 
 @register.tag

@@ -22,6 +22,7 @@ def speaker_search(context):
 
 class ListSpeakerNode(ListNode):
     model = Speaker
+    perms = 'speakers.view_speaker'
 
 
 @register.tag

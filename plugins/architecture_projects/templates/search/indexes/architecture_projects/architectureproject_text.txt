@@ -1,0 +1,20 @@
+{% load tagging_tags %}
+{% load base_filters %}
+
+{{ object.client }}
+{{ object.overview|striptags|stripentities }}
+{{ object.execution|striptags|stripentities }}
+{{ object.results|striptags|stripentities }}
+
+{% for category in object.category.all %}
+category:{{ category }} 
+{% endfor %}
+
+{% for building_type in object.building_type.all %}
+building_type:{{ building_type }} 
+{% endfor %}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+tag:{{ tag }} 
+{% endfor %}

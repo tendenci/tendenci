@@ -28,7 +28,7 @@
     <div class="attorneys">
         <h2>Shareholders</h2>
         {% for attorney in attorneys %}
-        {% with attorney.object as attorney %}
+        {% with attorney|get_object as attorney %}
         {% ifequal "SH" attorney.category %}
         <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
             <div class="name">
@@ -48,7 +48,7 @@
     <div class="attorneys">
         <h2>Of Counsel</h2>
         {% for attorney in attorneys %}
-        {% with attorney.object as attorney %}
+        {% with attorney|get_object as attorney %}
         {% ifequal "OF" attorney.category %}
         <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
             <div class="name">
@@ -68,7 +68,7 @@
     <div class="attorneys">
         <h2>Associates</h2>
         {% for attorney in attorneys %}
-        {% with attorney.object as attorney %}
+        {% with attorney|get_object as attorney %}
         {% ifequal "AS" attorney.category %}
         <div class="attorney-item" id="attorney-{{ attorney.pk }}">    
             <div class="name">

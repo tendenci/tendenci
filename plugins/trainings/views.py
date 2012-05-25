@@ -9,9 +9,10 @@ from django.contrib import messages
 from django.db.models import Sum, Count
 
 from base.http import Http403
+from site_settings.utils import get_setting
 from trainings.models import Training, Completion
 from trainings.forms import CompletionForm
-from perms.utils import get_notice_recipients, has_perm
+from perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 
 from perms.utils import is_admin, update_perms_and_save
@@ -20,9 +21,6 @@ try:
     from notification import models as notification
 except:
     notification = None
-
-def index(request, template_name="trainings/detail.html"):
-    return HttpResponseRedirect(reverse('trainings.search'))
 
 def detail(request, pk=None, template_name="trainings/detail.html"):
     if not pk: return HttpResponseRedirect(reverse('trainings.search'))
@@ -42,7 +40,7 @@ def detail(request, pk=None, template_name="trainings/detail.html"):
         except:
             user_completion = None
         
-        if has_perm(request.user, 'trainings.view_training', training):
+        if has_view_perm(request.user, 'trainings.view_training', training):
             log_defaults = {
                 'event_id' : 1011500,
                 'event_data': '%s (%d) viewed by %s' % (training._meta.object_name, training.pk, request.user),
@@ -59,27 +57,42 @@ def detail(request, pk=None, template_name="trainings/detail.html"):
     else:
         raise Http403
 
-def search(request, template_name="trainings/search.html"):
+def search(request, template_name='trainings/search.html'):
+    """
+    This page lists out all trainings from newest to oldest.
+    If a search index is available, this page will also
+    have the option to search through trainings.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    if has_perm(request.user, 'trainings.view_training') and not query:
-        trainings = Training.objects.all().annotate(completions=Count('completion')).order_by('-completions')
-    else:
+
+    if has_index and query:
         trainings = Training.objects.search(query, user=request.user)
         trainings = trainings.order_by('-create_dt')
+    else:
+        if has_perm(request.user, 'trainings.view_training') and has_perm(request.user, 'trainings.view_completion'):
+            trainings = Training.objects.all().annotate(completions=Count('completion')).order_by('-completions')
+        else:
+            filters = get_query_filters(request.user, 'trainings.view_training')
+            trainings = Training.objects.filter(filters).distinct()
+            if request.user.is_authenticated():
+                trainings = trainings.select_related()
+            trainings = trainings.order_by('-create_dt')
 
-    print trainings
-    log_defaults = {
+    EventLog.objects.log(**{
         'event_id' : 1011400,
         'event_data': '%s searched by %s' % ('Training', request.user),
         'description': '%s searched' % 'Training',
         'user': request.user,
         'request': request,
         'source': 'trainings'
-    }
-    EventLog.objects.log(**log_defaults)
+    })
     
     return render_to_response(template_name, {'trainings':trainings}, 
         context_instance=RequestContext(request))
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('trainings'))
 
 @login_required
 def completion_add(request, training_pk=None, form_class=CompletionForm, template_name="trainings/completion-add.html"):

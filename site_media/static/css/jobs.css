@@ -21,10 +21,6 @@
 	position: relative;
 }
 
-.t .jobs-wrap .wrap-search-item {
-	border: 1px solid silver;
-}
-
 .t .jobs-wrap .wrap-search-item .job-search-item .job-info {
     padding: 10px;
 }
@@ -410,6 +406,8 @@ div.pricing-table-block table {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+	background: #fff;
+	color: #404040;
 }
 
 div.pricing-table-block table tr.alt {

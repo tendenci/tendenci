@@ -20,7 +20,7 @@
 <meta property="og:image" content="{{ photo_set.get_cover_photo.get_small_url }}" />
 
 {% if photo_set.description %}
-<meta property="og:description" content="{{ photo_set.description|safe }}" />
+<meta property="og:description" content="{{ photo_set.description|striptags }}" />
 {% endif %}
 
 {% endblock %}
@@ -128,7 +128,7 @@
             <div class="quick-info">
             {% blocktrans count photo_set.image_set.count as photocount %}{{ photocount }} Photo{% plural %}{{ photocount }} Photos{% endblocktrans %}{% if admin %}
             <span class="visibility">
-                 &middot; {% obj_perms photo_set %} &middot; {% obj_status photo_set %}
+                 &middot; {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
             </span>
             {% endif %}
             </div>
@@ -147,11 +147,9 @@
             {% autopaginate photos 48 %}
                 <div class="thumb-row clearfix">
                     {% for photo in photos %}
-                    {% with photo.object as photo %}
                     <div class="gallery-photo-thumb">
                         <a href="{% url photo photo.pk photo_set.pk %}"><img src="{{ photo.get_small_crop_url }}" alt="{{ photo.title }}"/></a>
                     </div>
-                    {% endwith %}
                     {% endfor %}
                 </div>
                 <div style="clear:both; height:10px;"></div>

@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
+from perms.utils import is_admin
 from categories.forms import CategoryForm
 from categories.models import Category
 
@@ -22,7 +23,7 @@ def update(request, app_label, model, pk, form_class=CategoryForm, template_name
     
     # check permissions
     perm_tuple = (object._meta.app_label, object._meta.module_name)
-    if not request.user.has_perm('%s.change_%s' % perm_tuple):
+    if not request.user.has_perm('%s.change_%s' % perm_tuple, object):
         raise Http403
     
     category = Category.objects.get_for_object(object,'category')
@@ -70,6 +71,11 @@ def update(request, app_label, model, pk, form_class=CategoryForm, template_name
             form = form_class(content_type, request.POST, initial=initial_form_data)      
     else:
         form = form_class(content_type, initial=initial_form_data)
+        
+    if not is_admin(request.user):
+        # remove the add links for non-admins
+        form.fields['category'].help_text = ''
+        form.fields['sub_category'].help_text = ''
     
     response_data = {
         'object':object,

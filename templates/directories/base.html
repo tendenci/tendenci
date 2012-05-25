@@ -1,8 +1,0 @@
-{% extends "site_base.html" %}
-{% load i18n %}
-
-{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %} for  {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_description %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }}: {% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %} for {{SITE_GLOBAL_SITEDISPLAYNAME }} in {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}{% endblock %}
-{% block meta_keywords %}{% firstof MODULE_DIRECTORIES_LABEL trans 'Directories' %},  {{SITE_GLOBAL_SITEGEOGRAPHICLOCATION }}, {{SITE_GLOBAL_SITEDISPLAYNAME }}, white papers, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }}{% endblock %}
-
-{% block messages %}{{ block.super }}{% endblock %}

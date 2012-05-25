@@ -18,19 +18,18 @@
 
 {% block body %}
 <div class="t">
-	{% page_nav request.user %}
+    {% page_nav request.user %}
     <h1>{% firstof MODULE_PAGES_LABEL trans 'Pages' %} {% trans "Search" %}</h1>
-	
-	{% page_search %}
+    
+    {% page_search %}
     {% autopaginate pages 10 %}
 
-	<div class="pages-wrap">
-    {% for page in pages %}	
-		{% search_result page %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+    <div class="pages-wrap">
+    {% for page in pages %} 
+        {% search_result page %}
+    {% empty %}
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>

@@ -1,15 +1,20 @@
 import imghdr
 from datetime import datetime
-from os.path import splitext
+from os.path import splitext, basename
 
 from django import forms
 
-from directories.models import Directory, DirectoryPricing
-from directories.utils import get_payment_method_choices, get_duration_choices
-from perms.utils import is_admin
-from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
+from perms.utils import is_admin, is_developer
+from perms.forms import TendenciBaseForm
 from base.fields import SplitDateTimeField
+from django.utils.translation import ugettext_lazy as _
+
+from directories.models import Directory, DirectoryPricing
+from directories.utils import (get_payment_method_choices,
+    get_duration_choices)
+from directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
+    STATUS_CHOICES)
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -26,15 +31,17 @@ class DirectoryForm(TendenciBaseForm):
     
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-    
-    requested_duration = forms.ChoiceField()
-    
+        
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    remove_photo = forms.BooleanField(label=_('Remove the current logo'), required=False)
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
+    
+    pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
+                    queryset=DirectoryPricing.objects.filter(status=1).order_by('duration'))
     
     class Meta:
         model = Directory
@@ -61,12 +68,11 @@ class DirectoryForm(TendenciBaseForm):
             'email2',
             'website',
             'tags',
-            'requested_duration',
+            'pricing',
             'list_type',
             'payment_method',
             'activation_dt',
             'expiration_dt',
-            'entity',
             'allow_anonymous_view',
             'allow_user_view',
             'allow_user_edit',
@@ -88,9 +94,8 @@ class DirectoryForm(TendenciBaseForm):
                                  'source', 
                                  'timezone',
                                  'activation_dt',
-                                 'requested_duration',
+                                 'pricing',
                                  'expiration_dt',
-                                 'entity'
                                  ],
                       'legend': ''
                       }),
@@ -161,33 +166,76 @@ class DirectoryForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
+        if self.instance.logo:
+            self.fields['logo'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current logo: <a target="_blank" href="/site_media/media/%s">%s</a>' % (self.instance.logo, basename(self.instance.logo.file.name))
+        else:
+            self.fields.pop('remove_photo')
+
         if not is_admin(self.user):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+
+        if not is_developer(self.user):
+            if 'status' in self.fields: self.fields.pop('status')
+
         if self.fields.has_key('payment_method'):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        if self.fields.has_key('requested_duration'):
-            self.fields['requested_duration'].choices = get_duration_choices()
+        if self.fields.has_key('pricing'):
+            self.fields['pricing'].choices = get_duration_choices(self.user)
+        
+        # expiration_dt = activation_dt + requested_duration
+        fields_to_pop = ['expiration_dt']    
+        if not is_admin(self.user):
+            fields_to_pop += [
+                'slug',
+                'entity',
+                'allow_anonymous_view',
+                'user_perms',
+                'member_perms',
+                'group_perms',
+                'post_dt',
+                'activation_dt',
+                'syndicate',
+                'status',
+                'status_detail'
+            ]
 
-DURATION_CHOICES = ((14,'14 Days from Activation date'), 
-                    (30,'30 Days from Activation date'), 
-                    (60,'60 Days from Activation date'), 
-                    (90,'90 Days from Activation date'),
-                    (120,'120 Days from Activation date'),
-                    (365,'1 Year from Activation date'),
-                    )
-STATUS_CHOICES = ((1, 'Active'),
-                   (0, 'Inactive'),)
-            
-class DirectoryPricingForm(forms.ModelForm): 
-    duration = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
+        if not is_developer(self.user):
+            fields_to_pop += [
+               'status'
+            ]
+
+        for f in list(set(fields_to_pop)):
+            if f in self.fields:
+                self.fields.pop(f)
+
+    def save(self, *args, **kwargs):
+        directory = super(DirectoryForm, self).save(*args, **kwargs)
+        if self.cleaned_data.has_key('pricing'):
+            directory.requested_duration = self.cleaned_data['pricing'].duration
+        if self.cleaned_data.get('remove_photo'):
+            directory.logo = None
+        return directory
+        
+
+class DirectoryPricingForm(forms.ModelForm):
     status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
+    
     class Meta:
         model = DirectoryPricing
         fields = ('duration',
                   'regular_price',
                   'premium_price',
-                  'category_threshold',
+                  'regular_price_member',
+                  'premium_price_member',
+                  'show_member_pricing',
                   'status',)
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(DirectoryPricingForm, self).__init__(*args, **kwargs)
+        if user and is_admin(user):
+            self.fields['duration'] = forms.ChoiceField(initial=14, choices=ADMIN_DURATION_CHOICES)
+        else:
+            self.fields['duration'] = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
 

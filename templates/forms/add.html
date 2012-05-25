@@ -33,11 +33,13 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        $('#pricing-options').hide();
-        $('.id_payment_methods').hide();
-        $('#id_custom_payment').change(function(){
-            pricings = $(this).attr('checked')
-            if(pricings=='checked'){
+
+        var custom_payment = $('#id_custom_payment');
+
+        /* Take Payment CHANGE Handler */
+        custom_payment.change(function(){
+            pricings = $(this).attr('checked');
+            if(pricings){
                 $('#pricing-options').show();
                 $('.id_payment_methods').show();
             }else{
@@ -45,7 +47,18 @@
                 $('.id_payment_methods').hide();
             }
         });
+
+        /* Presetting Payment Display */
+        if (custom_payment.attr('checked')){
+            $('#pricing-options').show();
+            $('.id_payment_methods').show();
+        } else {
+            $('#pricing-options').hide();
+            $('.id_payment_methods').hide();
+        }
+
     });
+
     var slugit = new Slugify({
         input_element : 'input#id_title',
         slug_element : 'input#id_slug',

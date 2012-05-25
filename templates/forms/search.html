@@ -24,11 +24,7 @@
             <div class="quick-options">
 			{% forms_options request.user form %}
 		    </div>
-			<h3><a href="{{ form.object.get_absolute_url }}">{{ form.title }}</a></h3>
-            <!-- delete form -->
-            <form name="form-delete" method="POST" action="{% url form_delete form.pk %}">{% csrf_token %}
-                <input type="hidden" name="action" value="delete">
-            </form>
+			<h3><a href="{{ form.get_absolute_url }}">{{ form.title }}</a></h3>
 		</div>
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
@@ -37,18 +33,4 @@
 
     {% paginate %}
 </div>
-{% endblock %}
-
-{% block extra_body %}
-    {{ block.super }}
-    <script type="text/javascript">
-		$(document).ready(function(){
-			// delete confirmation
-			$('.delete').click(function(){
-				var delete_form = confirm('Permenantly delete form and all it\'s submissions?');	// confirm
-				if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="form-delete"]').submit() // delete: if OK
-				return false;	// cancel
-			});
-		});
-    </script>
 {% endblock %}

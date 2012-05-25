@@ -4,7 +4,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from articles.models import Article
-from perms.utils import is_admin
+from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -40,8 +40,6 @@ class ArticleForm(TendenciBaseForm):
             'tags',
             'allow_anonymous_view',
             'syndicate',
-            'featured',
-            'not_official_content',
             'user_perms',
             'member_perms',
             'group_perms',
@@ -59,8 +57,6 @@ class ArticleForm(TendenciBaseForm):
                                  'website',
                                  'release_dt',
                                  'timezone',
-                                 'featured',
-                                 'not_official_content'
                                  ],
                       'legend': ''
                       }),
@@ -99,3 +95,5 @@ class ArticleForm(TendenciBaseForm):
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
+        if not is_developer(self.user):
+            if 'status' in self.fields: self.fields.pop('status')

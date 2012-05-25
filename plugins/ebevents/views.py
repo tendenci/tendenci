@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import urllib2
 import time
+from dateutil import parser as dparser
 
 from BeautifulSoup import BeautifulStoneSoup
 from django.template import RequestContext
@@ -41,8 +42,10 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         q_event_year = 0  
     
     # pull from cache
-    xml = cache.get('event_booking_xml')
-
+    keys = [settings.CACHE_PRE_KEY, 'event_booking_xml']
+    key = '.'.join(keys)
+    xml = cache.get(key)
+    
     # direct pull and cache
     if not xml:
         # Code when eventbooking goes down
@@ -52,7 +55,7 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         xml = url_object.read()
 
         # cache the content for one hour
-        cache.set('event_booking_xml', xml, 60*60*2) # 2 hours
+        cache.set(key, xml, 60*60*2) # 2 hours
         
     soup = BeautifulStoneSoup(xml)
     nodes = soup.findAll('event')
@@ -62,7 +65,8 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         event_type = strip_tags(node.event_type.string)
         start_date = node.date_range.start_date.string
         if start_date:
-            start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
+            #start_date = datetime(*(time.strptime(start_date, '%Y-%b-%d')[0:6]))
+            start_date = dparser.parse(start_date)
         
         events.append({'event_name': event_name, 
                        'event_type': event_type,

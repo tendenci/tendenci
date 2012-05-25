@@ -32,7 +32,24 @@ class GroupSubscription(models.Model):
         else:
             name_data = self.data.filter(field_label__icontains="name")
             if name_data:
-                return name_data[0].value
+                first_name = ""
+                last_name = ""
+                name = ""
+                for obj in name_data:
+                    field = obj.field_label
+                    if 'full' in field.lower():
+                        name = obj.value
+                    if 'first' in field.lower():
+                        first_name = obj.value
+                    if 'last' in field.lower():
+                        last_name = obj.value
+                if not name:
+                    if first_name or last_name:
+                        name = '%s %s' % (first_name, last_name)
+                if name:
+                    return name
+                else:
+                    return name_data[0].value
         return None
         
     @property
@@ -55,10 +72,10 @@ class SubscriberData(models.Model):
     subscription = models.ForeignKey(GroupSubscription, related_name="data")
     field_label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     value = models.CharField(_("Value"), max_length=FIELD_MAX_LENGTH)
-    
+
     class Meta:
         unique_together = ('subscription', 'field_label')
-    
+
     def __unicode__(self):
         return "%s(%s:%s)" % (self.subscription.pk, self.field_label, self.value)
 

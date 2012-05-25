@@ -24,7 +24,7 @@ class ResumeRegistry(CoreRegistry):
     
     url = {
         'add': lazy_reverse('resume.add'),
-        'search': lazy_reverse('resume.search'),
+        'search': lazy_reverse('resumes'),
     }
 
 site.register(Resume, ResumeRegistry)

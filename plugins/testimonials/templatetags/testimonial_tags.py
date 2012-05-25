@@ -23,6 +23,7 @@ def testimonial_search(context):
 
 class ListTestimonialNode(ListNode):
     model = Testimonial
+    perms = 'testimonials.view_testimonial'
 
 
 @register.tag

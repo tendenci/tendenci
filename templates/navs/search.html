@@ -18,16 +18,17 @@
     {% nav_nav request.user %}
     <h1>{% firstof MODULE_NAVS_LABEL "Navs" %}  {% trans "Search" %}</h1>  
 
-	{% nav_search %}
+    {% nav_search %}
+    <span><em>{{ navs|length }} {% firstof MODULE_NAVS_LABEL_PLURAL "Navs" %} {% trans "Found" %}</em></span>
     {% autopaginate navs 50 %}
-	
-	<div class="navs-wrap">
+    
+    <div class="navs-wrap">
     {% for nav in navs %}
-		{% search_result nav %}
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
+        {% search_result nav %}
+    {% empty %}
+
     {% endfor %}
-	</div>
+    </div>
 
     {% paginate %}
 </div>

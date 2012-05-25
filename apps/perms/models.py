@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):    
     # authority fields
@@ -33,16 +32,16 @@ class TendenciBaseModel(models.Model):
 
     @property
     def obj_perms(self):
-        from perms.fields import groups_with_perms
+        from perms.fields import has_groups_perms
         t = '<span class="perm-%s">%s</span>'
-
+ 
         if self.allow_anonymous_view:
             value = t % ('public','Public')
         elif self.allow_user_view:
             value = t % ('users','Users')
         elif self.allow_member_view:
             value = t % ('members','Members')
-        elif groups_with_perms(self):
+        elif has_groups_perms(self):
             value = t % ('groups','Groups')
         else:
             value = t % ('private','Private')
@@ -51,11 +50,13 @@ class TendenciBaseModel(models.Model):
 
     @property
     def obj_status(obj):
-        from perms.fields import groups_with_perms
         t = '<span class="status-%s">%s</span>'
 
         if obj.status:
-            value = t % (obj.status_detail, obj.status_detail.capitalize())
+            if obj.status_detail == 'paid - pending approval':
+                value = t % ('pending', obj.status_detail.capitalize())
+            else:
+                value = t % (obj.status_detail, obj.status_detail.capitalize())
         else:
             value = t % ('inactive','Inactive')
 

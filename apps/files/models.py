@@ -15,7 +15,8 @@ from files.managers import FileManager
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    return 'files/%s/%s' % (instance.content_type, filename)
+    content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(instance.content_type))
+    return 'files/%s/%s' % (content_type, filename)
 
 
 class File(TendenciBaseModel):
@@ -34,15 +35,21 @@ class File(TendenciBaseModel):
 
     def save(self, *args, **kwargs):
         if not self.id:
-            self.guid = str(uuid.uuid1())
+            self.guid = unicode(uuid.uuid1())
 
         super(File, self).save(*args, **kwargs)
 
     def basename(self):
-        return os.path.basename(str(self.file))
+        return os.path.basename(unicode(self.file.name))
+
+    def ext(self):
+        return os.path.splitext(self.basename())[-1]
+
+    def get_name(self):
+        return self.name or os.path.splitext(self.basename())[0]
 
     def type(self):
-        ext = os.path.splitext(self.basename())[1].lower()
+        ext = self.ext().lower()
 
         # map file-type to extension
         types = {
@@ -86,7 +93,7 @@ class File(TendenciBaseModel):
             return None
 
         # assign icons directory
-        icons_dir = os.path.join(settings.STATIC_URL, 'images/icons')
+        icons_dir = os.path.join(settings.LOCAL_STATIC_URL, 'images/icons')
 
         # map file-type to image file
         icons = {
@@ -127,6 +134,8 @@ class File(TendenciBaseModel):
 
             return doc.text()
 
+        return unicode()
+
     @models.permalink
     def get_absolute_url(self):
         return ("file", [self.pk])
@@ -136,4 +145,4 @@ class File(TendenciBaseModel):
         return ("file", [self.pk, 'download'])
 
     def __unicode__(self):
-        return self.name
+        return self.get_name()

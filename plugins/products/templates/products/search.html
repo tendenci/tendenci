@@ -28,7 +28,8 @@
 {% autopaginate products 9 %}
 {% has_perm user products.add_product as can_add_product %}
 <div class="t">
-    <h1>{% trans 'Product List' %}</h1>
+    <h1>{% firstof SITE_GLOBAL_PRODUCTS_LABEL "Products" %}</h1>
+
     {% product_search %}
     {% if can_add_product %}
     <div><a href="{% url admin:products_product_add %}">{% trans 'Add a Product' %}</a></div>

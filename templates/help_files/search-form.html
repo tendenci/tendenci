@@ -1,4 +1,0 @@
-<form class="search-form" action="{% url help_files.search %}" method="get">
-<input type="text" name="q" value="{% with request.GET.q|striptags as search_value %}{% firstof search_value 'Search Help Files' %}{% endwith %}" onfocus="if (this.value == 'Search Help Files') this.value = '';" onblur="if (this.value == '') this.value = 'Search Help Files';" />
-<input type="submit" name="search" value="Search" />
-</form>

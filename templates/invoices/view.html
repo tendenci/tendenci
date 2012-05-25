@@ -6,6 +6,7 @@
 
 {% block title %}{{ block.super }}{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice{% endblock %}
 
+
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="/site_media/static/css/invoices.css">
@@ -15,14 +16,14 @@
 <div class="t">
 {% invoice_nav  invoice %}
 {% is_admin request.user as user_is_admin %}
-
+{% has_perm request.user invoices.change_invoice as can_edit_invoice %}
 <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice</h1>
 
 {% if SITE_GLOBAL_SITEMAILINGADDRESS %}
 <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
 {% endif %}
 
-{% if user_is_admin %}
+{% if user_is_admin or can_edit_invoice %}
 <div class="invoice-options">
 	<ul>
 		{% if invoice.is_tendered %}
@@ -40,7 +41,7 @@
 	</ul>
 </div>
 
-{% if user_is_admin %}
+{% if user_is_admin or can_edit_invoice %}
 <div class="invoice-admin-notes">
 	<form method="post" action=".">
 	{% csrf_token %}

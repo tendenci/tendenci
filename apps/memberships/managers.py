@@ -58,6 +58,7 @@ class MemberAppEntryManager(TendenciBaseManager):
         from perms.utils import is_admin, is_member, is_developer
 
         sqs = kwargs.get('sqs', SearchQuerySet())
+        sqs = sqs.models(self.model)
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
@@ -70,7 +71,7 @@ class MemberAppEntryManager(TendenciBaseManager):
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-
+        
         if is_admin(user) or is_developer(user):
             sqs = sqs.all()
         else:
@@ -85,7 +86,7 @@ class MemberAppEntryManager(TendenciBaseManager):
                 status_detail=status_detail)
                 # pass
 
-        return sqs.models(self.model)
+        return sqs
 
 
 
@@ -196,7 +197,7 @@ class MembershipManager(Manager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', AnonymousUser())
         user = impersonation(user)
-
+        
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
@@ -209,6 +210,20 @@ class MembershipManager(Manager):
                 sqs = user_sqs(sqs, user=user)  # user
 
         return sqs.models(self.model)
+
+    def first(self, **kwargs):
+        """
+        Returns first instance that matches filters.
+        If no instance is found then a none type object is returned.
+        """
+        try:
+            instance = self.get(**kwargs)
+        except self.model.MultipleObjectsReturned:
+            instance = self.filter(**kwargs)[0]
+        except self.model.DoesNotExist:
+            instance = None
+
+        return instance
 
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
@@ -253,5 +268,3 @@ class MembershipManager(Manager):
                 silenced_memberships.append(membership)
 
         return silenced_memberships
-
-

@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes import generic
 
+from perms.object_perms import ObjectPermission
 from perms.models import TendenciBaseModel
 from pages.models import Page
 from navs.managers import NavManager
@@ -12,7 +14,11 @@ class Nav(TendenciBaseModel):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     megamenu = models.BooleanField(default=False)
-    
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
+
     objects = NavManager()
     
     def __unicode__(self):
@@ -33,6 +39,7 @@ class NavItem(models.Model):
     nav = models.ForeignKey(Nav)
     label = models.CharField(max_length=100)
     title = models.CharField(_("Title Attribute"), max_length=100, blank=True, null=True)
+    new_window = models.BooleanField(_("Open in a new window"), default=False)
     css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
     ordering = models.IntegerField(default=0)
     level = models.IntegerField(default=0)

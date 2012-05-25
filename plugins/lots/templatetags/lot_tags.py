@@ -7,6 +7,7 @@ register = Library()
 
 class ListLotsNode(ListNode):
     model = Lot
+    perms = 'lots.view_lot'
 
 @register.tag
 def list_lots(parser, token):
@@ -52,3 +53,7 @@ def lot_search(context):
 @register.inclusion_tag("lots/maps/search-form.html", takes_context=True)
 def map_search(context):
     return context
+
+@register.filter(name='height_for_width')
+def height_for_width(value, width):
+    return value.height_for(width)

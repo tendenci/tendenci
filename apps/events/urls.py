@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from events.feeds import LatestEntriesFeed
 
 urlpatterns = patterns('events',                  
-    url(r'^$', 'views.index', name="events"),
+    url(r'^$', 'views.month_redirect', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
     url(r'^search/$', 'views.search', name="event.search"),
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
@@ -17,7 +17,7 @@ urlpatterns = patterns('events',
     url(r'^delete/(?P<id>\d+)/$', 'views.delete', name="event.delete"),
     url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
-    url(r'^(?P<id>\d+)/$', 'views.index', name="event"),
+    url(r'^(?P<id>\d+)/$', 'views.details', name="event"),
     
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
@@ -104,8 +104,11 @@ urlpatterns = patterns('events',
     url(r'^(?P<event_id>\d+)/register/user_status/$', 'registration.views.ajax_user', name='event.reg_user_status'),
     
     # addons
+    url(r'^(?P<event_id>\d+)/addons/$', 'views.list_addons', name='event.list_addons'),
     url(r'^(?P<event_id>\d+)/addons/add/$', 'views.add_addon', name='event.add_addon'),
     url(r'^(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/edit/$', 'views.edit_addon', name='event.edit_addon'),
+    url(r'^(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/disable/$', 'views.disable_addon', name='event.disable_addon'),
+    url(r'^(?P<event_id>\d+)/addons/(?P<addon_id>\d+)/enable/$', 'views.enable_addon', name='event.enable_addon'),
     
     # pending events
     url(r'^minimal_add/$', 'views.minimal_add', name='event.minimal_add'),

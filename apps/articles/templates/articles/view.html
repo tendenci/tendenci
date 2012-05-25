@@ -1,0 +1,56 @@
+{% extends "articles/base.html" %}
+{% load article_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ article.get_title }}{% endblock %}
+{% block meta_description %}{{ article.get_description }}{% endblock %}
+{% block meta_keywords %}{{ article.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ article.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/articles.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% article_nav request.user article %}
+
+    <div class="article-wrap">
+
+        <h1>{{ article.headline }}</h1>
+
+        <div class="content">
+            {{ article.body|safe }} 
+        </div>
+        {% if article.source %}
+            <div class="submitted"><strong>{% trans "Source:" %}</strong> {{ article.source|urlize }}</div>
+            {% endif %}
+            
+            {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %} 
+            <div class="contact">
+                {% if article.first_name or article.last_name %}
+                    <div>{{ article.first_name }} {{ article.last_name }}</div>
+                {% endif %} 
+                {% if article.phone %}
+                    <div>{{ article.phone }}</div>  
+                {% endif %} 
+                {% if article.fax %}
+                    <div>{{ article.fax }}</div>    
+                {% endif %} 
+                {% if article.email %}
+                <div>{{ article.email|obfuscate_email }}</div>
+                {% endif %}
+                {% if article.website %}    
+                <div>{{ article.website|urlize }}</div> 
+                {% endif %}
+            </div> 
+        {% endif %}
+        <div class="fb-connect">{% fb_like_button_iframe article.get_absolute_url %}</div>
+        {% include "articles/meta.html" %}
+    </div>
+</div>
+{% endblock %}

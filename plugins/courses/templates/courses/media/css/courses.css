@@ -12,3 +12,25 @@
     margin-top: 10px;
     width: 80%;
 }
+
+.questions-wrap {
+    margin-top: 10px;
+}
+
+.question-wrap {
+    margin-top: 10px;
+    padding: 5px;
+}
+
+.question-controls {
+    padding: 5px;
+    background: #EEEEEE;
+}
+
+.choices-wrap {
+    padding: 5px;
+}
+
+.choices-wrap .answer {
+    color: green;
+}

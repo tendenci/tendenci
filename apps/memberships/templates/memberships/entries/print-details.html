@@ -1,0 +1,55 @@
+{% extends "base-print.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load perm_tags %}
+{% load i18n %}
+{% is_admin user as admin %}
+
+{% block title %}{% trans "Membership Application Print View for" %} {{ entry.name }}{% endblock %}
+{% block meta_description %}{{ entry.get_description }}{% endblock %}
+{% block meta_keywords %}{{ entry.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ entry.get_canonical_url }}" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+
+
+<div class="t-print" style="width: 800px; margin: 0 auto;">
+    <div class="application-entry-wrap">
+        {% if entry.is_renewal %}
+        <h2>{{ entry.app.name }} {% trans "Renewal" %}</h2>
+        {% else %}
+        <h2>{{ entry.app.name }} {% trans "Submission" %}</h2>
+        {% endif %}
+
+        {% if entry.is_approved %}
+        <div id="member-number">{{ entry.membership.member_number }}</div>
+        {% endif %}
+        <table>
+    	{% for field in entry.ordered_fields %}
+    		{% if field.field.field_type == 'FileField' %}
+                <tr>
+                    <td><strong>{{ field.field.label }}</strong></td>
+                    <td><a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a></td>
+                </tr>
+    		{% else %}
+                <tr><td><strong>{{ field.field.label }}</strong></td><td>{% with field.corporate_membership_name as cm_name %}
+    			{% if cm_name %}
+    				{{ cm_name }} (ID:{{ field.value }})
+    			{% else %}
+    				{{ field.value }}
+    			{% endif %}
+    			{% endwith %}
+    			</td>
+    			</tr>
+    		{% endif %}
+    	{% endfor %}
+    	</table>
+    </div>
+</div>
+{% endblock %}

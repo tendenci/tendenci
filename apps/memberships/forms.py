@@ -1,44 +1,40 @@
-import os
 import sys
-import operator
 from uuid import uuid4
 from captcha.fields import CaptchaField
 from os.path import join
 from datetime import datetime
+from hashlib import md5
 
 from django.contrib.auth.models import User, AnonymousUser
 from django.forms.fields import CharField, ChoiceField, BooleanField
 from django.template.defaultfilters import slugify
 from django.forms.widgets import HiddenInput
-from django.http import Http404
 from django import forms
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
-from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
-
-from perms.forms import TendenciBaseForm
 from perms.utils import is_admin
-from models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
-from fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
-from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from memberships.utils import csv_to_dict
+from base.fields import SplitDateTimeField
 
-from widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
-
-from corporate_memberships.models import CorporateMembership, AuthorizedDomain
+from corporate_memberships.models import (CorporateMembership,
+    AuthorizedDomain)
 from user_groups.models import Group
 from perms.forms import TendenciBaseForm
 
-from memberships.models import MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry
-from memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
+from memberships.models import (Membership, MembershipType, Notice, App,
+    AppEntry, AppField, AppFieldEntry)
+from memberships.fields import (TypeExpMethodField, PriceInput,
+    NoticeTimeTypeField)
 from memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from memberships.utils import csv_to_dict, is_import_valid
-from memberships.widgets import CustomRadioSelect, TypeExpMethodWidget, NoticeTimeTypeWidget
+from memberships.utils import csv_to_dict, is_import_valid, NoMembershipTypes
+from memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
+    NoticeTimeTypeWidget)
+
+from memberships.utils import get_notice_token_help_text
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -212,7 +208,7 @@ class MembershipTypeForm(forms.ModelForm):
     class Meta:
         model = MembershipType
         fields = (
-                  'app',
+                  #'app',
                   'name',
                   'price',
                   'admin_fee',
@@ -247,7 +243,7 @@ class MembershipTypeForm(forms.ModelForm):
         initial_list = []
         if self.instance.pk:
             for field in self.type_exp_method_fields:
-                field_value = eval('self.instance.%s' % field)
+                field_value = getattr(self.instance, field)
                 if field == 'fixed_option2_can_rollover' and (not field_value):
                     field_value = ''
                 else:
@@ -348,7 +344,7 @@ class NoticeForm(forms.ModelForm):
                                           widget=NoticeTimeTypeWidget)
     email_content = forms.CharField(widget=TinyMCE(attrs={'style':'width:70%'}, 
         mce_attrs={'storme_app_label':Notice._meta.app_label, 
-        'storme_model':Notice._meta.module_name.lower()}))    
+        'storme_model':Notice._meta.module_name.lower()}), help_text="Click here to view available tokens")    
     class Meta:
         model = Notice
         fields = (
@@ -378,6 +374,8 @@ class NoticeForm(forms.ModelForm):
             initial_list.append(str(self.instance.notice_type))
         
         self.fields['notice_time_type'].initial = initial_list
+        
+        self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
         
     def clean_notice_time_type(self):
         value = self.cleaned_data['notice_time_type']
@@ -519,6 +517,7 @@ class EntryEditForm(forms.ModelForm):
     class Meta:
         model = AppEntry
         exclude = (
+            'hash',
             'entry_time',
             'allow_anonymous_view',
             'allow_anonymous_edit',
@@ -582,7 +581,7 @@ class EntryEditForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         super(EntryEditForm, self).save(*args, **kwargs)
-
+        
         for key, value in self.cleaned_data.items():
             pk = key.split('.')[1]
 
@@ -609,13 +608,12 @@ class EntryEditForm(forms.ModelForm):
 
         return self.instance
 
-
-
 class AppEntryForm(forms.ModelForm):
 
     class Meta:
         model = AppEntry
         exclude = (
+            'hash',
             'entry_time',
             'allow_anonymous_view',
             'allow_anonymous_edit',
@@ -641,13 +639,17 @@ class AppEntryForm(forms.ModelForm):
         self.types_field = app.membership_types
         self.user = kwargs.pop('user', None) or AnonymousUser
         self.corporate_membership = kwargs.pop('corporate_membership', None) # id; not object
-        
-        if is_admin(self.user):
-            self.form_fields = app.fields.visible()
-        else:
-            self.form_fields = app.fields.non_admin_visible()
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
+
+        if is_admin(self.user):
+            self.form_fields = app.fields.visible()
+            exclude_types = []
+        else:
+            self.form_fields = app.fields.non_admin_visible()
+            # exclude membership types you are in contract with [not within renewal period]
+            exclude_types = Membership.types_in_contract(self.user)
+            exclude_types = [t.pk for t in exclude_types]  # only pks
 
         CLASS_AND_WIDGET = {
             'text': ('CharField', None),
@@ -686,15 +688,21 @@ class AppEntryForm(forms.ModelForm):
 
             if "choices" in arg_names:
                 if field.field_type == 'membership-type':
-                    if not self.corporate_membership:
-                        choices = [type.name for type in app.membership_types.all()]
-                        choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.all()]
-                        field_args["choices"] = zip(choices, choices_with_price)
-                    else:
+
+                    if self.corporate_membership:
                         membership_type = self.corporate_membership.corporate_membership_type.membership_type 
                         choices = [membership_type.name]
                         choices_with_price = ['%s $%s' % (membership_type.name, membership_type.price)]
                         field_args["choices"] = zip(choices, choices_with_price)
+                    else:
+                        choices = [type.name for type in app.membership_types.exclude(pk__in=exclude_types)]
+                        choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.exclude(pk__in=exclude_types)]
+                        field_args["choices"] = zip(choices, choices_with_price)
+
+                        if not is_admin(self.user):
+                            if not field_args['choices']:
+                                raise NoMembershipTypes('There are no membership types available for you in this application.')
+
                 elif field.field_type == 'corporate_membership_id' and self.corporate_membership:
                     field_args["choices"] = ((self.corporate_membership.id, self.corporate_membership.name),)
                 else:
@@ -726,7 +734,7 @@ class AppEntryForm(forms.ModelForm):
             self.fields['field_captcha'] = CaptchaField(**{
                 'label':'',
                 'error_messages':{'required':'CAPTCHA is required'}
-                })
+            })
 
 
     def save(self, **kwargs):
@@ -757,6 +765,9 @@ class AppEntryForm(forms.ModelForm):
         app_entry.status_detail = 'active'
         app_entry.allow_anonymous_view = False
         
+        app_entry.save()
+        
+        app_entry.hash = md5(unicode(app_entry.pk)).hexdigest()
         app_entry.save()
         
         #create all field entries
@@ -955,15 +966,42 @@ class CSVForm(forms.Form):
 
 
 class ExportForm(forms.Form):
+
     app = forms.ModelChoiceField(
-                label=_('Application'), 
-                queryset=App.objects.all())
-    passcode = forms.CharField(label=_("Type Your Password"), 
-                               widget=forms.PasswordInput(render_value=False))
+        label=_('Application'), 
+        queryset=App.objects.all()
+    )
+
+    passcode = forms.CharField(
+        label=_("Type Your Password"), 
+        widget=forms.PasswordInput(render_value=False)
+    )
     
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', '')
+        from base.http import Http403
+        from site_settings.utils import get_setting
+        from perms.utils import is_member, is_admin
+        from memberships.models import Membership
+
+        self.user = kwargs.pop('user', None)
         super(ExportForm, self).__init__(*args, **kwargs)
+
+        who_can_export = get_setting('module','memberships','memberexport')
+
+        if who_can_export == 'admin-only':
+            if not is_admin(self.user):
+                raise Http403
+        elif who_can_export == 'membership-of-same-type':
+            if not is_member(self.user):
+                raise Http403
+            membership_types = self.user.memberships.values_list('membership_type').distinct()
+            self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
+        elif who_can_export == 'members':
+            if not is_member(self.user):
+                raise Http403
+        elif who_can_export == 'users':
+            if not self.user.is_authenticated():
+                raise Http403
         
     def clean_passcode(self):
         value = self.cleaned_data['passcode']
@@ -981,3 +1019,66 @@ class ReportForm(forms.Form):
     
     membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
     membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
+    
+class MembershipForm(TendenciBaseForm):
+    STATUS_CHOICES = (
+        ('active','Active'),
+        ('expired','Expired'),
+    )
+
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    subscribe_dt = SplitDateTimeField(label=_('Subscribe Date'))
+    expire_dt = SplitDateTimeField(label=_('Expiration Date'), required=False)
+    ma = forms.ModelChoiceField(label=_('Application'), queryset=App.objects.all())
+
+    class Meta:
+        model = Membership
+        
+        fields = (
+            'member_number',
+            'membership_type',
+            'user',
+            'renewal',
+            'subscribe_dt',
+            'expire_dt',
+            'payment_method',
+            'ma',
+            'send_notice',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
+        
+        fieldsets = [
+            ('Membership Details', {
+                'fields': [
+                    'membership_type',
+                    'user',
+                    'member_number',
+                    'subscribe_dt',
+                    'expire_dt',
+                    'renewal',
+                    'payment_method',
+                    'ma',
+                    'send_notice',
+                ],
+                'legend': ''
+            }),
+            ('Permissions', {
+                'fields': [
+                    'allow_anonymous_view',
+                    'user_perms',
+                    'member_perms',
+                    'group_perms',
+                ],
+                'classes': ['permissions'],
+            }),
+            ('Administrator Only', {
+                'fields': [
+                    'syndicate',
+                    'status',
+                    'status_detail'], 
+                'classes': ['admin-only'],
+            })]

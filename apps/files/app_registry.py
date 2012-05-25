@@ -25,7 +25,7 @@ class FileRegistry(CoreRegistry):
 
     url = {
         'add': lazy_reverse('file.add'),
-        'search': lazy_reverse('file.search'),
+        'search': lazy_reverse('files'),
     }
 
 site.register(File, FileRegistry)

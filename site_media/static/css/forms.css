@@ -284,4 +284,13 @@ div.forms fieldset.permissions legend {
 }
 
 /* Forms delete links */
-.form-delete-link {text-align: right; font-size: 12px; text-decoration: underline;}
+.form-delete-link {
+	text-align: right;
+	font-size: 12px;
+	text-decoration: underline;
+}
+
+/* Custom Price Input Fields */
+div.forms div.form-field div.field input.custom-price {
+	width: 50px;
+}

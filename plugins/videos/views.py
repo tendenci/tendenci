@@ -2,49 +2,71 @@ from django.template.context import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404
 
 from base.http import Http403
+from site_settings.utils import get_setting
 from event_logs.models import EventLog
-from perms.utils import has_perm
+from perms.utils import has_perm, get_query_filters, has_view_perm
 from models import Video, Category
 
 
 def index(request, cat_slug=None, template_name="videos/list.html"):
-    if cat_slug:
-        query = 'cat:%s' % cat_slug
+    """
+    This page lists out all videos. The order can be customized.
+    Filtering by category only works if a search index is available.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
+
+    if has_index and cat_slug:
+        videos = Video.objects.search('cat:%s' % cat_slug, user=request.user)
+        videos = videos.order_by('-ordering','-create_dt')
+        category = get_object_or_404(Category, slug=cat_slug)
     else:
-        query = ''
-    videos = Video.objects.search(query, user=request.user)
-    videos = videos.order_by('-ordering','-create_dt')
+        filters = get_query_filters(request.user, 'videos.view_video')
+        videos = Video.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            videos = videos.select_related()
+        videos = videos.order_by('-ordering', '-create_dt')
 
     categories = Category.objects.all()
-    if cat_slug:
-        category = get_object_or_404(Category, slug=cat_slug)
-        
-    log_defaults = {
+
+    EventLog.objects.log(**{
         'event_id' : 1200400,
         'event_data': '%s viewed by %s' % ('Video list', request.user),
         'description': '%s viewed' % 'Video',
         'user': request.user,
         'request': request,
         'source': 'video',
-    }
-    EventLog.objects.log(**log_defaults)
+    })
+
     return render_to_response(template_name, locals(), 
         context_instance=RequestContext(request))
             
 def search(request, cat_slug=None, template_name="videos/list.html"):
+    """
+    This page lists out all videos. The order can be customized.
+    If a search index is available, this page will also
+    have the option to search through videos.
+    """
+    has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
-    cat = request.GET.get('cat', cat_slug)
-    if cat:
-        cat_query = 'cat:%s' % cat
-        query = ' '.join([query, cat_query])
-        try:
-            category = Category.objects.get(slug=cat)
-        except:
-            pass
 
-    videos = Video.objects.search(query, user=request.user)
-    videos = videos.order_by('-ordering','-create_dt')
-    categories = Category.objects.all()   
+    categories = Category.objects.all()
+
+    if has_index and query:
+        cat = request.GET.get('cat', cat_slug)
+        if cat:
+            cat_query = 'cat:%s' % cat
+            query = ' '.join([query, cat_query])
+            categories = Category.objects.filter(slug=cat)
+            category = None
+            if categories:
+                category = category[0]
+        videos = Video.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'videos.view_video')
+        videos = Video.objects.filter(filters).distinct()
+        if request.user.is_authenticated():
+            videos = videos.select_related()
+        videos = videos.order_by('-ordering', '-create_dt')
 
     log_defaults = {
         'event_id' : 1200400,

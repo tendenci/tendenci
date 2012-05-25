@@ -8,7 +8,7 @@ class ServiceManager(TendenciBaseManager):
         Uses haystack to query resumes.
         Returns a SearchQuerySet
         """
-        sqs = super(ServiceManager, self).search(query=None, *args, **kwargs)
+        sqs = super(ServiceManager, self).search(query, *args, **kwargs)
         if self.user.is_anonymous():
             sqs = sqs.filter(activation_dt__lte=now_localized())
             sqs = sqs.filter(expiration_dt__gte=now_localized())
