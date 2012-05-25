@@ -424,6 +424,42 @@ class Membership(TendenciBaseModel):
                 return True
         
         return False
+    
+    def populate_user_member_id(self, verbosity=1):
+        """
+        Populate the member ID (or member number) to user profile.
+        """
+        if all([self.status==1, self.status_detail == 'active']):
+            if self.member_number:
+                [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
+                if not profile:
+                    profile = Profile.objects.create_profile(self.user)
+                
+                if any([not profile.member_number, 
+                       profile.member_number <> self.member_number]):
+                    profile.member_number = self.member_number
+                    profile.save()
+                    
+                    if verbosity >=2:
+                        print 'Added member number %s for %s.' % (self.member_number, 
+                                                                  self.user.username)
+                else:
+                    if verbosity >=2:
+                        print 'Member number already populated for %s' % self.user.username
+            else:
+                if verbosity >=2:
+                    print '***Membership (ID=%d) does NOT have a member number.' % self.id
+            
+                    
+    def clear_user_member_id(self):
+        """
+        Clear the member ID (or member number) in user's profile.
+        """
+        if any([self.status==0, self.status_detail <> 'active']):
+            [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
+            if profile and profile.member_number:                
+                profile.member_number = ''
+                profile.save()
 
 
 class MembershipArchive(TendenciBaseModel):
