@@ -53,7 +53,7 @@
         {% if news.tags %}
         <div class="tags"><strong>{% trans "Tags:" %} </strong>
             {% for tag in news.tags|tag_split %}
-                <a href="{% url news %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url news %}?q=tag:{{ tag|lower }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

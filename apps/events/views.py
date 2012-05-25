@@ -1,3 +1,6 @@
+# NOTE: When updating the registration scheme be sure to check with the 
+# anonymous registration impementation of events in the registration module.
+
 import re
 import calendar
 from datetime import datetime
@@ -51,6 +54,8 @@ from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import (get_active_addons, get_available_addons, 
     get_addons_for_list)
+from user_groups.models import GroupMembership
+from memberships.models import MembershipType
 
 from notification import models as notification
     
@@ -155,12 +160,9 @@ def search(request, redirect=False, template_name="events/search.html"):
     query = request.GET.get('q', None)
     event_type = request.GET.get('event_type', None)
     start_dt = request.GET.get('start_dt', None)
-    if isinstance(start_dt, unicode):
-        start_dt = datetime.strptime(
-            start_dt,
-            '%Y-%m-%d'
-        )
-    else:
+    try:
+        start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+    except:
         start_dt = datetime.now()
 
     if has_index and query:
@@ -594,7 +596,7 @@ def add(request, year=None, month=None, day=None, \
         form=Reg8nConfPricingForm, 
         extra=1
     )
-    
+
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
             
@@ -723,7 +725,8 @@ def add(request, year=None, month=None, day=None, \
         else:  # if not post request
             event_init = {}
 
-            today = datetime.today()
+            # default to 30 days from now
+            mydate = datetime.now()+timedelta(days=30)
             offset = timedelta(hours=2)
             
             if all((year, month, day)):
@@ -738,8 +741,8 @@ def add(request, year=None, month=None, day=None, \
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
             else:
-                start_dt = datetime.now()
-                end_dt = datetime.now() + offset
+                start_dt = mydate
+                end_dt = start_dt + offset
                 
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
@@ -755,7 +758,6 @@ def add(request, year=None, month=None, day=None, \
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf', 
                                          reg_form_queryset=reg_form_queryset,)
-            
             # form sets
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),
@@ -865,7 +867,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     
     # set up pricing
     try:
-        price, price_pk, amount = clean_price(request.POST['price'], request.user)
+        pricing, pricing_pk, amount = clean_price(request.POST['price'], request.user)
     except:
         return multi_register_redirect(request, event, _('Please choose a price.'))
     
@@ -873,13 +875,13 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     event_price = amount
     
     # get all pricing
-    pricing = RegConfPricing.objects.filter(
+    pricings = RegConfPricing.objects.filter(
         reg_conf=event.registration_configuration,
         status=True,
     )
     
     # check is this person is qualified to see this pricing and event_price
-    qualified_pricing = get_pricing(request.user, event, pricing=pricing)
+    qualified_pricing = get_pricing(request.user, event, pricing=pricings)
     qualifies = False
     # custom registration form
     # use the custom registration form if pricing is associated with a custom reg form
@@ -887,7 +889,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     reg_conf=event.registration_configuration
 
     for q_price in qualified_pricing:
-        if price.pk == q_price['price'].pk:
+        if pricing.pk == q_price['price'].pk:
             qualifies = True
             
     if not qualifies:
@@ -899,7 +901,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
         else:
-            custom_reg_form = price.reg_form
+            custom_reg_form = pricing.reg_form
 
     # check if this post came from the pricing form
     # and modify the request method
@@ -911,7 +913,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         request.POST = QueryDict({})
 
     # check if it is still open based on dates
-    reg_started = registration_has_started(event, pricing=pricing)
+    reg_started = registration_has_started(event, pricing=pricings)
     if not reg_started:
         return multi_register_redirect(request, event, _('Registration has been closed.'))     
 
@@ -934,8 +936,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         RF,
         formset=RegistrantBaseFormSet,
         can_delete=True,
-        max_num=price.quantity,
-        extra=(price.quantity - 1)
+        max_num=pricing.quantity,
+        extra=(pricing.quantity - 1)
     )
     
     # get available addons
@@ -949,7 +951,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     )
     
     # update the amount of forms based on quantity
-    total_regt_forms = price.quantity
+    total_regt_forms = pricing.quantity
     
     # REGISTRANT formset
     post_data = request.POST or None
@@ -1006,7 +1008,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     if request.method == 'POST' and 'submit' in request.POST:
         reg_form = RegistrationForm(
             event,
-            price,
+            pricing,
             event_price,
             request.POST, 
             user=request.user,
@@ -1015,7 +1017,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     else:
         reg_form = RegistrationForm(
             event,
-            price,
+            pricing,
             event_price,
             user=request.user
         )
@@ -1036,17 +1038,6 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     if event_price != reg_form.cleaned_data['amount_for_admin']:
                         admin_notes = "Price has been overriden for this registration. "
                     event_price = reg_form.cleaned_data['amount_for_admin']
-                
-                # apply discount if any
-                discount = reg_form.get_discount()
-                if discount:
-                    event_price = event_price - discount.value
-                    if event_price < 0:
-                        event_price = 0
-                    admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
-                    #messages.add_message(request, messages.INFO,
-                    #    'Your discount of $%s has been added.' % discount.value
-                    #)
                     
                 reg8n, reg8n_created = add_registration(
                     request, 
@@ -1054,10 +1045,9 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                     reg_form, 
                     registrant,
                     addon_formset,
-                    price,
+                    pricing,
                     event_price,
                     admin_notes=admin_notes,
-                    discount=discount,
                     custom_reg_form=custom_reg_form,
                 )
                 
@@ -1144,12 +1134,12 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         deleted = False
         if form.data.get('registrant-%d-DELETE' % count, False):
             deleted = True
-        if count % price.quantity == 0:
+        if count % pricing.quantity == 0:
             price_list.append({'price': event_price, 'deleted':deleted})
         else:
             price_list.append({'price': 0.00 , 'deleted':deleted})
         if not deleted:
-            if price.quantity > 1:
+            if pricing.quantity > 1:
                 total_price = event_price
             else:
                 total_price += event_price
@@ -1172,7 +1162,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         'free_event': free_event,
         'price_list':price_list,
         'total_price':total_price,
-        'price': price,
+        'price': pricing,
         'reg_form':reg_form,
         'custom_reg_form': custom_reg_form,
         'registrant': registrant,
@@ -1197,7 +1187,6 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
     
     custom_reg_form = None
     reg_conf = reg8n.event.registration_configuration
-    #reg_conf = reg8n.reg_conf_price.reg_conf
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
@@ -1244,7 +1233,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             updated = False
             if custom_reg_form:
                 for form in formset.forms:
-                    form.save(reg8n.event)
+                    entry = form.save(reg8n.event)
+                    for reg in entry.registrants.all():
+                        reg.initialize_fields()
                 updated = True
             else:
                 instances = formset.save()
@@ -1698,6 +1689,25 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     num_registrants_who_paid = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
+    
+    # assign is_member attribute to registrants
+    # avoid to use is_member(user) function for the performance reason
+    member_group_ids = MembershipType.objects.filter(
+                            status=1, 
+                            status_detail='active'
+                            ).values_list('id', flat=True)
+    member_userids = GroupMembership.objects.filter(
+                            group__id__in=member_group_ids).filter(member__in=[
+                            reg.user for reg in registrants if reg.user]
+                            ).filter(
+                            status=1, 
+                            status_detail='active'
+                            ).values_list('member__id', flat=True)
+    for reg in registrants:
+        if reg.user and reg.user.id in member_userids:
+            reg.is_member = True
+        else:
+            reg.is_member = False
 
     return render_to_response(template_name, {
         'event':event, 
@@ -1778,7 +1788,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         if registrant.custom_reg_form_entry:
             registrant.name = registrant.custom_reg_form_entry.__unicode__()
         else:
-            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+            if registrant.first_name or registrant.last_name:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
     
     return render_to_response(template_name, {
         'event':event,

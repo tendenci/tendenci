@@ -1,22 +1,19 @@
 # encoding: utf-8
-import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'Story.photo_file'
         db.add_column('stories_story', 'photo_file', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['files.File'], null=True, blank=True), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # Deleting field 'Story.photo_file'
         db.delete_column('stories_story', 'photo_file_id')
-
 
     models = {
         'auth.group': {

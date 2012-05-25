@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 
 from django.utils.translation import ugettext_lazy as _
 from django import forms
@@ -106,8 +107,8 @@ class DiscountCodeForm(forms.Form):
         code = self.cleaned_data['code']
         price = self.cleaned_data['price']
         count = self.cleaned_data['count']
-        discount = Discount.objects.get(discount_code=code).value * count
+        discount = Discount.objects.get(discount_code=code).value * Decimal(count)
         new_price = price - discount
         if new_price < 0:
-            new_price = 0
+            new_price = Decimal('0.00')
         return (new_price, discount)

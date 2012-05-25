@@ -111,6 +111,12 @@
 	.registrant-contact-info{
 		border-top: 1px dotted #ccc !important;
 	}
+	.member{
+		background-image: url({{ STATIC_URL }}images/icons/member.gif); 
+		/*background-image: url({{ STATIC_URL }}images/icons/member_16x16.png);*/
+		background-repeat: no-repeat;
+		padding-left: 16px;
+	}
 
 </style>
 
@@ -138,6 +144,7 @@
 	.canceled .attended-checkbox div {
 		background-color: silver;
 	}
+	
 
 </style>
 
@@ -215,6 +222,7 @@
 	{% if registrant.user %}
 	<div title="View {{ registrant.first_name}}'s profile">
         <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
+        {% if registrant.is_member %}<span class="member" title="Member">&nbsp;</span>{% endif %}
     </div>
 	{% else %}
 	<div title="{{ registrant.name }} does not have a user-account">
@@ -225,7 +233,12 @@
 	{% endif %}
 	</div>
 	{% endif %}
+	
 	<div>{{ registrant.phone }}</div>
+	
+	{% if registrant.comments %}
+	<div>{{ registrant.comments }}</div>
+	{% endif %}
 	</td>
 
 	<td> <!-- title & company -->

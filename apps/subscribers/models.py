@@ -72,10 +72,10 @@ class SubscriberData(models.Model):
     subscription = models.ForeignKey(GroupSubscription, related_name="data")
     field_label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     value = models.CharField(_("Value"), max_length=FIELD_MAX_LENGTH)
-    
+
     class Meta:
         unique_together = ('subscription', 'field_label')
-    
+
     def __unicode__(self):
         return "%s(%s:%s)" % (self.subscription.pk, self.field_label, self.value)
 

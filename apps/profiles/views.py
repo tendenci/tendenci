@@ -332,7 +332,7 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 1
             else:
                 user_edit.is_active = 0
-               
+
             profile.save()
             user_edit.save()
             
@@ -636,32 +636,76 @@ def password_change_done(request, id, template_name='registration/password_chang
 def _user_events(from_date):
     return User.objects.all()\
                 .filter(eventlog__create_dt__gte=from_date)\
-                .annotate(event_count=Count('eventlog__pk'))\
-                .order_by('-event_count')
+                .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required
-def user_activity_report(request):
+def user_activity_report(request, template_name='reports/user_activity.html'):
     now = datetime.now()
-    users30days = _user_events(now-timedelta(days=10))[:10]
-    users60days = _user_events(now-timedelta(days=60))[:10]
-    users90days = _user_events(now-timedelta(days=90))[:10]
-    return render_to_response(
-                'reports/user_activity.html', 
-                {'users30days': users30days,'users60days': users60days,'users90days': users90days,},  
-                context_instance=RequestContext(request))
+    users30days = _user_events(now-timedelta(days=10))
+    users60days = _user_events(now-timedelta(days=60))
+    users90days = _user_events(now-timedelta(days=90))
+    
+    # get sort order
+    sort = request.GET.get('sort', 'events')
+    if sort == 'username':
+        users30days = users30days.order_by('username')
+        users60days = users60days.order_by('username')
+        users90days = users90days.order_by('username')
+    elif sort == 'last_name':
+        users30days = users30days.order_by('last_name')
+        users60days = users60days.order_by('last_name')
+        users90days = users90days.order_by('last_name')
+    elif sort == 'first_name':
+        users30days = users30days.order_by('first_name')
+        users60days = users60days.order_by('first_name')
+        users90days = users90days.order_by('first_name')
+    elif sort == 'email':
+        users30days = users30days.order_by('email')
+        users60days = users60days.order_by('email')
+        users90days = users90days.order_by('email')
+    elif sort == 'events':
+        users30days = users30days.order_by('-event_count')
+        users60days = users60days.order_by('-event_count')
+        users90days = users90days.order_by('-event_count')
+        
+    # top 10 only
+    users30days = users30days[:10]
+    users60days = users60days[:10]
+    users90days = users90days[:10]
+    
+    return render_to_response(template_name, {
+        'users30days': users30days,
+        'users60days': users60days,
+        'users90days': users90days,
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def admin_users_report(request):
+def admin_users_report(request, template_name='reports/admin_users.html'):
     filters = {
         'is_staff': 1,
         'is_active': 1,
     }
     users = User.objects.all().filter(**filters)
-    return render_to_response(
-                'reports/admin_users.html', 
-                {'users': users},  
-                context_instance=RequestContext(request))
+    
+    # get sort order
+    sort = request.GET.get('sort', 'id')
+    if sort == 'id':
+        users = users.order_by('pk')
+    elif sort == 'username':
+        users = users.order_by('username')
+    elif sort == 'last_name':
+        users = users.order_by('last_name')
+    elif sort == 'first_name':
+        users = users.order_by('first_name')
+    elif sort == 'email':
+        users = users.order_by('email')
+    elif sort == 'phone':
+        users = users.order_by('profile__phone')
+    
+    return render_to_response(template_name, {
+        'users': users
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -688,7 +732,7 @@ def admin_list(request, template_name='profiles/admin_list.html'):
     # only admins can edit this list
     if not is_admin(request.user):
         raise Http403
-
+    
     filters = {
         'status':1,
         'status_detail':'active',

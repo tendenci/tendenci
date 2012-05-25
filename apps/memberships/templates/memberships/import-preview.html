@@ -48,8 +48,9 @@
 	<p class="timestamp">{% trans "Step 3/4" %} &middot; {{ datetime.now }}</p>
     
 	<p class="msg">
-        <em>{{ stats.all }}</em> import{{ stats.all|pluralize }};
+        <em>{{ stats.all }}</em> membership{{ stats.all|pluralize }};
         <em>{{ stats.added }}</em> will be added,
+        <em>{{ stats.updated }}</em> will be updated,
         and <em>{{ stats.skipped }}</em> will be skipped.</p>
         <em><a title="Looks good!" href="{% url membership_import_confirm memport.id %}" id="import-confirm">Import Now &rarr;</a></em>
     </p>

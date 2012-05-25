@@ -1,7 +1,4 @@
 Stories
 =======
 
-Overview
---------
-
 Here will be an overview of the stories app.

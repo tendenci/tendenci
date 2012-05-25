@@ -22,7 +22,7 @@ try:
 except:
     notification = None
 
-def index(request, slug=None, template_name="news/view.html"):
+def detail(request, slug=None, template_name="news/view.html"):
     if not slug: return HttpResponseRedirect(reverse('news.search'))
     news = get_object_or_404(News, slug=slug)
     
@@ -71,6 +71,9 @@ def search(request, template_name="news/search.html"):
 
     return render_to_response(template_name, {'search_news':news}, 
         context_instance=RequestContext(request))
+
+def search_redirect(request):
+    return HttpResponseRedirect(reverse('news'))
 
 def print_view(request, slug, template_name="news/print-view.html"):
     news = get_object_or_404(News, slug=slug)
@@ -122,7 +125,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
-            return HttpResponseRedirect(reverse('news.view', args=[news.slug])) 
+            return HttpResponseRedirect(reverse('news.detail', args=[news.slug])) 
 
     return render_to_response(template_name, {'news': news, 'form':form}, 
         context_instance=RequestContext(request))
@@ -151,7 +154,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
             
             messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % news)
             
-            return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
+            return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
     else:
         form = form_class(instance=news.meta)
 
@@ -195,7 +198,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
                     }
                     notification.send_emails(recipients,'news_added', extra_context)
             
-            return HttpResponseRedirect(reverse('news.view', args=[news.slug]))
+            return HttpResponseRedirect(reverse('news.detail', args=[news.slug]))
     else:
         form = form_class(user=request.user)
        
