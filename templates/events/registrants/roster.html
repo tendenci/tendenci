@@ -222,7 +222,9 @@
 	{% if registrant.user %}
 	<div title="View {{ registrant.first_name}}'s profile">
         <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
-        {% if registrant.is_member %}<span class="member" title="Member">&nbsp;</span>{% endif %}
+        {% if registrant.memberid %}
+        <span class="member-icon" title="memberID: {{ registrant.memberid }}">M</span>
+        {% endif %}
     </div>
 	{% else %}
 	<div title="{{ registrant.name }} does not have a user-account">

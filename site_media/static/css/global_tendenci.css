@@ -48,3 +48,16 @@
 .content-wide {
     width: 100% !important;
 }
+span.member-icon{
+	/*background-image: url('/site_media/static/images/icons/member.gif'); 
+	background-repeat: no-repeat;
+	padding-left: 16px; */
+	border: 1px solid #ffe87c;
+	font-size: 11px;
+	padding: 4px;
+	color: #fff;
+	background-color: #4E9258;
+	-moz-box-shadow: 0 0 5px #888;
+	-webkit-box-shadow: 0 0 5px #888;
+	box-shadow: 0 0 5px #888;
+}
