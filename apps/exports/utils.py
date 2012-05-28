@@ -1,9 +1,12 @@
+import subprocess
 import datetime
 import csv
 from StringIO import StringIO
 
 from django.http import HttpResponse
+from django.core import management
 
+from exports.models import Export
 
 def full_model_to_dict(instance, fields=None, exclude=None):
     """
@@ -33,7 +36,7 @@ def full_model_to_dict(instance, fields=None, exclude=None):
     return data
 
 def render_csv(filename, title_list, data_list):
-    
+    """Render a csv file response"""
     output = StringIO("")
     #output = open('eggs.csv', 'wb')
     csv_writer = csv.writer(output)
@@ -56,3 +59,12 @@ def render_csv(filename, title_list, data_list):
     response['Content-Type'] = "application/text"
     response['Content-Disposition'] = 'attachment; filename='+filename
     return response
+
+def run_export_task(app_label, model_name, fields):
+    export = Export.objects.create(
+        app_label = app_label,
+        model_name = model_name,
+    )
+    management.call_command('run_export_task', export.pk, *fields, verbosity=0)
+    subprocess.Popen(['python', 'manage.py', 'run_export_task', str(export.pk)] + fields)
+    return export.pk

@@ -19,8 +19,7 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from theme.shortcuts import themed_response as render_to_response
-from imports.utils import render_excel
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from articles.models import Article
 from articles.forms import ArticleForm
@@ -295,7 +294,6 @@ def export(request, template_name="articles/export.html"):
     
     if request.method == 'POST':
         # initilize initial values
-        file_name = "articles.csv"
         fields = [
             'guid',
             'slug',
@@ -322,15 +320,9 @@ def export(request, template_name="articles/export.html"):
             'entity',
         ]
         
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(Article, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Article, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('articles', 'article', fields)
+        
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
