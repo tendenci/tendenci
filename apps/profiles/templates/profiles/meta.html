@@ -20,6 +20,14 @@
     <ul>
         <li>{{ profile.obj_perms }}</li>
         <li>{{ profile.obj_status }}</li>
+        {% if profile.user.is_superuser%}
+        <li><span class="role-superuser">Super-user</span></li>
+        {% else %}
+        	{% if profile.user.is_staff %}
+	        <li><span class="role-staff">Staff</span></li>
+	        {% endif %}
+        {% endif %}
+        
     </ul>
     </div>
     <div class="edit-links">

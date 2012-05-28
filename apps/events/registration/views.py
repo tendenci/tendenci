@@ -1,3 +1,5 @@
+"""ANONYMOUS EVENT REGISTRATION VIEWS"""
+
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.translation import ugettext_lazy as _
@@ -150,7 +152,7 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     if shared_pricing:
         available_addons = get_addons_for_list(event, shareable_users)
     else:
-        available_addons = get_addons_for_list(event, user)
+        available_addons = get_available_addons(event, user)
     
     a_list = []
     for addon in all_addons:

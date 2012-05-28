@@ -1,30 +1,32 @@
-# django
 from django.core.cache import cache
 from django.conf import settings as d_settings
-
-# local
 from site_settings.models import Setting
 from site_settings.cache import SETTING_PRE_KEY
+
 
 def delete_all_settings_cache():
     keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 'all']
     key = '.'.join(keys)
     cache.delete(key)
-    
+
+
 def cache_setting(scope, scope_category, name, value):
-    """Caches a single setting within a scope
+    """
+    Caches a single setting within a scope
     and scope category
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope, 
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
             scope_category, name]
-    key = '.'.join(keys)   
+
+    key = '.'.join(keys)
     is_set = cache.add(key, value)
     if not is_set:
         cache.set(key, value)
-    
+
+
 def cache_settings(scope, scope_category):
-    """Caches all settings within a scope
-    and scope category
+    """
+    Caches all settings within a scope and scope category
     """
     filters = {
         'scope': scope,
@@ -36,20 +38,22 @@ def cache_settings(scope, scope_category):
             keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
                     setting.scope, setting.scope_category, setting.name]
             key = '.'.join(keys)
-            is_set = cache.add(key, setting.value)
+            is_set = cache.add(key, setting.get_value())
             if not is_set:
-                cache.set(key, setting.value)
+                cache.set(key, setting.get_value())
+
 
 def delete_setting_cache(scope, scope_category, name):
     """
         Deletes a single setting within a
         scope and scope category
     """
-    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope, 
+    keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
             scope_category, name]
     key = '.'.join(keys)
     cache.delete(key)
-    
+
+
 def delete_settings_cache(scope, scope_category):
     """
         Deletes all settings within a scope
@@ -61,11 +65,12 @@ def delete_settings_cache(scope, scope_category):
     }
     settings = Setting.objects.filter(**filters)
     for setting in settings:
-        keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, 
+        keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY,
                 setting.scope, setting.scope_category, setting.name]
         key = '_'.join(keys)
         cache.delete(key)
-        
+
+
 def get_setting(scope, scope_category, name):
     """
         Gets a single setting value from within a scope
@@ -76,9 +81,9 @@ def get_setting(scope, scope_category, name):
     keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
             scope_category, name]
     key = '.'.join(keys)
-    
+
     setting = cache.get(key)
-    
+
     if not setting:
         #setting is not in the cache
         try:
@@ -90,18 +95,20 @@ def get_setting(scope, scope_category, name):
             }
             setting = Setting.objects.get(**filters)
             cache_setting(setting.scope, setting.scope_category, setting.name, setting)
-        except Exception, e:
+        except Exception:
             setting = None
-    
+
     #check if the setting has been set and evaluate the value
     if setting:
-        value = setting.value.strip()
+        value = setting.get_value().strip()
         # convert data types
         if setting.data_type == 'boolean':
             value = value[0].lower() == 't'
         if setting.data_type == 'int':
-            if value.strip(): value = int(value.strip())
-            else: value = 0 # default to 0
+            if value.strip():
+                value = int(value.strip())
+            else:
+                value = 0  # default to 0
         if setting.data_type == 'file':
             from files.models import File as TFile
             try:
@@ -110,28 +117,28 @@ def get_setting(scope, scope_category, name):
                 tfile = None
             value = tfile
         return value
-    
-    #return empty string as default
+
     return u''
+
 
 def check_setting(scope, scope_category, name):
     #check cache first
     keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
             scope_category, name]
     key = '.'.join(keys)
-    
+
     setting = cache.get(key)
     if setting:
         return True
-    
+
     missing_keys = [d_settings.CACHE_PRE_KEY, SETTING_PRE_KEY, scope,
             scope_category, name, "missing"]
     missing_key = '.'.join(missing_keys)
-    
+
     missing = cache.get(missing_key)
     if not missing:
         #check the db if it is not in the cache
-        exists = Setting.objects.filter(scope=scope, 
+        exists = Setting.objects.filter(scope=scope,
             scope_category=scope_category, name=name).exists()
 
         #cache that it does not exist
@@ -145,6 +152,7 @@ def check_setting(scope, scope_category, name):
         return exists
     return False
 
+
 def get_form_list(user):
     """
     Generate a list of 2-tuples of form id and form title
@@ -156,12 +164,13 @@ def get_form_list(user):
     forms = Form.objects.filter(filters)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
-    l = [('','None')]
+    l = [('', 'None')]
     for form in forms:
         l.append((form.pk, form.title))
-    
+
     return l
-    
+
+
 def get_box_list(user):
     """
     Generate a list of 2-tuples of form id and form title
@@ -173,8 +182,8 @@ def get_box_list(user):
     boxes = Box.objects.filter(filters)
     #To avoid hitting the database n time by calling .object
     #We will use the values in the index field.
-    l = [('','None')]
+    l = [('', 'None')]
     for box in boxes:
         l.append((box.pk, box.title))
-    
+
     return l

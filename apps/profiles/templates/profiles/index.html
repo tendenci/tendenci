@@ -4,6 +4,7 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load profile_tags %}
+{% load profile_filters %}
 {% load contribution_tags %}
 {% load membership_tags %}
 {% load humanize %}
@@ -31,7 +32,13 @@
 			</a>
 		</div>
 
-		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+		<h1>{% firstof user_this.get_full_name user_this.username %}
+			{% if profile.member_number %}
+			{% if profile|allow_edit_by:user %}
+	    	<span class="member-icon">Member ID: {{ profile.member_number}}</span>
+	    	{% endif %}
+	    	{% endif %}
+			</h1>
 
 		{% if profile.company %}
 			<p>{{ profile.company }}</p>

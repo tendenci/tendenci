@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes import generic
+from django.utils.safestring import mark_safe
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
@@ -607,6 +608,11 @@ class CorporateMembership(TendenciBaseModel):
     def allow_view_by(self, this_user):
         if is_admin(this_user): return True
         
+        if get_setting('module', 
+                     'corporate_memberships', 
+                     'anonymoussearchcorporatemembers'):
+            return True
+        
         if not this_user.is_anonymous():
             if self.is_rep(this_user): return True
             if self.creator:
@@ -628,6 +634,19 @@ class CorporateMembership(TendenciBaseModel):
                     if this_user.id == self.owner.id: return True
                 
         return False
+    
+    @property
+    def obj_perms(self):
+        t = '<span class="perm-%s">%s</span>'
+ 
+        if get_setting('module', 
+                     'corporate_memberships', 
+                     'anonymoussearchcorporatemembers'):
+            value = t % ('public','Public')
+        else:
+            value = t % ('private','Private')
+
+        return mark_safe(value)
     
     
     def get_renewal_period_dt(self):

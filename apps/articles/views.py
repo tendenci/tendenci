@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 from django.db.models import Count
-from django.forms.models import model_to_dict
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -23,24 +22,22 @@ from exports.utils import run_export_task
 
 from articles.models import Article
 from articles.forms import ArticleForm
+from notification import models as notification
 
-try:
-    from notification import models as notification
-except:
-    notification = None
 
 def index(request, slug=None, template_name="articles/view.html"):
-    if not slug: return HttpResponseRedirect(reverse('articles'))
+    if not slug:
+        return HttpResponseRedirect(reverse('articles'))
     article = get_object_or_404(Article, slug=slug)
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
     if (article.status_detail).lower() != 'active' and (not is_admin(request.user)):
         raise Http403
-    
+
     if has_view_perm(request.user, 'articles.view_article', article):
         log_defaults = {
-            'event_id' : 435000,
+            'event_id': 435000,
             'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
             'description': '%s viewed' % article._meta.object_name,
             'user': request.user,
@@ -48,7 +45,7 @@ def index(request, slug=None, template_name="articles/view.html"):
             'instance': article,
         }
         EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'article': article}, 
+        return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -58,7 +55,7 @@ def search(request, template_name="articles/search.html"):
     get = dict(request.GET)
     query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
-    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
+    query_extra = ['%s:%s' % (k, v[0]) for k, v in get.items() if v[0].strip()]
     query = ' '.join(query)
     if query_extra:
         query = '%s %s' % (query, ' '.join(query_extra))
@@ -91,8 +88,8 @@ def search(request, template_name="articles/search.html"):
         category = 0
     categories, sub_categories = Article.objects.get_categories(category=category)
 
-    return render_to_response(template_name, {'articles': articles,'categories':categories,
-        'sub_categories':sub_categories},
+    return render_to_response(template_name, {'articles': articles, 'categories': categories,
+        'sub_categories': sub_categories},
         context_instance=RequestContext(request))
 
 
@@ -101,10 +98,10 @@ def search_redirect(request):
 
 
 def print_view(request, slug, template_name="articles/print-view.html"):
-    article = get_object_or_404(Article, slug=slug)    
+    article = get_object_or_404(Article, slug=slug)
 
     log_defaults = {
-        'event_id' : 435001,
+        'event_id': 435001,
         'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
         'description': '%s viewed - print view' % article._meta.object_name,
         'user': request.user,
@@ -112,18 +109,19 @@ def print_view(request, slug, template_name="articles/print-view.html"):
         'instance': article,
     }
     EventLog.objects.log(**log_defaults)
-       
-    if has_perm(request.user,'articles.view_article', article):
-        return render_to_response(template_name, {'article': article}, 
+
+    if has_perm(request.user, 'articles.view_article', article):
+        return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+
 @login_required
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
 
-    if has_perm(request.user,'articles.change_article', article):    
+    if has_perm(request.user, 'articles.change_article', article):
         if request.method == "POST":
 
             form = form_class(request.POST, instance=article, user=request.user)
@@ -135,7 +133,7 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                 article = update_perms_and_save(request, form, article)
 
                 log_defaults = {
-                    'event_id' : 432000,
+                    'event_id': 432000,
                     'event_data': '%s (%d) edited by %s' % (article._meta.object_name, article.pk, request.user),
                     'description': '%s edited' % article._meta.object_name,
                     'user': request.user,
@@ -143,24 +141,25 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
                     'instance': article,
                 }
                 EventLog.objects.log(**log_defaults)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % article)
-                                                                             
-                return HttpResponseRedirect(reverse('article', args=[article.slug]))             
+
+                return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(instance=article, user=request.user)
 
-        return render_to_response(template_name, {'article': article, 'form':form}, 
+        return render_to_response(template_name, {'article': article, 'form': form},
             context_instance=RequestContext(request))
     else:
         raise Http403
+
 
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-meta.html"):
 
     # check permission
     article = get_object_or_404(Article, pk=id)
-    if not has_perm(request.user,'articles.change_article', article):
+    if not has_perm(request.user, 'articles.change_article', article):
         raise Http403
 
     defaults = {
@@ -174,31 +173,32 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
     if request.method == "POST":
         form = form_class(request.POST, instance=article.meta)
         if form.is_valid():
-            article.meta = form.save() # save meta
-            article.save() # save relationship
-            
+            article.meta = form.save()  # save meta
+            article.save()  # save relationship
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % article)
-             
+
             return HttpResponseRedirect(reverse('article', args=[article.slug]))
     else:
         form = form_class(instance=article.meta)
 
-    return render_to_response(template_name, {'article': article, 'form':form}, 
+    return render_to_response(template_name, {'article': article, 'form': form},
         context_instance=RequestContext(request))
+
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
-    if has_perm(request.user,'articles.add_article'):
+    if has_perm(request.user, 'articles.add_article'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
-            if form.is_valid():           
+            if form.is_valid():
                 article = form.save(commit=False)
 
                 # add all permissions and save the model
-                articles = update_perms_and_save(request, form, article)
+                update_perms_and_save(request, form, article)
 
                 log_defaults = {
-                    'event_id' : 431000,
+                    'event_id': 431000,
                     'event_data': '%s (%d) added by %s' % (article._meta.object_name, article.pk, request.user),
                     'description': '%s added' % article._meta.object_name,
                     'user': request.user,
@@ -206,13 +206,13 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                     'instance': article,
                 }
                 EventLog.objects.log(**log_defaults)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % article)
-                
+
                 # send notification to administrator(s) and module recipient(s)
                 recipients = get_notice_recipients('module', 'articles', 'articlerecipients')
-                if recipients and notification: 
-                    notification.send_emails(recipients,'article_added', {
+                if recipients and notification:
+                    notification.send_emails(recipients, 'article_added', {
                         'object': article,
                         'request': request,
                     })
@@ -220,27 +220,28 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 return HttpResponseRedirect(reverse('article', args=[article.slug]))
         else:
             form = form_class(user=request.user)
-           
-        return render_to_response(template_name, {'form':form}, 
+
+        return render_to_response(template_name, {'form': form},
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+
 @login_required
 def delete(request, id, template_name="articles/delete.html"):
     article = get_object_or_404(Article, pk=id)
 
-    if has_perm(request.user,'articles.delete_article'):   
+    if has_perm(request.user, 'articles.delete_article'):
         if request.method == "POST":
             log_defaults = {
-                'event_id' : 433000,
+                'event_id': 433000,
                 'event_data': '%s (%d) deleted by %s' % (article._meta.object_name, article.pk, request.user),
                 'description': '%s deleted' % article._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': article,
             }
-            
+
             EventLog.objects.log(**log_defaults)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % article)
@@ -253,38 +254,56 @@ def delete(request, id, template_name="articles/delete.html"):
                         'object': article,
                         'request': request,
                     }
-                    notification.send_emails(recipients,'article_deleted', extra_context)
-                            
+                    notification.send_emails(recipients, 'article_deleted', extra_context)
+
             article.delete()
-                                    
+
             return HttpResponseRedirect(reverse('article.search'))
-    
-        return render_to_response(template_name, {'article': article}, 
+
+        return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
     else:
         raise Http403
 
 
 @staff_member_required
-def articles_report(request):
-    stats= EventLog.objects.filter(event_id=435000)\
+def articles_report(request, template_name='reports/articles.html'):
+    article_type = ContentType.objects.get(app_label="articles", model="article")
+    stats = EventLog.objects.filter(event_id=435000, content_type=article_type) \
                     .values('content_type', 'object_id', 'headline')\
                     .annotate(count=Count('pk'))\
                     .order_by('-count')
+
+    # get sort order
+    sort = request.GET.get('sort', 'viewed')
+    if sort == 'viewed':
+        stats = stats.order_by('-count')
+    elif sort == 'name':
+        stats = stats.order_by('headline')
+    elif sort == 'created':
+        stats = stats.order_by('create_dt')
+
     for item in stats:
-        ct = ContentType.objects.get_for_id(item['content_type'])
-        assert ct.model_class() == Article
+
         try:
             article = Article.objects.get(pk=item['object_id'])
             item['article'] = article
-            item['per_day'] = item['count'] * 1.0 / article.age().days
+            if article.age().days > 0:
+                item['per_day'] = item['count'] * 1.0 / article.age().days
+            else:
+                item['per_day'] = item['count'] * 1.0
         except Article.DoesNotExist:
             pass
-        
-    return render_to_response('reports/articles.html', 
-            {'stats': stats}, 
-            context_instance=RequestContext(request))
             
+    # special sort option
+    if sort == 'day':
+        stats = sorted(stats, key=lambda item: item['per_day'], reverse=True)
+
+    return render_to_response(template_name, {
+        'stats': stats
+    }, context_instance=RequestContext(request))
+
+
 @login_required
 def export(request, template_name="articles/export.html"):
     """Export Articles"""

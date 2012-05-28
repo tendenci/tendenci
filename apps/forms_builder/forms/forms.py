@@ -105,8 +105,8 @@ class FormForForm(forms.ModelForm):
                     widget=forms.RadioSelect,
                     initial=1,
                 )
-
-        if not self.user.is_authenticated(): # add captcha if not logged in
+        
+        if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
 

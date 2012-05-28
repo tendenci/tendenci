@@ -38,6 +38,7 @@ python-dateutil>=1.5
 pdfminer==20110515
 slate==0.3
 stripe
+pycrypto==2.6
 
 # git repositories
 git+http://github.com/notanumber/xapian-haystack.git

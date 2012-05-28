@@ -1042,13 +1042,11 @@ def membership_export(request):
                         elif field.field_type == 'corporate_membership_id':
                             value = memb.corporate_membership_id
 
-                    if field_entry_d in field_name:
+                    if field_name in field_entry_d:
                         value = field_entry_d[field_name]
 
-                    if value == None:
-                        value = ''
-
-                    if type(value) in (bool, int, long):
+                    value = value or u''
+                    if type(value) in (bool, int, long, None):
                         value = unicode(value)
 
                     value = value.replace(',', ' ')
@@ -1126,7 +1124,35 @@ def membership_join_report_pdf(request):
 
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
+
     mems = Membership.objects.filter(expire_dt__gt=datetime.now())
+
+    # get sort order
+    sort = request.GET.get('sort', 'subscribe_dt')
+    if sort == 'username':
+        mems = mems.order_by('user__username')
+    elif sort == 'full_name':
+        mems = mems.order_by('user__first_name', 'user__last_name')
+    elif sort == 'email':
+        mems = mems.order_by('user__email')
+    elif sort == 'app':
+        mems = mems.order_by('ma')
+    elif sort == 'type':
+        mems = mems.order_by('membership_type')
+    elif sort == 'subscription':
+        mems = mems.order_by('subscribe_dt')
+    elif sort == 'expiration':
+        mems = mems.order_by('expire_dt')
+    elif sort == 'invoice':
+        # since we need to sort by a related field with the proper
+        # conditions we'll need to bring the sorting to the python level
+        for mem in mems:
+            mem.valid_invoice = None
+            if mem.get_entry():
+                if mem.get_entry().invoice:
+                    mem.valid_invoice = mem.get_entry().invoice.pk
+
+        mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
 
     return render_to_response(template_name, {
             'mems': mems,
@@ -1137,6 +1163,33 @@ def report_active_members(request, template_name='reports/membership_list.html')
 @staff_member_required
 def report_expired_members(request, template_name='reports/membership_list.html'):
     mems = Membership.objects.filter(expire_dt__lt=datetime.now())
+
+    # get sort order
+    sort = request.GET.get('sort', 'expire_dt')
+    if sort == 'username':
+        mems = mems.order_by('user__username')
+    elif sort == 'full_name':
+        mems = mems.order_by('user__first_name', 'user__last_name')
+    elif sort == 'email':
+        mems = mems.order_by('user__email')
+    elif sort == 'app':
+        mems = mems.order_by('ma')
+    elif sort == 'type':
+        mems = mems.order_by('membership_type')
+    elif sort == 'subscription':
+        mems = mems.order_by('subscribe_dt')
+    elif sort == 'expiration':
+        mems = mems.order_by('expire_dt')
+    elif sort == 'invoice':
+        # since we need to sort by a related field with the proper
+        # conditions we'll need to bring the sorting to the python level
+        for mem in mems:
+            mem.valid_invoice = None
+            if mem.get_entry():
+                if mem.get_entry().invoice:
+                    mem.valid_invoice = mem.get_entry().invoice.pk
+
+        mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
 
     return render_to_response(template_name, {
             'mems': mems,

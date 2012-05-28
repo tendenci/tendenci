@@ -357,7 +357,7 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "false", 
+        "default_value": "true", 
         "description": "Select true if you want to include Captcha codes on your forms and false to turn them off.  This effects all forms site-wide.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-12 17:19:13", 
