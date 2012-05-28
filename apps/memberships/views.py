@@ -13,6 +13,10 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 
+from djcelery.models import TaskMeta
+from geraldo.generators import PDFGenerator
+from notification.utils import send_welcome_email
+
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from base.http import Http403
@@ -20,11 +24,10 @@ from base.utils import send_email_notification
 from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
 from perms.utils import has_perm
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
-from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
 from imports.utils import render_excel
-from djcelery.models import TaskMeta
+from exports.utils import render_csv
 
 from memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, AppField, MembershipImport)
@@ -37,8 +40,6 @@ from memberships.utils import (is_import_valid, prepare_chart_data,
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
-
-from notification.utils import send_welcome_email
 
 
 def membership_index(request):
@@ -1005,16 +1006,15 @@ def membership_export(request):
                 'horizontal-rule',
                 'header',
             )
-
+            
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
-
+            
             label_list = [field.label for field in fields]
             extra_field_labels = ['User Name', 'Member Number', 'Join Date', 'Renew Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
             extra_field_names = ['user', 'member_number', 'join_dt', 'renew_dt', 'expire_dt', 'status', 'status_detail', 'invoice', 'invoice_total', 'invoice_balance']
-
+            
             label_list.extend(extra_field_labels)
-            label_list.append('\n')
-
+            
             data_row_list = []
             memberships = Membership.objects.filter(ma=app)
             for memb in memberships:
@@ -1048,10 +1048,9 @@ def membership_export(request):
                     value = value or u''
                     if type(value) in (bool, int, long, None):
                         value = unicode(value)
-
-                    value = value.replace(',', ' ')
+                    
                     data_row.append(value)
-
+                
                 for field in extra_field_names:
 
                     if field == 'user':
@@ -1090,11 +1089,10 @@ def membership_export(request):
                         value = unicode(value)
 
                     data_row.append(value)
-
-                data_row.append('\n')
+                
                 data_row_list.append(data_row)
 
-            return render_excel(file_name, label_list, data_row_list, '.csv')
+            return render_csv(file_name, label_list, data_row_list)
 
     return render_to_response(template_name, {
             'form': form
