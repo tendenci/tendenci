@@ -113,4 +113,4 @@ class FormsExportTask(Task):
             fields = fields + ["field %s %s" % (i, f) for f in field_fields]
         for i in range(0, max_pricings):
             fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
-        return render_excel(file_name, fields, data_row_list)
+        return render_csv(file_name, fields, data_row_list)

@@ -35,6 +35,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from events.search_indexes import EventIndex
 from events.models import (Event, RegistrationConfiguration,
@@ -55,7 +56,6 @@ from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import (get_active_addons, get_available_addons, 
     get_addons_for_list)
-from events.tasks import EventsExportTask
 
 from notification import models as notification
     
@@ -2427,15 +2427,8 @@ def export(request, template_name="events/export.html"):
         raise Http403
     
     if request.method == 'POST':
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = EventsExportTask()
-            response = result.run()
-            return response
-        else:
-            result = EventsExportTask.delay()
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('events', 'event', [])
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

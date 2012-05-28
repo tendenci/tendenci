@@ -18,6 +18,7 @@ from perms.utils import (has_perm, is_admin, update_perms_and_save,
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from invoices.models import Invoice
+from exports.utils import run_export_task
 
 from forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
@@ -26,7 +27,6 @@ from forms_builder.forms.utils import (generate_admin_email_body,
     generate_submitter_email_body, generate_email_subject,
     make_invoice_for_entry, update_invoice_for_entry)
 from forms_builder.forms.formsets import BaseFieldFormSet
-from forms_builder.forms.tasks import FormsExportTask
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
@@ -527,15 +527,8 @@ def export(request, template_name="forms/export.html"):
         raise Http403
     
     if request.method == 'POST':
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = FormsExportTask()
-            response = result.run()
-            return response
-        else:
-            result = FormsExportTask.delay()
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('forms_builder.forms', 'form', [])
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

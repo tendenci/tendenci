@@ -65,6 +65,6 @@ def run_export_task(app_label, model_name, fields):
         app_label = app_label,
         model_name = model_name,
     )
-    management.call_command('run_export_task', export.pk, *fields, verbosity=0)
+    #management.call_command('run_export_task', export.pk, *fields, verbosity=0)
     subprocess.Popen(['python', 'manage.py', 'run_export_task', str(export.pk)] + fields)
     return export.pk

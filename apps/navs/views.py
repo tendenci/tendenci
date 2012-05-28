@@ -16,11 +16,11 @@ from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters, has_view_perm
 from pages.models import Page
+from exports.utils import run_export_task
 
 from navs.models import Nav, NavItem
 from navs.forms import NavForm, PageSelectForm, ItemForm
 from navs.utils import cache_nav
-from navs.tasks import NavsExportTask
 
 @login_required
 def search(request, template_name="navs/search.html"):
@@ -230,15 +230,8 @@ def export(request, template_name="navs/export.html"):
         raise Http403
     
     if request.method == 'POST':
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = NavsExportTask()
-            response = result.run()
-            return response
-        else:
-            result = NavsExportTask.delay()
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('navs', 'nav', [])
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

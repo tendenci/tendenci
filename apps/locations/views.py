@@ -16,7 +16,7 @@ from perms.utils import (is_admin, has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
 from perms.decorators import admin_required
 from theme.shortcuts import themed_response as render_to_response
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from locations.models import Location, LocationImport
 from locations.forms import LocationForm
@@ -391,15 +391,9 @@ def export(request, template_name="locations/export.html"):
             'entity',
         ]
         
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(Location, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Location, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('locations', 'location', fields)
+        
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

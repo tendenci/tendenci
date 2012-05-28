@@ -6,7 +6,7 @@ from django.template import RequestContext
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from perms.utils import is_admin
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from boxes.models import Box
 
@@ -25,16 +25,8 @@ def export(request, template_name="boxes/export.html"):
             'content',
             'tags',
         ]
-        
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(Box, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Box, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('boxes', 'box', fields)
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

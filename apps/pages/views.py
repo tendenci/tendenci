@@ -22,7 +22,7 @@ from categories.models import Category
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
 from files.models import file_directory
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from pages.models import Page, HeaderImage
 from pages.forms import PageForm
@@ -402,16 +402,8 @@ def export(request, template_name="pages/export.html"):
             'meta',
             'categories',
         ]
-        
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(Page, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Page, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('pages', 'page', fields)
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

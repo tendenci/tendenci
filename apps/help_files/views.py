@@ -12,7 +12,7 @@ from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from perms.utils import (has_perm, is_admin, update_perms_and_save,
     get_notice_recipients, has_view_perm, get_query_filters)
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from help_files.models import (HelpFile_Topics, Topic, HelpFile, 
     HelpFileMigration, Request)
@@ -291,16 +291,8 @@ def export(request, template_name="help_files/export.html"):
             'syndicate',
             'view_totals',
         ]
-        
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(HelpFile, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(HelpFile, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('help_files', 'helpfile', fields)
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

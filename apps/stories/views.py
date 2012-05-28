@@ -14,7 +14,7 @@ from perms.utils import (has_perm, update_perms_and_save,
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
@@ -253,16 +253,8 @@ def export(request, template_name="stories/export.html"):
             'tags',
             'categories',
         ]
-        
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results storie
-            result = TendenciExportTask()
-            response = result.run(Story, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Story, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('stories', 'story', fields)
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

@@ -23,7 +23,7 @@ from perms.utils import (get_notice_recipients, is_admin, is_developer,
 from categories.forms import CategoryForm, CategoryForm2
 from categories.models import Category
 from theme.shortcuts import themed_response as render_to_response
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from jobs.models import Job, JobPricing
 from jobs.forms import JobForm, JobPricingForm
@@ -674,16 +674,8 @@ def export(request, template_name="jobs/export.html"):
             'non_member_price',
             'non_member_count',
         ]
-        
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(Job, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Job, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('jobs', 'job', fields)
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

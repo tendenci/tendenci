@@ -15,7 +15,6 @@ class TendenciExportTask(Task):
     def run(self, model, fields, file_name, **kwargs):
         """Create the xls file"""
         if issubclass(model, TendenciBaseModel):
-            print fields
             fields = fields + (
                 'allow_anonymous_view',
                 'allow_user_view',

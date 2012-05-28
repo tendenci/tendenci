@@ -10,7 +10,7 @@ from perms.utils import is_admin, has_perm
 from event_logs.models import EventLog
 from notification.utils import send_notifications
 from site_settings.utils import get_setting
-from exports.tasks import TendenciExportTask
+from exports.utils import run_export_task
 
 from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
@@ -266,15 +266,9 @@ def export(request, template_name="invoices/export.html"):
             'status',
         ]
         
-        if not settings.CELERY_IS_ACTIVE:
-            # if celery server is not present 
-            # evaluate the result and render the results page
-            result = TendenciExportTask()
-            response = result.run(Invoice, fields, file_name)
-            return response
-        else:
-            result = TendenciExportTask.delay(Invoice, fields, file_name)
-            return redirect('export.status', result.task_id)
+        export_id = run_export_task('invoices', 'invoice', fields)
+        
+        return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
