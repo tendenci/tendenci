@@ -16,9 +16,11 @@
 {% for day, items in chart_data.items %}
 	<td>
 		{% for item in items %}
+            {% if item.source %}
 			<a href="{% url reports-events-source item.source %}" title="{{ item.source }} ({{ item.count }})">
 				<div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
 			</a>
+            {% endif %}
 		{% endfor %}
 		{{ day.day }}
 		<div style="font-size: 10px;">{{ day|date:"D" }}</div>
@@ -32,7 +34,9 @@
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
+    {% if item.source %}
 	<a href="{% url reports-events-source item.source %}">{{ item.source }} ({{ item.count }})</a>
+    {% endif %}
 	</li>
 	{% endif %}
 {% endfor %}

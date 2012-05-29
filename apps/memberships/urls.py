@@ -11,14 +11,14 @@ urlpatterns = patterns("memberships.views",
 
     # notices
     (r'^notices/', include('memberships.notices.urls')),
-    
+
     # import
     url(r"^import/$", "membership_import_upload", name="membership_import"),
     url(r"^import/upload-file$", "membership_import_upload", name="membership_import_upload_file"),
     url(r"^import/preview/(?P<id>\d+)/$", "membership_import_preview", name="membership_import_preview"),
     url(r"^import/confirm/(?P<id>\d+)/$", "membership_import_confirm", name="membership_import_confirm"),
     url(r"^import/status/(?P<task_id>[-\w]+)/$", "membership_import_status", name='membership_import_status'),
-    
+
     # export
     url(r"^export/$", "membership_export", name="membership_export"),
 
@@ -41,7 +41,7 @@ urlpatterns = patterns("memberships.views",
 
     # notice
     url(r"^notices/(?P<id>\d+)/email_content/$", "notice_email_content", name="membership.notice_email_content"),
-    
+
     url(r"^emailtoverify/conf/$", "email_to_verify_conf", name="membership.email__to_verify_conf"),
     url(r"^verifyemail/(?P<id>\d+)/(?P<guid>[\d\w-]+)/$", "verify_email", name="membership.verify_email"),
 

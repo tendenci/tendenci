@@ -1,5 +1,6 @@
 {% load avatar_tags %}
 {% load profile_tags %}
+{% load profile_filters %}
 {% load perm_tags %}
 {% load base_filters %}
 {% load i18n %}
@@ -9,6 +10,11 @@
 <div class="profile-wrap">
     <h2>
         <a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{ profile.user.username }})</a>
+    	{% if profile.member_number %}
+    	{% if profile|allow_edit_by:user %}
+    	<span class="member-icon">Member ID: {{ profile.member_number}}</span>
+    	{% endif %}
+    	{% endif %}
     </h2>
     <div class="clear-right"></div>
 

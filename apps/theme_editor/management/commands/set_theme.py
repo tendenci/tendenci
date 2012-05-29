@@ -19,15 +19,18 @@ class Command(BaseCommand):
         from site_settings.models import Setting
 
         try:
-            setting = Setting.objects.filter(
+            setting = Setting.objects.get(
                 name='theme',
                 scope='module',
                 scope_category='theme_editor',
-            ).update(value=theme_name)
+            )
+            setting.set_value(theme_name)
+            setting.save()
             call_command('hide_settings', 'theme')
             call_command('update_settings', 'themes.%s' % theme_name.lstrip())
             call_command('clear_cache')
-        except:
+        except Setting.DoesNotExist:
             if int(options['verbosity']) > 0:
                 print "We could not update the theme because the setting or theme is not available."
+            
 
