@@ -6,7 +6,6 @@ django.jQuery('document').ready(function() {
             'Auth',
             'Avatar',
             'Djcelery',
-            'Notification',
             'Payments',
             'Photologue',
             'Photos',
