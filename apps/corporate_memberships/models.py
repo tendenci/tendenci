@@ -27,6 +27,7 @@ from perms.utils import is_admin, is_member
 from user_groups.models import GroupMembership
 from payments.models import PaymentMethod
 from perms.object_perms import ObjectPermission
+from profiles.models import Profile
 
 from base.utils import send_email_notification
 from corporate_memberships.settings import use_search_index
@@ -571,6 +572,10 @@ class CorporateMembership(TendenciBaseModel):
                 assign_to_user.username = get_unique_username(assign_to_user)
                 assign_to_user.set_password(assign_to_user.password)
                 assign_to_user.save() 
+                
+                # create a profile for this new user
+                Profile.objects.create_profile(assign_to_user)
+                
                     
             self.creator = assign_to_user
             self.creator_username = assign_to_user.username
