@@ -132,6 +132,9 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                     group=membership.membership_type.group
                 ).delete()
             # -----
+            
+            # populate or clear the member ID from profile based on the membership status
+            membership.populate_or_clear_member_id()
 
             # log membership details view
             EventLog.objects.log(**{

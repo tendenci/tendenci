@@ -460,6 +460,16 @@ class Membership(TendenciBaseModel):
             if profile and profile.member_number:                
                 profile.member_number = ''
                 profile.save()
+                
+    def populate_or_clear_member_id(self):
+        """
+        If the membership is active, populate the member ID to profile.
+        Otherwise, clear the member ID from profile. 
+        """
+        if all([self.status==1, self.status_detail == 'active']):
+            self.populate_user_member_id()
+        else:
+            self.clear_user_member_id()
 
 
 class MembershipArchive(TendenciBaseModel):
