@@ -33,12 +33,14 @@
 		</div>
 
 		<h1>{% firstof user_this.get_full_name user_this.username %}
+			</h1>
 			{% if profile.member_number %}
 			{% if profile|allow_edit_by:user %}
+			<div style="padding-bottom: 1em;">
 	    	<span class="member-icon">Member ID: {{ profile.member_number}}</span>
+	    	</div>
 	    	{% endif %}
 	    	{% endif %}
-			</h1>
 
 		{% if profile.company %}
 			<p>{{ profile.company }}</p>
