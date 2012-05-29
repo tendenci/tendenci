@@ -57,7 +57,8 @@ span.member-icon{
 	padding: 4px;
 	color: #fff;
 	background-color: #4E9258;
-	-moz-box-shadow: 0 0 5px #888;
+	font-weight: bold;
+	/*-moz-box-shadow: 0 0 5px #888;
 	-webkit-box-shadow: 0 0 5px #888;
-	box-shadow: 0 0 5px #888;
+	box-shadow: 0 0 5px #888;*/
 }
