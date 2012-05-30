@@ -193,7 +193,8 @@ class ImportMembershipsTask(Task):
                 for k, d in entry_dict.items():
 
                     entry_item = d['item'] or AppFieldEntry()
-                    field_name = clean_field_name(k).replace('_', '').strip()
+                    field_name = slugify(k).replace('-', '')
+                    field_name = clean_field_name(field_name).replace('_', '').strip()
                     imported_value = m.get(field_name, u'').strip()
 
                     if not entry_item.pk:
