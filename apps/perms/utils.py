@@ -120,15 +120,11 @@ def is_member(user):
     if hasattr(user, 'is_member'):
         return getattr(user, 'is_member')
     else:
-        try:
-            membership = user.memberships.get_membership()
-            if user.is_active:
-                status = membership.status == 1
-                active = membership.status_detail.lower() == 'active'
-                if all([status, active]):
-                    setattr(user, 'is_member', True)
-                    return True
-        except:
+        [profile] = user.profile.all()[:1] or [None]
+        if profile and profile.member_number:
+            setattr(user, 'is_member', True)
+            return True
+        else:
             setattr(user, 'is_member', False)
             return False
 
