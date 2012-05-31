@@ -77,10 +77,11 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
                 'instance': file,
             })
 
-    # update index
-    if file.type() != 'image':
-        file_index = FileIndex(File)
-        file_index.update_object(file)
+# commenting out the real time index for files 
+#    # update index
+#    if file.type() != 'image':
+#        file_index = FileIndex(File)
+#        file_index.update_object(file)
 
     # if image size specified
     if file.type()=='image' and size:  # if size specified
