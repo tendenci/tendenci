@@ -55,7 +55,7 @@ class Profile(TendenciBaseModel):
     work_phone = models.CharField(_('work phone'), max_length=50, blank=True)
     home_phone = models.CharField(_('home phone'), max_length=50, blank=True)
     mobile_phone = models.CharField(_('mobile phone'), max_length=50, blank=True)
-    email = models.CharField(_('email'), max_length=200,  blank=True)
+    #email = models.CharField(_('email'), max_length=200,  blank=True)
     email2 = models.CharField(_('email2'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True)
     url2 = models.CharField(_('url2'), max_length=100, blank=True)
@@ -100,10 +100,6 @@ class Profile(TendenciBaseModel):
         from campaign_monitor.utils import update_subscription
         if not self.id:
             self.guid = str(uuid.uuid1())
-        if self.pk:
-            old_email = Profile.objects.get(pk=self.pk).email
-        else:
-            old_email = ''
 
         # match allow_anonymous_view with opposite of hide_in_search
         if self.hide_in_search:
@@ -112,8 +108,10 @@ class Profile(TendenciBaseModel):
             self.allow_anonymous_view = True
 
         super(Profile, self).save(*args, **kwargs)
-        if old_email and old_email != self.email:
-            update_subscription(self, old_email)
+        
+        if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
+            update_subscription(self, self.old_email)
+            del self.old_email
         
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):

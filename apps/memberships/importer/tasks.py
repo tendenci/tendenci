@@ -79,7 +79,7 @@ class ImportMembershipsTask(Task):
                     profile.work_phone = m.get('workphone', '') or profile.work_phone
                     profile.home_phone = m.get('homephone', '') or profile.home_phone
                     profile.mobile_phone = m.get('mobilephone', '') or profile.mobile_phone
-                    profile.email = user.email
+                    #profile.email = user.email
                     profile.email2 = m.get('email2', '') or profile.email2
                     profile.url = m.get('website', '') or profile.url
                     profile.dob = dt_parse(m.get('dob', ''))
@@ -99,7 +99,7 @@ class ImportMembershipsTask(Task):
                     profile.work_phone = profile.work_phone or m.get('workphone', '')
                     profile.home_phone = profile.home_phone or m.get('homephone', '')
                     profile.mobile_phone = profile.mobile_phone or m.get('mobilephone', '')
-                    profile.email = user.email or m.get('email', '')
+                    #profile.email = user.email or m.get('email', '')
                     profile.email2 = profile.email2 or m.get('email2', '')
                     profile.url = profile.url or m.get('website', '')
                     profile.dob = profile.dob or dt_parse(m.get('dob', ''))

@@ -18,7 +18,7 @@ from event_logs.models import EventLog
 
 from profiles.models import Profile
 from profiles.utils import (get_groups, get_memberships, 
-    group_choices, app_choices)
+    group_choices, app_choices, update_user)
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -168,6 +168,7 @@ class ProfileForm(TendenciBaseForm):
             self.fields['first_name'].initial = self.user_this.first_name
             self.fields['last_name'].initial = self.user_this.last_name
             self.fields['username'].initial = self.user_this.username
+            self.fields['email'].initial = self.user_this.email
             if self.user_this.is_superuser and self.user_this.is_staff:
                 self.fields['security_level'].initial = "developer"
             elif self.user_this.is_staff:
@@ -239,24 +240,21 @@ class ProfileForm(TendenciBaseForm):
         """
         username = self.cleaned_data['username']
         email = self.cleaned_data['email']
+        params = {'first_name': self.cleaned_data['first_name'],
+                  'last_name': self.cleaned_data['last_name'],
+                  'email': self.cleaned_data['email'], }
+        
         if not self.user_this:
             password = self.cleaned_data['password1']
             new_user = User.objects.create_user(username, email, password)
-            new_user.first_name = self.cleaned_data['first_name']
-            new_user.last_name = self.cleaned_data['last_name']
-           
-            new_user.save()
-            self.instance.user = new_user
-            
-            # if not self.instance.owner:
-            self.instance.owner = request.user
+            self.instance.user = new_user 
+            update_user(new_user, **params)            
         else:
-            user_edit.username = username
-            user_edit.email = email
-            user_edit.first_name = self.cleaned_data['first_name']
-            user_edit.last_name = self.cleaned_data['last_name']
+            # for update_subscription
+            self.instance.old_email = user_edit.email
             
-            user_edit.save()
+            params.update({'username': username})
+            update_user(user_edit, **params) 
             
         if not self.instance.id:
             self.instance.creator = request.user

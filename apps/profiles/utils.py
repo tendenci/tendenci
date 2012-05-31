@@ -125,3 +125,9 @@ def app_choices(user):
     choices = [(app.pk, app.name) for app in apps]
     
     return choices
+
+def update_user(user, **kwargs):
+    for k, v in kwargs.iteritems():
+        if hasattr(user, k):
+            setattr(user, k, v)
+    user.save()

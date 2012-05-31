@@ -110,7 +110,7 @@ def update_subscription(profile, old_email):
             for listmap in group.listmap_set.all():
                 subscriber = Subscriber(listmap.list_id, old_email)
                 try:
-                    subscriber.update(profile.email, user.get_full_name(), [], False)
+                    subscriber.update(user.email, user.get_full_name(), [], False)
                 except BadRequest, e:
                     print e
             

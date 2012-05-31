@@ -333,8 +333,9 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             else:
                 user_edit.is_active = 0
 
-            profile.save()
             user_edit.save()
+            profile.save()
+            
             
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):

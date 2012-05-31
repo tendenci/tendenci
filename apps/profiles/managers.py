@@ -8,8 +8,7 @@ class ProfileManager(TendenciBaseManager):
                            creator_id=user.id,
                            creator_username=user.username,
                            owner_id=user.id,
-                           owner_username=user.username,
-                           email=user.email)
+                           owner_username=user.username)
 
     def search(self, query=None, *args, **kwargs):
         """
