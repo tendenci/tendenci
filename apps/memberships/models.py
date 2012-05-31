@@ -543,9 +543,13 @@ class MembershipImport(models.Model):
     )
 
     app = models.ForeignKey('App')
+    # active users
     interactive = models.IntegerField(choices=INTERACTIVE_CHOICES, default=0)
+    # overwrite already existing fields if match
     override = models.IntegerField(choices=OVERRIDE_CHOICES, default=0)
+    # uniqueness key
     key = models.CharField(max_length=50, choices=KEY_CHOICES, default="email")
+    
     creator = models.ForeignKey(User)
     create_dt = models.DateTimeField(auto_now_add=True)
     
