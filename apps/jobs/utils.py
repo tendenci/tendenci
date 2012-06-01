@@ -4,11 +4,10 @@ from django.contrib.contenttypes.models import ContentType
 from jobs.models import Job, JobPricing
 from invoices.models import Invoice
 from payments.models import Payment
-from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
 def get_payment_method_choices(user):
-    if is_admin(user):
+    if user.profile.is_superuser:
         return (('paid - check', 'User paid by check'),
                 ('paid - cc', 'User paid by credit card'),
                 ('Credit Card', 'Make online payment NOW'),)
@@ -91,7 +90,7 @@ def job_set_inv_payment(user, job, pricing):
             job.invoice = inv
             job.save()
             
-            if is_admin(user):
+            if user.profile.is_superuser:
                 if job.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
                     boo_inv = inv.tender(user) 
                     
@@ -107,7 +106,7 @@ def job_set_inv_payment(user, job, pricing):
                     
             
 def get_job_price(user, job, pricing):
-    if is_member(user):
+    if user.profile.is_member:
         if job.list_type == 'regular':
             return pricing.regular_price_member
         else:
@@ -127,7 +126,7 @@ def pricing_choices(user):
     choices = []
     pricings = JobPricing.objects.all()
     for pricing in pricings:
-        if is_member(user):
+        if user.profile.is_member:
             prices = "%s/%s" % (pricing.regular_price_member, pricing.premium_price_member)
         else:
             prices = "%s/%s" % (pricing.regular_price, pricing.premium_price)

@@ -20,7 +20,7 @@ from django.contrib.contenttypes import generic
 from base.utils import day_validate
 from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
-from perms.utils import get_notice_recipients, is_admin, has_perm
+from perms.utils import get_notice_recipients, has_perm
 from perms.object_perms import ObjectPermission
 from invoices.models import Invoice
 from directories.models import Directory
@@ -410,7 +410,7 @@ class Membership(TendenciBaseModel):
         return in_contract
 
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
 
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
@@ -892,7 +892,7 @@ class App(TendenciBaseModel):
         return initial
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
@@ -1023,7 +1023,7 @@ class AppEntry(TendenciBaseModel):
 
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:

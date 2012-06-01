@@ -22,7 +22,6 @@ from recurring_payments.utils import (RecurringPaymentEmailNotices,
                                       run_a_recurring_payment)
 from recurring_payments.authnet.cim import CIMCustomerProfile
 
-from perms.utils import is_admin
 from base.http import Http403
 from event_logs.models import EventLog
 from base.decorators import ssl_required
@@ -38,7 +37,7 @@ def view_account(request, recurring_payment_id,
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
     
     # only admin or user self can access this page
-    if not is_admin(request.user) and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
         raise Http403
     
     paid_payment_transactions = PaymentTransaction.objects.filter(
@@ -121,7 +120,7 @@ def my_accounts(request, username=None,
                         template_name="recurring_payments/my_accounts.html"):
     """View a person's all recurring payment accounts.
     """
-    isadmin = is_admin(request.user)
+    isadmin = request.user.profile.is_superuser
     
     if isadmin and username:
         u = get_object_or_404(User, username=username)
@@ -251,7 +250,7 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
     if request.user.is_authenticated():
         rp = get_object_or_404(RecurringPayment, pk=rp_id)
         # only admin or user self can access this page
-        if not is_admin(request.user) and request.user.id <> rp.user.id:
+        if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
             raise Http403
     else:
         if not rp_guid: raise Http403
@@ -282,7 +281,7 @@ def disable_account(request, rp_id,
     rp = get_object_or_404(RecurringPayment, pk=rp_id)
     
     # only admin or user self can access this page
-    if not is_admin(request.user) and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
         raise Http403
     if request.method == "POST":
         if request.POST.get('cancel'):

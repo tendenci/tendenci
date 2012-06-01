@@ -4,8 +4,6 @@
 {% load styled_forms %}
 {% load i18n %}
 
-{% is_admin user as admin %}
-
 {% block title %}Add {% firstof MODULE_JOBS_LABEL 'Job' %}{% endblock %}
 
 {% block extra_head %}
@@ -71,7 +69,7 @@
 		  step: 15
 		});
 	</script>
-    {% if admin %}
+    {% if request.user.is_superuser %}
     <script type="text/javascript">
 		$(document).ready(function(){
 			// delete confirmation

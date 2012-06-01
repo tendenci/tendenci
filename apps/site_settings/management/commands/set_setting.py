@@ -4,7 +4,7 @@ from django.core.cache import cache
 
 class Command(BaseCommand):
     """
-    Example: python manage.py set_setting site developer freepaid paid
+    Example: python manage.py set_setting site global siteurl http://example.com
     """
 
     def handle(self, scope=None, scope_category=None, name=None, value=None, **options):

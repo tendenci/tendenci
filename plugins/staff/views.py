@@ -11,7 +11,7 @@ from event_logs.models import EventLog
 from files.utils import get_image
 from site_settings.utils import get_setting
 from perms.utils import has_perm
-from perms.utils import is_admin, get_query_filters, has_view_perm
+from perms.utils import get_query_filters, has_view_perm
 
 
 from models import Staff
@@ -22,7 +22,7 @@ def details(request, slug=None, cv=None):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (staff.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (staff.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if cv:

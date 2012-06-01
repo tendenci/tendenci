@@ -11,7 +11,7 @@ from django.template.defaultfilters import slugify
 
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import (is_admin, is_member, get_notice_recipients, has_perm,
+from perms.utils import (get_notice_recipients, has_perm,
     has_view_perm, get_query_filters, update_perms_and_save)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -117,10 +117,10 @@ def print_view(request, slug, template_name="directories/print-view.html"):
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
     can_add_active = has_perm(request.user,'directories.add_directory')
     
-    if not any([is_admin(request.user),
+    if not any([request.user.profile.is_superuser,
                can_add_active,
                get_setting('module', 'directories', 'usercanadd'),
-               (is_member(request.user) and get_setting('module', 'directories', 'directoriesrequiresmembership'))
+               (request.user.profile.is_member and get_setting('module', 'directories', 'directoriesrequiresmembership'))
                ]):
         raise Http403
      
@@ -216,7 +216,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                       user=request.user)
     
     del form.fields['payment_method']
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         del form.fields['pricing']
         del form.fields['list_type']
     

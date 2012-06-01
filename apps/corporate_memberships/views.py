@@ -20,7 +20,7 @@ from django.db.models import Q
 from imports.utils import render_excel
 
 from base.http import Http403
-from perms.utils import has_perm, is_admin, is_member
+from perms.utils import has_perm
 from event_logs.models import EventLog
 
 from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
@@ -87,9 +87,9 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
         user - if paid, active, otherwise, pending 
     """ 
     corp_app = get_object_or_404(CorpApp, slug=slug)
-    user_is_admin = is_admin(request.user)
+    user_is_superuser = request.user.profile.is_superuser
     
-    if not user_is_admin and corp_app.status <> 1 and corp_app.status_detail <> 'active':
+    if not user_is_superuser and corp_app.status <> 1 and corp_app.status_detail <> 'active':
         raise Http403
 
     creator = None
@@ -106,7 +106,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
             return HttpResponseRedirect(reverse('corp_memb.add_pre', args=[slug]))
 
     field_objs = corp_app.fields.filter(visible=1)
-    if not user_is_admin:
+    if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     
     field_objs = list(field_objs.order_by('order'))
@@ -119,7 +119,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
     form.fields['payment_method'].choices = get_payment_method_choices(request.user, corp_app)
     
     # add an admin only block for admin
-    if user_is_admin:
+    if user_is_superuser:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
         field_objs.append(CorpField(label='Join Date', field_name='join_dt', admin_only=1))
         field_objs.append(CorpField(label='Status', field_name='status', admin_only=1))
@@ -237,13 +237,13 @@ def edit(request, id, template="corporate_memberships/edit.html"):
         if not corporate_membership.allow_edit_by(request.user):
             raise Http403
     
-    user_is_admin = is_admin(request.user)
+    user_is_superuser = request.user.profile.is_superuser
     
     corp_app = corporate_membership.corp_app
     
     # get the list of field objects for this corporate membership
     field_objs = corp_app.fields.filter(visible=1)
-    if not user_is_admin:
+    if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     
     field_objs = list(field_objs.order_by('order'))
@@ -270,7 +270,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
                         request.FILES or None, instance=corporate_membership)
     
     # add or delete fields based on the security level
-    if user_is_admin:
+    if user_is_superuser:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
         field_objs.append(CorpField(label='Join Date', field_name='join_dt', admin_only=1))
         field_objs.append(CorpField(label='Expiration Date', 
@@ -317,7 +317,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
             corp_memb_update_perms(corporate_membership)
             
             # send notification to administrators
-            if not user_is_admin:
+            if not user_is_superuser:
                 recipients = get_notice_recipients('module', 'corporate_membership', 'corporatemembershiprecipients')
                 extra_context = {
                     'object': corporate_membership,
@@ -360,7 +360,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
         messages.add_message(request, messages.INFO, 'The corporate membership "%s" has been renewed and is pending for admin approval.' % corporate_membership.name)
         return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
         
-    user_is_admin = is_admin(request.user)
+    user_is_superuser = request.user.profile.is_superuser
     
     corp_app = corporate_membership.corp_app
     
@@ -436,7 +436,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                     'corp_renew_entry': corp_renew_entry,
                     'invoice': inv,
                 }
-                if user_is_admin:
+                if user_is_superuser:
                     # admin: approve renewal
                     corporate_membership.approve_renewal(request)
                 else:
@@ -493,7 +493,7 @@ def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
         if not corporate_membership.allow_edit_by(request.user):
             raise Http403
         
-    #user_is_admin = is_admin(request.user)
+    #user_is_superuser = request.user.profile.is_superuser
     
     corp_app = corporate_membership.corp_app
     
@@ -513,8 +513,8 @@ def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
 def approve(request, id, template="corporate_memberships/approve.html"):
     corporate_membership = get_object_or_404(CorporateMembership, id=id)
     
-    user_is_admin = is_admin(request.user)
-    if not user_is_admin:
+    user_is_superuser = request.user.profile.is_superuser
+    if not user_is_superuser:
         raise Http403
     
     # if not in pending, go to view page
@@ -637,10 +637,10 @@ def view(request, id, template="corporate_memberships/view.html"):
     if has_perm(request.user, 'corporate_memberships.change_corporatemembership', corporate_membership):
         can_edit = True
     
-    user_is_admin = is_admin(request.user)
+    user_is_superuser = request.user.profile.is_superuser
     
     field_objs = corporate_membership.corp_app.fields.filter(visible=1)
-    if not user_is_admin:
+    if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     if not can_edit:
         field_objs = field_objs.exclude(field_name='corporate_membership_type')
@@ -651,7 +651,7 @@ def view(request, id, template="corporate_memberships/view.html"):
         field_objs.append(CorpField(label='Representatives', field_type='section_break', admin_only=0))
         field_objs.append(CorpField(label='Reps', field_name='reps', object_type='corporate_membership', admin_only=0))
         
-    if user_is_admin:
+    if user_is_superuser:
         field_objs.append(CorpField(label='Admin Only', field_type='section_break', admin_only=1))
         field_objs.append(CorpField(label='Join Date', field_name='join_dt', object_type='corporate_membership', admin_only=1))
         field_objs.append(CorpField(label='Expiration Date', field_name='expiration_dt', object_type='corporate_membership', admin_only=1))
@@ -680,7 +680,7 @@ def search(request, template_name="corporate_memberships/search.html"):
     
     query = request.GET.get('q', None)
     
-    if query == 'is_pending:true' and is_admin(request.user):
+    if query == 'is_pending:true' and request.user.profile.is_superuser:
         # pending list only for admins
         pending_rew_entry_ids = CorpMembRenewEntry.objects.filter(
                                     status_detail__in=['pending', 'paid - pending approval']
@@ -892,7 +892,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
         memberships = Membership.objects.filter(
                                             corporate_membership_id=corp_memb.id)
         
-    if is_admin(request.user) or corp_memb.is_rep(request.user):
+    if request.user.profile.is_superuser or corp_memb.is_rep(request.user):
         pass
     else:
         memberships = memberships.filter(status=1, status_detail='active')
@@ -915,7 +915,7 @@ def corp_import(request, step=None):
     """
     Corporate membership import.
     """
-    #if not is_admin(request.user):  # admin only page
+    #if not request.user.profile.is_superuser:  # admin only page
     #    raise Http403
 
     if not step:  # start from beginning
@@ -1211,7 +1211,7 @@ def corp_import(request, step=None):
 @staff_member_required
 def download_csv_import_template(request, file_ext='.csv'):
     from django.db.models.fields import AutoField
-    #if not is_admin(request.user):raise Http403   # admin only page
+    #if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     filename = "corporate_memberships_import.csv"
     
@@ -1251,7 +1251,7 @@ def download_csv_import_template(request, file_ext='.csv'):
 @staff_member_required
 def corp_import_invalid_records_download(request):
     
-    #if not is_admin(request.user):raise Http403   # admin only page
+    #if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     file_path = request.session.get('corp_memb.import.file_path')
     invalid_corp_membs = request.session.get('corp_memb.import.invalid_skipped')
@@ -1291,7 +1291,7 @@ def corp_import_invalid_records_download(request):
 
 @login_required
 def corp_export(request):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     template_name = 'corporate_memberships/export.html'
     form = ExportForm(request.POST or None, user=request.user)

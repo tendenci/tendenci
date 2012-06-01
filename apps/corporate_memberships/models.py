@@ -22,7 +22,6 @@ from invoices.models import Invoice
 from memberships.models import MembershipType, App, Membership
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from corporate_memberships.managers import CorporateMembershipManager
-from perms.utils import is_admin, is_member
 #from site_settings.utils import get_setting
 from user_groups.models import GroupMembership
 from payments.models import PaymentMethod
@@ -278,7 +277,7 @@ class CorporateMembership(TendenciBaseModel):
     
     @staticmethod
     def get_search_filter(user):
-        if is_admin(user): return None, None
+        if user.profile.is_superuser: return None, None
         
         filter_and, filter_or = None, None
         
@@ -289,7 +288,7 @@ class CorporateMembership(TendenciBaseModel):
                                   'corporate_memberships', 
                                   'membersearchcorporatemembers')
         
-        if allow_anonymous_search or (allow_member_search and is_member(user)):
+        if allow_anonymous_search or (allow_member_search and user.profile.is_member):
             filter_and =  {'status':1,
                            'status_detail':'active'}
         else:
@@ -611,7 +610,7 @@ class CorporateMembership(TendenciBaseModel):
         return False
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if get_setting('module', 
                      'corporate_memberships', 
@@ -628,7 +627,7 @@ class CorporateMembership(TendenciBaseModel):
         return False
     
     def allow_edit_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if not this_user.is_anonymous():
             if self.status == 1 and (self.status_detail not in ['inactive', 'admin hold'] ):

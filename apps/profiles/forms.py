@@ -10,7 +10,6 @@ from django.utils.safestring import mark_safe
 
 from base.fields import SplitDateTimeField
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin, is_developer
 from site_settings.utils import get_setting
 from user_groups.models import Group, GroupMembership
 from memberships.models import App, Membership
@@ -79,8 +78,8 @@ class ProfileForm(TendenciBaseForm):
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
         help_text = _("Enter the same password as above, for verification."))
     security_level = forms.ChoiceField(initial="user", choices=(('user','User'),
-                                                                ('admin','Admin'),
-                                                                ('developer','Developer'),))
+                                                                ('staff','Staff'),
+                                                                ('superuser','Superuser'),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,'Not Interactive (no login)'),))
     direct_mail =  forms.ChoiceField(initial=1, choices=((1, 'Yes'),(0, 'No'),))
@@ -169,10 +168,11 @@ class ProfileForm(TendenciBaseForm):
             self.fields['last_name'].initial = self.user_this.last_name
             self.fields['username'].initial = self.user_this.username
             self.fields['email'].initial = self.user_this.email
-            if self.user_this.is_superuser and self.user_this.is_staff:
-                self.fields['security_level'].initial = "developer"
+
+            if self.user_this.is_superuser:
+                self.fields['security_level'].initial = "superuser"
             elif self.user_this.is_staff:
-                self.fields['security_level'].initial = "admin"
+                self.fields['security_level'].initial = "staff"
             else:
                 self.fields['security_level'].initial = "user"
             if self.user_this.is_active == 1:
@@ -183,16 +183,13 @@ class ProfileForm(TendenciBaseForm):
             del self.fields['password1']
             del self.fields['password2']
             
-            if not is_admin(self.user_current):
+            if not self.user_current.profile.is_superuser:
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status']
                 del self.fields['status_detail']
-        
-        if is_admin(self.user_current) and not is_developer(self.user_current):
-            self.fields['security_level'].choices=(('user','User'), ('admin','Admin'),)
 
-        if not is_admin(self.user_current):
+        if not self.user_current.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 

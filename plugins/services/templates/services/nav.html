@@ -2,7 +2,6 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% is_admin user as user_is_admin %}
 {% has_perm user site_settings.change_setting as can_edit_setting %}
 {% has_perm user services.add_service as can_add_service %}
 
@@ -43,7 +42,7 @@
             {% if user.is_authenticated %}
                 <li><a href="{% url service.add %}">{% trans "Add" %} {% firstof MODULE_SERVICES_LABEL 'Service' %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if request.user.is_superuser %}
                 <li><a href="{% url service.pending %}">{% trans "Pending" %} {% firstof MODULE_SERVICES_LABEL_PLURAL 'Services' %}</a></li>
             {% endif %}
         </ul>

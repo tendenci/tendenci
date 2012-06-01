@@ -9,7 +9,7 @@ from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
-from perms.utils import has_perm, is_admin, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
+from perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
 
 from help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from help_files.forms import RequestForm, HelpFileForm

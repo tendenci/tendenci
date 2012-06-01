@@ -6,7 +6,6 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
 from perms.managers import TendenciBaseManager
-from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 #from memberships.models import Membership
 
@@ -31,7 +30,7 @@ class MemberAppManager(TendenciBaseManager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             sqs = sqs.all()  # admin
         else:
             if user.is_anonymous():
@@ -55,8 +54,6 @@ class MemberAppEntryManager(TendenciBaseManager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        from perms.utils import is_admin, is_member, is_developer
-
         sqs = kwargs.get('sqs', SearchQuerySet())
         sqs = sqs.models(self.model)
 
@@ -72,13 +69,13 @@ class MemberAppEntryManager(TendenciBaseManager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
         
-        if is_admin(user) or is_developer(user):
+        if user.profile.is_superuser:
             sqs = sqs.all()
         else:
             if user.is_anonymous():
                 sqs = anon3_sqs(sqs, status_detail=status_detail)
 
-            elif is_member(user):
+            elif user.profile.is_member:
                 sqs = self._member_sqs(sqs, user=user,
                 status_detail=status_detail)
             else:
@@ -168,7 +165,7 @@ def user_sqs(sqs, **kwargs):
     q = reduce(operator.or_, [q, perm_q])
 
     filtered_sqs = sqs.filter(q)
-    if not is_member(user):
+    if not user.profile.is_member:
         # all-members means members can view all other members
         if member_perms == "all-members":
             filtered_sqs = filtered_sqs.none()
@@ -197,11 +194,11 @@ class MembershipManager(Manager):
         sqs = SearchQuerySet()
         user = kwargs.get('user', AnonymousUser())
         user = impersonation(user)
-        
+
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             sqs = sqs.all()  # admin
         else:
             if user.is_anonymous():

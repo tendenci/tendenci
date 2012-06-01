@@ -7,7 +7,7 @@ from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.db.models import Q
-from perms.utils import has_perm, is_admin
+from perms.utils import has_perm
 from memberships.models import App, AppField, AppEntry, Membership, MembershipType
 
 
@@ -224,7 +224,7 @@ def has_app_perm(user, perm, obj=None):
     This consider's the app's status_detail
     """
     allow = has_perm(user, perm, obj)
-    if is_admin(user):
+    if user.profile.is_superuser:
         return allow
     if obj.status_detail != 'published':
         return allow

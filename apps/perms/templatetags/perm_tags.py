@@ -24,7 +24,7 @@ class HasPermNode(Node):
         if isinstance(user, User):
 
             # return true for admins
-            if utils.is_admin(user):
+            if user.profile.is_superuser:
                 has_perm = True
             else:
                 if self.object:
@@ -78,21 +78,22 @@ class IsAdminNode(Node):
         user = self.resolve(self.user, context)
 
         if isinstance(user, User):
-            is_admin = utils.is_admin(user)
+            is_superuser = user.profile.is_superuser
         else:
-            is_admin= False
+            is_superuser = False
     
         if self.var_name:
-            context[self.var_name] = is_admin
+            context[self.var_name] = is_superuser
             return ""
         else:
-            return is_admin
+            return is_superuser
 
 @register.tag
 def is_admin(parser, token):
     """
         {% is_admin user as context %}
-        {% is_admin user as context %}
+
+        This has been deprecated in favor of request.user.is_superuser
     """
     bits  = token.split_contents()
     
@@ -117,21 +118,22 @@ class IsDeveloperNode(Node):
         user = self.resolve(self.user, context)
         
         if isinstance(user, User):
-            is_developer = utils.is_developer(user)
+            is_superuser = user.profile.is_superuser
         else:
-            is_developer= False
+            is_superuser= False
     
         if self.var_name:
-            context[self.var_name] = is_developer
+            context[self.var_name] = is_superuser
             return ""
         else:
-            return is_developer
+            return is_superuser
 
 @register.tag
 def is_developer(parser, token):
     """
         {% is_developer user as context %}
-        {% is_developer user as context %}
+
+        This has been deprecated in favor of request.user.is_superuser
     """
     bits  = token.split_contents()
    

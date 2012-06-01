@@ -17,8 +17,7 @@
     <p>
     {% blocktrans with corporate_membership.name as member %}Thanks for renewing corporate membership "{{ member }}"!{% endblocktrans %}<br /><br />
     {% blocktrans with renew_entry.status_detail as status %}The status of the renewal: <b>{{ status }}{% endblocktrans %}</b> <br /><br />
-    	{% is_admin request.user as admin %}
-    	{% if not admin %}
+    	{% if not request.user.is_superuser %}
     		{% if  renew_entry.status_detail == "pending" or renew_entry.status_detail == "paid - pending approval" %}
 		    	{% trans "Your membership renewal will be reviewed by an administrator who will be contacting you shortly." %}
 	    	{% endif %}

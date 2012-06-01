@@ -2,10 +2,8 @@
 {% load base_filters %}
 {% load perm_tags %}
 
-{% is_admin request.user as is_admin %}
-
 {% if registration.enabled %}
-    {% if event.is_over and not is_admin %}
+    {% if event.is_over and not request.user.is_superuser %}
         <div class="registration-red">
             {% trans "Event has ended" %}
         </div>

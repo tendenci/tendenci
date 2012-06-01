@@ -56,7 +56,6 @@ def get_imp_user(username, real_user):
         Search for an impersonated user
         and return the user object
     """
-    from perms.utils import is_developer
 
     user = None
     if username == 'anonymous':
@@ -66,10 +65,6 @@ def get_imp_user(username, real_user):
             user = User.objects.get(username=username)
         except:
             pass
-
-    # Don't allow non-developers to impersonate developers
-    if not is_developer(real_user) and is_developer(user):
-        return None
 
     return user
 
@@ -102,7 +97,6 @@ class ImpersonationMiddleware(object):
         Persists with sessions. 
     """
     def process_request(self, request):
-        from perms.utils import is_admin
         session_impersonation = False
         message = False
         
@@ -116,7 +110,7 @@ class ImpersonationMiddleware(object):
             session_impersonation = request.session['is_impersonating']
         
         # check for session impersonation
-        if session_impersonation and is_admin(request.user):
+        if session_impersonation and request.user.profile.is_superuser:
             # kill impersonation on post requests
             # it means they are adding, editing, deleting stuff
             if request.method == 'POST':
@@ -149,7 +143,7 @@ class ImpersonationMiddleware(object):
             # set the impersonated user
             request.user.impersonated_user = new_user
             
-        elif '_impersonate' in request.GET and is_admin(request.user): # GET
+        elif '_impersonate' in request.GET and request.user.profile.is_superuser: # GET
             # kill impersonation on post requests
             # it means they are adding, editing, deleting stuff
             if request.method == 'POST':

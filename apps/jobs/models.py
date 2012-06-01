@@ -18,7 +18,6 @@ from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from jobs.module_meta import JobMeta
 from invoices.models import Invoice
-from perms.utils import is_admin
 
 
 class Job(TendenciBaseModel):
@@ -157,7 +156,7 @@ class Job(TendenciBaseModel):
         """
         Update the object after online payment is received.
         """
-        if not is_admin(request.user):
+        if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()

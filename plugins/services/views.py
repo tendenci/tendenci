@@ -12,7 +12,7 @@ from base.utils import now_localized
 from models import Service
 from forms import ServiceForm
 from perms.object_perms import ObjectPermission
-from perms.utils import get_notice_recipients, is_admin, get_query_filters, update_perms_and_save, has_perm, has_view_perm
+from perms.utils import get_notice_recipients, get_query_filters, update_perms_and_save, has_perm, has_view_perm
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
@@ -252,14 +252,14 @@ def delete(request, id, template_name="services/delete.html"):
         raise Http403
 
 def pending(request, template_name="services/pending.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     services = Service.objects.filter(status=0, status_detail='pending')
     return render_to_response(template_name, {'services': services},
             context_instance=RequestContext(request))
 
 def approve(request, id, template_name="services/approve.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     service = get_object_or_404(Service, pk=id)
 

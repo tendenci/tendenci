@@ -21,7 +21,6 @@ from events.models import Event, Place, RegistrationConfiguration, \
     CustomRegFieldEntry
 
 from payments.models import PaymentMethod
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -224,7 +223,7 @@ class FormForCustomRegForm(forms.ModelForm):
             if not (user.is_anonymous() or pricing.allow_anonymous):
                 already_registered = Registrant.objects.filter(user=user)
                 if already_registered:
-                    if not is_admin(user):
+                    if not user.profile.is_superuser:
                         raise forms.ValidationError('%s is already registered for this event' % user)
             
         return data
@@ -381,7 +380,7 @@ class EventForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             
@@ -846,7 +845,7 @@ class RegistrationForm(forms.Form):
             self.fields['payment_method'] = forms.ModelChoiceField(
                 empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
 
-            if user and is_admin(user):
+            if user and user.profile.is_superuser:
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
 
     def get_discount(self):

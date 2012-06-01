@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 from directories.models import DirectoryPricing
 from invoices.models import Invoice
 from payments.models import Payment
-from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 
 def get_duration_choices(user):
@@ -13,12 +12,12 @@ def get_duration_choices(user):
     choices = []
     for pricing in pricings:
         if pricing.duration == 0:
-            if is_admin(user):
+            if user.profile.is_superuser:
                 choice = (pricing.pk, 'Unlimited')
             else:
                 continue
         else:
-            if pricing.show_member_pricing and is_member(user):
+            if pricing.show_member_pricing and user.profile.is_member:
                 prices = "%s%s(R)/%s(P)" % (currency_symbol,pricing.regular_price_member, 
                                             pricing.premium_price_member)
             else:
@@ -30,7 +29,7 @@ def get_duration_choices(user):
     return choices
 
 def get_payment_method_choices(user):
-    if is_admin(user):
+    if user.profile.is_superuser:
         return (('paid - check', 'User paid by check'),
                 ('paid - cc', 'User paid by credit card'),
                 ('Credit Card', 'Make online payment NOW'),)
@@ -94,7 +93,7 @@ def directory_set_inv_payment(user, directory, pricing):
             directory.invoice = inv
             directory.save()
             
-            if is_admin(user):
+            if user.profile.is_superuser:
                 if directory.payment_method in ['paid - cc', 'paid - check', 'paid - wire transfer']:
                     boo_inv = inv.tender(user) 
                     
@@ -111,7 +110,7 @@ def directory_set_inv_payment(user, directory, pricing):
             
 def get_directory_price(user, directory, pricing):
     directory_price = 0
-    if is_member(user):
+    if user.profile.is_member:
         if directory.list_type == 'regular':
             return  pricing.regular_price_member
         else:
