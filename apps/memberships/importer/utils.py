@@ -164,7 +164,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
                     skipped = skipped + 1
                 # consider as update if already exists and is not yet skipped
                 if membership_exists and m['status__action'] != 'skip':
-                    m['status__action'] == 'update'
+                    m['status__action'] = 'update'
                     updated = updated + 1
 
         if m['joindate']:

@@ -29,7 +29,7 @@ class ImportMembershipsTask(Task):
         )
 
         for m in mems:
-            if not m['skipped']:
+            if m['status__action'] != 'skip':
                 # membership type exists; we have tested; can add more tests here
                 membership_type = MembershipType.objects.get(name=m['membershiptype'])
 
