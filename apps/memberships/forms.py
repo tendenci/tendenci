@@ -5,6 +5,7 @@ from os.path import join
 from datetime import datetime
 from hashlib import md5
 
+from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.forms.fields import CharField, ChoiceField, BooleanField
 from django.template.defaultfilters import slugify
@@ -517,6 +518,64 @@ class EntryEditForm(TendenciBaseForm):
         ('inactive','Inactive'),
     )
     
+    SALUTATION_CHOICES = (
+        ('Mr.', 'Mr.'),
+        ('Mrs.', 'Mrs.'),
+        ('Ms.', 'Ms.'),
+        ('Miss', 'Miss'),
+        ('Dr.', 'Dr.'),
+        ('Prof.', 'Prof.'),
+        ('Hon.', 'Hon.'),
+    )
+    
+    member_number = forms.CharField(required=False)
+    historical_member_number = forms.CharField(required=False)
+    #time_zone = TimeZoneField(_('timezone'))
+    language = forms.ChoiceField(choices=settings.LANGUAGES, initial=settings.LANGUAGE_CODE)
+    salutation = forms.ChoiceField(choices=SALUTATION_CHOICES, required=False)
+    initials = forms.CharField(required=False)
+    display_name = forms.CharField(required=False)
+    mailing_name = forms.CharField(required=False)
+    company = forms.CharField(required=False)
+    position_title = forms.CharField(required=False)
+    position_assignment = forms.CharField(required=False)
+    sex = forms.ChoiceField(required=False, choices=(('male', u'Male'),('female', u'Female')))
+    address_type = forms.CharField(required=False)
+    address = forms.CharField(required=False)
+    address2 = forms.CharField(required=False)
+    city = forms.CharField(required=False)
+    state = forms.CharField(required=False)
+    zipcode = forms.CharField(required=False)
+    country = forms.CharField(required=False)
+    county = forms.CharField(required=False)
+    phone = forms.CharField(required=False)
+    phone2 = forms.CharField(required=False)
+    fax = forms.CharField(required=False)
+    work_phone = forms.CharField(required=False)
+    home_phone = forms.CharField(required=False)
+    mobile_phone = forms.CharField(required=False)
+    email2 = forms.CharField(required=False)
+    url = forms.CharField(required=False)
+    url2 = forms.CharField(required=False)
+    dob = forms.DateTimeField(required=False)
+    ssn = forms.CharField(required=False)
+    spouse = forms.CharField(required=False)
+    department = forms.CharField(required=False)
+    education = forms.CharField(required=False)
+    student = forms.IntegerField(required=False)
+    remember_login = forms.BooleanField(required=False)
+    exported = forms.BooleanField(required=False)
+    direct_mail = forms.BooleanField(required=False)
+    notes = forms.CharField(required=False)
+    admin_notes = forms.CharField(required=False) 
+    referral_source = forms.CharField(required=False)
+    hide_in_search = forms.BooleanField(required=False)
+    hide_address = forms.BooleanField(required=False)
+    hide_email = forms.BooleanField(required=False)
+    hide_phone = forms.BooleanField(required=False)
+    first_responder = forms.BooleanField(required=False)
+    agreed_to_tos = forms.BooleanField(required=False)
+    original_username = forms.CharField()
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
     
     class Meta:
@@ -552,6 +611,54 @@ class EntryEditForm(TendenciBaseForm):
                     'decision_dt',
                     'judge',
                     'invoice',
+                    'member_number',
+                    'historical_member_number',
+                    #'time_zone',
+                    'language',
+                    'salutation',
+                    'initials',
+                    'display_name',
+                    'mailing_name',
+                    'company',
+                    'position_title',
+                    'position_assignment',
+                    'sex',
+                    'address_type',
+                    'address',
+                    'address2',
+                    'city',
+                    'state',
+                    'zipcode',
+                    'country',
+                    'county',
+                    'phone',
+                    'phone2',
+                    'fax',
+                    'work_phone',
+                    'home_phone',
+                    'mobile_phone',
+                    'email2',
+                    'url',
+                    'url2',
+                    'dob',
+                    'ssn',
+                    'spouse',
+                    'department',
+                    'education',
+                    'student',
+                    'remember_login',
+                    'exported',
+                    'direct_mail',
+                    'notes',
+                    'admin_notes',
+                    'referral_source',
+                    'hide_in_search',
+                    'hide_address',
+                    'hide_email',
+                    'hide_phone',
+                    'first_responder',
+                    'agreed_to_tos',
+                    'original_username',
                 ],
                 'legend': ''
             }),
