@@ -17,7 +17,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from event_logs.models import EventLog
-from perms.utils import is_admin, update_perms_and_save
+from perms.utils import update_perms_and_save
 
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import UPLOAD_ROOT

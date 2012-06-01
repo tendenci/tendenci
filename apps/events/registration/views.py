@@ -15,7 +15,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 
-from perms.utils import is_admin
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from memberships.models import Membership
@@ -69,7 +68,7 @@ def ajax_user(request, event_id):
     if not (user.is_anonymous() or pricing.allow_anonymous):
         used = Registrant.objects.filter(user=user)
         if used:
-            if not (pricing.allow_anonymous or is_admin(user)):
+            if not (pricing.allow_anonymous or user.profile.is_superuser):
                 data = json.dumps({"error":"REG"})
             else:
                 data = json.dumps({"message":"REG"})
@@ -202,7 +201,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
         raise Http404
     
     # check if it is still open, always open for admin users
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         status = reg_status(event, request.user)
         if status == REG_FULL:
             messages.add_message(request, messages.ERROR, _('Registration is full.'))

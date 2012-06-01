@@ -407,7 +407,7 @@ class RecurringPayment(models.Model):
         inv.bill_to_zip_code = profile.zipcode
         inv.bill_to_country = profile.country
         inv.bill_to_phone = profile.phone
-        inv.bill_to_email = profile.email
+        inv.bill_to_email = self.user.email
         inv.status = True
         
         if self.taxable and self.tax_rate:

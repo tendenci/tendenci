@@ -8,8 +8,7 @@ class ProfileManager(TendenciBaseManager):
                            creator_id=user.id,
                            creator_username=user.username,
                            owner_id=user.id,
-                           owner_username=user.username,
-                           email=user.email)
+                           owner_username=user.username)
 
     def search(self, query=None, *args, **kwargs):
         """
@@ -17,8 +16,11 @@ class ProfileManager(TendenciBaseManager):
         Returns a SearchQuerySet.
         Filter out users if they have hide_in_search set to True.
         """
-        from perms.utils import is_admin
         sqs = super(ProfileManager, self).search(query=query, *args, **kwargs)
-        if not is_admin(kwargs.get('user')):
+        if not kwargs.get('user').profile.is_superuser:
             sqs = sqs.filter(hide_in_search=False)
         return sqs
+
+class ProfileActiveManager(TendenciBaseManager):
+    def get_query_set(self):
+        return super(ProfileActiveManager, self).get_query_set().filter(status=True, status_detail='active', user__is_active=True)

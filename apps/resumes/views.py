@@ -12,7 +12,7 @@ from base.http import Http403
 from base.utils import now_localized
 from perms.object_perms import ObjectPermission
 from perms.utils import (update_perms_and_save, get_notice_recipients,
-    is_admin, has_perm, has_view_perm, get_query_filters)
+    has_perm, has_view_perm, get_query_filters)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -260,7 +260,7 @@ def delete(request, id, template_name="resumes/delete.html"):
 
 @login_required
 def pending(request, template_name="resumes/pending.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     resumes = Resume.objects.filter(status=0, status_detail='pending')
     return render_to_response(template_name, {'resumes': resumes},
@@ -268,7 +268,7 @@ def pending(request, template_name="resumes/pending.html"):
 
 @login_required
 def approve(request, id, template_name="resumes/approve.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     resume = get_object_or_404(Resume, pk=id)
 

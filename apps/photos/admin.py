@@ -2,7 +2,7 @@ from django.contrib import admin
 from photos.models import Image, Pool
 from photos.forms import PhotoAdminForm
 from event_logs.models import EventLog
-from perms.utils import is_admin, get_notice_recipients, update_perms_and_save
+from perms.utils import get_notice_recipients, update_perms_and_save
 from notification.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
@@ -71,7 +71,7 @@ class PhotoAdmin(admin.ModelAdmin):
         instance = update_perms_and_save(request, form, instance)
 
         # notifications
-        if not is_admin(request.user):
+        if not request.user.profile.is_superuser:
             # send notification to administrators
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients:

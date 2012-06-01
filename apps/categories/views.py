@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from perms.utils import is_admin
 from categories.forms import CategoryForm
 from categories.models import Category
 
@@ -72,7 +71,7 @@ def update(request, app_label, model, pk, form_class=CategoryForm, template_name
     else:
         form = form_class(content_type, initial=initial_form_data)
         
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         # remove the add links for non-admins
         form.fields['category'].help_text = ''
         form.fields['sub_category'].help_text = ''

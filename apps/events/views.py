@@ -27,7 +27,7 @@ from django.conf import settings
 from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import (has_perm, get_notice_recipients, is_admin,
+from perms.utils import (has_perm, get_notice_recipients,
     get_query_filters, update_perms_and_save, get_administrators, has_view_perm)
 from event_logs.models import EventLog
 from invoices.models import Invoice
@@ -176,9 +176,10 @@ def search(request, redirect=False, template_name="events/search.html"):
     else:
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
-        events = events.filter(start_dt__gte=start_dt)
         if event_type:
-            events = events.filter(type__slug=event_type)
+            events = events.filter(type__slug=event_type, end_dt__gte=start_dt, start_dt__lte=start_dt)
+        else:
+            events = events.filter(start_dt__gte=start_dt)
         if request.user.is_authenticated():
             events = events.select_related()
 
@@ -1036,7 +1037,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                 
                 # override event_price to price specified by admin
                 admin_notes = ''
-                if is_admin(request.user) and event_price > 0:
+                if request.user.profile.is_superuser and event_price > 0:
                     if event_price != reg_form.cleaned_data['amount_for_admin']:
                         admin_notes = "Price has been overriden for this registration. "
                     event_price = reg_form.cleaned_data['amount_for_admin']
@@ -2266,7 +2267,7 @@ def pending(request, template_name="events/pending.html"):
     """
     Show a list of pending events to be approved.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
         
     events = Event.objects.filter(status=False, status_detail='pending').order_by('start_dt')
@@ -2281,7 +2282,7 @@ def approve(request, event_id, template_name="events/approve.html"):
     Approve a selected event
     """
     
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     event = get_object_or_404(Event, pk=event_id)

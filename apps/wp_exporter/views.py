@@ -8,13 +8,13 @@ from django.utils.translation import ugettext as _
 from django.template import Template
 
 from base.http import Http403
-from perms.utils import has_perm, is_admin
+from perms.utils import has_perm
 from event_logs.models import EventLog
 from wp_exporter.utils import gen_xml
 from wp_exporter.forms import ExportForm
 
 def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     if request.method == "POST":

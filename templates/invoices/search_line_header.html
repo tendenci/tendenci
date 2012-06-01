@@ -2,8 +2,6 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% is_admin request.user as isadmin %}
-
 <tr>
                 <td colspan="6">
                     <div style="background-color: {{ obj_color }}; height: 5px;">&nbsp;</div>
@@ -23,7 +21,7 @@
                     {% else %}
                         <a href="{% url invoice.view invoice.pk %}" class="links"><img src="/site_media/static/images/icons/tendered65x12.gif" border="0" width="65"  height="12" alt="Tendered {{ invoice.tender_date|date:'N j, Y h:i a'}}"></a>&nbsp;
                     {% endif %} 
-                    {% if isadmin %}
+                    {% if request.user.is_superuser %}
                         <a href="{% url invoice.detail invoice.pk %}" class="links">
                         <img src="/site_media/static/images/icons/accounting12x12.gif"
                                border="0" width="12" height="12" alt="View Accounting Entries"></a>

@@ -22,8 +22,7 @@
     <h1>{{ entry.app.name }} {% if entry.is_renewal %}{% trans "Renewal" %}{% else %}{% trans "Submission" %}{% endif %}</h1>
 
     <form action="" method="post">
-    <div class="forms">
-        {% csrf_token %}
+    <div class="forms">{% csrf_token %}
         {{ form|styled_form }}
         <input type="submit" value="Save Changes" />
     </div>

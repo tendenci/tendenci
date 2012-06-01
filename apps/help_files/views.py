@@ -4,24 +4,16 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.conf import settings
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
-from perms.utils import (has_perm, is_admin, update_perms_and_save,
-    get_notice_recipients, has_view_perm, get_query_filters)
 from exports.utils import run_export_task
-
-from help_files.models import (HelpFile_Topics, Topic, HelpFile, 
-    HelpFileMigration, Request)
+from perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
+from help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from help_files.forms import RequestForm, HelpFileForm
-
-try:
-    from notification import models as notification
-except:
-    notification = None
+from notification import models as notification
 
 
 def index(request, template_name="help_files/index.html"):
@@ -43,7 +35,7 @@ def index(request, template_name="help_files/index.html"):
     topic_pks = sorted(list(set(topic_pks)))
 
     topics = Topic.objects.filter(pk__in=topic_pks)
-    m = len(topics)/2
+    m = len(topics) / 2
     topics = topics[:m], topics[m:] # two columns
     most_viewed = HelpFile.objects.filter(filters).order_by('-view_totals').distinct()[:5]
     featured = HelpFile.objects.filter(filters).filter(is_featured=True).distinct()[:5]

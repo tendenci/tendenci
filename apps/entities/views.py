@@ -10,7 +10,7 @@ from entities.models import Entity
 from entities.forms import EntityForm
 from perms.object_perms import ObjectPermission
 from event_logs.models import EventLog
-from perms.utils import is_admin, has_perm, update_perms_and_save, get_query_filters
+from perms.utils import has_perm, update_perms_and_save, get_query_filters
 
 def index(request, id=None, template_name="entities/view.html"):
     if not id: return HttpResponseRedirect(reverse('entity.search'))

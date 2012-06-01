@@ -19,8 +19,7 @@
 
 {% block body %}
 <div class="t">
- {% is_admin request.user as isadmin %}
- {% if isadmin %}
+ {% if request.user.is_superuser %}
  {% rp_nav request.user rp %}
  {% endif %}
  

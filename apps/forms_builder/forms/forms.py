@@ -15,7 +15,6 @@ from site_settings.utils import get_setting
 from payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin, is_developer
 from captcha.fields import CaptchaField
 from user_groups.models import Group
 
@@ -311,14 +310,11 @@ class FormForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields:
                 self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
-
-        if not is_developer(self.user):
-            if 'status' in self.fields: self.fields.pop('status')
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])

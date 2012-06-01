@@ -135,7 +135,8 @@
     {% event_search %}
 
     <div class="highlight">
-        {% blocktrans count events|length as events_count and start_dt|date:"F jS, Y" as search_dt %}You found {{ events_count }} event starting on or after {{ search_dt }}.{% plural %}You found {{ events_count }} events starting on or after {{ search_dt }}.{% endblocktrans %}
+            You found {{ events|length }} event{{ events|length|pluralize }}{% if event_type %}.{% else %} starting on or after {{ start_dt|date:"F jS, Y" }}.{% endif %}
+
     </div>
 
     {% autopaginate events 10 %}

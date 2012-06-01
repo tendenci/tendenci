@@ -14,7 +14,7 @@ from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
-from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters, has_view_perm
+from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from pages.models import Page
 from exports.utils import run_export_task
 
@@ -201,7 +201,7 @@ def delete(request, id, template_name="navs/delete.html"):
 
 @login_required
 def page_select(request, form_class=PageSelectForm):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     if request.method=="POST":

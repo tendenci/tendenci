@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 
 from models import SchipulEmployee
 from models import LegacyUser
-from utils import get_profile_defaults, legacy_user_is_developer, legacy_user_is_admin
+from utils import get_profile_defaults, legacy_user_developer, legacy_user_admin
 from profiles.utils import user_add_remove_admin_auth_group
 
 import hashlib
@@ -47,13 +47,9 @@ class LegacyUserBackend(object):
         user.is_superuser = False
 
         # test for legacy user rights and adjust accordingly
-        if legacy_user_is_developer(legacy_user):
+        if legacy_user_developer(legacy_user) or legacy_user_admin(legacy_user):
             user.is_staff = True
             user.is_superuser = True
-            
-        if legacy_user_is_admin(legacy_user):
-            user.is_staff = True
-            user.is_superuser = False
 
         try:
             user.save()

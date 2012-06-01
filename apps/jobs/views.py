@@ -17,8 +17,7 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
-from perms.utils import (get_notice_recipients, is_admin, is_developer,
-    update_perms_and_save, is_member, has_perm, get_query_filters,
+from perms.utils import (get_notice_recipients, update_perms_and_save, has_perm, get_query_filters,
     has_view_perm)
 from categories.forms import CategoryForm, CategoryForm2
 from categories.models import Category
@@ -128,7 +127,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
     
     content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
     
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         category_form_class = CategoryForm
     else:
         category_form_class = CategoryForm2
@@ -237,7 +236,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                         )
 
             # send user to thank you or view page
-            if is_admin(request.user):
+            if request.user.profile.is_superuser:
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
@@ -291,7 +290,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
         'category': getattr(category,'name','0'),
         'sub_category': getattr(sub_category,'name','0')
     }
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         category_form_class = CategoryForm
     else:
         category_form_class = CategoryForm2
@@ -302,7 +301,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                         prefix='category')
     
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         del form.fields['pricing']
         del form.fields['list_type']
         if form.fields.has_key('activation_dt'):

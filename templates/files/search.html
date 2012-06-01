@@ -6,8 +6,6 @@
 {% load search_tags %}
 {% load i18n %}
 
-{% is_admin user as admin %}
-
 {% block title %}{{ block.super }}Search{% endblock %}
 
 {% block extra_head %}
@@ -31,7 +29,7 @@
     {% for file in files %}
         {% search_result file %}
     {% empty %}
-        {% if admin %}
+        {% if request.user.is_superuser %}
             {% if request.GET.q %}
                 <div>{% trans "0 Results Found" %}</div>
             {% else %}

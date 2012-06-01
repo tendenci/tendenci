@@ -17,7 +17,6 @@ from django.core.files.storage import FileSystemStorage
 
 from haystack.query import SearchQuerySet
 from tinymce.widgets import TinyMCE
-from perms.utils import is_admin
 from base.fields import SplitDateTimeField
 
 from corporate_memberships.models import (CorporateMembership,
@@ -512,25 +511,65 @@ class AppFieldForm(forms.ModelForm):
 
 
 
-class EntryEditForm(forms.ModelForm):
-
+class EntryEditForm(TendenciBaseForm):
+    STATUS_CHOICES = (
+        ('active','Active'),
+        ('inactive','Inactive'),
+    )
+    
+    status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
+    
     class Meta:
         model = AppEntry
-        exclude = (
-            'hash',
+        fields = (
+            'app',
+            'user',
+            'membership',
             'entry_time',
-            'allow_anonymous_view',
-            'allow_anonymous_edit',
-            'allow_user_view',
-            'allow_user_edit',
-            'allow_member_view',
-            'allow_member_edit',
-            'creator_username',
-            'owner',
-            'owner_username',
+            'hash',
+            'is_renewal',
+            'is_approved',
+            'decision_dt',
+            'judge',
+            'invoice',
+            'user_perms',
+            'member_perms',
+            'group_perms',
             'status',
-            'status_detail'
+            'status_detail',
         )
+        
+        fieldsets = [
+            ('Membership Details', {
+                'fields': [
+                    'app',
+                    'user',
+                    'membership',
+                    'entry_time',
+                    'hash',
+                    'is_renewal',
+                    'is_approved',
+                    'decision_dt',
+                    'judge',
+                    'invoice',
+                ],
+                'legend': ''
+            }),
+            ('Permissions', {
+                'fields': [
+                    'allow_anonymous_view',
+                    'user_perms',
+                    'member_perms',
+                    'group_perms',
+                ],
+                'classes': ['permissions'],
+            }),
+            ('Administrator Only', {
+                'fields': [
+                    'status',
+                    'status_detail'], 
+                'classes': ['admin-only'],
+            })]
 
     def __init__(self, *args, **kwargs):
         super(EntryEditForm, self).__init__(*args, **kwargs)
@@ -539,8 +578,10 @@ class EntryEditForm(forms.ModelForm):
 
         is_corporate = instance.membership_type and \
             instance.membership_type.corporatemembershiptype_set.exists()
-
+        
+        print self.fields
         for entry_field in entry_fields:
+            print entry_field, 'field'
             field_type = entry_field.field.field_type  # shorten
             field_key = "%s.%s" % (entry_field.field.field_type, entry_field.pk)
 
@@ -642,7 +683,7 @@ class AppEntryForm(forms.ModelForm):
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
-        if is_admin(self.user):
+        if self.user.profile.is_superuser:
             self.form_fields = app.fields.visible()
             exclude_types = []
         else:
@@ -699,7 +740,7 @@ class AppEntryForm(forms.ModelForm):
                         choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.exclude(pk__in=exclude_types)]
                         field_args["choices"] = zip(choices, choices_with_price)
 
-                        if not is_admin(self.user):
+                        if not self.user.profile.is_superuser:
                             if not field_args['choices']:
                                 raise NoMembershipTypes('There are no membership types available for you in this application.')
 
@@ -980,7 +1021,6 @@ class ExportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         from base.http import Http403
         from site_settings.utils import get_setting
-        from perms.utils import is_member, is_admin
         from memberships.models import Membership
 
         self.user = kwargs.pop('user', None)
@@ -989,15 +1029,15 @@ class ExportForm(forms.Form):
         who_can_export = get_setting('module','memberships','memberexport')
 
         if who_can_export == 'admin-only':
-            if not is_admin(self.user):
+            if not self.user.profile.is_superuser:
                 raise Http403
         elif who_can_export == 'membership-of-same-type':
-            if not is_member(self.user):
+            if not self.user.profile.is_member:
                 raise Http403
             membership_types = self.user.memberships.values_list('membership_type').distinct()
             self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
         elif who_can_export == 'members':
-            if not is_member(self.user):
+            if not self.user.profile.is_member:
                 raise Http403
         elif who_can_export == 'users':
             if not self.user.is_authenticated():

@@ -77,19 +77,21 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
                 'instance': file,
             })
 
-    # update index
-    if file.type() != 'image':
-        file_index = FileIndex(File)
-        file_index.update_object(file)
+# commenting out the real time index for files 
+#    # update index
+#    if file.type() != 'image':
+#        file_index = FileIndex(File)
+#        file_index.update_object(file)
 
     # if image size specified
-    if file.type()=='image' and size:  # if size specified
-        size= [int(s) for s in size.split('x')]  # convert to list
+    if file.type() == 'image' and size:  # if size specified
+
+        size = [int(s) for s in size.split('x')]  # convert to list
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
-        response['Content-Disposition'] = '%s filename=%s'% (attachment, file.get_name())
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
         return response
@@ -97,10 +99,11 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
     # set mimetype
     if file.mime_type():
         response = HttpResponse(data, mimetype=file.mime_type())
-    else: raise Http404
+    else:
+        raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s'% (attachment, file.get_name())
+    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
     return response
 
 def search(request, template_name="files/search.html"):

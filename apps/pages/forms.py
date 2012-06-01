@@ -2,7 +2,6 @@ import imghdr
 from os.path import splitext, basename
 
 from pages.models import Page
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -144,7 +143,7 @@ class PageForm(TendenciBaseForm):
         template_choices += get_template_list()
         self.fields['template'].choices = template_choices
         
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

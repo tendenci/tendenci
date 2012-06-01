@@ -7,7 +7,7 @@ from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.db.models import Q
-from perms.utils import has_perm, is_admin
+from perms.utils import has_perm
 from memberships.models import App, AppField, AppEntry, Membership, MembershipType
 
 
@@ -109,10 +109,20 @@ def csv_to_dict(file_path, **kwargs):
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
-
+        
     cols = xrange(len(colnames))
     lst = []
-
+    
+    # make sure colnames are unique
+    duplicates = {}
+    for i in cols:
+        for j in cols:
+            # compare with previous and next fields
+            if i != j and colnames[i] == colnames[j]:
+                number = duplicates.get(colnames[i], 0) + 1
+                duplicates[colnames[i]] = number
+                colnames[j] = colnames[j] + "-" + str(number)
+    
     for row in csv_file:
         entry = {}
         rows = len(row) - 1
@@ -224,7 +234,7 @@ def has_app_perm(user, perm, obj=None):
     This consider's the app's status_detail
     """
     allow = has_perm(user, perm, obj)
-    if is_admin(user):
+    if user.profile.is_superuser:
         return allow
     if obj.status_detail != 'published':
         return allow

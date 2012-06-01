@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
 from resumes.models import Resume
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -163,7 +162,7 @@ class ResumeForm(TendenciBaseForm):
             fields_to_pop += [
                'captcha'
             ]
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             fields_to_pop += [
                 'allow_anonymous_view',
                 'user_perms',

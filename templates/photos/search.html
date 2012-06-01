@@ -1,12 +1,9 @@
 {% extends "photos/base.html" %}
 {% load pagination_tags %}
 {% load photo_tags %}
-{% load perm_tags %}
 {% load search_tags %}
 {% load humanize %}
 {% load i18n %}
-
-{% is_admin user as admin %}
 
 {% block title %}{% blocktrans %}Photos{% endblocktrans %}{% endblock %}
 {% block meta_description %}{{ block.super }}{% endblock %}

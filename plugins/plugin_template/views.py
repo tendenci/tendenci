@@ -8,8 +8,6 @@ from S_P_LOW.models import S_S_CAP
 from perms.utils import get_notice_recipients, has_perm
 from event_logs.models import EventLog
 
-from perms.utils import is_admin
-
 try:
     from notification import models as notification
 except:

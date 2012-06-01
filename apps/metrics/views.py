@@ -5,13 +5,12 @@ from django.template import RequestContext
 from django.db.models import Avg, Max, Min, Count, Sum
 
 from base.http import Http403
-from perms.utils import is_admin
 from metrics.models import Metric
 
 @login_required
 def index(request, template_name="metrics/index.html"):
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     seven_days_ago = datetime.datetime.now() - datetime.timedelta(days=7)

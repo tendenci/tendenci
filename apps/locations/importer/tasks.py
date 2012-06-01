@@ -14,14 +14,12 @@ class ImportLocationsTask(Task):
 
     def run(self, user, file_path, fields, **kwargs):
 
-        from django.template.defaultfilters import slugify
-
         location_fields = [f.name for f in Location._meta.fields]
 
         #get parsed membership dicts
         imported = []
         locs, stats = parse_locs_from_csv(file_path, fields)
-        
+
         for m in locs:
             if not m['skipped']:
                 # Create Location object

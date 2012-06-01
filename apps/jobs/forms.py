@@ -8,7 +8,6 @@ from django.template.defaultfilters import slugify
 
 from captcha.fields import CaptchaField
 from jobs.models import Job
-from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -195,7 +194,7 @@ class JobForm(TendenciBaseForm):
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             #self.fields['pricing'].initial = JobPricing.objects.filter(duration=self.instance.requested_duration)[0]
-            if is_admin(self.user):
+            if self.user.profile.is_superuser:
                 self.fields['status_detail'].choices = STATUS_DETAIL_CHOICES
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
@@ -226,7 +225,7 @@ class JobForm(TendenciBaseForm):
                'captcha'
             ]
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             fields_to_pop += [
                 'slug',
                 'entity',
@@ -240,11 +239,6 @@ class JobForm(TendenciBaseForm):
                 'syndicate',
                 'status',
                 'status_detail'
-            ]
-
-        if not is_developer(self.user):
-            fields_to_pop += [
-               'status'
             ]
 
         for f in list(set(fields_to_pop)):
