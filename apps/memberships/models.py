@@ -990,18 +990,18 @@ class AppEntry(TendenciBaseModel):
     """
     An entry submitted via a membership application.
     """
-    app = models.ForeignKey("App", related_name="entries", editable=False)
-    user = models.ForeignKey(User, null=True, editable=False)
-    membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
+    app = models.ForeignKey("App", related_name="entries")
+    user = models.ForeignKey(User, null=True)
+    membership = models.ForeignKey("Membership", related_name="entries", null=True)
     entry_time = models.DateTimeField(_("Date/Time"))
     hash = models.CharField(max_length=40, null=True, default='')
 
-    is_renewal = models.BooleanField(editable=False)
-    is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
-    decision_dt = models.DateTimeField(null=True, editable=False)
-    judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
+    is_renewal = models.BooleanField()
+    is_approved = models.NullBooleanField(_('Status'), null=True)
+    decision_dt = models.DateTimeField(null=True)
+    judge = models.ForeignKey(User, null=True, related_name='entries')
 
-    invoice = models.ForeignKey(Invoice, null=True, editable=False)
+    invoice = models.ForeignKey(Invoice, null=True)
     
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
