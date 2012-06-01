@@ -109,10 +109,20 @@ def csv_to_dict(file_path, **kwargs):
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
-
+        
     cols = xrange(len(colnames))
     lst = []
-
+    
+    # make sure colnames are unique
+    duplicates = {}
+    for i in cols:
+        for j in cols:
+            # compare with previous and next fields
+            if i != j and colnames[i] == colnames[j]:
+                number = duplicates.get(colnames[i], 0) + 1
+                duplicates[colnames[i]] = number
+                colnames[j] = colnames[j] + "-" + str(number)
+    
     for row in csv_file:
         entry = {}
         rows = len(row) - 1
