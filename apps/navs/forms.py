@@ -2,7 +2,6 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 from pages.models import Page
 from navs.models import Nav, NavItem
 

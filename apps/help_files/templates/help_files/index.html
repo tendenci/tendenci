@@ -12,7 +12,6 @@
 
 {% block body %}
 
-{% is_admin request.user as admin %}
 {% has_perm request.user help_files.add_helpfile as can_add %}
 <div class="t">
     {% help_file_nav request.user %}

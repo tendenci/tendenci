@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import has_perm, is_admin, get_query_filters, has_view_perm
+from perms.utils import has_perm, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 
 from models import ArchitectureProject, Category, BuildingType

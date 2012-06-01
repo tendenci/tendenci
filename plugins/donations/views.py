@@ -11,7 +11,7 @@ from site_settings.utils import get_setting
 from base.http import Http403
 from base.utils import tcurrency
 from event_logs.models import EventLog
-from perms.utils import get_notice_recipients, is_admin
+from perms.utils import get_notice_recipients
 from perms.utils import has_perm
 from base.utils import get_unique_username
 from profiles.models import Profile
@@ -85,7 +85,7 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             # updated the invoice_id for mp, so save again
             donation.save(user)
             
-            if is_admin(request.user): 
+            if request.user.profile.is_superuser: 
                 if donation.payment_method in ['paid - check', 'paid - cc']:
                     # the admin accepted payment - mark the invoice paid
                     invoice.tender(request.user)

@@ -261,26 +261,6 @@
 	{% endif %}
 				
 				
-	{% if old_profile.email != profile.email %}
-				<tr class="body_copy">
-				  <td valign="top"><div align="left">
-					 <font face="Arial, Helvetica, sans-serif" size="2">
-				{% trans "Email" %}</font></div></td>
-				  <td valign="top"><div align="left">
-					 <font face="Arial, Helvetica, sans-serif" size="2">
-				
-				{% if old_profile.email %}
-					{{ old_profile.email }}</font></div></td>
-				{% else %}
-					{% trans "BLANK" %}</font></div></td>
-				{% endif %}
-				
-				  <td valign="top"><div align="left">
-					 <font face="Arial, Helvetica, sans-serif" size="2">
-				{{ profile.email}}</font></div></td>
-				</tr>
-	{% endif %}
-				
 	{% if old_profile.email2 != profile.email2 %}
 				<tr class="body_copy">
 				  <td valign="top"><div align="left">

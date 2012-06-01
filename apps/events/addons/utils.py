@@ -2,11 +2,9 @@ from datetime import datetime
 
 from django.contrib.auth.models import User, AnonymousUser
 
-from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
-
 from events.models import Event, Addon, AddonOption
-    
+
 def get_active_addons(event):
     """
     Returns all active addons of an event.
@@ -21,7 +19,7 @@ def get_available_addons(event, user):
     
     addons = get_active_addons(event)
     
-    if is_admin(user):
+    if user.profile.is_superuser:
         # return all if admin is user
         return addons
     
@@ -37,11 +35,11 @@ def get_available_addons(event, user):
                 continue
             
             # Members allowed
-            if addon.allow_member and is_member(user):
+            if addon.allow_member and user.profile.is_member:
                 continue
             
             # Group members allowed
-            if addon.group and addon.group.is_member(user):
+            if addon.group and addon.group.user.profile.is_member:
                 continue
             
             # user failed all permission checks

@@ -16,7 +16,7 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from perms.utils import (update_perms_and_save, get_notice_recipients,
-    is_admin, has_perm,  get_query_filters)
+    has_perm,  get_query_filters)
 from categories.forms import CategoryForm
 from categories.models import Category
 from site_settings.utils import get_setting
@@ -37,7 +37,7 @@ def index(request, slug=None, template_name="pages/view.html"):
     
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (page.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (page.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if not page.template or not check_template(page.template):
@@ -183,7 +183,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % page)
             
-            if not is_admin(request.user):
+            if not request.user.profile.is_superuser:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
                 if recipients:
@@ -312,7 +312,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % page)
             
-            if not is_admin(request.user):
+            if not request.user.profile.is_superuser:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
                 if recipients:

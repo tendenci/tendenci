@@ -10,7 +10,7 @@ from base.http import Http403
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
-from perms.utils import (get_notice_recipients, has_perm, is_admin,
+from perms.utils import (get_notice_recipients, has_perm,
     update_perms_and_save, get_query_filters)
 from theme.shortcuts import themed_response as render_to_response
 
@@ -28,7 +28,7 @@ def detail(request, slug=None, template_name="news/view.html"):
     
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (news.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (news.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     # check permission
@@ -55,8 +55,8 @@ def search(request, template_name="news/search.html"):
     else:
         filters = get_query_filters(request.user, 'news.view_news')
         news = News.objects.filter(filters).distinct()
-        if request.user.is_authenticated():
-            news = news.select_related()  
+
+ 
     news = news.order_by('-release_dt')
 
     log_defaults = {

@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 from base.http import Http403
 from perms.utils import update_perms_and_save, has_perm
 from event_logs.models import EventLog
-from perms.utils import is_admin
 
 from lots.models import Lot, Map, Line
 from lots.forms import LotForm, MapForm, LineForm

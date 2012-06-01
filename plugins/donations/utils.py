@@ -3,7 +3,6 @@
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from invoices.models import Invoice
-from perms.utils import is_admin
 from site_settings.utils import get_setting
 
 def donation_inv_add(user, donation, **kwargs):
@@ -74,7 +73,7 @@ def donation_email_user(request, donation, invoice, **kwargs):
         pass
 
 def get_payment_method_choices(user):
-    if is_admin(user):
+    if user.profile.is_superuser:
         return (('paid - check', 'User paid by check'),
                 ('paid - cc', 'User paid by credit card'),
                 ('Credit Card', 'Make online payment NOW'),)

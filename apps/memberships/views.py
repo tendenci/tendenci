@@ -17,7 +17,7 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from base.http import Http403
 from base.utils import send_email_notification
-from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
+from perms.utils import update_perms_and_save, get_query_filters
 from perms.utils import has_perm
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from geraldo.generators import PDFGenerator
@@ -132,6 +132,9 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                     group=membership.membership_type.group
                 ).delete()
             # -----
+            
+            # populate or clear the member ID from profile based on the membership status
+            membership.populate_or_clear_member_id()
 
             # log membership details view
             EventLog.objects.log(**{
@@ -219,7 +222,7 @@ def application_details(request, template_name="memberships/applications/details
         corporate_membership = get_object_or_404(CorporateMembership, id=cmb_id)
         # check if they have verified their email or entered the secret code
         is_verified = False
-        if is_admin(request.user) or app.corp_app.authentication_method == 'admin':
+        if request.user.profile.is_superuser or app.corp_app.authentication_method == 'admin':
             is_verified = True
         elif app.corp_app.authentication_method == 'email':
             try:
@@ -252,16 +255,15 @@ def application_details(request, template_name="memberships/applications/details
     initial_dict = {}
     if hasattr(user, 'memberships'):
         is_only_a_member = [
-            is_developer(user) == False,
-            is_admin(user) == False,
-            is_member(user) == True,
+            user.profile.is_superuser == False,
+            user.profile.is_member == True,
         ]
 
         if corporate_membership:
             # exclude corp. reps, creator and owner - they should be able to add new
             is_only_a_member.append(corporate_membership.allow_edit_by(user) == False)
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             username = request.GET.get('username', unicode())
             if username:
                 try:
@@ -321,7 +323,7 @@ def application_details(request, template_name="memberships/applications/details
             entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
-            if is_admin(user):
+            if user.profile.is_superuser:
                 return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
             # send "joined" notification
@@ -411,7 +413,7 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
         raise Http404
 
     form = AppCorpPreForm(request.POST or None)
-    if is_admin(request.user) or app.corp_app.authentication_method == 'admin':
+    if request.user.profile.is_superuser or app.corp_app.authentication_method == 'admin':
         del form.fields['secret_code']
         del form.fields['email']
         from utils import get_corporate_membership_choices
@@ -673,7 +675,7 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
     """
     entry = get_object_or_404(AppEntry, id=id)  # exists
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403  # not permitted
 
     # log entry view
@@ -715,7 +717,7 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
     """
     entry = get_object_or_404(AppEntry, id=id)  # exists
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403  # not permitted
 
     if request.method == "POST":
@@ -781,7 +783,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
 
 @login_required
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     notice = get_object_or_404(Notice, pk=id)
 
@@ -798,7 +800,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
     to the import mapping/preview page of the import file
     """
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     if request.method == 'POST':
@@ -846,7 +848,7 @@ def membership_import_preview(request, id):
     This will generate a form based on the uploaded CSV for field mapping.
     A preview will be generated based on the mapping given.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     memport = get_object_or_404(MembershipImport, pk=id)
@@ -893,7 +895,7 @@ def membership_import_confirm(request, id):
     This can only be accessed via a hidden post form from the preview page.
     That will hold the original mappings selected by the user.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     memport = get_object_or_404(MembershipImport, pk=id)
@@ -925,7 +927,7 @@ def membership_import_status(request, task_id, template_name='memberships/import
     """
     Checks if a membership import is completed.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     try:

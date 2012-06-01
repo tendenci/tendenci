@@ -186,8 +186,7 @@
 				<div class="clear"></div>
 			</div>
 
-			{% is_admin user as admin %}
-			{% if admin %}
+			{% if request.user.is_superuser %}
 			<div class="admin-block">
 
 				<div class="item-text">

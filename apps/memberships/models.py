@@ -20,7 +20,7 @@ from django.contrib.contenttypes import generic
 from base.utils import day_validate
 from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
-from perms.utils import get_notice_recipients, is_admin, has_perm
+from perms.utils import get_notice_recipients, has_perm
 from perms.object_perms import ObjectPermission
 from invoices.models import Invoice
 from directories.models import Directory
@@ -410,7 +410,7 @@ class Membership(TendenciBaseModel):
         return in_contract
 
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
 
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
@@ -439,6 +439,8 @@ class Membership(TendenciBaseModel):
                        profile.member_number <> self.member_number]):
                     profile.member_number = self.member_number
                     profile.save()
+                    # set the is_member attr to True for this user
+                    setattr(self.user, 'is_member', True)
                     
                     if verbosity >=2:
                         print 'Added member number %s for %s.' % (self.member_number, 
@@ -460,6 +462,18 @@ class Membership(TendenciBaseModel):
             if profile and profile.member_number:                
                 profile.member_number = ''
                 profile.save()
+                # set the is_member attr to False for this user
+                setattr(self.user, 'is_member', False)
+                
+    def populate_or_clear_member_id(self):
+        """
+        If the membership is active, populate the member ID to profile.
+        Otherwise, clear the member ID from profile. 
+        """
+        if all([self.status==1, self.status_detail == 'active']):
+            self.populate_user_member_id()
+        else:
+            self.clear_user_member_id()
 
 
 class MembershipArchive(TendenciBaseModel):
@@ -882,7 +896,7 @@ class App(TendenciBaseModel):
         return initial
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
@@ -1013,7 +1027,7 @@ class AppEntry(TendenciBaseModel):
 
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:

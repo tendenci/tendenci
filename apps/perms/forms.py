@@ -1,8 +1,6 @@
-from os.path import join
-from django.conf import settings
 from perms.fields import GroupPermissionField, groups_with_perms
-from perms.fields import UserPermissionField, user_perm_bits
-from perms.fields import MemberPermissionField, member_perm_bits
+from perms.fields import UserPermissionField
+from perms.fields import MemberPermissionField
 from perms.fields import group_choices
 from form_utils.forms import BetterModelForm
 
@@ -62,6 +60,8 @@ class TendenciBaseForm(BetterModelForm):
         return value
 
     def __init__(self, *args, **kwargs):
+        from perms.fields import user_perm_bits
+        from perms.fields import member_perm_bits
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         else:

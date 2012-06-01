@@ -294,7 +294,7 @@
 	    {% endfor %}
     {% endif %}
     
-    {% if request.user.is_admin %}
+    {% if request.user.is_superuser %}
         {% if registrant.registration.invoice.admin_notes %}
             {% trans "admin notes: " %}{{ registrant.registration.invoice.admin_notes }}
         {% endif %}

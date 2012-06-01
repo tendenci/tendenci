@@ -7,7 +7,6 @@ from dateutil import parser
 
 from site_settings.models import Setting
 from site_settings.utils import get_setting
-from perms.utils import is_admin
 from theme.shortcuts import themed_response
 
 @login_required
@@ -16,7 +15,7 @@ def index(request, template_name="dashboard/index.html"):
         profile_redirect = Setting.objects.get(scope = 'site', scope_category = 'global', name = 'profile_redirect')
     except Setting.DoesNotExist:
         profile_redirect = ''
-    if profile_redirect and profile_redirect.value != '/dashboard' and not is_admin(request.user):
+    if profile_redirect and profile_redirect.value != '/dashboard' and not request.user.profile.is_superuser:
         return redirect(profile_redirect.value)
     
     # self signup  free trial version

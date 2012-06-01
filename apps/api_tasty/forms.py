@@ -1,12 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
 from tastypie.models import ApiKey
-from perms.utils import is_developer
 from perms.models import TendenciBaseModel
 
 class ApiKeyForm(forms.ModelForm):
     """
-    From for setting up ApiKeys for developers.
+    From for setting up ApiKeys for superusers.
     """
     
     class Meta:
@@ -15,8 +14,8 @@ class ApiKeyForm(forms.ModelForm):
         
     def clean_user(self):
         user = self.cleaned_data['user']
-        if not is_developer(user):
-            raise forms.ValidationError('This user is not a developer.')
+        if not user.profile.is_superuser:
+            raise forms.ValidationError('This user is not a superuser.')
         return user
 
 class TendenciForm(forms.ModelForm):
@@ -27,4 +26,3 @@ class TendenciForm(forms.ModelForm):
 
     class Meta:
         model = TendenciBaseModel
-        

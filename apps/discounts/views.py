@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters
+from perms.utils import has_perm, update_perms_and_save, get_query_filters
 from event_logs.models import EventLog
 from theme.shortcuts import themed_response as render_to_response
 

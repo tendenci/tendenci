@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import has_perm, has_view_perm, get_query_filters, is_admin
+from perms.utils import has_perm, has_view_perm, get_query_filters
 
 from models import Testimonial
 
@@ -15,7 +15,7 @@ def details(request, pk=None, template_name="testimonials/view.html"):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (testimonial.status_detail).lower() != 'active' and (not is_admin(request.user)):
+    if (testimonial.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if has_perm(request.user, 'testimonials.view_testimonial', testimonial):

@@ -12,7 +12,6 @@ from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from dateutil.relativedelta import relativedelta
 from site_settings.utils import get_setting
-from perms.utils import is_admin
 from memberships.models import AppField, Membership
 from invoices.models import Invoice
 from payments.models import Payment
@@ -38,7 +37,7 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
     cmt_list = []
     corporate_membership_types = corpapp.corp_memb_type.all()
     
-    if not is_admin(user):
+    if not user.profile.is_superuser:
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
     corporate_membership_types = corporate_membership_types.order_by('order')
     currency_symbol = get_setting("site", "global", "currencysymbol")
@@ -82,7 +81,7 @@ def get_indiv_membs_choices(corp):
 def get_payment_method_choices(user, corp_app):
     payment_methods = corp_app.payment_methods.all()
     
-    if not is_admin(user):
+    if not user.profile.is_superuser:
         payment_methods = payment_methods.filter(admin_only=False)
     
     pm_choices = []    
@@ -157,7 +156,7 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.save(user)
 
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             # if offline payment method
             if not corp_memb.get_payment_method().is_online:
                 inv.tender(user) # tendered the invoice for admin if offline

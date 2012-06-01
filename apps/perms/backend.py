@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Permission
 from django.db.models.base import Model
 
 from perms.object_perms import ObjectPermission
-from perms.utils import is_member, can_view
+from perms.utils import can_view
 
 
 class ObjectPermBackend(object):
@@ -131,7 +131,7 @@ class ObjectPermBackend(object):
                     return True
                 if user.is_authenticated() and obj.allow_user_view:
                     return True
-                if is_member(user) and obj.allow_member_view:
+                if user.profile.is_member and obj.allow_member_view:
                     return True
 
         if perm_type == 'change':
@@ -143,7 +143,7 @@ class ObjectPermBackend(object):
                     return True
                 if user.is_authenticated() and obj.allow_user_edit:
                     return True
-                if is_member(user) and obj.allow_member_edit:
+                if user.profile.is_member and obj.allow_member_edit:
                     return True
 
         # no anonymous user currently

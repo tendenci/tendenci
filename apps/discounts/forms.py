@@ -5,7 +5,6 @@ from decimal import Decimal
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 from discounts.models import Discount
 from base.fields import SplitDateTimeField
 
@@ -60,7 +59,7 @@ class DiscountForm(TendenciBaseForm):
         
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             

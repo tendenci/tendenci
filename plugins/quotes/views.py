@@ -10,7 +10,6 @@ from perms.object_perms import ObjectPermission
 from perms.utils import get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from event_logs.models import EventLog
 
-from perms.utils import is_admin
 from notification import models as notification
 
 def details(request, pk=None, template_name="quotes/view.html"):
@@ -19,7 +18,7 @@ def details(request, pk=None, template_name="quotes/view.html"):
     
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (quote.status_detail).lower() != 'active' and (not is_admin(request.user)):
+    if (quote.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
     
     if has_view_perm(request.user, 'quotes.view_quote', quote):
