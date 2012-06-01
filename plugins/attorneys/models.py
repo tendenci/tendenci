@@ -1,9 +1,12 @@
+import os
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.contrib.contenttypes import generic
+from django.db.models.signals import pre_delete
 
 from perms.object_perms import ObjectPermission
 from tagging.fields import TagField
@@ -107,3 +110,16 @@ class Attorney(TendenciBaseModel):
 class Photo(File):
     attorney = models.ForeignKey(Attorney)
     file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
+
+def delete_photos(sender, **kwargs):
+    instance = kwargs.pop('instance')
+    for photo in instance.photo_set.all():
+        print photo
+        if photo.file:
+            path = photo.file.path
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
+pre_delete.connect(delete_photos, sender=Attorney)
