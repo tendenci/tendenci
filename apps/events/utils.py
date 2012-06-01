@@ -696,6 +696,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
             'amount': price.price,
             'qualifies': qualifies,
             'failure_type': failure_type,
+            'display_order': price.display_order
         }
     else:
         if now >= price.start_dt and now <= price.end_dt:
@@ -704,6 +705,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
                 'amount': price.price,
                 'qualifies': qualifies,
                 'failure_type': failure_type,
+                'display_order': price.display_order
             }
         else:
             pricing = {}
@@ -839,7 +841,7 @@ def get_pricing(user, event, pricing=None):
     if pricing_list:
         sorted_pricing_list = sorted(
             pricing_list, 
-            key=lambda k: k['amount']
+            key=lambda k:( k['display_order'], k['amount'])
         )
 
         # set a default pricing on the first
