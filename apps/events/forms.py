@@ -637,10 +637,8 @@ class Reg8nEditForm(BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
+            'discount_eligible',
             'use_custom_reg',
-            #'use_custom_reg_form',
-            #'bind_reg_form_to_conf_only',
-            #'reg_form',
         )
 
         fieldsets = [('Registration Configuration', {
@@ -648,10 +646,8 @@ class Reg8nEditForm(BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
+                    'discount_eligible',
                     'use_custom_reg'
-                    #'use_custom_reg_form',
-                    #'bind_reg_form_to_conf_only',
-                    #'reg_form'
                     ],
           'legend': ''
           })
@@ -832,10 +828,15 @@ class RegistrationForm(forms.Form):
         self.count = kwargs.pop('count', 0)
         self.free_event = event_price <= 0
         super(RegistrationForm, self).__init__(*args, **kwargs)
+        
+        reg_conf =  event.registration_configuration
+        
+        if not self.free_event and reg_conf.discount_eligible:
+            display_discount = True
+        else:
+            display_discount = False 
 
         if not self.free_event:
-            reg_conf =  event.registration_configuration
-
             if reg_conf.can_pay_online:
                 payment_methods = reg_conf.payment_method.all()
             else:
@@ -848,8 +849,13 @@ class RegistrationForm(forms.Form):
             if user and user.profile.is_superuser:
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
 
+        if not display_discount:
+            del self.fields['discount_code']
+
     def get_discount(self):
-        if self.is_valid() and self.cleaned_data['discount_code']:
+        # don't use all() because we don't want to evaluate all items if one of them is false
+        if self.is_valid() and hasattr(self.cleaned_data, 'discount_code') and \
+                self.cleaned_data['discount_code']:
             try:
                 discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
                 if discount.available_for(self.count):

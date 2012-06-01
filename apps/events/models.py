@@ -288,6 +288,7 @@ class RegistrationConfiguration(models.Model):
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
+    discount_eligible = models.BooleanField(default=True)
 
     # custom reg form
     use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
