@@ -1001,7 +1001,7 @@ class AppEntry(TendenciBaseModel):
     hash = models.CharField(max_length=40, null=True, default='')
 
     is_renewal = models.BooleanField()
-    is_approved = models.NullBooleanField(_('Status'), null=True)
+    is_approved = models.NullBooleanField(_('Approved'), null=True)
     decision_dt = models.DateTimeField(null=True)
     judge = models.ForeignKey(User, null=True, related_name='entries')
 

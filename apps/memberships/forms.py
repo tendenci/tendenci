@@ -527,19 +527,22 @@ class EntryEditForm(TendenciBaseForm):
         ('Prof.', 'Prof.'),
         ('Hon.', 'Hon.'),
     )
+    SEX_CHOICES = (
+        ('male', u'Male'),
+        ('female', u'Female'),
+    )
     
-    member_number = forms.CharField(required=False)
-    historical_member_number = forms.CharField(required=False)
-    #time_zone = TimeZoneField(_('timezone'))
-    language = forms.ChoiceField(choices=settings.LANGUAGES, initial=settings.LANGUAGE_CODE)
     salutation = forms.ChoiceField(choices=SALUTATION_CHOICES, required=False)
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
     initials = forms.CharField(required=False)
-    display_name = forms.CharField(required=False)
-    mailing_name = forms.CharField(required=False)
+    member_number = forms.CharField(required=False)
+    sex = forms.ChoiceField(required=False, choices=SEX_CHOICES)
+    language = forms.ChoiceField(choices=settings.LANGUAGES, initial=settings.LANGUAGE_CODE)
     company = forms.CharField(required=False)
     position_title = forms.CharField(required=False)
     position_assignment = forms.CharField(required=False)
-    sex = forms.ChoiceField(required=False, choices=(('male', u'Male'),('female', u'Female')))
+    mailing_name = forms.CharField(required=False)
     address_type = forms.CharField(required=False)
     address = forms.CharField(required=False)
     address2 = forms.CharField(required=False)
@@ -554,43 +557,30 @@ class EntryEditForm(TendenciBaseForm):
     work_phone = forms.CharField(required=False)
     home_phone = forms.CharField(required=False)
     mobile_phone = forms.CharField(required=False)
-    email2 = forms.CharField(required=False)
+    email = forms.EmailField(required=False)
+    email2 = forms.EmailField(required=False)
     url = forms.CharField(required=False)
     url2 = forms.CharField(required=False)
-    dob = forms.DateTimeField(required=False)
-    ssn = forms.CharField(required=False)
+    dob = forms.DateTimeField(required=False, label='Date of Birth')
+    ssn = forms.CharField(required=False, label='Social Security Number')
     spouse = forms.CharField(required=False)
     department = forms.CharField(required=False)
     education = forms.CharField(required=False)
     student = forms.IntegerField(required=False)
-    remember_login = forms.BooleanField(required=False)
-    exported = forms.BooleanField(required=False)
-    direct_mail = forms.BooleanField(required=False)
     notes = forms.CharField(required=False)
-    admin_notes = forms.CharField(required=False) 
+    admin_notes = forms.CharField(required=False)
     referral_source = forms.CharField(required=False)
-    hide_in_search = forms.BooleanField(required=False)
-    hide_address = forms.BooleanField(required=False)
-    hide_email = forms.BooleanField(required=False)
-    hide_phone = forms.BooleanField(required=False)
-    first_responder = forms.BooleanField(required=False)
-    agreed_to_tos = forms.BooleanField(required=False)
-    original_username = forms.CharField()
+    
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
     
     class Meta:
         model = AppEntry
         fields = (
-            'app',
-            'user',
-            'membership',
-            'entry_time',
-            'hash',
             'is_renewal',
             'is_approved',
+            'entry_time',
             'decision_dt',
             'judge',
-            'invoice',
             'user_perms',
             'member_perms',
             'group_perms',
@@ -601,28 +591,23 @@ class EntryEditForm(TendenciBaseForm):
         fieldsets = [
             ('Membership Details', {
                 'fields': [
-                    'app',
-                    'user',
-                    'membership',
-                    'entry_time',
-                    'hash',
                     'is_renewal',
                     'is_approved',
+                    'entry_time',
                     'decision_dt',
                     'judge',
-                    'invoice',
-                    'member_number',
-                    'historical_member_number',
-                    #'time_zone',
-                    'language',
+                    # profile fields
                     'salutation',
+                    'first_name',
+                    'last_name',
                     'initials',
-                    'display_name',
-                    'mailing_name',
+                    'sex',
+                    'member_number',
+                    'language',
                     'company',
                     'position_title',
                     'position_assignment',
-                    'sex',
+                    'mailing_name',
                     'address_type',
                     'address',
                     'address2',
@@ -637,6 +622,7 @@ class EntryEditForm(TendenciBaseForm):
                     'work_phone',
                     'home_phone',
                     'mobile_phone',
+                    'email',
                     'email2',
                     'url',
                     'url2',
@@ -646,19 +632,9 @@ class EntryEditForm(TendenciBaseForm):
                     'department',
                     'education',
                     'student',
-                    'remember_login',
-                    'exported',
-                    'direct_mail',
                     'notes',
                     'admin_notes',
                     'referral_source',
-                    'hide_in_search',
-                    'hide_address',
-                    'hide_email',
-                    'hide_phone',
-                    'first_responder',
-                    'agreed_to_tos',
-                    'original_username',
                 ],
                 'legend': ''
             }),
@@ -685,10 +661,8 @@ class EntryEditForm(TendenciBaseForm):
 
         is_corporate = instance.membership_type and \
             instance.membership_type.corporatemembershiptype_set.exists()
-        
-        print self.fields
+            
         for entry_field in entry_fields:
-            print entry_field, 'field'
             field_type = entry_field.field.field_type  # shorten
             field_key = "%s.%s" % (entry_field.field.field_type, entry_field.pk)
 
@@ -726,33 +700,122 @@ class EntryEditForm(TendenciBaseForm):
                     field_args["choices"] = zip(choices, choices)
 
             self.fields[field_key] = field_class(**field_args)
+        
+        # profile
+        if self.instance:
+            profile = self.instance.user.profile
+            self.fields['salutation'].initial = profile.salutation
+            self.fields['first_name'].initial = profile.user.first_name
+            self.fields['last_name'].initial = profile.user.last_name
+            self.fields['initials'].initial = profile.initials
+            self.fields['sex'].initial = profile.sex
+            self.fields['member_number'].initial = profile.member_number
+            self.fields['language'].initial = profile.language
+            self.fields['company'].initial = profile.company
+            self.fields['position_title'].initial = profile.position_title
+            self.fields['position_assignment'].initial = profile.position_assignment
+            self.fields['mailing_name'].initial = profile.mailing_name
+            self.fields['address_type'].initial = profile.address_type
+            self.fields['address'].initial = profile.address
+            self.fields['address2'].initial = profile.address2
+            self.fields['city'].initial = profile.city
+            self.fields['state'].initial = profile.state
+            self.fields['zipcode'].initial = profile.zipcode
+            self.fields['country'].initial = profile.country
+            self.fields['county'].initial = profile.county
+            self.fields['phone'].initial = profile.phone
+            self.fields['phone2'].initial = profile.phone2
+            self.fields['fax'].initial = profile.fax
+            self.fields['work_phone'].initial = profile.work_phone
+            self.fields['home_phone'].initial = profile.home_phone
+            self.fields['mobile_phone'].initial = profile.mobile_phone
+            self.fields['email'].initial = profile.user.email
+            self.fields['email2'].initial = profile.email2
+            self.fields['url'].initial = profile.url
+            self.fields['url2'].initial = profile.url2
+            self.fields['dob'].initial = profile.dob
+            self.fields['ssn'].initial = profile.ssn
+            self.fields['spouse'].initial = profile.spouse
+            self.fields['department'].initial = profile.department
+            self.fields['education'].initial = profile.education
+            self.fields['student'].initial = profile.student
+            self.fields['notes'].initial = profile.notes
+            self.fields['admin_notes'].initial = profile.admin_notes
+            self.fields['referral_source'].initial = profile.referral_source
+            profile.save()
 
     def save(self, *args, **kwargs):
         super(EntryEditForm, self).save(*args, **kwargs)
         
+        membership_type = None
         for key, value in self.cleaned_data.items():
-            pk = key.split('.')[1]
+            if len(key.split('.')) > 1:
+                pk = key.split('.')[1]
+                membership_type = None
+                membership_type_entry_pk = 0
+                
+                if 'corporate_membership' in key:
+                    corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
+                    membership_type = corp_memb.corporate_membership_type.membership_type
 
-            membership_type = None
-            membership_type_entry_pk = 0
+                if 'membership-type' in key:
+                    membership_type_entry_pk = pk
 
-            if 'corporate_membership' in key:
-                corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
-                membership_type = corp_memb.corporate_membership_type.membership_type
+                AppFieldEntry.objects.filter(pk=pk).update(value=value)
 
-            if 'membership-type' in key:
-                membership_type_entry_pk = pk
-
-            AppFieldEntry.objects.filter(pk=pk).update(value=value)
-
-            # update membership entry_field
-            if membership_type and membership_type_entry_pk:
-                AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type.name)
+                # update membership entry_field
+                if membership_type and membership_type_entry_pk:
+                    AppFieldEntry.objects.filter(pk=membership_type_entry_pk).update(value=membership_type.name)
 
         # update membership.membership_type relationship
         if self.instance.membership and membership_type:
             self.instance.membership.membership_type = membership_type
             self.instance.save()
+            
+        # update profile
+        if self.instance:
+            data = self.cleaned_data
+            profile = self.instance.user.profile
+            profile.salutation = data['salutation']
+            profile.user.first_name = data['first_name']
+            profile.user.last_name = data['last_name']
+            profile.initials = data['initials']
+            profile.sex = data['sex']
+            profile.member_number = data['member_number']
+            profile.language = data['language']
+            profile.company = data['company']
+            profile.position_title = data['position_title']
+            profile.position_assignment = data['position_assignment']
+            profile.mailing_name = data['mailing_name']
+            profile.address_type = data['address_type']
+            profile.address = data['address']
+            profile.address2 = data['address2']
+            profile.city = data['city']
+            profile.state = data['state']
+            profile.zipcode = data['zipcode']
+            profile.country = data['country']
+            profile.county = data['county']
+            profile.phone = data['phone']
+            profile.phone2 = data['phone2']
+            profile.fax = data['fax']
+            profile.work_phone = data['work_phone']
+            profile.home_phone = data['home_phone']
+            profile.mobile_phone = data['mobile_phone']
+            profile.user.email = data['email']
+            profile.email2 = data['email2']
+            profile.url = data['url']
+            profile.url2 = data['url2']
+            profile.dob = data['dob']
+            profile.ssn = data['ssn']
+            profile.spouse = data['spouse']
+            profile.department = data['department']
+            profile.education = data['education']
+            profile.student = data['student']
+            profile.notes = data['notes']
+            profile.admin_notes = data['admin_notes']
+            profile.referral_source = data['referral_source']
+            profile.user.save()
+            profile.save()
 
         return self.instance
 
