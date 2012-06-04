@@ -3,11 +3,13 @@
 
 <div class="wrap-search-item">
     <div class="search-item lots-search-item">
-        <h2><a href="{% url lots.map_detail map.id %}">{{ map.name }}</a></h2>
+        <h2><a href="{% url lots.map_detail map.pk %}">{{ map.name }}</a></h2>
         <div class="map-wrap">
             <p>{{ map.description }}</p>
             {% if map.file %}
-                <img src="{{ map.file|thumbnail:'200x200'}}" alt="{{ map.description }}">
+                <a href="{% url lots.map_detail map.id %}" title="{{ map.description }}">
+                    <img src="{{ map.file|thumbnail:'200x200'}}" alt="{{ map.description }}">
+                </a>
             {% endif %}
         </div>
     </div>
