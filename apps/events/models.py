@@ -33,7 +33,7 @@ from events.settings import (FIELD_MAX_LENGTH,
                              USER_FIELD_CHOICES)
 from base.utils import localize_date
 
-
+DEFAULT_HONOR_SYSTEM = get_setting('module', 'events', 'honorsystemregistration')
 
 class TypeColorSet(models.Model):
     """
@@ -272,7 +272,7 @@ class Registrant(models.Model):
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
-
+print DEFAULT_HONOR_SYSTEM, 'aaa'
 class RegistrationConfiguration(models.Model):
     """
     Event registration
@@ -286,6 +286,11 @@ class RegistrationConfiguration(models.Model):
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
+    
+    honor_system = models.BooleanField(help_text="If checked, no verification will be " + \
+                        "performed during the registration. Otherwise, users will be verified " + \
+                        "by the email address for the qualification of the price option selected.",
+                        default=DEFAULT_HONOR_SYSTEM)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
     discount_eligible = models.BooleanField(default=True)

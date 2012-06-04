@@ -639,6 +639,7 @@ class Reg8nEditForm(BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
+            'honor_system',
             'discount_eligible',
             'use_custom_reg',
         )
@@ -648,6 +649,7 @@ class Reg8nEditForm(BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
+                    'honor_system',
                     'discount_eligible',
                     'use_custom_reg'
                     ],
