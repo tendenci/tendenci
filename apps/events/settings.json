@@ -117,5 +117,22 @@
         "scope_category": "events", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "false", 
+        "description": "This setting sets the default for the Honor System Option in an event. If set to True, users will be verified by the email address for the qualification of the price option selected. Otherwise, no verification will be performed during the registration. In both cases, users will have the access to all non-admin price options regardless of their login status.", 
+        "data_type": "boolean", 
+        "update_dt": "2012-06-04 11:27:11", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "honorsystemregistration", 
+        "value": "false", 
+        "label": "Honor System Registration", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "events", 
+        "store": true, 
+        "updated_by": ""
     }
 ]
