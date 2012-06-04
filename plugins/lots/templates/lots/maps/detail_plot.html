@@ -16,6 +16,11 @@
             {% endfor %}                
             </map>
         </div>
+
+        {% for lot in lots %}
+            <div>{{ lot }}</div>
+        {% endfor %}
+
         {% include "lots/maps/meta.html" %} 
     </div>
 </div>
