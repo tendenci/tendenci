@@ -302,7 +302,7 @@ def thank_you(request, template_name="resumes/thank-you.html"):
 def export(request, template_name="resumes/export.html"):
     """Export Resumes"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

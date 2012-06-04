@@ -1,10 +1,8 @@
-import os
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from django.conf import settings
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -293,7 +291,7 @@ def articles_report(request, template_name='reports/articles.html'):
                 item['per_day'] = item['count'] * 1.0
         except Article.DoesNotExist:
             pass
-            
+
     # special sort option
     if sort == 'day':
         stats = sorted(stats, key=lambda item: item['per_day'], reverse=True)
@@ -306,10 +304,10 @@ def articles_report(request, template_name='reports/articles.html'):
 @login_required
 def export(request, template_name="articles/export.html"):
     """Export Articles"""
-    
-    if not is_admin(request.user):
+
+    if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         fields = [
@@ -339,7 +337,6 @@ def export(request, template_name="articles/export.html"):
         ]
         export_id = run_export_task('articles', 'article', fields)
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
-

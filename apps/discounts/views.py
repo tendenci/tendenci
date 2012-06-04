@@ -124,26 +124,27 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
             return redirect('discount.detail', id=discount.id)
     else:
         form = form_class(instance=discount, user=request.user)
-        
+
     return render_to_response(
         template_name,
         {
-            'form':form,
-            'discount':discount,
+            'form': form,
+            'discount': discount,
         },
         context_instance=RequestContext(request),
     )
+
 
 @login_required
 def delete(request, id, template_name="discounts/delete.html"):
     discount = get_object_or_404(Discount, pk=id)
 
-    if not has_perm(request.user,'discounts.delete_discount', discount):
+    if not has_perm(request.user, 'discounts.delete_discount', discount):
         raise Http403
-    
+
     if request.method == "POST":
         log_defaults = {
-            'event_id' : 1010300,
+            'event_id': 1010300,
             'event_data': '%s (%d) deleted by %s' % (discount._meta.object_name, discount.pk, request.user),
             'description': '%s deleted' % discount._meta.object_name,
             'user': request.user,
@@ -151,15 +152,16 @@ def delete(request, id, template_name="discounts/delete.html"):
             'instance': discount,
         }
         EventLog.objects.log(**log_defaults)
-        
+
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
         discount.delete()
-        
+
         return redirect('discounts')
 
-    return render_to_response(template_name, {'discount': discount}, 
+    return render_to_response(template_name, {'discount': discount},
         context_instance=RequestContext(request))
-    
+
+
 @csrf_exempt
 def discounted_price(request, form_class=DiscountCodeForm):
     if request.method == 'POST':
@@ -167,32 +169,32 @@ def discounted_price(request, form_class=DiscountCodeForm):
         if form.is_valid():
             return HttpResponse(json.dumps(
                 {
-                    "error":False,
-                    "price":str(form.new_price()[0]),
-                    "discount":str(form.new_price()[1]),
-                    "message":"Your discount of $ %s has been added."%str(form.new_price()[1]),
+                    "error": False,
+                    "price": unicode(form.new_price()[0]),
+                    "discount": unicode(form.new_price()[1]),
+                    "message": "Your discount of $ %s has been added." % unicode(form.new_price()[1]),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {
-                "error":True,
-                "message":"This is not a valid discount code.",
+                "error": True,
+                "message": "This is not a valid discount code.",
             }), mimetype="text/plain")
     else:
         form = form_class()
     return HttpResponse(
         "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
         mimetype="text/html")
-        
+
+
 @login_required
 def export(request, template_name="discounts/export.html"):
     """Export Discounts"""
-    
-    if not is_admin(request.user):
+
+    if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
-        file_name = "discounts.csv"
         fields = [
             'discount_code',
             'start_dt',
@@ -203,6 +205,6 @@ def export(request, template_name="discounts/export.html"):
         ]
         export_id = run_export_task('discounts', 'discount', fields)
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

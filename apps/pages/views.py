@@ -381,7 +381,7 @@ def delete(request, id, template_name="pages/delete.html"):
 def export(request, template_name="pages/export.html"):
     """Export Pages"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

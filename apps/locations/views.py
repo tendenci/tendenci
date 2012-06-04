@@ -12,7 +12,7 @@ from django.contrib import messages
 from base.http import Http403
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
-from perms.utils import (is_admin, has_perm, has_view_perm,
+from perms.utils import (has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
 from perms.decorators import admin_required
 from theme.shortcuts import themed_response as render_to_response
@@ -364,7 +364,7 @@ def locations_import_status(request, task_id, template_name='locations/import-co
 def export(request, template_name="locations/export.html"):
     """Export Locations"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

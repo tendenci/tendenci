@@ -8,14 +8,11 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
-from django.conf import settings
 
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import (is_admin, is_member, get_notice_recipients,
+from perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
-from perms.utils import (get_notice_recipients, has_perm,
-    has_view_perm, get_query_filters, update_perms_and_save)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
@@ -25,12 +22,9 @@ from exports.utils import run_export_task
 from directories.models import Directory, DirectoryPricing
 from directories.forms import DirectoryForm, DirectoryPricingForm
 from directories.utils import directory_set_inv_payment
-
-try:
-    from notification import models as notification
-except:
-    notification = None
+from notification import models as notification
 from base.utils import send_email_notification
+
 
 def details(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directories'))
@@ -503,10 +497,10 @@ def thank_you(request, template_name="directories/thank-you.html"):
 @login_required
 def export(request, template_name="directories/export.html"):
     """Export Directories"""
-    
-    if not is_admin(request.user):
+
+    if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         file_name = "directories.csv"

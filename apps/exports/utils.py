@@ -2,11 +2,9 @@ import subprocess
 import datetime
 import csv
 from StringIO import StringIO
-
 from django.http import HttpResponse
-from django.core import management
-
 from exports.models import Export
+
 
 def full_model_to_dict(instance, fields=None, exclude=None):
     """
@@ -35,16 +33,17 @@ def full_model_to_dict(instance, fields=None, exclude=None):
             data[f.name] = f.value_from_object(instance)
     return data
 
+
 def render_csv(filename, title_list, data_list):
     """Render a csv file response"""
     output = StringIO("")
     #output = open('eggs.csv', 'wb')
     csv_writer = csv.writer(output)
-    
+
     csv_writer.writerow(title_list)
-    
+
     for row_item_list in data_list:
-        for i in range (0, len(row_item_list)):
+        for i in range(0, len(row_item_list)):
             if row_item_list[i]:
                 if isinstance(row_item_list[i], datetime.datetime):
                     row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')
@@ -54,17 +53,17 @@ def render_csv(filename, title_list, data_list):
                     row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
                 row_item_list[i] = row_item_list[i].encode("utf-8")
         csv_writer.writerow(row_item_list)
-    
+
     response = HttpResponse(output.getvalue())
     response['Content-Type'] = "application/text"
-    response['Content-Disposition'] = 'attachment; filename='+filename
+    response['Content-Disposition'] = 'attachment; filename=' + filename
     return response
+
 
 def run_export_task(app_label, model_name, fields):
     export = Export.objects.create(
-        app_label = app_label,
-        model_name = model_name,
+        app_label=app_label,
+        model_name=model_name,
     )
-    #management.call_command('run_export_task', export.pk, *fields, verbosity=0)
-    subprocess.Popen(['python', 'manage.py', 'run_export_task', str(export.pk)] + fields)
+    subprocess.Popen(['python', 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
     return export.pk

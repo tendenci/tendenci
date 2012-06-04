@@ -616,7 +616,7 @@ def thank_you(request, template_name="jobs/thank-you.html"):
 def export(request, template_name="jobs/export.html"):
     """Export Jobs"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

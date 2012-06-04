@@ -189,7 +189,7 @@ def detail(request, id, template_name="invoices/detail.html"):
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

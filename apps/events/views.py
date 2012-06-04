@@ -2413,7 +2413,7 @@ def enable_addon(request, event_id, addon_id):
 def export(request, template_name="events/export.html"):
     """Export Events"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

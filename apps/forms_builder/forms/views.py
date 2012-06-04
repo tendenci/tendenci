@@ -13,7 +13,7 @@ from django.template.defaultfilters import yesno
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
-from perms.utils import (has_perm, is_admin, update_perms_and_save,
+from perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
@@ -523,7 +523,7 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
 def export(request, template_name="forms/export.html"):
     """Export forms"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

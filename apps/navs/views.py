@@ -226,7 +226,7 @@ def page_select(request, form_class=PageSelectForm):
 def export(request, template_name="navs/export.html"):
     """Export Navs"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':

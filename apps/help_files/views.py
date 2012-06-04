@@ -265,7 +265,7 @@ def requests(request, template_name="help_files/request_list.html"):
 def export(request, template_name="help_files/export.html"):
     """Export Help Files"""
     
-    if not is_admin(request.user):
+    if not request.user.is_superuser:
         raise Http403
     
     if request.method == 'POST':
