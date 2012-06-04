@@ -1,12 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import get_object_or_404
-from django.template import RequestContext
-from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect
+from django.template import RequestContext
+from django.http import HttpResponseRedirect
+
 from base.http import Http403
 from perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from site_settings.utils import get_setting
@@ -14,6 +15,8 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
+
 from articles.models import Article
 from articles.forms import ArticleForm
 from notification import models as notification
@@ -295,4 +298,45 @@ def articles_report(request, template_name='reports/articles.html'):
 
     return render_to_response(template_name, {
         'stats': stats
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def export(request, template_name="articles/export.html"):
+    """Export Articles"""
+
+    if not request.user.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        # initilize initial values
+        fields = [
+            'guid',
+            'slug',
+            'timezone',
+            'headline',
+            'summary',
+            'body',
+            'source',
+            'first_name',
+            'last_name',
+            'phone',
+            'fax',
+            'email',
+            'website',
+            'release_dt',
+            'syndicate',
+            'featured',
+            'design_notes',
+            'tags',
+            'enclosure_url',
+            'enclosure_type',
+            'enclosure_length',
+            'not_official_content',
+            'entity',
+        ]
+        export_id = run_export_task('articles', 'article', fields)
+        return redirect('export.status', export_id)
+
+    return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

@@ -244,6 +244,7 @@ INSTALLED_APPS = (
     'pluginmanager',
     'navs',
     'tendenci_guide',
+    'exports',
     # celery task system, must stay at the bottom
     # of installed apps
     'djkombu',

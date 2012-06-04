@@ -45,6 +45,9 @@
             {% if can_add_form %}
                 <li><a href="{% url form_add %}">{% trans "Add Form" %}</a></li>
             {% endif %}
+            {% if admin %}
+                <li><a href="{% url form_export %}">{% trans "Export Forms" %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_form or can_edit_form %}

@@ -13,10 +13,12 @@ from django.template.defaultfilters import yesno
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from perms.utils import (has_perm, update_perms_and_save,
+    get_query_filters, has_view_perm)
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from invoices.models import Invoice
+from exports.utils import run_export_task
 
 from forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
@@ -517,3 +519,16 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             'form':entry.form,
         }, context_instance=RequestContext(request))
         
+@login_required
+def export(request, template_name="forms/export.html"):
+    """Export forms"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        export_id = run_export_task('forms_builder.forms', 'form', [])
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

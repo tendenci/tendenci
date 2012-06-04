@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from PIL import Image
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -11,22 +11,20 @@ from django.template.defaultfilters import slugify
 
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import (get_notice_recipients, has_perm,
-    has_view_perm, get_query_filters, update_perms_and_save)
+from perms.utils import (get_notice_recipients,
+    has_perm, has_view_perm, get_query_filters, update_perms_and_save)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from directories.models import Directory, DirectoryPricing
 from directories.forms import DirectoryForm, DirectoryPricingForm
 from directories.utils import directory_set_inv_payment
-
-try:
-    from notification import models as notification
-except:
-    notification = None
+from notification import models as notification
 from base.utils import send_email_notification
+
 
 def details(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directories'))
@@ -495,3 +493,58 @@ def approve(request, id, template_name="directories/approve.html"):
 
 def thank_you(request, template_name="directories/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    
+@login_required
+def export(request, template_name="directories/export.html"):
+    """Export Directories"""
+
+    if not request.user.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "directories.csv"
+        fields = [
+            'guid',
+            'slug',
+            'timezone',
+            'headline',
+            'summary',
+            'body',
+            'source',
+            'logo',
+            'first_name',
+            'last_name',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zip_code',
+            'country',
+            'phone',
+            'phone2',
+            'fax',
+            'email',
+            'email2',
+            'website',
+            'list_type',
+            'requested_duration',
+            'pricing',
+            'activation_dt',
+            'expiration_dt',
+            'invoice',
+            'payment_method',
+            'syndicate',
+            'design_notes',
+            'admin_notes',
+            'tags',
+            'enclosure_url',
+            'enclosure_type',
+            'enclosure_length',
+            'entity',
+        ]
+        export_id = run_export_task('directories', 'directory', fields)
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

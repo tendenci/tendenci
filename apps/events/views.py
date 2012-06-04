@@ -22,6 +22,7 @@ from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
 from django.forms.models import BaseModelFormSet
+from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from base.http import Http403
@@ -34,6 +35,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from events.search_indexes import EventIndex
 from events.models import (Event, RegistrationConfiguration,
@@ -2406,3 +2408,17 @@ def enable_addon(request, event_id, addon_id):
     messages.add_message(request, messages.SUCCESS, "Successfully enabled the %s" % addon.title)
         
     return redirect('event.list_addons', event.id)
+
+@login_required
+def export(request, template_name="events/export.html"):
+    """Export Events"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        export_id = run_export_task('events', 'event', [])
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
