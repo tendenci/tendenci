@@ -38,6 +38,7 @@ from memberships.utils import is_import_valid, prepare_chart_data, \
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
+from memberships.utils import get_status_filter
 from site_settings.utils import get_setting
 from notification import models as notification
 
@@ -641,12 +642,18 @@ def application_entries_search(request, template_name="memberships/entries/searc
     query = request.GET.get('q')
     if get_setting('site', 'global', 'searchindex') and query:
         entries = AppEntry.objects.search(query, user=request.user)
-        entries = entries.order_by('-entry_time')
     else:
+        status = request.GET.get('status', None)
+
         filters = get_query_filters(request.user, 'memberships.view_appentry')
         entries = AppEntry.objects.filter(filters).distinct()
-        entries = entries.order_by('-entry_time')
+        if status:
+            status_filter = get_status_filter(status)
+            entries = entries.filter(status_filter)
+
         entries = entries.select_related()
+
+    entries = entries.order_by('-entry_time')
 
     apps = App.objects.all()
     types = MembershipType.objects.all()

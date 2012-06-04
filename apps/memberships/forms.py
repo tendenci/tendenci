@@ -239,7 +239,7 @@ class MembershipTypeForm(forms.ModelForm):
         initial_list = []
         if self.instance.pk:
             for field in self.type_exp_method_fields:
-                field_value = eval('self.instance.%s' % field)
+                field_value = getattr(self.instance, field)
                 if field == 'fixed_option2_can_rollover' and (not field_value):
                     field_value = ''
                 else:

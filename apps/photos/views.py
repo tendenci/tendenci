@@ -29,8 +29,8 @@ from djcelery.models import TaskMeta
 from photos.cache import PHOTO_PRE_KEY
 from photos.search_indexes import PhotoSetIndex
 from photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from photos.forms import (PhotoUploadForm, PhotoEditForm, 
-    PhotoSetAddForm, PhotoSetEditForm)
+from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
+from photos.utils import get_privacy_settings
 from photos.tasks import ZipPhotoSetTask
 
 def search(request, template_name="photos/search.html"):
@@ -318,6 +318,7 @@ def delete(request, id, set_id=0):
         EventLog.objects.log(**log_defaults)
 
         photo.delete()
+
         messages.add_message(request, messages.INFO, 'Photo %s deleted' % id)
         
         try:
@@ -372,6 +373,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 
 @login_required
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
+    from perms.object_perms import ObjectPermission
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
@@ -387,17 +389,27 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                 # update all permissions and save the model
                 photo_set = update_perms_and_save(request, form, photo_set)
 
-                request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
+                # copy all privacy settings from photo set to photos
+                Image.objects.filter(photoset=photo_set).update(**get_privacy_settings(photo_set))
 
-                log_defaults = {
+                # photo set group permissions
+                group_perms = photo_set.perms.filter(group__isnull=False).values_list('group','codename')
+                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms ])
+
+                photos = Image.objects.filter(photoset=photo_set)
+                for photo in photos:
+                    ObjectPermission.objects.remove_all(photo)
+                    ObjectPermission.objects.assign_group(group_perms, photo)
+
+                request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
+                EventLog.objects.log(**{
                     'event_id' : 991200,
                     'event_data': '%s (%d) edited by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
                     'description': '%s edited' % photo_set._meta.object_name,
                     'user': request.user,
                     'request': request,
                     'instance': photo_set,
-                }
-                EventLog.objects.log(**log_defaults)
+                })
 
                 return HttpResponseRedirect(reverse('photoset_details', args=[photo_set.id]))
     else:
@@ -417,23 +429,25 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         raise Http403
     
     if request.method == "POST":
-        log_defaults = {
+        EventLog.objects.log(**{
             'event_id' : 991300,
             'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
             'description': '%s deleted' % photo_set._meta.object_name,
             'user': request.user,
             'request': request,
             'instance': photo_set,
-        }
-        EventLog.objects.log(**log_defaults)
-
+        })
         photo_set.delete()
+
+        # soft delete all images in photo set
+        Image.objects.filter(photoset=photo_set).delete()
+
         messages.add_message(request, messages.INFO, 'Photo Set %s deleted' % photo_set)
         
         if "delete" in request.META.get('HTTP_REFERER', None):
             #if the referer is the get page redirect to the photo set search
             return redirect('photoset_latest')
-            
+
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
     
     return render_to_response(template_name, {
@@ -488,6 +502,7 @@ def photos_batch_add(request, photoset_id=0):
         photoset_id is passed via url
     """
     import uuid
+    from perms.object_perms import ObjectPermission
 
 
     # photoset permission required to add photos
@@ -514,8 +529,8 @@ def photos_batch_add(request, photoset_id=0):
 
             request.POST.update({
                 'owner': request.user.id,
-                'owner_username': str(request.user),
-                'creator_username': str(request.user),
+                'owner_username': unicode(request.user),
+                'creator_username': unicode(request.user),
                 'status': True,
                 'status_detail': 'active',
             })
@@ -546,7 +561,20 @@ def photos_batch_add(request, photoset_id=0):
                     photo_set = get_object_or_404(PhotoSet, id=photoset_id)
                     photo_set.image_set.add(photo)
 
+                privacy = get_privacy_settings(photo_set)
+
+                # photo privacy = album privacy
+                for k, v in privacy.items():
+                    setattr(photo, k, v)
+
                 photo.save()  # real time search index hooked to save method
+
+                print 'i waited'
+
+                # photo group perms = album group perms
+                group_perms = photo_set.perms.filter(group__isnull=False).values_list('group','codename')
+                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms ])
+                ObjectPermission.objects.assign_group(group_perms, photo)
 
                 # serialize queryset
                 data = serializers.serialize("json", Image.objects.filter(id=photo.id))
@@ -659,7 +687,6 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
-        
     
     order = get_setting('module', 'photos', 'photoordering')
     if order == 'descending':

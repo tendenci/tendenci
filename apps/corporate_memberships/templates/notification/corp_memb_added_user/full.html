@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<p>{% blocktrans with object.name as objname %}Thank you for applying for the corporate membership "{{ objname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
+<p>{% blocktrans with object.nam as bname %}Thank you for applying for the corporate membership "{{ bname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
 </p>
 {% if object.corp_app.authentication_method == 'secret_code' %}
 <p>

@@ -3,6 +3,8 @@ from os.path import basename, splitext
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
 
+from perms.utils import is_admin, is_developer
+
 def get_imp_message(request, user):
     """
         Get the message to post to super users via django
@@ -51,7 +53,7 @@ def get_imp_message(request, user):
     
     return message % message_repl
 
-def get_imp_user(username):
+def get_imp_user(username, real_user):
     """
         Search for an impersonated user
         and return the user object
@@ -64,8 +66,13 @@ def get_imp_user(username):
             user = User.objects.get(username=username)
         except:
             pass
+
+    # Don't allow non-developers to impersonate developers
+    if not is_developer(real_user) and is_developer(user):
+        return None
+
     return user
-        
+
 def stop_impersonation(session):
     """
         Reset the session of a user
@@ -108,7 +115,7 @@ class ImpersonationMiddleware(object):
             session_impersonation = request.session['is_impersonating']
         
         # check for session impersonation
-        if session_impersonation and request.user.is_superuser:
+        if session_impersonation and is_admin(request.user):
             # kill impersonation on post requests
             # it means they are adding, editing, deleting stuff
             if request.method == 'POST':
@@ -126,7 +133,7 @@ class ImpersonationMiddleware(object):
             # switch impersonated user if they request someone
             # else
             if '_impersonate' in request.GET:
-                new_user = get_imp_user(request.GET['_impersonate'])
+                new_user = get_imp_user(request.GET['_impersonate'], request.user)
                 if not new_user: 
                     stop_impersonation(request.session)
                     return
@@ -141,7 +148,7 @@ class ImpersonationMiddleware(object):
             # set the impersonated user
             request.user.impersonated_user = new_user
             
-        elif '_impersonate' in request.GET and request.user.is_superuser: # GET
+        elif '_impersonate' in request.GET and is_admin(request.user): # GET
             # kill impersonation on post requests
             # it means they are adding, editing, deleting stuff
             if request.method == 'POST':
@@ -154,7 +161,7 @@ class ImpersonationMiddleware(object):
             if len(splitext(basename(request.path))[1]) == 0:
                 message = True
 
-            new_user = get_imp_user(request.GET['_impersonate'])
+            new_user = get_imp_user(request.GET['_impersonate'], request.user)
             if not new_user: return                
             
             # log this to event logs

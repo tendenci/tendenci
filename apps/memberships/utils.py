@@ -9,6 +9,7 @@ from django.utils import simplejson
 from django.utils.datastructures import SortedDict
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
+from django.db.models import Q
 
 from perms.utils import has_perm, is_admin
 from memberships.models import App, AppField, Membership, MembershipType
@@ -266,6 +267,16 @@ def months_back(n):
     from dateutil.relativedelta import relativedelta
 
     return date.today() + relativedelta(months=-n)
+
+def get_status_filter(status):
+    if status == "pending":
+        return Q(is_approved=None)
+    elif status == "approved":
+        return Q(is_approved=True)
+    elif status == "disapproved":
+        return Q(is_approved=False)
+    else:
+        return Q()
 
 def get_app_field_labels(app):
     """Get a list of field labels for this app.

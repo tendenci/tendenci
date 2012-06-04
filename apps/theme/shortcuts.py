@@ -14,7 +14,7 @@ def themed_response(*args, **kwargs):
     httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
     return HttpResponse(render_to_theme(*args, **kwargs), **httpresponse_kwargs)
     
-def render_to_theme(template_name, dictionary=None, context_instance=None):
+def render_to_theme(template_name, dictionary={}, context_instance={}):
     """Loads the given template_name and renders it with the given dictionary as
     context. The template_name may be a string to load a single template using
     get_template, or it may be a tuple to use select_template to find one of
@@ -22,22 +22,17 @@ def render_to_theme(template_name, dictionary=None, context_instance=None):
     This shorcut prepends the template_name given with the selected theme's 
     directory
     """
-    dictionary = dictionary or {}
-    
-    if context_instance:
-        context_instance.update(dictionary)
-    else:
-        context_instance = Context(dictionary)
-    
+    context_instance.update(dictionary)
+
     toggle = context_instance["TOGGLE_TEMPLATE"]
     theme = context_instance['THEME']
     theme_template = get_theme_template(template_name, theme=theme)
     context_instance["THEME_TEMPLATE"] = template_name
-    context_instance["CUSTOM_TEMPLATE"] = True
-    
-    #if 'homepage.html' in template_name:
-    #    context_instance["CUSTOM_TEMPLATE"] = False
-    
+    context_instance["CUSTOM_TEMPLATE"] = False
+
+    if 'homepage.html' in template_name:
+       context_instance["CUSTOM_TEMPLATE"] = False
+
     if toggle=="TRUE":
         t = get_default_template(template_name)
     else:

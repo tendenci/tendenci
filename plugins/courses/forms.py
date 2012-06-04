@@ -126,12 +126,16 @@ class AnswerForm(forms.Form):
         Create the answer field based on the question
         """
         self.question = kwargs.pop('question')
+        self.display_number = kwargs.pop('display_number', -1)
         self.answers = self.question.correct_answers()
         
         choices = []
         # set up answer choices
         if self.question.correct_answers():
-            label = "%s. %s" % (self.question.number, self.question.question)
+            if self.display_number != -1:
+                label = "%s. %s" % (self.display_number, self.question.question)
+            else:
+                label = "%s. %s" % (self.question.number, self.question.question)
             for choice in self.question.choices():
                 c_label = "%s. %s" % (choice['letter'], choice['answer'].answer)
                 choices.append((choice['answer'].pk, c_label))

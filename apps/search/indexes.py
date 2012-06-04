@@ -10,7 +10,7 @@ class CustomSearchIndex(indexes.SearchIndex):
     
     This requires a script to run the management command "process_unindexed" in the 
     background to update index. 
-"""
+    """
     def _setup_save(self, model):
         signals.post_save.connect(save_unindexed_item, sender=model, weak=False)
         

@@ -155,6 +155,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
         if form.is_valid():
             file = form.save(commit=False)
+            file.name = file.file.path.split('/')[-1]
 
             # update all permissions and save the model
             file = update_perms_and_save(request, form, file)

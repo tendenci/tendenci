@@ -269,8 +269,13 @@ def take(request, pk, template_name="courses/take.html"):
         return redirect('courses.completion', course.pk)
     else:
         #create a form for each question
+        display_number = 1
         for question in questions:
-            form = AnswerForm(question=question, prefix=question.pk)
+            if question.correct_answers():
+                form = AnswerForm(question=question, prefix=question.pk, display_number=display_number)
+                display_number = display_number + 1
+            else:
+                form = AnswerForm(question=question, prefix=question.pk)
             forms.append(form)
             
     return render_to_response(template_name, {

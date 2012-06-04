@@ -1,0 +1,22 @@
+{% extends "lots/base.html" %}
+{% load lot_tags %}
+{% load base_filters %}
+
+{% block body %}
+{% lot_nav request.user %}
+<div class="t">
+    <div class="map-wrap">
+        <h1>{{ map.name }}</h1>
+        <p>{{ map.description }}</p>
+        <div class="map-photo">
+            <img src="{{ map.file.url }}" alt="{{ map.name }}" height="{{ map|height_for_width:900 }}" width="900" usemap="#mapmap" />
+            <map name="mapmap">
+            {% for lot in map.lot_set.all %}
+                <area shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="www.google.com" alt="{{ lot.name }}" />
+            {% endfor %}                
+            </map>
+        </div>
+        {% include "lots/maps/meta.html" %} 
+    </div>
+</div>
+{% endblock body %}
