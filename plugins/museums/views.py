@@ -9,7 +9,6 @@ from museums.models import Museum
 from perms.utils import get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from event_logs.models import EventLog
 
-from perms.utils import is_admin
 from notification import models as notification
 
 def details(request, slug=None, template_name="museums/detail.html"):

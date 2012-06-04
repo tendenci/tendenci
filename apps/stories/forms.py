@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from stories.models import Story
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 from base.fields import SplitDateTimeField
 
 ALLOWED_LOGO_EXT = (
@@ -43,6 +42,7 @@ class StoryForm(TendenciBaseForm):
             'title',
             'content',
             'full_story_link',
+            'link_title',
             'tags',
             'photo_upload',
             'start_dt',
@@ -62,6 +62,7 @@ class StoryForm(TendenciBaseForm):
                                  'content',
                                  'photo_upload',
                                  'full_story_link',
+                                 'link_title',
                                  'tags',
                                  'start_dt',
                                  'end_dt',
@@ -106,7 +107,7 @@ class StoryForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 

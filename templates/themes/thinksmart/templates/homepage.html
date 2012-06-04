@@ -31,8 +31,7 @@
         <section id="rotator" class="no-band">
             <div id="stories">
             {% list_stories as rotator_list limit=6 tags="rotator" %}
-            {% if rotator_list %}
-                {% for story in rotator_list %}
+            {% for story in rotator_list %}
                 <div class="story story-{% cycle "even" "odd" %}">
                   <div class="story-image"><a href="{{ story.full_story_link }}"><img width="954" height="376" src="{% image_url story.image size=954x376 crop=true quality=90 %}" alt="{{ story.title }} from {{ SITE_GLOBAL_SITEDISPLAYNAME }}"></a></div>
                     <div class="story-text">
@@ -44,25 +43,19 @@
                       <div class="admin-links clear-block"><a href="{% url story.edit story.pk %}?next={{ request.path }}" title="Edit Story" class="edit-story">Edit {{ story.title|title }} Story</a></div>
                     </div>
                 {% endif %}
-                </div>
-                {% endfor %}<!-- /.story-{{ forloop.counter }} -->
-            {% else %}
-                <div class="story story-even">
-                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://media.tendenciapp.com/images/sizes/rotator_1000x500.jpg" alt="Sample"></a></div>
-                    <div class="story-text">
-                        <h2 class="headline"><a href="#">Sample Story</a></h2>
-                        <div class="story-summary">Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
+                </div><!-- /.story-{{ forloop.counter }} -->
+            {% empty %}
+                {% for item in 3|make_range %}
+                    <div class="story story-{% cycle 'even' 'odd' %}">
+                      <div class="story-image"><a href="#"><img width="954" height="376" src="{% stock_image_url '954x376' %}" alt="Sample"></a></div>
+                        <div class="story-text">
+                            <h2 class="headline"><a href="#">{% cycle 'Headline' 'Story' 'Feature' %} {{ forloop.counter }}</a></h2>
+                            <div class="story-summary">Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/?tags=rotator">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
+                        </div>
                     </div>
-                </div>
-                <div class="story story-odd">
-                  <div class="story-image"><a href="#"><img width="954" height="376" src="http://media.tendenciapp.com/images/sizes/rotator_1000x500.jpg" alt="Sample"></a></div>
-                    <div class="story-text">
-                        <h2 class="headline"><a href="#">Second Story</a></h2>
-                        <div class="story-summary">Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/">Add your first story</a> to take the place of this photo. Be sure to <strong>tag it rotator</strong> so that it shows up in this area.{% endif %} | <span class="read-more"><a href="#">Read More</a></span></div>
-                    </div>
-                </div>
-            {% endif %}
-            </div>
+                {% endfor %}
+            {% endfor %}
+            </div><!-- /#stories -->
             <div id="stories-pager"></div>
         </section><!-- /#rotator -->
     </div>
@@ -70,27 +63,19 @@
     <div class="container">
         <section id="featured" class="band clearfix">
         {% list_stories as featured_list limit=3 tags="featured" %}
-        {% if featured_list %}
-            {% for story in featured_list %}
+        {% for story in featured_list %}
             <div class="featured-box{% if forloop.last %} last{% endif %}">
                 <a href="{{ story.full_story_link }}"><img src="{% image_url story.photo size=72x72 crop=true quality=90 %}" alt="{{ story.title }} at {{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
                 <span>{{ story.title }}</span></a>
             </div>
+        {% empty %}
+            {% for item in 3|make_range %}
+            <div class="featured-box">
+                <a href="#"><img src="{% stock_image_url '80x80' %}" />
+                <span>{% trans "HEADLINE" %} {{ forloop.counter }}</span></a>
+            </div>
             {% endfor %}
-        {% else %}
-            <div class="featured-box">
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" />
-                <span>{% trans "HEADLINE 1" %}</span></a>
-            </div>
-            <div class="featured-box">
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" />
-                <span>{% trans "HEADLINE 2" %}</span></a>
-            </div>
-            <div class="featured-box last">
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" />
-                <span>{% trans "HEADLINE 3" %}</span></a>
-            </div>
-        {% endif %}
+        {% endfor %}
         </section><!-- /#featured -->
     </div>
     {% endif %}
@@ -111,7 +96,7 @@
                     {% endfor %}
                 {% else %}
                 <h3><a href="/about"><span>{% trans "About" %}</span> {% trans "Us" %}</a></h3>
-                <img src="http://media.tendenciapp.com/images/sizes/pic_400x200.jpg" alt="About {{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
+                <img src="{% stock_image_url '400x200' %}" alt="About {{ SITE_GLOBAL_SITEDISPLAYNAME }}" />
                 <p>All about us. {% if request.user.is_authenticated %}</p><p><a href="/admin/boxes/box/add/">Add a box</a> and use the tag <strong>aboutus</strong> to bring that content into this area. This will replace the image and the text, The title of the box will appear as the heading.{% endif %} <a href="/" class="readmore">Read more</a></p>
                 {% endif %}
             </div>
@@ -123,12 +108,9 @@
                     <a href="{{ photo.get_absolute_url }}"><img src="{% photo_image_url photo size=80x80 crop=True %}" alt="{{ photo.title }}" /></a>
                     {% endfor %}
                 {% else %}
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
-                <a href="#"><img src="http://media.tendenciapp.com/images/sizes/pic_80x80.jpg" alt="title" /></a>
+                {% for item in 6|make_range  %}
+                    <a href="#"><img src="{% stock_image_url '80x80' %}" alt="sample" /></a>
+                {% endfor %}
                 {% endif %}
                 <a href="/photos/" class="readmore">{% trans "See More Photos" %}</a>
             </div>
@@ -145,7 +127,7 @@
                     {% endfor %}
                 {% else %}
                 <h3><a href="/about"><span>{% trans "Our" %}</span> {% trans "People" %}</a></h3>
-                <a href="#"><img style="height: 160px; width: 110px;" src="http://media.tendenciapp.com/images/person.jpg" alt="title" /></a>
+                <a href="#"><img style="height: 160px; width: 110px;" src="{% stock_image_url '110x160' %}" alt="sample image" /></a>
                 <div class="info-small-text">
                     <h4><a href="#">Thomas Purser</a></h4>
                     <strong><em>Sales Manager</em></strong>
@@ -170,7 +152,7 @@
     <script type="text/javascript">
     $(document).ready(function() {
         $("#stories").cycle({
-            timeout: 10000,
+            timeout: 6000,
             speed: 2000,
             pager: '#stories-pager',
             pagerEvent: 'mouseover'

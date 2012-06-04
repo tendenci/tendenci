@@ -48,8 +48,9 @@
 	<p class="timestamp">{% trans "Step 3/4" %} &middot; {{ datetime.now }}</p>
     
 	<p class="msg">
-        <em>{{ stats.all }}</em> import{{ stats.all|pluralize }};
+        <em>{{ stats.all }}</em> membership{{ stats.all|pluralize }};
         <em>{{ stats.added }}</em> will be added,
+        <em>{{ stats.updated }}</em> will be updated,
         and <em>{{ stats.skipped }}</em> will be skipped.</p>
         <em><a title="Looks good!" href="{% url membership_import_confirm memport.id %}" id="import-confirm">Import Now &rarr;</a></em>
     </p>
@@ -64,7 +65,7 @@
                 <td>{% trans "Type" %}</td>
                 <td>{% trans "Join Date" %}</td>
                 <td>{% trans "Expire Date" %}</td>
-                <td>{% trans "Skipped" %}</td>
+                <td>{% trans "Action" %}</td>
             </tr>
 
             {% for membership in memberships %}
@@ -83,7 +84,8 @@
                     <td><div>{{ membership.subscribedt|date:"M d, Y" }}</div></td>
                     <td><div>{{ membership.expiredt|date:"M d, Y" }}</div></td>
                     <td><div>
-                        {% if membership.skipped %}{% trans "Yes" %}{% endif %}
+                        {{ membership.status__action }}
+                        {% if membership.status__reason %}: {{ membership.status__reason }}{% endif %}
                     </div></td>
                 </tr>
             {% endfor %}

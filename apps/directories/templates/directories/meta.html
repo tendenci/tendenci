@@ -7,9 +7,9 @@
         {% with directory.category_set as directory_cat %}
         {% if directory_cat.category %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url directory.search %}?q=category:{{ directory_cat.category }}">{{ directory_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url directories %}?q=category:{{ directory_cat.category }}">{{ directory_cat.category }}</a>
             {% if directory_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url directory.search %}?q=sub_category:{{ directory_cat.sub_category }}">{{ directory_cat.sub_category }}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url directories %}?q=sub_category:{{ directory_cat.sub_category }}">{{ directory_cat.sub_category }}</a>
             {% endif %}
         </div>
         {% endif %}
@@ -19,7 +19,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in directory.tags|tag_split %}
-                <a href="{% url directory.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url directories %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

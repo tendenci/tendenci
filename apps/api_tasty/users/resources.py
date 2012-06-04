@@ -1,6 +1,6 @@
 import random
 
-from django.contrib.auth.models import User, get_hexdigest
+from django.contrib.auth.models import User
 
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource

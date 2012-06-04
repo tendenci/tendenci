@@ -1,0 +1,22 @@
+{% extends "directories/base.html" %}
+{% load directory_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+{% directory_nav request.user %}
+    <h1>{% trans "Directories Export" %}</h1>
+    <div class="content">
+        <form action="." method="POST" >{% csrf_token %}
+            <input type="submit" value="{% trans 'Download' %}" />
+        </form>
+    </div>
+</div>
+{% endblock %}

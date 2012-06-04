@@ -2,7 +2,6 @@ import uuid
 from django.db import models
 
 from perms.models import TendenciBaseModel
-from perms.utils import is_admin
 
 class EmailBlock(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -33,7 +32,7 @@ class EmailBlock(TendenciBaseModel):
     def allow_view_by(self, user2_compare):
         boo = False
        
-        if is_admin(user2_compare):
+        if user2_compare.profile.is_superuser:
             boo = True
         else: 
             if user2_compare == self.creator or user2_compare == self.owner:
@@ -48,7 +47,7 @@ class EmailBlock(TendenciBaseModel):
     # if this email allows edit by user2_compare
     def allow_edit_by(self, user2_compare):
         boo = False
-        if is_admin(user2_compare):
+        if user2_compare.profile.is_superuser:
             boo = True
         else: 
             if user2_compare == self.user:

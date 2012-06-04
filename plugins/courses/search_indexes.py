@@ -11,7 +11,7 @@ class CourseIndex(TendenciBaseSearchIndex):
     retries = indexes.IntegerField(model_attr='retries')
     retry_interval = indexes.IntegerField(model_attr='retry_interval')
     passing_score = indexes.IntegerField(model_attr='passing_score')
-    deadline = indexes.DateTimeField(model_attr='deadline')
+    deadline = indexes.DateTimeField(model_attr='deadline', null=True)
 
     # RSS fields
     can_syndicate = indexes.BooleanField()

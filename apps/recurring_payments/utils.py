@@ -1,5 +1,6 @@
 from datetime import datetime
 import time
+from decimal import Decimal
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.conf import settings
@@ -346,6 +347,21 @@ def api_rp_setup(data):
     description = data.get('description', '')
     url = data.get('url')
     payment_amount = data.get('amount', '')
+    taxable = data.get('taxable', 0)
+    if taxable in ('True', 'true', '1', 1): 
+        taxable = 1
+    else: 
+        taxable = 0
+    try:
+        tax_rate = Decimal(data.get('tax_rate', 0))
+        if tax_rate > 1: tax_rate = 0
+    except:
+        tax_rate = 0
+    tax_exempt = data.get('tax_exempt', 0)
+    if tax_exempt in ('True', 'true', '1', 1): 
+        tax_exempt = 1
+    else: 
+        tax_exempt = 0
     try:
         payment_amount = Decimal(payment_amount)
     except:
@@ -412,6 +428,9 @@ def api_rp_setup(data):
     rp.description = description
     rp.url = url
     rp.payment_amount = payment_amount
+    rp.taxable = taxable
+    rp.tax_rate = tax_rate
+    rp.tax_exempt = tax_exempt
     rp.customer_profile_id = cp_id
     rp.billing_start_dt = billing_cycle_start_dt
     
@@ -459,7 +478,7 @@ def api_rp_setup(data):
                                     recurring_payment_invoice=rp_invoice,
                                     payment_profile_id=pp_id,
                                     trans_type='auth_capture',
-                                    amount=payment_amount,
+                                    amount=rp_invoice.invoice.total,
                                     status=True)
     payment = payment_update_from_response(payment, direct_response_str)
     payment.mark_as_paid()

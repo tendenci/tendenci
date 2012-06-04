@@ -1,10 +1,10 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 from discounts.models import Discount
 from base.fields import SplitDateTimeField
 
@@ -59,7 +59,7 @@ class DiscountForm(TendenciBaseForm):
         
     def __init__(self, *args, **kwargs):
         super(DiscountForm, self).__init__(*args, **kwargs)
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             
@@ -106,8 +106,8 @@ class DiscountCodeForm(forms.Form):
         code = self.cleaned_data['code']
         price = self.cleaned_data['price']
         count = self.cleaned_data['count']
-        discount = Discount.objects.get(discount_code=code).value * count
+        discount = Discount.objects.get(discount_code=code).value * Decimal(count)
         new_price = price - discount
         if new_price < 0:
-            new_price = 0
+            new_price = Decimal('0.00')
         return (new_price, discount)

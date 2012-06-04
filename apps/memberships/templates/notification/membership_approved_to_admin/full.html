@@ -8,7 +8,6 @@
 <title>{% trans "Membership Application Approved" %}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
-{% is_admin request.user as isadmin %}
 <body bgcolor="#ffffff" text="#000000">
 
     <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ entry.app.name }} {% trans "Membership Approved" %}</div>
@@ -24,13 +23,10 @@
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
         {% trans "View Approved Application" %}
     </a></div>
-
+    
     <div>========================</div>
-
+    
     <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
-        {% blocktrans with entry.create_dt|date as create_date and entry.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
-    </a><div>
 
 </body>
 </html>

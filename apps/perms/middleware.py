@@ -3,8 +3,6 @@ from os.path import basename, splitext
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
 
-from perms.utils import is_admin, is_developer
-
 def get_imp_message(request, user):
     """
         Get the message to post to super users via django
@@ -58,6 +56,7 @@ def get_imp_user(username, real_user):
         Search for an impersonated user
         and return the user object
     """
+
     user = None
     if username == 'anonymous':
         user = AnonymousUser()
@@ -66,10 +65,6 @@ def get_imp_user(username, real_user):
             user = User.objects.get(username=username)
         except:
             pass
-
-    # Don't allow non-developers to impersonate developers
-    if not is_developer(real_user) and is_developer(user):
-        return None
 
     return user
 
@@ -115,7 +110,7 @@ class ImpersonationMiddleware(object):
             session_impersonation = request.session['is_impersonating']
         
         # check for session impersonation
-        if session_impersonation and is_admin(request.user):
+        if session_impersonation and request.user.profile.is_superuser:
             # kill impersonation on post requests
             # it means they are adding, editing, deleting stuff
             if request.method == 'POST':
@@ -148,7 +143,7 @@ class ImpersonationMiddleware(object):
             # set the impersonated user
             request.user.impersonated_user = new_user
             
-        elif '_impersonate' in request.GET and is_admin(request.user): # GET
+        elif '_impersonate' in request.GET and request.user.profile.is_superuser: # GET
             # kill impersonation on post requests
             # it means they are adding, editing, deleting stuff
             if request.method == 'POST':

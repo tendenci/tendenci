@@ -14,6 +14,7 @@ from perms.utils import (has_perm, update_perms_and_save,
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from stories.models import Story
 from stories.forms import StoryForm, UploadStoryImageForm
@@ -228,6 +229,32 @@ def upload(request, id, form_class=UploadStoryImageForm,
     return render_to_response(template_name, {'form':form, 'story': story}, 
             context_instance=RequestContext(request))
     
-            
-            
-            
+@login_required
+def export(request, template_name="stories/export.html"):
+    """Export Stories"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "stories.csv"
+        fields = [
+            'guid',
+            'title',
+            'content',
+            'syndicate',
+            'full_story_link',
+            'start_dt',
+            'end_dt',
+            'expires',
+            'ncsortorder',
+            'entity',
+            'tags',
+            'categories',
+        ]
+        export_id = run_export_task('stories', 'story', fields)
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

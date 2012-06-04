@@ -15,20 +15,21 @@ class Migration(DataMigration):
             SET payment_method_id = 1
             WHERE payment_method_temp LIKE "%%cc%%";
             """
-
-      sql = sql + """
+      cursor.execute(sql)
+      sql = """
             UPDATE memberships_membership 
             SET payment_method_id = 2
             WHERE payment_method_temp LIKE "%%check%%";
-            """
+           """
+      cursor.execute(sql)
 
-      sql = sql + """
+      sql = """
             UPDATE memberships_membership 
             SET payment_method_id = 3
             WHERE payment_method_temp LIKE "%%cash%%";
             """
-
       cursor.execute(sql)
+      
       transaction.commit_unless_managed()
 
     def backwards(self, orm):

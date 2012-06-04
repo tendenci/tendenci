@@ -42,15 +42,11 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
         if not request.user.is_authenticated():
             raise Http403
 
-    # we either have the name in our database
-    # or we pull the name straight off of the file
-    file_name = file.name or file.file.name
-
     # get image binary
     try:
         data = file.file.read()
         file.file.close()
-    except:
+    except IOError:  # no such file or directory
         raise Http404
 
     # log downloads and views
@@ -81,19 +77,21 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
                 'instance': file,
             })
 
-    # update index
-    if file.type() != 'image':
-        file_index = FileIndex(File)
-        file_index.update_object(file)
+# commenting out the real time index for files 
+#    # update index
+#    if file.type() != 'image':
+#        file_index = FileIndex(File)
+#        file_index.update_object(file)
 
     # if image size specified
-    if file.type()=='image' and size:  # if size specified
-        size= [int(s) for s in size.split('x')]  # convert to list
+    if file.type() == 'image' and size:  # if size specified
+
+        size = [int(s) for s in size.split('x')]  # convert to list
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
-        response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
         return response
@@ -101,10 +99,11 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
     # set mimetype
     if file.mime_type():
         response = HttpResponse(data, mimetype=file.mime_type())
-    else: raise Http404
+    else:
+        raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s'% (attachment, file_name)
+    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
     return response
 
 def search(request, template_name="files/search.html"):
@@ -155,20 +154,17 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
         if form.is_valid():
             file = form.save(commit=False)
-            file.name = file.file.path.split('/')[-1]
 
             # update all permissions and save the model
             file = update_perms_and_save(request, form, file)
-
-            log_defaults = {
+            EventLog.objects.log(**{
                 'event_id' : 182000,
                 'event_data': '%s (%d) edited by %s' % (file._meta.object_name, file.pk, request.user),
                 'description': '%s edited' % file._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': file,
-            }
-            EventLog.objects.log(**log_defaults)
+            })
 
             return HttpResponseRedirect(reverse('file.search'))
     else:

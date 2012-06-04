@@ -3,25 +3,24 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.contrib.syndication.views import feed
+from django.contrib.syndication.views import Feed
 
 from notification.models import *
 from notification.decorators import basic_auth_required, simple_basic_auth_callback
 from notification.feeds import NoticeUserFeed
 
-from perms.utils import is_admin
 from base.http import Http403
 
 @basic_auth_required(realm='Notices Feed', callback_func=simple_basic_auth_callback)
 def feed_for_user(request):
     url = "feed/%s" % request.user.username
-    return feed(request, url, {
+    return Feed(request, url, {
         "feed": NoticeUserFeed,
     })
 
 @login_required
 def notices(request):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     notice_types = NoticeType.objects.all()

@@ -4,6 +4,7 @@
 {% load perm_tags %}
 {% load tagging_tags %}
 {% load video_tags %}
+{% load video_filters %}
 
 {% block title %}{{ video.title }} - {{ video.category|title }} Videos{% endblock %}
 {% block meta_description %}{{ video.category }} Videos from {{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ video.title }} - {{ video.description|striptags|truncatewords:40 }}{% endblock %}
@@ -14,7 +15,7 @@
 
 <h1>{{ video.title }}</h1>
 
-{{ video.embed_code|safe }}
+{{ video|video_embed:"600" }}
 
 <br>
 {{ video.description|safe }}
@@ -23,7 +24,7 @@
     <div class="tags">
 Tags: {% for tag in tags %}
 <a href="{% url video.search %}?q={{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-{% endfor %}
+{% endfor %} 
 		</div>
 	{% endif %}		
     {% if video.status_detail != "active" %}

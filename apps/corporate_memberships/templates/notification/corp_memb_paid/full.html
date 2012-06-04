@@ -60,7 +60,9 @@
                 </tr>
               </table>              <p>                  <br>
                {% trans "To view this corporate membership, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}</strong>
+             {% if profile %}  
               <p>{% trans "For more on the person who submitted the application, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>
+             {% endif %}
               <p>{% trans "If you have received this in error, please contact the webmaster below." %} </p>
               <p>                {% trans "Thanks!" %}</p>
               <p>{{ SITE_GLOBAL_SITECONTACTNAME }}<br>

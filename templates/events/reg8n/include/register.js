@@ -1,8 +1,9 @@
 $(document).ready(function(){
     $('#discount_check').click(function(){
         code = $('#id_discount_code').val();
-        price = $('#original-price').html();
-        count = parseInt($('#id_registrant-TOTAL_FORMS').val());
+        price = $('#total-amount').html();
+        // only 1 registrant set is discounted
+        count = 1;
         $.post(
             '{% url discount.discounted_price %}',
             {
@@ -20,9 +21,9 @@ $(document).ready(function(){
                     $('#final-amount').html(json["price"]);
                     $('.discount-summary').show()
                 } else {
-                    $('#summary-total-amount').html($('#original-price').html());
-                    $('#discount-amount').html(0);
-                    $('#final-amount').html($('#original-price').html());
+                    $('#summary-total-amount').html($('#total-amount').html());
+                    $('#discount-amount').html("0.00");
+                    $('#final-amount').html($('#total-amount').html());
                 }
             }
         );

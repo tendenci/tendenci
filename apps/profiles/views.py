@@ -6,10 +6,9 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, Q, get_app
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
-from django.db.models import get_app
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib import messages
 # for password change
@@ -18,7 +17,7 @@ from django.views.decorators.csrf import csrf_protect
 from base.decorators import ssl_required
 
 from perms.object_perms import ObjectPermission
-from perms.utils import (has_perm, is_admin, update_perms_and_save,
+from perms.utils import (has_perm, update_perms_and_save,
     get_notice_recipients, get_query_filters)
 from base.http import Http403
 from event_logs.models import EventLog
@@ -50,8 +49,14 @@ friends = False
 # view profile  
 @login_required 
 def index(request, username='', template_name="profiles/index.html"):
+    """
+    Show profile of username passed.  If no username is passed
+    then redirect to username of person logged in.
+    """
+
     if not username:
-        username = request.user.username
+        return HttpResponseRedirect(reverse('profile', args=[request.user.username]))
+
     user_this = get_object_or_404(User, username=username)
 
     try:
@@ -135,19 +140,17 @@ def search(request, template_name="profiles/search.html"):
             raise Http403
     
     if request.user.is_authenticated():
-        if not allow_user_search and not is_admin(request.user):
+        if not allow_user_search and not request.user.profile.is_superuser:
             raise Http403
 
     query = request.GET.get('q', None)
-    if get_setting('site', 'global', 'searchindex') and query:
-        profiles = Profile.objects.search(query, user=request.user)
-        profiles = profiles.order_by('last_name_exact')
-    else:
-        filters = get_query_filters(request.user, 'profiles.view_profile')
-        profiles = Profile.objects.filter(filters).distinct()
-        profiles = profiles.order_by('user__last_name')
-        if request.user.is_authenticated():
-            profiles = profiles.select_related()
+    filters = get_query_filters(request.user, 'profiles.view_profile')
+    profiles = Profile.objects.filter(filters).distinct()
+    
+    if query:
+        profiles = profiles.filter(Q(user__first_name__icontains=query)|Q(user__last_name__icontains=query)|Q(user__email__icontains=query))
+    
+    profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     log_defaults = {
         'event_id' : 124000,
@@ -185,12 +188,12 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             new_user = profile.user
             
             # security_level
-            if is_admin(request.user):
+            if request.user.profile.is_superuser:
                 security_level = form.cleaned_data['security_level']
-                if security_level == 'developer':
+                if security_level == 'superuser':
                     new_user.is_superuser = 1
                     new_user.is_staff = 1
-                elif security_level == 'admin':
+                elif security_level == 'staff':
                     new_user.is_superuser = 0
                     new_user.is_staff = 1
                     
@@ -286,15 +289,15 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             old_profile = Profile.objects.get(user=old_user)
             profile = form.save(request, user_edit)
            
-            if is_admin(request.user):
+            if request.user.profile.is_superuser:
                 security_level = form.cleaned_data['security_level']
                 
-                if security_level == 'developer':
+                if security_level == 'superuser':
                     user_edit.is_superuser = 1
                     user_edit.is_staff = 1
                     # remove them from auth_group if any - they don't need it
                     user_edit.groups = []
-                elif security_level == 'admin':
+                elif security_level == 'staff':
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 1
                     
@@ -326,9 +329,10 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 user_edit.is_active = 1
             else:
                 user_edit.is_active = 0
-               
-            profile.save()
+
             user_edit.save()
+            profile.save()
+            
             
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):
@@ -427,7 +431,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         profile = Profile.objects.create_profile(user=user_edit)
    
     # for now, only admin can grant/remove permissions
-    if not is_admin(request.user): raise Http403
+    if not request.user.profile.is_superuser: raise Http403
     
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
@@ -441,78 +445,8 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
    
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 
         context_instance=RequestContext(request))
-    
-    
-#@login_required
-#def edit_user_groups(request, id, template_name="profiles/edit_groups.html"):
-#    user_edit = get_object_or_404(User, pk=id)
-#    profile = user_edit.get_profile()
-#    
-#    # get the groups with permissions
-#    groups = Group.objects.search(user=request.user)
-#    groups = [g.object for g in groups.filter(allow_self_add=True)]
-#    groups = [g for g in groups if not g.is_member(user_edit)]
-#    
-#    if is_admin(request.user):
-#        groups = Group.objects.all()
-#    
-#    print 'groups', groups
-#    
-#    # groups the user is in that have allow_self_remove true
-#    groups_joined = user_edit.group_set.filter(allow_self_remove=True)
-#    
-#    if is_admin(request.user):
-#        groups_joined = user_edit.group_set.all()
-#    
-#    print 'groups_joined', groups_joined
-#
-#    if request.method == "POST":
-#        selected_groups = request.POST.getlist("user_groups")    # list of ids
-#        selected_groups = [Group.objects.get(id=g) for g in selected_groups] # list of objects
-#        
-#        print 'selected_groups', selected_groups
-#        
-#        groups_to_add = [g for g in selected_groups if g not in groups_joined]
-#        print 'groups_to_add', groups_to_add
-#        for g in groups_to_add:
-#            gm = GroupMembership(group=g, member=user_edit)
-#            gm.creator_id = request.user.id
-#            gm.creator_username = request.user.username
-#            gm.owner_id = request.user.id
-#            gm.owner_username = request.user.username
-#            gm.save()    
-#            log_defaults = {
-#                'event_id' : 221000,
-#                'event_data': '%s (%d) added by %s' % (gm._meta.object_name, gm.pk, request.user),
-#                'description': '%s added' % gm._meta.object_name,
-#                'user': request.user,
-#                'request': request,
-#                'instance': gm,
-#            }
-#            EventLog.objects.log(**log_defaults)    
-#
-#        # remove those not selected but already in GroupMembership 
-#        groups_to_check = [groups_joined] + selected_groups 
-#        print 'groups_to_check', groups_to_check
-#        groups_to_remove = [g for g in groups_joined if g not in groups_to_check]
-#        print 'groups_to_remove', groups_to_remove
-#        for g in groups_to_remove:
-#            gm = GroupMembership.objects.get(group=g, member=user_edit)
-#            log_defaults = {
-#                'event_id' : 223000,
-#                'event_data': '%s (%d) deleted by %s' % (gm._meta.object_name, gm.pk, request.user),
-#                'description': '%s deleted' % gm._meta.object_name,
-#                'user': request.user,
-#                'request': request,
-#                'instance': gm,
-#            }
-#            EventLog.objects.log(**log_defaults)            
-#            
-#            gm.delete()
-#            
-#    return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'groups':groups, 'groups_joined':groups_joined}, 
-#        context_instance=RequestContext(request))
- 
+
+
 def _get_next(request):
     """
     The part that's the least straightforward about views in this module is how they 
@@ -603,7 +537,7 @@ def password_change(request, id, template_name='registration/password_change_for
         post_change_redirect = reverse('profiles.views.password_change_done', kwargs={'id':id})
     if request.method == "POST":
         form = password_change_form(user=user_edit, data=request.POST)
-        if is_admin(request.user):
+        if request.user.profile.is_superuser:
             del form.fields['old_password']
         if form.is_valid():
             form.save()
@@ -611,7 +545,7 @@ def password_change(request, id, template_name='registration/password_change_for
     else:
         form = password_change_form(user=user_edit)
         # an admin doesn't have to enter the old password
-        if is_admin(request.user):
+        if request.user.profile.is_superuser:
             del form.fields['old_password']
     return render_to_response(template_name, {
         'user_this': user_edit,
@@ -630,32 +564,75 @@ def password_change_done(request, id, template_name='registration/password_chang
 def _user_events(from_date):
     return User.objects.all()\
                 .filter(eventlog__create_dt__gte=from_date)\
-                .annotate(event_count=Count('eventlog__pk'))\
-                .order_by('-event_count')
+                .annotate(event_count=Count('eventlog__pk'))
 
 @staff_member_required
-def user_activity_report(request):
+def user_activity_report(request, template_name='reports/user_activity.html'):
     now = datetime.now()
-    users30days = _user_events(now-timedelta(days=10))[:10]
-    users60days = _user_events(now-timedelta(days=60))[:10]
-    users90days = _user_events(now-timedelta(days=90))[:10]
-    return render_to_response(
-                'reports/user_activity.html', 
-                {'users30days': users30days,'users60days': users60days,'users90days': users90days,},  
-                context_instance=RequestContext(request))
+    users30days = _user_events(now-timedelta(days=10))
+    users60days = _user_events(now-timedelta(days=60))
+    users90days = _user_events(now-timedelta(days=90))
+    
+    # get sort order
+    sort = request.GET.get('sort', 'events')
+    if sort == 'username':
+        users30days = users30days.order_by('username')
+        users60days = users60days.order_by('username')
+        users90days = users90days.order_by('username')
+    elif sort == 'last_name':
+        users30days = users30days.order_by('last_name')
+        users60days = users60days.order_by('last_name')
+        users90days = users90days.order_by('last_name')
+    elif sort == 'first_name':
+        users30days = users30days.order_by('first_name')
+        users60days = users60days.order_by('first_name')
+        users90days = users90days.order_by('first_name')
+    elif sort == 'email':
+        users30days = users30days.order_by('email')
+        users60days = users60days.order_by('email')
+        users90days = users90days.order_by('email')
+    elif sort == 'events':
+        users30days = users30days.order_by('-event_count')
+        users60days = users60days.order_by('-event_count')
+        users90days = users90days.order_by('-event_count')
+        
+    # top 10 only
+    users30days = users30days[:10]
+    users60days = users60days[:10]
+    users90days = users90days[:10]
+    
+    return render_to_response(template_name, {
+        'users30days': users30days,
+        'users60days': users60days,
+        'users90days': users90days,
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
-def admin_users_report(request):
-    filters = {
-        'is_staff': 1,
-        'is_active': 1,
-    }
-    users = User.objects.all().filter(**filters)
-    return render_to_response(
-                'reports/admin_users.html', 
-                {'users': users},  
-                context_instance=RequestContext(request))
+def admin_users_report(request, template_name='reports/admin_users.html'):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    profiles = Profile.actives.filter(user__is_superuser=True).select_related()
+    
+    # get sort order
+    sort = request.GET.get('sort', 'id')
+    if sort == 'id':
+        profiles = profiles.order_by('user__pk')
+    elif sort == 'username':
+        profiles = profiles.order_by('user__username')
+    elif sort == 'last_name':
+        profiles = profiles.order_by('user__last_name')
+    elif sort == 'first_name':
+        profiles = profiles.order_by('user__first_name')
+    elif sort == 'email':
+        profiles = profiles.order_by('user__email')
+    elif sort == 'phone':
+        profiles = profiles.order_by('phone')
+    
+    return render_to_response(template_name, {
+        'profiles': profiles
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -680,16 +657,10 @@ def user_access_report(request):
 @login_required
 def admin_list(request, template_name='profiles/admin_list.html'):
     # only admins can edit this list
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
-    filters = {
-        'status':1,
-        'status_detail':'active',
-        'user__is_staff': 1,
-        'user__is_active': 1,
-    }
-    admins = Profile.objects.filter(**filters)
+    admins = Profile.actives.filter(user__is_superuser=True).select_related()
     
     return render_to_response(template_name, {'admins': admins},
                               context_instance=RequestContext(request))
@@ -759,7 +730,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user)
         
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
         
     if request.method == 'POST':

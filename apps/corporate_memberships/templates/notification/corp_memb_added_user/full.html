@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<p>{% blocktrans with object.nam as bname %}Thank you for applying for the corporate membership "{{ bname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
+<p>{% blocktrans with object.name as bname %}Thank you for applying for the corporate membership "{{ bname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
 </p>
 {% if object.corp_app.authentication_method == 'secret_code' %}
 <p>
@@ -24,14 +24,15 @@
 	{% endif %}
 {% endif %}
 
+{% if object.status_detail == "pending" %}
+	<p>
+	{% trans "You will be notified by email when your corporate membership is approved." %}<br /><br />
+	{% trans "Your corporate membership has to be approved before individuals can join under your corporate membership." %}
+	</p>
+{% else %}
 <p>
 {% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
 </p>
-{% if object.status_detail == "pending" %}
-	<p>
-	{% trans "Note that the dues representative(s) will be notified by email when your corporate membership is approved." %}<br />
-	{% trans "Your corporate membership has to be approved before individuals can join under your corporate membership." %}
-	</p>
 {% endif %}
 
 <p>{% trans "Thanks!" %}</p>

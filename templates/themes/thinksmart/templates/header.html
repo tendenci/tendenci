@@ -3,12 +3,13 @@ Thinksmart Theme - header.html
 {% endcomment %}
 
 {% load theme_tags %}
+{% load base_tags %}
 {% load nav_tags %}
 <div class="container">
     <section id="header" class="no-band">
         <header>
             <div id="logo">
-                <a href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/250x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
+                <a href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/250x100/crop/90/{% else %}{% stock_image_url '250x100' %}{% endif %}" />
                 <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
             </div>
             <div id="search-box">

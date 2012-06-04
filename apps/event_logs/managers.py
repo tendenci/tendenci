@@ -1,3 +1,4 @@
+import inspect
 from time import strptime
 from datetime import datetime, timedelta
 from operator import and_
@@ -107,6 +108,8 @@ class EventLogManager(Manager):
         request, user, instance = None, None, None
         event_log = self.model()
 
+        stack = inspect.stack()
+
         if not kwargs:
             raise TypeError('At least event_id, event_data, description keyword arguments are expected')
 
@@ -115,11 +118,6 @@ class EventLogManager(Manager):
                 raise TypeError('Unexpected keyword argument %s' % kwarg)
 
         # check the required arguments
-        if 'event_id' in kwargs:
-            event_log.event_id = kwargs['event_id']
-        else:
-            raise TypeError('Keyword argument event_id is required')
-
         if 'event_data' in kwargs:
             event_log.event_data = kwargs['event_data']
         else:
@@ -133,9 +131,13 @@ class EventLogManager(Manager):
         # object parameters
         if 'request' in kwargs:
             request = kwargs['request']
+#         else:
+#             request = inspect.getargvalues(stack[1][0]).locals['request']
 
         if 'user' in kwargs:
             user = kwargs['user']
+#         else:
+#             user = inspect.getargvalues(stack[1][0]).locals['request'].user
 
         if 'instance' in kwargs:
             instance = kwargs['instance']
@@ -149,6 +151,21 @@ class EventLogManager(Manager):
             event_log.event_type = kwargs['event_type']
         if 'source' in kwargs:
             event_log.source = kwargs['source']
+#         if 'source' in kwargs:
+#             event_log.source = kwargs['source']
+#         else:
+#             event_log.source = inspect.getmodule(stack[1][0]).__name__.split('.')[0]
+
+#         if 'action' in kwargs:
+#             event_log.action = kwargs['action']
+#         else:
+#             event_log.action = stack[1][3]
+
+        if 'event_id' in kwargs:
+            event_log.event_id = kwargs['event_id']
+        else:
+            raise TypeError('Keyword argument event_id is required')
+            #event_log.event_id = event_id_generate(event_log.source, event_log.action)
 
         event_log.entity = None
         if 'entity' in kwargs:
@@ -208,6 +225,9 @@ class EventLogManager(Manager):
         # generate colors and use the source name on the display.
         # This will have to move forward when the eventlog ids and changes can
         # be approved with ED
+        
+        # this if and the if not below can be removed once source is
+        # set to come from the method module name
         if instance:
             ct = ContentType.objects.get_for_model(instance)
             event_log.content_type = ct

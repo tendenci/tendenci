@@ -8,9 +8,9 @@
         {% with story.category_set as story_cat %}
         {% if story_cat.category %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url story.search %}?q=category:{{ story_cat.category }}">{{ story_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url stories %}?q=category:{{ story_cat.category }}">{{ story_cat.category }}</a>
             {% if story_cat.sub_category %}
-                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url story.search %}?q=sub_category:{{ story_cat.sub_category }}">{{ story_cat.sub_category }}</a>
+                | <strong>{% trans "Sub Category:" %} </strong><a href="{% url stories %}?q=sub_category:{{ story_cat.sub_category }}">{{ story_cat.sub_category }}</a>
             {% endif %}
         </div>
         {% endif %}
@@ -20,7 +20,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in story.tags|tag_split %}
-                <a href="{% url story.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url stories %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

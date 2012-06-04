@@ -9,7 +9,7 @@ from django.forms.models import inlineformset_factory
 
 from base.http import Http403
 from perms.utils import get_notice_recipients, has_perm, update_perms_and_save
-from perms.utils import is_admin, get_query_filters
+from perms.utils import get_query_filters
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 
@@ -209,7 +209,7 @@ def take(request, pk, template_name="courses/take.html"):
         raise Http403
     
     # closed course, deadline passed
-    if course.is_closed() and not is_admin(request.user):
+    if course.is_closed() and not request.user.profile.is_superuser:
         raise Http403
     
     #check if user can retake/take the course
@@ -294,13 +294,13 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
     if not has_perm(request.user, 'courses.view_course', course):
         raise Http403
         
-    if user_id and is_admin(request.user):
-        # allow an admin user to view other certificates
+    if user_id and request.user.profile.is_superuser:
+        # allow an superuser user to view other certificates
         user = User.objects.get(id=user_id)
-        for_admin = True
+        for_superuser = True
     else:
         user = request.user
-        for_admin = False
+        for_superuser = False
     
     attempts = CourseAttempt.objects.filter(course=course, user=user).order_by("-create_dt")
     
@@ -308,7 +308,7 @@ def completion(request, pk, user_id=None, template_name="courses/completion.html
     retry, retry_time = can_retry(course, user)
         
     return render_to_response(template_name, {
-        'for_admin':for_admin,
+        'for_admin':for_superuser,
         'attempts':attempts,
         'course':course,
         'has_passed':passed,
@@ -325,7 +325,7 @@ def certificate(request, pk, user_id=None, template_name="courses/certificate.ht
     
     if user_id:
         user = get_object_or_404(User, pk=user_id)
-        if not (user == request.user or is_admin(request.user)):
+        if not (user == request.user or request.user.profile.is_superuser):
             raise Http403
     else:
         user = request.user
@@ -344,11 +344,11 @@ def certificate(request, pk, user_id=None, template_name="courses/certificate.ht
 @login_required
 def add_completion(request, pk, template_name="courses/add_completion.html"):
     """
-    Completion add for admin only
+    Completion add for superuser only
     """
     course = get_object_or_404(Course, pk=pk)
     
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     if request.method == "POST":
@@ -374,7 +374,7 @@ def clone(request, pk, form_class=CourseForm, template_name="courses/add.html"):
     
     course = get_object_or_404(Course, pk=pk)
     
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
         
     if request.method == "POST":
@@ -421,7 +421,7 @@ def completion_report(request, pk, template_name="courses/completion_report.html
     """
     course = get_object_or_404(Course, pk=pk)
     
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     # get the date range
@@ -458,7 +458,7 @@ def top_tests(request, template_name="courses/top_tests.html"):
     """
     Admin report view for course rankings and statistics
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise http403
     
     # get the date range

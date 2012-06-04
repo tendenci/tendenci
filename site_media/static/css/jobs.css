@@ -406,6 +406,8 @@ div.pricing-table-block table {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+	background: #fff;
+	color: #404040;
 }
 
 div.pricing-table-block table tr.alt {

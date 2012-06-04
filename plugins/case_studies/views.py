@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 
 from base.http import Http403
-from perms.utils import has_perm, is_admin, has_view_perm, get_query_filters
+from perms.utils import has_perm, has_view_perm, get_query_filters
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 
@@ -18,7 +18,7 @@ def index(request, slug=None, template_name="case_studies/view.html"):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (case_study.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (case_study.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if has_view_perm(request.user, 'case_studies.view_casestudy', case_study):

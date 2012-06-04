@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
@@ -16,12 +17,12 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
-from perms.utils import (get_notice_recipients, is_admin, is_developer,
-    update_perms_and_save, is_member, has_perm, get_query_filters,
+from perms.utils import (get_notice_recipients, update_perms_and_save, has_perm, get_query_filters,
     has_view_perm)
 from categories.forms import CategoryForm, CategoryForm2
 from categories.models import Category
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from jobs.models import Job, JobPricing
 from jobs.forms import JobForm, JobPricingForm
@@ -31,6 +32,7 @@ try:
     from notification import models as notification
 except:
     notification = None
+from base.utils import send_email_notification
 
 
 def details(request, slug=None, template_name="jobs/view.html"):
@@ -61,7 +63,8 @@ def details(request, slug=None, template_name="jobs/view.html"):
 
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
-
+    my_jobs = request.GET.get('my_jobs', False)
+    
     if get_setting('site', 'global', 'searchindex') and query:
         jobs = Job.objects.search(query, user=request.user)
     else:
@@ -69,9 +72,14 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
-
+    
     jobs = jobs.order_by('status_detail','list_type','-post_dt')
-
+    
+    # filter for "my jobs"
+    if my_jobs and not request.user.is_anonymous():
+        template_name = "jobs/my_jobs.html"
+        jobs = jobs.filter(creator_username=request.user.username)
+    
     log_defaults = {
         'event_id': 254000,
         'event_data': '%s searched by %s' % ('Job', request.user),
@@ -119,7 +127,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
     
     content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
     
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         category_form_class = CategoryForm
     else:
         category_form_class = CategoryForm2
@@ -175,7 +183,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             category = Category.objects.get_for_object(job,'category')
             sub_category = Category.objects.get_for_object(job,'sub_category')
             
-            ## update the category of the article
+            ## update the category of the job
             category_removed = False
             category = categoryform.cleaned_data['category']
             if category != '0': 
@@ -186,7 +194,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 Category.objects.remove(job,'sub_category')
             
             if not category_removed:
-                # update the sub category of the article
+                # update the sub category of the job
                 sub_category = categoryform.cleaned_data['sub_category']
                 if sub_category != '0': 
                     Category.objects.update(job, sub_category,'sub_category')
@@ -228,7 +236,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                         )
 
             # send user to thank you or view page
-            if is_admin(request.user):
+            if request.user.profile.is_superuser:
                 return HttpResponseRedirect(reverse('job', args=[job.slug]))
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
@@ -282,7 +290,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
         'category': getattr(category,'name','0'),
         'sub_category': getattr(sub_category,'name','0')
     }
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         category_form_class = CategoryForm
     else:
         category_form_class = CategoryForm2
@@ -293,7 +301,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                         prefix='category')
     
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         del form.fields['pricing']
         del form.fields['list_type']
         if form.fields.has_key('activation_dt'):
@@ -323,7 +331,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                 Category.objects.remove(job ,'sub_category')
             
             if not category_removed:
-                # update the sub category of the article
+                # update the sub category of the job
                 sub_category = categoryform.cleaned_data['sub_category']
                 if sub_category != '0': 
                     Category.objects.update(job, sub_category,'sub_category')
@@ -580,6 +588,18 @@ def approve(request, id, template_name="jobs/approve.html"):
             job.owner_username = request.user.username
 
         job.save()
+        
+        # send email notification to user
+        recipients = [job.creator.email]
+        if recipients:
+            extra_context = {
+                'object': job,
+                'request': request,
+            }
+            #try:
+            send_email_notification('job_approved_user_notice', recipients, extra_context)
+            #except:
+            #    pass
 
         messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % job)
 
@@ -591,3 +611,70 @@ def approve(request, id, template_name="jobs/approve.html"):
 
 def thank_you(request, template_name="jobs/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+@login_required
+def export(request, template_name="jobs/export.html"):
+    """Export Jobs"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "jobs.csv"
+        fields = [
+            'guid',
+            'title',
+            'slug',
+            'description',
+            'list_type',
+            'code',
+            'location',
+            'skills',
+            'experience',
+            'education',
+            'level',
+            'period',
+            'is_agency',
+            'percent_travel',
+            'contact_method',
+            'position_reports_to',
+            'salary_from',
+            'salary_to',
+            'computer_skills',
+            'requested_duration',
+            'pricing',
+            'activation_dt',
+            'post_dt',
+            'expiration_dt',
+            'start_dt',
+            'job_url',
+            'syndicate',
+            'design_notes',
+            'contact_company',
+            'contact_name',
+            'contact_address',
+            'contact_address2',
+            'contact_city',
+            'contact_state',
+            'contact_zip_code',
+            'contact_country',
+            'contact_phone',
+            'contact_fax',
+            'contact_email',
+            'contact_website',
+            'meta',
+            'entity',
+            'tags',
+            'invoice',
+            'payment_method',
+            'member_price',
+            'member_count',
+            'non_member_price',
+            'non_member_count',
+        ]
+        export_id = run_export_task('jobs', 'job', fields)
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

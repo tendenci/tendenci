@@ -20,7 +20,7 @@ def subscribers(request, id, template_name="subscribers/subscribers.html"):
     form = get_object_or_404(Form, id=id)
     
     # check permission
-    if not has_perm(request.user,'subscribers.change_groupsubscriptions'):
+    if not has_perm(request.user,'subscribers.change_groupsubscription'):
         raise Http403
     
     subscribers = GroupSubscription.objects.filter(subscriber__form=form)
@@ -35,7 +35,7 @@ def subscriber_delete(request, id, template_name="subscribers/delete.html"):
     grp_sub = get_object_or_404(GroupSubscription, id=id)
     
     # check permission
-    if not has_perm(request.user,'subscribers.delete_groupsubscriptions'):
+    if not has_perm(request.user,'subscribers.delete_groupsubscription'):
         raise Http403
         
     if request.method == 'POST':
@@ -63,7 +63,7 @@ def subscriber_detail(request, id, template_name="subscribers/detail.html"):
     grp_sub = get_object_or_404(GroupSubscription, pk=id)
     
     # check permission
-    if not has_perm(request.user,'subscribers.change_groupsubscriptions'):
+    if not has_perm(request.user,'subscribers.change_groupsubscription'):
         raise Http403
         
     return render_to_response(template_name, {

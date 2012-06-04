@@ -5,7 +5,6 @@ from django.http import Http404
 from base.http import Http403
 from perms.utils import has_perm
 from event_logs.models import EventLog
-from perms.utils import is_admin
 from tendenci_guide.models import Guide
 
 def guide_page(request, slug=None, template_name="tendenci_guide/detail.html"):
@@ -14,7 +13,7 @@ def guide_page(request, slug=None, template_name="tendenci_guide/detail.html"):
     remaining = Guide.objects.filter(section=guide.section, ordering__gt=guide.ordering).order_by('ordering')
     if remaining:
         next = remaining[0]
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         log_defaults = {
             'event_id' : 1002500,
             'event_data': '%s (%d) viewed by %s' % (guide._meta.object_name, guide.pk, request.user),

@@ -7,3 +7,7 @@ last_name:{{ object.user.last_name }}
 email:{{ object.user.email }}
 is:{{ object.status }}
 subscribe_dt:{{ object.subscribe_dt|date:"%Y-%m-%d %H:%M:%S" }}
+{{ object.user.username }}
+{{ object.user.first_name }}
+{{ object.user.last_name }}
+{{ object.user.email }}

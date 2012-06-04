@@ -44,16 +44,16 @@ tr.odd {
 	background-color: #DDDDDD;
 }
 
-.corp-mems-wrap {
+.stat-table {
     margin-top: 10px;
 }
 
-.corp-mems-wrap td {
+.stat-table td {
     padding:5px;
     border:solid 1px;
 }
 
-.corp-mems-wrap th {
+.stat-table th {
     padding:5px;
     border:solid 1px;
     background-color: #CCCCCC;

@@ -9,7 +9,6 @@
 {% has_perm user events.change_event event as can_edit %}
 {% has_perm user events.delete_event event as can_delete %}
 {% has_perm user events.add_event as can_add %}
-{% is_admin user as admin %}
 {% tags_for_object event as tags %}
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
@@ -69,7 +68,7 @@
                     <a class="delete" href="{% url event.delete event.pk %}">{% trans "Delete" %}</a>
                 </li>               
             {% endif %}
-            {% if admin and event.status == 0 %}
+            {% if request.user.is_superuser and event.status == 0 %}
                 <li><a href="{% url event.approve event.pk %}">{% trans "Approve" %}</a></li>
             {% endif %}
             {% if can_add %}

@@ -30,6 +30,15 @@
     span.company-label:after, span.position-label:after {
         content: ": ";
     }
+
+    .type-and-period {
+        margin: 10px 0;
+    }
+
+    .type-and-period div {
+        margin-bottom: 3px;
+    }
+
 </style>
 
 <div class="t">
@@ -57,7 +66,7 @@
             <div>{% trans "Membership Types" %}</div>
             <ul>
                 {% for type in types %}
-                <li><a href="?q=type:{{ type.name }}">{{ type.name }}</a></li>
+                <li><a href="?type={{ type.pk }}">{{ type.name }}</a></li>
                 {% endfor %}
             </ul>
         </div>

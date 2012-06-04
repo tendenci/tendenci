@@ -14,6 +14,27 @@
 <p>
 {% blocktrans %}To add individual memberships under your corporate, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre object.corp_app.memb_app.slug object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre object.corp_app.memb_app.slug object.pk %}</a>
 </p>
+
+{% if object.corp_app.authentication_method == 'secret_code' %}
+<p>
+{% blocktrans %}<b>secret code</b>:{% endblocktrans %}<br />
+<b>{{ object.secret_code }}</b>
+</p>
+{% endif %}
+
+{% if object.anonymous_creator %}
+<p>
+	{% if created %}
+	Your login account:<br />
+	Username: <strong>{{ username }}</strong><br />
+	Password: <strong>{{ password }}</strong>
+	{% else %}
+	Your login username: <strong>{{ object.creator_username }}</strong>
+	{% endif %}
+	<br />
+	To log into the site, visit <a href="{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}">{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}</a>
+</p>
+{% endif %}
 <p>{% trans "Thanks!" %}</p>
 
 <p>{% trans "Time submitted:" %} {% now "D d M Y P" %}</p>

@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from invoices.models import Invoice
 from site_settings.utils import get_setting
-from perms.utils import is_admin
 
 class Payment(models.Model):
     guid = models.CharField(max_length=50)
@@ -89,7 +88,9 @@ class Payment(models.Model):
         return self.response_code=='1' and self.response_reason_code=='1' and self.status_detail == 'approved'
 
     def __unicode__(self):
-        return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, self.trans_id, self.amount)
+        return u"response_code: %s, trans_id: %s, amount: %.2f" % (self.response_code, 
+                                                                   self.trans_id, 
+                                                                   self.amount)
         
     @models.permalink
     def get_absolute_url(self):
@@ -97,7 +98,7 @@ class Payment(models.Model):
     
     def allow_view_by(self, user2_compare, guid=''):
         boo = False
-        if is_admin(user2_compare):
+        if user2_compare.profile.is_superuser:
             boo = True
         else: 
             if user2_compare and user2_compare.id > 0:

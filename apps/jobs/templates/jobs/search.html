@@ -13,7 +13,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
-<link rel="alternate" type="application/rss+xml" title="{% trans "Latest" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}" href="{% url job.feed %}" />
+<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}" href="{% url job.feed %}" />
 {% endblock %}
 
 {% block body %}

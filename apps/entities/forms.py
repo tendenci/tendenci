@@ -2,7 +2,6 @@ from django import forms
 
 from entities.models import Entity
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 
 class EntityForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
@@ -53,7 +52,7 @@ class EntityForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(EntityForm, self).__init__(*args, **kwargs)
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'admin_notes' in self.fields: self.fields.pop('admin_notes')
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

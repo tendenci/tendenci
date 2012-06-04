@@ -24,7 +24,7 @@ class Command(BaseCommand):
         def subscribe_to_list(subscriber_obj, list_id, name, email):
             try:
                 subscriber = subscriber_obj.get(list_id, email)
-            except BadRequest as br:
+            except:
                 try:
                     email_address = subscriber_obj.add(list_id, email, name, [], True)
                     if verbosity >=2:

@@ -3,7 +3,6 @@ from django.utils.translation import ugettext_lazy as _
 from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
 from base.fields import SplitDateTimeField
-from perms.utils import is_admin
 
 from lots.models import Lot, Map, Line
 

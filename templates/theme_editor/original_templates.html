@@ -1,4 +1,4 @@
-{% extends "theme_editor/base.html" %}
+{% extends "theme_editor/base_list.html" %}
 
 {% load i18n %}
 {% load humanize %}
@@ -13,34 +13,44 @@
 {% endblock %}
         
 {% block body %}
+<div class="t">
+    <div class="editor-nav" style="float:right">
+        <a href="{% url theme_editor.app_list %}" >{% trans "Back to App List" %}</a>&nbsp;&nbsp;
+        <a href="{% url theme_editor.editor %}" >{% trans "Back to Theme-Editor" %}</a>
+    </div>
+    <h1>{% if app %}{{ app }}{% else %}default{% endif %} templates</h1>
+    <strong>{% trans "Choose a folder or file:" %}</strong>
     <div id="right_files_list">
-    <a href="{% url theme_editor.editor %}" style="float:right">{% trans "Back to Theme-Editor" %}</a>
-   <h2>{% trans "Choose a folder or file:" %}</h2>
-   {% if prev_dir %}
-       <p class="prev_dir">
-           <a href="{% url theme_editor.original_templates %}?dir={{ prev_dir }}">&laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}</a>
-       </p>
-   {% endif %}
-   {% if dirs %}
-       <ul class="dir_list">   
-            {% for dir in dirs %}
-                <li class="dir_item"><a href="{% url theme_editor.original_templates %}?dir={{ dir }}">{{ dir|basename|safe }}</a></li>
-            {% endfor %}
-       </ul>
-   {%  endif %}
-   {%  if files %}
-       <ul class="files_list">
-            {% for file in files %}
-                <li>
-                    {{ file|safe }}<a class="copy" href="{% url theme_editor.copy_to_theme %}?dir={{ current_dir }}&file={{ file }}">&laquo;&nbsp;{% trans "copy to custom templates" %}</a>
-                </li>
-            {% endfor %}
-       </ul>
-   {% endif %}
-   {% if not files and not dirs %}
-        <p>{% trans "No editable files" %}</p>
-   {% endif %}
-   </div>
+        {% if prev_dir %}
+           <p class="prev_dir">
+               <a href="{% if app %}{% url theme_editor.original_templates app %}{% else %}{% url theme_editor.original_templates %}{% endif %}?dir={{ prev_dir }}">
+               &laquo;&nbsp;{% blocktrans %}back to {{ prev_dir_name }}{% endblocktrans %}
+               </a>
+           </p>
+        {% endif %}
+        {% if dirs %}
+           <ul class="dir_list">   
+                {% for dir in dirs %}
+                    <li class="dir_item"><a href="{% if app %}{% url theme_editor.original_templates app %}{% else %}{% url theme_editor.original_templates %}{% endif %}?dir={{ dir }}">
+                    {{ dir|basename|safe }}</a></li>
+                {% endfor %}
+           </ul>
+        {%  endif %}
+        {%  if files %}
+           <ul class="files_list">
+                {% for file in files %}
+                    <li>
+                        {{ file|safe }}<a class="copy" href="{% if app %}{% url theme_editor.copy_to_theme app %}{% else %}{% url theme_editor.copy_to_theme %}{% endif %}?dir={{ current_dir }}&file={{ file }}">
+                        &laquo;&nbsp;{% trans "copy to custom templates" %}</a>
+                    </li>
+                {% endfor %}
+           </ul>
+        {% endif %}
+        {% if not files and not dirs %}
+            <p>{% trans "No editable files" %}</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_body %}

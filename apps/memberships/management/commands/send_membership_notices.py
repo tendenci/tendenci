@@ -170,7 +170,7 @@ class Command(BaseCommand):
                                                             membership=membership)
                         notice_log_record.save()
                     except:
-                        # catch the exception and email to developers
+                        # catch the exception and email
                         notice.err += traceback.format_exc()
                         
                 if num_sent > 0:

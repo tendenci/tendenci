@@ -53,7 +53,10 @@ class TendenciBaseModel(models.Model):
         t = '<span class="status-%s">%s</span>'
 
         if obj.status:
-            value = t % (obj.status_detail, obj.status_detail.capitalize())
+            if obj.status_detail == 'paid - pending approval':
+                value = t % ('pending', obj.status_detail.capitalize())
+            else:
+                value = t % (obj.status_detail, obj.status_detail.capitalize())
         else:
             value = t % ('inactive','Inactive')
 

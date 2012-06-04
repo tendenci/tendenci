@@ -15,7 +15,6 @@ from site_settings.utils import get_setting
 from payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin, is_developer
 from captcha.fields import CaptchaField
 from user_groups.models import Group
 
@@ -64,13 +63,15 @@ class FormForForm(forms.ModelForm):
                     else:
                         default = False
                 field_args["initial"] = field.default
-            #if "queryset" in arg_names:
-            #    field_args["queryset"] = field.queryset()
+
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+
             self.fields[field_key] = field_class(**field_args)
-            
+
+            self.fields[field_key].widget.attrs['title'] = field.label
+
         # include pricing options if any
         if self.form.custom_payment and self.form.pricing_set.all():
 
@@ -103,8 +104,8 @@ class FormForForm(forms.ModelForm):
                     widget=forms.RadioSelect,
                     initial=1,
                 )
-            
-        if not self.user.is_authenticated(): # add captcha if not logged in
+        
+        if not self.user.is_authenticated() and get_setting('site', 'global', 'captcha'): # add captcha if not logged in
             self.fields['captcha'] = CaptchaField(label=_('Type the code below'))
 
 
@@ -309,14 +310,11 @@ class FormForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields:
                 self.fields.pop('status')
             if 'status_detail' in self.fields:
                 self.fields.pop('status_detail')
-
-        if not is_developer(self.user):
-            if 'status' in self.fields: self.fields.pop('status')
 
     def clean_slug(self):
         slug = slugify(self.cleaned_data['slug'])

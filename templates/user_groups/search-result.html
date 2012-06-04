@@ -6,7 +6,7 @@
 <div class="wrap-search-item">
     <div class="group-wrap {% cycle row1,row2 as rowcolours %}">
         <h2><a href="{{ group.get_absolute_url }}">{% firstof group.name group.label trans 'Untitled' %}</a></h2>
-        <a href="{{ group.get_absolute_url }}">{{ group.members.count }} {% trans 'Member' %}{{ group.members.count|pluralize }}</a><br>
+        <a href="{{ group.get_absolute_url }}">{{ group.active_members.count }} {% trans 'Member' %}{{ group.members.count|pluralize }}</a><br>
         <a href="{{ group.get_absolute_url }}">{{ group.groupsubscription_set.all.count }} {% trans 'Subscriber' %}{{ group.groupsubscription_set.all.count|pluralize }}</a>
         {% if group.notes %}
             <div class="content">{{ group.notes|striptags|truncatewords:20 }}</div>

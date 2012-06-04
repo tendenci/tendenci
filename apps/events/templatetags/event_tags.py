@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timedelta
+from operator import or_
 
 from django.contrib.humanize.templatetags.humanize import naturalday
 from django.core.urlresolvers import reverse
@@ -7,6 +8,7 @@ from django.template.defaultfilters import floatformat
 from django.db import models
 from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
+from django.db.models import Q
 
 from base.template_tags import ListNode, parse_tag_kwargs
 from site_settings.utils import get_setting
@@ -85,6 +87,11 @@ def registration_pricing_and_button(context, event, user):
     # see get_pricing
     q_pricing = get_pricing(user, event, pricing=pricing)
     
+    default_pricing = []
+    for p in q_pricing:
+        if 'default' in p:
+            default_pricing = p
+
     # spots taken
     if limit > 0:
         spots_taken = get_event_spots_taken(event)
@@ -105,6 +112,7 @@ def registration_pricing_and_button(context, event, user):
         'reg_ended': reg_ended,
         'earliest_time': earliest_time,
         'pricing': q_pricing,
+        'default_pricing': default_pricing,
         'user': user,
         'is_registrant': is_registrant,
         'anonpricing': anonpricing,
@@ -316,15 +324,24 @@ class ListEventsNode(ListNode):
             except:
                 event_type = self.kwargs['type']
 
-        # process tags
-        for tag in tags:
-            tag = tag.strip()
-            query = '%s "tag:%s"' % (query, tag)
-
         filters = get_query_filters(user, 'events.view_event')
         items = Event.objects.filter(filters).distinct()
         if event_type:
             items = items.filter(type__name__iexact=event_type)
+
+        if tags:  # tags is a comma delimited list
+            # this is fast; but has one hole
+            # it finds words inside of other words
+            # e.g. "prev" is within "prevent"
+            tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
+            tag_queries += [Q(tags__istartswith=t.strip()+",") for t in tags]
+            tag_queries += [Q(tags__iendswith=", "+t.strip()) for t in tags]
+            tag_queries += [Q(tags__iendswith=","+t.strip()) for t in tags]
+            tag_queries += [Q(tags__icontains=", "+t.strip()+",") for t in tags]
+            tag_queries += [Q(tags__icontains=","+t.strip()+",") for t in tags]
+            tag_query = reduce(or_, tag_queries)
+            items = items.filter(tag_query)
+
         objects = []
 
         # if order is not specified it sorts by relevance

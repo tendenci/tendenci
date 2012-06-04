@@ -10,7 +10,7 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
-from perms.utils import is_admin, has_perm, has_view_perm, get_query_filters
+from perms.utils import has_perm, has_view_perm, get_query_filters
 
 
 from models import Speaker
@@ -21,7 +21,7 @@ def details(request, slug=None):
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (speaker.status_detail).lower() != 'active' and (not is_admin(request.user)):
+    if (speaker.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     template_name="speakers/view.html"

@@ -9,7 +9,7 @@ class TendenciValidation(CleanedDataFormValidation):
     def is_valid(self, bundle, request=None):
         """Validate the bundle with the given form.
         Creator and Owner fields and defaulted to be the user of 
-        the developerkey if they were not specified.
+        the apikey if they were not specified.
         """
         
         data = bundle.data

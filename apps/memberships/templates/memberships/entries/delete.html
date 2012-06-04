@@ -4,7 +4,6 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load i18n %}
-{% is_admin user as admin %}
 
 {% block title %}{% trans "Delete Membership Entry" %}{% endblock %}
 {% block meta_description %}{{ entry.get_description }}{% endblock %}
@@ -39,7 +38,7 @@
         {% endif %}
 
         <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
-            {% if admin %}
+            {% if request.user.is_superuser %}
             <a class="entry-edit" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit Entry" %}</a>
             {% endif %}
         </div>
@@ -89,7 +88,7 @@
     		{% endif %}
     	{% endfor %}
 
-        {% if user.is_admin %}
+        {% if request.user.is_superuser %}
         {% if entry.is_approved == 0 or entry.is_approved == 1 %}
         {% else %}
             {% if form %}

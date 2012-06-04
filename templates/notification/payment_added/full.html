@@ -36,6 +36,29 @@
     <td width="23%"> {% trans "Description:" %}</td>
     <td width="75%">{{ object.description }}</td>
   </tr>
+  <tr> 
+    <td colspan="3">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Name:" %}</td>
+    <td width="75%">{{ object.first_name }} {{ object.last_name }}</td>
+  </tr>
+  {% if object.phone %}
+  <tr> 
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Phone:" %}</td>
+    <td width="75%">{{ object.phone }}</td>
+  </tr>
+  {% endif %}
+  {% if object.email %}
+  <tr> 
+    <td width="2%">&nbsp;</td>
+    <td width="23%"> {% trans "Email:" %}</td>
+    <td width="75%">{{ object.email }}</td>
+  </tr>
+  {% endif %}
+
 </table>
 
 <p>

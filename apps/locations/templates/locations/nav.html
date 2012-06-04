@@ -44,7 +44,10 @@
             {% if can_add_location %}
                 <li><a href="{% url location.add %}">{% trans "Add" %} {% firstof MODULE_LOCATIONS_LABEL 'Location' %}</a></li>
                 <li class="divider"></li>
-                <li><a href="{% url locations_import_upload_file %}">{% trans "Import" %}</a></li>
+                <li><a href="{% url locations_import_upload_file %}">{% trans "Import" %} {% firstof MODULE_LOCATIONS_LABEL 'Locations' %}</a></li>
+            {% endif %}
+            {% if admin %}
+                <li><a href="{% url locations_export %}">{% trans "Export" %} {% firstof MODULE_LOCATIONS_LABEL 'Locations' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

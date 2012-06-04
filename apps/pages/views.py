@@ -1,8 +1,12 @@
+import os
+
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.core.files import File
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
@@ -12,13 +16,15 @@ from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from perms.utils import (update_perms_and_save, get_notice_recipients,
-    is_admin, has_perm,  get_query_filters)
+    has_perm,  get_query_filters)
 from categories.forms import CategoryForm
 from categories.models import Category
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
+from files.models import file_directory
+from exports.utils import run_export_task
 
-from pages.models import Page
+from pages.models import Page, HeaderImage
 from pages.forms import PageForm
 
 try:
@@ -32,7 +38,7 @@ def index(request, slug=None, template_name="pages/view.html"):
     
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (page.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (page.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if not page.template or not check_template(page.template):
@@ -120,13 +126,26 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
     }
 
     if request.method == "POST":
-        form = form_class(request.POST, instance=page, user=request.user)
+        form = form_class(request.POST, request.FILES, instance=page, user=request.user)
         metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             page = form.save(commit=False)
             # update all permissions and save the model
             page = update_perms_and_save(request, form, page)
+            
+            # handle header image
+            f = form.cleaned_data['header_image']
+            if f:
+                header = HeaderImage()
+                header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
+                header.creator = request.user
+                header.creator_username = request.user.username
+                header.owner = request.user
+                header.owner_username = request.user.username
+                filename = "%s-%s" % (page.slug, f.name)
+                header.file.save(filename, f)
+                page.header_image = header
             
             #save meta
             meta = metaform.save()
@@ -165,7 +184,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % page)
             
-            if not is_admin(request.user):
+            if not request.user.profile.is_superuser:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
                 if recipients:
@@ -231,7 +250,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
     content_type = get_object_or_404(ContentType, app_label='pages',model='page')
     
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        form = form_class(request.POST, request.FILES, user=request.user)
         metaform = meta_form_class(request.POST, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
@@ -239,6 +258,19 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             
             # add all permissions and save the model
             page = update_perms_and_save(request, form, page)
+            
+            # handle header image
+            f = form.cleaned_data['header_image']
+            if f:
+                header = HeaderImage()
+                header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
+                header.creator = request.user
+                header.creator_username = request.user.username
+                header.owner = request.user
+                header.owner_username = request.user.username
+                filename = "%s-%s" % (page.slug, f.name)
+                header.file.save(filename, f)
+                page.header_image = header
             
             #save meta
             meta = metaform.save()
@@ -281,7 +313,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
             
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % page)
             
-            if not is_admin(request.user):
+            if not request.user.profile.is_superuser:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
                 if recipients:
@@ -344,3 +376,34 @@ def delete(request, id, template_name="pages/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+
+@login_required
+def export(request, template_name="pages/export.html"):
+    """Export Pages"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "pages.csv"
+        fields = [
+            'guid',
+            'title',
+            'slug',
+            'header_image',
+            'content',
+            'view_contact_form',
+            'design_notes',
+            'syndicate',
+            'template',
+            'tags',
+            'entity',
+            'meta',
+            'categories',
+        ]
+        export_id = run_export_task('pages', 'page', fields)
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

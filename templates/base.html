@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load perm_tags %}
+{# admin left for deprecation for custom templates/themes #}
 {% is_admin user as admin %}
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US"> 
  
@@ -12,7 +13,7 @@
 
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss/" />
     {% block meta_canonical_url %}{% endblock %} 
-    <link href="{{ STATIC_URL }}css/global_tendenci.css?68" rel="stylesheet" type="text/css" />
+    <link href="{{ STATIC_URL }}css/global_tendenci.css?78" rel="stylesheet" type="text/css" />
     <link rel="search" type="application/opensearchdescription+xml" title="{{ SITE_GLOBAL_SITEDISPLAYNAME }}" href="{{ SITE_GLOBAL_SITEURL }}{% url open_search %}">
     {% block extra_head %}{% endblock %}
     <link href="{{ LOCAL_STATIC_URL }}css/websymbols.css" rel="stylesheet" type="text/css" />
@@ -20,10 +21,22 @@
         <link href="{{ STATIC_URL }}css/admin_menu.css" rel="stylesheet" type="text/css" />
         <link href="{{ LOCAL_STATIC_URL }}css/theme_bar.css" rel="stylesheet" type="text/css" />
     {% endif %}
+    {% if SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID %}
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', '{{ SITE_GLOBAL_SEMGOOGLEANALYTICSPROFILEID }}']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    {% endif %}
 </head> 
 
 <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
-{% if admin %}
+{% if request.user.is_superuser %}
     {% include "admin_menu/admin_top.html" %}
     {% if request.session.theme %}
         {% include "themes/theme_top.html" %}
@@ -32,14 +45,14 @@
 
 {% block html_body %}{% endblock %}
 
-{% if admin %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
+{% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 </body>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.2.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-dropdown.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-alerts.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-modal.js"></script>
-{% if admin %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
+{% if request.user.is_superuser %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
 {% if user.is_authenticated %}<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>{% endif %}
 {% block extra_body %}{% endblock %}
 

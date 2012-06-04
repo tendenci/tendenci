@@ -12,13 +12,12 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    #('Glen Zangirolami', 'gzangirolami@schipul.com'),
     ('Eloy Zuniga Jr.', 'ezuniga@schipul.com'),
     ('Jenny Qian', 'jqian@schipul.com'),
     ('JMO', 'jmoswalt@schipul.com'),
     ('Kerry Gayle', 'kgayle@schipul.com'),
-    #('Loren Lugosch', 'llugosch@schipul.com'),
-    #('Nabil Bani', 'nbani@schipul.com'),
+    ('Alex Ragsdale', 'aragsdale@schipul.com'),
+    ('Forrest Purser', 'fpurser@schipul.com')
 )
 
 MANAGERS = ADMINS
@@ -58,6 +57,7 @@ TIME_ZONE = 'US/Central'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 LANGUAGES = (
+    ('en', u'English'),
     ('en-us', u'English'),
     ('es', u'Espanol'),
 )
@@ -89,7 +89,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-68/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-78/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
@@ -103,6 +103,7 @@ ADMIN_MEDIA_PREFIX = '/site_media/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 's$6*!=m$t0__=51^w@_tbazonjm4+fg@0+ic#bx^3rj)zc$a6i'
+SITE_SETTINGS_KEY = "FhAiPZWDoxnY0TirkVEFplu2sd3DIli6"
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -128,6 +129,7 @@ MIDDLEWARE_CLASSES = (
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
     'mobile.middleware.MobileMiddleware',
+    'profiles.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -198,8 +200,8 @@ INSTALLED_APPS = (
     'pages',
     'events',
     'photos',
-    'corporate_memberships',
     'memberships',
+    'corporate_memberships',
     'entities',
     'locations',
     'site_settings',
@@ -238,9 +240,11 @@ INSTALLED_APPS = (
     'discounts',
     'metrics',
     'search',
-    'plugin_builder',
+    'navs',
+    'pluginmanager',
     'navs',
     'tendenci_guide',
+    'exports',
     # celery task system, must stay at the bottom
     # of installed apps
     'djkombu',
@@ -288,7 +292,7 @@ TINYMCE_DEFAULT_CONFIG = {
                                 image,|,pagebreak,fullscreen,codemirror",
     'theme_advanced_buttons2': "formatselect,underline,justifyfull,\
                                 forecolor,|,pastetext,pasteword,\
-                                removeformat,media,charmap,|,\
+                                removeformat,charmap,|,\
                                 outdent,indent,|,undo,redo",
     'theme_advanced_buttons3': "",
     'theme_advanced_toolbar_location': "top",

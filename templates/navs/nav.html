@@ -44,6 +44,9 @@
             {% if can_add_nav %}
                 <li><a href="{% url navs.add %}">{% trans "Add Nav" %}</a></li>
             {% endif %}
+            {% if admin %}
+                <li><a href="{% url navs.export %}">{% trans "Export Navs" %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_nav or can_edit_nav %}

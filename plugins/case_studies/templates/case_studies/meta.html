@@ -9,7 +9,7 @@
         <div class="tags">
             <strong>Tags: </strong>
             {% for tag in case_study.tags|tag_split %}
-                <a href="{% url case_study.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url case_study %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}

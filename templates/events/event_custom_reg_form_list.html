@@ -106,7 +106,7 @@
     					This event uses a separate custom registrations form for each pricing.
     					<div class="alert-actions">
 							<a class="btn small" href="{% url event event.id %}">View Event</a>
-							<a class="btn small" href="{% url event event.id %}">Edit Event</a>
+							<a class="btn small" href="{% url event.edit event.id %}">Edit Event</a>
 						</div>
     					</div>
     				{% for price in regconfpricings %}

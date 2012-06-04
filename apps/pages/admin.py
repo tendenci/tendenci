@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from event_logs.models import EventLog
-from perms.utils import is_admin, get_notice_recipients
+from perms.utils import get_notice_recipients
 from perms.utils import update_perms_and_save
 from models import Page 
 from forms import PageAdminForm
@@ -111,7 +111,7 @@ class PageAdmin(admin.ModelAdmin):
         instance = update_perms_and_save(request, form, instance)
         
         # notifications
-        if not is_admin(request.user):
+        if not request.user.profile.is_superuser:
             # send notification to administrators
             recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
             notice_type = 'page_added'

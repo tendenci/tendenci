@@ -43,10 +43,12 @@
             {% endif %}
             <li><a href="{% url jobs %}">{% trans "Latest" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
             {% if user.is_authenticated %}
+                <li><a href="{% url jobs %}?my_jobs=True">{% trans "My" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</a></li>
                 <li><a href="{% url job.add %}">{% trans "Add" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</a></li>
             {% endif %}
             {% if admin %}
                 <li><a href="{% url job.pending %}">{% trans "Pending" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
+                <li><a href="{% url job.export %}">{% trans "Export" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

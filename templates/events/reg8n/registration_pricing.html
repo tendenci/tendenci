@@ -2,10 +2,8 @@
 {% load base_filters %}
 {% load perm_tags %}
 
-{% is_admin request.user as is_admin %}
-
 {% if registration.enabled %}
-    {% if event.is_over and not is_admin %}
+    {% if event.is_over and not request.user.is_superuser %}
         <div class="registration-red">
             {% trans "Event has ended" %}
         </div>
@@ -80,7 +78,11 @@
                         {% if anonpricing %}
                         <input class="registration-green-button" type="button" value="{% trans 'Register' %}" onClick="location.href='{% url event.anon_multi_register event.pk %}'" />
                         {% else %}
-                        <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                            {% if not default_pricing %}
+                                <input class="registration-green-button" type="button" value="{% trans 'Login to Register' %}" onClick="location.href='/accounts/login/?next={{ request.path }}'" />
+                            {% else %}
+                                <input class="registration-green-button" type="submit" name="submit" value="{% trans 'Register' %}" />
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                     </form>

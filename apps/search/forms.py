@@ -8,7 +8,6 @@ from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from perms.utils import is_admin
 from site_settings.utils import get_setting
 from registry import site as registry_site
 try:
@@ -91,7 +90,7 @@ class SearchForm(forms.Form):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
                 
-        is_an_admin = is_admin(user)
+        is_an_admin = user.profile.is_superuser
         
         # making a special case for corp memb because it needs to utilize two settings
         # (anonymoussearchcorporatemembers and membersearchcorporatemembers)
@@ -202,7 +201,7 @@ class ModelSearchForm(SearchForm):
         # Check to see if users should be included in global search
         include_users = False
 
-        if is_admin(kwargs['user']) or get_setting('module', 'users', 'allowanonymoususersearchuser') \
+        if kwargs['user'].profile.is_superuser or get_setting('module', 'users', 'allowanonymoususersearchuser') \
         or (kwargs['user'].is_authenticated() and get_setting('module', 'users', 'allowusersearch')):
             include_users = True
 

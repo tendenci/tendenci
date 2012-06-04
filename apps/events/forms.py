@@ -21,7 +21,6 @@ from events.models import Event, Place, RegistrationConfiguration, \
     CustomRegFieldEntry
 
 from payments.models import PaymentMethod
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -224,7 +223,7 @@ class FormForCustomRegForm(forms.ModelForm):
             if not (user.is_anonymous() or pricing.allow_anonymous):
                 already_registered = Registrant.objects.filter(user=user)
                 if already_registered:
-                    if not is_admin(user):
+                    if not user.profile.is_superuser:
                         raise forms.ValidationError('%s is already registered for this event' % user)
             
         return data
@@ -309,8 +308,10 @@ class EventForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Event._meta.app_label, 
         'storme_model':Event._meta.module_name.lower()}))
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now())
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), 
+                                  initial=datetime.now()+timedelta(days=30))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), 
+                                initial=datetime.now()+timedelta(days=30, hours=2))
     
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
@@ -379,8 +380,7 @@ class EventForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
-
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             
@@ -464,6 +464,10 @@ class TypeForm(forms.ModelForm):
 
 
 class PlaceForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Place._meta.app_label, 
+        'storme_model':Place._meta.module_name.lower()}))
     label = 'Location Information'
     class Meta:
         model = Place
@@ -476,6 +480,10 @@ class SponsorForm(forms.ModelForm):
 
 
 class SpeakerForm(BetterModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Speaker._meta.app_label, 
+        'storme_model':Speaker._meta.module_name.lower()}))
     label = 'Speaker'
     file = forms.FileField(required=False)
 
@@ -500,6 +508,10 @@ class SpeakerForm(BetterModelForm):
 
 
 class OrganizerForm(forms.ModelForm):
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Organizer._meta.app_label, 
+        'storme_model':Organizer._meta.module_name.lower()}))
     label = 'Organizer'
 
     class Meta:
@@ -519,13 +531,15 @@ class PaymentForm(forms.ModelForm):
 class Reg8nConfPricingForm(BetterModelForm):
     label = "Pricing"
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(hours=6))
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
     
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
+        kwargs.update({'initial': {'start_dt':datetime.now(),
+                                   'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
         
@@ -564,7 +578,8 @@ class Reg8nConfPricingForm(BetterModelForm):
             'reg_form',
             'allow_anonymous',
             'allow_user',
-            'allow_member'
+            'allow_member',
+            'display_order'
          ]
         
         fieldsets = [('Registration Pricing', {
@@ -576,7 +591,8 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'reg_form',
                     'allow_anonymous',
                     'allow_user',
-                    'allow_member'
+                    'allow_member',
+                    'display_order'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -623,10 +639,8 @@ class Reg8nEditForm(BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
+            'discount_eligible',
             'use_custom_reg',
-            #'use_custom_reg_form',
-            #'bind_reg_form_to_conf_only',
-            #'reg_form',
         )
 
         fieldsets = [('Registration Configuration', {
@@ -634,10 +648,8 @@ class Reg8nEditForm(BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
+                    'discount_eligible',
                     'use_custom_reg'
-                    #'use_custom_reg_form',
-                    #'bind_reg_form_to_conf_only',
-                    #'reg_form'
                     ],
           'legend': ''
           })
@@ -818,10 +830,15 @@ class RegistrationForm(forms.Form):
         self.count = kwargs.pop('count', 0)
         self.free_event = event_price <= 0
         super(RegistrationForm, self).__init__(*args, **kwargs)
+        
+        reg_conf =  event.registration_configuration
+        
+        if not self.free_event and reg_conf.discount_eligible:
+            display_discount = True
+        else:
+            display_discount = False 
 
         if not self.free_event:
-            reg_conf =  event.registration_configuration
-
             if reg_conf.can_pay_online:
                 payment_methods = reg_conf.payment_method.all()
             else:
@@ -831,11 +848,16 @@ class RegistrationForm(forms.Form):
             self.fields['payment_method'] = forms.ModelChoiceField(
                 empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
 
-            if user and is_admin(user):
+            if user and user.profile.is_superuser:
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
 
+        if not display_discount:
+            del self.fields['discount_code']
+
     def get_discount(self):
-        if self.is_valid() and self.cleaned_data['discount_code']:
+        # don't use all() because we don't want to evaluate all items if one of them is false
+        if self.is_valid() and hasattr(self.cleaned_data, 'discount_code') and \
+                self.cleaned_data['discount_code']:
             try:
                 discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
                 if discount.available_for(self.count):
@@ -854,6 +876,9 @@ class RegistrantForm(forms.Form):
     #username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = forms.EmailField()
+    comments = forms.CharField(max_length=300, 
+                               widget=forms.Textarea,
+                               required=False)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)

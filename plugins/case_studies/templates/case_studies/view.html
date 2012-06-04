@@ -5,7 +5,6 @@
 {% load case_study_tags %}
 {% load tagging_tags %}
 {% load forms_tags %}
-{% load staff_tags %}
 
 {% block title %}
         {{ case_study.client }} - {% for tech in case_study.technologies.all %}
@@ -105,13 +104,13 @@
       <div class="tags">
           Tags: 
           {% for tag in tags %}
-            <a href="{% url case_study.search %}?q=tag:{{ tag }}">{{ tag }}</a>
+            <a href="{% url case_study %}?q=tag:{{ tag }}">{{ tag }}</a>
           {% endfor %}  
       </div>
       {% endif %}
 
         <div class="case-meta">
-            <a href="{% url case_study.search %}">&laquo;&nbsp;Search other case studies</a>
+            <a href="{% url case_study %}">&laquo;&nbsp;Search other case studies</a>
         </div>
         
     </div>

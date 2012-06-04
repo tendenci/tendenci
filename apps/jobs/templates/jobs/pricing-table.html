@@ -7,8 +7,8 @@
 	{% if show_member_price %}
 		<tr class="header-row">
 		<td>&nbsp;</td>
-		<td colspan="2">{% trans "Member" %}</td>
 		<td colspan="2">{% trans "Non-Member" %}</td>
+		<td colspan="2">{% trans "Member" %}</td>
 		</tr>
 	{% endif %}
 	
@@ -29,9 +29,15 @@
 		<td colspan="2">{% trans "Price" %}</td>
 	{% endif %}
 	</tr>
-	{%for jp in job_pricings %}
+	{% for jp in job_pricings %}
 		<tr class="{% cycle 'row1' 'row2' %}">
 			<td>{% blocktrans count jp.duration as jp_duration %}{{ jp_duration  }} day{% plural %}{{ jp_duration  }} days{% endblocktrans %}</td>
+			{% if show_premium_price %}
+				<td>{{ jp.regular_price|format_currency }}</td>
+				<td>{{ jp.premium_price|format_currency }}</td>
+			{% else %}
+				<td colspan="2">{{ jp.regular_price|format_currency }}</td>
+			{% endif %}
 			{% if show_member_price and jp.show_member_pricing %}
 				{% if show_premium_price %}
 					<td>{{ jp.regular_price_member|format_currency }}</td>
@@ -39,12 +45,6 @@
 				{% else %}
 					<td colspan="2">{{ jp.regular_price_member|format_currency }}</td>
 				{% endif %}
-			{% endif %}
-			{% if show_premium_price %}
-				<td>{{ jp.regular_price|format_currency }}</td>
-				<td>{{ jp.premium_price|format_currency }}</td>
-			{% else %}
-				<td colspan="2">{{ jp.regular_price|format_currency }}</td>
 			{% endif %}
 		</tr>
 	

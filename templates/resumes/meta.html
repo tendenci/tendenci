@@ -17,12 +17,12 @@
         <div class="tags">
             {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
             {% for tag in nonhash_tags %}
-                <a href="{% url resume.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url resumes %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
             
             {% if hash_tags and can_edit %}
             {% for tag in hash_tags %}
-                {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url resume.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url resumes %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
             {% endif %}
         </div>

@@ -29,6 +29,7 @@ STOP_WORDS = ['able','about','across','after','all','almost','also','am',
 template_directory = "templates"
 THEME_ROOT = get_theme_root()
 
+# this function is not necessary - datetime.now() *is* localized in django
 def now_localized():
     from datetime import datetime
     from timezones.utils import adjust_datetime_to_timezone
@@ -60,7 +61,7 @@ def localize_date(date, from_tz=None, to_tz=None):
         from_tz=settings.TIME_ZONE
     
     if to_tz is None: 
-        to_tz=settings.UI_TIME_ZONE
+        to_tz=settings.TIME_ZONE
         
     return adjust_datetime_to_timezone(date,from_tz=from_tz,to_tz=to_tz)
 
@@ -501,3 +502,21 @@ def fieldify(str):
 
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
+
+def is_blank(item):
+    """
+    Check if values inside list are blank
+    Check if values inside dictionary are blank.
+    """
+    if isinstance(item, dict):
+        l = item.values()
+    elif isinstance(item, list):
+        l = item
+    elif isinstance(item, basestring):
+        l = list(item)
+
+    # return not bool([i for i in l if i.strip)
+    return not bool(''.join(l).strip())
+
+    raise Exception
+

@@ -4,7 +4,7 @@ from django.core.cache import cache
 
 class Command(BaseCommand):
     """
-    Example: python manage.py set_setting site developer freepaid paid
+    Example: python manage.py set_setting site global siteurl http://example.com
     """
 
     def handle(self, scope=None, scope_category=None, name=None, value=None, **options):
@@ -16,12 +16,14 @@ class Command(BaseCommand):
         
         if scope and scope_category and name and value:
             try:
-                setting = Setting.objects.filter(
+                setting = Setting.objects.get(
                     name=name,
                     scope=scope,
                     scope_category=scope_category,
-                ).update(value=value)
-            except:
+                )
+                setting.set_value(value)
+                setting.save()
+            except Setting.DoesNotExist:
                 if int(options['verbosity']) > 0:
                     print "We could not update that setting."
             delete_all_settings_cache()

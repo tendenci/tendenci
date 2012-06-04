@@ -3,11 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 from user_groups.models import Group
 from imports.utils import get_header_list_from_content
 
-KEY_CHOICES = (('email','email'),
-               ('first_name,last_name,email','first_name and last_name and email'),
-               ('first_name,last_name,phone','first_name and last_name and phone'),
-               ('first_name,last_name,company','first_name and last_name and company'),
-               ('username','username'),)
+KEY_CHOICES = (('email','Email'),
+               ('first_name,last_name,email','First Name and Last Name and Email'),
+               ('first_name,last_name,phone','First Name and Last Name and Phone'),
+               ('first_name,last_name,company','First Name and Last Name and Company'),
+               ('username','Username'),)
 
 class UserImportForm(forms.Form):
     file  = forms.FileField(widget=forms.FileInput(attrs={'size': 35}))

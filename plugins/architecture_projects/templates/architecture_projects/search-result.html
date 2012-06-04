@@ -1,23 +1,13 @@
-<div class="wrap-search-item">
-    <div class="case-study-item search-item">
-        {% for img in architecture_project.featured_screenshots %}
-            {% if forloop.first %}
-                <a class="cs-img-link" href="{{ architecture_project.get_absolute_url }}"><img alt="{{ architecture_project.client }}" src="{% url file img.pk %}180x130" /></a>
-            {% endif %}
-        {% endfor %}
-        <h3><a href="{{ architecture_project.get_absolute_url }}" title="{{ architecture_project.client }}">{{ architecture_project.client }}</a></h3>
-        <div class="cs-full">
-            {% spaceless %}<p class="categories"><span><strong>Categories</strong>: </span>
-            {% for category in architecture_project.categories.all %}
-            <a href="{% url architecture_project.search %}?q={{ category.title }}">{{ category.title }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}</p>{% endspaceless %}
-            
-            {% spaceless %}<p class="building_type"><span><strong>BuildingType</strong>: </span>
-            {% for tech in architecture_project.building_types.all %}
-            <a href="{% url architecture_project.search %}?q={{ tech.title }}">{{ tech.title }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}</p>{% endspaceless %}
-            <p style="margin-top: 6px; border-top: 1px dashed #fff; padding-top: 6px;"><a href="{{ architecture_project.url }}">View this Website &raquo;</a></p>
-        </div>
-    </div>
-    {% include 'architecture_projects/meta.html' %}
-</div>
+{% load base_tags %}
+        <ul>
+        <li class="cs-search-item">
+            <div class="cs-item">
+                {% for img in architecture_project.featured_images %}
+                        {% if forloop.first %}
+                    <a class="cs-img-link" href="{{ architecture_project.get_absolute_url }}"><img alt="{{ img.description }}" height="130" width="180" src="{% image_url img size=180x130 crop=true quality=90 %}" /></a>
+                    {% endif %}
+                {% endfor %}
+                <h2><a href="{{ architecture_project.get_absolute_url }}" title="{{ architecture_project.client }}">{{ architecture_project.client }}</a></h2>
+            </div>
+        </li>
+        </ul>

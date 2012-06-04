@@ -6,7 +6,7 @@
   <p class="quote-text">{{ quote.quote|safe|linebreaks }}</p>
       <p><strong>&mdash;<a href="{% url quote.search %}?q=author:{{ quote.author }}">{{ quote.author }}</a></strong></p>
     {% if tags %}
-        <p>Tags: {% for tag in tags %}{% if not tag.name|slice:":3" == "zzz" %}<a href="{% url quote.search %}?q=tag:{{ tag }}">{{ tag|title }}</a>{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</p>
+        <p>Tags: {% for tag in tags %}{% if not tag.name|slice:":3" == "zzz" %}<a href="{% url quotes %}?q=tag:{{ tag }}">{{ tag|title }}</a>{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</p>
     {% endif %}
     <small><a href="{{ quote.get_absolute_url }}">Quote Link</a></small>
     <div class="meta">  

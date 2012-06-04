@@ -1,0 +1,41 @@
+{% extends "memberships/base.html" %}
+{% load membership_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% trans "Edit Membership" %} - {{ membership.title }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% membership_nav user membership %}
+    <h1>{% trans "Membership Edit" %}</h1>
+    
+    <div class="membership-wrap">
+    	<form action="{% url membership.edit membership.pk %}" method="post">{% csrf_token %}
+    	<div class="forms">
+ 			{{ form|styled_form }}
+        	<input type="submit" value="{% trans 'Save Membership Changes' %}" />
+		</div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+<script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+    $('.timepicker').timePicker({
+      show24Hours: false,
+      step: 15
+    });
+</script>
+{% endblock %}

@@ -42,9 +42,9 @@
         {% with news.category_set as news_cat %}
         {% if news_cat %}
         <div class="categories">
-            <strong>{% trans "Category:" %} </strong><a href="{% url news.search %}?q=category:{{ news_cat.category }}">{{ news_cat.category }}</a>
+            <strong>{% trans "Category:" %} </strong><a href="{% url news %}?q=category:{{ news_cat.category }}">{{ news_cat.category }}</a>
         {% if news_cat.sub_category %}
-            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url news.search %}?q=sub_category:{{ news_cat.sub_category }}">{{ news_cat.sub_category }}</a>
+            | <strong>{% trans "Sub Category:" %} </strong><a href="{% url news %}?q=sub_category:{{ news_cat.sub_category }}">{{ news_cat.sub_category }}</a>
         {% endif %}	
         </div>
         {% endif %}
@@ -53,7 +53,7 @@
         {% if news.tags %}
         <div class="tags"><strong>{% trans "Tags:" %} </strong>
             {% for tag in news.tags|tag_split %}
-                <a href="{% url news.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                <a href="{% url news %}?q=tag:{{ tag|lower }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
         {% endif %}
@@ -63,7 +63,7 @@
         {% endif %}
     </div>
     <div class="meta-right">
-        <a class="print-link" href="{# url news.print_view news.slug #}">Print</a>
+        {% if news.slug %}<a class="print-link" href="{% url news.print_view news.slug %}">Print</a>{% endif %}
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>

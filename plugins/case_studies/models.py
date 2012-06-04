@@ -36,6 +36,11 @@ class CaseStudy(TendenciBaseModel):
         verbose_name = 'Case Study'
         verbose_name_plural = 'Case Studies'
 
+    def delete(self, *args, **kwargs):
+        for img in self.image_set.all():
+            img.delete()
+        return super(CaseStudy, self).delete(*args, **kwargs)
+
     @models.permalink
     def get_absolute_url(self):
         return ("case_study.view", [self.slug])
@@ -95,6 +100,7 @@ class Technology(models.Model):
 
 class Image(File):
     case_study = models.ForeignKey(CaseStudy)
+    file_ptr = models.OneToOneField(File, related_name="%(app_label)s_%(class)s_related")
     file_type = models.CharField(
         _('File type'),
         max_length=50,

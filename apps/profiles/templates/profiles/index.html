@@ -4,6 +4,7 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load profile_tags %}
+{% load profile_filters %}
 {% load contribution_tags %}
 {% load membership_tags %}
 {% load humanize %}
@@ -19,19 +20,27 @@
 {% endblock %}
 
 {% block body %}
-<div class="t"><div id="t-profile"><div id="t-view">
+<div class="t"><div id="t-profile">
 
 	{% users_nav request.user user_this %}
 
+	<div id="t-view">
 	<div class="intro info">
 		<div class="profile-icon">
 			<a href="{% url profile.change_avatar  user_this.id %}">
 				{% avatar user_this 128 %}
 			</a>
-
 		</div>
 
-		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+		<h1>{% firstof user_this.get_full_name user_this.username %}
+			</h1>
+			{% if profile.member_number %}
+			{% if profile|allow_edit_by:user %}
+			<div style="padding-bottom: 1em;">
+	    	<span class="member-icon">Member ID: {{ profile.member_number}}</span>
+	    	</div>
+	    	{% endif %}
+	    	{% endif %}
 
 		{% if profile.company %}
 			<p>{{ profile.company }}</p>
@@ -44,6 +53,12 @@
 		{% if city_state %}
 			<p>{{ city_state }}</p>
 		{% endif %}
+
+        {% if request.user == user_this or admin %}
+        {% if content_counts.invoice > 0 %}
+            <p><a href="{% url invoice.search %}?bill_to_email={{ user_this.email }}">{% trans "Invoices" %} ({{ content_counts.invoice }})</a></p>
+        {% endif %}
+        {% endif %}
 
 		<div class="clear"></div>
     </div>
@@ -81,23 +96,25 @@
 		{% endif %}
 		</h2>
 
+		{% if memberships %}
+    	<table>
         {% for membership in memberships %}
-
-        	<table>
         		<tr>
-        			<td>{{ membership.member_number }} {{ membership.membership_type }}</td>
         			<td>
+        				<a href="{% url membership.details membership.pk %}">
+        				{{ membership.member_number }} {{ membership.membership_type }}
+        				<a/>
+        			</td>
+        			<td>
+		        		{{ membership.subscribe_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+		        		</a>
 
-        				{% if membership.get_entry %}
-	        				<a href="{{ membership.get_entry.get_absolute_url }}">
-		        				{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}</a>
-		        		{% else %}
-		        			{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}
+		        		{% if membership.can_renew and membership.ma %}
+		        		<span><a href="{{ membership.ma.get_absolute_url }}?username={{ user_this }}">Renew Now</a></span>
 		        		{% endif %}
-
 	        		</td>
 	        		<td>
-	        			{% if membership.get_entry %}
+	        			{% if membership.get_entry.invoice %}
 	        			<a href="{% url invoice.view membership.get_entry.invoice.pk %}">
 	        				Balance ${% firstof membership.get_entry.invoice.balance  0|intcomma %}
 	        			</a>
@@ -106,11 +123,11 @@
 	        			{% endif %}
 	        		</td>
         		</tr>
-        	</table>
-
-        {% empty %}
-            <p>Not a member.</p>
         {% endfor %}
+    	</table>
+    	{% else %}
+        <p>Not a member.</p>
+    	{% endif %}
 
     </div>
 
@@ -123,31 +140,25 @@
 		</h2>
 		
 		{% if group_memberships %}
-
+			<table>
 			{% for gm in group_memberships %}
-
-				<table>
-					<tr>
-						<td>
-
-							{% if admin %}
-								<a href="{% url group.edituser gm.group.slug user_this.pk %}">
-									{% firstof gm.role 'Member' %}
-								</a>
-							{% else %}
-									{% firstof gm.role 'Member' %}
-							{% endif %}
-
-						</td>
-						<td>
-							<a href="{% url group.detail gm.group.slug %}">
-								{% firstof gm.group.label gm.group.name %}
+				<tr>
+					<td>
+						{% if admin %}
+							<a href="{% url group.edituser gm.group.slug user_this.pk %}">
+								{% firstof gm.role 'Member' %}
 							</a>
-						</td>
-					</tr>
-				</table>
+						{% else %}
+							{% firstof gm.role 'Member' %}
+						{% endif %} of
 
+						<a href="{% url group.detail gm.group.slug %}">
+							{% firstof gm.group.label gm.group.name %}
+						</a>
+					</td>
+				</tr>
 			{% endfor %}
+			</table>
 		{% else %}
 			<p>Not in any groups.</p>
 		{% endif %}

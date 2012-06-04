@@ -5,9 +5,6 @@
 {% load pagination_tags %}
 {% load tagging_tags %}
 {% load photo_tags %}
-{% load perm_tags %}
-
-{% is_admin user as admin %}
 
 {% block title %}{{ block.super }}{{ photo_set.name }}{% endblock %}
 
@@ -126,7 +123,7 @@
             </div>
 
             <div class="quick-info">
-            {% blocktrans count photo_set.image_set.count as photocount %}{{ photocount }} Photo{% plural %}{{ photocount }} Photos{% endblocktrans %}{% if admin %}
+            {% blocktrans count photo_set.image_set.count as photocount %}{{ photocount }} Photo{% plural %}{{ photocount }} Photos{% endblocktrans %}{% if request.user.is_superuser %}
             <span class="visibility">
                  &middot; {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
             </span>

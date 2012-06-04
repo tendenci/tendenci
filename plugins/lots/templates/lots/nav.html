@@ -2,7 +2,6 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% is_admin user as user_is_admin %}
 {% has_perm user lots.add_lot as can_add_lot %}
 {% has_perm user lots.add_map as can_add_map %}
 

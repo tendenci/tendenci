@@ -15,7 +15,7 @@ from trainings.forms import CompletionForm
 from perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 
-from perms.utils import is_admin, update_perms_and_save
+from perms.utils import update_perms_and_save
 
 try:
     from notification import models as notification

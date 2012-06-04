@@ -1,0 +1,11 @@
+{% load theme_tags %}
+{% load directory_tags %}
+
+<section id="events-list">
+    <h3>{% firstof MODULE_DIRECTORIES_LABEL "Directories" %}</h3>
+    {% list_directories as directories_list limit=3 %}
+    {% for directory in directories_list %}
+        <h4><a href="{{ directory.get_absolute_url }}">{{ directory.headline }}</a></h4>
+    {% endfor %}
+</section>
+{% theme_setting setting_name %}

@@ -10,12 +10,12 @@ from perms.models import TendenciBaseModel
 from entities.models import Entity
 from perms.object_perms import ObjectPermission
 
-from profiles.managers import ProfileManager
-         
+from profiles.managers import ProfileManager, ProfileActiveManager
+
 
 class Profile(TendenciBaseModel):
     # relations
-    user = models.ForeignKey(User, unique=True, related_name="profile", verbose_name=_('user'))
+    user = models.OneToOneField(User, related_name="profile", verbose_name=_('user'))
     guid = models.CharField(max_length=40)
     entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
@@ -55,7 +55,7 @@ class Profile(TendenciBaseModel):
     work_phone = models.CharField(_('work phone'), max_length=50, blank=True)
     home_phone = models.CharField(_('home phone'), max_length=50, blank=True)
     mobile_phone = models.CharField(_('mobile phone'), max_length=50, blank=True)
-    email = models.CharField(_('email'), max_length=200,  blank=True)
+    #email = models.CharField(_('email'), max_length=200,  blank=True)
     email2 = models.CharField(_('email2'), max_length=200,  blank=True)
     url = models.CharField(_('url'), max_length=100, blank=True)
     url2 = models.CharField(_('url2'), max_length=100, blank=True)
@@ -83,6 +83,7 @@ class Profile(TendenciBaseModel):
         object_id_field="object_id", content_type_field="content_type")
     
     objects = ProfileManager()
+    actives = ProfileActiveManager()
     
     def __unicode__(self):
         return self.user.username
@@ -90,20 +91,43 @@ class Profile(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ('profile', [self.user.username])
-    
+
+    def _can_login(self):
+        """
+        Private function used to verify active statuses in
+        user and profile records.
+        """
+        return all([self.user.is_active, self.status, self.status_detail == "active"])
+
+    @property
+    def is_active(self):
+        return self._can_login()
+
+    @property
+    def is_member(self):
+        if self.member_number and self._can_login():
+            return True
+        return False
+
+    @property
+    def is_staff(self):
+        if self.is_superuser:
+            return True
+        return all([self._can_login(), self.user.is_staff])
+
+    @property
+    def is_superuser(self):
+        return all([self._can_login(), self.user.is_superuser])
+
     class Meta:
         permissions = (("view_profile","Can view profile"),)
         verbose_name = "User"
         verbose_name_plural = "Users"
-        
+
     def save(self, *args, **kwargs):
         from campaign_monitor.utils import update_subscription
         if not self.id:
             self.guid = str(uuid.uuid1())
-        if self.pk:
-            old_email = Profile.objects.get(pk=self.pk).email
-        else:
-            old_email = ''
 
         # match allow_anonymous_view with opposite of hide_in_search
         if self.hide_in_search:
@@ -112,8 +136,10 @@ class Profile(TendenciBaseModel):
             self.allow_anonymous_view = True
 
         super(Profile, self).save(*args, **kwargs)
-        if old_email and old_email != self.email:
-            update_subscription(self, old_email)
+        
+        if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
+            update_subscription(self, self.old_email)
+            del self.old_email
         
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):
@@ -155,19 +181,18 @@ class Profile(TendenciBaseModel):
         return [membership.group for membership in memberships]
 
     def roles(self):
-        from perms.utils import is_developer, is_admin, is_member
         role_set = []
 
-        if is_developer(self.user):
-            role_set.append('developer')
+        if self.is_superuser:
+            role_set.append('superuser')
 
-        if is_admin(self.user):
-            role_set.append('admin')
-        
-        if is_member(self.user):
+        if self.is_staff:
+            role_set.append('staff')
+
+        if self.is_member:
             role_set.append('member')
-        
-        if self.user.is_active:
+
+        if self.is_active:
             role_set.append('user')
 
         return role_set or ['disabled']
@@ -176,7 +201,7 @@ class Profile(TendenciBaseModel):
         """
         The highest role will be returned.
         """
-        roles = ['developer', 'admin', 'member', 'user', 'disabled']
+        roles = ['superuser', 'staff', 'member', 'user', 'disabled']
         for role in roles:
             if role in self.roles():
                 return role

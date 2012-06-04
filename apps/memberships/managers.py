@@ -6,7 +6,6 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
 from perms.managers import TendenciBaseManager
-from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 #from memberships.models import Membership
 
@@ -31,7 +30,7 @@ class MemberAppManager(TendenciBaseManager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             sqs = sqs.all()  # admin
         else:
             if user.is_anonymous():
@@ -55,9 +54,8 @@ class MemberAppEntryManager(TendenciBaseManager):
         Search the Django Haystack search index
         Returns a SearchQuerySet object
         """
-        from perms.utils import is_admin, is_member, is_developer
-
         sqs = kwargs.get('sqs', SearchQuerySet())
+        sqs = sqs.models(self.model)
 
         # user information
         user = kwargs.get('user') or AnonymousUser()
@@ -70,14 +68,14 @@ class MemberAppEntryManager(TendenciBaseManager):
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-
-        if is_admin(user) or is_developer(user):
+        
+        if user.profile.is_superuser:
             sqs = sqs.all()
         else:
             if user.is_anonymous():
                 sqs = anon3_sqs(sqs, status_detail=status_detail)
 
-            elif is_member(user):
+            elif user.profile.is_member:
                 sqs = self._member_sqs(sqs, user=user,
                 status_detail=status_detail)
             else:
@@ -85,7 +83,7 @@ class MemberAppEntryManager(TendenciBaseManager):
                 status_detail=status_detail)
                 # pass
 
-        return sqs.models(self.model)
+        return sqs
 
 
 
@@ -167,7 +165,7 @@ def user_sqs(sqs, **kwargs):
     q = reduce(operator.or_, [q, perm_q])
 
     filtered_sqs = sqs.filter(q)
-    if not is_member(user):
+    if not user.profile.is_member:
         # all-members means members can view all other members
         if member_perms == "all-members":
             filtered_sqs = filtered_sqs.none()
@@ -200,7 +198,7 @@ class MembershipManager(Manager):
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             sqs = sqs.all()  # admin
         else:
             if user.is_anonymous():
@@ -209,6 +207,20 @@ class MembershipManager(Manager):
                 sqs = user_sqs(sqs, user=user)  # user
 
         return sqs.models(self.model)
+
+    def first(self, **kwargs):
+        """
+        Returns first instance that matches filters.
+        If no instance is found then a none type object is returned.
+        """
+        try:
+            instance = self.get(**kwargs)
+        except self.model.MultipleObjectsReturned:
+            instance = self.filter(**kwargs)[0]
+        except self.model.DoesNotExist:
+            instance = None
+
+        return instance
 
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
@@ -253,5 +265,3 @@ class MembershipManager(Manager):
                 silenced_memberships.append(membership)
 
         return silenced_memberships
-
-

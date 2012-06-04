@@ -1,5 +1,4 @@
 from boxes.models import Box
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from django import forms
 from tinymce.widgets import TinyMCE
