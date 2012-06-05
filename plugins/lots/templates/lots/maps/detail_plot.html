@@ -18,7 +18,7 @@
         </div>
 
         {% for lot in lots %}
-            <div>{{ lot }}</div>
+            <div><a href="{% url lots.detail lot.pk %}">{{ lot.suite_number }} {{ lot.name }}</a></div>
         {% endfor %}
 
         {% include "lots/maps/meta.html" %} 

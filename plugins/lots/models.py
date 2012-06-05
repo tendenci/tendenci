@@ -58,7 +58,10 @@ class Lot(TendenciBaseModel):
 
 
 class Photo(File):
-
+    """
+    This is the photo associated
+    with a lot. A lot can have multiple photos.
+    """
     lot = models.ForeignKey(Lot)
 
     @property
