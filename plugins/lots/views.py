@@ -6,11 +6,10 @@ from django.forms.models import modelformset_factory, inlineformset_factory
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.translation import ugettext_lazy as _
-
 from base.http import Http403
-from perms.utils import update_perms_and_save, has_perm
+from perms.utils import update_perms_and_save, get_query_filters, has_perm
 from event_logs.models import EventLog
-
+from site_settings.utils import get_setting
 from lots.models import Lot, Map, Line
 from lots.forms import LotForm, MapForm, LineForm
 
@@ -20,19 +19,24 @@ def index(request, template_name="lots/detail.html"):
 
 
 def map_selection(request, template_name="lots/maps/search.html"):
-    query = request.GET.get('q', None)
-    maps = Map.objects.search(query, user=request.user)
-    maps = maps.order_by('-create_dt')
+    query = request.GET.get('q')
 
-    log_defaults = {
+    if get_setting('site', 'global', 'searchindex') and query:
+        maps = Map.objects.search(query, user=request.user).order_by('-create_dt')
+    else:
+        filters = get_query_filters(request.user, 'maps.view_lot')
+        maps = Map.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            maps = maps.select_related()
+
+    EventLog.objects.log(**{
         'event_id': 9999400,
         'event_data': '%s searched by %s' % ('Map', request.user),
         'description': '%s searched' % 'Map',
         'user': request.user,
         'request': request,
         'source': 'maps'
-    }
-    EventLog.objects.log(**log_defaults)
+    })
 
     return render_to_response(template_name, {
         'maps': maps
@@ -187,19 +191,29 @@ def detail(request, pk=None, template_name="lots/detail.html"):
 
 
 def search(request, template_name="lots/search.html"):
-    query = request.GET.get('q', None)
-    lots = Lot.objects.search(query, user=request.user)
-    lots = lots.order_by('-create_dt')
+    """
+    Search/browse through all lots, regardless of which map
+    they're associated with.
+    """
 
-    log_defaults = {
+    query = request.GET.get('q')
+
+    if get_setting('site', 'global', 'searchindex') and query:
+        lots = Lot.objects.search(query, user=request.user).order_by('-create_dt')
+    else:
+        filters = get_query_filters(request.user, 'lots.view_lot')
+        lots = Lot.objects.filter(filters).distinct()
+        if not request.user.is_anonymous():
+            lots = lots.select_related()
+
+    EventLog.objects.log(**{
         'event_id': 9999400,
         'event_data': '%s searched by %s' % ('Lot', request.user),
         'description': '%s searched' % 'Lot',
         'user': request.user,
         'request': request,
         'source': 'lots'
-    }
-    EventLog.objects.log(**log_defaults)
+    })
 
     return render_to_response(template_name, {'lots': lots},
         context_instance=RequestContext(request))

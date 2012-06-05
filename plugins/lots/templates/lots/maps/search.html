@@ -17,9 +17,7 @@
     {% map_search %}
     <div class="maps-wrap clearfix">
     {% for map in maps %}
-        {% with map.object as map %}
-            {% include 'lots/maps/search-result.html' %}
-        {% endwith %}
+        {% include 'lots/maps/search-result.html' %}
     {% empty %}
     <p>{% trans '0 maps found' %}</p>
     {% endfor %}
