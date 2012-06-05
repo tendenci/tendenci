@@ -2,7 +2,7 @@
 <form class="search-form" action="{% url directories %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
 <input type="submit" value="Search" />
-<!-- <div class="category-wrap">
+<div class="category-wrap">
     <select name="category" onchange="this.form.submit();">
     <option value="">All Categories ({{ categories|length }})</option>
     {% for cat in categories %}
@@ -24,6 +24,6 @@
         {% endif %}
     {% endfor %}
     </select>
-</div> -->
+</div>
 </form>
 {% endif %}
