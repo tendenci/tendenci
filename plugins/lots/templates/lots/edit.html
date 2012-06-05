@@ -11,8 +11,7 @@
         <form method="post" action="">{% csrf_token %}
         <div class="map-wrap">
             <div class="map-photo">
-                <canvas height="{{ map|height_for_width:900 }}" width="900" >
-                </canvas>
+                <canvas height="{{ map|height_for_width:900 }}" width="900" ></canvas>
             </div>
             <p class="map-title">{{ map.name }}</p>
         </div>
@@ -40,5 +39,31 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
 <script type="text/javascript">
     {% include "lots/media/js/maps.js" %}
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
+<script type="text/javascript">
+// initialize map image
+$(document).ready(function(){
+    $("canvas").drawImage({
+      source: "{{ lot.map.file.url }}",
+      x: 0, y: 0,
+      width: 900,
+      fromCenter: false,
+      load: displayLines,
+    });
+});
+function displayLines(){
+    //plot lines
+    {% for line in lot.line_set.all %}
+    $("canvas").drawLine({
+        strokeStyle: "#AAA",
+        strokeWidth: 10,
+        strokeCap: "round",
+        strokeJoin: "miter",
+        x1: {{ line.x1 }}, y1: {{ line.y1 }},
+        x2: {{ line.x2 }}, y2: {{ line.y2 }},
+    });
+    {% endfor %}
+}
 </script>
 {% endblock %}
