@@ -13,17 +13,6 @@
 	{% has_perm user lots.change_lot as can_edit_lot %}
 {% endif %}
 
-<!-- 
-
-can_view_lot
-can_add_lot
-can_edit_lot
-
-can_add_map
-
- -->
-
-
     <ul id="module-tabs" class="tabs">
 	
     {% if user.is_authenticated %}
@@ -38,11 +27,10 @@ can_add_map
     {% endif %}
 
 	<li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_LOTS_LABEL 'Lots' %}</a>
+        <a href="#" class="dropdown-toggle">{% trans "Maps" %}</a>
 
         <ul class="dropdown-menu">
-            <li><a href="{% url lots.search %}">{% trans "Lots" %}</a></li>
-            <li><a href="{% url lots.map_selection %}">{% trans "Maps" %}</a></li>
+            <!-- <li><a href="{% url lots.search %}">{% trans "Lots" %}</a></li> -->
 
             {% if nav_object and can_edit_lot %}
 			<li><a href="{% url lots.edit nav_object.pk %}">{% trans "Edit Lot" %}</a></li>
@@ -51,6 +39,8 @@ can_add_map
         {% if can_add_map %}
         <li><a href="{% url lots.map_add %}">{% trans "Add Map" %}</a></li>
         {% endif %}
+        <li><a href="{% url lots.map_selection %}">{% trans "View Maps" %}</a></li>
+
         </ul>
 
 	</li>
