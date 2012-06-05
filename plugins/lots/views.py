@@ -151,12 +151,13 @@ def edit(request, pk, template_name="lots/edit.html"):
         if False not in (form.is_valid(), formset.is_valid()):
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
-            # delete old points
-            lot.line_set.all().delete()
-            # save new points
-            formset.save()
+
+            if formset.total_form_count() > 1:
+                lot.line_set.all().delete()
+                formset.save()
+
             messages.add_message(request, messages.INFO, _('Successfully updated %s' % lot))
-            return redirect('lots.detail', lot.pk)
+            return redirect('lots.map_detail', lot.map.pk)
     else:
         form = LotForm(instance=lot)
         formset = LineFormSet(instance=lot, queryset=Line.objects.none(), prefix="lines")
