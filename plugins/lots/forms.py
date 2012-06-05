@@ -65,6 +65,9 @@ class LotForm(TendenciBaseForm):
             'status',
             'status_detail',
         )
+        widgets = {
+          'map': forms.HiddenInput
+        }
 
         fieldsets = [('Map Information', {
                       'fields': ['name',
