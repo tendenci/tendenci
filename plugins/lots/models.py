@@ -7,7 +7,10 @@ from lots.managers import LotManager, MapManager
 
 
 class Map(File):
-    """This is an image where users will place lot coordinates on
+    """
+    This is an image of the map that lots will
+    be defined on. Clicking on hotspots of a map give you
+    details about the lot you clicked.
     """
     objects = MapManager()
 
@@ -28,14 +31,19 @@ class Map(File):
 
 
 class Lot(TendenciBaseModel):
-    """A Lot is a set of coordinates.
+    """
+    A Lot is a set of coordinates.
     Coordinates are integer 2-tuples that describe a point on an uploaded image.
     The uploaded image can also be identified as the map.
     """
-    tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     map = models.ForeignKey(Map)
-    name = models.CharField(_(u'Name'), max_length=200,)
-    description = models.TextField(_('Description'), blank=True)
+    name = models.CharField(_(u'Name'), max_length=200)
+    description = models.TextField(_(u'Description'), blank=True)
+    link = models.URLField()
+    suite_number = models.CharField(_(u'Suite Number'), max_length=10)
+    contact_info = models.TextField(_(u'Contact Info'), blank=True)
+    tags = TagField(blank=True, help_text=u'Tag 1, Tag 2, ...')
+
     objects = LotManager()
 
     class Meta:
@@ -49,8 +57,18 @@ class Lot(TendenciBaseModel):
         return ("lots.detail", [self.pk])
 
 
+class Photo(File):
+
+    lot = models.ForeignKey(Lot)
+
+    @property
+    def content_type(self):
+        return 'lots'
+
+
 class Line(models.Model):
-    """Line coordinates for a lot.
+    """
+    Line coordinates for a lot.
     """
     lot = models.ForeignKey('Lot')
     x1 = models.FloatField()
