@@ -1,14 +1,12 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
-from base.fields import SplitDateTimeField
-
 from lots.models import Lot, Map, Line
+
 
 class MapForm(TendenciBaseForm):
     name = forms.CharField()
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
+    status_detail = forms.ChoiceField(choices=(('active', 'Active'), ('pending', 'Pending')))
 
     class Meta:
         model = Map
@@ -41,17 +39,18 @@ class MapForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
-                    
+
     def __init__(self, *args, **kwargs):
         super(MapForm, self).__init__(*args, **kwargs)
         self.fields['file'].label = _("Image")
 
+
 class LotForm(TendenciBaseForm):
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
-    
+    status_detail = forms.ChoiceField(choices=(('active', 'Active'), ('pending', 'Pending')))
+
     class Meta:
         model = Lot
         fields = (
@@ -85,9 +84,10 @@ class LotForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
 
 class LineForm(forms.ModelForm):
     class Meta:
