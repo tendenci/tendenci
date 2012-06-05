@@ -6,6 +6,7 @@ import calendar
 from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
+import operator
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -21,7 +22,8 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
-from django.forms.models import BaseModelFormSet
+#from django.forms.models import BaseModelFormSet
+from django.db.models import Q
 
 from haystack.query import SearchQuerySet
 from base.http import Http403
@@ -844,7 +846,290 @@ def delete(request, id, template_name="events/delete.html"):
 
 def multi_register_redirect(request, event, msg):
     messages.add_message(request, messages.INFO, msg)
-    return HttpResponseRedirect(reverse('event', args=(event.pk,),))    
+    return HttpResponseRedirect(reverse('event', args=(event.pk,),)) 
+
+
+def register(request, event_id=0, is_table=False, template_name="events/reg8n/register.html"):
+    """
+    Handles both table and non-table registrations. 
+    Only the table registration requires pricing_id to be passed in via request.POST. 
+    """
+    event = get_object_or_404(Event, pk=event_id)
+
+    # check if event allows registration
+    if not event.registration_configuration and \
+       event.registration_configuration.enabled:
+        raise Http404
+        
+    event.is_table = is_table
+    
+    reg_conf=event.registration_configuration
+    
+    # get all available pricing
+    pricings = reg_conf.get_available_pricings(request.user)
+    
+    # don't worry about the table for now
+    if is_table:
+        try:
+            pricing = RegConfPricing.objects.get(pk=request.POST['pricing_id'])
+            event.free_event = pricing.price <=0
+        except:
+            return multi_register_redirect(request, event, _('Please choose a price for table registration.'))
+    else:
+        event.free_event = not bool([p for p in pricings if p.price > 0])
+        
+    
+    # check if use a custom reg form
+    custom_reg_form = None
+    if reg_conf.use_custom_reg_form:
+        if reg_conf.bind_reg_form_to_conf_only:
+            custom_reg_form = reg_conf.reg_form
+        else:
+            raise Http404   
+
+    # update the spots left
+    limit = event.registration_configuration.limit
+    spots_taken = 0
+    spots_available = 0
+    if limit > 0:
+        spots_taken = get_event_spots_taken(event)
+        if spots_taken > limit:
+            return multi_register_redirect(request, event, _('Registration is full.'))
+        spots_available = limit - spots_taken    
+    
+    
+    if custom_reg_form:
+        RF = FormForCustomRegForm
+    else:
+        RF = RegistrantForm
+    #RF = RegistrantForm
+    
+    # start the form set factory    
+    RegistrantFormSet = formset_factory(
+        RF,
+        formset=RegistrantBaseFormSet,
+        can_delete=True,
+        max_num=1,
+        extra=0
+    )
+    
+    # get available addons
+    addons = get_available_addons(event, request.user)
+    
+    # start addon formset factory
+    RegAddonFormSet = formset_factory(
+        RegAddonForm,
+        formset=RegAddonBaseFormSet,
+        extra=0,
+    )
+    
+    # update the amount of forms based on quantity
+    if event.is_table:
+        total_regt_forms = pricing.quantity
+    else:
+        total_regt_forms = 1
+    
+    # REGISTRANT formset
+    post_data = request.POST or None
+    
+    params = {'prefix': 'registrant',
+              'event': event,
+              'pricings': pricings, 
+              'user': request.user}
+    if custom_reg_form:
+        params.update({"custom_reg_form": custom_reg_form}) 
+        
+    addon_extra_params = {'addons':addons}
+    
+    # Setting the initial or post data
+    if request.method != 'POST':
+        # set the initial data if logged in
+        initial = {}
+        if request.user.is_authenticated():
+            profile = request.user.profile
+            
+            initial = {'first_name':request.user.first_name,
+                        'last_name':request.user.last_name,
+                        'email':request.user.email,}
+            if profile:
+                initial.update({'company_name': profile.company,
+                                'phone':profile.phone,})
+
+        params.update({"initial": [initial]})
+        
+        post_data = None
+    else: 
+        if post_data and 'add_registrant' in request.POST:
+            post_data = request.POST.copy()
+            post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1 
+            
+            addon_extra_params.update({'valid_addons':addons})
+    
+    # Setting up the formset        
+    registrant = RegistrantFormSet(post_data or None, **params)
+    addon_formset = RegAddonFormSet(request.POST,
+                        prefix='addon',
+                        event=event,
+                        extra_params=addon_extra_params)
+                            
+    # REGISTRATION form
+    if request.method == 'POST' and 'submit' in request.POST:
+        reg_form = RegistrationForm(
+            event,
+            request.POST, 
+            user=request.user,
+            count=len(registrant.forms),
+        )
+    else:
+        reg_form = RegistrationForm(
+            event,
+            user=request.user
+        )
+    if request.user.is_authenticated():
+        del reg_form.fields['captcha']
+    
+    # total registrant forms
+    if post_data:
+        total_regt_forms = post_data['registrant-TOTAL_FORMS']
+    
+    if request.method == 'POST':
+        if 'submit' in request.POST:
+            if False not in (reg_form.is_valid(), registrant.is_valid(), addon_formset.is_valid()):
+                
+                # override event_price to price specified by admin
+                reg8n, reg8n_created = add_registration(
+                    request, 
+                    event, 
+                    reg_form, 
+                    registrant,
+                    addon_formset,
+#                    pricing,
+#                    event_price,
+#                    admin_notes=admin_notes,
+                    custom_reg_form=custom_reg_form,
+                )
+                
+                site_label = get_setting('site', 'global', 'sitedisplayname')
+                site_url = get_setting('site', 'global', 'siteurl')
+                self_reg8n = get_setting('module', 'users', 'selfregistration')
+                
+                is_credit_card_payment = reg8n.payment_method and \
+                (reg8n.payment_method.machine_name).lower() == 'credit-card' \
+                and not event.free_event
+                
+                if reg8n_created:
+                    registrants = reg8n.registrant_set.all().order_by('id')
+                    for registrant in registrants:
+                        #registrant.assign_mapped_fields()
+                        if registrant.custom_reg_form_entry:
+                            registrant.name = registrant.custom_reg_form_entry.__unicode__()
+                        else:
+                            registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+
+                    if is_credit_card_payment:
+                        # online payment
+                        # get invoice; redirect to online pay
+                        # email the admins as well
+                        email_admins(event, self_reg8n, reg8n, registrants)
+                        
+                        return HttpResponseRedirect(reverse(
+                            'payments.views.pay_online',
+                            args=[reg8n.invoice.id, reg8n.invoice.guid]
+                        )) 
+                    else:
+                        # offline payment:
+                        # send email; add message; redirect to confirmation
+                        primary_registrant = reg8n.registrant
+                        
+                        if primary_registrant and  primary_registrant.email:
+                            notification.send_emails(
+                                [primary_registrant.email],
+                                'event_registration_confirmation',
+                                {   
+                                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                                    'SITE_GLOBAL_SITEURL': site_url,
+                                    'self_reg8n': self_reg8n,
+                                    'reg8n': reg8n,
+                                    'registrants': registrants,
+                                    'event': event,
+                                    'is_paid': reg8n.invoice.balance == 0
+                                 },
+                                True, # save notice in db
+                            )                            
+                            #email the admins as well
+                            email_admins(event, self_reg8n, reg8n, registrants)
+                        
+                    # log an event
+                    log_defaults = {
+                        'event_id' : 431000,
+                        'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
+                        'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
+                        'user': request.user,
+                        'request': request,
+                        'instance': event,
+                    }
+                    EventLog.objects.log(**log_defaults)
+                
+                else:
+                    messages.add_message(request, messages.INFO,
+                                 'You were already registered on %s' % date_filter(reg8n.create_dt)
+                    ) 
+                           
+                return HttpResponseRedirect(reverse( 
+                                                'event.registration_confirmation',
+                                                args=(event_id, reg8n.registrant.hash)
+                                                ))         
+    
+    # if not free event, store price in the list for each registrant
+    price_list = []
+    count = 0
+    total_price = Decimal(str(0.00))
+    event_price = 0
+    
+    # total price calculation when invalid
+    for form in registrant.forms:
+        deleted = False
+        if form.data.get('registrant-%d-DELETE' % count, False):
+            deleted = True
+#        if count % pricing.quantity == 0:
+#            price_list.append({'price': event_price, 'deleted':deleted})
+#        else:
+        price_list.append({'price': 0.00 , 'deleted':deleted})
+        if not deleted:
+#            if pricing.quantity > 1:
+#                total_price = event_price
+#            else:
+            total_price += event_price
+        count += 1
+    addons_price = addon_formset.get_total_price()
+    total_price += addons_price
+    
+    # check if we have any error on registrant formset
+    has_registrant_form_errors = False
+    for form in registrant.forms:
+        for field in form:
+            if field.errors:
+                has_registrant_form_errors = True
+                break
+        if has_registrant_form_errors:
+            break
+    return render_to_response(template_name, {
+        'event':event,
+        'event_price': event_price,
+        'free_event': event.free_event,
+        'price_list':price_list,
+        'total_price':total_price,
+#        'price': pricing,
+        'reg_form':reg_form,
+        'custom_reg_form': custom_reg_form,
+        'registrant': registrant,
+        'addons':addons,
+        'addon_formset': addon_formset,
+        'total_regt_forms': total_regt_forms,
+        'has_registrant_form_errors': has_registrant_form_errors,
+        'limit': limit,
+        'spots_available': spots_available,
+    }, context_instance=RequestContext(request))   
 
 
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):

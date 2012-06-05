@@ -760,11 +760,11 @@ input.registration-green-button {
 	width: 75%;
 }
 
-.pricing-list-wrap li{
+div.pricing-list-wrap li{
 		list-style: none;
 		text-align: left;
 		padding: 3px 0;
-		margin-left: 1em;
+		margin-left: 5px;
 	}
 
 table.pricing-list {

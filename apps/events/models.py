@@ -1,5 +1,6 @@
 import uuid
 from hashlib import md5
+import operator
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +12,7 @@ from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import AutoField
 from django.contrib.contenttypes import generic
+from django.db.models import Q
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
@@ -272,7 +274,6 @@ class Registrant(models.Model):
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
-print DEFAULT_HONOR_SYSTEM, 'aaa'
 class RegistrationConfiguration(models.Model):
     """
     Event registration
@@ -321,6 +322,30 @@ class RegistrationConfiguration(models.Model):
         has_api = settings.MERCHANT_LOGIN is not ''
 
         return all([has_method, has_account, has_api])
+    
+    def get_available_pricings(self, user):
+        """
+        Get the available pricings for this user. 
+        """
+        filter_and, filter_or = RegConfPricing.get_access_filter(user)
+        q_obj = None
+        if filter_and:
+            q_obj = Q(**filter_and)
+        if filter_or:
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+            if q_obj:
+                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+            else:
+                q_obj = q_obj_or
+        pricings = RegConfPricing.objects.filter(
+                    reg_conf=self,
+                    status=True
+                    )
+        if q_obj:
+            pricings = pricings.filter(q_obj)
+            
+        return pricings
+        
 
 
 class RegConfPricing(models.Model):
@@ -403,6 +428,23 @@ class RegConfPricing(models.Model):
     @property
     def timezone(self):
         return self.reg_conf.event.timezone.zone
+    
+    @staticmethod
+    def get_access_filter(user):
+        if user.profile.is_superuser: return None, None
+        
+        now = datetime.now()
+        filter_and, filter_or = None, None
+        
+        filter_or = {'allow_anonymous': True,
+                    'allow_user': True,
+                    'allow_member': True,
+                    'group__isnull': False}
+        filter_and = {'start_dt__lt': now,
+                      'end_dt__gt': now,
+                      }
+                
+        return filter_and, filter_or
     
 class Registration(models.Model):
 

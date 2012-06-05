@@ -36,7 +36,8 @@ urlpatterns = patterns('events',
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
 
     # register for event
-    url(r'^(?P<event_id>\d+)/multi-register/$', 'views.multi_register', name='event.multi_register'),
+    url(r'^(?P<event_id>\d+)/multi-register/$', 'views.register', name='event.register'),
+    url(r'^(?P<event_id>\d+)/multi-register/table/$', 'views.multi_register', {'is_table': True}, name='event.multi_register'),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/$', 'views.registration_edit', 
         name="event.registration_edit"),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$', 'views.registration_edit', 
@@ -98,10 +99,10 @@ urlpatterns = patterns('events',
         name="event.registrant.export.total"
     ),
     
-    # dynamic pricing registration
-    url(r'^(?P<event_id>\d+)/register/$', 'registration.views.multi_register', name='event.anon_multi_register'),
-    url(r'^(?P<event_id>\d+)/register/pricing/$', 'registration.views.ajax_pricing', name='event.reg_pricing'),
-    url(r'^(?P<event_id>\d+)/register/user_status/$', 'registration.views.ajax_user', name='event.reg_user_status'),
+#    # dynamic pricing registration
+#    url(r'^(?P<event_id>\d+)/register/$', 'registration.views.multi_register', name='event.anon_multi_register'),
+#    url(r'^(?P<event_id>\d+)/register/pricing/$', 'registration.views.ajax_pricing', name='event.reg_pricing'),
+#    url(r'^(?P<event_id>\d+)/register/user_status/$', 'registration.views.ajax_user', name='event.reg_user_status'),
     
     # addons
     url(r'^(?P<event_id>\d+)/addons/$', 'views.list_addons', name='event.list_addons'),

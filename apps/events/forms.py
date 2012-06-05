@@ -12,6 +12,7 @@ from django.forms.models import BaseModelFormSet
 from django.forms.util import ErrorList
 from django.utils.importlib import import_module
 from django.contrib.auth.models import User, AnonymousUser
+from django.utils.safestring import mark_safe
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
@@ -79,8 +80,10 @@ class FormForCustomRegForm(forms.ModelForm):
         self.form_index = kwargs.pop('form_index', None)
         self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
         
-        # for anonymousmemberpricing
         self.pricings = kwargs.pop('pricings', None)
+        if self.event:
+            self.default_pricing = getattr(self.event, 'default_pricing', None)
+            
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -112,8 +115,16 @@ class FormForCustomRegForm(forms.ModelForm):
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
             
+        # add class attr registrant-email to the email field
+        for field in self.form_fields:
+            if field.map_to_field == "email":
+                self.email_key = "field_%s" % field.id
+                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
+                break
+         
+        reg_conf=self.event.registration_configuration   
         # make the fields in the subsequent forms as not required
-        if not self.custom_reg_form.validate_guest:
+        if reg_conf.honor_system or not self.custom_reg_form.validate_guest:
             if self.form_index and self.form_index > 0:
                 for key in self.fields.keys():
                     self.fields[key].required = False
@@ -124,27 +135,16 @@ class FormForCustomRegForm(forms.ModelForm):
         # for anonymousmemberpricing
         # --------------------------
         if self.pricings:   
-            # initialize pricing options and reg_set field
+            # add the price options field
             self.fields['pricing'] = forms.ModelChoiceField(
-                                                            widget=forms.HiddenInput(
-                                                        attrs={'class': 'registrant-pricing'}), 
-                                                            queryset=self.pricings)
-            
-        allow_memberid = get_setting('module', 'events', 'memberidpricing')
-        if allow_memberid:
-            # add the memberid field
-            self.fields['memberid'] = forms.CharField(label=_("Member ID"), 
-                                                      max_length=50, required=False
-                                                      )
-            self.fields['memberid'].widget = forms.TextInput(
-                                                attrs={'class': 'registrant-memberid'}
-                                                             )
-        # add class attr registrant-email to the email field
-        for field in self.form_fields:
-            if field.map_to_field == "email":
-                self.email_key = "field_%s" % field.id
-                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
-                break 
+                    label='Price Options',
+                    queryset=self.pricings,
+                    widget=forms.RadioSelect(attrs={'class': 'registrant-pricing'}),
+                    initial=self.default_pricing,
+                    )
+            self.fields['pricing'].label_from_instance = _get_price_labels
+            self.fields['pricing'].empty_label = None
+                                                              
                 
         
         # initialize internal variables
@@ -228,6 +228,34 @@ class FormForCustomRegForm(forms.ModelForm):
             
         return data
     
+    def clean_pricing(self):
+        pricing = self.cleaned_data['pricing']
+        
+        if self.display_price_options:
+            # check if user is eligiable for this pricing
+            if pricing.allow_anonymous:
+                return pricing
+
+            if not self.user.is_anonymous() and  self.user.is_superuser:
+                return pricing
+            
+            registrant_user = self.get_user()
+            
+            if pricing.allow_user and not registrant_user.is_anonymous():
+                return pricing
+            if pricing.allow_member and registrant_user.profile.is_member:
+                return pricing
+#            if pricing.group and pricing.group.is_member(registrant_user):
+#                return pricing
+            
+            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+     
+            raise forms.ValidationError('User not eligible for the price: %s - %s%s' % (
+                                                            pricing.title,
+                                                            currency_symbol,
+                                                            pricing.price))
+            
+        return pricing
         
                 
     def save(self, event, **kwargs):
@@ -267,7 +295,31 @@ class FormForCustomRegForm(forms.ModelForm):
             return entry
         return
             
-       
+    
+
+def _get_price_labels(pricing):
+    currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+    target = []
+    if pricing.group:
+        target.append( 'group: %s' % pricing.group.name)
+    if pricing.allow_anonymous:
+        target.append('everyone')
+    if pricing.allow_user:
+        target.append('users')
+    if pricing.allow_member:
+        target.append('members')
+        
+    if target:
+        target_str = ' - (for %s)' % ', '.join(target)
+    else:
+        target_str = ''
+        
+    return mark_safe('<span data-price="%s">%s%s %s%s</span>' % (
+                                      pricing.price,
+                                      currency_symbol,
+                                      pricing.price,
+                                      pricing.title,
+                                      target_str))   
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -822,7 +874,7 @@ class RegistrationForm(forms.Form):
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
     captcha = CaptchaField(label=_('Type the code below'))
     
-    def __init__(self, event, price, event_price, *args, **kwargs):
+    def __init__(self, event, *args, **kwargs):
         """
         event: instance of Event model
         price: instance of RegConfPricing model
@@ -830,17 +882,16 @@ class RegistrationForm(forms.Form):
         """
         user = kwargs.pop('user', None)
         self.count = kwargs.pop('count', 0)
-        self.free_event = event_price <= 0
         super(RegistrationForm, self).__init__(*args, **kwargs)
         
         reg_conf =  event.registration_configuration
         
-        if not self.free_event and reg_conf.discount_eligible:
+        if not event.free_event and reg_conf.discount_eligible:
             display_discount = True
         else:
             display_discount = False 
 
-        if not self.free_event:
+        if not event.free_event:
             if reg_conf.can_pay_online:
                 payment_methods = reg_conf.payment_method.all()
             else:
@@ -850,8 +901,8 @@ class RegistrationForm(forms.Form):
             self.fields['payment_method'] = forms.ModelChoiceField(
                 empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
 
-            if user and user.profile.is_superuser:
-                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
+#            if user and user.profile.is_superuser:
+#                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
 
         if not display_discount:
             del self.fields['discount_code']
@@ -883,16 +934,34 @@ class RegistrantForm(forms.Form):
                                required=False)
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        self.user = kwargs.pop('user', None)
         self.event = kwargs.pop('event', None)
         self.form_index = kwargs.pop('form_index', None)
+        self.pricings = kwargs.pop('pricings', None)
+        if self.event:
+            self.default_pricing = getattr(self.event, 'default_pricing', None)
         
         super(RegistrantForm, self).__init__(*args, **kwargs)
         
+        reg_conf=self.event.registration_configuration
         # make the fields in the subsequent forms as not required
-        if self.form_index and self.form_index > 0:
-            for key in self.fields.keys():
-                self.fields[key].required = False
+        if reg_conf.honor_system:
+            if self.form_index and self.form_index > 0:
+                for key in self.fields.keys():
+                    self.fields[key].required = False
+        else:
+            self.empty_permitted = False
+            
+        if self.pricings:   
+            # add the price options field
+            self.fields['pricing'] = forms.ModelChoiceField(
+                    label='Price Options',
+                    queryset=self.pricings,
+                    widget=forms.RadioSelect(attrs={'class': 'registrant-pricing'}),
+                    initial=self.default_pricing,
+                    )
+            self.fields['pricing'].label_from_instance = _get_price_labels
+            self.fields['pricing'].empty_label = None
         
 
     def clean_first_name(self):
@@ -918,6 +987,35 @@ class RegistrantForm(forms.Form):
         # registrations
         data = self.cleaned_data['email']
         return data
+    
+    def clean_pricing(self):
+        pricing = self.cleaned_data['pricing']
+        
+        if not self.is_table:
+            # check if user is eligiable for this pricing
+            if pricing.allow_anonymous:
+                return pricing
+
+            if not self.user.is_anonymous() and self.user.is_superuser:
+                return pricing
+            
+            registrant_user = self.get_user()
+            
+            if pricing.allow_user and not registrant_user.is_anonymous():
+                return pricing
+            if pricing.allow_member and registrant_user.profile.is_member:
+                return pricing
+#            if pricing.group and pricing.group.is_member(registrant_user):
+#                return pricing
+            
+            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+     
+            raise forms.ValidationError('User not eligible for the price: %s - %s%s' % (
+                                                            pricing.title,
+                                                            currency_symbol,
+                                                            pricing.price))
+            
+        return pricing
 
 
 # extending the BaseFormSet because i want to pass the event obj 
@@ -926,9 +1024,13 @@ class RegistrantBaseFormSet(BaseFormSet):
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  initial=None, error_class=ErrorList, **kwargs):
         self.event = kwargs.pop('event', None)
+        self.user = kwargs.pop('user', None)
         custom_reg_form = kwargs.pop('custom_reg_form', None)
         if custom_reg_form:
             self.custom_reg_form = custom_reg_form
+        pricings = kwargs.pop('pricings', None)
+        if pricings:
+            self.pricings = pricings
         entries = kwargs.pop('entries', None)
         if entries:
             self.entries = entries
@@ -942,11 +1044,14 @@ class RegistrantBaseFormSet(BaseFormSet):
         defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
         
         defaults['event'] = self.event
+        defaults['user'] = self.user
         defaults['form_index'] = i
         if hasattr(self, 'custom_reg_form'):
             defaults['custom_reg_form'] = self.custom_reg_form
         if hasattr(self, 'entries'):
             defaults['entry'] = self.entries[i]
+        if hasattr(self, 'pricings'):
+            defaults['pricings'] = self.pricings
             
         
         if self.data or self.files:
