@@ -68,7 +68,7 @@
                 <li class="divider"></li>
                 {% if can_view_event %}
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View Event" %}</a></li>
-                    <li><a href="{% url event.ics_single nav_object.pk %}">{% trans "Export This Event" %}</a></li>
+                    <li><a href="{% url event.ics_single nav_object.pk %}">{% trans "Add Event to my Calendar" %}</a></li>
                 {% endif %}
                 {% if can_edit_event %}
                     <li><a href="{% url event.edit nav_object.pk %}">{% trans "Edit Event" %}</a></li>
