@@ -3,6 +3,7 @@ from files.models import File
 
 register = Library()
 
+
 @register.inclusion_tag("files/options.html", takes_context=True)
 def file_options(context, user, file):
     context.update({
@@ -11,6 +12,7 @@ def file_options(context, user, file):
     })
     return context
 
+
 @register.inclusion_tag("files/nav.html", takes_context=True)
 def file_nav(context, user, file=None):
     context.update({
@@ -18,6 +20,7 @@ def file_nav(context, user, file=None):
         "user": user
     })
     return context
+
 
 @register.inclusion_tag("files/search-form.html", takes_context=True)
 def file_search(context):
@@ -29,6 +32,7 @@ def most_viewed_result(context):
     event_log = context['event_log']
     context['file'] = File.objects.get(pk=event_log['object_id'])
     return context
+
 
 class FilesForModelNode(Node):
 
@@ -48,6 +52,7 @@ class FilesForModelNode(Node):
 
         context[self.context_var] = files
         return ''
+
 
 @register.tag
 def files_for_model(parser, token):
@@ -75,3 +80,28 @@ def files_for_model(parser, token):
         raise TemplateSyntaxError(message)
 
     return FilesForModelNode(context_var, *args, **kwargs)
+
+
+@register.filter
+def size(file, size):
+    """
+    size examples:
+        size = '100x200'
+        size = '100'
+        size = '100x'
+        size = 'x100'
+    """
+    from django.core.urlresolvers import reverse
+
+    return reverse('file', kwargs={
+        'id': unicode(file.pk),
+        'size': size,
+        'download': ''
+    })
+
+
+
+
+
+
+
