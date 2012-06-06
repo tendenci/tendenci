@@ -8,13 +8,13 @@
 
 <div class="t">
     <div class="map-wrap">
-        <h1>{{ map.name }}</h1>
+        <h1 title="some title">{{ map.name }}</h1>
         <p>{{ map.description }}</p>
         <div class="map-photo">
             <img class="map" src="{{ map|size:'900x444' }}" alt="{{ map.name }}" usemap="#mapmap" />
             <map name="mapmap">
             {% for lot in map.lot_set.all %}
-                <area id="lot-area-{{ lot.pk }}" shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="{% url lots.detail lot.pk %}" alt="{{ lot.name }}" />
+                <area id="lot-area-{{ lot.pk }}" shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="{% url lots.detail lot.pk %}" alt="{{ lot.suite_number }} {{ lot.name }}" />
             {% endfor %}                
             </map>
         </div>
@@ -30,8 +30,32 @@
 
 {% block extra_body %}
 {{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.maphilight.js"></script>
+
 <script type="text/javascript">
+
+    // Use the each() method to gain access to each elements attributes
+   $('area').each(function() {
+        $(this).qtip({
+            content: $(this).attr('alt'),
+            style: {
+                name: 'dark', // Give it the preset dark style
+                border: {
+                    width: 0, 
+                    radius: 4
+                },
+                tip: true // Apply a tip at the default tooltip corner
+            },
+            position: {
+                corner: {
+                    target: 'topMiddle',
+                    tooltip: 'bottomMiddle'
+                }
+            }
+        });
+   });
+
     $('.map').maphilight();
 
     // lot-listing links to map area
