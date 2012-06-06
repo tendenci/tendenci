@@ -11,14 +11,7 @@
     {% if lot.map %}
         <div class="map-wrap">
             <div class="map-photo">
-                <img src="{{ lot.map.file.url }}" height="{{ lot.map|height_for_width:900 }}" width="900" alt="{{ lot.map.name }}" usemap="#mapmap" />
-                <map name="mapmap">
-                    <area shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="www.google.com" alt="{{ lot.name }}" />
-                </map>
-                <!--
-                <canvas height="{{ lot.map|height_for_width:900 }}" width="900" >
-                </canvas>
-                -->
+                <canvas height="{{ lot.map|height_for_width:900 }}" width="900" ></canvas>
             </div>
             <p class="map-title">{{ lot.map.name }}</p>
         </div>
@@ -42,7 +35,6 @@ $(document).ready(function(){
       load: displayLines,
     });
 });
-
 function displayLines(){
     //plot lines
     {% for line in lot.line_set.all %}
@@ -56,6 +48,5 @@ function displayLines(){
     });
     {% endfor %}
 }
-
 </script>
 {% endblock %}
