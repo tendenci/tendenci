@@ -864,10 +864,10 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
     event.is_table = is_table
     
     reg_conf=event.registration_configuration
+    event.honor_system = reg_conf.honor_system
     
     # get all available pricing
     pricings = reg_conf.get_available_pricings(request.user)
-    
     # don't worry about the table for now
     if is_table:
         try:
@@ -964,7 +964,7 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
             post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1 
             
             addon_extra_params.update({'valid_addons':addons})
-    
+            
     # Setting up the formset        
     registrant = RegistrantFormSet(post_data or None, **params)
     addon_formset = RegAddonFormSet(request.POST,
@@ -994,7 +994,7 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
     
     if request.method == 'POST':
         if 'submit' in request.POST:
-            if False not in (reg_form.is_valid(), registrant.is_valid(), addon_formset.is_valid()):
+            if reg_form.is_valid() and registrant.is_valid() and addon_formset.is_valid():
                 
                 # override event_price to price specified by admin
                 reg8n, reg8n_created = add_registration(
@@ -1003,6 +1003,9 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
                     reg_form, 
                     registrant,
                     addon_formset,
+                    None,
+                    0,
+                    admin_notes='',
 #                    pricing,
 #                    event_price,
 #                    admin_notes=admin_notes,
@@ -1057,7 +1060,8 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
                                 True, # save notice in db
                             )                            
                             #email the admins as well
-                            email_admins(event, self_reg8n, reg8n, registrants)
+                            # fix the price
+                            email_admins(event, 0, self_reg8n, reg8n, registrants)
                         
                     # log an event
                     log_defaults = {

@@ -1,12 +1,17 @@
-var price_quantity = {{ price.quantity }};
-var price_price = {{ price.price }}
+//var price_quantity = {{ price.quantity }};
+//var price_price = {{ price.price }};
+var price_quantity = 1;
+var price_price = 0;
+
 
 function deleteRegistrant(ele, prefix) {
     var registrant_form = $(ele).parents('.registrant-form');
     var attr_id = $(registrant_form).attr("id");
-    
     // remove the registrant form
     $(registrant_form).remove();
+    // $(registrant_form).slideUp(600, function(){
+    	// $(this).remove();
+    // });
     
     // update the TOTAL_FORMS
     var forms = $(".registrant-form");
@@ -14,7 +19,7 @@ function deleteRegistrant(ele, prefix) {
     
     // update the total amount and remove the reg price entry
     var reg_id = attr_id.split('_')[1];
-    var reg_id_0 = reg_id-1
+    var reg_id_0 = reg_id-1;
     removeSummaryEntry(prefix, reg_id_0);
     
     // update form index
@@ -31,6 +36,8 @@ function deleteRegistrant(ele, prefix) {
             updateFormHeader(this_form, prefix, i);
         }
     }
+    
+    return false;
 }
 
 function updateIndex(e, prefix, idx){
@@ -60,32 +67,54 @@ function updateFormHeader(this_form, prefix, idx){
             $(ic).html(idx);}
     };
     
-}
+};
 
 function addRegistrant(ele, prefix, price) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var row = $('.registrant-form:first').clone(true).get(0);
+    
     $('.registrant-form:first').find('.registrant-header').removeClass('hidden');
-    $(row).insertAfter($('.registrant-form:last')).find('.hidden').removeClass('hidden');
+    //$(row).insertAfter($('.registrant-form:last')).find('.hidden').removeClass('hidden');
     // remove the error
     $(row).find('div.error').remove();
-    {% if not custom_reg_form.validate_guest %}
+    
+    {% if event.honor_system or not custom_reg_form.validate_guest %}
     // remove required att
     $(row).find('div.label').removeClass("required");
     {% endif %}
+    
     // update id attr
     var id_regex = new RegExp('(registrant_\\d+)');
     var replacement = prefix + '_' + formCount;
     if(row.id){
         row.id = row.id.replace(id_regex, replacement);
     }
-    $(row).find(".form-field").children().children().each(function() {
+    //$(row).find(".form-field").children().children().each(function() {
+    $(row).find(".form-field").find('[id^="id_registrant"]').each(function() {
         updateIndex(this, prefix, formCount);
-        $(this).val('');
+        if ($(this).attr('type') == 'text'){
+         $(this).val('');
+        }
+      
     });
+    
+    $(row).find(".form-field").find('label[for^="id_registrant"]').each(function() {
+        updateIndex(this, prefix, formCount);
+    });
+
+    var price = $(row).find('.registrant-pricing:checked').next('span').data('price');
+    if (isNaN(price)){
+    	price = 0;
+    }
+    
+    
+    $(row).insertAfter($('.registrant-form:last')).find('.hidden').removeClass('hidden');
+    
+    
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     updateFormHeader(row, prefix, formCount);
     updateSummaryEntry(prefix, formCount, price);
+    
     return false;
 }
 
@@ -111,15 +140,36 @@ function add_registrant_set(e, prefix) {
     return false;
 }
 
+function get_registrant_pricing_obj(pricing_item){
+	if (pricing_item == null){
+		return false;
+	}else{
+    	var $this = $(pricing_item);
+	    var name = $this.attr('name');
+	    var this_price = $this.next('span').data('price');
+	    if (isNaN(this_price)){
+	     	this_price = 0;
+	    }
+	    //var id_regex = new RegExp('(registrant_(\\d+))');
+	    var myRegexp = /registrant-(\d+)/g;
+	    var match = myRegexp.exec(name);
+	    var idx = parseInt(match[1]);
+	     
+	    return {'idx': idx, 'price': this_price};
+    }
+     
+}
+
 $(document).ready(function(){
+	var prefix = 'registrant';
     // show delete-button-wrap
     $(".delete-button-wrap").show();
     // delete confirmation
-    $('button.delete-button').live('click', function(){
-        var delete_confirm = confirm('Are you sure you want to delete this registrant?');   // confirm
-        if(delete_confirm) {
-            return deleteRegistrant(this, 'registrant');
-        }
+    $('button.delete-button').live('click', function(e){
+         var delete_confirm = confirm('Are you sure you want to delete this registrant?');   // confirm
+         if(delete_confirm) {
+            deleteRegistrant(this, 'registrant');
+         }
         return false;   // cancel
     });
     $('.registrant-header').click(function() {
@@ -128,5 +178,30 @@ $(document).ready(function(){
             $(this).children('span.showhide').text('- ');
         } else 
         {$(this).children('span.showhide').text('+ '); }
+    });
+    
+    
+    
+    {% if not event.is_table %}
+    $('.registrant-pricing').click(function(){
+     var $this = $(this);
+     var name = $this.attr('name');
+     var this_price = $this.next('span').data('price');
+     //var id_regex = new RegExp('(registrant_(\\d+))');
+     var myRegexp = /registrant-(\d+)/g;
+     var match = myRegexp.exec(name);
+     var idx = parseInt(match[1]);
+     updateSummaryEntry('registrant', idx, this_price);
+    
+    });   
+    {% endif %} 
+    
+    $('.registrant-form').each(function(){
+    	$this = $(this);
+    	var pricing_obj = get_registrant_pricing_obj($this.find('.registrant-pricing:checked'));
+    	if (pricing_obj !== false ){
+    		updateSummaryEntry(prefix, pricing_obj.idx, pricing_obj.price);
+    	}
+	   	
     });
 });

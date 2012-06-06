@@ -577,17 +577,20 @@ def add_registration(*args, **kwargs):
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
     
-    discount_applied = False
+#    discount_applied = False
     for form in registrant_formset.forms:
+        if not event.is_table:
+            price = form.cleaned_data['pricing']
+            event_price = price.price
         if count % price.quantity == 0:
             amount = event_price
-            # apply the discount to the first registrant only
-            if not discount_applied:
-                if discount:
-                    amount = event_price - Decimal(discount.value)
-                    if amount < 0:
-                        amount = 0
-                discount_applied = True
+#            # apply the discount to the first registrant only
+#            if not discount_applied:
+#                if discount:
+#                    amount = event_price - Decimal(discount.value)
+#                    if amount < 0:
+#                        amount = 0
+#                discount_applied = True
         else:
             amount = Decimal('0.00')
             
@@ -619,11 +622,11 @@ def add_registration(*args, **kwargs):
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
     
-    if discount:
-        DiscountUse.objects.create(
-                discount=discount,
-                invoice=invoice,
-            )
+#    if discount:
+#        DiscountUse.objects.create(
+#                discount=discount,
+#                invoice=invoice,
+#            )
     
     return (reg8n, created)
 

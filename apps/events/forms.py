@@ -31,6 +31,7 @@ from discounts.models import Discount
 from events.settings import FIELD_MAX_LENGTH
 from site_settings.utils import get_setting
 from memberships.models import Membership
+from profiles.models import Profile
 
 from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
 from widgets import UseCustomRegWidget
@@ -231,29 +232,29 @@ class FormForCustomRegForm(forms.ModelForm):
     def clean_pricing(self):
         pricing = self.cleaned_data['pricing']
         
-        if self.display_price_options:
+        if not self.event.is_table:
             # check if user is eligiable for this pricing
             if pricing.allow_anonymous:
                 return pricing
 
-            if not self.user.is_anonymous() and  self.user.is_superuser:
-                return pricing
-            
-            registrant_user = self.get_user()
-            
-            if pricing.allow_user and not registrant_user.is_anonymous():
-                return pricing
-            if pricing.allow_member and registrant_user.profile.is_member:
-                return pricing
-#            if pricing.group and pricing.group.is_member(registrant_user):
-#                return pricing
-            
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-     
-            raise forms.ValidationError('User not eligible for the price: %s - %s%s' % (
-                                                            pricing.title,
-                                                            currency_symbol,
-                                                            pricing.price))
+            if not self.user.is_anonymous():
+                if self.user.is_superuser or pricing.allow_user:
+                    return pricing
+                
+                registrant_user = self.get_user()
+                [registrant_profile] = Profile.objects.filter(user=registrant_user)[:1] or [None]
+                
+                if pricing.allow_member and registrant_profile.is_member:
+                    return pricing
+    #            if pricing.group and pricing.group.is_member(registrant_user):
+    #                return pricing
+                
+                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+         
+                raise forms.ValidationError('User not eligible for the price: %s - %s%s' % (
+                                                                pricing.title,
+                                                                currency_symbol,
+                                                                pricing.price))
             
         return pricing
         
@@ -988,32 +989,42 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['email']
         return data
     
+    def get_user(self):
+        user = None
+        if hasattr(self.cleaned_data, 'email'):
+            email = self.cleaned_data['email']
+            
+            if email:
+                [user] = User.objects.filter(email=email)[:1] or [None]
+       
+        return user or AnonymousUser()
+    
     def clean_pricing(self):
         pricing = self.cleaned_data['pricing']
         
-        if not self.is_table:
+        if not self.event.is_table:
             # check if user is eligiable for this pricing
             if pricing.allow_anonymous:
                 return pricing
 
-            if not self.user.is_anonymous() and self.user.is_superuser:
-                return pricing
-            
-            registrant_user = self.get_user()
-            
-            if pricing.allow_user and not registrant_user.is_anonymous():
-                return pricing
-            if pricing.allow_member and registrant_user.profile.is_member:
-                return pricing
-#            if pricing.group and pricing.group.is_member(registrant_user):
-#                return pricing
-            
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-     
-            raise forms.ValidationError('User not eligible for the price: %s - %s%s' % (
-                                                            pricing.title,
-                                                            currency_symbol,
-                                                            pricing.price))
+            if not self.user.is_anonymous():
+                if self.user.is_superuser or pricing.allow_user:
+                    return pricing
+                
+                registrant_user = self.get_user()
+                [registrant_profile] = Profile.objects.filter(user=registrant_user)[:1] or [None]
+                
+                if pricing.allow_member and registrant_profile.is_member:
+                    return pricing
+    #            if pricing.group and pricing.group.is_member(registrant_user):
+    #                return pricing
+                
+                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+         
+                raise forms.ValidationError('User not eligible for the price: %s - %s%s' % (
+                                                                pricing.title,
+                                                                currency_symbol,
+                                                                pricing.price))
             
         return pricing
 
