@@ -16,10 +16,13 @@
             </div>
             <p class="map-title">{{ map.name }}</p>
         </div>
+
+        <div class="reset-drawing" style="display:none;"><a href="javascript:;">
+            Reset area on map</a></div>
+        
         <div class="forms">
             {{ formset.management_form }}
-            <div id="lines-formset">
-            </div>
+            <div id="lines-formset"></div>
             {{ form|styled_form }}
             <input type="submit" value="Submit">
         </div>
@@ -33,12 +36,44 @@
 	    <input type="hidden" name="lines-0-id" id="id_lines-0-id" />
 	</div>
 </div>
+
 {% endblock body %}
 
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
 <script type="text/javascript">
-    {% include "lots/media/js/maps.js" %}
+{% include "lots/media/js/maps.js" %}
+$(document).ready(function(){
+
+    var draw_default = function(){
+        $("canvas").drawImage({
+            source: "{{ map.get_absolute_url }}",
+            x: 0, y: 0,
+            width: 900,
+            fromCenter: false,
+        });
+    };
+
+    draw_default();
+
+    $('.reset-drawing').click(function(){
+        $(this).hide();  // hide reset link
+        $('#lines-formset').children().remove();  // remove form fields
+        draw_default();  // draw original map on canvas
+
+        $('#id_lines-TOTAL_FORMS').val(0);  // reset # of forms
+        addLine('lines', {});  // set form field 0
+
+        prev_x = null;  // reset previous
+        prev_y = null;  // coordinates
+    });
+
+    $('canvas').click(function(){
+        var lines = $('#id_lines-TOTAL_FORMS').val();
+        if(lines > 1) $('.reset-drawing').show();
+    });
+
+});
 </script>
 {% endblock %}

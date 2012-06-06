@@ -76,14 +76,7 @@ function redrawMap(map){
 }
 
 $(document).ready(function(){
-    // // initialize map image
-    // $("canvas").drawImage({
-    //     source: "{{ map.file.url }}",
-    //     x: 0, y: 0,
-    //     width: 900,
-    //     fromCenter: false
-    // });
-    
+
     // initialize last line
     addLine('lines', {});
     
