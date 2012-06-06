@@ -1,22 +1,22 @@
 //dynamic line form creation
 function updateIndex(e, prefix, idx){
     var id_regex = new RegExp('('+ prefix +'-\\d+)');
-    var replacement = prefix + '-' + idx
-    if ($(e).attr("for")) 
+    var replacement = prefix + '-' + idx;
+    if ($(e).attr("for"))
         {$(e).attr("for", $(e).attr("for").replace(id_regex, replacement));}
     if (e.id) {e.id = e.id.replace(id_regex, replacement);}
     if (e.name){ e.name = e.name.replace(id_regex, replacement);}
 }
 
 function addLine(prefix, data){
-    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val(), 10);
     var row = $('#line-hidden').clone(true).get(0);
-    
+
     // place proper class
     $(row).addClass('line-form');
     
     // update id attr
-    var replacement = prefix + '_' + formCount
+    var replacement = prefix + '_' + formCount;
     $(row).attr('id',replacement);
     
     $(row).find("input").each(function() {
@@ -57,7 +57,7 @@ function redrawMap(map){
         source: "{{ map.file.url }}",
         x: 0, y: 0,
         width: 900,
-        fromCenter: false,
+        fromCenter: false
     });
     lines.each(function(i){
         var x1 = $(this).find('.x1').val();
@@ -70,26 +70,26 @@ function redrawMap(map){
             strokeCap: "round",
             strokeJoin: "miter",
             x1: x1, y1: y1,
-            x2: x2, y2: y2,
+            x2: x2, y2: y2
         });
     });
 }
 
 $(document).ready(function(){
-    // initialize map image
-    $("canvas").drawImage({
-        source: "{{ map.file.url }}",
-        x: 0, y: 0,
-        width: 900,
-        fromCenter: false,
-    });
+    // // initialize map image
+    // $("canvas").drawImage({
+    //     source: "{{ map.file.url }}",
+    //     x: 0, y: 0,
+    //     width: 900,
+    //     fromCenter: false
+    // });
     
     // initialize last line
     addLine('lines', {});
     
     //state variables for plotting
-    prev_x = null;
-    prev_y = null;
+    var prev_x = null;
+    var prev_y = null;
 
     //line plotting
     $("canvas").click(function(e){
@@ -101,16 +101,16 @@ $(document).ready(function(){
           fillStyle: "black",
           x: x, y: y,
           radius: 5,
-          sides: 4,
-        })
+          sides: 4
+        });
         if (prev_x){
             //initialize a line form here
             var data = {
                 'x1':prev_x,
                 'y1':prev_y,
                 'x2':x,
-                'y2':y,
-            }
+                'y2':y
+            };
             addLine('lines', data);
             updateLastLine(data);
             redrawMap(this);
