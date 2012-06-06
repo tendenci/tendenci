@@ -111,168 +111,6 @@ class Place(models.Model):
         return [s for s in (self.city, self.state) if s]
 
 
-class Registrant(models.Model):
-    """
-    Event registrant.
-    An event can have multiple registrants.
-    A registrant can go to multiple events.
-    A registrant is static information.
-    The names do not change nor does their information
-    This is the information that was used while registering
-    """
-    registration = models.ForeignKey('Registration')
-    user = models.ForeignKey(User, blank=True, null=True)
-    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
-    # this is a field used for dynamic pricing registrations only
-    pricing = models.ForeignKey('RegConfPricing', null=True)
-    
-    custom_reg_form_entry = models.ForeignKey("CustomRegFormEntry", 
-                                              related_name="registrants", 
-                                              null=True)
-    
-    name = models.CharField(max_length=100)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    mail_name = models.CharField(max_length=100)
-    address = models.CharField(max_length=200)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    zip = models.CharField(max_length=50)
-    country = models.CharField(max_length=100)
-
-    phone = models.CharField(max_length=50)
-    email = models.CharField(max_length=100)
-    groups = models.CharField(max_length=100)
-
-    position_title = models.CharField(max_length=100)
-    company_name = models.CharField(max_length=100)
-    
-    meal_option = models.CharField(max_length=200, default='')
-    comments = models.TextField(default='')
-
-    cancel_dt = models.DateTimeField(editable=False, null=True)
-
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-
-    objects = RegistrantManager()
-
-    class Meta:
-        permissions = (("view_registrant", "Can view registrant"),)
-
-    def __unicode__(self):
-        if self.custom_reg_form_entry:
-            return self.custom_reg_form_entry.get_lastname_firstname()
-        else:
-            return '%s, %s' % (self.last_name, self.first_name)
-
-    @property
-    def lastname_firstname(self):
-        fn = self.first_name or None
-        ln = self.last_name or None
-        
-        if fn and ln:
-            return ', '.join([ln, fn])
-        return fn or ln
-        
-    def get_name(self):
-        if self.custom_reg_form_entry:
-            return self.custom_reg_form_entry.get_name()
-        else:
-            if self.first_name or self.last_name:
-                return self.first_name + ' ' + self.last_name
-        return None
-
-    @classmethod
-    def event_registrants(cls, event=None):
-
-        return cls.objects.filter(
-            registration__event=event,
-            cancel_dt=None,
-        )
-        
-    @property
-    def additional_registrants(self):
-        # additional registrants on the same invoice
-        return self.registration.registrant_set.filter(cancel_dt=None).exclude(id=self.id).order_by('id')
-
-    @property
-    def hash(self):
-        return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
-
-    @property
-    def old_hash1(self):
-        """
-        Deprecated: Remove after 7/01/2011
-        """
-        return md5(".".join([str(self.registration.event.pk), self.email, str(self.pk)])).hexdigest()
-
-    @property
-    def old_hash2(self):
-        """
-        Deprecated: Remove after 7/01/2011
-        """
-        return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
-
-    @models.permalink
-    def hash_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
-
-    def reg8n_status(self):
-        """
-        Returns string status.
-        """
-        config = self.registration.event.registration_configuration
-
-        balance = self.registration.invoice.balance
-        payment_required = config.payment_required
-
-        if self.cancel_dt:
-            return 'cancelled'
-
-        if balance > 0:
-            if payment_required:
-                return 'payment-required'
-            else:
-                return 'registered-with-balance'
-        else:
-            return 'registered'
-
-    def initialize_fields(self):
-        """Similar to assign_mapped_fields but more direct and saves the registrant
-        """
-        if self.custom_reg_form_entry:
-            self.first_name = self.custom_reg_form_entry.get_value_of_mapped_field('first_name')
-            self.last_name = self.custom_reg_form_entry.get_value_of_mapped_field('last_name')
-            self.mail_name = self.custom_reg_form_entry.get_value_of_mapped_field('mail_name')
-            self.address = self.custom_reg_form_entry.get_value_of_mapped_field('address')
-            self.city = self.custom_reg_form_entry.get_value_of_mapped_field('city')
-            self.state = self.custom_reg_form_entry.get_value_of_mapped_field('state')
-            self.zip = self.custom_reg_form_entry.get_value_of_mapped_field('zip')
-            self.country = self.custom_reg_form_entry.get_value_of_mapped_field('country')
-            self.phone = self.custom_reg_form_entry.get_value_of_mapped_field('phone')
-            self.email = self.custom_reg_form_entry.get_value_of_mapped_field('email')
-            self.groups = self.custom_reg_form_entry.get_value_of_mapped_field('groups')
-            self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
-            self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
-        if self.first_name or self.last_name:
-            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
-        self.save()
-
-    def assign_mapped_fields(self):
-        """
-        Assign the value of the mapped fields from custom registration form to this registrant
-        """
-        if self.custom_reg_form_entry:
-            user_fields = [item[0] for item in USER_FIELD_CHOICES]
-            for field in user_fields:
-                setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
-
-            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
 class RegistrationConfiguration(models.Model):
     """
@@ -463,6 +301,10 @@ class Registration(models.Model):
     # so that it may always be referenced
     payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
     amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
+    
+    is_table = models.BooleanField(_('Is table registration'), default=False)
+    # used for table
+    quantity = models.IntegerField(_('Number of registrants for a table'), default=1)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True)
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
@@ -682,6 +524,171 @@ class Registration(models.Model):
         self.save()
 
         return invoice
+    
+class Registrant(models.Model):
+    """
+    Event registrant.
+    An event can have multiple registrants.
+    A registrant can go to multiple events.
+    A registrant is static information.
+    The names do not change nor does their information
+    This is the information that was used while registering
+    """
+    registration = models.ForeignKey('Registration')
+    user = models.ForeignKey(User, blank=True, null=True)
+    amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
+    # this is a field used for dynamic pricing registrations only
+    pricing = models.ForeignKey('RegConfPricing', null=True)
+    
+    custom_reg_form_entry = models.ForeignKey("CustomRegFormEntry", 
+                                              related_name="registrants", 
+                                              null=True)
+    
+    name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    mail_name = models.CharField(max_length=100)
+    address = models.CharField(max_length=200)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    zip = models.CharField(max_length=50)
+    country = models.CharField(max_length=100)
+
+    phone = models.CharField(max_length=50)
+    email = models.CharField(max_length=100)
+    groups = models.CharField(max_length=100)
+
+    position_title = models.CharField(max_length=100)
+    company_name = models.CharField(max_length=100)
+    
+    meal_option = models.CharField(max_length=200, default='')
+    comments = models.TextField(default='')
+    
+    is_primary = models.BooleanField(_('Is primary registrant'), default=False)
+
+    cancel_dt = models.DateTimeField(editable=False, null=True)
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
+    objects = RegistrantManager()
+
+    class Meta:
+        permissions = (("view_registrant", "Can view registrant"),)
+
+    def __unicode__(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_lastname_firstname()
+        else:
+            return '%s, %s' % (self.last_name, self.first_name)
+
+    @property
+    def lastname_firstname(self):
+        fn = self.first_name or None
+        ln = self.last_name or None
+        
+        if fn and ln:
+            return ', '.join([ln, fn])
+        return fn or ln
+        
+    def get_name(self):
+        if self.custom_reg_form_entry:
+            return self.custom_reg_form_entry.get_name()
+        else:
+            if self.first_name or self.last_name:
+                return self.first_name + ' ' + self.last_name
+        return None
+
+    @classmethod
+    def event_registrants(cls, event=None):
+
+        return cls.objects.filter(
+            registration__event=event,
+            cancel_dt=None,
+        )
+        
+    @property
+    def additional_registrants(self):
+        # additional registrants on the same invoice
+        return self.registration.registrant_set.filter(cancel_dt=None).exclude(id=self.id).order_by('id')
+
+    @property
+    def hash(self):
+        return md5(".".join([str(self.registration.event.pk), str(self.pk)])).hexdigest()
+
+    @property
+    def old_hash1(self):
+        """
+        Deprecated: Remove after 7/01/2011
+        """
+        return md5(".".join([str(self.registration.event.pk), self.email, str(self.pk)])).hexdigest()
+
+    @property
+    def old_hash2(self):
+        """
+        Deprecated: Remove after 7/01/2011
+        """
+        return md5(".".join([str(self.registration.event.pk), self.email])).hexdigest()
+
+    @models.permalink
+    def hash_url(self):
+        return ('event.registration_confirmation', [self.registration.event.pk, self.hash])
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
+
+    def reg8n_status(self):
+        """
+        Returns string status.
+        """
+        config = self.registration.event.registration_configuration
+
+        balance = self.registration.invoice.balance
+        payment_required = config.payment_required
+
+        if self.cancel_dt:
+            return 'cancelled'
+
+        if balance > 0:
+            if payment_required:
+                return 'payment-required'
+            else:
+                return 'registered-with-balance'
+        else:
+            return 'registered'
+
+    def initialize_fields(self):
+        """Similar to assign_mapped_fields but more direct and saves the registrant
+        """
+        if self.custom_reg_form_entry:
+            self.first_name = self.custom_reg_form_entry.get_value_of_mapped_field('first_name')
+            self.last_name = self.custom_reg_form_entry.get_value_of_mapped_field('last_name')
+            self.mail_name = self.custom_reg_form_entry.get_value_of_mapped_field('mail_name')
+            self.address = self.custom_reg_form_entry.get_value_of_mapped_field('address')
+            self.city = self.custom_reg_form_entry.get_value_of_mapped_field('city')
+            self.state = self.custom_reg_form_entry.get_value_of_mapped_field('state')
+            self.zip = self.custom_reg_form_entry.get_value_of_mapped_field('zip')
+            self.country = self.custom_reg_form_entry.get_value_of_mapped_field('country')
+            self.phone = self.custom_reg_form_entry.get_value_of_mapped_field('phone')
+            self.email = self.custom_reg_form_entry.get_value_of_mapped_field('email')
+            self.groups = self.custom_reg_form_entry.get_value_of_mapped_field('groups')
+            self.position_title = self.custom_reg_form_entry.get_value_of_mapped_field('position_title')
+            self.company_name = self.custom_reg_form_entry.get_value_of_mapped_field('company_name')
+        if self.first_name or self.last_name:
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
+        self.save()
+
+    def assign_mapped_fields(self):
+        """
+        Assign the value of the mapped fields from custom registration form to this registrant
+        """
+        if self.custom_reg_form_entry:
+            user_fields = [item[0] for item in USER_FIELD_CHOICES]
+            for field in user_fields:
+                setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
+
+            self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
 
 class Payment(models.Model):

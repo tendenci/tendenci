@@ -879,7 +879,7 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
         event.free_event = not bool([p for p in pricings if p.price > 0])
         
     
-    # check if use a custom reg form
+    # check if using a custom reg form
     custom_reg_form = None
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
