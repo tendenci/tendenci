@@ -15,10 +15,13 @@
             </div>
             <p class="map-title">{{ map.name }}</p>
         </div>
+
+        <div class="reset-drawing" style="display:none;"><a href="javascript:;">
+            Reset area on map</a></div>
+
         <div class="forms">
             {{ formset.management_form }}
-            <div id="lines-formset">
-            </div>
+            <div id="lines-formset"></div>
             {{ form|styled_form }}
             <input type="submit" value="Submit">
         </div>
@@ -43,8 +46,7 @@
 // initialize map image
 $(document).ready(function(){
 
-    function displayLines(){
-        //plot lines
+    var default_area = function(){
         {% for line in lot.line_set.all %}
         $("canvas").drawLine({
             strokeStyle: "#AAA",
@@ -55,14 +57,35 @@ $(document).ready(function(){
             x2: {{ line.x2 }}, y2: {{ line.y2 }},
         });
         {% endfor %}
-    }
+    };
 
-    $("canvas").drawImage({
-        source: "{{ lot.map.get_absolute_url }}",
-        x: 0, y: 0,
-        width: 900,
-        fromCenter: false,
-        load: displayLines,
+    var draw_default = function(){
+        $("canvas").drawImage({
+            source: "{{ lot.map.get_absolute_url }}",
+            x: 0, y: 0,
+            width: 900,
+            fromCenter: false,
+            load: default_area,
+        });
+    };
+
+    draw_default();
+
+    $('.reset-drawing').click(function(){
+        $(this).hide();  // hide reset link
+        $('#lines-formset').children().remove();  // remove form fields
+        draw_default();  // draw original map on canvas
+
+        $('#id_lines-TOTAL_FORMS').val(0);  // reset # of forms
+        addLine('lines', {});  // set form field 0
+
+        prev_x = null;  // reset previous
+        prev_y = null;  // coordinates
+    });
+
+    $('canvas').click(function(){
+        var lines = $('#id_lines-TOTAL_FORMS').val();
+        if(lines > 1) $('.reset-drawing').show();
     });
 
 });

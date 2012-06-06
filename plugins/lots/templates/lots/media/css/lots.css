@@ -85,3 +85,7 @@
 #lines-formset {
     display: none;
 }
+
+.t .reset-drawing {
+    margin: 15px 0;
+}

@@ -88,8 +88,8 @@ $(document).ready(function(){
     addLine('lines', {});
     
     //state variables for plotting
-    var prev_x = null;
-    var prev_y = null;
+    prev_x = null;
+    prev_y = null;
 
     //line plotting
     $("canvas").click(function(e){
