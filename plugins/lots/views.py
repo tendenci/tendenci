@@ -75,6 +75,66 @@ def map_add(request, template_name="lots/maps/add.html"):
 
 
 @login_required
+def map_edit(request, pk=None, template_name="lots/maps/edit.html"):
+    if not has_perm(request.user, 'lots.change_map'):
+        return Http403
+
+    map = get_object_or_404(Map, pk=pk)
+
+    if request.method == "POST":
+        form = MapForm(request.POST, request.FILES, instance=map)
+
+        if form.is_valid():
+            map = form.save(commit=False)
+            map = update_perms_and_save(request, form, map)
+
+            EventLog.objects.log(**{
+                'event_id': 9999000,
+                'event_data': '%s (%d) changed by %s' % (map._meta.object_name, map.pk, request.user),
+                'description': '%s changed' % map._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': map,
+            })
+
+            messages.add_message(request, messages.INFO, _('Successfully changed %s' % map))
+            return redirect('lots.map_selection')
+    else:
+        form = MapForm(instance=map)
+
+    return render_to_response(template_name, {
+        'form': form,
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def map_delete(request, pk, template_name="lots/maps/delete.html"):
+    map = get_object_or_404(Map, pk=pk)
+
+    if has_perm(request.user, 'lots.delete_map'):
+        if request.method == "POST":
+
+            EventLog.objects.log(**{
+                'event_id': 9999500,
+                'event_data': '%s (%d) deleted by %s' % (map._meta.object_name, map.pk, request.user),
+                'description': '%s deleted' % map._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': map,
+            })
+
+            map.delete()
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % map)
+
+            return HttpResponseRedirect(reverse('lots.map_selection'))
+
+        return render_to_response(template_name, {'map': map},
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
+
+
+@login_required
 def map_detail(request, pk=None, template_name='lots/maps/detail_plot.html'):
     if not pk:
         return HttpResponseRedirect(reverse('lots.map_selection'))
@@ -168,6 +228,33 @@ def edit(request, pk, template_name="lots/edit.html"):
         'lot': lot,
         'map': lot.map,
     }, context_instance=RequestContext(request))
+
+
+@login_required
+def delete(request, pk, template_name="lots/delete.html"):
+    lot = get_object_or_404(Lot, pk=pk)
+
+    if has_perm(request.user, 'lots.delete_lot'):
+        if request.method == "POST":
+
+            EventLog.objects.log(**{
+                'event_id': 9999500,
+                'event_data': '%s (%d) deleted by %s' % (lot._meta.object_name, lot.pk, request.user),
+                'description': '%s deleted' % lot._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': lot,
+            })
+
+            lot.delete()
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % lot)
+
+            return HttpResponseRedirect(reverse('lots.map_selection'))
+
+        return render_to_response(template_name, {'lot': lot},
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
 
 
 def detail(request, pk=None, template_name="lots/detail.html"):
