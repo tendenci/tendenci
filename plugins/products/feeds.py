@@ -15,10 +15,10 @@ class LatestEntriesFeed(SubFeed):
         return items
 
     def item_title(self, item):
-        return item.name
+        return item.product_name
 
     def item_description(self, item):
-        return item.description
+        return item.generic_description
 
     def item_pubdate(self, item):
         return item.create_dt
@@ -28,7 +28,7 @@ class LatestEntriesFeed(SubFeed):
 
 class ProductSitemap(TendenciSitemap):
     """ Sitemap information for products """
-    changefreq = "weekly"
+    changefreq = "monthly"
     priority = 0.5
 
     def items(self):

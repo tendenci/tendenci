@@ -1,6 +1,16 @@
-{% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" action="{% url products %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="Search" />
+<form class="search-form" action="{% url products.search %}" method="get">
+    <div class="fieldWrapper">
+        <label for="id_q">Search</label>
+        {{ form.q }}
+    </div>
+    <div class="fieldWrapper">
+        <label for="id_q">Category</label>
+        {{ form.category }}
+    </div>
+    <div class="fieldWrapper">
+        <label for="id_q">Formulation</label>
+        {{ form.formulation }}
+    </div>
+    
+    <input type="submit" value="Search" />
 </form>
-{% endif %}

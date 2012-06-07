@@ -1,83 +1,55 @@
 {% extends "products/base.html" %}
-
-{% load i18n %}
 {% load base_tags %}
-
-{% block title %}{{ product.name }} {{ product.category }} {{ product.subcategory }}{% endblock title %}
-{% block meta_description %}{{ product.name }} {% if product.brand %}by: {{ product.brand }}{% endif %} {{ product.description|striptags|truncatewords:"20" }}{% endblock %}
-
-{% block extra_head %}
-{{ block.super }}
-
-<meta property="og:image" content="{{ SITE_GLOBAL_SITEURL }}{% for f in product.productfile_set.all %}{% if forloop.first %}{% image_url f size=300x300 quality=90 %}{% endif %}{% endfor %}" />
-<meta property="og:title" content="{{ product.name }}"/>
-<meta property="og:description" content="{{ product.description|striptags|truncatewords:"20" }}"/>
-<meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ product.get_absolute_url }}" />
-
-<style type="text/css">
-{% include "products/media/css/products.css" %}
-.product-image { float: left; width: 240px;}
-.product-image p { text-align: center; }
-.product-image .small-img { padding: 4px; border: solid 2px #ddd; }
-.product-info { float: right; width: 370px; }
-.product-info li { list-style-type: square; line-height: 16px; margin-bottom: 10px;}
-.more-products {clear: both;}
-</style>
-<link rel="alternate" type="application/rss+xml" title="{% trans 'Latest Products' %}" href="{% url products.feed %}" />
-{% endblock %}
+{% load i18n %}
 
 {% block body %}
-
-<div class="product-image">
-{% for f in product.productfile_set.all %}
-    {% if forloop.first %}
-        <a href="{% url file f.file_ptr_id %}"><img alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=220x220 crop=true quality=90 %}" /></a>
-        <p>{{ f.photo_description }}</p>
-    {% else %}
-        <a href="{% url file f.file_ptr_id %}"><img class="small-img" alt="{{ product.name }} {{ f.photo_description }}" src="{% image_url f size=80x80 quality=95 %}" /></a>
-    {% endif %}
-{% endfor %}
-</div>
+<div class="product-wrap">
+<h1>{{ product.product_name }}</h1>
 <div class="product-info">
-    <h1>{{ product.name }}</h1>
-    {% if product.brand %}by: {{ product.brand }}{% endif %}
-    <div>{{ product.description|safe }}</div>
-    <ul>
-        {% if product.url %}<li><a href="{{ product.url }}">{{ product.url }}</a></li>{% endif %}
-        {% if product.item_number %}<li>Item number: {{ product.item_number }}</li>{% endif %}
-    </ul>
-    <div id="fb-root"></div>
-    <div class="fb-like" data-send="true" data-width="450" data-show-faces="true"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) {return;}
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
-
-    <!-- AddThis Button BEGIN -->
-    <div class="addthis_toolbox addthis_default_style ">
-    <a class="addthis_button_tweet"></a>
-    <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-    <a class="addthis_counter addthis_pill_style"></a>
+    <div class="product-photo">
+    {% if product.product_image %}
+        <img src="{% image_url product.product_image size=300x300 crop=True quality=88 %}" />
+    {% endif %}
     </div>
-    <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4e80e97c36c01c63"></script>
-    <!-- AddThis Button END -->
-    <p><a href="">Get a quote</a></p>
+    <div class="product-basic">
+		<h3>Basic Information</h3>
+        <p>Product Id: {{ product.product_id }}</p>
+        <p>Category: {{ product.category }}</p>
+        <p>Formulation: {{ product.formulation }}</p>
+        <p>Brand: {{ product.brand }}</p>
+        <p>Product Code: {{ product.product_code }}</p>
+        <p>Key Insects: {{ product.key_insects }}</p>
+        <p>Use Sites: {{ product.use_sites }}</p>
+    </div>
+
+    <div class="generic-description">
+        <h3>Generic Description</h3>
+        <p>{{ product.generic_description|safe }}</p>
+    </div>
+    
+    <div class="product-features">
+        <h3>Product Features</h3>
+        <p>{{ product.product_features|safe }}</p>
+    </div>
+    
+    <div class="product-specs">
+        <h3>Product Specifications</h3>
+        <p>{{ product.product_specs|safe }}</p>
+    </div>
+    
+    <div class="active-ingredients">
+        <h3>Product Specifications</h3>
+        <p>{{ product.active_ingredients }}</p>
+    </div>
+    
+    <div class="product-links">
+		<h3>Links</h3>
+		<p>MSDS LABEL: <a href="{{ product.msds_label }}">{{ product.msds_label }}</a></p>
+		<p>Product LABEL: <a href="{{ product.product_label }}">{{ product.product_label }}</a></p>
+		<p>State Registered: <a href="{{ product.state_registered }}">{{ product.state_registered }}</a></p>
+    </div>
 </div>
-<div class="more-products"><a href="{% url products.search %}">&larr; {% trans 'See all products' %}</a></div>
-{% include "products/meta.html" %}
 
-
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
-
+{% include "products/meta.html" %} 
+</div>
 {% endblock body %}
-​

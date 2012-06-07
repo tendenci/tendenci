@@ -3,88 +3,77 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from base.fields import SlugField
+from files.models import File
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
-from products.managers import ProductManager, ProductFileManager
-from files.models import File
-
+from products.managers import ProductManager
 
 class Category(models.Model):
-    name = models.CharField(_('name'), max_length=200, unique=True)
-
-    @property
-    def content_type(self):
-        return 'product'
-
-    class Meta:
-        verbose_name_plural = "Categories"
-        ordering = ('name',)
-
+    name = models.CharField(_(u'Name'), max_length=200,)
+    
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
-class Subcategory(models.Model):
-    name = models.CharField(_('name'), max_length=200, unique=True)
-
-    class Meta:
-        verbose_name_plural = "Subcategories"
-        ordering = ('name',)
-
+class Formulation(models.Model):
+    name = models.CharField(_(u'Name'), max_length=200,)
+    
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 
 class Product(TendenciBaseModel):
     """
-    Products plugin lists out different products
+    Products plugin comments
     """
-    name = models.CharField(_(u'name'), help_text=u'', blank=False, max_length=200, default=u'',)
-    slug = models.SlugField(_(u'slug'), unique=True, blank=False, max_length=200, default=u'',)
-    brand = models.CharField(_(u'brand'), help_text=u'', blank=True, max_length=200, default=u'',)
-    url = models.URLField(_(u'url'), help_text=u'URL outside of this site for the product.', blank=True, max_length=200, default=u'',)
-    item_number = models.CharField(_(u'item number'), help_text=u'', blank=True, max_length=200, default=u'',)
-    category = models.ForeignKey(Category, null=True, blank=True)
-    subcategory = models.ForeignKey(Subcategory, null=True, blank=True)
-    summary = models.TextField(_(u'summary'), help_text=u'A brief summary that can be shown in search results.', blank=True, default=u'',)
-    description = models.TextField(_(u'description'), help_text=u'', blank=False, default=u'')
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
-
-    perms = generic.GenericRelation(ObjectPermission, 
-        object_id_field="object_id", content_type_field="content_type")
+    category_num = models.CharField(_(u'Category Id'), max_length=200,) # To avoid conflicting column names
+    category = models.ForeignKey(Category)
+    product_id = models.CharField(_(u'Product Id'), max_length=200,)
+    product_name = models.CharField(_(u'Product Name'), max_length=200,)
+    product_slug = models.SlugField(max_length=200, unique=True,)
+    generic_description = models.TextField(_(u'Generic Description'),)
+    brand = models.CharField(_(u'Brand'), max_length=200,)
+    product_features = models.TextField(_(u'Product Features'),)
+    product_code = models.CharField(_(u'Product Code'), max_length=200,)
+    product_specs = models.TextField(_(u'Product Specs'),)
+    formulation = models.ForeignKey(Formulation)
+    active_ingredients = models.CharField(_(u'Active Ingredients'), max_length=200,)
+    key_insects = models.CharField(_(u'Key Insects'), max_length=200,)
+    use_sites = models.CharField(_(u'Use Sites'), max_length=200,)
+    msds_label = models.URLField(_(u'MSDS Label'), max_length=200,)
+    product_label = models.URLField(_(u'Product Label'), max_length=200,)
+    state_registered = models.URLField(_(u'State Registered'), max_length=200,)
+    product_image = models.ForeignKey('ProductPhoto',
+        help_text=_('Photo that represents this product.'), null=True, default=None)
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = ProductManager()
     
     def __unicode__(self):
-        return self.name
+        return unicode(self.id)
     
     class Meta:
         permissions = (("view_product","Can view product"),)
     
+    @property
+    def content_type(self):
+        return 'stories'
+
+    def photo(self):
+        if self.product_image and self.product_image.file:
+            return self.product_image.file
+
+        return None
+
     @models.permalink
     def get_absolute_url(self):
-        return ("products.detail", [self.slug])
+        return ("products.detail", [self.pk])
 
 
-class ProductFile(File):
-    product = models.ForeignKey(Product)
-    photo_description = models.CharField(_('description'), max_length=50, blank=True)
-    position = models.IntegerField(blank=True)
-
-    objects = ProductFileManager()
-
-    def save(self, *args, **kwargs):
-        if self.position is None:
-            # Append
-            try:
-                last = ProductFile.objects.order_by('-position')[0]
-                self.position = last.position + 1
-            except IndexError:
-                # First row
-                self.position = 0
-
-        return super(ProductFile, self).save(*args, **kwargs)
-
-    class Meta:
-        ordering = ('position',)
+class ProductPhoto(File):
+    @property
+    def content_type(self):
+        return 'products'

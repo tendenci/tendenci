@@ -6,13 +6,15 @@
 {% endfor %}
 
 {{ object.pk }}
-{{ object.name }}
-{{ object.slug }}
+{{ object.product_id }}
+{{ object.product_name }}
+{{ object.generic_description }}
 {{ object.brand }}
-{{ object.url }}
-{{ object.item_number }}
-{{ object.summary }}
-{{ object.description }}
-
-category:{{ object.category }}
-subcategory:{{ object.subcategory }}
+{{ object.product_features }}
+{{ object.product_code }}
+{{ object.product_specs }}
+{{ object.active_ingredients }}
+{{ object.key_insects }}
+{{ object.use_sites }}
+{{ object.product_label }}
+{{ object.state_registered }}

@@ -6,15 +6,8 @@ from products.models import Product
 
 class ProductIndex(TendenciBaseSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='name')
-    slug = indexes.CharField(model_attr='slug')
-    brand = indexes.CharField(model_attr='brand')
-    #url = indexes.CharField(model_attr='url')
-    item_number = indexes.CharField(model_attr='item_number')
-    category = indexes.CharField()
-    subcategory = indexes.CharField()
-    summary = indexes.CharField(model_attr='summary')
-    description = indexes.CharField(model_attr='description')
+    category = indexes.CharField(model_attr='category',)
+    formulation = indexes.CharField(model_attr='formulation',)
 
     # RSS fields
     can_syndicate = indexes.BooleanField()
@@ -28,4 +21,3 @@ class ProductIndex(TendenciBaseSearchIndex):
         return obj.update_dt
 
 site.register(Product, ProductIndex)
- 
