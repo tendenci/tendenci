@@ -39,10 +39,10 @@ class Lot(TendenciBaseModel):
     map = models.ForeignKey(Map)
     name = models.CharField(_(u'Name'), max_length=200)
     description = models.TextField(_(u'Description'), blank=True)
-    link = models.URLField()
-    suite_number = models.CharField(_(u'Suite Number'), max_length=10)
-    contact_info = models.TextField(_(u'Contact Info'), blank=True)
-    tags = TagField(blank=True, help_text=u'Tag 1, Tag 2, ...')
+    link = models.URLField(blank=True)
+    suite_number = models.CharField(max_length=10, blank=True)
+    contact_info = models.TextField(_(u'Contact Information'), blank=True)
+    tags = TagField(blank=True, help_text=u'e.g. restaurant, clothing, restroom')
 
     objects = LotManager()
 

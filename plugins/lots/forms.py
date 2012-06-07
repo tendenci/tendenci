@@ -54,9 +54,12 @@ class LotForm(TendenciBaseForm):
     class Meta:
         model = Lot
         fields = (
-            'name',
             'map',
+            'name',
+            'suite_number',
+            'link',
             'description',
+            'contact_info',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -70,9 +73,12 @@ class LotForm(TendenciBaseForm):
         }
 
         fieldsets = [('Map Information', {
-                      'fields': ['name',
-                                 'map',
+                      'fields': ['map',
+                                 'name',
+                                 'suite_number',
+                                 'link',
                                  'description',
+                                 'contact_info',
                                  'tags',
                                  ],
                       'legend': ''
