@@ -849,10 +849,10 @@ def multi_register_redirect(request, event, msg):
     return HttpResponseRedirect(reverse('event', args=(event.pk,),)) 
 
 
-def register(request, event_id=0, is_table=False, template_name="events/reg8n/register.html"):
+def register(request, event_id=0, is_table=False, pricing_id=None, template_name="events/reg8n/register.html"):
     """
     Handles both table and non-table registrations. 
-    Only the table registration requires pricing_id to be passed in via request.POST. 
+    Table registration requires is_table=True and a valid pricing_id. 
     """
     event = get_object_or_404(Event, pk=event_id)
 
@@ -866,17 +866,14 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
     reg_conf=event.registration_configuration
     event.honor_system = reg_conf.honor_system
     
-    # get all available pricing
-    pricings = reg_conf.get_available_pricings(request.user)
-    # don't worry about the table for now
-    if is_table:
-        try:
-            pricing = RegConfPricing.objects.get(pk=request.POST['pricing_id'])
-            event.free_event = pricing.price <=0
-        except:
-            return multi_register_redirect(request, event, _('Please choose a price for table registration.'))
+    if is_table and pricing_id:
+        pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
+        event.free_event = pricing.price <=0
     else:
+        # get all available pricing
+        pricings = reg_conf.get_available_pricings(request.user)
         event.free_event = not bool([p for p in pricings if p.price > 0])
+        pricing = None
         
     
     # check if using a custom reg form
@@ -904,13 +901,15 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
         RF = RegistrantForm
     #RF = RegistrantForm
     
+    total_regt_forms = pricing and pricing.quantity or 1
+    can_delete = (not is_table)
     # start the form set factory    
     RegistrantFormSet = formset_factory(
         RF,
         formset=RegistrantBaseFormSet,
-        can_delete=True,
-        max_num=1,
-        extra=0
+        can_delete=can_delete,
+        max_num=total_regt_forms,
+        extra=pricing and (pricing.quantity - 1) or 0
     )
     
     # get available addons
@@ -923,19 +922,17 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
         extra=0,
     )
     
-    # update the amount of forms based on quantity
-    if event.is_table:
-        total_regt_forms = pricing.quantity
-    else:
-        total_regt_forms = 1
     
     # REGISTRANT formset
     post_data = request.POST or None
     
     params = {'prefix': 'registrant',
               'event': event,
-              'pricings': pricings, 
               'user': request.user}
+    if not is_table:
+        # pass the pricings to display the price options
+        params.update({'pricings': pricings})
+    
     if custom_reg_form:
         params.update({"custom_reg_form": custom_reg_form}) 
         
@@ -953,7 +950,13 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
                         'email':request.user.email,}
             if profile:
                 initial.update({'company_name': profile.company,
-                                'phone':profile.phone,})
+                                'phone':profile.phone,
+                                'address': profile.address,
+                                'city': profile.city,
+                                'state': profile.state,
+                                'zip': profile.zipcode,
+                                'country': profile.country,
+                                'position_title': profile.position_title})
 
         params.update({"initial": [initial]})
         
@@ -973,18 +976,14 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
                         extra_params=addon_extra_params)
                             
     # REGISTRATION form
-    if request.method == 'POST' and 'submit' in request.POST:
-        reg_form = RegistrationForm(
+    reg_form = RegistrationForm(
             event,
-            request.POST, 
+            request.POST or None, 
             user=request.user,
             count=len(registrant.forms),
         )
-    else:
-        reg_form = RegistrationForm(
-            event,
-            user=request.user
-        )
+
+    # remove captcha for logged in user
     if request.user.is_authenticated():
         del reg_form.fields['captcha']
     
@@ -997,20 +996,13 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
             if reg_form.is_valid() and registrant.is_valid() and addon_formset.is_valid():
                 
                 # override event_price to price specified by admin
-                reg8n, reg8n_created = add_registration(
-                    request, 
-                    event, 
-                    reg_form, 
-                    registrant,
-                    addon_formset,
-                    None,
-                    0,
-                    admin_notes='',
-#                    pricing,
-#                    event_price,
-#                    admin_notes=admin_notes,
-                    custom_reg_form=custom_reg_form,
-                )
+                
+                args = [request, event, reg_form, registrant, addon_formset,
+                        pricing, pricing and pricing.price or None]
+                kwargs = {'admin_notes': '',
+                          'custom_reg_form': custom_reg_form}
+                # add registration
+                reg8n, reg8n_created = add_registration(*args, **kwargs)
                 
                 site_label = get_setting('site', 'global', 'sitedisplayname')
                 site_url = get_setting('site', 'global', 'siteurl')
@@ -1088,22 +1080,20 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
     price_list = []
     count = 0
     total_price = Decimal(str(0.00))
-    event_price = 0
-    
+    event_price = pricing and pricing.price or 0
+    individual_price = event_price
+    if is_table:
+        individual_price = Decimal(round(event_price/pricing.quantity, 2))
+
     # total price calculation when invalid
     for form in registrant.forms:
         deleted = False
         if form.data.get('registrant-%d-DELETE' % count, False):
             deleted = True
-#        if count % pricing.quantity == 0:
-#            price_list.append({'price': event_price, 'deleted':deleted})
-#        else:
-        price_list.append({'price': 0.00 , 'deleted':deleted})
+
+        price_list.append({'price': individual_price , 'deleted':deleted})
         if not deleted:
-#            if pricing.quantity > 1:
-#                total_price = event_price
-#            else:
-            total_price += event_price
+            total_price += individual_price
         count += 1
     addons_price = addon_formset.get_total_price()
     total_price += addons_price
@@ -1123,7 +1113,7 @@ def register(request, event_id=0, is_table=False, template_name="events/reg8n/re
         'free_event': event.free_event,
         'price_list':price_list,
         'total_price':total_price,
-#        'price': pricing,
+        'pricing': pricing,
         'reg_form':reg_form,
         'custom_reg_form': custom_reg_form,
         'registrant': registrant,

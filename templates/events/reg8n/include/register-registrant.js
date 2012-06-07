@@ -160,6 +160,43 @@ function get_registrant_pricing_obj(pricing_item){
      
 }
 
+function populate_blank_fields(){
+	// populate the blank fields in the forms below with the content from the first form.
+	// get the first form
+	var first_form = $('.registrant-form:first'),
+	    prefix = 'registrant';
+	
+	// get each text field from the form
+	var regexp = /registrant-\d+-([\w\d_]+)/;
+	var match, name, value;
+	var myfields = {};
+	$(first_form).find(".form-field").find('[id^="id_registrant"]').each(function() {
+		var $this = $(this);
+        //if ($this.attr('type') == 'text'){
+         	name = $this.attr('name');
+         	match = regexp.exec(name);
+         	if (match !== null){
+         		myfields[match[1]] = $this.val();
+         	}
+       // }
+
+	});
+	
+	if (!$.isEmptyObject(myfields)){
+		var num_forms = $('.registrant-form:not(:first)').length;
+		for (i=1; i<=num_forms; i++){
+		    $.each(myfields, function(name, value) {
+		    	//var field = $('input[name=' + prefix + '-' + i + '-' + name + ']');
+		    	var field = $('[name=' + prefix + '-' + i + '-' + name + ']');
+		    	if(!$.trim($(field).val()).length) {
+		    		$(field).val(value);
+		    	}
+		    });
+		}
+	}
+
+}
+
 $(document).ready(function(){
 	var prefix = 'registrant';
     // show delete-button-wrap
@@ -196,6 +233,7 @@ $(document).ready(function(){
     });   
     {% endif %} 
     
+    {% if not event.is_table %}
     $('.registrant-form').each(function(){
     	$this = $(this);
     	var pricing_obj = get_registrant_pricing_obj($this.find('.registrant-pricing:checked'));
@@ -204,4 +242,10 @@ $(document).ready(function(){
     	}
 	   	
     });
+    {% endif %} 
+    
+    $('#populate-fields').click(function(e){
+		e.preventDefault();
+		populate_blank_fields()
+	});
 });

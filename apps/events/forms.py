@@ -87,7 +87,10 @@ class FormForCustomRegForm(forms.ModelForm):
             
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
-            field_key = "field_%s" % field.id
+            if field.map_to_field:
+                field_key = field.map_to_field
+            else:
+                field_key = "field_%s" % field.id
             if "/" in field.field_type:
                 field_class, field_widget = field.field_type.split("/")
             else:
@@ -117,21 +120,24 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields[field_key] = field_class(**field_args)
             
         # add class attr registrant-email to the email field
-        for field in self.form_fields:
-            if field.map_to_field == "email":
-                self.email_key = "field_%s" % field.id
-                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
-                break
+        if hasattr(self.fields, 'email'):
+            self.fields['email'].widget.attrs = {'class': 'registrant-email'}
+#        for field in self.form_fields:
+#            if field.map_to_field == "email":
+#                self.email_key = "field_%s" % field.id
+#                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
+#                break
          
-        reg_conf=self.event.registration_configuration   
-        # make the fields in the subsequent forms as not required
-        if reg_conf.honor_system or not self.custom_reg_form.validate_guest:
-            if self.form_index and self.form_index > 0:
-                for key in self.fields.keys():
-                    self.fields[key].required = False
-        else:
-            # this attr is required for form validation
-            self.empty_permitted = False
+        if self.event:
+            reg_conf=self.event.registration_configuration   
+            # make the fields in the subsequent forms as not required
+            if reg_conf.honor_system or not self.custom_reg_form.validate_guest:
+                if self.form_index and self.form_index > 0:
+                    for key in self.fields.keys():
+                        self.fields[key].required = False
+            else:
+                # this attr is required for form validation
+                self.empty_permitted = False
                 
         # for anonymousmemberpricing
         # --------------------------
@@ -273,7 +279,10 @@ class FormForCustomRegForm(forms.ModelForm):
             else:
                 entry = self.entry
             for field in self.form_fields:
-                field_key = "field_%s" % field.id
+                if field.map_to_field:
+                    field_key = field.map_to_field
+                else:
+                    field_key = "field_%s" % field.id
                 value = self.cleaned_data.get(field_key, '')
                 if isinstance(value,list):
                     value = ','.join(value)
@@ -287,12 +296,11 @@ class FormForCustomRegForm(forms.ModelForm):
                         field_entry = field_entries[0]
                         field_entry.value = value
                 if not field_entry:
-                    field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
+                    #field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
+                    field_entry = CustomRegFieldEntry(field=field, entry=entry, value=value)
                     
-                if self.user and self.user.is_authenticated():
-                    field_entry.save(user=self.user)
-                else:
-                    field_entry.save()
+                
+                field_entry.save()
             return entry
         return
             

@@ -568,8 +568,11 @@ def add_registration(*args, **kwargs):
         "event": event,
         "payment_method": reg_form.cleaned_data.get('payment_method'),
         "amount_paid": str(total_amount),
-        "reg_conf_price": price
+        "reg_conf_price": price,
+        'is_table': event.is_table
     }
+    if event.is_table:
+        reg8n_attrs['quantity'] = price.quantity
     if request.user.is_authenticated():
         reg8n_attrs['creator'] = request.user
         reg8n_attrs['owner'] = request.user
@@ -577,24 +580,19 @@ def add_registration(*args, **kwargs):
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
     
+    if event.is_table:
+        individual_price = Decimal(round(event_price/price.quantity, 2))
+    
 #    discount_applied = False
-    for form in registrant_formset.forms:
+    for i, form in enumerate(registrant_formset.forms):
         if not event.is_table:
             price = form.cleaned_data['pricing']
-            event_price = price.price
-        if count % price.quantity == 0:
-            amount = event_price
-#            # apply the discount to the first registrant only
-#            if not discount_applied:
-#                if discount:
-#                    amount = event_price - Decimal(discount.value)
-#                    if amount < 0:
-#                        amount = 0
-#                discount_applied = True
+            amount = price.price
         else:
-            amount = Decimal('0.00')
-            
-        if not form in registrant_formset.deleted_forms:
+            amount = individual_price
+        
+        # the table registration form does not have the DELETE field   
+        if event.is_table or not form in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
                 event,
@@ -602,8 +600,10 @@ def add_registration(*args, **kwargs):
                 price,
                 amount
             ]
-            registrant = create_registrant_from_form(*registrant_args, 
-                                                     custom_reg_form=custom_reg_form)
+            registrant_kwargs = {'custom_reg_form': custom_reg_form,
+                                 'is_primary': i==0}
+            
+            registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
             total_amount += registrant.amount 
             
             count += 1
@@ -647,6 +647,7 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.registration = reg8n
     registrant.amount = amount
     
+    registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
     
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
@@ -1099,7 +1100,11 @@ def get_custom_registrants_initials(entries, **kwargs):
         fields_d = {}
         field_entries = entry.field_entries.all()
         for field_entry in field_entries:
-            fields_d['field_%d' % field_entry.field.id] = field_entry.value
+            if field_entry.field.map_to_field:
+                field_key = field_entry.field.map_to_field
+            else:
+                field_key = 'field_%d' % field_entry.field.id
+            fields_d[field_key] = field_entry.value
         initials.append(fields_d)
     return initials
 

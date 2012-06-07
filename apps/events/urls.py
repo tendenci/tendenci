@@ -36,8 +36,9 @@ urlpatterns = patterns('events',
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
 
     # register for event
-    url(r'^(?P<event_id>\d+)/multi-register/$', 'views.register', name='event.register'),
-    url(r'^(?P<event_id>\d+)/multi-register/table/$', 'views.multi_register', {'is_table': True}, name='event.multi_register'),
+    url(r'^register/(?P<event_id>\d+)/$', 'views.register', name='event.register'),
+    url(r'^register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$', 'views.register', {'is_table': True}, name='event.table_register'),
+#    url(r'^(?P<event_id>\d+)/multi-register/$', 'views.register', name='event.register'),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/$', 'views.registration_edit', 
         name="event.registration_edit"),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$', 'views.registration_edit', 

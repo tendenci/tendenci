@@ -11,6 +11,11 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/event-addons.css" />
+<style>
+	#populate-fields{
+		margin-top: 1em;
+	}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -20,7 +25,7 @@
     <div class="event-info">
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
         {% if event.is_table %}
-        <div class="event-price">{{ event_price|format_currency }}</div>
+        <div class="event-price">{{ event_price|format_currency }} for a Table/Team of {{ pricing.quantity }}</div>
         {% endif %}
         <div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
@@ -28,7 +33,12 @@
         </div>
         {% if event.registration_configuration.honor_system  %}
         <div class="event-msg">
-            <strong>{% blocktrans %} Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
+            {% blocktrans %} <strong> Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
+        </div>
+        {% endif %}
+        {% if event.is_table %}
+        <div class="event-msg">
+            {% blocktrans %}The first one is the primary registrant and responsible for the billing if applicable.  {% endblocktrans %}
         </div>
         {% endif %}
     </div>
@@ -250,6 +260,10 @@
 							{% endif %}	
 							
 						</div>	
+						{% if forloop_counter == 1 and event.is_table %} 
+						<button class="btn" id="populate-fields">Populate the blank fields below with the content in the corresponing fields above</button>
+						{% endif %}
+					
 					</div>
 				{% endwith %}	
 				{% endfor %}
@@ -273,9 +287,7 @@
                     GO</a>!
                 {% endblocktrans %}
                 </div>
-                {% else %}
-                     <a class="add-registrants-link" title='Add registrant(s)' onClick="add_registrant_set(this, 'registrant'); return false;">
-                    {% blocktrans with price.quantity as quant %}Add another set of {{ quant }} additional registrants{% endblocktrans %}</a>
+                
                 {% endif %}
             </div>
             
@@ -376,5 +388,7 @@ function updateSummaryIndex(prefix){
     {% include 'events/addons/register-addon.js' %}
     {% include 'events/reg8n/include/register.js' %}
 </script>
+
+
 {{ block.super }}
 {% endblock %}
