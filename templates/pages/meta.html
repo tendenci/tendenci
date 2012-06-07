@@ -1,7 +1,12 @@
 {% load base_filters %}
 {% load base_tags %}
 {% load perm_tags %}
+{% load tagging_tags %}
 {% load i18n %}
+
+{% tags_for_object page as tags %}
+{% tags_hash_tags page as hash_tags %}
+{% tags_strip_hash page as nonhash_tags %}
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
@@ -17,17 +22,20 @@
         {% endif %}
         {% endwith %}
         
-        {% if page.tags %}
-        <div class="tags"><strong>{% trans "Tags:" %} </strong>
-            {% for tag in page.tags|tag_split %}
-                <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
-        
-        {% if admin or user == page.creator or user == page.owner %}
-            {% meta_creator_owner page %}
-        {% endif %}
+        {% if nonhash_tags or hash_tags %}
+                    <div class="tags">
+                      {% if nonhash_tags or can_edit %}<strong>Tags: </strong>{% endif %}
+                      {% for tag in nonhash_tags %}
+                        <a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+           
+                      {% if hash_tags and can_edit %}
+                      {% for tag in hash_tags %}
+                        {% if forloop.first and nonhash_tags %}| {% endif %}<a href="{% url page.search %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    </div>
+                    {% endif %}
         
     </div>
     <div class="meta-right">
