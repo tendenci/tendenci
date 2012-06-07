@@ -871,7 +871,8 @@ def register(request, event_id=0, is_table=False, pricing_id=None, template_name
         event.free_event = pricing.price <=0
     else:
         # get all available pricing
-        pricings = reg_conf.get_available_pricings(request.user)
+        pricings = reg_conf.get_available_pricings(request.user).filter(quantity=1)
+        pricings = pricings.order_by('display_order', '-price')
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
         

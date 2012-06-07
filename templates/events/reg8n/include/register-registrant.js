@@ -176,7 +176,9 @@ function populate_blank_fields(){
          	name = $this.attr('name');
          	match = regexp.exec(name);
          	if (match !== null){
-         		myfields[match[1]] = $this.val();
+         		if (match[1] !== 'first_name' && match[1] !== 'last_name'){
+         			myfields[match[1]] = $this.val();
+         		}
          	}
        // }
 
