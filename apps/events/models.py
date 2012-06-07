@@ -305,6 +305,12 @@ class Registration(models.Model):
     is_table = models.BooleanField(_('Is table registration'), default=False)
     # used for table
     quantity = models.IntegerField(_('Number of registrants for a table'), default=1)
+    # admin price override for table
+    override_table = models.BooleanField(_('Admin Price Override?'), default=False)
+    override_price_table = models.DecimalField(_('Override Price'), max_digits=21, 
+                                         decimal_places=2, 
+                                         blank=True, 
+                                         default=0)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True)
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
@@ -565,6 +571,11 @@ class Registrant(models.Model):
     comments = models.TextField(default='')
     
     is_primary = models.BooleanField(_('Is primary registrant'), default=False)
+    override = models.BooleanField(_('Admin Price Override?'), default=False)
+    override_price = models.DecimalField(_('Override Price'), max_digits=21, 
+                                         decimal_places=2, 
+                                         blank=True, 
+                                         default=0)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
 
