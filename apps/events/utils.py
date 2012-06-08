@@ -585,10 +585,20 @@ def add_registration(*args, **kwargs):
     
 #    discount_applied = False
     for i, form in enumerate(registrant_formset.forms):
+        override = False
+        override_price = Decimal(0)
         if not event.is_table:
+            if request.user.is_superuser:
+                override = form.cleaned_data['override']
+                override_price = form.cleaned_data['override_price']
+                
             price = form.cleaned_data['pricing']
-            amount = price.price
+            if override:
+                amount = override_price
+            else:
+                amount = price.price
         else:
+            # table individual
             amount = individual_price
         
         # the table registration form does not have the DELETE field   
@@ -601,7 +611,9 @@ def add_registration(*args, **kwargs):
                 amount
             ]
             registrant_kwargs = {'custom_reg_form': custom_reg_form,
-                                 'is_primary': i==0}
+                                 'is_primary': i==0,
+                                 'override': override,
+                                 'override_price': override_price}
             
             registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
             total_amount += registrant.amount 
@@ -646,6 +658,8 @@ def create_registrant_from_form(*args, **kwargs):
     registrant = Registrant()
     registrant.registration = reg8n
     registrant.amount = amount
+    registrant.override = kwargs.get('override', False)
+    registrant.override_price = kwargs.get('override_price')
     
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)

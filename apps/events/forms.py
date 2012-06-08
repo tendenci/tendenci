@@ -139,7 +139,6 @@ class FormForCustomRegForm(forms.ModelForm):
                 # this attr is required for form validation
                 self.empty_permitted = False
                 
-        # for anonymousmemberpricing
         # --------------------------
         if self.pricings:   
             # add the price options field
@@ -151,6 +150,17 @@ class FormForCustomRegForm(forms.ModelForm):
                     )
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
+         
+        # add override and override_price to allow admin override the price   
+        if not self.event.is_table and not self.event.free_event:
+            if (not self.user.is_anonymous() and self.user.is_superuser):
+                self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
+                                                             required=False)
+                self.fields['override_price'] = forms.DecimalField(label="Override Price",
+                                                            max_digits=10, 
+                                                            decimal_places=2,
+                                                            required=False)
+                self.fields['override_price'].widget.attrs.update({'size': '8'})
                                                               
                 
         
@@ -263,6 +273,15 @@ class FormForCustomRegForm(forms.ModelForm):
                                                                 pricing.price))
             
         return pricing
+    
+    
+    def clean_override_price(self):
+        override = self.cleaned_data['override']
+        override_price = self.cleaned_data['override_price']
+
+        if override and override_price <0:
+            raise forms.ValidationError('Override price must be a positive number.')
+        return override_price
         
                 
     def save(self, event, **kwargs):
@@ -1045,6 +1064,15 @@ class RegistrantForm(forms.Form):
                                                                 pricing.price))
             
         return pricing
+    
+    def clean_override_price(self):
+        override = self.cleaned_data['override']
+        override_price = self.cleaned_data['override_price']
+
+        if override and override_price <0:
+            raise forms.ValidationError('Override price must be a positive number.')
+        return override_price
+             
 
 
 # extending the BaseFormSet because i want to pass the event obj 
