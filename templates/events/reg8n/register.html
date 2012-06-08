@@ -15,6 +15,14 @@
 	#populate-fields{
 		margin-top: 1em;
 	}
+	.admin-override{
+		margin-left: 2em;
+		color: #880000;
+	}
+	.admin-override_price{
+		margin-left: 3.5em;
+		color: #880000;
+	}
 </style>
 {% endblock %}
 
@@ -173,7 +181,20 @@
 							
 							{% for field in form %}
 							{% if field.label != 'Delete' %}
-								<div class="form-field">
+								{% if field.name == 'override' or field.name == 'override_price' %}
+								<div class="form-field admin-{{ field.name }}">
+									<div class="error">{{ field.errors }}</div>
+									{% if field.name == 'override' %}
+									<div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
+									{% else %}
+									<div>{% trans field.label %} {{ field }}</div>
+									{% endif %}
+									{% if field.help_text %}
+				                    <div class="help-text">{{ field.help_text }}</div>   
+				                    {% endif %}
+								</div>
+								{% else %}
+								<div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
 									<div class="error">{{ field.errors }}</div>
 									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
 									<div class="field">{{ field }}</div>
@@ -181,6 +202,7 @@
 				                    <div class="help-text">{{ field.help_text }}</div>   
 				                    {% endif %}
 								</div>
+								{% endif %}
 							{% endif %}
 							{% endfor %}
 						

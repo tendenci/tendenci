@@ -999,7 +999,7 @@ def register(request, event_id=0, is_table=False, pricing_id=None, template_name
                 # override event_price to price specified by admin
                 
                 args = [request, event, reg_form, registrant, addon_formset,
-                        pricing, pricing and pricing.price or None]
+                        pricing, pricing and pricing.price or 0]
                 kwargs = {'admin_notes': '',
                           'custom_reg_form': custom_reg_form}
                 # add registration

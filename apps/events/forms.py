@@ -971,6 +971,16 @@ class RegistrantForm(forms.Form):
                     )
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
+            
+        if not self.event.is_table and not self.event.free_event:
+            if (not self.user.is_anonymous() and self.user.is_superuser):
+                self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
+                                                             required=False)
+                self.fields['override_price'] = forms.DecimalField(label="Override Price",
+                                                            max_digits=10, 
+                                                            decimal_places=2,
+                                                            required=False)
+                self.fields['override_price'].widget.attrs.update({'size': '8'})
         
 
     def clean_first_name(self):

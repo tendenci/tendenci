@@ -3,7 +3,6 @@
 var price_quantity = 1;
 var price_price = 0;
 
-
 function deleteRegistrant(ele, prefix) {
     var registrant_form = $(ele).parents('.registrant-form');
     var attr_id = $(registrant_form).attr("id");
@@ -92,8 +91,21 @@ function addRegistrant(ele, prefix, price) {
     //$(row).find(".form-field").children().children().each(function() {
     $(row).find(".form-field").find('[id^="id_registrant"]').each(function() {
         updateIndex(this, prefix, formCount);
-        if ($(this).attr('type') == 'text'){
-         $(this).val('');
+        var $this = $(this);
+        if ($this.attr('type') == 'text'){
+         $this.val('');
+        }
+        
+        // uncheck the checkbox
+        if ($this.attr('type') == 'checkbox'){
+         $this.attr('checked', false);
+         
+         {% if request.user.is_superuser %}
+         if ($this.attr('name', 'override')){
+         	toggle_admin_override($this);
+         }
+         {% endif %}
+         
         }
       
     });
@@ -141,23 +153,25 @@ function add_registrant_set(e, prefix) {
 }
 
 function get_registrant_pricing_obj(pricing_item){
-	if (pricing_item == null){
-		return false;
-	}else{
+	if ($(pricing_item).length > 0){
+
     	var $this = $(pricing_item);
-	    var name = $this.attr('name');
+	    var name_attr = $this.attr('name');
 	    var this_price = $this.next('span').data('price');
 	    if (isNaN(this_price)){
 	     	this_price = 0;
 	    }
 	    //var id_regex = new RegExp('(registrant_(\\d+))');
-	    var myRegexp = /registrant-(\d+)/g;
-	    var match = myRegexp.exec(name);
+	    var myRegexp = /registrant-(\d+)/;
+	    var match = myRegexp.exec(name_attr);
 	    var idx = parseInt(match[1]);
 	     
 	    return {'idx': idx, 'price': this_price};
-    }
-     
+   
+    }else{
+    	return false;
+    
+    }  
 }
 
 function populate_blank_fields(){
@@ -199,8 +213,77 @@ function populate_blank_fields(){
 
 }
 
+{% if request.user.is_superuser %}
+function toggle_admin_override(item){
+	var $this = $(item);
+	var target = $this.closest('.admin-override').next();
+	if ($this.is(':checked')){
+			//$(target).slideDown('fast');
+			$(target).show();
+			
+		}else{
+			//$(target).slideUp('fast');
+			$(target).hide();
+		}
+}
+{% endif %}
+
+// get the form index from the string str
+function get_idx(regexp, str){
+	var match = regexp.exec(str);
+	if (match !== null){
+		return parseInt(match[1]);
+	}
+    
+    return null
+} 
+
+var name_regexp = /registrant-(\d+)/;
+
+{% if not event.is_table and request.user.is_superuser %}
+function override_update_summary_entry(prefix, registrant_form){
+	// update the summary entry whenever the override checkbox is clicked
+	// or the override input field is changed. 
+	var input_box, idx, price, name_attr;
+	var override = true;
+
+	var override_node = $(registrant_form).find('.admin-override'),
+		override_price_node = $(registrant_form).find('.admin-override_price');
+	// if override is checked, find the value of the input
+	if ($($(override_node).find('input[type=checkbox]:checked')).length > 0){
+		input_box = $(override_price_node).find('input[type=text]');
+		
+		name_attr = $(input_box).attr('name');
+	    idx = get_idx(name_regexp, name_attr);
+	    price = parseInt($(input_box).val());
+	    
+	    if (isNaN(price)){
+	    	override = false;
+	    } 
+	     
+	}
+	else{
+		override = false;
+	}
+	
+	if (!override){
+		var this_pricing = $(registrant_form).find('.registrant-pricing');
+		name_attr = $(this_pricing).eq(0).attr('name');
+		idx = get_idx(name_regexp, name_attr);
+		var pricing_obj = get_registrant_pricing_obj($(registrant_form).find('.registrant-pricing:checked'));
+    	if (pricing_obj == false ){
+    		price = 0;
+    	}else{
+    		price = pricing_obj.price;
+    	}
+	}
+	updateSummaryEntry(prefix, idx, price);
+}
+{% endif %}	
+
 $(document).ready(function(){
 	var prefix = 'registrant';
+	
     // show delete-button-wrap
     $(".delete-button-wrap").show();
     // delete confirmation
@@ -221,24 +304,37 @@ $(document).ready(function(){
     
     
     
+    
     {% if not event.is_table %}
     $('.registrant-pricing').click(function(){
-     var $this = $(this);
-     var name = $this.attr('name');
-     var this_price = $this.next('span').data('price');
-     //var id_regex = new RegExp('(registrant_(\\d+))');
-     var myRegexp = /registrant-(\d+)/g;
-     var match = myRegexp.exec(name);
-     var idx = parseInt(match[1]);
-     updateSummaryEntry('registrant', idx, this_price);
+    	// check if the price has been overrided 
+	     var $this = $(this);
+	     var registrant_form = $this.closest('.registrant-form');
+	     var override_node = $(registrant_form).find('.admin-override'),
+			override_price_node = $(registrant_form).find('.admin-override_price');
+			
+		var override = false;
+		var override_checked = $($(override_node).find('input[type=checkbox]:checked')).length > 0;
+		var override_price = parseInt($(override_price_node).find('input[type=text]').val());
+		
+		if (!override_checked || isNaN(override_checked)){
+			
+			var name_attr = $this.attr('name');
+		     var this_price = $this.next('span').data('price');
+		     //var id_regex = new RegExp('(registrant_(\\d+))');
+		     var idx = get_idx(name_regexp, name_attr);
+		
+		     updateSummaryEntry('registrant', idx, this_price);
+		}
     
     });   
     {% endif %} 
     
     {% if not event.is_table %}
+    // update summary entries
     $('.registrant-form').each(function(){
     	$this = $(this);
-    	var pricing_obj = get_registrant_pricing_obj($this.find('.registrant-pricing:checked'));
+    	var pricing_obj = get_registrant_pricing_obj($this.find('.registrant-pricing:checked').eq(0));
     	if (pricing_obj !== false ){
     		updateSummaryEntry(prefix, pricing_obj.idx, pricing_obj.price);
     	}
@@ -248,6 +344,32 @@ $(document).ready(function(){
     
     $('#populate-fields').click(function(e){
 		e.preventDefault();
-		populate_blank_fields()
+		populate_blank_fields();
 	});
+	
+	
+	{% if not event.is_table and request.user.is_superuser %}
+	var override_checkboxes = $('.admin-override').find('input[type=checkbox]');
+	$(override_checkboxes).each(function(){
+		toggle_admin_override(this);
+	});
+	
+	
+	$(override_checkboxes).change(function(){
+		toggle_admin_override(this);
+		var registrant_form = $(this).closest('.registrant-form');
+	    
+	    override_update_summary_entry(prefix, registrant_form);
+		
+	});
+	
+	$('.admin-override_price').change(function() {
+	    var registrant_form = $(this).closest('.registrant-form');
+	    
+	    override_update_summary_entry(prefix, registrant_form);
+	     
+	});
+
+	{% endif %}
+
 });
