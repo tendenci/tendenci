@@ -540,6 +540,18 @@ def save_registration(*args, **kwargs):
     reg8n.save_invoice()
     return (reg8n, created)
 
+def split_table_price(total_price, quantity):
+    """
+    Split the price for a team. 
+    Returns a tuple: (first_individual_price, individual_price).
+    """
+    avg = Decimal(round(total_price/quantity, 2))
+    diff = total_price - avg * quantity
+    
+    if diff <> 0:
+        return (avg+diff, avg)
+    return (avg, avg)
+
 
 def add_registration(*args, **kwargs):
     """
@@ -559,6 +571,14 @@ def add_registration(*args, **kwargs):
     admin_notes = kwargs.get('admin_notes', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
     
+    override_table = False
+    override_price_table = Decimal(0)
+    if event.is_table and request.user.is_superuser:
+        override_table = reg_form.cleaned_data.get('override_table')
+        override_price_table = reg_form.cleaned_data.get('override_price_table')
+        if override_price_table == None:
+            override_price_table = 0
+    
     # apply discount if any
     discount = reg_form.get_discount()
     if discount:
@@ -569,7 +589,9 @@ def add_registration(*args, **kwargs):
         "payment_method": reg_form.cleaned_data.get('payment_method'),
         "amount_paid": str(total_amount),
         "reg_conf_price": price,
-        'is_table': event.is_table
+        'is_table': event.is_table,
+        'override_table': override_table,
+        'override_price_table': override_price_table
     }
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
@@ -581,7 +603,12 @@ def add_registration(*args, **kwargs):
     reg8n = Registration.objects.create(**reg8n_attrs)
     
     if event.is_table:
-        individual_price = Decimal(round(event_price/price.quantity, 2))
+        if reg8n.override_table:
+            table_individual_first_price, table_individual_price = split_table_price(
+                                                reg8n.override_table, price.quantity)
+        else:
+            table_individual_first_price, table_individual_price = split_table_price(
+                                                event_price, price.quantity)
     
 #    discount_applied = False
     for i, form in enumerate(registrant_formset.forms):
@@ -599,7 +626,13 @@ def add_registration(*args, **kwargs):
                 amount = price.price
         else:
             # table individual
-            amount = individual_price
+            if i == 0:
+                amount = table_individual_first_price
+            else:
+                amount = table_individual_price
+            if reg8n.override_table:
+                override = reg8n.override_table
+                override_price = amount
         
         # the table registration form does not have the DELETE field   
         if event.is_table or not form in registrant_formset.deleted_forms:

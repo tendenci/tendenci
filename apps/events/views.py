@@ -49,7 +49,7 @@ from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet)
 from events.utils import (save_registration, email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
-    get_event_spots_taken, get_ievent,
+    get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
 from events.addons.forms import RegAddonForm
@@ -1084,17 +1084,23 @@ def register(request, event_id=0, is_table=False, pricing_id=None, template_name
     event_price = pricing and pricing.price or 0
     individual_price = event_price
     if is_table:
-        individual_price = Decimal(round(event_price/pricing.quantity, 2))
+        individual_price_first, individual_price = split_table_price(
+                                                event_price, pricing.quantity)
 
     # total price calculation when invalid
-    for form in registrant.forms:
+    for i, form in enumerate(registrant.forms):
         deleted = False
         if form.data.get('registrant-%d-DELETE' % count, False):
             deleted = True
 
-        price_list.append({'price': individual_price , 'deleted':deleted})
-        if not deleted:
-            total_price += individual_price
+        if is_table and i == 0:
+            price_list.append({'price': individual_price_first , 'deleted':deleted})
+            if not deleted:
+                total_price += individual_price_first
+        else:
+            price_list.append({'price': individual_price , 'deleted':deleted})
+            if not deleted:
+                total_price += individual_price
         count += 1
     addons_price = addon_formset.get_total_price()
     total_price += addons_price

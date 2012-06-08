@@ -214,16 +214,14 @@ function populate_blank_fields(){
 }
 
 {% if request.user.is_superuser %}
-function toggle_admin_override(item){
-	var $this = $(item);
-	var target = $this.closest('.admin-override').next();
-	if ($this.is(':checked')){
+function toggle_admin_override(checkbox, price_box){
+	if ($(checkbox).is(':checked')){
 			//$(target).slideDown('fast');
-			$(target).show();
+			$(price_box).show();
 			
 		}else{
 			//$(target).slideUp('fast');
-			$(target).hide();
+			$(price_box).hide();
 		}
 }
 {% endif %}
@@ -351,12 +349,17 @@ $(document).ready(function(){
 	{% if not event.is_table and request.user.is_superuser %}
 	var override_checkboxes = $('.admin-override').find('input[type=checkbox]');
 	$(override_checkboxes).each(function(){
-		toggle_admin_override(this);
+		var checkbox = this;
+		var price_box = $(checkbox).closest('.admin-override').next();
+		toggle_admin_override(checkbox, price_box);
 	});
 	
 	
 	$(override_checkboxes).change(function(){
-		toggle_admin_override(this);
+		var checkbox = this;
+		var price_box = $(checkbox).closest('.admin-override').next();
+		toggle_admin_override(checkbox, price_box);
+		
 		var registrant_form = $(this).closest('.registrant-form');
 	    
 	    override_update_summary_entry(prefix, registrant_form);
@@ -370,6 +373,18 @@ $(document).ready(function(){
 	     
 	});
 
+	{% endif %}
+	
+	
+	{% if event.is_table and request.user.is_superuser %}
+	// toggle admin override for table
+	var override_tbl_checkboxes = $('#admin-override-table').find('input[type=checkbox]');
+	var override_price_tbl_box = $('#admin-override-price-table');
+	toggle_admin_override(override_tbl_checkboxes, override_price_tbl_box);
+	$(override_tbl_checkboxes).change(function(){
+		toggle_admin_override(override_tbl_checkboxes, override_price_tbl_box);
+	});
+	
 	{% endif %}
 
 });

@@ -908,7 +908,7 @@ class RegistrationForm(forms.Form):
         price: instance of RegConfPricing model
         event_price: integer of the event amount
         """
-        user = kwargs.pop('user', None)
+        self.user = kwargs.pop('user', None)
         self.count = kwargs.pop('count', 0)
         super(RegistrationForm, self).__init__(*args, **kwargs)
         
@@ -931,6 +931,15 @@ class RegistrationForm(forms.Form):
 
 #            if user and user.profile.is_superuser:
 #                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
+            if event.is_table and not event.free_event:
+                if (not self.user.is_anonymous() and self.user.is_superuser):
+                    self.fields['override_table'] = forms.BooleanField(label="Admin Price Override?", 
+                                                                 required=False)
+                    self.fields['override_price_table'] = forms.DecimalField(label="Override Price",
+                                                                max_digits=10, 
+                                                                decimal_places=2,
+                                                                required=False)
+                    self.fields['override_price_table'].widget.attrs.update({'size': '5'})
 
         if not display_discount:
             del self.fields['discount_code']
@@ -946,6 +955,17 @@ class RegistrationForm(forms.Form):
             except:
                 pass
         return None
+    
+    
+    def clean_override_price_table(self):
+        override_table = self.cleaned_data['override_table']
+        override_price_table = self.cleaned_data['override_price_table']
+
+        if override_table and override_price_table <0:
+            raise forms.ValidationError('Override price must be a positive number.')
+        return override_price_table
+    
+    
 
 class RegistrantForm(forms.Form):
     """

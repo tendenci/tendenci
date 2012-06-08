@@ -17,11 +17,22 @@
 	}
 	.admin-override{
 		margin-left: 2em;
-		color: #880000;
 	}
 	.admin-override_price{
 		margin-left: 3.5em;
+	}
+	.override{
 		color: #880000;
+	}
+	#admin-override-price-table{
+		margin-left: 1.5em;
+	}
+	#reg-form-box #admin-override-price-table input[type="text"]{
+		width: 50px;
+		
+	}
+	#admin-override-table label{
+		cursor: pointer;
 	}
 </style>
 {% endblock %}
@@ -163,6 +174,28 @@
 							</td>
 						</tr>
 					</table>
+					
+					
+					{% if event.is_table %}
+					<div id="admin-override-table" class="override">
+						<div class="error">{{ reg_form.override_table.errors }}</div>
+						<div>{{ reg_form.override_table }} <label for="id_{{ reg_form.override_table.name }}">{% trans reg_form.override_table.label %}</label></div>
+						{% if reg_form.override_table.help_text %}
+	                    <div class="help-text">{{ reg_form.override_table.help_text }}</div>   
+	                    {% endif %}
+					</div>
+					<div id="admin-override-price-table" class="override">
+						<div class="error">{{ reg_form.override_price_table.errors }}</div>
+						<div>{% trans reg_form.override_price_table.label %} {{ reg_form.override_price_table }}</div>
+						{% if reg_form.override_price_table.help_text %}
+	                    <div class="help-text">{{ reg_form.override_price_table.help_text }}</div>   
+	                    {% endif %}
+					</div>
+					{% endif %}
+					
+					
+					
+					
     		   </div>
     		   </div>  {# float-widow#}
     		</div>
@@ -182,7 +215,7 @@
 							{% for field in form %}
 							{% if field.label != 'Delete' %}
 								{% if field.name == 'override' or field.name == 'override_price' %}
-								<div class="form-field admin-{{ field.name }}">
+								<div class="form-field admin-{{ field.name }} override">
 									<div class="error">{{ field.errors }}</div>
 									{% if field.name == 'override' %}
 									<div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-override">{% trans field.label %}</label></div>
