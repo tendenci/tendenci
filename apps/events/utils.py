@@ -552,6 +552,15 @@ def split_table_price(total_price, quantity):
         return (avg+diff, avg)
     return (avg, avg)
 
+def apply_discount(amount, discount_amount):
+    """
+    Take the amount and discount amount as the input, 
+    return the new amount and discount amount left.
+    """
+    if discount_amount > amount:
+        return 0, discount_amount - amount
+    return amount - discount_amount, 0
+
 
 def add_registration(*args, **kwargs):
     """
@@ -580,9 +589,15 @@ def add_registration(*args, **kwargs):
             override_price_table = 0
     
     # apply discount if any
-    discount = reg_form.get_discount()
-    if discount:
-        admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
+    discount_code = reg_form.cleaned_data.get('discount_code', None)
+    discount_amount = Decimal(0)
+    if discount_code:
+        [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
+        if discount and discount.available_for(1):
+            discount_amount = discount.value
+            
+    if discount_amount:
+        admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount_code)
     
     reg8n_attrs = {
         "event": event,
@@ -593,6 +608,10 @@ def add_registration(*args, **kwargs):
         'override_table': override_table,
         'override_price_table': override_price_table
     }
+    if discount_code and discount_amount:
+        reg8n_attrs.update({'discount_code': discount_code,
+                            'discount_amount': discount_amount})
+    
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
     if request.user.is_authenticated():
@@ -611,6 +630,7 @@ def add_registration(*args, **kwargs):
                                                 event_price, price.quantity)
     
 #    discount_applied = False
+    discount_amount_left = discount_amount
     for i, form in enumerate(registrant_formset.forms):
         override = False
         override_price = Decimal(0)
@@ -633,6 +653,14 @@ def add_registration(*args, **kwargs):
             if reg8n.override_table:
                 override = reg8n.override_table
                 override_price = amount
+                
+        # Apply discount. For multiple registrants, we'll try to
+        # apply one by one until we use up all the discount amount.
+        # For example, if the discount amount is $12, and we register
+        # 3 people with amount of $10, 5, 20, respectively. Then 
+        # the first one gets 10, and the second one gets the remaining 2. 
+        if discount_amount_left > 0:
+            amount, discount_amount_left = apply_discount(amount, discount_amount_left)
         
         # the table registration form does not have the DELETE field   
         if event.is_table or not form in registrant_formset.deleted_forms:
