@@ -328,6 +328,7 @@ class FormForCustomRegForm(forms.ModelForm):
 def _get_price_labels(pricing):
     currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
     target = []
+    target_str = ''
     if pricing.group:
         target.append( 'group: %s' % pricing.group.name)
     if pricing.allow_anonymous:
@@ -337,11 +338,11 @@ def _get_price_labels(pricing):
     if pricing.allow_member:
         target.append('members')
         
-    if target:
-        target_str = ' - (for %s)' % ', '.join(target)
-    else:
-        target_str = ''
-        
+    if pricing.quantity > 1:
+        target_str += ' for a team of %d' % pricing.quantity
+#    if target:
+#        target_str += ' - (for %s)' % ', '.join(target)
+    
     return mark_safe('<span data-price="%s">%s%s %s%s</span>' % (
                                       pricing.price,
                                       currency_symbol,
@@ -895,6 +896,44 @@ class Reg8nForm(forms.Form):
         return data
 
 
+IS_TABLE_CHOICES = (
+                    ('0', 'Individual registration(s)'),
+                    ('1', 'Table registration'),
+                    )
+class RegistrationPreForm(forms.Form):
+    is_table = forms.ChoiceField(
+                    widget=forms.RadioSelect(),
+                    choices=IS_TABLE_CHOICES,
+                    initial='0'
+                                  )
+    
+    def __init__(self, table_pricing, *args, **kwargs):
+        self.table_only = kwargs.pop('table_only', False)
+        super(RegistrationPreForm, self).__init__(*args, **kwargs)
+        self.fields['pricing'] = forms.ModelChoiceField(
+                    queryset=table_pricing,
+                    widget=forms.RadioSelect(),
+                    required=False
+                    )
+        
+        self.fields['pricing'].label_from_instance = _get_price_labels
+        self.fields['pricing'].empty_label = None
+        
+        if self.table_only:
+            del self.fields['is_table']
+        
+        
+    def clean_pricing(self):
+        if not self.table_only:
+            is_table = self.cleaned_data['is_table'] == '1'
+        else:
+            is_table = True
+        pricing = self.cleaned_data['pricing']
+        if is_table and not pricing:
+            raise forms.ValidationError('Please choose a price for table registration.')
+        
+        return pricing  
+    
 class RegistrationForm(forms.Form):
     """
     Registration form - not include the registrant.

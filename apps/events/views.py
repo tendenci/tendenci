@@ -46,7 +46,8 @@ from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm, RegConfPricingBaseModelFormSet)
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet,
+    RegistrationPreForm)
 from events.utils import (save_registration, email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
@@ -842,6 +843,41 @@ def delete(request, id, template_name="events/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403# Create your views here.
+    
+def register_pre(request, event_id, template_name="events/reg8n/register_pre.html"):
+    event = get_object_or_404(Event, pk=event_id)
+    
+    reg_conf=event.registration_configuration
+    
+    pricings = reg_conf.get_available_pricings(request.user)
+    
+    individual_pricings = pricings.filter(quantity=1).order_by('display_order', '-price')
+    table_pricings = pricings.filter(quantity__gt=1).order_by('display_order', '-price')
+    
+    table_only = not individual_pricings
+    form = RegistrationPreForm(table_pricings, request.POST or None,
+                               table_only=table_only)
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            if table_only:
+                is_table = True
+            else:
+                is_table = form.cleaned_data['is_table'] == '1'
+            pricing = form.cleaned_data['pricing']
+            
+            if not is_table:
+                return HttpResponseRedirect(reverse('event.register_individual', args=(event.pk,),)) 
+            else:
+                return HttpResponseRedirect(reverse('event.register_table', args=(event.pk, pricing.id),)) 
+            
+    return render_to_response(template_name, {
+        'event':event,
+        'form': form,
+        'individual_pricings': individual_pricings,
+        'table_only': table_only
+    }, context_instance=RequestContext(request))   
+    
 
 
 def multi_register_redirect(request, event, msg):
@@ -849,7 +885,11 @@ def multi_register_redirect(request, event, msg):
     return HttpResponseRedirect(reverse('event', args=(event.pk,),)) 
 
 
-def register(request, event_id=0, is_table=False, pricing_id=None, template_name="events/reg8n/register.html"):
+def register(request, event_id=0, 
+             individual=False,
+             is_table=False, 
+             pricing_id=None, 
+             template_name="events/reg8n/register.html"):
     """
     Handles both table and non-table registrations. 
     Table registration requires is_table=True and a valid pricing_id. 
@@ -860,17 +900,41 @@ def register(request, event_id=0, is_table=False, pricing_id=None, template_name
     if not event.registration_configuration and \
        event.registration_configuration.enabled:
         raise Http404
-        
-    event.is_table = is_table
     
     reg_conf=event.registration_configuration
+    
+    if not any((individual, is_table)):
+        # Check if the event has both individual and table registrations.
+        # If so, redirect them to the intermediate page to choose individual
+        # or table.
+        pricings = reg_conf.get_available_pricings(request.user)
+        individual_prices = [p for p in pricings if p.quantity == 1]
+        table_price = [p for p in pricings if p.quantity > 1]
+        
+        if individual_prices and table_price:
+            return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),)) 
+        if individual_prices and not table_price:
+            individual = True
+        elif table_price:
+            if len(table_price) == 1:
+                is_table = True
+                pricing_id = (table_price[0]).id
+            else:
+                return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),)) 
+        else:
+            raise Http404
+            
+              
+    event.is_table = is_table
+    
+    
     event.honor_system = reg_conf.honor_system
     
     if is_table and pricing_id:
         pricing = get_object_or_404(RegConfPricing, pk=pricing_id)
         event.free_event = pricing.price <=0
     else:
-        # get all available pricing
+        # get all available pricing for the Price Options to select
         pricings = reg_conf.get_available_pricings(request.user).filter(quantity=1)
         pricings = pricings.order_by('display_order', '-price')
         event.free_event = not bool([p for p in pricings if p.price > 0])

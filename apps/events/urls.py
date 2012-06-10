@@ -37,7 +37,9 @@ urlpatterns = patterns('events',
 
     # register for event
     url(r'^register/(?P<event_id>\d+)/$', 'views.register', name='event.register'),
-    url(r'^register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$', 'views.register', {'is_table': True}, name='event.table_register'),
+    url(r'^register/(?P<event_id>\d+)/pre/$', 'views.register_pre', name='event.register_pre'),
+    url(r'^register/(?P<event_id>\d+)/individual/$', 'views.register', {'individual': True}, name='event.register_individual'),
+    url(r'^register/(?P<event_id>\d+)/table/(?P<pricing_id>\d+)/$', 'views.register', {'is_table': True}, name='event.register_table'),
 #    url(r'^(?P<event_id>\d+)/multi-register/$', 'views.register', name='event.register'),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/$', 'views.registration_edit', 
         name="event.registration_edit"),
