@@ -10,8 +10,8 @@ from base.http import Http403
 from perms.utils import update_perms_and_save, get_query_filters, has_perm
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
-from lots.models import Lot, Map, Line
-from lots.forms import LotForm, MapForm, LineForm
+from lots.models import Map, Lot, Photo, Line
+from lots.forms import MapForm, LotForm, PhotoForm, LineForm
 
 
 def index(request, template_name="lots/detail.html"):
@@ -160,37 +160,52 @@ def map_detail(request, pk=None, template_name='lots/maps/detail_plot.html'):
 
 
 @login_required
-def add(request, map_id=None, template_name="lots/add.html"):
+def add(request, pk=None, template_name="lots/add.html"):
     if not has_perm(request.user, 'lots.add_lot'):
         return Http403
 
-    if map_id:
-        map_instance = Map.objects.get(pk=map_id)
-    else:
+    map = get_object_or_404(Map, pk=pk)
+
+    if not map:
         messages.add_message(request, messages.INFO, _('Please select a Map.'))
         return redirect('lots.map_selection')
 
+    PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=1)
     LineFormSet = modelformset_factory(Line, form=LineForm, extra=0)
 
     if request.method == "POST":
         form = LotForm(request.POST)
-        formset = LineFormSet(request.POST, queryset=Line.objects.none(), prefix="lines")
-        if False not in (form.is_valid(), formset.is_valid()):
+
+        photo_formset = PhotoFormSet(request.POST, request.FILES, prefix="photos")
+        formset = LineFormSet(request.POST, prefix="lines")
+
+        if photo_formset.is_valid():
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
+
+            photos = photo_formset.save(commit=False)
+            for photo in photos:
+                photo.lot = lot
+                photo.creator = request.user
+                photo.owner = request.user
+                photo.save()
+
             points = formset.save(commit=False)
             for point in points:
                 point.lot = lot
                 point.save()
 
             messages.add_message(request, messages.INFO, 'Successfully added %s' % lot)
-            return redirect('lots.map_detail', map_id)
+            return redirect('lots.map_detail', map.pk)
     else:
-        form = LotForm(initial={"map": map_instance})
+        form = LotForm(initial={"map": map})
+
+        photo_formset = PhotoFormSet(queryset=Photo.objects.none(), prefix="photos")
         formset = LineFormSet(queryset=Line.objects.none(), prefix="lines")
 
     return render_to_response(template_name, {
-        'map': map_instance,
+        'map': map,
+        'photo_formset': photo_formset,
         'formset': formset,
         'form': form,
     }, context_instance=RequestContext(request))
@@ -203,14 +218,27 @@ def edit(request, pk, template_name="lots/edit.html"):
 
     lot = get_object_or_404(Lot, pk=pk)
 
+    PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=0)
     LineFormSet = inlineformset_factory(Lot, Line, extra=0)
 
     if request.method == "POST":
         form = LotForm(request.POST, instance=lot)
+
+        photo_formset = PhotoFormSet(request.POST, request.FILES, prefix="photos")
         formset = LineFormSet(request.POST, instance=lot, queryset=Line.objects.none(), prefix="lines")
-        if False not in (form.is_valid(), formset.is_valid()):
+
+        if all((form.is_valid(), formset.is_valid(), photo_formset.is_valid())):
+
             lot = form.save(commit=False)
             lot = update_perms_and_save(request, form, lot)
+
+            photos = photo_formset.save(commit=False)
+
+            for photo in photos:
+                photo.lot = lot
+                photo.creator = request.user
+                photo.owner = request.user
+                photo.save()
 
             if formset.total_form_count() > 1:
                 lot.line_set.all().delete()
@@ -220,9 +248,11 @@ def edit(request, pk, template_name="lots/edit.html"):
             return redirect('lots.map_detail', lot.map.pk)
     else:
         form = LotForm(instance=lot)
+        photo_formset = PhotoFormSet(queryset=Photo.objects.filter(lot=lot), prefix="photos")
         formset = LineFormSet(instance=lot, queryset=Line.objects.none(), prefix="lines")
 
     return render_to_response(template_name, {
+        'photo_formset': photo_formset,
         'formset': formset,
         'form': form,
         'lot': lot,

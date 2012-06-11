@@ -8,7 +8,7 @@
     {% lot_nav request.user %}
     <div class="lot-wrap">
         <h1>{% trans "Add Lot" %}</h1>
-        <form method="post" action="">{% csrf_token %}
+
         <div class="map-wrap">
             <div class="map-photo">
                 <canvas height="{{ map|height_for_width:900 }}" width="900" >
@@ -23,14 +23,18 @@
 
         <div class="reset-drawing" style="display:none;"><a href="javascript:;">
             Reset area on map</a></div>
-        
+
         <div class="forms">
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
             {{ formset.management_form }}
             <div id="lines-formset"></div>
+            {{ photo_formset }}
             {{ form|styled_form }}
             <input type="submit" value="Submit">
-        </div>
         </form>
+        </div>
+
     </div>
     <div id="line-hidden">
         <input type="text" name="lines-0-x1" class="x1" id="id_lines-0-x1" />
@@ -62,19 +66,19 @@ $(document).ready(function(){
     draw_default();
 
     $('.reset-drawing').click(function(){
-        $(this).hide();  // hide reset link
-        $('#lines-formset').children().remove();  // remove form fields
-        draw_default();  // draw original map on canvas
+        $(this).hide();                             // hide reset link
+        $('#lines-formset').children().remove();    // remove form fields
+        draw_default();                             // draw original map on canvas
 
-        $('#id_lines-TOTAL_FORMS').val(0);  // reset # of forms
-        addLine('lines', {});  // set form field 0
+        $('#id_lines-TOTAL_FORMS').val(0);          // reset # of forms
+        addLine('lines', {});                       // set form field 0
 
-        prev_x = null;  // reset previous
-        prev_y = null;  // coordinates
+        prev_x = null;                              // reset previous
+        prev_y = null;                              // coordinates
     });
 
     $('canvas').click(function(){
-        var lines = $('#id_lines-TOTAL_FORMS').val();
+        var lines = $('#id_lines-TOTAL_FORM').val();
         if(lines > 1) $('.reset-drawing').show();
     });
 

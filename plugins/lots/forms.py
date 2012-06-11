@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from perms.forms import TendenciBaseForm
-from lots.models import Lot, Map, Line
+from lots.models import Map, Lot, Photo, Line
 
 
 class MapForm(TendenciBaseForm):
@@ -58,6 +58,8 @@ class LotForm(TendenciBaseForm):
             'name',
             'suite_number',
             'link',
+            'phone',
+            'hours_open',
             'description',
             'contact_info',
             'tags',
@@ -77,6 +79,8 @@ class LotForm(TendenciBaseForm):
                                  'name',
                                  'suite_number',
                                  'link',
+                                 'phone',
+                                 'hours_open',
                                  'description',
                                  'contact_info',
                                  'tags',
@@ -96,6 +100,13 @@ class LotForm(TendenciBaseForm):
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
+
+class PhotoForm(forms.ModelForm):
+
+    class Meta:
+        model = Photo
+        fields = ('file',)
 
 
 class LineForm(forms.ModelForm):
