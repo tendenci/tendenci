@@ -15,6 +15,7 @@
 {% block body %}
 {% autopaginate products 10 %}
 <div class="t">
+{% product_nav request.user %}
 <h1>{% trans 'Product List' %}</h1>
 {% product_search %}
 <div class="products-wrap clearfix">

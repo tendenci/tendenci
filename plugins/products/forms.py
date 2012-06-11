@@ -50,6 +50,8 @@ class ProductForm(TendenciBaseForm):
     
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
+        print 'clean photo_upload', photo_upload
+        
         if photo_upload:
             extension = splitext(photo_upload.name)[1]
             
@@ -64,16 +66,17 @@ class ProductForm(TendenciBaseForm):
 
         return photo_upload
     
+    
     def save(self, *args, **kwargs):
         product = super(ProductForm, self).save(*args, **kwargs)
         photo_upload = self.cleaned_data.get('photo_upload')
         
-        if photo_upload and product.pk:
+        if photo_upload and not self.current_user.is_anonymous():
             image = ProductPhoto(
-                        creator=product.creator,
-                        creator_username=product.creator_username,
-                        owner=product.owner,
-                        owner_username=product.owner_username
+                        creator=self.current_user,
+                        creator_username=self.current_user.username,
+                        owner=self.current_user,
+                        owner_username=self.current_user.username
                     )
             image.file.save(photo_upload.name, photo_upload)  # save file row
             image.save()  # save image row
@@ -81,8 +84,6 @@ class ProductForm(TendenciBaseForm):
             if product.product_image:
                 product.product_image.delete()  # delete image and file row
             product.product_image = image
-            print 'image', image
-            product.save()
         return product
 
 
