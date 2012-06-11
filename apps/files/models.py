@@ -4,11 +4,9 @@ import uuid
 import Image
 import re
 from slate import PDF
-
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-
 from perms.models import TendenciBaseModel
 from files.managers import FileManager
 
@@ -113,7 +111,7 @@ class File(TendenciBaseModel):
         try:
             im = Image.open(self.file.path)
             return im.size
-        except Exception, e:
+        except Exception:
             return (0, 0)
 
     def read(self):

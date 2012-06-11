@@ -7,7 +7,6 @@ from django.contrib.contenttypes import generic
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from forms_builder.forms.managers import FormManager
-from perms.utils import is_admin
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
 from user_groups.models import Group, GroupMembership

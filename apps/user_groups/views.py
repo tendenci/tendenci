@@ -17,7 +17,7 @@ from django.http import HttpResponse
 from djcelery.models import TaskMeta
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import is_admin, get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from entities.models import Entity
 from event_logs.models import EventLog
 from event_logs.utils import request_month_range, day_bars
@@ -823,7 +823,7 @@ def subscribers_import_status(request, group_slug, task_id, template_name='user_
     """
     group = get_object_or_404(Group, slug=group_slug)
     
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     try:

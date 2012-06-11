@@ -1,7 +1,5 @@
-{% load perm_tags %}
 {% if box %}
-{% is_admin user as admin %}
-{% if admin %}
+{% if user.is_superuser %}
 <div class="admin-inline">
   <div class="admin-border admin-border-top"></div>
   <div class="admin-border admin-border-right"></div>

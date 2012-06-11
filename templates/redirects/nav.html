@@ -43,6 +43,9 @@
             {% if can_add_redirect %}
                 <li><a href="{% url redirect.add %}">{% trans "Add a Redirect" %}</a></li>
             {% endif %}
+            {% if admin %}
+                <li><a href="{% url redirect.export %}">{% trans "Export Redirects" %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_redirect or can_edit_redirect %}

@@ -4,7 +4,6 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 
 from photos.models import Image, PhotoSet, License
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 
 class LicenseField(forms.ModelChoiceField):
@@ -141,11 +140,11 @@ class PhotoSetAddForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(PhotoSetAddForm, self).__init__(*args, **kwargs)
         
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
-#        if is_admin(self.user):
+#        if self.user.profile.is_superuser:
 #            self.fields['status'] = forms.BooleanField(required=False)
 #            self.fields['status_detail'] = forms.ChoiceField(
 #                choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -194,6 +193,6 @@ class PhotoSetEditForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(PhotoSetEditForm, self).__init__(*args, **kwargs)
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')

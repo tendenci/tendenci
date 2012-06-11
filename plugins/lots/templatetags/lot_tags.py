@@ -1,13 +1,15 @@
-from django.template import Node, Library, TemplateSyntaxError, Variable
+from django.template import Library, TemplateSyntaxError
 
 from lots.models import Lot
 from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 
+
 class ListLotsNode(ListNode):
     model = Lot
     perms = 'lots.view_lot'
+
 
 @register.tag
 def list_lots(parser, token):
@@ -38,6 +40,7 @@ def list_lots(parser, token):
 
     return ListLotsNode(context_var, *args, **kwargs)
 
+
 @register.inclusion_tag("lots/nav.html", takes_context=True)
 def lot_nav(context, user, job=None):
     context.update({
@@ -46,14 +49,17 @@ def lot_nav(context, user, job=None):
     })
     return context
 
+
 @register.inclusion_tag("lots/search-form.html", takes_context=True)
 def lot_search(context):
     return context
-    
+
+
 @register.inclusion_tag("lots/maps/search-form.html", takes_context=True)
 def map_search(context):
     return context
 
+
 @register.filter(name='height_for_width')
-def height_for_width(value, width):
-    return value.height_for(width)
+def height_for_width(map, width):
+    return map.height_for(width)

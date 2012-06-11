@@ -89,7 +89,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-77/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-78/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
@@ -129,6 +129,7 @@ MIDDLEWARE_CLASSES = (
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
     'mobile.middleware.MobileMiddleware',
+    'profiles.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -243,6 +244,7 @@ INSTALLED_APPS = (
     'pluginmanager',
     'navs',
     'tendenci_guide',
+    'exports',
     # celery task system, must stay at the bottom
     # of installed apps
     'djkombu',

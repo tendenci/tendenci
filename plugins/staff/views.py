@@ -11,18 +11,18 @@ from event_logs.models import EventLog
 from files.utils import get_image
 from site_settings.utils import get_setting
 from perms.utils import has_perm
-from perms.utils import is_admin, get_query_filters, has_view_perm
+from perms.utils import get_query_filters, has_view_perm
 
 
 from models import Staff
 
-def details(request, slug=None, cv=None):
+def detail(request, slug=None, cv=None):
     """Staff plugin details view"""
     staff = get_object_or_404(Staff, slug=slug)
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (staff.status_detail).lower() <> 'active' and (not is_admin(request.user)):
+    if (staff.status_detail).lower() <> 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
     if cv:
@@ -31,15 +31,7 @@ def details(request, slug=None, cv=None):
         template_name="staff/view.html"
 
     if has_view_perm(request.user, 'staff.view_staff', staff):
-        log_defaults = {
-            'event_id' : 1080500,
-            'event_data': '%s (%d) viewed by %s' % (staff._meta.object_name, staff.pk, request.user),
-            'description': '%s viewed' % staff._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': staff,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=staff)
 
         return render_to_response(template_name, {'staff': staff},
             context_instance=RequestContext(request))
@@ -59,16 +51,8 @@ def search(request, template_name="staff/search.html"):
             staff = staff.select_related()
 
     staff = staff.order_by('-status','status_detail','start_date')
-    
-    log_defaults = {
-        'event_id' : 1080400,
-        'event_data': '%s searched by %s' % ('Staff', request.user),
-        'description': '%s searched' % 'Staff',
-        'user': request.user,
-        'request': request,
-        'source': 'staff'
-    }
-    EventLog.objects.log(**log_defaults)
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'staff_members':staff},
         context_instance=RequestContext(request))

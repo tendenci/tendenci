@@ -17,7 +17,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from event_logs.models import EventLog
-from perms.utils import is_admin, update_perms_and_save
+from perms.admin import TendenciBaseModelAdmin
 
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import UPLOAD_ROOT
@@ -36,7 +36,7 @@ class FieldAdmin(admin.TabularInline):
     extra = 0
     ordering = ("position",)
 
-class FormAdmin(admin.ModelAdmin):
+class FormAdmin(TendenciBaseModelAdmin):
 
     inlines = (FieldAdmin,)
     list_display = ("title", "id", "intro", "email_from", "email_copies", 
@@ -154,58 +154,5 @@ class FormAdmin(admin.ModelAdmin):
         response.write(f.read())
         f.close()
         return response
-    
-    def log_deletion(self, request, object, object_repr):
-        super(FormAdmin, self).log_deletion(request, object, object_repr)
-        log_defaults = {
-            'event_id' : 587300,
-            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
-                                                    object.pk, request.user),
-            'description': '%s deleted' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-    
-    def log_change(self, request, object, message):
-        super(FormAdmin, self).log_change(request, object, message)
-        log_defaults = {
-            'event_id' : 587200,
-            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
-                                                    object.pk, request.user),
-            'description': '%s edited' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-    
-    def log_addition(self, request, object):
-        super(FormAdmin, self).log_addition(request, object)
-        log_defaults = {
-            'event_id' : 587100,
-            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
-                                                   object.pk, request.user),
-            'description': '%s added' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-    
-    def save_model(self, request, object, form, change):
-        instance = form.save(commit=False)
-        
-        instance = update_perms_and_save(request, form, instance)
-        
-        return instance
-    
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(FormAdmin, self).change_view(request, object_id, extra_context)
-
-        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
-            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
-        return result
 
 admin.site.register(Form, FormAdmin)

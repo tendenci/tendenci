@@ -8,7 +8,6 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from captcha.fields import CaptchaField
 from discounts.models import Discount
-from perms.utils import is_admin
 from site_settings.utils import get_setting
 from memberships.models import Membership
 
@@ -42,7 +41,7 @@ class RegistrationForm(forms.Form):
             self.fields.pop('captcha')
         
         # admin only price override field
-        if not is_admin(user):
+        if not user.profile.is_superuser:
             self.fields.pop('amount_for_admin')
         
         reg_conf =  event.registration_configuration
@@ -214,6 +213,6 @@ class RegistrantForm(forms.Form):
         if not (user.is_anonymous() or pricing.allow_anonymous):
             already_registered = Registrant.objects.filter(user=user)
             if already_registered:
-                if not is_admin(user):
+                if not user.profile.is_superuser:
                     raise forms.ValidationError('%s is already registered for this event' % user)
         return data

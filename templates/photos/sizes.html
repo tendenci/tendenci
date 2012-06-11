@@ -77,7 +77,7 @@
 
 	<div id="embed-photo">
 	<div>{% trans "Copy &amp; paste HTML into your webpage" %}</div>
-	<textarea><a href="{{ photo.get_absolute_url }}"><img src="{{ source_url }}" alt="{{ photo.title }}"></a></textarea>
+	<textarea><a href="{{ SITE_GLOBAL_SITEURL }}{{ photo.get_absolute_url }}"><img src="{{ SITE_GLOBAL_SITEURL }}{{ source_url }}" alt="{{ photo.title }}"></a></textarea>
 	</div><!-- #embed-photo -->
 
 </div> <!-- #photo-sizes -->

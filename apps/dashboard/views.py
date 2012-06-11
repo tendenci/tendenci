@@ -5,9 +5,9 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from dateutil import parser
 
+from event_logs.models import EventLog
 from site_settings.models import Setting
 from site_settings.utils import get_setting
-from perms.utils import is_admin
 from theme.shortcuts import themed_response
 
 @login_required
@@ -16,7 +16,7 @@ def index(request, template_name="dashboard/index.html"):
         profile_redirect = Setting.objects.get(scope = 'site', scope_category = 'global', name = 'profile_redirect')
     except Setting.DoesNotExist:
         profile_redirect = ''
-    if profile_redirect and profile_redirect.value != '/dashboard' and not is_admin(request.user):
+    if profile_redirect and profile_redirect.value != '/dashboard' and not request.user.profile.is_superuser:
         return redirect(profile_redirect.value)
     
     # self signup  free trial version
@@ -43,7 +43,7 @@ def index(request, template_name="dashboard/index.html"):
         if now >= expiration_dt:
             expired = True
 
-            
+    EventLog.objects.log()
     return render_to_response(template_name, {
                                               'has_paid': has_paid,
                                               'activate_url': activate_url,

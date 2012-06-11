@@ -1,12 +1,13 @@
 {% extends "reports/base.html" %}
 {% load i18n %}
+{% load base_filters %}
 
 {% block content %}
 
 
-<h1>{% trans "Administrator Security Level Report" %}</h1>
+<h1>{% trans "Superuser Security Level Report" %}</h1>
 
-{% trans "Lists all users with a securitylevel of Administrator. This can be helpful as a cross reference when auditing." %}
+{% trans "Lists all users with a security level of Superuser. This can be helpful as a cross reference when auditing." %}
 
 
 
@@ -20,15 +21,15 @@
 	<th><a href="{% url reports-admin-users %}?sort=email" >{% trans "Email" %}</a></th>
 	<th><a href="{% url reports-admin-users %}?sort=phone" >{% trans "Phone" %}</a></th>
 </tr>
-{% for user in users %}
+{% for profile in profiles %}
 <tr class="{% cycle 'odd' '' %}">
 	<td>{{ forloop.counter }}</td>
-	<td><a href="{% url profile user.username %}">{{ user.username }}</a></td>
-	<td>{{ user.pk }}</td>
-	<td>{{ user.last_name }}</td>
-	<td>{{ user.first_name }}</td>
-	<td><a href="mailto:{{ user.email }}">{{ user.email }}</td>
-	<td></td>
+	<td><a href="{% url profile profile.user.username %}">{{ profile.user.username }}</a></td>
+	<td>{{ profile.user.pk }}</td>
+	<td>{{ profile.user.last_name }}</td>
+	<td>{{ profile.user.first_name }}</td>
+	<td>{{ profile.user.email|obfuscate_email }}</td>
+	<td>{{ profile.phone }}</td>
 </tr>
 {% endfor %}
 </table>

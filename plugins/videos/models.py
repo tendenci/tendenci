@@ -55,7 +55,7 @@ class Video(TendenciBaseModel):
             except IndexError:
                 # First row
                 self.ordering = 0
-        
+
         return super(Video, self).save(*args, **kwargs)
     
     class Meta:

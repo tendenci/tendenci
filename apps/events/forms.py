@@ -21,7 +21,6 @@ from events.models import Event, Place, RegistrationConfiguration, \
     CustomRegFieldEntry
 
 from payments.models import PaymentMethod
-from perms.utils import is_admin
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
@@ -224,7 +223,7 @@ class FormForCustomRegForm(forms.ModelForm):
             if not (user.is_anonymous() or pricing.allow_anonymous):
                 already_registered = Registrant.objects.filter(user=user)
                 if already_registered:
-                    if not is_admin(user):
+                    if not user.profile.is_superuser:
                         raise forms.ValidationError('%s is already registered for this event' % user)
             
         return data
@@ -381,7 +380,7 @@ class EventForm(TendenciBaseForm):
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
         else:
             self.fields.pop('remove_photo')
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             
@@ -579,7 +578,8 @@ class Reg8nConfPricingForm(BetterModelForm):
             'reg_form',
             'allow_anonymous',
             'allow_user',
-            'allow_member'
+            'allow_member',
+            'display_order'
          ]
         
         fieldsets = [('Registration Pricing', {
@@ -591,7 +591,8 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'reg_form',
                     'allow_anonymous',
                     'allow_user',
-                    'allow_member'
+                    'allow_member',
+                    'display_order'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -638,10 +639,8 @@ class Reg8nEditForm(BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
+            'discount_eligible',
             'use_custom_reg',
-            #'use_custom_reg_form',
-            #'bind_reg_form_to_conf_only',
-            #'reg_form',
         )
 
         fieldsets = [('Registration Configuration', {
@@ -649,10 +648,8 @@ class Reg8nEditForm(BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
+                    'discount_eligible',
                     'use_custom_reg'
-                    #'use_custom_reg_form',
-                    #'bind_reg_form_to_conf_only',
-                    #'reg_form'
                     ],
           'legend': ''
           })
@@ -833,10 +830,15 @@ class RegistrationForm(forms.Form):
         self.count = kwargs.pop('count', 0)
         self.free_event = event_price <= 0
         super(RegistrationForm, self).__init__(*args, **kwargs)
+        
+        reg_conf =  event.registration_configuration
+        
+        if not self.free_event and reg_conf.discount_eligible:
+            display_discount = True
+        else:
+            display_discount = False 
 
         if not self.free_event:
-            reg_conf =  event.registration_configuration
-
             if reg_conf.can_pay_online:
                 payment_methods = reg_conf.payment_method.all()
             else:
@@ -846,11 +848,16 @@ class RegistrationForm(forms.Form):
             self.fields['payment_method'] = forms.ModelChoiceField(
                 empty_label=None, queryset=payment_methods, widget=forms.RadioSelect(), initial=1, required=True)
 
-            if user and is_admin(user):
+            if user and user.profile.is_superuser:
                 self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
 
+        if not display_discount:
+            del self.fields['discount_code']
+
     def get_discount(self):
-        if self.is_valid() and self.cleaned_data['discount_code']:
+        # don't use all() because we don't want to evaluate all items if one of them is false
+        if self.is_valid() and hasattr(self.cleaned_data, 'discount_code') and \
+                self.cleaned_data['discount_code']:
             try:
                 discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
                 if discount.available_for(self.count):

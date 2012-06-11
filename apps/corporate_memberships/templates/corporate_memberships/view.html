@@ -15,7 +15,6 @@
 {% endblock %}
 
 {% block body %}
- {% is_admin request.user as is_admin %}
  {% has_perm request.user corporate_memberships.change_corpapp corporate_membership.corp_app as can_change_app %}
  {% has_perm request.user corporate_memberships.change_corporatemembership corporate_membership as can_change %}
  
@@ -128,7 +127,7 @@
 				 			
 				 			{% if field_obj.field_name == 'payment_method' %}
 				 				{% if corporate_membership.invoice %}
-				 					{% if is_admin %}
+				 					{% if request.user.is_superuser %}
 				 					<div>&nbsp;</div>
 				 					<div>
 				 					<a href="{{ corporate_membership.invoice.get_absolute_url }}">{% trans "View Invoice" %}</a>

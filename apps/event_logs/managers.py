@@ -81,102 +81,107 @@ class EventLogManager(Manager):
 
     def log(self, **kwargs):
         """
-        EventLog.objects.log(**kwargs)
-        Optional Keyword Arguments:
-            request - request object from a view
-            user - any user instance
-            instance - any model instance
-            category - defaults to 'application'
-            event_name - default to 'application'
-            event_type - defaults to 'information'
-            source - defaults to app_label if instance is passed
-            entity - entity object
-        Required keyword Arguments:
-            event_id
-            event_data
-            description
-
         Simple Example:
-        from event_logs.utils import log_event
-        event_log_defaults = {
-            'event_id': 123000,
-            'event_data': 'added by glenbot'
-            'description': 'article added'
-        }
-        EventLog.objects.log(**eventlog_defaults)
+            from event_logs.models import EventLog
+            EventLog.objects.log()
+        
+        If you have a Tendenci Base Object, then use the following
+        
+            EventLog.objects.log(instance=obj_local_var)
+
         """
         request, user, instance = None, None, None
         event_log = self.model()
 
         stack = inspect.stack()
 
-        if not kwargs:
-            raise TypeError('At least event_id, event_data, description keyword arguments are expected')
-
-        for kwarg in kwargs:
-            if kwarg not in default_keyword_args:
-                raise TypeError('Unexpected keyword argument %s' % kwarg)
-
-        # check the required arguments
-        if 'event_data' in kwargs:
-            event_log.event_data = kwargs['event_data']
-        else:
-            raise TypeError('Keyword argument event_data is required')
-
-        if 'description' in kwargs:
-            event_log.description = kwargs['description']
-        else:
-            raise TypeError('Keyword argument description is required')
-
-        # object parameters
-        if 'request' in kwargs:
-            request = kwargs['request']
-#         else:
-#             request = inspect.getargvalues(stack[1][0]).locals['request']
-
-        if 'user' in kwargs:
-            user = kwargs['user']
-#         else:
-#             user = inspect.getargvalues(stack[1][0]).locals['request'].user
+        # Set the following fields to blank
+        event_log.description = ""
+        event_log.guid = ""
+        event_log.source = ""
+        event_log.event_id = 0
+        event_log.event_name = ""
+        event_log.event_type = ""
+        event_log.event_data = ""
+        event_log.category = ""
 
         if 'instance' in kwargs:
             instance = kwargs['instance']
-
-        # non object parameters
-        if 'category' in kwargs:
-            event_log.category = kwargs['category']
-        if 'event_name' in kwargs:
-            event_log.event_name = kwargs['event_name']
-        if 'event_type' in kwargs:
-            event_log.event_type = kwargs['event_type']
-        if 'source' in kwargs:
-            event_log.source = kwargs['source']
-#         if 'source' in kwargs:
-#             event_log.source = kwargs['source']
-#         else:
-#             event_log.source = inspect.getmodule(stack[1][0]).__name__.split('.')[0]
-
-#         if 'action' in kwargs:
-#             event_log.action = kwargs['action']
-#         else:
-#             event_log.action = stack[1][3]
-
-        if 'event_id' in kwargs:
-            event_log.event_id = kwargs['event_id']
-        else:
-            raise TypeError('Keyword argument event_id is required')
-            #event_log.event_id = event_id_generate(event_log.source, event_log.action)
+            ct = ContentType.objects.get_for_model(instance)
+            event_log.content_type = ct
+            event_log.object_id = instance.pk
+            event_log.headline = unicode(instance)[:50]
+            event_log.model_name = ct.name
+            event_log.application = instance.__module__
+            if hasattr(instance, 'guid'):
+                event_log.uuid = instance.guid
 
         event_log.entity = None
         if 'entity' in kwargs:
             event_log.entity = kwargs['entity']
 
-        if not event_log.category:
-            event_log.category = 'application'
-        if not event_log.event_name:
-            event_log.event_name = 'application'
-        if not event_log.event_type:
-            event_log.event_type = 'information'
+        # Application is the name of the app that the event is coming from
+        #
+        # We get the app name via inspecting. Due to our update_perms_and_save util
+        # we must filter out perms as an actual source. This is ok since there are 
+        # no views within perms. - JMO 2012-05-14
+        if 'application' in kwargs:
+            event_log.application = kwargs['application']
+
+        if not event_log.application:
+            event_log.application = inspect.getmodule(stack[1][0]).__name__
+            if event_log.application.split('.')[0] == "perms":
+                event_log.application = inspect.getmodule(stack[2][0]).__name__
+                if event_log.application.split('.')[0] == "perms":
+                    event_log.application = inspect.getmodule(stack[3][0]).__name__
+
+        if event_log.application.split('.')[0] == "plugins":
+            event_log.application = event_log.application.split('.')[1]
+        else:
+            event_log.application = event_log.application.split('.')[0]
+
+        # Action is the name of the view that is being called
+        #
+        # We get it via the stack, but we filter out stacks that are named 
+        # 'save' or 'update_perms_and_save' to avoid getting the incorrect
+        # view. We don't want to miss on a save method override or our own
+        # updating. - JMO 2012-05-14
+        if 'action' in kwargs:
+            event_log.action = kwargs['action']
+        else:
+            event_log.action = stack[1][3]
+            if stack[1][3] == "save":
+                if stack[2][3] == "save" or stack[2][3] == "update_perms_and_save":
+                    if stack[3][3] == "update_perms_and_save":
+                        event_log.action = stack[4][3]
+                    else:
+                        event_log.action = stack[3][3]
+                else:
+                    event_log.action = stack[2][3]
+
+        # If the request is not present in the kwargs, we try to find it
+        # by inspecting the stack. We dive 3 levels if necessary. - JMO 2012-05-14
+        if 'request' in kwargs:
+            request = kwargs['request']
+        else:
+            if 'request' in inspect.getargvalues(stack[1][0]).locals:
+                request = inspect.getargvalues(stack[1][0]).locals['request']
+            elif 'request' in inspect.getargvalues(stack[2][0]).locals:
+                request = inspect.getargvalues(stack[2][0]).locals['request']
+            elif 'request' in inspect.getargvalues(stack[3][0]).locals:
+                request = inspect.getargvalues(stack[3][0]).locals['request']
+
+
+        # If this eventlog is being triggered by something without a request, we
+        # do not want to log it. This is usually some other form of logging
+        # like Contributions or perhaps Versions in the future. - JMO 2012-05-14
+        if not request:
+            return None
+
+        if 'user' in kwargs:
+            user = kwargs['user']
+        else:
+            user = request.user
 
         # set up the user information
         if user:
@@ -219,24 +224,6 @@ class EventLogManager(Manager):
 
             if hasattr(request, 'path'):
                 event_log.url = request.path or ''
-
-        # setup instance information
-        # Source may need to be a required field. The event log reports use source to
-        # generate colors and use the source name on the display.
-        # This will have to move forward when the eventlog ids and changes can
-        # be approved with ED
-        
-        # this if and the if not below can be removed once source is
-        # set to come from the method module name
-        if instance:
-            ct = ContentType.objects.get_for_model(instance)
-            event_log.content_type = ct
-            event_log.object_id = instance.pk
-            event_log.source = ct.app_label
-            event_log.headline = unicode(instance)[:50]
-
-        if not event_log.source:
-            event_log.source = ''
 
         event_log.save()
 

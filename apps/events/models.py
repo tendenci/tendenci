@@ -288,6 +288,7 @@ class RegistrationConfiguration(models.Model):
     enabled = models.BooleanField(_('Enable Registration'), default=False)
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
+    discount_eligible = models.BooleanField(default=True)
 
     # custom reg form
     use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
@@ -326,6 +327,7 @@ class RegConfPricing(models.Model):
     title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
+    display_order = models.IntegerField(default=1, help_text="The pricing will be sorted by this field.")
     
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     

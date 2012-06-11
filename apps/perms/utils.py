@@ -41,7 +41,7 @@ def set_perm_bits(request, form, instance):
     return instance
 
 
-def update_perms_and_save(request, form, instance):
+def update_perms_and_save(request, form, instance, **kwargs):
     """
     Adds object row-level permissions for a model instance
     """
@@ -76,7 +76,7 @@ def update_perms_and_save(request, form, instance):
 
     # save again for indexing purposes
     # TODO: find a better solution, saving twice kinda sux
-    instance.save()
+    instance.save(**kwargs)
 
     return instance
 
@@ -94,87 +94,22 @@ def has_perm(user, perm, obj=None):
     if hasattr(user, 'impersonated_user'):
         if isinstance(user.impersonated_user, User):
             # check the logged in users permissions
-            logged_in_has_perm = user.has_perm(perm, obj)
-            if not logged_in_has_perm:
-                return False
+            if not user.profile.is_superuser:
+                logged_in_has_perm = user.has_perm(perm, obj)
+                if not logged_in_has_perm:
+                    return False
             else:
+                if user.impersonated_user.profile.is_superuser:
+                    return True
                 impersonated_has_perm = user.impersonated_user.has_perm(perm, obj)
                 if not impersonated_has_perm:
                     return False
                 else:
                     return True
     else:
+        if user.profile.is_superuser:
+            return True
         return user.has_perm(perm, obj)
-
-
-def is_member(user):
-    """
-    Test a user instance to see if they have a membership
-    """
-    if not user or user.is_anonymous():
-        return False
-
-    # impersonation
-    user = getattr(user, 'impersonated_user', user)
-
-    if hasattr(user, 'is_member'):
-        return getattr(user, 'is_member')
-    else:
-        try:
-            membership = user.memberships.get_membership()
-            if user.is_active:
-                status = membership.status == 1
-                active = membership.status_detail.lower() == 'active'
-                if all([status, active]):
-                    setattr(user, 'is_member', True)
-                    return True
-        except:
-            setattr(user, 'is_member', False)
-            return False
-
-
-def is_admin(user):
-    if not user or user.is_anonymous():
-        return False
-
-    if hasattr(user, 'impersonated_user'):
-        if isinstance(user.impersonated_user, User):
-            user = user.impersonated_user
-    if hasattr(user, 'is_admin'):
-        return getattr(user, 'is_admin')
-    else:
-        try:
-            profile = user.get_profile()
-        except Profile.DoesNotExist:
-            profile = Profile.objects.create_profile(user=user)
-        if user.is_staff and user.is_active and profile.status == 1 \
-                and profile.status_detail.lower() == 'active':
-            setattr(user, 'is_admin', True)
-            return True
-        else:
-            setattr(user, 'is_admin', False)
-            return False
-
-
-def is_developer(user):
-    if not user or user.is_anonymous():
-        return False
-
-    if hasattr(user, 'is_developer'):
-        return getattr(user, 'is_developer')
-    else:
-        try:
-            profile = user.get_profile()
-        except Profile.DoesNotExist:
-            profile = Profile.objects.create_profile(user=user)
-        if user.is_superuser and user.is_staff and user.is_active \
-                and profile.status == 1 \
-                and profile.status_detail.lower() == 'active':
-            setattr(user, 'is_developer', True)
-            return True
-        else:
-            setattr(user, 'is_developer', False)
-            return False
 
 
 def has_view_perm(user, perm, obj=None):
@@ -191,13 +126,11 @@ def has_view_perm(user, perm, obj=None):
                 return True
             else:
                 return False
-        elif is_developer(user):
-            return True
-        elif is_admin(user) and obj.status:
+        elif user.profile.is_superuser:
             return True
         elif obj.creator_id == user.pk or obj.owner_id == user.pk:
             return True
-        elif is_member(user) and obj.status and obj.status_detail in active_status_details \
+        elif user.profile.is_member and obj.status and obj.status_detail in active_status_details \
                     and (obj.allow_anonymous_view or obj.allow_user_view or obj.allow_member_view):
             return True
         elif obj.status and obj.status_detail in active_status_details \
@@ -227,17 +160,14 @@ def get_query_filters(user, perm, **kwargs):
         anon_filter = (anon_q & status_q & status_detail_q)
         return anon_filter
     else:
-        if is_developer(user):
+        if user.profile.is_superuser:
             return Q()
-        # Uses has_perm instead of has_view_perm since no object is present
-        elif is_admin(user) or has_perm(user, perm):
-            return Q(status=True)
         else:
 
             if '.' in perm and perms_field:
                 group_perm = Q(perms__codename=perm.split(".")[-1])
 
-            if is_member(user):
+            if user.profile.is_member:
                 anon_q = Q(allow_anonymous_view=True)
                 user_q = Q(allow_user_view=True)
                 member_q = Q(allow_member_view=True)

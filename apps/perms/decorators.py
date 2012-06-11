@@ -4,7 +4,6 @@ from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
 
 from base.http import Http403
-from perms.utils import is_admin, is_developer
 
 class PageSecurityCheck(object):
     """
@@ -19,10 +18,10 @@ class PageSecurityCheck(object):
             user_security_level = 'anonymous'
             
             if request.user.is_authenticated():
-                if is_developer(request.user):
-                    user_security_level = 'developer'
-                elif is_admin(request.user):
-                    user_security_level = 'administrator'
+                if request.user.profile.is_superuser:
+                    user_security_level = 'superuser'
+                elif request.user.profile.is_staff:
+                    user_security_level = 'staff'
                 else:
                     user_security_level = 'user'
             
@@ -32,11 +31,11 @@ class PageSecurityCheck(object):
             elif self.page_security_level == 'user':
                 if user_security_level <> 'anonymous':
                     boo = True
-            elif self.page_security_level == 'administrator':
-                if user_security_level == 'administrator' or user_security_level == 'developer':
+            elif self.page_security_level == 'superuser':
+                if user_security_level == 'superuser':
                     boo = True
-            elif self.page_security_level == 'developer':
-                if user_security_level == 'developer':
+            elif self.page_security_level == 'staff':
+                if user_security_level == 'staff':
                     boo = True
                     
             if boo:
@@ -62,7 +61,7 @@ def admin_required(view_method):
     returning method, else raises 403 exception.
     """
     def decorator(request, *args, **kwargs):
-        admin = is_admin(request.user)
+        admin = request.user.profile.is_superuser
 
         if not admin:
             raise Http403

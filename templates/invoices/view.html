@@ -15,7 +15,6 @@
 {% block body %}
 <div class="t">
 {% invoice_nav  invoice %}
-{% is_admin request.user as user_is_admin %}
 {% has_perm request.user invoices.change_invoice as can_edit_invoice %}
 <h1>{% if obj_name %}{{ obj_name|capfirst }}{% endif %} Invoice</h1>
 
@@ -23,7 +22,7 @@
 <address class="invoice-site-address">{{ SITE_GLOBAL_SITEMAILINGADDRESS }}</address>
 {% endif %}
 
-{% if user_is_admin or can_edit_invoice %}
+{% if request.user.is_superuser or can_edit_invoice %}
 <div class="invoice-options">
 	<ul>
 		{% if invoice.is_tendered %}
@@ -41,7 +40,7 @@
 	</ul>
 </div>
 
-{% if user_is_admin or can_edit_invoice %}
+{% if request.user.is_superuser or can_edit_invoice %}
 <div class="invoice-admin-notes">
 	<form method="post" action=".">
 	{% csrf_token %}
@@ -61,7 +60,7 @@
 		{% if object %}
 			<tr>
 				<td>{% trans "Invoice For" %}</td>
-				<td class="td-right">{{ object }}</td>
+				<td class="td-right"><a href="{%  url event.registration_confirmation obj.event.pk obj.pk %}">{{ object }}</a></td>
 			</tr>
 		{% endif %}
 		<tr>

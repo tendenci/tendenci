@@ -10,5 +10,6 @@ urlpatterns = patterns('',
     url(r'^edit/(?P<id>\d+)/$', 'stories.views.edit', name="story.edit"),
     url(r'^upload/(?P<id>\d+)/$', 'stories.views.upload', name="story.upload"),
     url(r'^delete/(?P<id>\d+)/$', 'stories.views.delete', name="story.delete"),
+    url(r'^export/$', 'stories.views.export', name="story.export"),
     url(r'^feed/$', LatestEntriesFeed(), name='story.feed'),
 )

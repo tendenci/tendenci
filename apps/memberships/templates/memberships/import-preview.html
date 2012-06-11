@@ -65,7 +65,7 @@
                 <td>{% trans "Type" %}</td>
                 <td>{% trans "Join Date" %}</td>
                 <td>{% trans "Expire Date" %}</td>
-                <td>{% trans "Skipped" %}</td>
+                <td>{% trans "Action" %}</td>
             </tr>
 
             {% for membership in memberships %}
@@ -84,7 +84,8 @@
                     <td><div>{{ membership.subscribedt|date:"M d, Y" }}</div></td>
                     <td><div>{{ membership.expiredt|date:"M d, Y" }}</div></td>
                     <td><div>
-                        {% if membership.skipped %}{% trans "Yes" %}{% endif %}
+                        {{ membership.status__action }}
+                        {% if membership.status__reason %}: {{ membership.status__reason }}{% endif %}
                     </div></td>
                 </tr>
             {% endfor %}

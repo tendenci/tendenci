@@ -3,8 +3,6 @@
 {% load invoice_tags %}
 {% load i18n %}
 
-{% is_admin request.user as isadmin %}
-
 {% if search_line_display %}
 	{{ search_line_display|safe }}
 {% else %}

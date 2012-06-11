@@ -46,6 +46,7 @@
             {% endif %}
             {% if admin %}
             <li><a href="{% url resume.pending %}">{% trans "Pending Resumes" %}</a></li>
+            <li><a href="{% url resume.export %}">{% trans "Export Resumes" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

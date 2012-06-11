@@ -8,7 +8,7 @@ from emails.forms import EmailForm, AmazonSESVerifyEmailForm
 from emails.models import Email
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import is_admin, has_perm
+from perms.utils import has_perm
 
 @login_required 
 def add(request, form_class=EmailForm, template_name="emails/edit.html"):
@@ -61,7 +61,7 @@ def edit(request, id, form_class=EmailForm, template_name="emails/edit.html"):
         context_instance=RequestContext(request))
     
 def search(request, template_name="emails/search.html"):
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         emails = Email.objects.all()
     else:
         emails = Email.objects.filter(status=True, status_detail='active')
@@ -85,7 +85,7 @@ def delete(request, id, template_name="emails/delete.html"):
 @login_required   
 def amazon_ses_index(request, template_name="emails/amazon_ses/index.html"):
     # admin only
-    if not is_admin(request.user):raise Http403
+    if not request.user.profile.is_superuser:raise Http403
     
     return render_to_response(template_name,
         context_instance=RequestContext(request))
@@ -95,7 +95,7 @@ def amazon_ses_index(request, template_name="emails/amazon_ses/index.html"):
 def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm, 
                             template_name="emails/amazon_ses/verify_email.html"):
     # admin only
-    if not is_admin(request.user):raise Http403
+    if not request.user.profile.is_superuser:raise Http403
 
     from emails.amazon_ses import AmazonSES
     form = form_class(request.POST or None)
@@ -117,7 +117,7 @@ def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm,
 @login_required   
 def amazon_ses_list_verified_emails(request, template_name="emails/amazon_ses/list_verified_emails.html"):
     # admin only
-    if not is_admin(request.user):raise Http403
+    if not request.user.profile.is_superuser:raise Http403
     
     from emails.amazon_ses import AmazonSES
     amazon_ses = AmazonSES()
@@ -132,7 +132,7 @@ def amazon_ses_list_verified_emails(request, template_name="emails/amazon_ses/li
 @login_required    
 def amazon_ses_send_quota(request, template_name="emails/amazon_ses/send_quota.html"):
     # admin only
-    if not is_admin(request.user):raise Http403
+    if not request.user.profile.is_superuser:raise Http403
     
     from emails.amazon_ses import AmazonSES
     amazon_ses = AmazonSES()

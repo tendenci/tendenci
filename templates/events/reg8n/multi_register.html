@@ -21,8 +21,15 @@
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
         <div class="event-price">{{ event_price|format_currency }}</div>
         <div class="event-time">
-            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
-            <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+            {% for span in event.date_spans %}
+            
+                                {% if span.same_date %}
+                                    <div class="line">{{ span.start_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
+                                {% else %}
+                                    <div class="line">{{ span.start_dt|date:"D, M. j" }} - {{ span.end_dt|date:"D, M. j, Y" }}</div>{% if not forloop.last %} and {% endif %}
+                                {% endif %}
+            
+                            {% endfor %} 
         </div>
         <div class="event-msg">
             <strong>{% blocktrans %} Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}

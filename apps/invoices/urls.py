@@ -1,7 +1,8 @@
 from django.conf.urls.defaults import patterns, url, include
 
 urlpatterns = patterns('invoices.views',  
-    url(r'^$', 'search', name="invoices"),                
+    url(r'^$', 'search', name="invoices"),
+    url(r'^export/', 'export', name="invoice.export"),
     url(r'^(?P<id>\d+)/(?P<guid>[\d\w-]+)?$', 'view', name="invoice.view"),
     url(r'^print/(?P<id>\d+)/(?P<guid>[\d\w-]+)?$', 'view',
         {'template_name': 'invoices/print_view.html'}, 

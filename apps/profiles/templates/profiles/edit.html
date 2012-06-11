@@ -21,7 +21,6 @@
 {% block body %}
 {{ block.super }}
 <div class="t">
-{% is_admin request.user as request_user_is_admin %}
 {% users_nav request.user user_this %}
 <div id="t-profile">
 <div id="t-add">
@@ -435,7 +434,7 @@
                       <tr>
                         <td colspan="6" >&nbsp;</td>
                       </tr>
-{% if request_user_is_admin  %}
+{% if request.user.is_superuser  %}
 					<tr>
                      <td colspan="6" ></td>
                    </tr>

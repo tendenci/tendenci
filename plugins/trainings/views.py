@@ -15,7 +15,7 @@ from trainings.forms import CompletionForm
 from perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 
-from perms.utils import is_admin, update_perms_and_save
+from perms.utils import update_perms_and_save
 
 try:
     from notification import models as notification
@@ -41,15 +41,8 @@ def detail(request, pk=None, template_name="trainings/detail.html"):
             user_completion = None
         
         if has_view_perm(request.user, 'trainings.view_training', training):
-            log_defaults = {
-                'event_id' : 1011500,
-                'event_data': '%s (%d) viewed by %s' % (training._meta.object_name, training.pk, request.user),
-                'description': '%s viewed' % training._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': training,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=training)
+
             return render_to_response(template_name, {'training': training, 'completions':completions,'user_completion':user_completion}, 
                 context_instance=RequestContext(request))
         else:
@@ -79,15 +72,8 @@ def search(request, template_name='trainings/search.html'):
                 trainings = trainings.select_related()
             trainings = trainings.order_by('-create_dt')
 
-    EventLog.objects.log(**{
-        'event_id' : 1011400,
-        'event_data': '%s searched by %s' % ('Training', request.user),
-        'description': '%s searched' % 'Training',
-        'user': request.user,
-        'request': request,
-        'source': 'trainings'
-    })
-    
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'trainings':trainings}, 
         context_instance=RequestContext(request))
 
@@ -112,16 +98,6 @@ def completion_add(request, training_pk=None, form_class=CompletionForm, templat
             # update all permissions and save the model
             completion = update_perms_and_save(request, form, completion)
 
-            log_defaults = {
-                'event_id' : 1011150,
-                'event_data': '%s (%d) added by %s' % (completion._meta.object_name, completion.pk, request.user),
-                'description': '%s added' % completion._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': completion,
-            }
-            EventLog.objects.log(**log_defaults)
-            
             messages.add_message(request, messages.SUCCESS, 'Successfully completed %s' % training)
 
             return HttpResponseRedirect(reverse('trainings.detail', args=[training.pk]))
@@ -149,16 +125,6 @@ def completion_edit(request, completion_pk=None, form_class=CompletionForm, temp
             # update all permissions and save the model
             completion = update_perms_and_save(request, form, completion)
 
-            log_defaults = {
-                'event_id' : 1011250,
-                'event_data': '%s (%d) added by %s' % (completion._meta.object_name, completion.pk, request.user),
-                'description': '%s added' % completion._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': completion,
-            }
-            EventLog.objects.log(**log_defaults)
-            
             messages.add_message(request, messages.SUCCESS, 'Successfully edited completion for %s' % training)
 
             return HttpResponseRedirect(reverse('trainings.detail', args=[training.pk]))
@@ -175,16 +141,7 @@ def completion_delete(request, completion_pk=None, template_name="trainings/comp
 
     if has_perm(request.user,'trainings.delete_completion'):
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 1011350,
-                'event_data': '%s (%d) deleted by %s' % (completion._meta.object_name, completion.pk, request.user),
-                'description': '%s deleted' % completion._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': completion,
-            }
-            
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=completion)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted completion for %s' % training)
 
@@ -214,7 +171,9 @@ def completion_report_all(request, template_name="trainings/report-all.html"):
         for user in completions:
             user_completions = Completion.objects.filter(finish_dt__gte=start_dt, finish_dt__lte=end_dt,owner=user['owner']).order_by('-finish_dt')
             all_user_completions.append({'user':user['owner'], 'completions':user_completions})
-    
+
+        EventLog.objects.log()
+
         return render_to_response(template_name, locals(), 
         context_instance=RequestContext(request))
     else:

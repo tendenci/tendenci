@@ -13,5 +13,6 @@ urlpatterns = patterns('',
     url(r'^pending/$', 'resumes.views.pending', name="resume.pending"),
     url(r'^approve/(?P<id>\d+)/$', 'resumes.views.approve', name="resume.approve"),
     url(r'^thank-you/$', 'resumes.views.thank_you', name="resume.thank_you"),
+    url(r'^export/$', 'resumes.views.export', name="resume.export"),
     url(r'^(?P<slug>[\w\-\/]+)/$', 'resumes.views.index', name="resume"),
 )

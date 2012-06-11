@@ -8,8 +8,6 @@
 
 {% endif %}
 
-{% is_admin user as isadmin %}
-
 	<ul id="module-tabs" class="tabs">
 	
     {% if user.is_authenticated %}
@@ -35,7 +33,7 @@
 	            <ul class="dropdown-menu">
 	        {% endif %}
 			
-			{% if isadmin %}
+			{% if request.user.is_superuser %}
 				<li><a href="{% url admin:recurring_payments_recurringpayment_add %}">{% trans "Add" %}</a></li>
 				<li><a href="{% url recurring_payment.customers %}">{% trans "Customers" %}</a></li>
 				<li><a href="{% url admin:recurring_payments_recurringpayment_changelist %}">Admin Backend</a></li>
@@ -47,9 +45,9 @@
 				<ul>
                 <li class="heading">{% trans "This R.P." %}</li>
                 <li class="divider"></li>
-				{% if isadmin or user.id == nav_object.user.id %}
+				{% if request.user.is_superuser or user.id == nav_object.user.id %}
 				<li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %}</a></li>
-				{% if isadmin %}
+				{% if request.user.is_superuser %}
 				<li><a href="{% url admin:recurring_payments_recurringpayment_change nav_object.id %}">{% trans "Edit" %}</a></li>
 				{% endif %}
 				{% if nav_object.status_detail == 'active' %}

@@ -5,27 +5,20 @@ from django.core.urlresolvers import reverse
 
 from base.http import Http403
 from site_settings.utils import get_setting
-from perms.utils import has_perm, is_admin, get_query_filters, has_view_perm
+from perms.utils import has_perm, get_query_filters, has_view_perm
 from event_logs.models import EventLog
 
 from models import ArchitectureProject, Category, BuildingType
 
-def index(request, slug=None, template_name="architecture_projects/view.html"):
+def detail(request, slug=None, template_name="architecture_projects/view.html"):
     if not slug: return HttpResponseRedirect(reverse('architecture_project.search'))
     architecture_project = get_object_or_404(ArchitectureProject, slug=slug)
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()
 
     if has_view_perm(request.user, 'architecture_projects.view_architectureproject', architecture_project):
-        log_defaults = {
-            'event_id' : 1000500,
-            'event_data': '%s (%d) viewed by %s' % (architecture_project._meta.object_name, architecture_project.pk, request.user),
-            'description': '%s viewed' % architecture_project._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': architecture_project,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=architecture_project)
+
         return render_to_response(template_name, {'architecture_project': architecture_project, 'categories': categories, 'building_types': building_types},
             context_instance=RequestContext(request))
     else:
@@ -45,15 +38,7 @@ def search(request, template_name="architecture_projects/search.html"):
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()
 
-    log_defaults = {
-        'event_id' : 1000400,
-        'event_data': '%s searched by %s' % ('Architecture Project', request.user),
-        'description': '%s searched' % 'Architecture Project',
-        'user': request.user,
-        'request': request,
-        'source': 'architecture_projects'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'architecture_projects': architecture_projects, 'categories': categories, 'building_types': building_types},
         context_instance=RequestContext(request))
@@ -68,6 +53,8 @@ def category(request, id, template_name="architecture_projects/search.html"):
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'category':category, 'architecture_projects': architecture_projects, 'categories': categories, 'building_types': building_types}, 
         context_instance=RequestContext(request))
 
@@ -80,6 +67,8 @@ def building_type(request, id, template_name="architecture_projects/search.html"
 
     categories = Category.objects.all()
     building_types = BuildingType.objects.all()
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'building_type':building_type, 'architecture_projects': architecture_projects, 'categories': categories, 'building_types': building_types}, 
         context_instance=RequestContext(request))

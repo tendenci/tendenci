@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User, AnonymousUser
 
-from perms.utils import is_admin, is_member
 from site_settings.utils import get_setting
 from discounts.models import Discount, DiscountUse
 
@@ -66,7 +65,7 @@ def get_available_pricings(event, user):
         status=True,
     )
     
-    if is_admin(user):
+    if user.profile.is_superuser:
         # return all if admin is user
         return pricings
     
@@ -82,11 +81,11 @@ def get_available_pricings(event, user):
                 continue
             
             # Members allowed
-            if price.allow_member and is_member(user):
+            if price.allow_member and user.profile.is_member:
                 continue
             
             # Group members allowed
-            if price.group and price.group.is_member(user):
+            if price.group and price.group.user.profile.is_member:
                 continue
             
             # user failed all permission checks
@@ -219,7 +218,7 @@ def process_registration(reg_form, reg_formset, addon_formset, **kwargs):
         admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
         
     # override event_price to price specified by admin
-    if is_admin(user) and total_price > 0:
+    if user.profile.is_superuser and total_price > 0:
         admin_price = reg_form.cleaned_data['amount_for_admin']
         if admin_price and admin_price != total_price:
             total_price = admin_price

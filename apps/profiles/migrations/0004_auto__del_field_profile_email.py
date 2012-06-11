@@ -1,30 +1,22 @@
 # encoding: utf-8
-from south.v2 import DataMigration
-from django.db import connection, transaction
+import datetime
+from south.db import db
+from south.v2 import SchemaMigration
+from django.db import models
 
-
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        """The query needs to be raw because the Story model
-        overrrode the photo field with a function to reference the
-        original photo field and image field.
-        """
-        story_qs = orm.Story.objects.raw('SELECT id, photo, image_id FROM stories_story')
-        cursor = connection.cursor()
+        
+        # Deleting field 'Profile.email'
+        db.delete_column('profiles_profile', 'email')
 
-        for story in story_qs:
-            if not story.image:
-                story.image = None
-                story.save()
-            if not story.photo:
-                # use SQL because the model does not reference the db field for 'photo'
-                cursor.execute('UPDATE stories_story SET photo=NULL WHERE id=%s' % story.id)
-                transaction.commit_unless_managed()
 
     def backwards(self, orm):
-        """This migration can't be reversed, pass it instead."""
-        pass
+        
+        # Adding field 'Profile.email'
+        db.add_column('profiles_profile', 'email', self.gf('django.db.models.fields.CharField')(default='', max_length=200, blank=True), keep_default=False)
+
 
     models = {
         'auth.group': {
@@ -55,19 +47,6 @@ class Migration(DataMigration):
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'categories.category': {
-            'Meta': {'object_name': 'Category'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'db_index': 'True'})
-        },
-        'categories.categoryitem': {
-            'Meta': {'object_name': 'CategoryItem'},
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'categoryitem_category'", 'null': 'True', 'to': "orm['categories.Category']"}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'categoryitem_parent'", 'null': 'True', 'to': "orm['categories.Category']"})
         },
         'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
@@ -106,31 +85,6 @@ class Migration(DataMigration):
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'website': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'})
         },
-        'files.file': {
-            'Meta': {'object_name': 'File'},
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
-            'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'file_creator'", 'to': "orm['auth.User']"}),
-            'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'file': ('django.db.models.fields.files.FileField', [], {'max_length': '260'}),
-            'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'object_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'file_owner'", 'to': "orm['auth.User']"}),
-            'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
-            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
-        },
         'perms.objectpermission': {
             'Meta': {'object_name': 'ObjectPermission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -141,39 +95,75 @@ class Migration(DataMigration):
             'object_id': ('django.db.models.fields.IntegerField', [], {}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
         },
-        'stories.story': {
-            'Meta': {'object_name': 'Story'},
+        'profiles.profile': {
+            'Meta': {'object_name': 'Profile'},
+            'address': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
+            'address2': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '100', 'blank': 'True'}),
+            'address_type': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'admin_notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'agreed_to_tos': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'content': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'city': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'company': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'country': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'county': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'story_creator'", 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'profile_creator'", 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True'}),
-            'expires': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'full_story_link': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'department': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'direct_mail': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'display_name': ('django.db.models.fields.CharField', [], {'max_length': '120', 'blank': 'True'}),
+            'dob': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'education': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'email2': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True', 'blank': 'True'}),
+            'exported': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'fax': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'first_responder': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
+            'hide_address': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'hide_email': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'hide_in_search': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'hide_phone': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'historical_member_number': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'home_phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['stories.StoryPhoto']", 'null': 'True'}),
-            'ncsortorder': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'story_owner'", 'to': "orm['auth.User']"}),
+            'initials': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '10'}),
+            'mailing_name': ('django.db.models.fields.CharField', [], {'max_length': '120', 'blank': 'True'}),
+            'member_number': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'mobile_phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'original_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'profile_owner'", 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'phone2': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'pl_id': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'position_assignment': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'position_title': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'referral_source': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'remember_login': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'salutation': ('django.db.models.fields.CharField', [], {'max_length': '15', 'blank': 'True'}),
+            'sex': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'spouse': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'ssn': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'state': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
-            'syndicate': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'tags': ('tagging.fields.TagField', [], {'default': "''"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
-        },
-        'stories.storyphoto': {
-            'Meta': {'object_name': 'StoryPhoto', '_ormbases': ['files.File']},
-            'file_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['files.File']", 'unique': 'True', 'primary_key': 'True'})
+            'student': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'time_zone': ('timezones.fields.TimeZoneField', [], {'default': "'US/Central'", 'max_length': '100'}),
+            'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'url': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'url2': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'profile'", 'unique': 'True', 'to': "orm['auth.User']"}),
+            'work_phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
+            'zipcode': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
         },
         'user_groups.group': {
             'Meta': {'object_name': 'Group'},
@@ -228,4 +218,4 @@ class Migration(DataMigration):
         }
     }
 
-    complete_apps = ['stories']
+    complete_apps = ['profiles']

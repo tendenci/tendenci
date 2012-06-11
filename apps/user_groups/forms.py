@@ -6,7 +6,6 @@ from django.contrib.auth.models import Permission
 from user_groups.models import Group, GroupMembership
 from user_groups.utils import member_choices
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin
 
 
 class GroupAdminForm(TendenciBaseForm):
@@ -103,7 +102,7 @@ class GroupForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')               
 

@@ -6,7 +6,6 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 
 from haystack.query import SearchQuerySet
-from perms.utils import is_admin
 from perms.managers import TendenciBaseManager
 
 
@@ -47,7 +46,7 @@ class EventManager(TendenciBaseManager):
         groups = []
         if user and user.is_authenticated():
             groups = [g.pk for g in user.group_set.all()]
-        admin = is_admin(user)
+        admin = user.profile.is_superuser
         
         # permission filters
         if user:

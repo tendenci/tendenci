@@ -5,7 +5,6 @@ from os.path import splitext, basename
 from django import forms
 
 from tinymce.widgets import TinyMCE
-from perms.utils import is_admin, is_developer
 from perms.forms import TendenciBaseForm
 from base.fields import SplitDateTimeField
 from django.utils.translation import ugettext_lazy as _
@@ -158,7 +157,7 @@ class DirectoryForm(TendenciBaseForm):
         super(DirectoryForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
-            if is_admin(self.user):
+            if self.user.profile.is_superuser:
                 self.fields['status_detail'].choices = (('active','Active'),
                                                         ('inactive','Inactive'), 
                                                         ('pending','Pending'),
@@ -171,12 +170,9 @@ class DirectoryForm(TendenciBaseForm):
         else:
             self.fields.pop('remove_photo')
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-
-        if not is_developer(self.user):
-            if 'status' in self.fields: self.fields.pop('status')
 
         if self.fields.has_key('payment_method'):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
@@ -185,7 +181,7 @@ class DirectoryForm(TendenciBaseForm):
         
         # expiration_dt = activation_dt + requested_duration
         fields_to_pop = ['expiration_dt']    
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             fields_to_pop += [
                 'slug',
                 'entity',
@@ -198,11 +194,6 @@ class DirectoryForm(TendenciBaseForm):
                 'syndicate',
                 'status',
                 'status_detail'
-            ]
-
-        if not is_developer(self.user):
-            fields_to_pop += [
-               'status'
             ]
 
         for f in list(set(fields_to_pop)):
@@ -234,7 +225,7 @@ class DirectoryPricingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(DirectoryPricingForm, self).__init__(*args, **kwargs)
-        if user and is_admin(user):
+        if user and user.profile.is_superuser:
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=ADMIN_DURATION_CHOICES)
         else:
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)

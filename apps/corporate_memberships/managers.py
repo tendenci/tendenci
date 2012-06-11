@@ -10,7 +10,6 @@ class CorporateMembershipManager(Manager):
         Returns a SearchQuerySet
         """
         from corporate_memberships.models import CorporateMembership
-        from perms.utils import is_admin
 
         sqs = SearchQuerySet().models(CorporateMembership)
 

@@ -11,7 +11,7 @@ from site_settings.utils import get_setting
 from base.http import Http403
 from base.utils import tcurrency
 from event_logs.models import EventLog
-from perms.utils import get_notice_recipients, is_admin
+from perms.utils import get_notice_recipients
 from perms.utils import has_perm
 from base.utils import get_unique_username
 from profiles.models import Profile
@@ -85,34 +85,12 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             # updated the invoice_id for mp, so save again
             donation.save(user)
             
-            if is_admin(request.user): 
+            if request.user.profile.is_superuser: 
                 if donation.payment_method in ['paid - check', 'paid - cc']:
                     # the admin accepted payment - mark the invoice paid
                     invoice.tender(request.user)
                     invoice.make_payment(request.user, donation.donation_amount)
-            
-            # log an event for invoice add
-            log_defaults = {
-                'event_id' : 311000,
-                'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
-                'description': '%s added' % invoice._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': invoice,
-            }
-            EventLog.objects.log(**log_defaults)  
-            
-            # log an event for donation add
-            log_defaults = {
-                'event_id' : 511000,
-                'event_data': '%s (%d) added by %s' % (donation._meta.object_name, donation.pk, request.user),
-                'description': '%s added' % donation._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': donation,
-            }
-            EventLog.objects.log(**log_defaults)
-            
+
             # send notification to administrators
             # get admin notice recipients
             if not donation.payment_method.lower() in ['cc', 'credit card']:
@@ -131,7 +109,9 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
             email_receipt = form.cleaned_data['email_receipt']
             if email_receipt:
                 donation_email_user(request, donation, invoice)
-            
+
+            EventLog.objects.log(instance=donation)
+
             # redirect to online payment or confirmation page
             if donation.payment_method.lower() in ['cc', 'credit card']:
                 return HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
@@ -147,22 +127,28 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
         context_instance=RequestContext(request))
     
 def add_confirm(request, id, template_name="donations/add_confirm.html"):
+    donation = get_object_or_404(Donation, pk=id)
+    EventLog.objects.log(instance=donation)
     return render_to_response(template_name, context_instance=RequestContext(request))
 
 @login_required
-def view(request, id=None, template_name="donations/view.html"):
+def detail(request, id=None, template_name="donations/view.html"):
     donation = get_object_or_404(Donation, pk=id)
     if not has_perm(request.user,'donations.view_donation'): raise Http403
-    
+
+    EventLog.objects.log(instance=donation)
+
     donation.donation_amount = tcurrency(donation.donation_amount)
     return render_to_response(template_name, {'donation':donation}, 
         context_instance=RequestContext(request))
     
 def receipt(request, id, guid, template_name="donations/receipt.html"):
     donation = get_object_or_404(Donation, pk=id, guid=guid)
-    
+
     donation.donation_amount = tcurrency(donation.donation_amount)
-    
+
+    EventLog.objects.log(instance=donation)
+
     if (not donation.invoice) or donation.invoice.balance > 0 or (not donation.invoice.is_tendered):
         template_name="donations/view.html"
     return render_to_response(template_name, {'donation':donation}, 
@@ -176,18 +162,7 @@ def search(request, template_name="donations/search.html"):
     else:
         donations = Donation.objects.all()
 
-    log_defaults = {
-        'event_id' : 514000,
-        'event_data': '%s searched by %s' % ('Donation', request.user),
-        'description': '%s searched' % 'Donation',
-        'user': request.user,
-        'request': request,
-        'source': 'donations'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'donations':donations}, 
         context_instance=RequestContext(request))
-    
-    
-    

@@ -17,7 +17,7 @@ from events.models import (Event, Place, Speaker, Organizer,
     CustomRegForm, Addon, AddonOption)
 from events.forms import FormForCustomRegForm
 from user_groups.models import Group
-from perms.utils import is_member, is_admin, get_query_filters
+from perms.utils import get_query_filters
 from discounts.models import Discount, DiscountUse
 
 try:
@@ -696,6 +696,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
             'amount': price.price,
             'qualifies': qualifies,
             'failure_type': failure_type,
+            'display_order': price.display_order
         }
     else:
         if now >= price.start_dt and now <= price.end_dt:
@@ -704,6 +705,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
                 'amount': price.price,
                 'qualifies': qualifies,
                 'failure_type': failure_type,
+                'display_order': price.display_order
             }
         else:
             pricing = {}
@@ -744,7 +746,7 @@ def get_pricing(user, event, pricing=None):
         
         # Admins are always true
         # This should always be at the top of this code
-        if is_admin(user):
+        if user.profile.is_superuser:
             qualifies = True
             pricing_list.append(gen_pricing_dict(
                price, 
@@ -777,7 +779,7 @@ def get_pricing(user, event, pricing=None):
 
         # Admin only price
         if not any([price.allow_user, price.allow_anonymous, price.allow_member, price.group]):
-            if not is_admin(user):
+            if not user.profile.is_superuser:
                 continue      
 
         # User permissions
@@ -794,7 +796,7 @@ def get_pricing(user, event, pricing=None):
         if price.group and price.allow_member:
             qualifies = False
             
-            if price.group.is_member(user) or is_member(user):
+            if price.group.user.profile.is_member or user.profile.is_member:
                 qualifies = True            
                 pricing_list.append(gen_pricing_dict(
                    price, 
@@ -804,7 +806,7 @@ def get_pricing(user, event, pricing=None):
                 continue
 
         # Group permissions
-        if price.group and not price.group.is_member(user):
+        if price.group and not price.group.user.profile.is_member:
             qualifies = False
             pricing_list.append(gen_pricing_dict(
                price, 
@@ -814,7 +816,7 @@ def get_pricing(user, event, pricing=None):
             continue
 
         # Member permissions
-        if price.allow_member and not is_member(user):
+        if price.allow_member and not user.profile.is_member:
             qualifies = False
             pricing_list.append(gen_pricing_dict(
                price, 
@@ -839,7 +841,7 @@ def get_pricing(user, event, pricing=None):
     if pricing_list:
         sorted_pricing_list = sorted(
             pricing_list, 
-            key=lambda k: k['amount']
+            key=lambda k:( k['display_order'], k['amount'])
         )
 
         # set a default pricing on the first
@@ -947,7 +949,7 @@ def clean_price(price, user):
     price = RegConfPricing.objects.get(pk=price_pk, status=True)
     amount = Decimal(str(amount))
     
-    if amount != price.price and not is_admin(user):
+    if amount != price.price and not user.profile.is_superuser:
         raise ValueError("Invalid price amount")
     
     return price, price_pk, amount

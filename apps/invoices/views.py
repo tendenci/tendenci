@@ -1,14 +1,16 @@
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.conf import settings
 
 from base.http import Http403
 from theme.shortcuts import themed_response as render_to_response
-from perms.utils import is_admin, has_perm
+from perms.utils import has_perm
 from event_logs.models import EventLog
 from notification.utils import send_notifications
 from site_settings.utils import get_setting
+from exports.utils import run_export_task
 
 from invoices.models import Invoice
 from invoices.forms import AdminNotesForm, AdminAdjustForm
@@ -19,7 +21,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
 
     if not invoice.allow_view_by(request.user, guid): raise Http403
     
-    if is_admin(request.user) or has_perm(request.user, 'invoices.change_invoice'):
+    if request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice'):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
@@ -72,7 +74,7 @@ def search(request, template_name="invoices/search.html"):
         invoices = Invoice.objects.all()
         if bill_to_email:
             invoices = invoices.filter(bill_to_email=bill_to_email)
-    if is_admin(request.user) or has_perm(request.user, 'invoices.view_invoice'):
+    if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
         if request.user.is_authenticated():
@@ -90,7 +92,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     original_total = invoice.total
     original_balance = invoice.balance
 
-    if not (is_admin(request.user) or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
     
     if request.method == "POST":
         form = form_class(request.POST, instance=invoice)
@@ -152,7 +154,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
     
-    if not (is_admin(request.user) or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
     
     from accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)
@@ -183,4 +185,90 @@ def detail(request, id, template_name="invoices/detail.html"):
                                               'total_credit':total_credit}, 
                                               context_instance=RequestContext(request))
     
+@login_required
+def export(request, template_name="invoices/export.html"):
+    """Export Invoices"""
     
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "invoices.csv"
+        fields = [
+            'guid',
+            'object_type',
+            'title',
+            'tender_date',
+            'bill_to',
+            'bill_to_first_name',
+            'bill_to_last_name',
+            'bill_to_company',
+            'bill_to_address',
+            'bill_to_city',
+            'bill_to_state',
+            'bill_to_zip_code',
+            'bill_to_country',
+            'bill_to_phone',
+            'bill_to_fax',
+            'bill_to_email',
+            'ship_to',
+            'ship_to_first_name',
+            'ship_to_last_name',
+            'ship_to_company',
+            'ship_to_address',
+            'ship_to_city',
+            'ship_to_state',
+            'ship_to_zip_code',
+            'ship_to_country',
+            'ship_to_phone',
+            'ship_to_fax',
+            'ship_to_email',
+            'ship_to_address_type',
+            'receipt',
+            'gift',
+            'arrival_date_time',
+            'greeting',
+            'instructions',
+            'po',
+            'terms',
+            'due_date',
+            'ship_date',
+            'ship_via',
+            'fob',
+            'project',
+            'other',
+            'message',
+            'subtotal',
+            'shipping',
+            'shipping_surcharge',
+            'box_and_packing',
+            'tax_exempt',
+            'tax_exemptid',
+            'tax_rate',
+            'taxable',
+            'tax',
+            'variance',
+            'total',
+            'payments_credits',
+            'balance',
+            'estimate',
+            'disclaimer',
+            'variance_notes',
+            'admin_notes',
+            'create_dt',
+            'update_dt',
+            'creator',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status_detail',
+            'status',
+        ]
+        
+        export_id = run_export_task('invoices', 'invoice', fields)
+        
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

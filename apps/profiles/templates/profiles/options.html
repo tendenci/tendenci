@@ -5,18 +5,11 @@
 <div class="t-iconrow">
 {% get_or_create_profile_for user_this as "user_this_profile" %}
 {% assign can_edit_user user_this_profile|args:request.user|call:'allow_edit_by' %}
-{% is_admin user_this as admin %}
-{% is_admin request.user as viewer_admin %}
 
     {% if user_this.id %}
         {% if can_edit_user %} 
-            {% is_developer user_this as developer %}
-            {% if developer %}
-                <span class="copyright body-copy-alerts"><em>{% trans "DEVELOPER" %}</em></span>
-            {% else %}
-                {% if admin %}
-                <span class="copyright body-copy-alerts"><em>{% trans "ADMINISTRATOR" %}</em></span>
-                {% endif %}
+            {% if user_this.profile.is_superuser %}
+                <span class="copyright body-copy-alerts"><em>{% trans "Superuser" %}</em></span>
             {% endif %}
             {% if profile.status == 0 %}
                 <a href="{% url profile.edit user_this.id %}" title="Inactive" class="t-statusdetail"
@@ -51,7 +44,7 @@
                 <li>
                  <a href="{% url auth_password_change user_this.id %}" class="changepassword" title=="Change Password">{% trans "Change Password" %}</a>
                 </li> 
-                {% if viewer_admin %}
+                {% if request.user.is_superuser %}
                 <li>
                 <a href="{% url profile.edit_perms user_this.id %}" class="permissions" title=="Edit Permissions">{% trans "Permissions" %}</a>
                 </li>

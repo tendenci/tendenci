@@ -17,17 +17,18 @@
 
 {% block body %}
 <div class="t">
-<div class="entry-edit">
+{% membership_nav request.user %}
+<div class="entry-wrap">
     
     <h1>{{ entry.app.name }} {% if entry.is_renewal %}{% trans "Renewal" %}{% else %}{% trans "Submission" %}{% endif %}</h1>
-
+    <div>
     <form action="" method="post">
-    <div class="forms">
-        {% csrf_token %}
+    <div class="forms">{% csrf_token %}
         {{ form|styled_form }}
         <input type="submit" value="Save Changes" />
     </div>
     </form>
+    </div>
 </div>
 </div>
 {% endblock %}

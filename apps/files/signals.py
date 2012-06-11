@@ -1,10 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
+from perms.object_perms import ObjectPermission
 from django.db.models import signals
 from files.models import File
 
-def save_files(sender, **kwargs):
-    from django.contrib.sessions.models import Session
 
+def save_files(sender, **kwargs):
     # get content type and instance
     content_type = ContentType.objects.get_for_model(sender)
     instance = kwargs['instance']
@@ -13,8 +13,10 @@ def save_files(sender, **kwargs):
     coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
     files = orphaned_files + coupled_files
 
+    file_ct = ContentType.objects.get_for_model(File)
+
     perm_attrs = []
-    if 'tendencibasemodel' in [s._meta.module_name for s in sender.__bases__ if hasattr(s,'_meta')]:
+    if 'tendencibasemodel' in [s._meta.module_name for s in sender.__bases__ if hasattr(s, '_meta')]:
         # if model (aka sender) inherits from TendenciBaseModel
         perm_attrs = [
             'allow_anonymous_view',
@@ -32,12 +34,30 @@ def save_files(sender, **kwargs):
         if not file.object_id:  # pick up orphans
             file.object_id = instance.pk
 
+        # remove all group permissions on file
+        ObjectPermission.objects.filter(
+            content_type=file_ct, object_id=file.pk, group__isnull=False).delete()
+
+        # get all instance permissions [for copying]
+        instance_perms = ObjectPermission.objects.filter(
+            content_type=content_type, object_id=instance.pk, group__isnull=False
+        )
+
+        # copy instance group permissions to file
+        for file_perm in instance_perms:
+            file_perm.pk = None
+            file_perm.content_type = file_ct
+            file_perm.object_id = file.pk
+            file_perm.codename = '%s_%s' % (file_perm.codename.split('_')[0], 'file')
+            file_perm.save()
+
+        # copy permission attributes
         for attr in perm_attrs:
             # example: file.status = instance.status
             setattr(file, attr, getattr(instance, attr))
-        file.name = file.file.path.split('/')[-1]
 
         file.save()
+
 
 def delete_files(sender, **kwargs):
     from files.models import File
@@ -45,7 +65,7 @@ def delete_files(sender, **kwargs):
     content_type = ContentType.objects.get_for_model(sender)
     instance = kwargs['instance']
     # get orphaned images (images not coupled with application)
-    files = File.objects.filter(content_type=content_type, object_id = instance.id)
+    files = File.objects.filter(content_type=content_type, object_id=instance.id)
     # loop through media files and delete
     for file in files:
         file.delete()

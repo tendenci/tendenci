@@ -22,14 +22,18 @@
     <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "Users Search" %}{% else %}{% trans "Users List" %}{% endif %}</h1>
     {{ MODULE_USERS_USERSEARCHSTATEMENT }}
     {% profile_search %}
-    <span><em>{{ profiles|length }} {% trans "Users" %} {% trans "Found" %}</em></span>
+    {% if profiles %}
+        <span><em>{{ profiles|length }} {% trans "Users" %} {% trans "Found" %}</em></span>
+    {% else %}
+        <span>{% trans "Hmm.. didn't find anything."%} <a href="{% url haystack_search %}?q={{ request.GET.q}}">{% blocktrans %}Try the power search</a>.{% endblocktrans %}</span>
+    {% endif %}
     {% autopaginate profiles 10 %}
 
     <div class="profiles-wrap">
     {% for profile in profiles %}
         {% search_result profile %}
     {% empty %}
-
+        
     {% endfor %}
     </div>
 

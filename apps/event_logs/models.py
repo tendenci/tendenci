@@ -1,4 +1,3 @@
-import uuid
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
@@ -9,7 +8,7 @@ from robots.models import Robot
 from event_logs.colors import get_color
 
 class EventLog(models.Model):
-    guid = models.CharField(max_length=40) 
+    guid = models.CharField(max_length=40)
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.IntegerField(null=True)
     source = models.CharField(max_length=50, null=True)
@@ -35,6 +34,11 @@ class EventLog(models.Model):
     robot = models.ForeignKey(Robot, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     
+    uuid = models.CharField(max_length=40)
+    application = models.CharField(max_length=50)
+    action = models.CharField(max_length=50)
+    model_name = models.CharField(max_length=75)
+    
     objects = EventLogManager()
 
     class Meta:
@@ -46,12 +50,6 @@ class EventLog(models.Model):
     def get_absolute_url(self):
         return ('event_log', [self.pk])
     get_absolute_url = models.permalink(get_absolute_url)
-
-    def save(self):
-        if not self.id:
-            self.guid = uuid.uuid1()
-
-        super(EventLog, self).save()
 
     def __unicode__(self):
         return str(self.event_id)

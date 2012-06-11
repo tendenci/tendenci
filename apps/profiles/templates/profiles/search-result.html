@@ -1,21 +1,24 @@
 {% load avatar_tags %}
 {% load profile_tags %}
+{% load profile_filters %}
 {% load perm_tags %}
 {% load base_filters %}
 {% load i18n %}
 
-{% if profile.user %}
+{% if profile.user_id %}
 <div class="wrap-search-item">
 <div class="profile-wrap">
     <h2>
-        <a href="{% url profiles.views.index profile.user.username %}">{{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{ profile.user.username }})</a>
+        <a href="{{ profile.get_absolute_url }}">{{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{ profile.user.username }})</a> 	
+        {% if profile.is_member %}
+        <span style="font-size: 12px;">Member</span> <!-- replace with Icon -->
+        {% endif %}
     </h2>
+    
     <div class="clear-right"></div>
 
     <div class="profile-avatar-left" style="float: left; padding-right:1em;">
-    {% if user_this %}
-        {% avatar user_this 56 %}
-    {% endif %}
+        {% avatar profile.user 56 %}
     </div>
 
 
@@ -30,8 +33,16 @@
         <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
         {% endif %}
     </div>
-
-    <div class="clear-left" style="clear: left;"></div>
+		{% if profile.is_member %}
+        	{% if profile|allow_edit_by:user %}
+            	<div style="float: right;">
+            	<span class="member-icon">Member ID: {{ profile.member_number }}</span>
+            	</div>
+        	{% endif %}
+            
+    	{% endif %}
+    	
+    <div class="clear"></div>
 
 </div>
 {% include 'profiles/meta.html' %}

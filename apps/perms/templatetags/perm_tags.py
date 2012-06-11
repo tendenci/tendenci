@@ -5,6 +5,7 @@ from perms.fields import groups_with_perms
 
 register = Library()
 
+
 class HasPermNode(Node):
     def __init__(self, user, perm, object=None, context_var=None):
         self.perm = perm
@@ -14,17 +15,18 @@ class HasPermNode(Node):
             self.object = Variable(object)
         else:
             self.object = object
+
     def render(self, context):
         if not self.user and not self.perm:
             return False
-        
+
         has_perm = False
         user = self.user.resolve(context)
 
         if isinstance(user, User):
 
             # return true for admins
-            if utils.is_admin(user):
+            if user.profile.is_superuser:
                 has_perm = True
             else:
                 if self.object:
@@ -39,99 +41,117 @@ class HasPermNode(Node):
         else:
             return has_perm
 
+
 @register.tag
 def has_perm(parser, token):
     """
         {% has_perm user perm instance as context}
         {% has_perm user perm as context}
     """
-    bits  = token.split_contents()
-    
-    try: user = bits[1]
-    except: user = None
-    
-    try: perm = bits[2]
-    except: perm = None
-        
-    try: object = bits[3]
-    except: object = None
-    
+    bits = token.split_contents()
+
+    try:
+        user = bits[1]
+    except:
+        user = None
+
+    try:
+        perm = bits[2]
+    except:
+        perm = None
+
+    try:
+        object = bits[3]
+    except:
+        object = None
+
     if object == 'as':
         object = None
-        try: context_var = bits[4]
-        except: context_var = None
+        try:
+            context_var = bits[4]
+        except:
+            context_var = None
     else:
         try: context_var = bits[5]
         except: context_var = None
-    
+
     return HasPermNode(user, perm, object, context_var=context_var)
+
 
 class IsAdminNode(Node):
     def __init__(self, user, context_var):
         self.user = user
         self.var_name = context_var
-        
+
     def resolve(self, var, context):
         return Variable(var).resolve(context)
-        
+
     def render(self, context):
         user = self.resolve(self.user, context)
 
         if isinstance(user, User):
-            is_admin = utils.is_admin(user)
+            is_superuser = user.profile.is_superuser
         else:
-            is_admin= False
-    
+            is_superuser = False
+
         if self.var_name:
-            context[self.var_name] = is_admin
+            context[self.var_name] = is_superuser
             return ""
         else:
-            return is_admin
+            return is_superuser
+
 
 @register.tag
 def is_admin(parser, token):
     """
         {% is_admin user as context %}
-        {% is_admin user as context %}
+        This has been deprecated in favor of request.user.is_superuser
     """
-    bits  = token.split_contents()
-    
-    try: user = bits[1]
-    except: user = None
-    
+    import warnings
+    warnings.warn('stop using is_admin, please use user.is_superuser', DeprecationWarning)
+
+    bits = token.split_contents()
+
+    try:
+        user = bits[1]
+    except:
+        user = None
+
     if len(bits) >= 4:
         context_var = bits[3]
     else:
         context_var = None
     return IsAdminNode(user, context_var=context_var)
 
+
 class IsDeveloperNode(Node):
     def __init__(self, user, context_var):
         self.user = user
         self.var_name = context_var
-        
+
     def resolve(self, var, context):
         return Variable(var).resolve(context)
-        
+
     def render(self, context):
         user = self.resolve(self.user, context)
-        
+
         if isinstance(user, User):
-            is_developer = utils.is_developer(user)
+            is_superuser = user.profile.is_superuser
         else:
-            is_developer= False
-    
+            is_superuser = False
+
         if self.var_name:
-            context[self.var_name] = is_developer
+            context[self.var_name] = is_superuser
             return ""
         else:
-            return is_developer
+            return is_superuser
 
 @register.tag
 def is_developer(parser, token):
     """
         {% is_developer user as context %}
-        {% is_developer user as context %}
+
+        This has been deprecated in favor of request.user.is_superuser
     """
     bits  = token.split_contents()
    

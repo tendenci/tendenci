@@ -8,7 +8,6 @@ from django.contrib.auth.models import User, AnonymousUser
 
 from captcha.fields import CaptchaField
 from discounts.models import Discount
-from perms.utils import is_admin
 from site_settings.utils import get_setting
 
 from events.models import Addon, AddonOption, RegAddon, RegAddonOption

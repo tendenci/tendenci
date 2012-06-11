@@ -4,7 +4,6 @@
 {% load base_filters %}
 {% load perm_tags %}
 {% load i18n %}
-{% is_admin user as admin %}
 
 {% block title %}{% trans "Membership Application Print View for" %} {{ entry.name }}{% endblock %}
 {% block meta_description %}{{ entry.get_description }}{% endblock %}
