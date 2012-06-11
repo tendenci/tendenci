@@ -59,8 +59,8 @@ function updateFormHeader(this_form, prefix, idx){
 
     var reg_header = $(this_form).find('.registrant-header');
     if (reg_header) {
-        $(reg_header).parent().children('div:last').hide();
-        $(reg_header).children('span.showhide').text('+ ');
+        $(reg_header).parent().children('div:last').show();
+        $(reg_header).children('span.showhide').text('- ');
         var ic = $(reg_header).find('.item-counter');
         if (ic) {
             $(ic).html(idx);}
