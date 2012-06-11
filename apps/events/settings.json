@@ -117,6 +117,23 @@
         "scope_category": "events", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "open", 
+        "description": "This setting controls how people can register for your events. Choose one of the following options: <br /><br /> <strong>1. Open</strong> - Allows people registering for events to choose any price for themselves and their guests.<br /><strong>2. Validated</strong> - Allows people to see all prices when registering, but they will need to enter a valid email address for each price to check that they qualify. They do not have to be logged in, and they can register guests using the guests' email addresses.<br /><strong>3. Strict</strong> - Requires people to be logged in to select prices that are restricted to groups or members. Registrants will only be able to pick public prices for their guests.", 
+        "data_type": "string", 
+        "update_dt": "2012-06-01 15:10:11", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "anonymousregistration", 
+        "value": "open", 
+        "label": "Anonymous Event Registration", 
+        "input_value": "open,validated, strict", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "events", 
+        "store": true, 
+        "updated_by": ""
     }
 
 ]
