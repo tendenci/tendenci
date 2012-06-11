@@ -938,7 +938,7 @@ def register(request, event_id=0,
     event.is_table = is_table
     
     
-    event.honor_system = reg_conf.honor_system
+    event.require_guests_info = reg_conf.require_guests_info
     
     if is_table and pricing_id:
         pricing = get_object_or_404(RegConfPricing, pk=pricing_id)

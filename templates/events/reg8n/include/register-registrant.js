@@ -77,7 +77,7 @@ function addRegistrant(ele, prefix, price) {
     // remove the error
     $(row).find('div.error').remove();
     
-    {% if event.honor_system or not custom_reg_form.validate_guest %}
+    {% if not event.require_guests_info  %}
     // remove required att
     $(row).find('div.label').removeClass("required");
     {% endif %}

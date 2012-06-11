@@ -131,7 +131,7 @@ class FormForCustomRegForm(forms.ModelForm):
         if self.event:
             reg_conf=self.event.registration_configuration   
             # make the fields in the subsequent forms as not required
-            if reg_conf.honor_system or not self.custom_reg_form.validate_guest:
+            if not reg_conf.require_guests_info:
                 if self.form_index and self.form_index > 0:
                     for key in self.fields.keys():
                         self.fields[key].required = False
@@ -720,7 +720,7 @@ class Reg8nEditForm(BetterModelForm):
             'limit',
             'payment_method',
             'payment_required',
-            'honor_system',
+            'require_guests_info',
             'discount_eligible',
             'use_custom_reg',
         )
@@ -730,7 +730,7 @@ class Reg8nEditForm(BetterModelForm):
                     'limit',
                     'payment_method',
                     'payment_required',
-                    'honor_system',
+                    'require_guests_info',
                     'discount_eligible',
                     'use_custom_reg'
                     ],
@@ -1032,7 +1032,7 @@ class RegistrantForm(forms.Form):
         
         reg_conf=self.event.registration_configuration
         # make the fields in the subsequent forms as not required
-        if reg_conf.honor_system:
+        if not reg_conf.require_guests_info:
             if self.form_index and self.form_index > 0:
                 for key in self.fields.keys():
                     self.fields[key].required = False
