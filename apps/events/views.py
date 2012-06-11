@@ -177,7 +177,7 @@ def search(request, redirect=False, template_name="events/search.html"):
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
         if event_type:
-            events = events.filter(type__slug=event_type, end_dt__gte=start_dt, start_dt__lte=start_dt)
+            events = events.filter(type__slug=event_type, end_dt__gte=start_dt)
         else:
             events = events.filter(start_dt__gte=start_dt)
         if request.user.is_authenticated():
