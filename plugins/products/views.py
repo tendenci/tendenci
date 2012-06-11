@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.contrib.contenttypes.models import ContentType
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
 from base.http import Http403
@@ -42,11 +43,28 @@ def search(request, template_name="products/search.html"):
     Searches products according to the query string, category
     dropdown and formulation dropdown.
     """
-    form = ProductSearchForm(request.GET)
+    app_label = Product._meta.app_label
+    model_name = Product._meta.module_name
+    # get the content type
+    try: content_type = ContentType.objects.get(app_label=app_label,model=model_name)
+    except: raise Http404
+    
+    
+    form = ProductSearchForm(content_type, request.GET)
     if form.is_valid():
-		query = form.cleaned_data['q']
-		category = form.cleaned_data['category']
-		formulation = form.cleaned_data['formulation']
+        query = form.cleaned_data['q']
+        category = form.cleaned_data['category']
+        sub_category = form.cleaned_data['sub_category']
+        formulation = form.cleaned_data['formulation']
+    else:
+        print 'errors', form.errors
+    
+    if category:
+        query = query + ' category:' + category
+    if sub_category:
+        query = query + ' sub_category:' + sub_category
+    print 'query', query
+    
     
     if get_setting('site', 'global', 'searchindex') and query:
         products = Product.objects.search(query, user=request.user)
@@ -55,11 +73,9 @@ def search(request, template_name="products/search.html"):
         products = Product.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             products = products.select_related()
-            
-    if category:
-        products = products.filter(category=category)
+    
     if formulation:
-		products = products.filter(formulation=formulation)
+        products = products.filter(formulation=formulation)
 
     products = products.order_by('-create_dt')
 

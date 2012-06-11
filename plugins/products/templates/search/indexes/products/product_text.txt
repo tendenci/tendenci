@@ -18,3 +18,15 @@
 {{ object.use_sites }}
 {{ object.product_label }}
 {{ object.state_registered }}
+
+{% with object.category_set as obj_cats %}
+{% if obj_cats.category %}
+category:{{ obj_cats.category }}
+category:{{ obj_cats.category.pk }}
+{% endif %}
+
+{% if obj_cats.sub_category %}
+sub_category:{{ obj_cats.sub_category }}
+sub_category:{{ obj_cats.sub_category.pk }}
+{% endif %}
+{% endwith %}

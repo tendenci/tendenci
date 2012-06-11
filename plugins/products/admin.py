@@ -2,12 +2,16 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
 from django.conf import settings
+from django.contrib.contenttypes import generic
 
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
-from products.models import Product, Category, Formulation
+from products.models import Product, Formulation
 from products.forms import ProductForm
+from categories.models import Category, CategoryItem
 
+class CategoryItemInline(generic.GenericTabularInline):
+    model = CategoryItem
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = [u'product_id', 'view_on_site', 'edit_link', 'tags']
@@ -15,6 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = []
     prepopulated_fields = {'product_slug': ['product_name']}
     actions = []
+    inlines = [CategoryItemInline]
     form = ProductForm
     
     fieldsets = [('Product Information', {
@@ -27,7 +32,6 @@ class ProductAdmin(admin.ModelAdmin):
                                  'brand',
                                  'generic_description',
                                  'category_num',
-                                 'category',
                                  'formulation',
                                  'active_ingredients',
                                  'key_insects',
@@ -56,6 +60,9 @@ class ProductAdmin(admin.ModelAdmin):
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.2.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
     
     def edit_link(self, obj):
@@ -144,5 +151,4 @@ class ProductAdmin(admin.ModelAdmin):
         return result
 
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Category)
 admin.site.register(Formulation)

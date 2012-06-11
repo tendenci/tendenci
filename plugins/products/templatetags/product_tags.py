@@ -6,6 +6,14 @@ from base.template_tags import ListNode, parse_tag_kwargs
 register = Library()
 
 
+@register.inclusion_tag("products/nav.html", takes_context=True)
+def product_nav(context, user, product=None):
+    context.update({
+        "nav_object": product,
+        "user": user
+    })
+    return context
+
 class ListProductsNode(ListNode):
     model = Product
     perms = 'products.view_product'

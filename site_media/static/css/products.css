@@ -38,18 +38,6 @@ div.contact-form-links{
     width: 50%;
 }
 
-div.product-category-links {
-    float: left;
-    position: relative;
-    width: 50%;
-}
-
-div.product-results-link {
-    float: right;
-    position: relative;
-    width: 50%;
-}
-
 div.clear {
     clear: both;
 }
