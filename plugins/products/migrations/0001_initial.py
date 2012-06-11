@@ -40,7 +40,7 @@ class Migration(SchemaMigration):
             ('status', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
             ('tags', self.gf('tagging.fields.TagField')()),
-            ('category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['products.Category'])),
+            ('category_num', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('product_id', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('product_name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('product_slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=200, db_index=True)),
@@ -111,6 +111,19 @@ class Migration(SchemaMigration):
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
+        },
+        'categories.category': {
+            'Meta': {'object_name': 'Category'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255', 'db_index': 'True'})
+        },
+        'categories.categoryitem': {
+            'Meta': {'object_name': 'CategoryItem'},
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'categoryitem_category'", 'null': 'True', 'to': "orm['categories.Category']"}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'categoryitem_parent'", 'null': 'True', 'to': "orm['categories.Category']"})
         },
         'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
@@ -204,7 +217,7 @@ class Migration(SchemaMigration):
             'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'brand': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['products.Category']"}),
+            'category_num': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'product_creator'", 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
