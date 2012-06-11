@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from dateutil import parser
 
+from event_logs.models import EventLog
 from site_settings.models import Setting
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response
@@ -42,7 +43,7 @@ def index(request, template_name="dashboard/index.html"):
         if now >= expiration_dt:
             expired = True
 
-            
+    EventLog.objects.log()
     return render_to_response(template_name, {
                                               'has_paid': has_paid,
                                               'activate_url': activate_url,

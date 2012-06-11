@@ -17,17 +17,9 @@ def index(request, template_name='attorneys/index.html'):
         filters = get_query_filters(request.user, 'attorneys.view_attorney')
         attorneys = Attorney.objects.filter(filters).distinct()
     attorneys = attorneys.order_by('ordering','create_dt')
-    
-    log_defaults = {
-        'event_id' : 496000,
-        'event_data': '%s page viewed by %s' % ('Attorneys', request.user),
-        'description': '%s viewed' % 'Attorneys',
-        'user': request.user,
-        'request': request,
-        'source': 'attorneys'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name,
         {
             'attorneys':attorneys,
@@ -51,17 +43,9 @@ def search(request, template_name='attorneys/search.html'):
     
     if category:
         attorneys = attorneys.filter(category=category)
-    
-    log_defaults = {
-        'event_id' : 494000,
-        'event_data': '%s searched by %s' % ('Attorneys', request.user),
-        'description': '%s searched' % 'Attorneys',
-        'user': request.user,
-        'request': request,
-        'source': 'attorneys'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, 
         {
             'attorneys':attorneys,
@@ -73,17 +57,9 @@ def detail(request, slug=None, template_name='attorneys/detail.html'):
     
     if not has_perm(request.user, 'attorneys.view_attorney', attorney):
         raise Http403
-        
-    log_defaults = {
-        'event_id' : 495000,
-        'event_data': '%s (%d) viewed by %s' % (attorney._meta.object_name, attorney.pk, request.user),
-        'description': '%s viewed' % attorney._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': attorney,
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log(instance=attorney)
+
     return render_to_response(template_name,
         {
             'attorney': attorney,
@@ -96,6 +72,7 @@ def vcard(request, slug):
     """
     attorney = get_object_or_404(Attorney, slug=slug)
     output = get_vcard_content(attorney)
+    EventLog.objects.log(instance=attorney)
     filename = "%s.vcf" % (attorney.slug)
     response = HttpResponse(output, mimetype="text/x-vCard")
     response['Content-Disposition'] = 'attachment; filename=%s' % filename

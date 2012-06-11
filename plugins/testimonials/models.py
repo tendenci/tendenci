@@ -27,7 +27,7 @@ class Testimonial(TendenciBaseModel):
     objects = TestimonialManager()
 
     def __unicode__(self):
-        return '%s, %s' % (self.first_name, self.last_name)
+        return '%s %s %s' % (self.first_name, self.last_name, self._meta.verbose_name)
 
     def first_last_name(self):
         return '%s %s' % (self.first_name, self.last_name)

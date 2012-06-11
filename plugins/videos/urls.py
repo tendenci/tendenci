@@ -6,5 +6,5 @@ urlpatterns = patterns('plugins.videos.views',
     url(r'^videos/category/([^/]+)/$', 'index', name="video.category"),
     url(r'^videos/search/$', 'search', name="video.search"),
     url(r'^videos/feed/$', LatestEntriesFeed(), name='video.feed'),
-    url(r'^videos/([^/]+)/$', 'details', name="video.details"),
+    url(r'^videos/([^/]+)/$', 'detail', name="video.details"),
 )

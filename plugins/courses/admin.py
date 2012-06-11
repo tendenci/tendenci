@@ -1,12 +1,9 @@
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-from django.utils.encoding import iri_to_uri
 from django.conf import settings
 
-from event_logs.models import EventLog
-from perms.utils import update_perms_and_save
-
+from perms.admin import TendenciBaseModelAdmin
 from courses.models import Course, Question, Answer, CourseAttempt
 from courses.forms import CourseForm, QuestionForm, QuestionFormset
 
@@ -49,12 +46,13 @@ class QuestionInline(admin.TabularInline):
     form = QuestionForm
     formset = QuestionFormset
     extra = 0
-    
-class CourseAdmin(admin.ModelAdmin):
+
+
+class CourseAdmin(TendenciBaseModelAdmin):
     inlines = [
         QuestionInline,
     ]
-    list_display = ['title', 'deadline', 'passing_score', 'status', 'view_on_site']
+    list_display = ['title', 'deadline', 'passing_score', 'status']
     list_filter = []
     search_fields = []
     fieldsets = (
@@ -99,88 +97,9 @@ class CourseAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
-    def edit_link(self, obj):
-        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:courses_course_change', args=[obj.pk])
-        return link
-    edit_link.allow_tags = True
-    edit_link.short_description = 'edit'
-
-    def view_on_site(self, obj):
-        link_icon = '%simages/icons/external_16x16.png' % settings.STATIC_URL
-        link = '<a href="%s" title="%s"><img src="%s" /></a>' % (
-            reverse('courses.detail', args=[obj.pk]),
-            obj,
-            link_icon,
-        )
-        return link
-    view_on_site.allow_tags = True
-    view_on_site.short_description = 'view'
-
-    def log_deletion(self, request, object, object_repr):
-        super(CourseAdmin, self).log_deletion(request, object, object_repr)
-        log_defaults = {
-            'event_id' : 555300,
-            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, 
-                                                    object.pk, request.user),
-            'description': '%s deleted' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)           
-
-    def log_change(self, request, object, message):
-        super(CourseAdmin, self).log_change(request, object, message)
-        log_defaults = {
-            'event_id' : 555200,
-            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, 
-                                                    object.pk, request.user),
-            'description': '%s edited' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)               
-
-    def log_addition(self, request, object):
-        super(CourseAdmin, self).log_addition(request, object)
-        log_defaults = {
-            'event_id' : 555100,
-            'event_data': '%s (%d) added by %s' % (object._meta.object_name, 
-                                                   object.pk, request.user),
-            'description': '%s added' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-                     
-    def get_form(self, request, obj=None, **kwargs):
-        """
-        inject the user in the form.
-        """
-        form = super(CourseAdmin, self).get_form(request, obj, **kwargs)
-        form.current_user = request.user
-        return form
-
-    def save_model(self, request, object, form, change):
-        """
-        update the permissions backend
-        """
-        instance = form.save(commit=False)
-        perms = update_perms_and_save(request, form, instance)
-        return instance
-
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(CourseAdmin, self).change_view(request, object_id, extra_context)
-
-        if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
-            result['Location'] = iri_to_uri("%s") % request.GET.get('next')
-        return result
-        
     def response_add(self, request, obj, post_url_continue=None):
         return redirect('courses.questions', obj.pk)
-    
+
     def response_change(self, request, obj, post_url_continue=None):
         return redirect('courses.questions', obj.pk)
 

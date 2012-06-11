@@ -153,25 +153,8 @@ def distribute_newsletter(request, action, **kwargs):
             
             # clear the recap_d
             recap_d = None
-            
-            # log an event
-            log_defaults = {
-                'event_id' : 301100,
-                'event_data': """<b>Actionid: </b><a href="%s">%d</a>,<br />
-                                <b>Action name: </b> %s,<br />
-                                <b>Action type: </b> %s,<br />
-                                <b>Category: </b> marketing,<br />
-                                <b>Description: </b> %s,<br />
-                                <b>Distributed to %d users part of user group: </b>%s.<br />
-                            """ % (reverse('action.view', args=[action.id]), action.id,
-                                   action.name, action.type, action.description,
-                                   action.sent, action.group.name),
-                'description': '%s newsletter sent' % action._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': action,
-            }
-            EventLog.objects.log(**log_defaults)
+
+            EventLog.objects.log(instance=action)
             
             # send the email notification to creator that the newsletter has been processed
             
@@ -337,25 +320,9 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
             # clear the recap_d
             recap_d = None
             
-            # log an event
-            log_defaults = {
-                'event_id' : 301100,
-                'event_data': """<b>Actionid: </b><a href="%s">%d</a>,<br />
-                                <b>Action name: </b> %s,<br />
-                                <b>Action type: </b> %s,<br />
-                                <b>Category: </b> marketing,<br />
-                                <b>Description: </b> %s,<br />
-                                <b>Distributed to %d users part of user group: </b>%s.<br />
-                            """ % (reverse('action.view', args=[action.id]), action.id,
-                                   action.name, action.type, action.description,
-                                   action.sent, action.group.name),
-                'description': '%s newsletter sent' % action._meta.object_name,
-                'user': action.owner,
-                'instance': action,
-            }
+
             if request:
-                log_defaults['request'] = request
-            EventLog.objects.log(**log_defaults)
+                EventLog.objects.log(instance=action)
             
             # send the email notification to creator that the newsletter has been processed
             subject = action.email.subject

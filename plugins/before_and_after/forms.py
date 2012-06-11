@@ -24,17 +24,6 @@ class BnAForm(TendenciBaseForm):
                 raise forms.ValidationError(
                     "%s is not a subcategory of %s" % (sub, cat))
         return data
-            
-    def save(self, *args, **kwargs):
-        bna = super(BnAForm, self).save(commit=False)
-        if not bna.id:
-            bna.creator = self.current_user
-            bna.creator_username = self.current_user.username
-            
-        bna.owner = self.current_user
-        bna.owner_username = self.current_user.username
-        bna.save()
-        return bna
 
 class SearchForm(forms.Form):
     category = forms.ModelChoiceField(

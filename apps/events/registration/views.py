@@ -314,17 +314,8 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                     send_registrant_email(reg8n, self_reg8n)
                     # email the admins as well
                     email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
-                    
-                # log an event
-                log_defaults = {
-                    'event_id' : 431000,
-                    'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                    'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                    'user': request.user,
-                    'request': request,
-                    'instance': event,
-                }
-                EventLog.objects.log(**log_defaults)
+
+                EventLog.objects.log(instance=event)
                 
                 # redirect to confirmation
                 return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)
