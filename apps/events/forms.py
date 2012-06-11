@@ -53,7 +53,6 @@ class CustomRegFormAdminForm(forms.ModelForm):
         model = CustomRegForm
         fields = ('name',
                   'notes',
-                  'validate_guest',
                   'status',
                   #'used',
                  )
