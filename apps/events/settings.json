@@ -117,22 +117,6 @@
         "scope_category": "events", 
         "store": true, 
         "updated_by": ""
-    },
-    {
-        "default_value": "true", 
-        "description": "Event registrations allow anonymous people to register.", 
-        "data_type": "boolean", 
-        "update_dt": "2012-06-04 11:27:11", 
-        "input_type": "select", 
-        "client_editable": false, 
-        "name": "allowanonymousregistration", 
-        "value": "true", 
-        "label": "Anonymous Registration", 
-        "input_value": "true,false", 
-        "parent_id": 0, 
-        "scope": "module", 
-        "scope_category": "events", 
-        "store": true, 
-        "updated_by": ""
     }
+
 ]

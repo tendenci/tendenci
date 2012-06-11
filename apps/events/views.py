@@ -896,16 +896,6 @@ def register(request, event_id=0,
     """
     event = get_object_or_404(Event, pk=event_id)
     
-    if not get_setting('module', 'events', 'allowanonymousregistration'):
-        # if not allow anonymous registration and user is not logged in,
-        # redirect them to log-in page.
-        if not request.user.is_authenticated():
-            messages.add_message(request, messages.INFO, 
-                                 'Please log in or sign up to the site before registering the event.')
-            return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), 
-                                                        reverse('event.register', args=[event.id])))
-         
-
     # check if event allows registration
     if not event.registration_configuration and \
        event.registration_configuration.enabled:
