@@ -117,6 +117,14 @@
 		$('div.is-table-choice li:first').append(individual_list);
 		$(individual_list).show();
 		$(individual_list).css({'margin-left': '2em'});
+		
+		// make sure the Table registration is checked when selecting a table option
+		var table_reg_radio = $('div.is-table-choice input[type=radio]:last');
+		$('.table-pricing-choice input[type=radio]').click(function(){
+			if ($(table_reg_radio).attr('checked') !== true){
+				$(table_reg_radio).attr('checked', true);
+			}
+		})
 		{% endif %}
 	});
 	
