@@ -19,5 +19,5 @@ urlpatterns = patterns('services.views',
     url(r'^%s/pending/$' % urlpath, 'pending', name="service.pending"),
     url(r'^%s/approve/(?P<id>\d+)/$' % urlpath, 'approve', name="service.approve"),
     url(r'^%s/thank-you/$' % urlpath, 'thank_you', name="service.thank_you"),
-    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'details', name="service"),
+    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'detail', name="service"),
 )

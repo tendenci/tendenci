@@ -50,17 +50,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
                     form_instance.payment_methods.add(method)
                 
                 formset.save()
-                
-                log_defaults = {
-                    'event_id' : 587100,
-                    'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-                    'description': '%s added' % form_instance._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': form_instance,
-                }
-                EventLog.objects.log(**log_defaults)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % form_instance)
                 return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
@@ -94,16 +84,6 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             if not form.cleaned_data['custom_payment']:
                 form_instance.pricing_set.all().delete()
 
-            log_defaults = {
-                'event_id' : 587200,
-                'event_data': '%s (%d) edited by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-                'description': '%s edited' % form_instance._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': form_instance,
-            }
-            EventLog.objects.log(**log_defaults)
-                        
             messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % form_instance)
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:

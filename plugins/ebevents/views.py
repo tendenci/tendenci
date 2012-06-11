@@ -15,6 +15,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from base.http import Http403
 from forms import EventSearchForm
+from event_logs.models import EventLog
 from utils import get_event_by_id
 from site_settings.utils import get_setting
 from pages.models import Page
@@ -26,7 +27,7 @@ if not EVENTBOOKING_XML_URL:
 # Code when eventbooking goes down
 # EVENTBOOKING_XML_LIST = os.path.join(settings.MEDIA_ROOT, 'ebevents', 'events_list.xml')
 
-def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"):
+def search(request, form_class=EventSearchForm, template_name="ebevents/list.html"):
     """
     List all the events from eventbooking and cache them
     """
@@ -114,16 +115,17 @@ def list(request, form_class=EventSearchForm, template_name="ebevents/list.html"
         top_page = Page.objects.get(slug=slug)
     except:
         top_page = ''
-    
-  
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'form': form,
                                               'events': events, 
                                               'event_types': event_types,
                                               'selected_event_type':q_event_type,
                                               'top_page': top_page}, 
         context_instance=RequestContext(request))
-    
-def display(request, id, template_name="ebevents/display.html"):
+
+def detail(request, id, template_name="ebevents/display.html"):
     if not id: raise Http403
         
     try:
@@ -141,11 +143,12 @@ def display(request, id, template_name="ebevents/display.html"):
         html_title += ' at %s' % event['location']
     
     html_title += '. A calendar event on %s' % get_setting('site', 'global', 'sitedisplayname')
-    
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'event': event, 'html_title': html_title}, 
         context_instance=RequestContext(request))
-    
+
 def ical(request, id):
     import re
     from timezones.utils import adjust_datetime_to_timezone

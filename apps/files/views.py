@@ -53,29 +53,14 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
     if download:
         # if filew download
         attachment = 'attachment;'
-        log_defaults = {
-            'event_id' : 185000,
-            'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
-            'description': '%s downloaded' % file._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': file,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=file)
     else:
         attachment = ''
 
         if file.type() != 'image':
 
             # log file view
-            EventLog.objects.log(**{
-                'event_id' : 186000,
-                'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
-                'description': '%s viewed' % file._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': file,
-            })
+            EventLog.objects.log(instance=file)
 
 # commenting out the real time index for files 
 #    # update index
@@ -124,6 +109,8 @@ def search(request, template_name="files/search.html"):
             files = files.select_related()
     files = files.order_by('-update_dt')
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
@@ -136,6 +123,8 @@ def print_view(request, id, template_name="files/print-view.html"):
     # check permission
     if not has_view_perm(request.user,'files.view_file',file):
         raise Http403
+
+    EventLog.objects.log(instance=file)
 
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
@@ -157,14 +146,6 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
             # update all permissions and save the model
             file = update_perms_and_save(request, form, file)
-            EventLog.objects.log(**{
-                'event_id' : 182000,
-                'event_data': '%s (%d) edited by %s' % (file._meta.object_name, file.pk, request.user),
-                'description': '%s edited' % file._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': file,
-            })
 
             return HttpResponseRedirect(reverse('file.search'))
     else:
@@ -192,16 +173,6 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
             file.owner_username = request.user.username        
             file.save()
 
-            log_defaults = {
-                'event_id' : 181000,
-                'event_data': '%s (%d) added by %s' % (file._meta.object_name, file.pk, request.user),
-                'description': '%s added' % file._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': file,
-            }
-            EventLog.objects.log(**log_defaults)
-            
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
             
@@ -221,15 +192,7 @@ def delete(request, id, template_name="files/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        log_defaults = {
-            'event_id' : 183000,
-            'event_data': '%s (%d) deleted by %s' % (file._meta.object_name, file.pk, request.user),
-            'description': '%s deleted' % file._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': file,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=file)
 
         file.delete()
 
@@ -371,6 +334,8 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
         event_logs = event_logs.filter(event_data__icontains=file_type)
 
     event_logs =event_logs.annotate(count=Count('object_id'))
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {
         'form': form,

@@ -12,20 +12,13 @@ from event_logs.models import EventLog
 from notification import models as notification
 
 
-def details(request, slug=None, template_name="products/detail.html"):
+def detail(request, slug=None, template_name="products/detail.html"):
     if not slug: return HttpResponseRedirect(reverse('products'))
     product = get_object_or_404(Product, slug=slug)
     
     if has_view_perm(request.user, 'product.view_product', product):
-        log_defaults = {
-            'event_id' : 370500,
-            'event_data': '%s (%d) viewed by %s' % (product._meta.object_name, product.pk, request.user),
-            'description': '%s viewed' % product._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': product,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=product)
+
         return render_to_response(template_name, {'product': product}, 
             context_instance=RequestContext(request))
     else:
@@ -49,14 +42,7 @@ def search(request, template_name="products/search.html"):
             products = products.select_related()
         products = products.order_by('-create_dt')
 
-    EventLog.objects.log(**{
-        'event_id' : 370400,
-        'event_data': '%s searched by %s' % ('Product', request.user),
-        'description': '%s searched' % 'Product',
-        'user': request.user,
-        'request': request,
-        'source': 'products'
-    })
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'products':products}, 
         context_instance=RequestContext(request))

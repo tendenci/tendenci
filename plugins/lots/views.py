@@ -7,8 +7,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from base.http import Http403
-from perms.utils import update_perms_and_save, has_perm
+from perms.utils import update_perms_and_save, has_perm, get_query_filters, has_view_perm
 from event_logs.models import EventLog
+
+from site_settings.utils import get_setting
 
 from lots.models import Lot, Map, Line
 from lots.forms import LotForm, MapForm, LineForm
@@ -23,18 +25,15 @@ def index(request):
     
 def map_selection(request, template_name="lots/maps/search.html"):
     query = request.GET.get('q')
-    maps = Map.objects.search(query, user=request.user)
 
-    log_defaults = {
-        'event_id' : 9999400,
-        'event_data': '%s searched by %s' % ('Map', request.user),
-        'description': '%s searched' % 'Map',
-        'user': request.user,
-        'request': request,
-        'source': 'maps'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    if get_setting('site', 'global', 'searchindex') and query:
+        maps = Map.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'lots.view_map')
+        maps = Map.objects.filter(filters).distinct()
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'maps':maps
     }, context_instance=RequestContext(request))
@@ -49,17 +48,7 @@ def map_add(request, template_name="lots/maps/add.html"):
         if form.is_valid():
             map = form.save(commit=False)
             map = update_perms_and_save(request, form, map)
-            
-            log_defaults = {
-                'event_id' : 9999000,
-                'event_data': '%s (%d) added by %s' % (map._meta.object_name, map.pk, request.user),
-                'description': '%s added' % map._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': map,
-            }
-            EventLog.objects.log(**log_defaults)
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % map)
     else:
         form = MapForm(user=request.user)
@@ -140,15 +129,7 @@ def detail(request, pk=None, template_name="lots/detail.html"):
     lot = get_object_or_404(Lot, pk=pk)
     
     if has_perm(request.user, 'lots.view_lot', lot):
-        log_defaults = {
-            'event_id' : 9999500,
-            'event_data': '%s (%d) viewed by %s' % (lot._meta.object_name, lot.pk, request.user),
-            'description': '%s viewed' % lot._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': lot,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=lot)
         return render_to_response(template_name, {'lot': lot}, 
             context_instance=RequestContext(request))
     else:
@@ -156,18 +137,15 @@ def detail(request, pk=None, template_name="lots/detail.html"):
 
 def search(request, template_name="lots/search.html"):
     query = request.GET.get('q', None)
-    lots = Lot.objects.search(query, user=request.user)
+    
+    if get_setting('site', 'global', 'searchindex') and query:
+        lots = Lot.objects.search(query, user=request.user)
+    else:
+        filters = get_query_filters(request.user, 'lots.view_lot')
+        lots = Lot.objects.filter(filters).distinct()
     lots = lots.order_by('-create_dt')
 
-    log_defaults = {
-        'event_id' : 9999400,
-        'event_data': '%s searched by %s' % ('Lot', request.user),
-        'description': '%s searched' % 'Lot',
-        'user': request.user,
-        'request': request,
-        'source': 'lots'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'lots':lots}, 
         context_instance=RequestContext(request))

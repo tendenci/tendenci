@@ -131,7 +131,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
             'request': request,
             'instance': object,
         }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=object)
     
     def log_change(self, request, object, message):
         super(CustomRegFormAdmin, self).log_change(request, object, message)
