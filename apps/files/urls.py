@@ -6,8 +6,8 @@ init_signals()
 urlpatterns = patterns('files',
     url(r'^$', 'views.search', name="files"),
     url(r'^(?P<id>\d+)/$', 'views.details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<download>[download/]*)$', 'views.details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<download>[download/]*)$', 'views.details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<download>(download)?)/$', 'views.details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>(download)?)/?(?P<constrain>(constrain)?)/?$', 'views.details', name="file"),
 
     # crop and quality
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/?$', 'views.details', name="file"),

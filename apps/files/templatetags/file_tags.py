@@ -90,18 +90,26 @@ def size(file, size):
         size = '100'
         size = '100x'
         size = 'x100'
+        size = '100x200/constrain'
     """
     from django.core.urlresolvers import reverse
 
-    return reverse('file', kwargs={
+    if not isinstance(file, File):
+        return u''
+
+    options = u''
+
+    if '/' in size:
+        size, options = size.split('/')
+
+    kwargs = {
         'id': unicode(file.pk),
         'size': size,
-        'download': ''
-    })
+        'constrain': u'',
+        'download': u''
+    }
 
+    if 'constrain' in options:
+        kwargs['constrain'] = 'constrain'
 
-
-
-
-
-
+    return reverse('file', kwargs=kwargs)
