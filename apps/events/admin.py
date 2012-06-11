@@ -24,7 +24,7 @@ class EventAdmin(admin.ModelAdmin):
 
 #admin.site.register(Event, EventAdmin)
 #admin.site.register(Type)
-admin.site.register(Registrant)
+#admin.site.register(Registrant)
 
 class CustomRegFieldAdminForm(CustomRegFormForField):
     class Meta:
