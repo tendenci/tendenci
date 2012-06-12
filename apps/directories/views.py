@@ -255,7 +255,6 @@ def delete(request, id, template_name="directories/delete.html"):
 
     if has_perm(request.user,'directories.delete_directory'):   
         if request.method == "POST":
-            EventLog.objects.log(instance=directory)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory)
 
@@ -336,8 +335,6 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
     if not has_perm(request.user,'directories.delete_directorypricing'): raise Http403
        
     if request.method == "POST":
-        EventLog.objects.log(instance=directory_pricing)
-
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory_pricing)
         
         #directory_pricing.delete()
@@ -471,6 +468,7 @@ def export(request, template_name="directories/export.html"):
             'entity',
         ]
         export_id = run_export_task('directories', 'directory', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {

@@ -225,6 +225,7 @@ def memcached_status(request):
 def feedback(request, template_name="base/feedback.html"):
     if not request.user.profile.is_superuser:
         raise Http404
+    EventLog.objects.log()
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):

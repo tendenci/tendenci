@@ -284,6 +284,7 @@ def export(request, template_name="articles/export.html"):
             'entity',
         ]
         export_id = run_export_task('articles', 'article', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
 
     return render_to_response(template_name, {

@@ -210,7 +210,7 @@ def add_conf(request, id, template="corporate_memberships/add_conf.html"):
     
 #    if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
 #        raise Http403
-    
+    EventLog.objects.log(instance=corporate_membership)
     context = {"corporate_membership": corporate_membership}
     return render_to_response(template, context, RequestContext(request))
 
@@ -384,8 +384,6 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                                                                membership=membership)
                     ind_memb_renew_entry.save()
 
-                EventLog.objects.log(instance=corporate_membership)
-
                 # handle online payment
                 if corp_renew_entry.get_payment_method().is_online:
                 #if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
@@ -465,7 +463,8 @@ def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
         renew_entry = CorpMembRenewEntry.objects.get(pk=corporate_membership.renew_entry_id)
     except CorpMembRenewEntry.DoesNotExist:
         renew_entry = None
-    
+
+    EventLog.objects.log(instance=corporate_membership)
     context = {"corporate_membership": corporate_membership, 
                'corp_app': corp_app,
                'renew_entry': renew_entry,
@@ -620,7 +619,7 @@ def view(request, id, template="corporate_memberships/view.html"):
         else:
             field_obj.is_date = False
             
-    
+    EventLog.objects.log(instance=corporate_membership)
     context = {"corporate_membership": corporate_membership, 'field_objs': field_objs}
     return render_to_response(template, context, RequestContext(request))
 
@@ -685,7 +684,6 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
 
     if has_perm(request.user,'corporate_memberships.delete_corporatemembership'):   
         if request.method == "POST":
-            EventLog.objects.log(instance=corp_memb)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % corp_memb)
             
 #            # send notification to administrators
@@ -711,7 +709,7 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
 def index(request, template_name="corporate_memberships/index.html"):
     corp_apps = CorpApp.objects.filter(status=1, status_detail='active').order_by('name')
     #cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
-    
+    EventLog.objects.log()
     return render_to_response(template_name, {'corp_apps': corp_apps}, 
         context_instance=RequestContext(request))
     
@@ -840,7 +838,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     form = RosterSearchForm(request.GET or None)
     #form.fields['name'].choices = name_choices
     form.fields['name'].initial = corp_memb.name
-        
+    EventLog.objects.log(instance=corp_memb)
     return render_to_response(template_name, {'corp_memb': corp_memb,
                                               'memberships': memberships, 
                                               'form': form}, 

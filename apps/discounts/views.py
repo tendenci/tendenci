@@ -159,6 +159,7 @@ def export(request, template_name="discounts/export.html"):
             'cap',
         ]
         export_id = run_export_task('discounts', 'discount', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
 
     return render_to_response(template_name, {

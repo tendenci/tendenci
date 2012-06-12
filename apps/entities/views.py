@@ -94,7 +94,6 @@ def delete(request, id, template_name="entities/delete.html"):
 
     if has_perm(request.user,'entities.delete_entity'):     
         if request.method == "POST":
-            EventLog.objects.log(instance=entity)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % entity)
             entity.delete()
 
