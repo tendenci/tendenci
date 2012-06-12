@@ -473,10 +473,9 @@ class Membership(TendenciBaseModel):
             self.populate_user_member_id()
         else:
             self.clear_user_member_id()
+            # set the is_member attr to False for this user
+            setattr(self.user, 'is_member', False)
 
-                # set the is_member attr to False for this user
-                setattr(self.user, 'is_member', False)
-                
     def populate_or_clear_member_id(self):
         """
         If the membership is active, populate the member ID to profile.
