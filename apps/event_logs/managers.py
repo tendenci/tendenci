@@ -70,6 +70,12 @@ class EventLogManager(Manager):
         if f_data['source']:
             qs.append(Q(source=f_data['source']))
 
+        if f_data['application']:
+            qs.append(Q(application=f_data['application']))
+
+        if f_data['action']:
+            qs.append(Q(action=f_data['action']))
+
         if f_data['object_id']:
             qs.append(Q(object_id=f_data['object_id']))
 

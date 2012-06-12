@@ -27,7 +27,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         
         form = form_class(request.POST)
         if form.login(request):
-            EventLog.objects.log(instance=request.user)
+            EventLog.objects.log(instance=request.user, application="accounts")
 
             return HttpResponseRedirect(redirect_to)
     else:

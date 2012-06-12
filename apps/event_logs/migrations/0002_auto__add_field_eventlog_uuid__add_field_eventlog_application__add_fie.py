@@ -12,10 +12,10 @@ class Migration(SchemaMigration):
         db.add_column('event_logs_eventlog', 'uuid', self.gf('django.db.models.fields.CharField')(default='', max_length=40), keep_default=False)
 
         # Adding field 'EventLog.application'
-        db.add_column('event_logs_eventlog', 'application', self.gf('django.db.models.fields.CharField')(default='', max_length=50), keep_default=False)
+        db.add_column('event_logs_eventlog', 'application', self.gf('django.db.models.fields.CharField')(default='', max_length=50, db_index=True), keep_default=False)
 
         # Adding field 'EventLog.action'
-        db.add_column('event_logs_eventlog', 'action', self.gf('django.db.models.fields.CharField')(default='', max_length=50), keep_default=False)
+        db.add_column('event_logs_eventlog', 'action', self.gf('django.db.models.fields.CharField')(default='', max_length=50, db_index=True), keep_default=False)
 
         # Adding field 'EventLog.model_name'
         db.add_column('event_logs_eventlog', 'model_name', self.gf('django.db.models.fields.CharField')(default='', max_length=75), keep_default=False)
@@ -105,8 +105,8 @@ class Migration(SchemaMigration):
         },
         'event_logs.eventlog': {
             'Meta': {'object_name': 'EventLog'},
-            'action': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'application': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'action': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'}),
+            'application': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'}),
             'category': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),

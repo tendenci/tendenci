@@ -35,8 +35,8 @@ class EventLog(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     
     uuid = models.CharField(max_length=40)
-    application = models.CharField(max_length=50)
-    action = models.CharField(max_length=50)
+    application = models.CharField(max_length=50, db_index=True)
+    action = models.CharField(max_length=50, db_index=True)
     model_name = models.CharField(max_length=75)
     
     objects = EventLogManager()

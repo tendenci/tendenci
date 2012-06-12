@@ -50,6 +50,8 @@ class EventLogSearchForm(BetterForm):
     user_id = forms.IntegerField(required=False)
     user_name = forms.CharField(required=False)
     session_id = forms.CharField(required=False)
+    application = forms.CharField(required=False)
+    action = forms.CharField(required=False)
 
     class Meta:
         fields = (
@@ -63,6 +65,8 @@ class EventLogSearchForm(BetterForm):
             'user_id',
             'user_name',
             'session_id',
+            'application',
+            'action',
             )
 
         fieldsets = [('',
@@ -81,7 +85,9 @@ class EventLogSearchForm(BetterForm):
                          'user_ip_address',
                          'session_id',
                          'source',
-                         'object_id'
+                         'object_id',
+                         'application',
+                         'action'
                          ],
               'legend': 'Advanced Options'
               }),
