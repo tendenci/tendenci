@@ -27,15 +27,8 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
         
         form = form_class(request.POST)
         if form.login(request):
-            log_defaults = {
-                'event_id' : 125200,
-                'event_data': '%s (%d) logged in by form' % (request.user._meta.object_name, request.user.pk),
-                'description': '%s logged in' % request.user._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': request.user,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=request.user, application="accounts")
+
             return HttpResponseRedirect(redirect_to)
     else:
         form = form_class()
@@ -164,17 +157,10 @@ def register(request, success_url=None,
                         gm.owner_id =  new_user.id
                         gm.owner_username = new_user.username
                         gm.save()
- 
-            log_defaults = {
-                'event_id' : 121000,
-                'event_data': '%s (%d) self added by form' % (new_user._meta.object_name, new_user.pk),
-                'description': '%s self added' % new_user._meta.object_name,
-                'user': new_user,
-                'request': request,
-                'instance': new_user,
-            }
-            EventLog.objects.log(**log_defaults)
-                   
+
+
+            EventLog.objects.log(instance=new_user)
+
             return HttpResponseRedirect(success_url or reverse('registration_complete'))
     else:
         form = form_class()

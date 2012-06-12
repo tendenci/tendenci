@@ -29,12 +29,9 @@ class Page(TendenciBaseModel):
     syndicate = models.BooleanField(_('Include in RSS feed'))
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
-    
-    objects = PageManager()
     entity = models.ForeignKey(Entity,null=True)
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
-    
     categories = generic.GenericRelation(CategoryItem,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -42,7 +39,8 @@ class Page(TendenciBaseModel):
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
-
+    objects = PageManager()
+    
     class Meta:
         permissions = (("view_page","Can view page"),)
 

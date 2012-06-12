@@ -10,7 +10,6 @@ from django.utils.safestring import mark_safe
 
 from base.fields import SplitDateTimeField
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin, is_developer
 from site_settings.utils import get_setting
 from user_groups.models import Group, GroupMembership
 from memberships.models import App, Membership
@@ -18,7 +17,7 @@ from event_logs.models import EventLog
 
 from profiles.models import Profile
 from profiles.utils import (get_groups, get_memberships, 
-    group_choices, app_choices)
+    group_choices, app_choices, update_user)
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -79,8 +78,8 @@ class ProfileForm(TendenciBaseForm):
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
         help_text = _("Enter the same password as above, for verification."))
     security_level = forms.ChoiceField(initial="user", choices=(('user','User'),
-                                                                ('admin','Admin'),
-                                                                ('developer','Developer'),))
+                                                                ('staff','Staff'),
+                                                                ('superuser','Superuser'),))
     interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
                                                           (0,'Not Interactive (no login)'),))
     direct_mail =  forms.ChoiceField(initial=1, choices=((1, 'Yes'),(0, 'No'),))
@@ -168,10 +167,12 @@ class ProfileForm(TendenciBaseForm):
             self.fields['first_name'].initial = self.user_this.first_name
             self.fields['last_name'].initial = self.user_this.last_name
             self.fields['username'].initial = self.user_this.username
-            if self.user_this.is_superuser and self.user_this.is_staff:
-                self.fields['security_level'].initial = "developer"
+            self.fields['email'].initial = self.user_this.email
+
+            if self.user_this.is_superuser:
+                self.fields['security_level'].initial = "superuser"
             elif self.user_this.is_staff:
-                self.fields['security_level'].initial = "admin"
+                self.fields['security_level'].initial = "staff"
             else:
                 self.fields['security_level'].initial = "user"
             if self.user_this.is_active == 1:
@@ -182,16 +183,13 @@ class ProfileForm(TendenciBaseForm):
             del self.fields['password1']
             del self.fields['password2']
             
-            if not is_admin(self.user_current):
+            if not self.user_current.profile.is_superuser:
                 del self.fields['admin_notes']
                 del self.fields['security_level']
                 del self.fields['status']
                 del self.fields['status_detail']
-        
-        if is_admin(self.user_current) and not is_developer(self.user_current):
-            self.fields['security_level'].choices=(('user','User'), ('admin','Admin'),)
 
-        if not is_admin(self.user_current):
+        if not self.user_current.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
@@ -239,24 +237,21 @@ class ProfileForm(TendenciBaseForm):
         """
         username = self.cleaned_data['username']
         email = self.cleaned_data['email']
+        params = {'first_name': self.cleaned_data['first_name'],
+                  'last_name': self.cleaned_data['last_name'],
+                  'email': self.cleaned_data['email'], }
+        
         if not self.user_this:
             password = self.cleaned_data['password1']
             new_user = User.objects.create_user(username, email, password)
-            new_user.first_name = self.cleaned_data['first_name']
-            new_user.last_name = self.cleaned_data['last_name']
-           
-            new_user.save()
-            self.instance.user = new_user
-            
-            # if not self.instance.owner:
-            self.instance.owner = request.user
+            self.instance.user = new_user 
+            update_user(new_user, **params)            
         else:
-            user_edit.username = username
-            user_edit.email = email
-            user_edit.first_name = self.cleaned_data['first_name']
-            user_edit.last_name = self.cleaned_data['last_name']
+            # for update_subscription
+            self.instance.old_email = user_edit.email
             
-            user_edit.save()
+            params.update({'username': username})
+            update_user(user_edit, **params) 
             
         if not self.instance.id:
             self.instance.creator = request.user

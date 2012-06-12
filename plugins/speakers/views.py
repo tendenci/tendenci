@@ -10,33 +10,22 @@ from base.http import Http403
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
-from perms.utils import is_admin, has_perm, has_view_perm, get_query_filters
+from perms.utils import has_perm, has_view_perm, get_query_filters
 
 
 from models import Speaker
 
-def details(request, slug=None):
+def details(request, slug=None, template_name="speakers/view.html"):
     if not slug: return HttpResponseRedirect(reverse('speakers'))
     speaker = get_object_or_404(Speaker, slug=slug)
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
-    if (speaker.status_detail).lower() != 'active' and (not is_admin(request.user)):
+    if (speaker.status_detail).lower() != 'active' and (not request.user.profile.is_superuser):
         raise Http403
 
-    template_name="speakers/view.html"
-    
-    log_defaults = {
-        'event_id' : 1070500,
-        'event_data': '%s (%d) viewed by %s' % (speaker._meta.object_name, speaker.pk, request.user),
-        'description': '%s viewed' % speaker._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': speaker,
-    }
-    EventLog.objects.log(**log_defaults)
-    
     if has_perm(request.user, 'speaker.view_speaker', speaker):
+        EventLog.objects.log(instance=speaker)
         return render_to_response(template_name, {'speaker': speaker},
             context_instance=RequestContext(request))
     else:
@@ -60,14 +49,7 @@ def search(request, template_name="speakers/search.html"):
             speakers = speakers.select_related()
     speakers = speakers.order_by('ordering')
 
-    EventLog.objects.log(**{
-        'event_id' : 1070400,
-        'event_data': '%s searched by %s' % ('Speakers', request.user),
-        'description': '%s searched' % 'Speakers',
-        'user': request.user,
-        'request': request,
-        'source': 'speakers'
-    })
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'speakers':speakers},
         context_instance=RequestContext(request))

@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 
 
-def legacy_user_is_admin(legacy_user):
+def legacy_user_admin(legacy_user):
     """
     Test if legacy user is an administrator in the legacy system
     """
@@ -11,7 +11,7 @@ def legacy_user_is_admin(legacy_user):
     return False
 
     
-def legacy_user_is_developer(legacy_user):
+def legacy_user_developer(legacy_user):
     """
     Test if legacy user is a developer in the legacy system
     """

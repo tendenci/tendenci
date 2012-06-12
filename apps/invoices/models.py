@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
-from perms.utils import is_admin, has_perm
+from perms.utils import has_perm
 from invoices.managers import InvoiceManager
 
 from event_logs.models import EventLog
@@ -144,7 +144,7 @@ class Invoice(models.Model):
     
     # if this invoice allows view by user2_compare
     def allow_view_by(self, user2_compare, guid=''):
-        if is_admin(user2_compare):
+        if user2_compare.profile.is_superuser:
             return True
         
         if has_perm(user2_compare, 'invoices.view_invoice'):

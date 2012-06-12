@@ -1,22 +1,24 @@
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.conf import settings
 
 from base.http import Http403
 from base.utils import now_localized
 from perms.object_perms import ObjectPermission
 from perms.utils import (update_perms_and_save, get_notice_recipients,
-    is_admin, has_perm, has_view_perm, get_query_filters)
+    has_perm, has_view_perm, get_query_filters)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from site_settings.utils import get_setting
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from resumes.models import Resume
 from resumes.forms import ResumeForm
@@ -258,7 +260,7 @@ def delete(request, id, template_name="resumes/delete.html"):
 
 @login_required
 def pending(request, template_name="resumes/pending.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     resumes = Resume.objects.filter(status=0, status_detail='pending')
     return render_to_response(template_name, {'resumes': resumes},
@@ -266,7 +268,7 @@ def pending(request, template_name="resumes/pending.html"):
 
 @login_required
 def approve(request, id, template_name="resumes/approve.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     resume = get_object_or_404(Resume, pk=id)
 
@@ -295,3 +297,64 @@ def approve(request, id, template_name="resumes/approve.html"):
 
 def thank_you(request, template_name="resumes/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+@login_required
+def export(request, template_name="resumes/export.html"):
+    """Export Resumes"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "resumes.csv"
+        fields = [
+            'guid',
+            'title',
+            'slug',
+            'description',
+            'location',
+            'skills',
+            'experience',
+            'education',
+            'is_agency',
+            'list_type',
+            'requested_duration',
+            'activation_dt',
+            'expiration_dt',
+            'resume_url',
+            'syndicate',
+            'contact_name',
+            'contact_address',
+            'contact_address2',
+            'contact_city',
+            'contact_state',
+            'contact_zip_code',
+            'contact_country',
+            'contact_phone',
+            'contact_phone2',
+            'contact_fax',
+            'contact_email',
+            'contact_website',
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_member_view',
+            'allow_anonymous_edit',
+            'allow_user_edit',
+            'allow_member_edit',
+            'create_dt',
+            'update_dt',
+            'creator',
+            'creator_username',
+            'owner',
+            'owner_username',
+            'status',
+            'status_detail',
+            'meta',
+            'tags',
+        ]
+        export_id = run_export_task('resumes', 'resume', fields)
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

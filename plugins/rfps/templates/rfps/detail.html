@@ -1,0 +1,25 @@
+{% extends "rfps/base.html" %}
+{% load rfp_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block body %}
+<div class="t">
+    {% rfp_nav request.user rfp %}
+
+    <div class="rfp-wrap">
+        <div>Name: <a href="{{ rfp.get_absolute_url }}">{{ rfp.name }}</a></div>
+        <div>Program: {{ rfp.program }}</div>
+        <div>Status: {{ rfp.status }}</div>
+        <div>Release Date: {{ rfp.release_dt }}</div>
+        <div>Proposal Date{{ rfp.proposal_due_dt }}</div>
+        <div>Expired Date: {{ rfp.expired_dt }}</div>
+        <div>Questions Title: {{ rfp.questions_title }}</div>
+        <div>Question Expiration Date: {{ rfp.questions_expiration_dt }}</div>
+        <div>Contract Doc Description: {{ rfp.contract_doc_description|safe }}</div>
+        {% include "rfps/meta.html" %} 
+    </div>
+</div>
+
+{% endblock body %}

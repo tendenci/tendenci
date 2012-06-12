@@ -77,7 +77,7 @@
                 {% if nav_object.can_renew %}
 			        <li><a href="{% url corp_memb.renew nav_object.id %}">{% trans "Renew" %}</a></li>
 			    {% else %}
-			    	{% if nav_object.is_expired and is_admin %}
+			    	{% if nav_object.is_expired and request.user.is_superuser %}
 			    	 <li><a href="{% url corp_memb.renew nav_object.id %}">{% trans "Admin: Renew" %}</a></li>
 			
 			    	{% endif %}

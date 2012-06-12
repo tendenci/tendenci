@@ -30,5 +30,6 @@ USER_FIELD_CHOICES = (
     ('phone', _('Phone')),
     ('email', _('Email')),
     ('position_title', _('Position Title')),
-    ('company_name', _('Company Name')),       
-                      )
+    ('company_name', _('Company Name')),
+    ('meal_option', _('Meal Option')),
+    ('comments', _('Comments')) )

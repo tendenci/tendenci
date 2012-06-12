@@ -10,11 +10,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import Count
-from django.contrib.admin.views.decorators import staff_member_required
 
 from base.http import render_to_403
 from base.http import Http403
 from perms.utils import has_perm
+from perms.decorators import superuser_required
 from registry import site
 
 from event_logs.utils import day_bars, month_days,\
@@ -139,7 +139,7 @@ def event_colors(data):
         item['color'] = get_color(str(item['event_id']))
 
 
-@staff_member_required
+@superuser_required
 def event_summary_report(request):
     queryset = EventLog.objects.all()
     form = EventsFilterForm(request.GET)
@@ -174,7 +174,7 @@ def event_summary_report(request):
                 context_instance=RequestContext(request))
 
 
-@staff_member_required
+@superuser_required
 def event_source_summary_report(request, source):
     queryset = EventLog.objects.filter(source=source)
     form = EventsFilterForm(request.GET)
@@ -206,7 +206,7 @@ def event_source_summary_report(request, source):
                 context_instance=RequestContext(request))
 
 
-@staff_member_required
+@superuser_required
 def info(request):
     apps = site.get_registered_apps().all_apps
     logged_models = []

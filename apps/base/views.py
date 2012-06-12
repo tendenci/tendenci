@@ -13,7 +13,6 @@ from django.conf import settings
 
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
-from perms.utils import is_admin
 from theme.shortcuts import themed_response as render_to_response
 
 
@@ -224,20 +223,14 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http404
+    EventLog.objects.log()
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
     from event_logs.models import EventLog
 
-    EventLog.objects.log(**{
-        'event_id' : 100000,
-        'event_data': 'Homepage viewed by %s' % request.user,
-        'description': 'Homepage viewed',
-        'user': request.user,
-        'request': request,
-        'source': 'homepage'
-    })
+    EventLog.objects.log()
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))

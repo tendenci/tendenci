@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from perms.utils import is_admin
 from base.http import Http403
 from imports.forms import UserImportForm
 from imports.utils import extract_from_excel, render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
@@ -20,7 +19,7 @@ IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')
 
 @login_required
 def user_upload_add(request, form_class=UserImportForm, template_name="imports/users.html"):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES)
@@ -66,7 +65,7 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
     
 @login_required
 def user_upload_preview(request, id, template_name="imports/users_preview.html"):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     id = str(id)
         
@@ -92,7 +91,7 @@ def user_upload_preview(request, id, template_name="imports/users_preview.html")
     
 @login_required
 def user_upload_process(request, id, template_name="imports/users_process.html"):
-    if not is_admin(request.user): raise Http403   # admin only page
+    if not request.user.profile.is_superuser: raise Http403   # admin only page
 
     id = str(id)
     import_dict = get_user_import_settings(request, id)
@@ -126,7 +125,7 @@ def user_upload_process(request, id, template_name="imports/users_process.html")
     
 @login_required
 def user_upload_subprocess(request, id, template_name="imports/users_subprocess.html"):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not request.user.profile.is_superuser:raise Http403   # admin only page
 
     id = str(id)
     import_dict = get_user_import_settings(request, id)
@@ -218,7 +217,7 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
  
 @login_required   
 def user_upload_recap(request, id):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     recap_file_name = '%s_recap.txt' % str(id)
     recap_path = os.path.join(IMPORT_DIR, recap_file_name)
@@ -291,7 +290,7 @@ def user_upload_recap(request, id):
    
 @login_required
 def download_user_upload_template(request, file_ext='.xls'):
-    if not is_admin(request.user):raise Http403   # admin only page
+    if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     if file_ext == '.csv':
         filename = "import-users.csv"

@@ -37,14 +37,12 @@
 {% has_perm user eventlogs.view_setting as view_settings %}
 {% has_perm user forms.view_form as view_forms %}
 {% has_perm user resumes.view_reume as view_resumes %}
-{% is_developer user as is_developer %}
-{% is_admin user as admin %}
 {% dashboard_nav user %}	
 
 <div class="main-panel">
 
     {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
-        {% if admin %}
+        {% if user.is_superuser %}
 	        {% if not has_paid and activate_url %}
 			<div class=" alert-message block-message fade in" data-alert="alert">
 				<a class="close" href="#">×</a>
@@ -140,7 +138,7 @@
          <li class="forms"><a href="{% url forms %}"><span>{%  trans "Forms" %}</span></a></li>
  		{% endif %}
  		
-		{% if admin %}
+		{% if user.is_superuser %}
 		 <li class="redirects"><a href="{% url redirects %}"><span>{% trans "Redirects" %}</span></a></li>
 		<li class="contacts"><a href="{% url contact.search %}"><span>{%  trans "Contacts" %}</span></a></li>
      	<li class="settings"><a href="{% url settings %}"><span>{% trans "Settings" %}</span></a></li>
@@ -189,7 +187,7 @@
 
 
 <div class="side-panel">
-	{% if admin %}
+	{% if user.is_superuser %}
 	<div class="admin-quick-links">
     <h3>{% trans "Admin Quick Links" %}</h3>
 	<ul>
@@ -208,9 +206,7 @@
     	<li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
     	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
         <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
-    	{% if user.is_super_user %}
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
-        {% endif %}
         {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
         <li><a href="{% url recurring_payment.customers %}">{% trans "Recurring Payments" %}</a></li>
         {% endif %}

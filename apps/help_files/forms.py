@@ -5,8 +5,7 @@ from models import Request, HelpFile, Topic
 from tinymce.widgets import TinyMCE
 from captcha.fields import CaptchaField
 from perms.forms import TendenciBaseForm
-from perms.utils import is_admin, is_developer
-   
+
 class RequestForm(forms.ModelForm):
     captcha = CaptchaField()
     class Meta:
@@ -100,7 +99,7 @@ class HelpFileForm(TendenciBaseForm):
         else:
             self.fields['answer'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not is_admin(self.user):
+        if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
             if 'allow_anonymous_view' in self.fields: self.fields.pop('allow_anonymous_view')
@@ -108,6 +107,3 @@ class HelpFileForm(TendenciBaseForm):
             if 'member_perms' in self.fields: self.fields.pop('member_perms')
             if 'group_perms' in self.fields: self.fields.pop('group_perms')
             if 'syndicate' in self.fields: self.fields.pop('syndicate')
-
-        if not is_developer(self.user):
-            if 'status' in self.fields: self.fields.pop('status')

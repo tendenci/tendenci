@@ -33,11 +33,15 @@
                     <tr>
                         <td class="el-sh-pk"><strong><a href="{{ event_log.get_absolute_url }}">{{ event_log.pk }}</a></strong></td>
                         <td class="el-sh-elid">
+                        {% if event_log.event_id > 0 %}
                         	<a href="{% url event_log.search %}?event_id={{ event_log.event_id }}{{ date_range_query }}">
                         		<img border="0" src="{% url event_log.colored_image event_log.color %}" width="40" height="20" />&nbsp; 
                                 {{ event_log.event_id }}
                       		</a>
                       		<a href="{% url event_log.search %}?event_id={{ event_log.event_id }}{{ date_range_query }}">()</a>
+                        {% else %}
+                            <a href="{% url event_log.search %}?application={{ event_log.application }}">{{ event_log.application }}</a> : <a href="{% url event_log.search %}?action={{ event_log.action }}">{{ event_log.action }}</a>
+                        {% endif %}
                         </td>
                         <td class="el-sh-source">
                         	{% if event_log.source %}

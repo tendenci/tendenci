@@ -6,6 +6,12 @@
 <h1>{% trans "Tendenci&trade; Marketing Events Summary Report" %}</h1>
 
 <div>
+    <p>This report is being updated. Your event logs are still being tracked. Go to the <a href="{% url event_log.search %}">Event log search</a> to see the latest.</p>
+</div>
+
+{% comment %}
+
+<div>
 	<a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
 	{{ date_range.0|date:"M Y" }}
 	<a href="./?{% month_url next %}">{% trans "Next" %}</a>
@@ -72,6 +78,8 @@
 <table>{{ form }}</table>
 <input type="submit" value="submit">
 </form>
+
+{% endcomment %}
 
 {% endblock content %}
 

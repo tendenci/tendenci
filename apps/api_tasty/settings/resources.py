@@ -8,7 +8,7 @@ from api_tasty.settings.forms import SettingForm
 class SettingResource(TendenciResource):
     """This resource will clean the given data based on the generated
     rules of the SettingForm.
-    To access this resource the username and api_key of a developer
+    To access this resource the username and api_key of a superuser
     must be present in request.GET or request.POST
     for example,
     /api_tasty/v1/setting/1/?format=json&username=sam&api_key=6f21b5cad4841d7ba76e6d76d5b9332dddf109bf

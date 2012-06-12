@@ -1,0 +1,30 @@
+{% extends "rfps/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load rfp_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'RFPs' %}" href="{% url rfps.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate rfps 10 %}
+<div class="t">
+{% rfp_nav request.user %}
+<h1>{% trans 'RFP List' %}</h1>
+{% rfp_search %}
+<div class="rfps-wrap clearfix">
+{% for rfp in rfps %}
+{% search_result rfp %}
+{% empty %}
+<p>{% trans '0 rfps found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock body %}

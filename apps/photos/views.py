@@ -20,7 +20,7 @@ from django.middleware.csrf import get_token as csrf_get_token
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, is_admin, get_query_filters, has_view_perm
+from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from files.utils import get_image
@@ -86,7 +86,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     original_source_url = reverse('photo.size', kwargs={'id':id, 'size':"%sx%s" % (photo.image.width, photo.image.height)})
 
     view_original_requirments = [
-        is_admin(request.user),
+        request.user.profile.is_superuser,
         request.user == photo.creator,
         request.user == photo.owner,
         photo.get_license().name != 'All Rights Reserved',
@@ -716,7 +716,7 @@ def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
     
     #admin only
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     file_path = ""

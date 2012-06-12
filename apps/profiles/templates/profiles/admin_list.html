@@ -18,9 +18,7 @@
 {{ block.super }}
 <div class="t">
     {% users_nav request.user request.user %}
-    {% is_developer request.user as user_is_developer %}
-    {% is_admin request.user as user_is_admin %}
-    <h1>{% trans "Administrators" %}</h1>
+    <h1>{% trans "Superusers" %}</h1>
     {% autopaginate admins 50 %}
 
 	<div class="profiles-wrap">
@@ -32,31 +30,14 @@
             </div>
             <div class="admin-meta">
                 <p>
-                    {% is_developer admin.user as admin_is_developer %}
-                    {% is_admin admin.user as admin_is_admin %}
                     <strong>
                         {{ admin }}
-                        {% if admin_is_developer %}
-                        (developer)
-                        {% else %}
-                        {% if admin_is_admin %}
-                        (admin)
-                        {% endif %}
-                        {% endif %}
-                        {% if admin_is_developer %}
-                            {% if user_is_developer %}
+                            {% if request.user.is_superuser %}
                                 &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
                             {% endif %}
-                        {% else %}
-                            {% if admin_is_admin %}
-                               {% if user_is_developer or user_is_admin %}
-                                    &ndash;&nbsp;<a href="{% url profile.edit admin.user.pk %}">{% trans "edit" %}</a>
-                               {% endif %}
-                            {% endif %}
-                        {% endif %}
                     </strong>
                 </p>
-                {% if admin.user.first_name and  admin.user.last_name  %}
+                {% if admin.user.first_name and admin.user.last_name  %}
                 <p>
                     {{ admin.user.first_name }}&nbsp;{{ admin.user.last_name }}
                 </p>

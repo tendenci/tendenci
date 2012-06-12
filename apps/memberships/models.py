@@ -20,7 +20,7 @@ from django.contrib.contenttypes import generic
 from base.utils import day_validate
 from site_settings.utils import get_setting
 from perms.models import TendenciBaseModel
-from perms.utils import get_notice_recipients, is_admin, has_perm
+from perms.utils import get_notice_recipients, has_perm
 from perms.object_perms import ObjectPermission
 from invoices.models import Invoice
 from directories.models import Directory
@@ -410,7 +410,7 @@ class Membership(TendenciBaseModel):
         return in_contract
 
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
 
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
@@ -439,6 +439,9 @@ class Membership(TendenciBaseModel):
                        profile.member_number <> self.member_number]):
                     profile.member_number = self.member_number
                     profile.save()
+
+                    # set the is_member attr to True for this user
+                    setattr(self.user, 'is_member', True)
                     
                     if verbosity >=2:
                         print 'Added member number %s for %s.' % (self.member_number, 
@@ -460,6 +463,19 @@ class Membership(TendenciBaseModel):
             if profile and profile.member_number:                
                 profile.member_number = ''
                 profile.save()
+                
+    def populate_or_clear_member_id(self):
+        """
+        If the membership is active, populate the member ID to profile.
+        Otherwise, clear the member ID from profile. 
+        """
+        if all([self.status==1, self.status_detail == 'active']):
+            self.populate_user_member_id()
+        else:
+            self.clear_user_member_id()
+
+                # set the is_member attr to False for this user
+                setattr(self.user, 'is_member', False)
                 
     def populate_or_clear_member_id(self):
         """
@@ -553,9 +569,13 @@ class MembershipImport(models.Model):
     )
 
     app = models.ForeignKey('App')
+    # active users
     interactive = models.IntegerField(choices=INTERACTIVE_CHOICES, default=0)
+    # overwrite already existing fields if match
     override = models.IntegerField(choices=OVERRIDE_CHOICES, default=0)
+    # uniqueness key
     key = models.CharField(max_length=50, choices=KEY_CHOICES, default="email")
+    
     creator = models.ForeignKey(User)
     create_dt = models.DateTimeField(auto_now_add=True)
     
@@ -888,7 +908,7 @@ class App(TendenciBaseModel):
         return initial
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
@@ -986,18 +1006,18 @@ class AppEntry(TendenciBaseModel):
     """
     An entry submitted via a membership application.
     """
-    app = models.ForeignKey("App", related_name="entries", editable=False)
-    user = models.ForeignKey(User, null=True, editable=False)
-    membership = models.ForeignKey("Membership", related_name="entries", null=True, editable=False)
+    app = models.ForeignKey("App", related_name="entries")
+    user = models.ForeignKey(User, null=True)
+    membership = models.ForeignKey("Membership", related_name="entries", null=True)
     entry_time = models.DateTimeField(_("Date/Time"))
     hash = models.CharField(max_length=40, null=True, default='')
 
-    is_renewal = models.BooleanField(editable=False)
-    is_approved = models.NullBooleanField(_('Status'), null=True, editable=False)
-    decision_dt = models.DateTimeField(null=True, editable=False)
-    judge = models.ForeignKey(User, null=True, related_name='entries', editable=False)
+    is_renewal = models.BooleanField()
+    is_approved = models.NullBooleanField(_('Approved'), null=True)
+    decision_dt = models.DateTimeField(null=True)
+    judge = models.ForeignKey(User, null=True, related_name='entries')
 
-    invoice = models.ForeignKey(Invoice, null=True, editable=False)
+    invoice = models.ForeignKey(Invoice, null=True)
     
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -1019,7 +1039,7 @@ class AppEntry(TendenciBaseModel):
 
     
     def allow_view_by(self, this_user):
-        if is_admin(this_user): return True
+        if this_user.profile.is_superuser: return True
         
         if this_user.is_anonymous():
             if self.allow_anonymous_view:

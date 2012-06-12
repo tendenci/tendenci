@@ -6,13 +6,13 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from base.http import Http403
-from perms.utils import update_perms_and_save, has_perm, is_admin
+from perms.utils import update_perms_and_save, has_perm
 from plugin_builder.models import Plugin
 from plugin_builder.utils import build_plugin
 
 @login_required
 def build(request, id):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     
     plugin = get_object_or_404(Plugin, id=id)

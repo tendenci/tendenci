@@ -13,18 +13,21 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 
+from djcelery.models import TaskMeta
+from geraldo.generators import PDFGenerator
+from notification.utils import send_welcome_email
+
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
 from base.http import Http403
 from base.utils import send_email_notification
-from perms.utils import update_perms_and_save, is_admin, is_member, is_developer, get_query_filters
+from perms.utils import update_perms_and_save, get_query_filters
 from perms.utils import has_perm
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
-from geraldo.generators import PDFGenerator
 from reports import ReportNewMems
 from files.models import File
 from imports.utils import render_excel
-from djcelery.models import TaskMeta
+from exports.utils import render_csv
 
 from memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, AppField, MembershipImport)
@@ -37,8 +40,6 @@ from memberships.utils import (is_import_valid, prepare_chart_data,
 from memberships.importer.forms import ImportMapForm, UploadForm
 from memberships.importer.utils import parse_mems_from_csv
 from memberships.importer.tasks import ImportMembershipsTask
-
-from notification.utils import send_welcome_email
 
 
 def membership_index(request):
@@ -222,7 +223,7 @@ def application_details(request, template_name="memberships/applications/details
         corporate_membership = get_object_or_404(CorporateMembership, id=cmb_id)
         # check if they have verified their email or entered the secret code
         is_verified = False
-        if is_admin(request.user) or app.corp_app.authentication_method == 'admin':
+        if request.user.profile.is_superuser or app.corp_app.authentication_method == 'admin':
             is_verified = True
         elif app.corp_app.authentication_method == 'email':
             try:
@@ -255,16 +256,15 @@ def application_details(request, template_name="memberships/applications/details
     initial_dict = {}
     if hasattr(user, 'memberships'):
         is_only_a_member = [
-            is_developer(user) == False,
-            is_admin(user) == False,
-            is_member(user) == True,
+            user.profile.is_superuser == False,
+            user.profile.is_member == True,
         ]
 
         if corporate_membership:
             # exclude corp. reps, creator and owner - they should be able to add new
             is_only_a_member.append(corporate_membership.allow_edit_by(user) == False)
 
-        if is_admin(user):
+        if user.profile.is_superuser:
             username = request.GET.get('username', unicode())
             if username:
                 try:
@@ -324,7 +324,7 @@ def application_details(request, template_name="memberships/applications/details
             entry = update_perms_and_save(request, app_entry_form, entry)
 
             # administrators go to approve/disapprove page
-            if is_admin(user):
+            if user.profile.is_superuser:
                 return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
             # send "joined" notification
@@ -414,7 +414,7 @@ def application_details_corp_pre(request, slug, cmb_id=None, template_name="memb
         raise Http404
 
     form = AppCorpPreForm(request.POST or None)
-    if is_admin(request.user) or app.corp_app.authentication_method == 'admin':
+    if request.user.profile.is_superuser or app.corp_app.authentication_method == 'admin':
         del form.fields['secret_code']
         del form.fields['email']
         from utils import get_corporate_membership_choices
@@ -676,7 +676,7 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
     """
     entry = get_object_or_404(AppEntry, id=id)  # exists
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403  # not permitted
 
     # log entry view
@@ -718,7 +718,7 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
     """
     entry = get_object_or_404(AppEntry, id=id)  # exists
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403  # not permitted
 
     if request.method == "POST":
@@ -784,7 +784,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
 
 @login_required
 def notice_email_content(request, id, template_name="memberships/notices/email_content.html"):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
     notice = get_object_or_404(Notice, pk=id)
 
@@ -801,7 +801,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
     to the import mapping/preview page of the import file
     """
 
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     if request.method == 'POST':
@@ -849,7 +849,7 @@ def membership_import_preview(request, id):
     This will generate a form based on the uploaded CSV for field mapping.
     A preview will be generated based on the mapping given.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     memport = get_object_or_404(MembershipImport, pk=id)
@@ -896,7 +896,7 @@ def membership_import_confirm(request, id):
     This can only be accessed via a hidden post form from the preview page.
     That will hold the original mappings selected by the user.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     memport = get_object_or_404(MembershipImport, pk=id)
@@ -928,7 +928,7 @@ def membership_import_status(request, task_id, template_name='memberships/import
     """
     Checks if a membership import is completed.
     """
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     try:
@@ -1008,16 +1008,15 @@ def membership_export(request):
                 'horizontal-rule',
                 'header',
             )
-
+            
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
-
+            
             label_list = [field.label for field in fields]
             extra_field_labels = ['User Name', 'Member Number', 'Join Date', 'Renew Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
             extra_field_names = ['user', 'member_number', 'join_dt', 'renew_dt', 'expire_dt', 'status', 'status_detail', 'invoice', 'invoice_total', 'invoice_balance']
-
+            
             label_list.extend(extra_field_labels)
-            label_list.append('\n')
-
+            
             data_row_list = []
             memberships = Membership.objects.filter(ma=app)
             for memb in memberships:
@@ -1051,10 +1050,9 @@ def membership_export(request):
                     value = value or u''
                     if type(value) in (bool, int, long, None):
                         value = unicode(value)
-
-                    value = value.replace(',', ' ')
+                    
                     data_row.append(value)
-
+                
                 for field in extra_field_names:
 
                     if field == 'user':
@@ -1093,11 +1091,10 @@ def membership_export(request):
                         value = unicode(value)
 
                     data_row.append(value)
-
-                data_row.append('\n')
+                
                 data_row_list.append(data_row)
 
-            return render_excel(file_name, label_list, data_row_list, '.csv')
+            return render_csv(file_name, label_list, data_row_list)
 
     return render_to_response(template_name, {
             'form': form

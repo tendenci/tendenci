@@ -7,7 +7,7 @@ from email_blocks.forms import EmailBlockForm
 from email_blocks.models import EmailBlock
 #from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import is_admin, has_perm
+from perms.utils import has_perm
 
 @login_required 
 def add(request, form_class=EmailBlockForm, template_name="email_blocks/edit.html"):
@@ -56,7 +56,7 @@ def edit(request, id, form_class=EmailBlockForm, template_name="email_blocks/edi
 
 @login_required     
 def search(request, template_name="email_blocks/search.html"):
-    if is_admin(request.user):
+    if request.user.profile.is_superuser:
         email_blocks = EmailBlock.objects.all()
     else:
         raise Http403

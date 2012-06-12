@@ -16,7 +16,6 @@ class OldGroupManager(Manager):
             Uses haystack to query groups. 
             Returns a SearchQuerySet
         """
-        from perms.utils import is_admin
         sqs = SearchQuerySet()
         user = kwargs.get('user', None)
 
@@ -25,14 +24,14 @@ class OldGroupManager(Manager):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
                 
-        is_an_admin = is_admin(user)
+        is_a_superuser = user.profile.is_superuser
             
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
-                if not is_an_admin:
+                if not is_a_superuser:
                     if not user.is_anonymous():
-                    # if b/w admin and anon
+                    # if b/w superuser and anon
 
                         # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
                         anon_query = Q(**{'allow_anonymous_view':True,})
@@ -68,7 +67,7 @@ class OldGroupManager(Manager):
                 sqs = sqs.filter(query)
         else:
             if user:
-                if is_an_admin:
+                if is_a_superuser:
                     # this is no-op. the .all().exclude(type='membership').models(Group) wouldn't work
                     #sqs = sqs.all()
                     sqs = sqs.filter(status=1)

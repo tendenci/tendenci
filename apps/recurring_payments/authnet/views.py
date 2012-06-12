@@ -12,7 +12,6 @@ from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from recurring_payments.authnet.utils import get_token, get_test_mode
 
-from perms.utils import is_admin
 from base.http import Http403
 #from site_settings.utils import get_setting
 from base.decorators import ssl_required
@@ -27,7 +26,7 @@ def manage_payment_info(request, recurring_payment_id,
     gateway_error = False
     
     # only admin or user self can access this page
-    if not is_admin(request.user) and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
         raise Http403
     
     if hasattr(settings, 'AUTHNET_CIM_TEST_MODE') and  settings.AUTHNET_CIM_TEST_MODE:
@@ -83,7 +82,7 @@ def update_payment_info(request, recurring_payment_id,
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
     
     # only admin or user self can access this page
-    if not is_admin(request.user) and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
         raise Http403
     
     rp.populate_payment_profile()
@@ -121,7 +120,7 @@ def update_payment_profile_local(request):
     rp = get_object_or_404(RecurringPayment, pk=recurring_payment_id)
     
     # only admin or user self can access this page
-    if not is_admin(request.user) and request.user.id <> rp.user.id:
+    if not request.user.profile.is_superuser and request.user.id <> rp.user.id:
         raise Http403
     
     ret_d = {}

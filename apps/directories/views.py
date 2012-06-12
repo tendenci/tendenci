@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from PIL import Image
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -11,37 +11,28 @@ from django.template.defaultfilters import slugify
 
 from site_settings.utils import get_setting
 from base.http import Http403
-from perms.utils import (is_admin, is_member, get_notice_recipients, has_perm,
-    has_view_perm, get_query_filters, update_perms_and_save)
+from perms.utils import (get_notice_recipients,
+    has_perm, has_view_perm, get_query_filters, update_perms_and_save)
 from event_logs.models import EventLog
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from directories.models import Directory, DirectoryPricing
 from directories.forms import DirectoryForm, DirectoryPricingForm
 from directories.utils import directory_set_inv_payment
-
-try:
-    from notification import models as notification
-except:
-    notification = None
+from notification import models as notification
 from base.utils import send_email_notification
+
 
 def details(request, slug=None, template_name="directories/view.html"):
     if not slug: return HttpResponseRedirect(reverse('directories'))
     directory = get_object_or_404(Directory, slug=slug)
 
     if has_view_perm(request.user,'directories.view_directory',directory):
-        log_defaults = {
-            'event_id' : 445000,
-            'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
-            'description': '%s viewed' % directory._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': directory,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=directory)
+
         return render_to_response(template_name, {'directory': directory}, 
             context_instance=RequestContext(request))
     else:
@@ -66,15 +57,8 @@ def search(request, template_name="directories/search.html"):
     
         directories = directories.order_by('headline')
 
-    log_defaults = {
-        'event_id' : 444000,
-        'event_data': '%s searched by %s' % ('Directory', request.user),
-        'description': '%s searched' % 'Directory',
-        'user': request.user,
-        'request': request,
-        'source': 'directories'
-    }
-    EventLog.objects.log(**log_defaults)
+
+    EventLog.objects.log()
     category = request.GET.get('category')
     try:
         category = int(category)
@@ -97,16 +81,8 @@ def search_redirect(request):
 def print_view(request, slug, template_name="directories/print-view.html"):
     directory = get_object_or_404(Directory, slug=slug)    
     if has_view_perm(request.user,'directories.view_directory',directory):
-        log_defaults = {
-            'event_id' : 445001,
-            'event_data': '%s (%d) viewed by %s' % (directory._meta.object_name, directory.pk, request.user),
-            'description': '%s viewed - print view' % directory._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': directory,
-        }
-        EventLog.objects.log(**log_defaults)
-    
+        EventLog.objects.log(instance=directory)
+
         return render_to_response(template_name, {'directory': directory}, 
             context_instance=RequestContext(request))
     else:
@@ -117,10 +93,10 @@ def print_view(request, slug, template_name="directories/print-view.html"):
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
     can_add_active = has_perm(request.user,'directories.add_directory')
     
-    if not any([is_admin(request.user),
+    if not any([request.user.profile.is_superuser,
                can_add_active,
                get_setting('module', 'directories', 'usercanadd'),
-               (is_member(request.user) and get_setting('module', 'directories', 'directoriesrequiresmembership'))
+               (request.user.profile.is_member and get_setting('module', 'directories', 'directoriesrequiresmembership'))
                ]):
         raise Http403
      
@@ -170,16 +146,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
 
-            log_defaults = {
-                'event_id' : 441000,
-                'event_data': '%s (%d) added by %s' % (directory._meta.object_name, directory.pk, request.user),
-                'description': '%s added' % directory._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': directory,
-            }
-            EventLog.objects.log(**log_defaults)
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
             
             # send notification to administrators
@@ -216,7 +183,7 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
                       user=request.user)
     
     del form.fields['payment_method']
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         del form.fields['pricing']
         del form.fields['list_type']
     
@@ -235,16 +202,6 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             except:
                 pass
 
-            log_defaults = {
-                'event_id' : 442000,
-                'event_data': '%s (%d) edited by %s' % (directory._meta.object_name, directory.pk, request.user),
-                'description': '%s edited' % directory._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': directory,
-            }
-            EventLog.objects.log(**log_defaults)
-            
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % directory)
                                                                          
             return HttpResponseRedirect(reverse('directory', args=[directory.slug]))             
@@ -298,16 +255,6 @@ def delete(request, id, template_name="directories/delete.html"):
 
     if has_perm(request.user,'directories.delete_directory'):   
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 443000,
-                'event_data': '%s (%d) deleted by %s' % (directory._meta.object_name, directory.pk, request.user),
-                'description': '%s deleted' % directory._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': directory,
-            }
-            
-            EventLog.objects.log(**log_defaults)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory)
 
@@ -341,16 +288,6 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.status = 1
                 directory_pricing.save(request.user)
                 
-                log_defaults = {
-                    'event_id' : 265100,
-                    'event_data': '%s (%d) added by %s' % (directory_pricing._meta.object_name, directory_pricing.pk, request.user),
-                    'description': '%s added' % directory_pricing._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': directory_pricing,
-                }
-                EventLog.objects.log(**log_defaults)
-                
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
             form = form_class(user=request.user)
@@ -371,16 +308,6 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
             directory_pricing = form.save(commit=False)
             directory_pricing.save(request.user)
             
-            log_defaults = {
-                'event_id' : 265110,
-                'event_data': '%s (%d) edited by %s' % (directory_pricing._meta.object_name, directory_pricing.pk, request.user),
-                'description': '%s edited' % directory_pricing._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': directory_pricing,
-            }
-            EventLog.objects.log(**log_defaults)
-            
             return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
     else:
         form = form_class(instance=directory_pricing, user=request.user)
@@ -394,6 +321,8 @@ def pricing_view(request, id, template_name="directories/pricing-view.html"):
     directory_pricing = get_object_or_404(DirectoryPricing, id=id)
     
     if has_perm(request.user,'directories.view_directorypricing',directory_pricing):        
+        EventLog.objects.log(instance=directory_pricing)
+
         return render_to_response(template_name, {'directory_pricing': directory_pricing}, 
             context_instance=RequestContext(request))
     else:
@@ -406,16 +335,6 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
     if not has_perm(request.user,'directories.delete_directorypricing'): raise Http403
        
     if request.method == "POST":
-        log_defaults = {
-            'event_id' : 265120,
-            'event_data': '%s (%d) deleted by %s' % (directory_pricing._meta.object_name, directory_pricing.pk, request.user),
-            'description': '%s deleted' % directory_pricing._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': directory_pricing,
-        }
-        
-        EventLog.objects.log(**log_defaults)
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % directory_pricing)
         
         #directory_pricing.delete()
@@ -430,6 +349,7 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
 
 def pricing_search(request, template_name="directories/pricing-search.html"):
     directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'directory_pricings':directory_pricing}, 
         context_instance=RequestContext(request))
@@ -443,6 +363,8 @@ def pending(request, template_name="directories/pending.html"):
         raise Http403
 
     directories = Directory.objects.filter(status_detail__contains='pending')
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'directories': directories},
             context_instance=RequestContext(request))
     
@@ -495,3 +417,59 @@ def approve(request, id, template_name="directories/approve.html"):
 
 def thank_you(request, template_name="directories/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+    
+@login_required
+def export(request, template_name="directories/export.html"):
+    """Export Directories"""
+
+    if not request.user.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        # initilize initial values
+        file_name = "directories.csv"
+        fields = [
+            'guid',
+            'slug',
+            'timezone',
+            'headline',
+            'summary',
+            'body',
+            'source',
+            'logo',
+            'first_name',
+            'last_name',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zip_code',
+            'country',
+            'phone',
+            'phone2',
+            'fax',
+            'email',
+            'email2',
+            'website',
+            'list_type',
+            'requested_duration',
+            'pricing',
+            'activation_dt',
+            'expiration_dt',
+            'invoice',
+            'payment_method',
+            'syndicate',
+            'design_notes',
+            'admin_notes',
+            'tags',
+            'enclosure_url',
+            'enclosure_type',
+            'enclosure_length',
+            'entity',
+        ]
+        export_id = run_export_task('directories', 'directory', fields)
+        EventLog.objects.log()
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

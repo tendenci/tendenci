@@ -13,7 +13,7 @@ from photologue.models import *
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
-from perms.utils import is_admin, is_member, is_developer, get_query_filters
+from perms.utils import get_query_filters
 from photos.managers import PhotoManager, PhotoSetManager
 from meta.models import Meta as MetaTags
 from photos.module_meta import PhotoMeta

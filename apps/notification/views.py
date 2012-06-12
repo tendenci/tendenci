@@ -9,7 +9,6 @@ from notification.models import *
 from notification.decorators import basic_auth_required, simple_basic_auth_callback
 from notification.feeds import NoticeUserFeed
 
-from perms.utils import is_admin
 from base.http import Http403
 
 @basic_auth_required(realm='Notices Feed', callback_func=simple_basic_auth_callback)
@@ -21,7 +20,7 @@ def feed_for_user(request):
 
 @login_required
 def notices(request):
-    if not is_admin(request.user):
+    if not request.user.profile.is_superuser:
         raise Http403
 
     notice_types = NoticeType.objects.all()

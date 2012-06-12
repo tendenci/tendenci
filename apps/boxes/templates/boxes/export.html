@@ -1,0 +1,22 @@
+{% extends "boxes/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    <div class="boxes-wrap">
+        <h1>{% trans "Boxes Export" %}</h1>
+        <div class="content">
+            <form action="." method="POST" >{% csrf_token %}
+                <input type="submit" value="{% trans 'Download' %}" />
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

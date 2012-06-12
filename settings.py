@@ -129,6 +129,7 @@ MIDDLEWARE_CLASSES = (
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
     'mobile.middleware.MobileMiddleware',
+    'profiles.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
@@ -243,6 +244,7 @@ INSTALLED_APPS = (
     'pluginmanager',
     'navs',
     'tendenci_guide',
+    'exports',
     # celery task system, must stay at the bottom
     # of installed apps
     'djkombu',

@@ -44,6 +44,9 @@
             {% if can_add_page %}
                 <li><a href="{% url page.add %}">{% trans "Add Page" %}</a></li>
             {% endif %}
+            {% if admin %}
+                <li><a href="{% url page.export %}">{% trans "Export Pages" %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_page or can_edit_page %}

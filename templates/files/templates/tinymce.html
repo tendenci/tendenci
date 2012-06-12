@@ -78,11 +78,11 @@
 				</style>
 
                 <div class="photo-wrapper">
-                    <input type="hidden" name="image-id" value="{{ file.id }}" />
-					<input type="hidden" name="orig_width" value="{{ file.image_dimensions|first }}" />
-					<input type="hidden" name="orig_height" value="{{ file.image_dimensions|last }}" />
+                    <input type="hidden" name="image-id" value="" />
+					<input type="hidden" name="orig_width" value="" />
+					<input type="hidden" name="orig_height" value="" />
                     <div class="info">
-                        <div style="width:100%;" class="title">{{ file.name }}</div>
+                        <div style="width:100%;" class="title"></div>
                     </div>
                     <div style="clear:both;"></div>
                     <div class="options">
@@ -91,7 +91,7 @@
                         		<td>Title Text &amp; Alt Text:</td>
                         	</tr>
                             <tr>
-                                <td><input style="width:100%;" type="text" name="edit_title" value="{{ file.name }}" /></td>
+                                <td><input style="width:100%;" type="text" name="edit_title" value="" /></td>
                             </tr>
 							<tr>
 								<td>
@@ -106,7 +106,7 @@
 														<td><input style="width:30px;" type="text" size="3" name="edit_left_margin" value="" /></td>
 														<td>
 										                    <div class="photo">
-										                        <img class="edit_src" style="width:75px; height:75px;" src="{{ file.file.url }}" />
+										                        <img class="edit_src" style="width:75px; height:75px;" src="" />
 										                    </div>
 														</td>
 														<td><input style="width:30px;" type="text" size="3" name="edit_right_margin" value="" /></td>
@@ -119,11 +119,14 @@
 											<td>
 												<table cellpadding=5 style="width:120px;" border="0">
 													<tr>
-														<td>{% trans "Width: " %}<input style="width:40px;" type="text" name="edit_width" /></td>
+														<td>{% trans "Width" %}:<input style="width:40px;" type="text" name="edit_width" /></td>
 													</tr>
 													<tr>
-														<td>Height: <input style="width:40px;" type="text" name="edit_height" /></td>
+														<td>{% trans "Height" %}: <input style="width:40px;" type="text" name="edit_height" /></td>
 													</tr>
+                                                    <tr>
+                                                        <td>{% trans "Maintain Proportions" %}: <input style="width:15px;" type="checkbox" name="edit_ratio" /></td>
+                                                    </tr>
 													<tr>
 														<td>
 						                                    <select name="edit_float">

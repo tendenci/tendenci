@@ -13,7 +13,6 @@ from meta.models import Meta as MetaTags
 from base.fields import SlugField
 from perms.models import TendenciBaseModel 
 from perms.object_perms import ObjectPermission
-from perms.utils import is_admin
 from categories.models import CategoryItem
 from entities.models import Entity
 from invoices.models import Invoice
@@ -154,7 +153,7 @@ class Directory(TendenciBaseModel):
         """
         Update the object after online payment is received.
         """
-        if not is_admin(request.user):
+        if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
             self.save()
 

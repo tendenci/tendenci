@@ -30,7 +30,6 @@ from corporate_memberships.utils import (get_corpapp_default_fields_list,
                                          csv_to_dict)
 from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from base.fields import SplitDateTimeField
-from perms.utils import is_admin
 from payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -266,7 +265,7 @@ class CorpMembForm(forms.ModelForm):
             corporate_membership.creator = creator_owner
             corporate_membership.creator_username = creator_owner.username
             
-            if not is_admin(user):
+            if not user.profile.is_superuser:
                 corporate_membership.status = 1
                 corporate_membership.status_detail = 'pending'
                 corporate_membership.join_dt = datetime.now()

@@ -1,0 +1,24 @@
+{% extends "lots/base.html" %}
+{% load base_filters %}
+{% load lot_tags %}
+{% load i18n %}
+
+{% block body %}
+{% lot_nav request.user lot %}
+
+<div class="t">
+    <div class="lot-wrap">
+        <h1>{{ lot.suite_number }} {{ lot.name }}</h1>
+        <p>{{ lot.description }}</p>
+
+        <div class="delete-form">
+            <form method="POST" action="{% url lots.delete lot.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="{% trans 'Please delete' %}">
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock body %}

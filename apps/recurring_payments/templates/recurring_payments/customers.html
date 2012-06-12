@@ -43,10 +43,9 @@
 {% endblock %}
 
 {% block body %}
-  {% is_admin request.user as isadmin %}
 <div class="t">
 <div id="t-search">
- {% if isadmin %}
+ {% if request.user.is_superuser %}
  {% rp_nav request.user %}
  {% endif %}
 

@@ -6,8 +6,6 @@
 {% load courses_tags %}
 {% load tagging_tags %}
 
-{% is_admin user as admin %}
-
 {% block title %}{{ course.title }}{% endblock %}
 
 {% block extra_head %}
@@ -34,7 +32,7 @@
                 <p>{% trans "Congratulations! You've passed this course!" %}</p>
                 <p><a href="{% url courses.certificate course.pk %}">{% trans "View your Certificate" %}</a></p>
             {% else %}
-                {% if course.is_closed and not admin %}
+                {% if course.is_closed and not request.user.is_superuser %}
                     <p>{% trans "The deadline has passed and this course is now closed." %}</p>
                 {% else %}
                     {% if course.deadline_has_passed %}
@@ -62,7 +60,7 @@
             {% endif %}
 		</div>
         
-        {% if admin %}
+        {% if request.user.is_superuser %}
         <div class="attempts">
             <h2>{% trans "User Attempt History" %}</h2>
 			{% for list in course.user_attempts %}
