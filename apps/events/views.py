@@ -848,8 +848,9 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre.htm
     event = get_object_or_404(Event, pk=event_id)
     
     reg_conf=event.registration_configuration
+    anony_reg8n = get_setting('module', 'events', 'anonymousregistration')
     
-    pricings = reg_conf.get_available_pricings(request.user)
+    pricings = reg_conf.get_available_pricings(request.user, is_strict=anony_reg8n=='strict')
     
     individual_pricings = pricings.filter(quantity=1).order_by('display_order', '-price')
     table_pricings = pricings.filter(quantity__gt=1).order_by('display_order', '-price')
@@ -896,6 +897,20 @@ def register(request, event_id=0,
     """
     event = get_object_or_404(Event, pk=event_id)
     
+    # open,validated or strict
+    anony_setting = get_setting('module', 'events', 'anonymousregistration')
+    event.anony_setting = anony_setting
+    is_strict = anony_setting == 'strict'
+    
+    if is_strict:
+        # strict requires logged in
+        if not request.user.is_authenticated():
+            messages.add_message(request, messages.INFO, 
+                                 'Please log in or sign up to the site before registering the event.')
+            return HttpResponseRedirect('%s?next=%s' % (reverse('auth_login'), 
+                                                        reverse('event.register', args=[event.id])))
+        
+    
     # check if event allows registration
     if not event.registration_configuration and \
        event.registration_configuration.enabled:
@@ -907,7 +922,7 @@ def register(request, event_id=0,
         # Check if the event has both individual and table registrations.
         # If so, redirect them to the intermediate page to choose individual
         # or table.
-        pricings = reg_conf.get_available_pricings(request.user)
+        pricings = reg_conf.get_available_pricings(request.user, is_strict=is_strict)
         individual_prices = [p for p in pricings if p.quantity == 1]
         table_price = [p for p in pricings if p.quantity > 1]
         
@@ -923,6 +938,8 @@ def register(request, event_id=0,
                 return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),)) 
         else:
             raise Http404
+    else:
+        pricings = None
             
               
     event.is_table = is_table
@@ -935,7 +952,9 @@ def register(request, event_id=0,
         event.free_event = pricing.price <=0
     else:
         # get all available pricing for the Price Options to select
-        pricings = reg_conf.get_available_pricings(request.user).filter(quantity=1)
+        if not pricings:
+            pricings = reg_conf.get_available_pricings(request.user, is_strict=is_strict)
+        pricings = pricings.filter(quantity=1)
         pricings = pricings.order_by('display_order', '-price')
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None

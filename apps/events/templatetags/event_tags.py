@@ -65,32 +65,18 @@ def registrant_search(context, event=None):
 
 @register.inclusion_tag('events/reg8n/registration_pricing.html', takes_context=True)
 def registration_pricing_and_button(context, event, user):
-    pricing_context = []
     limit = event.registration_configuration.limit
     spots_taken = 0
     spots_left = limit - spots_taken
     registration = event.registration_configuration
-    
-    pricing = RegConfPricing.objects.filter(
-        reg_conf=event.registration_configuration,
-        status=True,
-    )
+
+    pricing = registration.get_available_pricings(user, is_strict=False)
+    pricing = pricing.order_by('display_order', '-price')
     
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
     
-    # setting for allowing anonymous members to choose prices
-    anonpricing = get_setting('module', 'events', 'anonymousmemberpricing')
-    
-    # dictionary with helpers, not a queryset
-    # see get_pricing
-    q_pricing = get_pricing(user, event, pricing=pricing)
-    
-    default_pricing = []
-    for p in q_pricing:
-        if 'default' in p:
-            default_pricing = p
 
     # spots taken
     if limit > 0:
@@ -111,11 +97,9 @@ def registration_pricing_and_button(context, event, user):
         'reg_started': reg_started,
         'reg_ended': reg_ended,
         'earliest_time': earliest_time,
-        'pricing': q_pricing,
-        'default_pricing': default_pricing,
+        'pricing': pricing,
         'user': user,
         'is_registrant': is_registrant,
-        'anonpricing': anonpricing,
     })
 
     return context

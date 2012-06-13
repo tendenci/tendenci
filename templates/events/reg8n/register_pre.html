@@ -98,7 +98,7 @@
     	<ul style="list-style: square;">
     		{% for pricing in individual_pricings %}
     		<li>
-    			{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}
+    			{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }} ({{ pricing.target_display }})
     		</li>
     		{% endfor %}
     	</ul>

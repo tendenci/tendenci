@@ -50,7 +50,7 @@
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
-        {% if not event.registration_configuration.require_guests_info  %}
+        {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  %}
         <div class="event-msg">
             {% blocktrans %} <strong> Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
         </div>

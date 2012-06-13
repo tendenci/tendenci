@@ -34,7 +34,7 @@
                 	<ul>
                 		{% for price in pricing %}
                 		<li>
-                			<strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.amount }}</strong>&nbsp;{{ price.price.title }}
+                			<strong>{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ price.price }}</strong>&nbsp;{{ price.title }} ({{ price.target_display }})
                 		</li>
                 		
                 		{% endfor %}

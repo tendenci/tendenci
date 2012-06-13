@@ -159,11 +159,11 @@ class RegistrationConfiguration(models.Model):
 
         return all([has_method, has_account, has_api])
     
-    def get_available_pricings(self, user):
+    def get_available_pricings(self, user, is_strict=False):
         """
         Get the available pricings for this user. 
         """
-        filter_and, filter_or = RegConfPricing.get_access_filter(user)
+        filter_and, filter_or = RegConfPricing.get_access_filter(user, is_strict=is_strict)
         q_obj = None
         if filter_and:
             q_obj = Q(**filter_and)
@@ -266,21 +266,72 @@ class RegConfPricing(models.Model):
         return self.reg_conf.event.timezone.zone
     
     @staticmethod
-    def get_access_filter(user):
+    def get_access_filter(user, is_strict=False):
         if user.profile.is_superuser: return None, None
-        
         now = datetime.now()
         filter_and, filter_or = None, None
         
-        filter_or = {'allow_anonymous': True,
-                    'allow_user': True,
-                    'allow_member': True,
-                    'group__isnull': False}
+        if is_strict:
+            if user.is_anonymous():
+                filter_or = {'allow_anonymous': True}
+            elif not user.profile.is_member:
+                filter_or = {'allow_anonymous': True,
+                             'allow_user': True
+                            }
+            else:
+                # user is a member
+                filter_or = {'allow_anonymous': True,
+                             'allow_user': True,
+                             'allow_member': True}
+                # get a list of groups for this user
+                groups_id_list = user.group_member.values_list('group__id', flat=True)
+                if groups_id_list:
+                    filter_or.update({'group__id__in': groups_id_list})
+        else:
+            filter_or = {'allow_anonymous': True,
+                        'allow_user': True,
+                        'allow_member': True,
+                        'group__id__gt': 0}
+
+        
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
                       }
                 
         return filter_and, filter_or
+    
+    def target_display(self):        
+        target_str = ''
+        
+        if self.allow_anonymous:
+            pass
+            #target_str = 'for public'
+        elif self.allow_user:
+            target_str = 'for users'
+        elif self.allow_member:
+            target_str = 'for members'
+            
+        if self.group:
+            if target_str:
+                target_str += ' and '
+            target_str += 'for members of "%s"' % self.group.name
+            
+        if not any([self.allow_anonymous,
+                    self.allow_user,
+                    self.allow_member,
+                    self.group
+                    ]):
+            target_str = 'admin only' 
+            
+        if self.quantity > 1:
+            if not target_str:
+                target_str = 'for '
+            else:
+                target_str += ' - '
+            target_str += 'a team of %d' % self.quantity
+            
+        return target_str
+        
     
 class Registration(models.Model):
 
