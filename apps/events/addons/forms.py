@@ -60,6 +60,7 @@ class RegAddonForm(forms.Form):
             option = data[addon.field_name()]
             if not option:
                 raise forms.ValidationError(_('Option required for %s' % (addon.title)))
+
         return data
     
     def save(self, registration):

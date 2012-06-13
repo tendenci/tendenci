@@ -998,14 +998,12 @@ def register(request, event_id=0,
     
     # get available addons
     addons = get_available_addons(event, request.user)
-    
     # start addon formset factory
     RegAddonFormSet = formset_factory(
         RegAddonForm,
         formset=RegAddonBaseFormSet,
         extra=0,
     )
-    
     
     # REGISTRANT formset
     post_data = request.POST or None
@@ -1050,8 +1048,8 @@ def register(request, event_id=0,
             post_data = request.POST.copy()
             post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1 
             
-            addon_extra_params.update({'valid_addons':addons})
-            
+        addon_extra_params.update({'valid_addons':addons})
+
     # Setting up the formset        
     registrant = RegistrantFormSet(post_data or None, **params)
     addon_formset = RegAddonFormSet(request.POST,
@@ -1074,7 +1072,7 @@ def register(request, event_id=0,
     # total registrant forms
     if post_data:
         total_regt_forms = post_data['registrant-TOTAL_FORMS']
-    
+
     if request.method == 'POST':
         if 'submit' in request.POST:
             if reg_form.is_valid() and registrant.is_valid() and addon_formset.is_valid():
@@ -2618,8 +2616,6 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             messages.add_message(request, messages.SUCCESS,
                 'Your event submission has been received. It is now subject to approval.')
             return redirect('events')
-        print "form", form.errors
-        print "form_place", form_place.errors
     else:
         form = form_class(user=request.user, prefix="event")
         form_place = PlaceForm(prefix="place")

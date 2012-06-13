@@ -721,7 +721,8 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.amount = amount
     registrant.override = kwargs.get('override', False)
     registrant.override_price = kwargs.get('override_price')
-    
+    if registrant.override_price is None:
+        registrant.override_price = Decimal(0)
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
     
@@ -758,7 +759,7 @@ def create_registrant_from_form(*args, **kwargs):
                     if not registrant.company_name:
                         registrant.company_name = user_profile.company
                     registrant.position_title = user_profile.position_title
-                
+
     registrant.save()
     return registrant
 

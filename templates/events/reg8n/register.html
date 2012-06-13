@@ -258,13 +258,6 @@
 				{% endfor %}
 			</div>
             
-            {% if addons %}
-                <div class="addon-forms">
-                    {% include 'events/addons/formset.html' %}
-                </div>
-            {% else %}
-                {{ addon_formset.management_form }}
-            {% endif %}
 			
             <div class="add-registrant-box">
                 {% if not event.is_table %}
@@ -279,6 +272,14 @@
                 
                 {% endif %}
             </div>
+            
+            {% if addons %}
+             <div class="addon-forms">
+                    {% include 'events/addons/formset.html' %}
+             </div>
+	         {% else %}
+	             {{ addon_formset.management_form }}
+	         {% endif %}
             
             {% if addons %}
                 <div class="add-addons-box">

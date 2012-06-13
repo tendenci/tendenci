@@ -268,13 +268,17 @@ class FormForCustomRegForm(forms.ModelForm):
 
 def _get_price_labels(pricing):
     currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+    if pricing.target_display():
+        target_display = ' (%s)' % pricing.target_display()
+    else:
+        target_display = ''
     
-    return mark_safe('<span data-price="%s">%s%s %s (%s)</span>' % (
+    return mark_safe('<span data-price="%s">%s%s %s%s</span>' % (
                                       pricing.price,
                                       currency_symbol,
                                       pricing.price,
                                       pricing.title,
-                                      pricing.target_display()))   
+                                      target_display) )  
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 

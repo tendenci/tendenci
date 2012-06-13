@@ -86,7 +86,7 @@ function addAddon(prefix, addon, container){
     
     var addon_input = $(row).find(".addon-input");
     addon_input.parent().parent().find('label').html(addon['title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
-    
+
     // insert as last element into form list
     $(container).append(row);
     
