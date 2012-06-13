@@ -85,7 +85,7 @@ def get_available_pricings(event, user):
                 continue
             
             # Group members allowed
-            if price.group and price.group.user.profile.is_member:
+            if price.group and price.group.is_member(user):
                 continue
             
             # user failed all permission checks
