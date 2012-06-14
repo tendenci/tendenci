@@ -7,7 +7,7 @@ from files.models import File
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
 from categories.models import CategoryItem
-from products.managers import ProductManager
+from martins_products.managers import ProductManager
 
 class Category(models.Model):
     name = models.CharField(_(u'Name'), max_length=200,)

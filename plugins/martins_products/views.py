@@ -5,8 +5,8 @@ from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
 from base.http import Http403
-from products.models import Product
-from products.forms import ProductSearchForm
+from martins_products.models import Product
+from martins_products.forms import ProductSearchForm
 from perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from site_settings.utils import get_setting
 from event_logs.models import EventLog
@@ -16,10 +16,10 @@ try:
 except:
     notification = None
 
-def index(request, template_name="products/detail.html"):
+def index(request, template_name="martins_products/detail.html"):
     return HttpResponseRedirect(reverse('products.search'))
 
-def detail(request, slug=None, template_name="products/detail.html"):
+def detail(request, slug=None, template_name="martins_products/detail.html"):
     if not slug: return HttpResponseRedirect(reverse('products.search'))
     product = get_object_or_404(Product, product_slug=slug)
     
@@ -38,7 +38,7 @@ def detail(request, slug=None, template_name="products/detail.html"):
     else:
         raise Http403
 
-def search(request, template_name="products/search.html"):
+def search(request, template_name="martins_products/search.html"):
     """
     Searches products according to the query string, category
     dropdown and formulation dropdown.
@@ -67,9 +67,11 @@ def search(request, template_name="products/search.html"):
     
     
     if get_setting('site', 'global', 'searchindex') and query:
+        print 'entry 1',
         products = Product.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'product.view_product')
+        print 'entry 2'
+        filters = get_query_filters(request.user, 'martins_product.view_product')
         products = Product.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             products = products.select_related()

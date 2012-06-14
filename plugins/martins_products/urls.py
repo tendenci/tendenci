@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
-from products.feeds import LatestEntriesFeed
+from martins_products.feeds import LatestEntriesFeed
 
-urlpatterns = patterns('products.views',                  
+urlpatterns = patterns('martins_products.views',                  
     url(r'^products/$', 'index', name="products"),
     url(r'^products/search/$', 'search', name="products.search"),
     url(r'^products/feed/$', LatestEntriesFeed(), name='products.feed'),

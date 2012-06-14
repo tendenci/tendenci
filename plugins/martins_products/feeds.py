@@ -3,7 +3,7 @@ from site_settings.utils import get_setting
 from perms.utils import PUBLIC_FILTER
 from sitemaps import TendenciSitemap
 
-from products.models import Product
+from martins_products.models import Product
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Products' % get_setting('site','global','sitedisplayname')

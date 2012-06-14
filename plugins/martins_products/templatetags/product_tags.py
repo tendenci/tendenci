@@ -1,12 +1,12 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 
-from products.models import Product
+from martins_products.models import Product
 from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 
 
-@register.inclusion_tag("products/nav.html", takes_context=True)
+@register.inclusion_tag("martins_products/nav.html", takes_context=True)
 def product_nav(context, user, product=None):
     context.update({
         "nav_object": product,
@@ -16,7 +16,7 @@ def product_nav(context, user, product=None):
 
 class ListProductsNode(ListNode):
     model = Product
-    perms = 'products.view_product'
+    perms = 'martins_products.view_product'
 
 
 @register.tag
@@ -48,6 +48,6 @@ def list_products(parser, token):
 
     return ListProductsNode(context_var, *args, **kwargs)
 
-@register.inclusion_tag("products/search-form.html", takes_context=True)
+@register.inclusion_tag("martins_products/search-form.html", takes_context=True)
 def product_search(context):
     return context

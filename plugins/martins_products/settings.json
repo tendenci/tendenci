@@ -12,7 +12,7 @@
         "input_value": " ", 
         "parent_id": 0, 
         "scope": "module", 
-        "scope_category": "products", 
+        "scope_category": "martins_products", 
         "store": false, 
         "updated_by": ""
     },
@@ -29,7 +29,7 @@
         "input_value": " ", 
         "parent_id": 0, 
         "scope": "module", 
-        "scope_category": "products", 
+        "scope_category": "martins_products", 
         "store": false, 
         "updated_by": ""
     },
@@ -46,7 +46,7 @@
         "input_value": "", 
         "parent_id": 0,
         "scope": "module",
-        "scope_category": "products", 
+        "scope_category": "martins_products", 
         "store": true, 
         "updated_by": ""
     },
@@ -63,7 +63,7 @@
         "input_value": "true,false", 
         "parent_id": 0, 
         "scope": "module", 
-        "scope_category": "products", 
+        "scope_category": "martins_products", 
         "store": true, 
         "updated_by": ""
     },
@@ -80,7 +80,7 @@
         "input_value": " ", 
         "parent_id": 0, 
         "scope": "module", 
-        "scope_category": "products", 
+        "scope_category": "martins_products", 
         "store": false, 
         "updated_by": ""
     }

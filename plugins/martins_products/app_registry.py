@@ -1,6 +1,6 @@
 from registry import site
 from registry.base import PluginRegistry, lazy_reverse
-from products.models import Product
+from martins_products.models import Product
 
 
 class ProductRegistry(PluginRegistry):

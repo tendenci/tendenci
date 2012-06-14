@@ -3,7 +3,7 @@ from haystack import site
 
 from perms.indexes import TendenciBaseSearchIndex
 from categories.models import Category
-from products.models import Product
+from martins_products.models import Product
 
 class ProductIndex(TendenciBaseSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

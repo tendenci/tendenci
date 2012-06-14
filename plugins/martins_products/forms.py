@@ -5,7 +5,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from categories.models import CategoryItem
-from products.models import Product, Category, Formulation, ProductPhoto
+from martins_products.models import Product, Category, Formulation, ProductPhoto
 from perms.forms import TendenciBaseForm
 from categories.forms import CategoryField, CategoryItem
 from tinymce.widgets import TinyMCE
@@ -25,15 +25,15 @@ class ProductForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     generic_description = forms.CharField(required=True,
         widget=TinyMCE(attrs={'style':'width:100%'},
-        mce_attrs={'storme_app_label':u'products',
+        mce_attrs={'storme_app_label':u'martins_products',
         'storme_model':Product._meta.module_name.lower()}))
     product_features = forms.CharField(required=True,
         widget=TinyMCE(attrs={'style':'width:100%'},
-        mce_attrs={'storme_app_label':u'products',
+        mce_attrs={'storme_app_label':u'martins_products',
         'storme_model':Product._meta.module_name.lower()}))
     product_specs = forms.CharField(required=True,
         widget=TinyMCE(attrs={'style':'width:100%'},
-        mce_attrs={'storme_app_label':u'products',
+        mce_attrs={'storme_app_label':u'martins_products',
         'storme_model':Product._meta.module_name.lower()}))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     

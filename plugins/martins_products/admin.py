@@ -6,8 +6,8 @@ from django.contrib.contenttypes import generic
 
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
-from products.models import Product, Formulation
-from products.forms import ProductForm
+from martins_products.models import Product, Formulation
+from martins_products.forms import ProductForm
 from categories.models import Category, CategoryItem
 
 class CategoryItemInline(generic.GenericTabularInline):
@@ -66,7 +66,7 @@ class ProductAdmin(admin.ModelAdmin):
         )
     
     def edit_link(self, obj):
-        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:products_product_change', args=[obj.pk])
+        link = '<a href="%s" title="edit">Edit</a>' % reverse('admin:martins_products_product_change', args=[obj.pk])
         return link
     edit_link.allow_tags = True
     edit_link.short_description = 'edit'

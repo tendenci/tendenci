@@ -42,7 +42,7 @@
             {% endif %}
             <li><a href="{% url products %}">{% trans "Latest" %} {% firstof MODULE_PRODUCTS_LABEL_PLURAL 'Products' %}</a></li>
             {% if can_add_product and request.user.is_staff %}
-                <li><a href="{% url admin:products_product_add %}">{% trans "Add" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
+                <li><a href="{% url admin:martins_products_product_add %}">{% trans "Add" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
@@ -54,12 +54,12 @@
                     <li><a href="{{ nav_object.get_absolute_url }}">{% trans "View" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
                 {% endif %}
                 {% if can_edit_product and request.user.is_staff %}
-                    <li><a href="{% url admin:products_product_change nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
+                    <li><a href="{% url admin:martins_products_product_change nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
                     <li><a href="{% url category.update nav_object.opt_app_label product.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
                 {% endif %}
                 {% if can_delete_product and request.user.is_staff %}
                     <li class="divider"></li>
-                    <li><a class="delete" href="{% url admin:products_product_delete nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
+                    <li><a class="delete" href="{% url admin:martins_products_product_delete nav_object.pk %}">{% trans "Delete" %} {% firstof MODULE_PRODUCTS_LABEL 'Product' %}</a></li>
                 {% endif %}
             </ul>
             {% endif %}

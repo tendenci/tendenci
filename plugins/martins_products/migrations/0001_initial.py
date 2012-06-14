@@ -9,21 +9,21 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding model 'Category'
-        db.create_table('products_category', (
+        db.create_table('martins_products_category', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
         ))
-        db.send_create_signal('products', ['Category'])
+        db.send_create_signal('martins_products', ['Category'])
 
         # Adding model 'Formulation'
-        db.create_table('products_formulation', (
+        db.create_table('martins_products_formulation', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
         ))
-        db.send_create_signal('products', ['Formulation'])
+        db.send_create_signal('martins_products', ['Formulation'])
 
         # Adding model 'Product'
-        db.create_table('products_product', (
+        db.create_table('martins_products_product', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('allow_user_view', self.gf('django.db.models.fields.BooleanField')(default=False)),
@@ -49,37 +49,37 @@ class Migration(SchemaMigration):
             ('product_features', self.gf('django.db.models.fields.TextField')()),
             ('product_code', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('product_specs', self.gf('django.db.models.fields.TextField')()),
-            ('formulation', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['products.Formulation'])),
+            ('formulation', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['martins_products.Formulation'])),
             ('active_ingredients', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('key_insects', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('use_sites', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('msds_label', self.gf('django.db.models.fields.URLField')(max_length=200)),
             ('product_label', self.gf('django.db.models.fields.URLField')(max_length=200)),
             ('state_registered', self.gf('django.db.models.fields.URLField')(max_length=200)),
-            ('product_image', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['products.ProductPhoto'], null=True)),
+            ('product_image', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['martins_products.ProductPhoto'], null=True)),
         ))
-        db.send_create_signal('products', ['Product'])
+        db.send_create_signal('martins_products', ['Product'])
 
         # Adding model 'ProductPhoto'
-        db.create_table('products_productphoto', (
+        db.create_table('martins_products_productphoto', (
             ('file_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['files.File'], unique=True, primary_key=True)),
         ))
-        db.send_create_signal('products', ['ProductPhoto'])
+        db.send_create_signal('martins_products', ['ProductPhoto'])
 
 
     def backwards(self, orm):
         
         # Deleting model 'Category'
-        db.delete_table('products_category')
+        db.delete_table('martins_products_category')
 
         # Deleting model 'Formulation'
-        db.delete_table('products_formulation')
+        db.delete_table('martins_products_formulation')
 
         # Deleting model 'Product'
-        db.delete_table('products_product')
+        db.delete_table('martins_products_product')
 
         # Deleting model 'ProductPhoto'
-        db.delete_table('products_productphoto')
+        db.delete_table('martins_products_productphoto')
 
 
     models = {
@@ -187,27 +187,17 @@ class Migration(SchemaMigration):
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
-        'perms.objectpermission': {
-            'Meta': {'object_name': 'ObjectPermission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.IntegerField', [], {}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
-        },
-        'products.category': {
+        'martins_products.category': {
             'Meta': {'object_name': 'Category'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
-        'products.formulation': {
+        'martins_products.formulation': {
             'Meta': {'object_name': 'Formulation'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
-        'products.product': {
+        'martins_products.product': {
             'Meta': {'object_name': 'Product'},
             'active_ingredients': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -221,7 +211,7 @@ class Migration(SchemaMigration):
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'product_creator'", 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'formulation': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['products.Formulation']"}),
+            'formulation': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['martins_products.Formulation']"}),
             'generic_description': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key_insects': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
@@ -231,7 +221,7 @@ class Migration(SchemaMigration):
             'product_code': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'product_features': ('django.db.models.fields.TextField', [], {}),
             'product_id': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'product_image': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['products.ProductPhoto']", 'null': 'True'}),
+            'product_image': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['martins_products.ProductPhoto']", 'null': 'True'}),
             'product_label': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
             'product_name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'product_slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '200', 'db_index': 'True'}),
@@ -243,9 +233,19 @@ class Migration(SchemaMigration):
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'use_sites': ('django.db.models.fields.CharField', [], {'max_length': '200'})
         },
-        'products.productphoto': {
+        'martins_products.productphoto': {
             'Meta': {'object_name': 'ProductPhoto', '_ormbases': ['files.File']},
             'file_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['files.File']", 'unique': 'True', 'primary_key': 'True'})
+        },
+        'perms.objectpermission': {
+            'Meta': {'object_name': 'ObjectPermission'},
+            'codename': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.IntegerField', [], {}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
         },
         'user_groups.group': {
             'Meta': {'object_name': 'Group'},
@@ -300,4 +300,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['products']
+    complete_apps = ['martins_products']
