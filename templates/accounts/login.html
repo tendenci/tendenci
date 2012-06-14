@@ -32,7 +32,9 @@
 {% if MODULE_USERS_SELFREGISTRATION %}
 <h3>{% trans "Don't have an account?" %}</h3>
 <p><a href="{% url registration_register %}">{% trans "Register Now" %}</a></p>
-<!-- <p><a href="{% url social_begin 'facebook' %}">{% trans "Log in with Facebook" %}</a></p> -->
+{% comment %}
+<p><a href="{% url social_begin 'facebook' %}">{% trans "Log in with Facebook" %}</a></p>
+{% endcomment %}
 {% endif %}
  
 {% endif %}
