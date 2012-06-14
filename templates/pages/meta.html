@@ -40,6 +40,12 @@
                     </div>
                     {% endif %}
         
+        {% if user.is_authenticated %}
+            {% if admin or user.id == page.creator_id or user.id == page.owner_id %}
+                {% meta_creator_owner page %}
+            {% endif %}
+        {% endif %}
+        
     </div>
     <div class="meta-right">
         <a class="print-link" href="{% url page.print_view page.slug %}">{% trans "Print" %}</a>
