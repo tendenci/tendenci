@@ -582,8 +582,8 @@ def add_registration(*args, **kwargs):
     override_table = False
     override_price_table = Decimal(0)
     if event.is_table and request.user.is_superuser:
-        override_table = reg_form.cleaned_data.get('override_table')
-        override_price_table = reg_form.cleaned_data.get('override_price_table')
+        override_table = reg_form.cleaned_data.get('override_table', False)
+        override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
         if override_price_table == None:
             override_price_table = 0
     
@@ -635,8 +635,8 @@ def add_registration(*args, **kwargs):
         override_price = Decimal(0)
         if not event.is_table:
             if request.user.is_superuser:
-                override = form.cleaned_data['override']
-                override_price = form.cleaned_data['override_price']
+                override = form.cleaned_data.get('override', False)
+                override_price = form.cleaned_data.get('override_price', Decimal(0))
                 
             price = form.cleaned_data['pricing']
             if override:

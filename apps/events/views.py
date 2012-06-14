@@ -956,6 +956,8 @@ def register(request, event_id=0,
             pricings = reg_conf.get_available_pricings(request.user, is_strict=is_strict)
         pricings = pricings.filter(quantity=1)
         pricings = pricings.order_by('display_order', '-price')
+        # get the default pricing to set for initial
+        [event.default_pricing] = pricings[:1] or [None]
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
         
@@ -1094,7 +1096,7 @@ def register(request, event_id=0,
                 
                 is_credit_card_payment = reg8n.payment_method and \
                 (reg8n.payment_method.machine_name).lower() == 'credit-card' \
-                and not event.free_event
+                and reg8n.invoice.balance > 0
                 
                 if reg8n_created:
                     registrants = reg8n.registrant_set.all().order_by('id')
