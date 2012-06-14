@@ -83,10 +83,9 @@ function addAddon(prefix, addon, container){
             }
         }
     });
-    
     var addon_input = $(row).find(".addon-input");
-    addon_input.parent().parent().find('label').html(addon['title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
-
+    addon_input.parent().parent().find('label').html(addon['title'] + ': ' + addon['option_title'] + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + addon['price']  + ')');
+	addon_input.hide();
     // insert as last element into form list
     $(container).append(row);
     
@@ -129,7 +128,8 @@ $(document).ready(function(){
                     addon_d['is_public'] = addon.attr('is_public');
                     selected_option = $("input[name=add-addon-option-"+ addon.val()+"]:checked");
                     addon_d['option'] = parseInt(selected_option.val());
-                    console.log(addon_d);
+                    addon_d['option_title'] = $(selected_option).attr('title');
+                   // console.log(addon_d);
                     var addon_num = parseInt($("#add-addon-"+ addon.val() +"-count").val());
                     for(var j=0; j<addon_num; j++){
                         addAddon('addon', addon_d, container);
@@ -143,10 +143,12 @@ $(document).ready(function(){
     
     var addon_inputs = $(".addon-input");
     var addon_choices = $("#addon-choices");
-    for(i=0;i<addon_inputs.length;i++){
+    for(i=0;i<addon_inputs.length-1;i++){
         var addon = $(addon_inputs[i]);
         var choice = $("input[value="+addon.val() + ']', addon_choices);
-        addon.parent().parent().find('label').html(choice.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
+        var option = $('div.addon-forms').find('.option-hidden').eq(i);
+        var addon_option = $(addon_choices).find('#addon-options').find('input[value="' + $(option).val()  + '"]');
+        addon.parent().parent().find('label').html(choice.attr('title') + ': ' + addon_option.attr('title') + ' ({{ SITE_GLOBAL_CURRENCYSYMBOL }}' + choice.attr('price')  + ' Addon)');
         addon.hide();
     }
     

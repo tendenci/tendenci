@@ -428,12 +428,11 @@ def email_registrants(event, email, **kwargs):
         
         email.body = tmp_body  # restore to the original
         
-def email_admins(event, event_price, self_reg8n, reg8n, registrants):
+def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
     email_list = [admin.strip() for admin in admins]
-    
     notification.send_emails(
         email_list,
         'event_registration_confirmation',
@@ -444,7 +443,7 @@ def email_admins(event, event_price, self_reg8n, reg8n, registrants):
             'reg8n': reg8n,
             'registrants': registrants,
             'event': event,
-            'price': event_price,
+            'total_amount': total_amount,
             'is_paid': reg8n.invoice.balance == 0,
             'reg8n_number': reg8n.registrant_set.all().count(),
             'for_admin': True,
@@ -689,17 +688,16 @@ def add_registration(*args, **kwargs):
     
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
-    
     created = True
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
     
-#    if discount:
-#        DiscountUse.objects.create(
-#                discount=discount,
-#                invoice=invoice,
-#            )
+    if discount_code and discount:
+        DiscountUse.objects.create(
+                discount=discount,
+                invoice=invoice,
+            )
     
     return (reg8n, created)
 

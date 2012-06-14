@@ -1047,7 +1047,7 @@ def register(request, event_id=0,
         if post_data and 'add_registrant' in request.POST:
             post_data = request.POST.copy()
             post_data['registrant-TOTAL_FORMS'] = int(post_data['registrant-TOTAL_FORMS'])+ 1 
-            
+    
         addon_extra_params.update({'valid_addons':addons})
 
     # Setting up the formset        
@@ -1075,7 +1075,9 @@ def register(request, event_id=0,
 
     if request.method == 'POST':
         if 'submit' in request.POST:
-            if reg_form.is_valid() and registrant.is_valid() and addon_formset.is_valid():
+            if all([reg_form.is_valid(),
+                    registrant.is_valid(),
+                    addon_formset.is_valid()]):
                 
                 # override event_price to price specified by admin
                 
@@ -1107,7 +1109,7 @@ def register(request, event_id=0,
                         # online payment
                         # get invoice; redirect to online pay
                         # email the admins as well
-                        email_admins(event, self_reg8n, reg8n, registrants)
+                        email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
                         
                         return HttpResponseRedirect(reverse(
                             'payments.views.pay_online',
@@ -1129,13 +1131,14 @@ def register(request, event_id=0,
                                     'reg8n': reg8n,
                                     'registrants': registrants,
                                     'event': event,
+                                    'total_amount': reg8n.invoice.total,
                                     'is_paid': reg8n.invoice.balance == 0
                                  },
                                 True, # save notice in db
                             )                            
                             #email the admins as well
                             # fix the price
-                            email_admins(event, 0, self_reg8n, reg8n, registrants)
+                            email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
                         
                     # log an event
                     log_defaults = {

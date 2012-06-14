@@ -273,6 +273,7 @@
                 {% endif %}
             </div>
             
+            <div class="addon-wrap" style="background-color: #f5f5f5;padding:10px; margin: 2em 0; border: 1px dashed #ccc;">
             {% if addons %}
              <div class="addon-forms">
                     {% include 'events/addons/formset.html' %}
@@ -286,6 +287,7 @@
                 {% include 'events/addons/addon-add-box.html' %}
                 </div>
             {% endif %}
+            </div>
             
             <div class="clear"></div>
             {% if reg_form.free_event %}

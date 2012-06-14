@@ -472,7 +472,7 @@ class Registration(models.Model):
                     'reg8n': self,
                     'registrants': registrants,
                     'event': self.event,
-                    'price': self.invoice.total,
+                    'total_amount': self.invoice.total,
                     'is_paid': payment.is_paid,
                 },
                 True,  # notice saved in db
