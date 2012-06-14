@@ -647,7 +647,12 @@ class Registrant(models.Model):
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
             return '%s, %s' % (self.last_name, self.first_name)
-
+        
+    def register_pricing(self):
+        # The pricing is a field recently added. The previous registrations
+        # store the pricing in registration. 
+        return self.pricing or self.registration.reg_conf_price
+        
     @property
     def lastname_firstname(self):
         fn = self.first_name or None

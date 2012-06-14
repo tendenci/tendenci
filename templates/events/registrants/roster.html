@@ -248,7 +248,7 @@
 	<div>{{ registrant.company_name }}</div>
 	</td>
 
-    <td>{% firstof registrant.registration.reg_conf_price.title 'Untitled' %}</td>
+    <td>{% firstof registrant.register_pricing.title 'Untitled' %}</td>
 	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
 	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
 	<td><a href="{% url event.registration_confirmation event.pk registrant.registration.pk %}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->

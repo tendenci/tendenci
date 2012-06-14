@@ -639,6 +639,7 @@ def add_registration(*args, **kwargs):
                 override_price = form.cleaned_data.get('override_price', Decimal(0))
                 
             price = form.cleaned_data['pricing']
+
             if override:
                 amount = override_price
             else:
@@ -716,6 +717,7 @@ def create_registrant_from_form(*args, **kwargs):
 
     registrant = Registrant()
     registrant.registration = reg8n
+    registrant.pricing = price
     registrant.amount = amount
     registrant.override = kwargs.get('override', False)
     registrant.override_price = kwargs.get('override_price')
