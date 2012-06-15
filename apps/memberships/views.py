@@ -953,10 +953,6 @@ def membership_import_status(request, task_id, template_name='memberships/import
         }, context_instance=RequestContext(request))
 
 
-def _membership_joins(from_date):
-    return Membership.objects.filter(subscribe_dt__gte=from_date)
-
-
 @staff_member_required
 def membership_join_report(request):
     now = datetime.now()
