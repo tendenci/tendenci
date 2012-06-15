@@ -13,10 +13,12 @@ from django.template.defaultfilters import yesno
 
 from theme.shortcuts import themed_response as render_to_response
 from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from perms.utils import (has_perm, update_perms_and_save,
+    get_query_filters, has_view_perm)
 from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from invoices.models import Invoice
+from exports.utils import run_export_task
 
 from forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
@@ -48,17 +50,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
                     form_instance.payment_methods.add(method)
                 
                 formset.save()
-                
-                log_defaults = {
-                    'event_id' : 587100,
-                    'event_data': '%s (%d) added by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-                    'description': '%s added' % form_instance._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': form_instance,
-                }
-                EventLog.objects.log(**log_defaults)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % form_instance)
                 return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
@@ -92,16 +84,6 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
             if not form.cleaned_data['custom_payment']:
                 form_instance.pricing_set.all().delete()
 
-            log_defaults = {
-                'event_id' : 587200,
-                'event_data': '%s (%d) edited by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-                'description': '%s edited' % form_instance._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': form_instance,
-            }
-            EventLog.objects.log(**log_defaults)
-                        
             messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % form_instance)
             return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
@@ -517,3 +499,16 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             'form':entry.form,
         }, context_instance=RequestContext(request))
         
+@login_required
+def export(request, template_name="forms/export.html"):
+    """Export forms"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        export_id = run_export_task('forms_builder.forms', 'form', [])
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

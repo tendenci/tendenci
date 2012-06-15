@@ -43,6 +43,9 @@
             {% if can_add_news %}
                 <li><a href="{% url news.add %}">{% trans "Add" %} {% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
             {% endif %}
+            {% if admin %}
+                <li><a href="{% url news.export %}">{% trans "Export" %} {% firstof MODULE_NEWS_LABEL 'News' %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_news or can_edit_news %}

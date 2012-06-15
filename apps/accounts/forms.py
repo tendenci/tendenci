@@ -71,7 +71,6 @@ class RegistrationCustomForm(RegistrationForm):
         send_registration_activation_email(new_user, registration_profile)
         
         new_profile = Profile(user=new_user, 
-                              email=self.cleaned_data['email'],
                               company=self.cleaned_data['company'],
                               phone=self.cleaned_data['phone'],
                               address=self.cleaned_data['address'],

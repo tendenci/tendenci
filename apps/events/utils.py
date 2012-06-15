@@ -876,7 +876,7 @@ def get_pricing(user, event, pricing=None):
         if price.group and price.allow_member:
             qualifies = False
             
-            if price.group.user.profile.is_member or user.profile.is_member:
+            if price.group.is_member(user) or user.profile.is_member:
                 qualifies = True            
                 pricing_list.append(gen_pricing_dict(
                    price, 
@@ -886,7 +886,7 @@ def get_pricing(user, event, pricing=None):
                 continue
 
         # Group permissions
-        if price.group and not price.group.user.profile.is_member:
+        if price.group and not price.group.is_member(user):
             qualifies = False
             pricing_list.append(gen_pricing_dict(
                price, 

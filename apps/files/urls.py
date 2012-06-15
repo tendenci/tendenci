@@ -1,14 +1,13 @@
 from django.conf.urls.defaults import patterns, url
 from files.signals import init_signals
 
-
 init_signals()
 
-urlpatterns = patterns('files',                  
+urlpatterns = patterns('files',
     url(r'^$', 'views.search', name="files"),
     url(r'^(?P<id>\d+)/$', 'views.details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<download>[download/]*)$', 'views.details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<download>[download/]*)$', 'views.details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<download>(download)?)/$', 'views.details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>(download)?)/?(?P<constrain>(constrain)?)/?$', 'views.details', name="file"),
 
     # crop and quality
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/?$', 'views.details', name="file"),
@@ -24,6 +23,5 @@ urlpatterns = patterns('files',
     url(r'^tinymce/template/(?P<id>\d+)/$', 'views.tinymce_upload_template'),
     url(r'^swfupload/$', 'views.swfupload', name="file.swfupload"),
 
-    # url(r'^reports/$', 'views.reports', name="file.reports"),
     url(r'^reports/most-viewed/$', 'views.report_most_viewed', name="file.report_most_viewed"),
 )

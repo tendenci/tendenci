@@ -7,7 +7,6 @@ from django.template import RequestContext
 from django.http import (HttpResponseRedirect, HttpResponse, Http404,
     HttpResponseServerError)
 from django.core.urlresolvers import reverse
-from django.contrib import messages
 from django.middleware.csrf import get_token as csrf_get_token
 
 from base.http import Http403
@@ -21,26 +20,26 @@ from theme.shortcuts import themed_response as render_to_response
 
 from files.cache import FILE_IMAGE_PRE_KEY
 from files.models import File
-from files.utils import get_image
+from files.utils import get_image, aspect_ratio
 from files.forms import FileForm, MostViewedForm
 
 
-def details(request, id=None, size=None, crop=False, quality=90, download=False, template_name="files/details.html"):
-    from files.search_indexes import FileIndex
-    if not id: return HttpResponseRedirect(reverse('file.search'))
-
-    # if string and digit convert to integer
-    if isinstance(quality, unicode) and quality.isdigit():
-        quality = int(quality)
+def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
 
     file = get_object_or_404(File, pk=id)
+
+    # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
         raise Http403
 
-    # check 'if public'
+    # extra permission
     if not file.is_public:
         if not request.user.is_authenticated():
             raise Http403
+
+    # if string and digit convert to integer
+    if isinstance(quality, basestring) and quality.isdigit():
+        quality = int(quality)
 
     # get image binary
     try:
@@ -51,25 +50,21 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
 
     # log downloads and views
     if download:
-        # if filew download
         attachment = 'attachment;'
-        log_defaults = {
-            'event_id' : 185000,
+        EventLog.objects.log(**{
+            'event_id': 185000,
             'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
             'description': '%s downloaded' % file._meta.object_name,
             'user': request.user,
             'request': request,
             'instance': file,
-        }
-        EventLog.objects.log(**log_defaults)
+        })
     else:
         attachment = ''
-
         if file.type() != 'image':
-
             # log file view
             EventLog.objects.log(**{
-                'event_id' : 186000,
+                'event_id': 186000,
                 'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
                 'description': '%s viewed' % file._meta.object_name,
                 'user': request.user,
@@ -77,16 +72,12 @@ def details(request, id=None, size=None, crop=False, quality=90, download=False,
                 'instance': file,
             })
 
-# commenting out the real time index for files 
-#    # update index
-#    if file.type() != 'image':
-#        file_index = FileIndex(File)
-#        file_index.update_object(file)
-
     # if image size specified
     if file.type() == 'image' and size:  # if size specified
 
-        size = [int(s) for s in size.split('x')]  # convert to list
+        size = [int(s) if s.isdigit() else 0 for s in size.split('x')]
+        size = aspect_ratio(file.image_dimensions(), size, constrain)
+
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)

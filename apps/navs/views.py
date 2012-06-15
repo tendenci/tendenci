@@ -16,6 +16,7 @@ from event_logs.models import EventLog
 from site_settings.utils import get_setting
 from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from pages.models import Page
+from exports.utils import run_export_task
 
 from navs.models import Nav, NavItem
 from navs.forms import NavForm, PageSelectForm, ItemForm
@@ -220,3 +221,17 @@ def page_select(request, form_class=PageSelectForm):
     return HttpResponse(json.dumps({
                 "error": True
             }), mimetype="text/plain")
+
+@login_required
+def export(request, template_name="navs/export.html"):
+    """Export Navs"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        export_id = run_export_task('navs', 'nav', [])
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

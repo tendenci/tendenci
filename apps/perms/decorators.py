@@ -65,7 +65,22 @@ def admin_required(view_method):
 
         if not admin:
             raise Http403
-        
+
+        return view_method(request, *args, **kwargs)
+
+    return decorator
+
+def superuser_required(view_method):
+    """
+    Checks for superuser permissions before
+    returning method, else raises 403 exception.
+    """
+    def decorator(request, *args, **kwargs):
+        superuser = request.user.profile.is_superuser
+
+        if not superuser:
+            raise Http403
+
         return view_method(request, *args, **kwargs)
 
     return decorator

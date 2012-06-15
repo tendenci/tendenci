@@ -43,6 +43,9 @@
             {% if can_add_article %}
                 <li><a href="{% url article.add %}">{% trans "Add" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></li>
             {% endif %}
+            {% if request.user.is_superuser %}
+                <li><a href="{% url article.export %}">{% trans "Export" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_article or can_edit_article %}

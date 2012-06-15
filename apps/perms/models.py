@@ -2,9 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from event_logs.models import EventLog
 
 # Abstract base class for authority fields
-class TendenciBaseModel(models.Model):    
+class TendenciBaseModel(models.Model):
     # authority fields
     allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
     allow_user_view = models.BooleanField(_("Signed in user can view"))
@@ -17,7 +18,7 @@ class TendenciBaseModel(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="%(class)s_owner")    
+    owner = models.ForeignKey(User, related_name="%(class)s_owner")
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
@@ -64,3 +65,23 @@ class TendenciBaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            log = kwargs.get('log', True)
+            if log:
+                application = self.__module__
+                EventLog.objects.log(instance=self, application=application)
+        if "log" in kwargs:
+            kwargs.pop('log')
+        super(TendenciBaseModel, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.pk:
+            log = kwargs.get('log', True)
+            if log:
+                application = self.__module__
+                EventLog.objects.log(instance=self, application=application)
+        if "log" in kwargs:
+            kwargs.pop('log')
+        super(TendenciBaseModel, self).delete(*args, **kwargs)

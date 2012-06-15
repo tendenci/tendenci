@@ -69,6 +69,7 @@ def get_addon_access_filter(user, is_strict=False):
     filter_and = {'start_dt__lt': now,
                   'end_dt__gt': now,
                   }
+
             
     return filter_and, filter_or
     

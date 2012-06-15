@@ -22,8 +22,11 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
+
 #from django.forms.models import BaseModelFormSet
 from django.db.models import Q
+from django.forms.models import BaseModelFormSet
+from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from base.http import Http403
@@ -36,6 +39,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
 from theme.shortcuts import themed_response as render_to_response
+from exports.utils import run_export_task
 
 from events.search_indexes import EventIndex
 from events.models import (Event, RegistrationConfiguration,
@@ -98,8 +102,8 @@ def event_custom_reg_form_list(request, event_id,
         else:
             for price in regconfpricings:
                 price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
-            
-        
+
+
     context = {'event': event,
                'reg_conf': reg_conf,
                'regconfpricings': regconfpricings}
@@ -111,7 +115,7 @@ def details(request, id=None, template_name="events/view.html"):
         return HttpResponseRedirect(reverse('event.month'))
 
     event = get_object_or_404(Event, pk=id)
-    
+
     days = []
     if not event.on_weekend:
         days = get_active_days(event)
@@ -119,15 +123,7 @@ def details(request, id=None, template_name="events/view.html"):
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
 
-    EventLog.objects.log(
-        event_id=175000,  # view event
-        event_data='%s (%d) viewed by %s' %
-            (event._meta.object_name, event.pk, request.user),
-        description='%s viewed' % event._meta.object_name,
-        user=request.user,
-        request=request,
-        instance=event
-    )
+    EventLog.objects.log(instance=event)
 
     speakers = event.speaker_set.all().order_by('pk')
     organizers = event.organizer_set.all().order_by('pk') or None
@@ -178,7 +174,7 @@ def search(request, redirect=False, template_name="events/search.html"):
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
         if event_type:
-            events = events.filter(type__slug=event_type, end_dt__gte=start_dt, start_dt__lte=start_dt)
+            events = events.filter(type__slug=event_type, end_dt__gte=start_dt)
         else:
             events = events.filter(start_dt__gte=start_dt)
         if request.user.is_authenticated():
@@ -187,14 +183,7 @@ def search(request, redirect=False, template_name="events/search.html"):
     events = events.order_by('start_dt')
     types = Type.objects.all().order_by('name')
 
-    EventLog.objects.log(
-        event_id=174000,  # searched event
-        event_data='%s searched by %s' % ('Event', request.user),
-        description='Event searched',
-        user=request.user,
-        request=request,
-        source='events',
-    )
+    EventLog.objects.log()
 
     return render_to_response(
         template_name,
@@ -218,12 +207,12 @@ def icalendar(request):
     ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
     ics_str += "VERSION:2.0\n"
     ics_str += "METHOD:PUBLISH\n"
-    
+
     # function get_vevents in events.utils
     ics_str += get_vevents(request, d)
-    
+
     ics_str += "END:VCALENDAR\n"
-    
+
     response = HttpResponse(ics_str)
     response['Content-Type'] = 'text/calendar'
     if d['domain_name']:
@@ -252,12 +241,12 @@ def icalendar_single(request, id):
     ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
     ics_str += "VERSION:2.0\n"
     ics_str += "METHOD:PUBLISH\n"
-    
+
     # function get_vevents in events.utils
     ics_str += get_ievent(request, d, id)
-    
+
     ics_str += "END:VCALENDAR\n"
-    
+
     response = HttpResponse(ics_str)
     response['Content-Type'] = 'text/calendar'
     if d['domain_name']:
@@ -268,19 +257,12 @@ def icalendar_single(request, id):
     return response
 
 def print_view(request, id, template_name="events/print-view.html"):
-    event = get_object_or_404(Event, pk=id)    
-
-    EventLog.objects.log(
-        event_id =  175001, # print-view event-id
-        event_data = '%s (%d) viewed [print] by %s' % (event._meta.object_name, event.pk, request.user),
-        description = '%s viewed [print]' % event._meta.object_name,
-        user = request.user,
-        request = request,
-        instance = event
-    )
+    event = get_object_or_404(Event, pk=id)
 
     if has_view_perm(request.user,'events.view_event',event):
-        return render_to_response(template_name, {'event': event}, 
+        EventLog.objects.log(instance=event)
+
+        return render_to_response(template_name, {'event': event},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -317,14 +299,14 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     # custom reg_form queryset
     reg_form_queryset = get_ACRF_queryset(event)
     regconfpricing_params = {'reg_form_queryset': reg_form_queryset}
-    
+
     SpeakerFormSet = modelformset_factory(
-        Speaker, 
+        Speaker,
         form=SpeakerForm,
         extra=1,
         can_delete=True
     )
-    
+
     if event.registration_configuration.regconfpricing_set.all():
         extra = 0
     else:
@@ -347,37 +329,37 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         organizer.event = [event]
         organizer.save()
 
-    if has_perm(request.user,'events.change_event', event):    
+    if has_perm(request.user,'events.change_event', event):
         if request.method == "POST":
             # single forms
             form_event = form_class(request.POST, request.FILES, instance=event, user=request.user)
             form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
             form_organizer = OrganizerForm(
                 request.POST,
-                instance=organizer, 
+                instance=organizer,
                 prefix='organizer'
             )
-            
+
             form_regconf = Reg8nEditForm(
                 request.POST,
-                instance=event.registration_configuration, 
+                instance=event.registration_configuration,
                 reg_form_queryset=reg_form_queryset,
                 prefix='regconf'
             )
 
             # form sets
             form_speaker = SpeakerFormSet(
-                request.POST, 
+                request.POST,
                 request.FILES,
                 queryset=event.speaker_set.all(),
                 prefix='speaker'
             )
-            
+
             conf_reg_form_required = False      # if reg_form is required on regconf
             pricing_reg_form_required = False  # if reg_form is required on regconfpricing
             if form_regconf.is_valid():
-                (use_custom_reg_form, 
-                 reg_form_id, 
+                (use_custom_reg_form,
+                 reg_form_id,
                  bind_reg_form_to_conf_only
                  ) = form_regconf.cleaned_data['use_custom_reg'].split(',')
                 if use_custom_reg_form == '1':
@@ -386,7 +368,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                     else:
                         pricing_reg_form_required = True
                     regconfpricing_params.update({'reg_form_required': pricing_reg_form_required})
-                    
+
             form_regconfpricing = RegConfPricingSet(
                 request.POST,
                 queryset=RegConfPricing.objects.filter(
@@ -396,7 +378,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 prefix='regconfpricing',
                 **regconfpricing_params
             )
-                
+
             # label the form sets
             form_speaker.label = "Speaker(s)"
             form_regconfpricing.label = "Pricing(s)"
@@ -422,7 +404,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
-                
+
                 # save photo
                 photo = form_event.cleaned_data['photo_upload']
                 if photo:
@@ -459,38 +441,29 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 if not conf_reg_form_required and regconf.reg_form:
                     regconf.reg_form = None
                     regconf.save()
-                    
+
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
-                    
+
                     if not pricing_reg_form_required:
                         regconf_price.reg_form = None
-                    
+
                     regconf_price.save()
-                    
+
                 organizer.event = [event]
                 organizer.save() # save again
 
                 # update event
                 event.place = place
                 event.registration_configuration = regconf
-                event.save()
-                
+                event.save(log=False)
+
                 # un-tie the reg_form from the pricing
                 if not pricing_reg_form_required:
                     for price in regconf.regconfpricing_set.all():
                         if price.reg_form:
                             price.reg_form = None
                             price.save()
-
-                EventLog.objects.log(
-                    event_id =  172000, # edit event
-                    event_data = '%s (%d) edited by %s' % (event._meta.object_name, event.pk, request.user),
-                    description = '%s edited' % event._meta.object_name,
-                    user = request.user,
-                    request = request,
-                    instance = event,
-                )
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
@@ -500,12 +473,12 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_place = PlaceForm(instance=event.place, prefix='place')
 
             form_organizer = OrganizerForm(
-                instance=organizer, 
+                instance=organizer,
                 prefix='organizer'
             )
             form_regconf = Reg8nEditForm(
                 instance=event.registration_configuration,
-                reg_form_queryset=reg_form_queryset, 
+                reg_form_queryset=reg_form_queryset,
                 prefix='regconf'
             )
 
@@ -516,7 +489,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 auto_id='speaker_formset'
             )
 
-            
+
             form_regconfpricing = RegConfPricingSet(
                 queryset=RegConfPricing.objects.filter(
                     reg_conf=event.registration_configuration,
@@ -542,7 +515,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 form_regconf,
                 form_regconfpricing
                 ],
-            }, 
+            },
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -568,14 +541,14 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
         if form.is_valid():
             event.meta = form.save() # save meta
             event.save() # save relationship
-            
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % event)
-             
+
             return HttpResponseRedirect(reverse('event', args=[event.pk]))
     else:
         form = form_class(instance=event.meta)
 
-    return render_to_response(template_name, {'event': event, 'form':form}, 
+    return render_to_response(template_name, {'event': event, 'form':form},
         context_instance=RequestContext(request))
 
 @login_required
@@ -588,27 +561,27 @@ def add(request, year=None, month=None, day=None, \
     # custom reg_form queryset
     reg_form_queryset = get_ACRF_queryset()
     regconfpricing_params = {'reg_form_queryset': reg_form_queryset}
-    
+
     SpeakerFormSet = modelformset_factory(
-        Speaker, 
-        form=SpeakerForm, 
+        Speaker,
+        form=SpeakerForm,
         extra=1
     )
     RegConfPricingSet = modelformset_factory(
-        RegConfPricing, 
+        RegConfPricing,
         formset=RegConfPricingBaseModelFormSet,
-        form=Reg8nConfPricingForm, 
+        form=Reg8nConfPricingForm,
         extra=1
     )
 
     if has_perm(request.user,'events.add_event'):
         if request.method == "POST":
-            
+
             # single forms
             form_event = form_class(request.POST, request.FILES, user=request.user)
             form_place = PlaceForm(request.POST, prefix='place')
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
-            form_regconf = Reg8nEditForm(request.POST, prefix='regconf', 
+            form_regconf = Reg8nEditForm(request.POST, prefix='regconf',
                                          reg_form_queryset=reg_form_queryset,)
 
             # form sets
@@ -618,12 +591,12 @@ def add(request, year=None, month=None, day=None, \
                 queryset=Speaker.objects.none(),
                 prefix='speaker'
             )
-            
+
             conf_reg_form_required = False      # if reg_form is required on regconf
             pricing_reg_form_required = False  # if reg_form is required on regconfpricing
             if form_regconf.is_valid():
-                (use_custom_reg_form, 
-                 reg_form_id, 
+                (use_custom_reg_form,
+                 reg_form_id,
                  bind_reg_form_to_conf_only
                  ) = form_regconf.cleaned_data['use_custom_reg'].split(',')
                 if use_custom_reg_form == '1':
@@ -639,7 +612,7 @@ def add(request, year=None, month=None, day=None, \
                 prefix='regconfpricing',
                 **regconfpricing_params
             )
-                
+
             # label the form sets
             form_speaker.label = "Speaker(s)"
             form_regconfpricing.label = "Pricing(s)"
@@ -661,17 +634,17 @@ def add(request, year=None, month=None, day=None, \
                 speakers = form_speaker.save()
                 organizer = form_organizer.save()
                 regconf_pricing = form_regconfpricing.save()
-    
+
                 event = form_event.save(commit=False)
-    
+
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
-                
+
                 # save photo
                 photo = form_event.cleaned_data['photo_upload']
                 if photo:
                     event.save(photo=photo)
-                
+
                 for speaker in speakers:
                     speaker.event = [event]
                     speaker.save()
@@ -682,35 +655,26 @@ def add(request, year=None, month=None, day=None, \
                         f.allow_user_view = event.allow_user_view
                         f.allow_member_view = event.allow_member_view
                         f.save()
-                        
+
                 if not conf_reg_form_required and regconf.reg_form:
                     regconf.reg_form = None
                     regconf.save()
-                    
+
                 for regconf_price in regconf_pricing:
                     regconf_price.reg_conf = regconf
-                    
+
                     if not pricing_reg_form_required:
                         regconf_price.reg_form = None
-                    
+
                     regconf_price.save()
-                    
+
                 organizer.event = [event]
                 organizer.save() # save again
 
                 # update event
                 event.place = place
                 event.registration_configuration = regconf
-                event.save()
-
-                EventLog.objects.log(
-                    event_id =  171000, # add event
-                    event_data = '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                    description = '%s added' % event._meta.object_name,
-                    user = request.user,
-                    request = request,
-                    instance = event
-                )
+                event.save(log=False)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % event)
                 # notification to administrator(s) and module recipient(s)
@@ -732,36 +696,37 @@ def add(request, year=None, month=None, day=None, \
             # default to 30 days from now
             mydate = datetime.now()+timedelta(days=30)
             offset = timedelta(hours=2)
-            
+
             if all((year, month, day)):
                 date_str = '-'.join([year,month,day])
                 time_str = '10:00 AM'
                 dt_str = "%s %s" % (date_str, time_str)
                 dt_fmt = '%Y-%m-%d %H:%M %p'
-                
+
                 start_dt = datetime.strptime(dt_str, dt_fmt)
                 end_dt = datetime.strptime(dt_str, dt_fmt) + offset
-                
+
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
             else:
                 start_dt = mydate
                 end_dt = start_dt + offset
-                
+
                 event_init['start_dt'] = start_dt
                 event_init['end_dt'] = end_dt
-            
+
             reg_init = {
                 'start_dt':start_dt,
                 'end_dt':end_dt,
             }
-            
+
             # single forms
             form_event = form_class(user=request.user, initial=event_init)
             form_place = PlaceForm(prefix='place')
             form_organizer = OrganizerForm(prefix='organizer')
-            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf', 
+            form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf',
                                          reg_form_queryset=reg_form_queryset,)
+
             # form sets
             form_speaker = SpeakerFormSet(
                 queryset=Speaker.objects.none(),
@@ -794,22 +759,15 @@ def add(request, year=None, month=None, day=None, \
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
 @login_required
 def delete(request, id, template_name="events/delete.html"):
     event = get_object_or_404(Event, pk=id)
 
-    if has_perm(request.user,'events.delete_event'):   
+    if has_perm(request.user,'events.delete_event'):
         if request.method == "POST":
 
-            eventlog = EventLog.objects.log(
-                event_id =  173000, # delete event
-                event_data = '%s (%d) deleted by %s' % (event._meta.object_name, event.pk, request.user),
-                description = '%s deleted' % event._meta.object_name,
-                user = request.user,
-                request = request,
-                instance = event
-            )
+            eventlog = EventLog.objects.log(instance=event)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
@@ -1474,17 +1432,8 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
                             )                            
                             #email the admins as well
                             email_admins(event, event_price, self_reg8n, reg8n, registrants)
-                        
-                    # log an event
-                    log_defaults = {
-                        'event_id' : 431000,
-                        'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                        'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                        'user': request.user,
-                        'request': request,
-                        'instance': event,
-                    }
-                    EventLog.objects.log(**log_defaults)
+
+                    EventLog.objects.log(instance=event)
                 
                 else:
                     messages.add_message(request, messages.INFO,
@@ -1620,17 +1569,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                                     )
         
             if updated:
-            
-                # log an event
-                log_defaults = {
-                    'event_id' : 202000,
-                    'event_data': '%s (%d) edited by %s' % (reg8n._meta.object_name, reg8n.pk, request.user),
-                    'description': '%s edited registrants info for event registrations %s' % (request.user, reg8n_conf_url),
-                    'user': request.user,
-                    'request': request,
-                    'instance': reg8n,
-                }
-                EventLog.objects.log(**log_defaults)
+                EventLog.objects.log(instance=reg8n)
                 
                 msg = 'Registrant(s) info updated'
             else:
@@ -1726,6 +1665,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
                         'user_is_registrant': user_is_registrant,
                     })
 
+                # Log an event for each registrant in the loop
+                EventLog.objects.log(instance=registrant)
+
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
             args=[event.pk, registration.registrant.hash])
@@ -1807,7 +1749,8 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     invoice.subtotal -= registrant.amount
                     invoice.balance -= registrant.amount
                     invoice.save(request.user)
-            
+
+            EventLog.objects.log(instance=registrant)
 
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -1875,6 +1818,8 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
 
     types = Type.objects.all().order_by('name')
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'cal':cal, 
         'month':month,
@@ -1893,7 +1838,9 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
     year = int(year)
     if year <= 1900:
         raise Http404
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'date': datetime(year=int(year), month=int(month), day=int(day)),
         'now':datetime.now(),
@@ -1912,39 +1859,15 @@ def types(request, template_name='events/types/index.html'):
 
             # log "added" event_types
             for event_type in formset.new_objects:
-                EventLog.objects.log(**{
-                    'event_id' : 271000,
-                    'event_data': '%s (%d) added by %s' % (event_type._meta.object_name, event_type.pk, request.user),
-                    'description': '%s added' % event_type._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': event_type,
-                    'source': 'events',
-                })
+                EventLog.objects.log(event_type="add", instance=event_type)
 
             # log "changed" event_types
             for event_type, changed_data in formset.changed_objects:
-                EventLog.objects.log(**{
-                    'event_id' : 272000,
-                    'event_data': '%s (%d) edited by %s' % (event_type._meta.object_name, event_type.pk, request.user),
-                    'description': '%s edited' % event_type._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': event_type,
-                    'source': 'events',
-                })
+                EventLog.objects.log(event_type="edit", instance=event_type)
 
             # log "deleted" event_types
             for event_type in formset.deleted_objects:
-                EventLog.objects.log(**{
-                    'event_id' : 273000,
-                    'event_data': '%s deleted by %s' % (event_type._meta.object_name, request.user),
-                    'description': '%s deleted' % event_type._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': event_type,
-                    'source': 'events',
-                })
+                EventLog.objects.log(event_type="delete", instance=event_type)
 
     formset = TypeFormSet()
 
@@ -1996,6 +1919,8 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
             reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
             if not reg.name:
                 reg.name = reg.custom_reg_form_entry.__unicode__()
+
+    EventLog.objects.log(instance=event)
 
     return render_to_response(template_name, {
         'event':event, 
@@ -2063,6 +1988,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     num_registrants_who_paid = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
 
+    EventLog.objects.log(instance=event)
+
     return render_to_response(template_name, {
         'event':event, 
         'registrants':registrants,
@@ -2079,6 +2006,8 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
     registrant = get_object_or_404(Registrant, pk=id)
 
     if has_perm(request.user,'registrants.view_registrant',registrant):
+        EventLog.objects.log(instance=registrant)
+
         return render_to_response(template_name, {'registrant': registrant}, 
             context_instance=RequestContext(request))
     else:
@@ -2144,7 +2073,8 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
         else:
             if registrant.first_name or registrant.last_name:
                 registrant.name = ' '.join([registrant.first_name, registrant.last_name])
-    
+    EventLog.objects.log(instance=registration)
+
     return render_to_response(template_name, {
         'event':event,
         'registrant':registrant,
@@ -2204,17 +2134,10 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
                 email.body = '<h2>Site Webmaster Notification of Calendar Event Send</h2>%s' % email.body
                 email.send()
 
-            EventLog.objects.log(**{
-                'event_id' : 131101,
-                'event_data': '%s (%d) sent by %s to event registrants' % (email._meta.object_name, email.pk, request.user),
-                'description': '%s (%d) sent to event registrants of %s' % (email._meta.object_name, email.pk, event.title),
-                'user': request.user,
-                'request': request,
-                'instance': email,
-            })
-            
+            EventLog.objects.log(instance=email)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully sent email "%s" to event registrants for event "%s".' % (subject, event.title))
-            
+
             return HttpResponseRedirect(reverse('event', args=([event_id])))
         
     else:
@@ -2330,6 +2253,8 @@ def registrant_export(request, event_id, roster_view=''):
                     style = balance_owed_style
 
             sheet.write(row, col, val, style=style)
+
+    EventLog.objects.log(instance=event)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s' % file_name
@@ -2508,11 +2433,12 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
             start_row += len(rows_list)
              
 
+    EventLog.objects.log(instance=event)
+
     response = HttpResponse(mimetype='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename=%s' % file_name
     book.save(response)
-    return response        
-        
+    return response
 
 @login_required
 def delete_speaker(request, id):
@@ -2568,16 +2494,9 @@ def copy(request, id):
         
     event = get_object_or_404(Event, id=id)
     new_event = copy_event(event, request.user)
-    
-    EventLog.objects.log(
-        event_id =  171000, # add event
-        event_data = '%s (%d) added by %s' % (new_event._meta.object_name, new_event.pk, request.user),
-        description = '%s added' % new_event._meta.object_name,
-        user = request.user,
-        request = request,
-        instance = new_event
-    )
-    
+
+    EventLog.objects.log(instance=new_event)
+
     messages.add_message(request, messages.SUCCESS, 'Sucessfully copied Event: %s.<br />Edit the new event (set to <strong>private</strong>) below.' % new_event.title)
     
     return redirect('event.edit', id=new_event.id)
@@ -2612,7 +2531,7 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
             # place event into pending queue
             event.status = False
             event.status_detail = 'pending'
-            event.save()
+            event.save(log=False)
             
             # save photo
             photo = form.cleaned_data['photo_upload']
@@ -2639,7 +2558,9 @@ def pending(request, template_name="events/pending.html"):
         raise Http403
         
     events = Event.objects.filter(status=False, status_detail='pending').order_by('start_dt')
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'events': events,
         }, context_instance=RequestContext(request))
@@ -2704,7 +2625,9 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
             for option in options:
                 option.addon = addon
                 option.save()
-                
+
+            EventLog.objects.log(instance=addon)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % addon)
             return redirect('event', event.pk)
     else:
@@ -2735,7 +2658,9 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
         if False not in (form.is_valid(), formset.is_valid()):
             addon = form.save()
             options = formset.save()
-            
+
+            EventLog.objects.log(instance=addon)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % addon)
             return redirect('event', event.pk)
     else:
@@ -2750,13 +2675,14 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
     
 @login_required
 def disable_addon(request, event_id, addon_id):
-    """delete addon for an event"""
+    """disable addon for an event"""
     event = get_object_or_404(Event, pk=event_id)
     
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
     
     addon = get_object_or_404(Addon, pk=addon_id)
+    EventLog.objects.log(instance=addon)
     addon.delete() # this just renders it inactive to not cause deletion of already existing regaddons
     messages.add_message(request, messages.SUCCESS, "Successfully disabled the %s" % addon.title)
         
@@ -2764,7 +2690,7 @@ def disable_addon(request, event_id, addon_id):
 
 @login_required
 def enable_addon(request, event_id, addon_id):
-    """delete addon for an event"""
+    """enable addon for an event"""
     event = get_object_or_404(Event, pk=event_id)
     
     if not has_perm(request.user,'events.change_event', event):
@@ -2773,6 +2699,23 @@ def enable_addon(request, event_id, addon_id):
     addon = get_object_or_404(Addon, pk=addon_id)
     addon.status = True
     addon.save()
+
+    EventLog.objects.log(instance=addon)
+
     messages.add_message(request, messages.SUCCESS, "Successfully enabled the %s" % addon.title)
         
     return redirect('event.list_addons', event.id)
+
+@login_required
+def export(request, template_name="events/export.html"):
+    """Export Events"""
+    
+    if not request.user.is_superuser:
+        raise Http403
+    
+    if request.method == 'POST':
+        export_id = run_export_task('events', 'event', [])
+        return redirect('export.status', export_id)
+        
+    return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))

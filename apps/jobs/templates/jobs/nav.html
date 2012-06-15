@@ -48,6 +48,7 @@
             {% endif %}
             {% if admin %}
                 <li><a href="{% url job.pending %}">{% trans "Pending" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
+                <li><a href="{% url job.export %}">{% trans "Export" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

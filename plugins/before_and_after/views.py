@@ -41,17 +41,9 @@ def search(request, template_name='before_and_after/search.html'):
         if subcategory:
             subcategory = get_object_or_404(Subcategory, pk=subcategory)
             bnas = bnas.filter(subcategory=subcategory.pk)
-            
-    log_defaults = {
-        'event_id' : 1090400,
-        'event_data': '%s searched by %s' % ('Before and Afters', request.user),
-        'description': '%s searched' % 'Before and Afters',
-        'user': request.user,
-        'request': request,
-        'source': 'before_and_afters'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, 
         {
             'categories': categories,
@@ -73,17 +65,9 @@ def detail(request, id, template_name='before_and_after/detail.html'):
     
     categories = Category.objects.all()
     subcategories = Subcategory.objects.filter(category=category.pk)
-    
-    log_defaults = {
-            'event_id' : 1090500,
-            'event_data': '%s (%d) viewed by %s' % (bna._meta.object_name, bna.pk, request.user),
-            'description': '%s viewed' % bna._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': bna,
-        }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log(instance=bna)
+
     return render_to_response(template_name,
         {
             'categories': categories,
@@ -98,7 +82,9 @@ def detail(request, id, template_name='before_and_after/detail.html'):
 def index(request, template_name='before_and_after/index.html'):
     categories = Category.objects.all()
     subcategories = Subcategory.objects.all()
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, 
         {
             'categories': categories,

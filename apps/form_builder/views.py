@@ -31,15 +31,7 @@ def index(request, form_class=ContactForm, template_name="form.html"):
             if listed_in_email_block(email):
                 # listed in the email blocks - it's a spam email we want to block
                 # log the spam
-                log_defaults = {
-                    'event_id' : 130999,
-                    'event_data': 'SPAM detected in email from  %s %s, %s.' \
-                                    % (first_name, last_name, email),
-                    'description': 'email spam detected',
-                    'user': request.user,
-                    'request': request,
-                }
-                EventLog.objects.log(**log_defaults)
+                EventLog.objects.log()
                 
                 # redirect normally so they don't suspect
                 return HttpResponseRedirect(reverse('form.confirmation'))
@@ -122,22 +114,7 @@ def index(request, form_class=ContactForm, template_name="form.html"):
             try: user = User.objects.filter(email=email)[0]
             except: user = None
 
-            if user:
-                event_user = user
-                event_id = 125115
-            else:
-                event_user = AnonymousUser()
-                event_id = 125114
-
-            log_defaults = {
-                'event_id' : event_id,
-                'event_data': 'Contact Form (id:%d) submitted by %s' % (contact.pk, email),
-                'description': '%s added' % contact._meta.object_name,
-                'user': event_user,
-                'request': request,
-                'instance': contact,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=contact)
 
             return HttpResponseRedirect(reverse('form.confirmation'))
         else:
@@ -150,14 +127,3 @@ def index(request, form_class=ContactForm, template_name="form.html"):
 
 def confirmation(request, form_class=ContactForm, template_name="form-confirmation.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))
-
-
-
-
-
-
-
-
-
-
-
