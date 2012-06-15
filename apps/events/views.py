@@ -967,8 +967,8 @@ def register(request, event_id=0,
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
-        else:
-            raise Http404   
+#        else:
+#            raise Http404   
 
     # update the spots left
     limit = event.registration_configuration.limit
