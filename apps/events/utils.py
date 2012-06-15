@@ -544,7 +544,7 @@ def split_table_price(total_price, quantity):
     Split the price for a team. 
     Returns a tuple: (first_individual_price, individual_price).
     """
-    avg = Decimal(round(total_price/quantity, 2))
+    avg = Decimal(str(round(total_price/quantity, 2)))
     diff = total_price - avg * quantity
     
     if diff <> 0:
