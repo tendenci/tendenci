@@ -203,8 +203,9 @@ class MembershipTypeForm(forms.ModelForm):
                                    widget=PriceInput(),
                                    help_text="Admin fee for the first time processing")
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('admin hold','Admin Hold'),))
-    
+        choices=(('active', 'Active'), ('inactive', 'Inactive'))
+    )
+
     class Meta:
         model = MembershipType
         fields = (
