@@ -517,31 +517,13 @@ class Registration(models.Model):
         Gets primary registrant.
         Get first registrant w/ email address
         Order by insertion (primary key)
-        """
-        registrant = None
+        """        
+        [registrant] = self.registrant_set.filter(is_primary=True)[:1] or [None]
+        if not registrant:
+            [registrant] = self.registrant_set.all().order_by("pk")[:1] or [None]
         
-        if self.event.registration_configuration.use_custom_reg_form:
-            registrants = self.registrant_set.all().order_by("pk")
-            for reg in registrants:
-                if reg.custom_reg_form_entry:
-                    email = reg.custom_reg_form_entry.get_email()
-                    if email:
-                        registrant = reg
-                        registrant.email = email
-                        break
-            if (not registrant) and registrants:
-                # this registrant probably didn't use the custom reg form,
-                # but the custom reg form is now enabled
-                registrant = registrants[0]
-                
-        else:
-            try:
-                registrant = self.registrant_set.filter(
-                    email__isnull=False).order_by("pk")[0]
-            except:
-                pass
-
         return registrant
+
 
     def save(self, *args, **kwargs):
         if not self.pk:
