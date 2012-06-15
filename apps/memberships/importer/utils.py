@@ -155,7 +155,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         if m['status__action'] != 'skip':
             # check if membership already exists
             if membership_type and user:
-                membership_exists = Membership.objects.filter(
+                membership_exists = Membership.objects.active(
                     user=user, membership_type=membership_type).exists()
                 # check if this is the first instance of the same key
                 if is_duplicate(csv_dict, csv_dicts, key):

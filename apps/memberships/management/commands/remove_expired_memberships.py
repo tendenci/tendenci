@@ -27,7 +27,7 @@ class Command(BaseCommand):
                 membership.status_detail = 'expired'
                 membership.save()
 
-                # clear the member id (or member number from user profile.
+                # update profile
                 membership.clear_user_member_id()
 
                 # remove from group

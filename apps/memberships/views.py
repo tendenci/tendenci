@@ -26,7 +26,6 @@ from perms.utils import has_perm
 from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from reports import ReportNewMems
 from files.models import File
-from imports.utils import render_excel
 from exports.utils import render_csv
 
 from memberships.models import (App, AppEntry, Membership,
@@ -133,7 +132,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
                     group=membership.membership_type.group
                 ).delete()
             # -----
-            
+
             # populate or clear the member ID from profile based on the membership status
             membership.populate_or_clear_member_id()
 
@@ -1004,17 +1003,17 @@ def membership_export(request):
                 'horizontal-rule',
                 'header',
             )
-            
+
             fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
-            
+
             label_list = [field.label for field in fields]
             extra_field_labels = ['User Name', 'Member Number', 'Join Date', 'Renew Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
             extra_field_names = ['user', 'member_number', 'join_dt', 'renew_dt', 'expire_dt', 'status', 'status_detail', 'invoice', 'invoice_total', 'invoice_balance']
-            
+
             label_list.extend(extra_field_labels)
-            
+
             data_row_list = []
-            memberships = Membership.objects.filter(ma=app)
+            memberships = Membership.objects.filter(ma=app).exclude('archive')
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
@@ -1046,9 +1045,9 @@ def membership_export(request):
                     value = value or u''
                     if type(value) in (bool, int, long, None):
                         value = unicode(value)
-                    
+
                     data_row.append(value)
-                
+
                 for field in extra_field_names:
 
                     if field == 'user':
@@ -1087,7 +1086,7 @@ def membership_export(request):
                         value = unicode(value)
 
                     data_row.append(value)
-                
+
                 data_row_list.append(data_row)
 
             return render_csv(file_name, label_list, data_row_list)
@@ -1121,7 +1120,7 @@ def membership_join_report_pdf(request):
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
 
-    mems = Membership.objects.filter(expire_dt__gt=datetime.now())
+    mems = Membership.objects.expired()
 
     # get sort order
     sort = request.GET.get('sort', 'subscribe_dt')
@@ -1158,7 +1157,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
 
 @staff_member_required
 def report_expired_members(request, template_name='reports/membership_list.html'):
-    mems = Membership.objects.filter(expire_dt__lt=datetime.now())
+    mems = Membership.objects.expired()
 
     # get sort order
     sort = request.GET.get('sort', 'expire_dt')
