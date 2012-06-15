@@ -366,27 +366,6 @@ class Membership(TendenciBaseModel):
         # assert that we're within the renewal period
         return (datetime.now() >= start_dt and datetime.now() <= end_dt)
 
-    def archive(self, user=None):
-        """
-        Copy self to the MembershipArchive table
-        """
-        arch = MembershipArchive()
-
-        fields = [field.name for field in self.__class__._meta.fields]
-
-        fields.remove('id')
-        fields.remove('guid')
-
-        for field in fields:
-            setattr(arch, field, getattr(self, field))
-
-        arch.membership = self
-        arch.membership_create_dt = self.create_dt
-        arch.membership_update_dt = self.update_dt
-        if user and (not user.is_anonymous()):
-            arch.archive_user = user
-        arch.save()
-
     @classmethod
     def types_in_contract(cls, user):
         """
@@ -410,133 +389,72 @@ class Membership(TendenciBaseModel):
         return in_contract
 
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser: return True
+        if this_user.profile.is_superuser:
+            return True
 
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail == 'active'
         else:
             if this_user in (self.creator, self.owner, self.user):
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail == 'active'
             elif self.allow_user_view:
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail == 'active'
             elif has_perm(this_user, 'memberships.view_app', self):
                 return True
-        
+
         return False
-    
+
     def populate_user_member_id(self, verbosity=1):
         """
         Populate the member ID (or member number) to user profile.
         """
-        if all([self.status==1, self.status_detail == 'active']):
+        if all([self.status == True, self.status_detail == 'active']):
             if self.member_number:
                 [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
                 if not profile:
                     profile = Profile.objects.create_profile(self.user)
-                
-                if any([not profile.member_number, 
-                       profile.member_number <> self.member_number]):
+
+                if any([not profile.member_number,
+                       profile.member_number != self.member_number]):
                     profile.member_number = self.member_number
                     profile.save()
 
                     # set the is_member attr to True for this user
                     setattr(self.user, 'is_member', True)
-                    
-                    if verbosity >=2:
-                        print 'Added member number %s for %s.' % (self.member_number, 
-                                                                  self.user.username)
+
+                    if verbosity > 1:
+                        print 'Added member number %s for %s.' % \
+                            (self.member_number, self.user.username)
                 else:
-                    if verbosity >=2:
+                    if verbosity > 1:
                         print 'Member number already populated for %s' % self.user.username
             else:
-                if verbosity >=2:
+                if verbosity > 1:
                     print '***Membership (ID=%d) does NOT have a member number.' % self.id
-            
-                    
+
     def clear_user_member_id(self):
         """
         Clear the member ID (or member number) in user's profile.
         """
-        if any([self.status==0, self.status_detail <> 'active']):
+        if any([self.status == 0, self.status_detail != 'active']):
             [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
-            if profile and profile.member_number:                
-                profile.member_number = ''
+            if profile and profile.member_number:
+                profile.member_number = u''
                 profile.save()
 
                 # set the is_member attr to False for this user
                 setattr(self.user, 'is_member', False)
-                
+
     def populate_or_clear_member_id(self):
         """
         If the membership is active, populate the member ID to profile.
-        Otherwise, clear the member ID from profile. 
+        Otherwise, clear the member ID from profile.
         """
-        if all([self.status==1, self.status_detail == 'active']):
+        if all([self.status == 1, self.status_detail == 'active']):
             self.populate_user_member_id()
         else:
             self.clear_user_member_id()
-
-
-class MembershipArchive(TendenciBaseModel):
-    """
-    Keep a record of the old memberships.
-    These records are created when a membership is renewed.
-    A reference to the newest (non-archived) membership is
-    included via the 'membership' field.
-    """
-    membership = models.ForeignKey('Membership', null=True, default=None)
-    member_number = models.CharField(_("Member Number"), max_length=50)
-    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
-    user = models.ForeignKey(User)
-    directory = models.ForeignKey(Directory, blank=True, null=True)
-    renewal = models.BooleanField(default=False)
-    subscribe_dt = models.DateTimeField(_("Subscribe Date"))
-    expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
-    corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
-    invoice = models.ForeignKey(Invoice, null=True)
-    payment_method = models.ForeignKey(PaymentMethod, null=True)
-    ma = models.ForeignKey("App")
-
-    membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
-    membership_update_dt = models.DateTimeField()   # original update dt for the membership entry
-
-    archive_user = models.ForeignKey(User, related_name="membership_archiver", null=True)
-
-    objects = MembershipManager()
-
-    class Meta:
-        verbose_name = _("Archived Membership")
-        verbose_name_plural = _("Archived Memberships")
-        permissions = (("view_archived_membership", "Can view archived membership"),)
-
-    def __unicode__(self):
-        return "%s #%s" % (self.user.get_full_name(), self.member_number)
-
-    @classmethod
-    def archive(cls, membership, **kwargs):
-        """
-        Create archive record
-        Delete membership record
-        """
-        arch = cls()
-        exclude_list = ['id']
-        # create archive record
-        for field_name in cls._meta.get_all_field_names():
-            if field_name not in exclude_list:
-                try:
-                    setattr(arch, field_name, getattr(membership, field_name))
-                except AttributeError:
-                    pass  # field not available in membership
-
-        arch.membership_create_dt = membership.create_dt
-        arch.membership_update_dt = membership.update_dt
-        arch.save()
-
-        # delete membership
-        membership.delete()
-
-        return arch
 
 
 class MembershipImport(models.Model):
@@ -1215,23 +1133,27 @@ class AppEntry(TendenciBaseModel):
 
         return user, created
 
-
     def approve(self):
         """
-        # Create membership/archive membership
-        # Bind membership with user
-        # Place user in membership group
-        # Update user profile with membership data (fn,ln,email)
-        # Update entry; mark as approved, bind to membership, update decision_dt
+        - Bind membership with user
+            1. authenticated user
+            2. suggestions per fn, ln, email
+            3. create new user
+        - Update user with membership data (fn, ln, email)
+        - Bind user with group
+        - Update memberhsip status_detail='active'
+        - Update decision_dt=datetime.now()
 
-        order of candidates (for user-binding)
-            authenticated user
-            suggestions per fn, ln, em
-            new user creation
+        More than 1 [active] membership of the same type cannot exist
         """
 
         # get user -------------
         user, created = self.get_or_create_user()
+
+        user.first_name = self.first_name
+        user.last_name = self.last_name
+        user.email = self.email
+        user.save()
 
         # get judge --------------
         if self.judge and self.judge.is_authenticated():
@@ -1239,102 +1161,57 @@ class AppEntry(TendenciBaseModel):
         else:
             judge, judge_pk, judge_username = None, int(), unicode()
 
-        # more than 1 membership of the same type cannot exist
+        # update old membership [of same type]
+        memberships = user.memberships.filter(
+            membership_type=self.membership_type,
+            status=True,
+            status_detail='active'
+        )
 
-        # if membership; then renewal; create archive
-        membership = user.memberships.get_membership()
-        if membership:
-            archive = MembershipArchive.objects.create(**{
-                'membership':membership,
-                'member_number': membership.member_number,
-                'membership_type': membership.membership_type,
-                'user': membership.user,
-                'directory':membership.directory,
-                'subscribe_dt':membership.subscribe_dt,
-                'expire_dt':membership.expire_dt,
-                'corporate_membership_id':membership.corporate_membership_id,
-                'invoice':membership.invoice,
-                'payment_method':membership.payment_method,
-                'ma':membership.ma,
-                'creator_id':membership.creator_id,
-                'creator_username':membership.creator_username,
-                'owner_id':membership.owner_id,
-                'owner_username':membership.owner_username,
-                'membership_create_dt':membership.create_dt,
-                'membership_update_dt':membership.update_dt,
-            })
-
-            # update current membership record
-            membership.membership_type = self.membership_type
-            membership.renewal = self.membership_type.renewal
-            membership.subscribe_dt = datetime.now()
-            membership.expire_dt = self.get_expire_dt()
-            membership.payment_method = self.payment_method
-            membership.ma = self.app
-            membership.corporate_membership_id = self.corporate_membership_id
-            membership.creator = user
-            membership.creator_username = user.username
-            membership.owner = user
-            membership.owner_username = user.username
+        membership = None
+        for membership in memberships:
+            membership.status_detail = 'expired'
             membership.save()
-            
-            # populate the member number to profile
-            membership.populate_user_member_id()
 
-        try: # get membership
-            membership = Membership.objects.get(**{
-                'membership_type': self.membership_type,
-                'user': user,
+        if membership:
+            member_number = membership.member_number
+        else:
+            member_number = self.app.entries.count() + 1000
+
+        membership = Membership.objects.create(**{
+            'member_number': member_number,
+            'membership_type': self.membership_type,
+            'user': user,
+            'renewal': self.membership_type.renewal,
+            'subscribe_dt': datetime.now(),
+            'expire_dt': self.get_expire_dt(),
+            'payment_method': self.payment_method,
+            'ma': self.app,
+            'corporate_membership_id': self.corporate_membership_id,
+            'creator': user,
+            'creator_username': user.username,
+            'owner': user,
+            'owner_username': user.username,
+        })
+
+        # populate the member number to profile
+        membership.populate_user_member_id()
+
+        try:
+            # add user to group
+            GroupMembership.objects.create(**{
+                'group': self.membership_type.group,
+                'member': user,
+                'creator_id': judge_pk or user.pk,
+                'creator_username': judge_username,
+                'owner_id': judge_pk or user.pk,
+                'owner_username': judge_username,
                 'status': True,
                 'status_detail': 'active',
             })
-        except: # or create membership
-                
-            membership = Membership.objects.create(**{
-                'member_number': self.app.entries.count() + 1000,
-                'membership_type': self.membership_type,
-                'user':user,
-                'renewal': self.membership_type.renewal,
-                'subscribe_dt':datetime.now(),
-                'expire_dt': self.get_expire_dt(),
-                'payment_method': self.payment_method,
-                'ma':self.app,
-                'corporate_membership_id': self.corporate_membership_id,
-                'creator':user,
-                'creator_username':user.username,
-                'owner':user,
-                'owner_username':user.username,
-            })
-
-        try:
-            # create group-membership object
-            # this adds the user to the group
-            GroupMembership.objects.create(**{
-                'group':self.membership_type.group,
-                'member':user,
-                'creator_id': judge_pk,
-                'creator_username': judge_username,
-                'owner_id':judge_pk,
-                'owner_username':judge_username,
-                'status':True,
-                'status_detail':'active',
-            })
         except:
             pass
 
-        # update user account
-        user.first_name = self.first_name
-        user.last_name = self.last_name
-        user.email = self.email
-
-        try:
-            user.get_profile().email = self.email
-        except:
-            pass
-
-        user.save()
-        
-        # take care of the special functionality - Groups
         # add user to the groups they checked
         field_entries = self.fields.all()
         for field_entry in field_entries:
