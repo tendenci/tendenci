@@ -440,7 +440,10 @@ class AppForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':App._meta.app_label, 
         'storme_model':App._meta.module_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
+    status_detail = forms.ChoiceField(
+        choices=(('draft', 'Draft'), ('published', 'Published')),
+        initial='published'
+    )
 
     class Meta:
         model = App
