@@ -222,6 +222,26 @@ class MembershipManager(Manager):
 
         return instance
 
+    def active(self, **kwargs):
+        """
+        Returns membership records with status=True
+        and status_detail='active'
+        """
+        from datetime import datetime
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        return self.filter(expire_dt_gt=datetime.now(), **kwargs)
+
+    def expired(self, **kwargs):
+        """
+        Returns membership records with status=True
+        and status_detail='active'
+        """
+        from datetime import datetime
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        return self.filter(expire_dt_lte=datetime.now(), **kwargs)
+
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
         Use Django Haystack search index
