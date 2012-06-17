@@ -1,5 +1,6 @@
 from datetime import datetime
 import operator
+from django.db.models import Q
 
 from django.contrib.auth.models import User, AnonymousUser
 
@@ -40,7 +41,6 @@ def get_available_addons(event, user, is_strict=False):
 def get_addon_access_filter(user, is_strict=False):
     if user.profile.is_superuser: return None, None
     
-    now = datetime.now()
     filter_and, filter_or = None, None
     
     if is_strict:
@@ -64,11 +64,6 @@ def get_addon_access_filter(user, is_strict=False):
                     'allow_user': True,
                     'allow_member': True,
                     'group__id__gt': 0}
-
-    
-    filter_and = {'start_dt__lt': now,
-                  'end_dt__gt': now,
-                  }
 
             
     return filter_and, filter_or

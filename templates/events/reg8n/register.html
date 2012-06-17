@@ -50,6 +50,7 @@
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
+         {% include "events/include/spots_status.html" %}	
         {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  %}
         <div class="event-msg">
             {% blocktrans %} <strong> Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
@@ -62,9 +63,12 @@
         {% endif %}
     </div>
         
-    {% if reg_form.errors.values or has_registrant_form_errors %}
+    {% if reg_form.errors.values or has_registrant_form_errors or not within_available_spots %}
         <div class="errors-box">
             <ul>
+            	{% if not within_available_spots %}
+            	<li>Only {{ event.spots_available }} spot{{ event.spots_available|pluralize }} available. No more {{ event.spots_available }} registrant{{ event.spots_available|pluralize }} please!</li>
+            	{% endif %}
                 {{ reg_form.non_field_errors }}
                 {% for field in reg_form %}
                     {% if field.errors %}

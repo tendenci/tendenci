@@ -38,6 +38,7 @@
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
+         {% include "events/include/spots_status.html" %}	
     </div>
     
    {% if not table_only %}

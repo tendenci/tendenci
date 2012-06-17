@@ -122,6 +122,9 @@ def details(request, id=None, template_name="events/view.html"):
 
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
+    
+    event.limit = event.registration_configuration.limit
+    event.spots_taken, event.spots_available = event.get_spots_status()
 
     EventLog.objects.log(instance=event)
 
@@ -808,7 +811,20 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre.htm
     reg_conf=event.registration_configuration
     anony_reg8n = get_setting('module', 'events', 'anonymousregistration')
     
-    pricings = reg_conf.get_available_pricings(request.user, is_strict=anony_reg8n=='strict')
+    # check spots available
+    limit = event.registration_configuration.limit
+    spots_taken, spots_available = event.get_spots_status()
+    
+    if limit > 0 and spots_available == 0:
+        if not request.user.profile.is_superuser:
+            # is no more spots available, redirect to event view.
+            return multi_register_redirect(request, event, _('Registration is full.'))
+    event.limit, event.spots_taken, event.spots_available = limit, spots_taken, spots_available 
+    
+    pricings = reg_conf.get_available_pricings(request.user, 
+                                               is_strict=anony_reg8n=='strict',
+                                               spots_available=spots_available
+                                               )
     
     individual_pricings = pricings.filter(quantity=1).order_by('display_order', '-price')
     table_pricings = pricings.filter(quantity__gt=1).order_by('display_order', '-price')
@@ -874,13 +890,26 @@ def register(request, event_id=0,
        event.registration_configuration.enabled:
         raise Http404
     
+    # check spots available
+    limit = event.registration_configuration.limit
+    spots_taken, spots_available = event.get_spots_status()
+    
+    if limit > 0 and spots_available == 0:
+        if not request.user.profile.is_superuser:
+            # is no more spots available, redirect to event view.
+            return multi_register_redirect(request, event, _('Registration is full.'))
+    event.limit, event.spots_taken, event.spots_available = limit, spots_taken, spots_available 
+    
+    
     reg_conf=event.registration_configuration
     
     if not any((individual, is_table)):
         # Check if the event has both individual and table registrations.
         # If so, redirect them to the intermediate page to choose individual
         # or table.
-        pricings = reg_conf.get_available_pricings(request.user, is_strict=is_strict)
+        pricings = reg_conf.get_available_pricings(request.user, 
+                                                   is_strict=is_strict,
+                                                   spots_available=spots_available)
         individual_prices = [p for p in pricings if p.quantity == 1]
         table_price = [p for p in pricings if p.quantity > 1]
         
@@ -911,7 +940,9 @@ def register(request, event_id=0,
     else:
         # get all available pricing for the Price Options to select
         if not pricings:
-            pricings = reg_conf.get_available_pricings(request.user, is_strict=is_strict)
+            pricings = reg_conf.get_available_pricings(request.user, 
+                                                       is_strict=is_strict,
+                                                       spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
         pricings = pricings.order_by('display_order', '-price')
         # get the default pricing to set for initial
@@ -925,19 +956,7 @@ def register(request, event_id=0,
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
             custom_reg_form = reg_conf.reg_form
-#        else:
-#            raise Http404   
-
-    # update the spots left
-    limit = event.registration_configuration.limit
-    spots_taken = 0
-    spots_available = 0
-    if limit > 0:
-        spots_taken = get_event_spots_taken(event)
-        if spots_taken > limit:
-            return multi_register_redirect(request, event, _('Registration is full.'))
-        spots_available = limit - spots_taken    
-    
+ 
     
     if custom_reg_form:
         RF = FormForCustomRegForm
@@ -1032,10 +1051,15 @@ def register(request, event_id=0,
     # total registrant forms
     if post_data:
         total_regt_forms = post_data['registrant-TOTAL_FORMS']
+    within_available_spots = True
 
     if request.method == 'POST':
         if 'submit' in request.POST:
-            if all([reg_form.is_valid(),
+            if not request.user.profile.is_superuser:
+                within_available_spots = event.limit==0 or event.spots_available >= int(total_regt_forms)
+               
+            if all([within_available_spots,
+                    reg_form.is_valid(),
                     registrant.is_valid(),
                     addon_formset.is_valid()]):
                 
@@ -1172,8 +1196,7 @@ def register(request, event_id=0,
         'addon_formset': addon_formset,
         'total_regt_forms': total_regt_forms,
         'has_registrant_form_errors': has_registrant_form_errors,
-        'limit': limit,
-        'spots_available': spots_available,
+        'within_available_spots': within_available_spots
     }, context_instance=RequestContext(request))   
 
 

@@ -80,7 +80,7 @@ def registration_pricing_and_button(context, event, user):
 
     # spots taken
     if limit > 0:
-        spots_taken = get_event_spots_taken(event)
+        spots_taken, spots_available = event.get_spots_status()
     
     is_registrant = False
     # check if user has already registered
@@ -93,6 +93,7 @@ def registration_pricing_and_button(context, event, user):
         'event': event,
         'limit': limit,
         'spots_taken': spots_taken,
+        'spots_available': spots_available,
         'registration': registration,
         'reg_started': reg_started,
         'reg_ended': reg_ended,

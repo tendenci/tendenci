@@ -102,6 +102,9 @@
 	border-bottom: 1px solid #CCC;
 }
 
+.spots-status{
+	color: #871B1B; 
+}
  /* speaker and organizer */
 .t .speaker-wrap {
 	margin: 15px 0 15px 0;

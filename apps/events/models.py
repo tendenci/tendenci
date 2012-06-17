@@ -159,11 +159,13 @@ class RegistrationConfiguration(models.Model):
 
         return all([has_method, has_account, has_api])
     
-    def get_available_pricings(self, user, is_strict=False):
+    def get_available_pricings(self, user, is_strict=False, spots_available=-1):
         """
         Get the available pricings for this user. 
         """
-        filter_and, filter_or = RegConfPricing.get_access_filter(user, is_strict=is_strict)
+        filter_and, filter_or = RegConfPricing.get_access_filter(user, 
+                                                                 is_strict=is_strict,
+                                                                 spots_available=spots_available)
         q_obj = None
         if filter_and:
             q_obj = Q(**filter_and)
@@ -181,7 +183,7 @@ class RegistrationConfiguration(models.Model):
             pricings = pricings.filter(q_obj)
             
         return pricings
-        
+       
 
 
 class RegConfPricing(models.Model):
@@ -266,7 +268,7 @@ class RegConfPricing(models.Model):
         return self.reg_conf.event.timezone.zone
     
     @staticmethod
-    def get_access_filter(user, is_strict=False):
+    def get_access_filter(user, is_strict=False, spots_available=-1):
         if user.profile.is_superuser: return None, None
         now = datetime.now()
         filter_and, filter_or = None, None
@@ -297,6 +299,10 @@ class RegConfPricing(models.Model):
         filter_and = {'start_dt__lt': now,
                       'end_dt__gt': now,
                       }
+        
+        if spots_available <> -1:
+            if not user.profile.is_superuser:
+                filter_and['quantity__lte'] = spots_available
                 
         return filter_and, filter_or
     
@@ -510,6 +516,7 @@ class Registration(models.Model):
                 return 'registered-with-balance'
         else:
             return 'registered'
+        
 
     @property
     def registrant(self):
@@ -1015,6 +1022,26 @@ class Event(TendenciBaseModel):
         if start_dt and not end_dt:
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+            
+    def get_spots_status(self):
+        """
+        Return a tuple of (spots_taken, spots_available) for this event.
+        """
+        limit = self.registration_configuration.limit
+        spots_taken = Registrant.objects.filter(
+                                    registration__event=self, 
+                                    cancel_dt__isnull=True).count()
+                                    
+        if limit == 0:
+            # no limit
+            return (spots_taken, -1)
+        
+        if spots_taken >= limit:
+            return  (spots_taken, 0)
+
+        return (spots_taken, limit-spots_taken)
+        
+        
 
     
 class CustomRegForm(models.Model):
