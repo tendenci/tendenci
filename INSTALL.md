@@ -26,7 +26,8 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
 - Clone project. This creates the Tendenci folder in you current working directory
     - `git clone git@github.com:tendenci/tendenci.git`
 
-## Install dependencies which includes the required version of Django itself
+## Install dependencies
++ This will also install the required version of Django
     cd tendenci
     pip install reportlab==2.5
     pip install -r scripts/requirements.txt
