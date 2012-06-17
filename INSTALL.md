@@ -27,7 +27,7 @@ Our preferred way is to use virtualenv with virtualenvwrapper to create an isola
     - `git clone git@github.com:tendenci/tendenci.git`
 
 ## Install dependencies
-+ This will also install the required version of Django
+This will also install the required version of Django
     cd tendenci
     pip install reportlab==2.5
     pip install -r scripts/requirements.txt
