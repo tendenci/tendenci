@@ -1985,7 +1985,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     roster_fields_dict = {}
     # [(110, 11), (111, 10),...]
     reg_form_entries = Registrant.objects.filter(
-                                registration__event=event
+                                registration__event=event,
+                                cancel_dt=None
                                 ).values_list('id', 'custom_reg_form_entry')
     # a dictionary of registrant.id as key and entry as value 
     reg_form_entries_dict = dict(reg_form_entries)
@@ -1998,9 +1999,10 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                                     'first_name', 
                                     'last_name', 
                                     'email',
-                                    'comment',
+                                    'phone',
                                     'position_title', 
-                                    'company_name'
+                                    'company_name',
+                                    'comments'
                                 ]).select_related().values_list(
                                 'entry__id', 
                                 'field__label',
@@ -2019,10 +2021,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     registrants = Registrant.objects.filter(registration__event=event, 
                                             cancel_dt=None
                                             ).order_by(order_field)
-               
     if roster_fields_dict:
         for registrant in registrants:
-            key = reg_form_entries_dict[registrant.id]
+            key = str(reg_form_entries_dict[registrant.id])
             if roster_fields_dict.has_key(key):
                 registrant.roster_field_list = roster_fields_dict[key]
 

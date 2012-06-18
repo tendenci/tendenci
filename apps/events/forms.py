@@ -151,7 +151,7 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['pricing'].empty_label = None
          
         # add override and override_price to allow admin override the price   
-        if not self.event.is_table and not self.event.free_event:
+        if self.event and not self.event.is_table and not self.event.free_event:
             if (not self.user.is_anonymous() and self.user.is_superuser):
                 self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
                                                              required=False)
