@@ -837,7 +837,15 @@ class AppEntryForm(forms.ModelForm):
             'owner',
             'owner_username',
             'status',
-            'status_detail'
+            'status_detail',
+            'app',
+            'user',
+            'membership',
+            'is_renewal',
+            'is_approved',
+            'decision_dt',
+            'judge',
+            'invoice',
         )
 
     def __init__(self, app=None, *args, **kwargs):
