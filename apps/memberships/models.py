@@ -1,5 +1,4 @@
 import re
-import operator
 import hashlib
 import uuid
 import time
@@ -31,7 +30,6 @@ from base.utils import fieldify
 from tinymce import models as tinymce_models
 from payments.models import PaymentMethod
 from user_groups.models import GroupMembership
-from haystack.query import SearchQuerySet
 from event_logs.models import EventLog
 from profiles.models import Profile
 from files.models import File
