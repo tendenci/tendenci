@@ -145,7 +145,27 @@ def anon_sqs(sqs):
         sqs = sqs.none()
 
     return sqs
-
+    
+def member_sqs(sqs, **kwargs):
+    """
+    users who are members
+    (status+status_detail+(anon OR user OR member)) OR (who_can_view__exact)
+    """
+    user = kwargs.get('user')
+   
+    anon_q = Q(allow_anonymous_view=True)
+    user_q = Q(allow_user_view=True)
+    member_q = Q(allow_member_view=True)
+    status_q = Q(status=1, status_detail='active')
+    perm_q = Q(users_can_view__in=user.username)
+    
+    q = reduce(operator.or_, [anon_q, user_q, member_q])
+    q = reduce(operator.and_, [status_q, q])
+    q = reduce(operator.or_, [q, perm_q])
+    
+    filtered_sqs = sqs.filter(q)
+        
+    return filtered_sqs
 
 def user_sqs(sqs, **kwargs):
     """
@@ -203,6 +223,8 @@ class MembershipManager(Manager):
         else:
             if user.is_anonymous():
                 sqs = anon_sqs(sqs)  # anonymous
+            elif user.profile.is_member:
+                sqs = member_sqs(sqs, user=user) # member
             else:
                 sqs = user_sqs(sqs, user=user)  # user
 
