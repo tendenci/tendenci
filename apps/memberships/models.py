@@ -1175,7 +1175,7 @@ class AppEntry(TendenciBaseModel):
 
         membership = None
         for membership in memberships:
-            membership.status_detail = 'expired'
+            membership.status_detail = 'archived'
             membership.save()
 
         if membership:
