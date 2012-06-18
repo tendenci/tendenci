@@ -268,9 +268,11 @@
     <td colspan="2"></td>
     <td colspan="2">
     	
-    {% if registrant.custom_reg_form_entry  and registrant.roster_field_list %}
+    {% if registrant.roster_field_list %}
 	{% for field in registrant.roster_field_list %}
+	{% if field.value %}
 	<div>{{ field.label }}: {{ field.value }}</div>
+	{% endif %}
 	{% endfor %}
 	{% endif %}	
   	

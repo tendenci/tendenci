@@ -1960,6 +1960,10 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     from django.db.models import Sum
     event = get_object_or_404(Event, pk=event_id)
     query = ''
+    
+    order_field = request.GET.get('order', 'last_name')
+    if order_field not in ('first_name', 'last_name', 'company'):
+        order_field = 'last_name'
 
     if not roster_view: # default to total page
         return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
@@ -1970,36 +1974,65 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrations = registrations.filter(invoice__balance__lte=0)
     elif roster_view == 'non-paid':
         registrations = registrations.filter(invoice__balance__gt=0)
-
-    # grab the primary registrants then the additional registrants 
-    # to group the registrants with the same registration together
-    primary_registrants = []
-    for registration in registrations:
-        regs = registration.registrant_set.filter(cancel_dt = None).order_by("pk")
-        if regs:
-            primary_registrants.append(regs[0])
-    for registrant in primary_registrants:
-        if registrant.custom_reg_form_entry:
-            registrant.assign_mapped_fields()
-            registrant.roster_field_list =registrant.custom_reg_form_entry.roster_field_entry_list()
-            if not registrant.name:
-                registrant.last_name = registrant.__unicode__()
-    primary_registrants = sorted(primary_registrants, key=lambda reg: reg.last_name)
+        
     
-    registrants = []
-    for primary_reg in primary_registrants:
-        registrants.append(primary_reg)
-        for reg in primary_reg.additional_registrants:
-            if reg.custom_reg_form_entry:
-                reg.assign_mapped_fields()
-                reg.roster_field_list =reg.custom_reg_form_entry.roster_field_entry_list()
-                if not reg.name:
-                    reg.last_name = reg.custom_reg_form_entry.__unicode__()
-            registrants.append(reg)
+    # Collect the info for custom reg form fields
+    # and store the values in roster_fields_dict.
+    # The key of roster_fields_dict is the entry.id.
+    # The map of entry.id and registrant.id is in the
+    # dictionary reg_form_entries_dict.
+    # This is to reduce the # of database queries.
+    roster_fields_dict = {}
+    # [(110, 11), (111, 10),...]
+    reg_form_entries = Registrant.objects.filter(
+                                registration__event=event
+                                ).values_list('id', 'custom_reg_form_entry')
+    # a dictionary of registrant.id as key and entry as value 
+    reg_form_entries_dict = dict(reg_form_entries)
+
+    if reg_form_entries:
+        reg_form_field_entries = CustomRegFieldEntry.objects.filter(
+                              entry__in=[entry[1] for entry in reg_form_entries],
+                              field__display_on_roster=1                                     
+                                ).exclude(field__map_to_field__in=[
+                                    'first_name', 
+                                    'last_name', 
+                                    'email',
+                                    'comment',
+                                    'position_title', 
+                                    'company_name'
+                                ]).select_related().values_list(
+                                'entry__id', 
+                                'field__label',
+                                'value'
+                                ).order_by('field__position')
+        if reg_form_field_entries:
+            for field_entry in reg_form_field_entries:
+                key = str(field_entry[0])
+                if not roster_fields_dict.has_key(key):
+                    roster_fields_dict[key] = []
+                roster_fields_dict[key].append(
+                                    {'label': field_entry[1], 
+                                    'value': field_entry[2]
+                                    })
+                
+    registrants = Registrant.objects.filter(registration__event=event, 
+                                            cancel_dt=None
+                                            ).order_by(order_field)
+               
+    if roster_fields_dict:
+        for registrant in registrants:
+            key = reg_form_entries_dict[registrant.id]
+            if roster_fields_dict.has_key(key):
+                registrant.roster_field_list = roster_fields_dict[key]
 
     total_sum = float(0)
     balance_sum = float(0)
 
+    # need to add a boolean field canceled in Registration
+    # and then replace the code below with the aggregate function
+    # to get the total_sum and balance_sum.
+    
     # get total and balance (sum)
     for reg8n in registrations:
         if not reg8n.canceled:  # not cancelled

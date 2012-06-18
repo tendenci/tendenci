@@ -491,10 +491,13 @@ class Registration(models.Model):
         """
         Return True if all registrants are canceled. Otherwise False.
         """
-        registrants = self.registrant_set.all()
-        for registrant in registrants:
-            if not registrant.cancel_dt:
-                return False
+        [not_canceled_registrant] = self.registrant_set.filter(
+                                registration=self,
+                                cancel_dt__isnull=False
+                                )[:1] or [None]
+        if not_canceled_registrant:
+            return False
+    
         return True
 
     def status(self):
