@@ -1255,48 +1255,71 @@ class AppEntry(TendenciBaseModel):
         self.judge = judge
         self.save()
 
-    def suggested_users(self, grouping=[('first_name', 'last_name', 'email')]):
+    # def suggested_users(self, grouping=[('first_name', 'last_name', 'email')]):
+    #     """
+    #         Generate list of suggestions [people]
+    #         Use the authenticated user that filled out the application
+    #         Use the fn, ln, em mentioned within the application
+
+    #         Grouping Example:
+    #             grouping=[('first_name', 'last_name'), ('email',)]
+    #             (first_name AND last_name) OR (email)
+
+    #         Grouping Example:
+    #             grouping=[('first_name', 'last_name', 'email)]
+    #             (first_name AND last_name AND email)
+
+    #         TODO: I don't like the assumption that we should
+    #         suggest the authenticated user. Tempted to take it out
+    #         and add the auth_user after the call.
+    #     """
+    #     user_set = {}
+
+    #     if self.user:  # suggest authenticated user
+    #         user_set[self.user.pk] = ' '.join([
+    #             self.user.first_name,
+    #             self.user.last_name,
+    #             self.user.username,
+    #             self.user.email,
+    #         ])
+
+    #     #  e.g. [<Q object>, <Q object>]; Example <Q object> 'eloy zuniga ezuniga@schipul.com'
+    #     query_list = [Q(content=' '.join([getattr(self, i) for i in g])) for g in grouping]
+
+    #     sqs = SearchQuerySet().models(Profile)
+    #     sqs = sqs.filter(reduce(operator.or_, query_list))
+    #     sqs_users = [sq.object.user for sq in sqs]
+
+    #     for u in sqs_users:
+    #         try:
+    #             user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
+    #         except:
+    #             pass
+
+    #     return user_set.items()
+
+    def suggested_users(self, **kwargs):
         """
-            Generate list of suggestions [people]
-            Use the authenticated user that filled out the application
-            Use the fn, ln, em mentioned within the application
-
-            Grouping Example:
-                grouping=[('first_name', 'last_name'), ('email',)]
-                (first_name AND last_name) OR (email)
-
-            Grouping Example:
-                grouping=[('first_name', 'last_name', 'email)]
-                (first_name AND last_name AND email)
-
-            TODO: I don't like the assumption that we should
-            suggest the authenticated user. Tempted to take it out
-            and add the auth_user after the call.
+        Return list of users.
+        List of users is created via fn, ln, and email passed.
         """
-        user_set = {}
+        from operator import __or__ as OR
 
-        if self.user:  # suggest authenticated user
-            user_set[self.user.pk] = ' '.join([
-                self.user.first_name,
-                self.user.last_name,
-                self.user.username,
-                self.user.email,
-            ])
+        kwargs = kwargs or {
+                'first_name': self.user.first_name,
+                'last_name': self.user.last_name,
+                'email': self.user.email
+            }
 
-        #  e.g. [<Q object>, <Q object>]; Example <Q object> 'eloy zuniga ezuniga@schipul.com'
-        query_list = [Q(content=' '.join([getattr(self, i) for i in g])) for g in grouping]
+        lst = []
+        for i in kwargs.items():
+            lst.append(Q(i))
 
-        sqs = SearchQuerySet().models(Profile)
-        sqs = sqs.filter(reduce(operator.or_, query_list))
-        sqs_users = [sq.object.user for sq in sqs]
+        users = {}
+        for u in User.objects.filter(reduce(OR, lst)):
+            users[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
 
-        for u in sqs_users:
-            try:
-                user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
-            except:
-                pass
-
-        return user_set.items()
+        return users.items()
 
     def spawn_username(self, *args, **kwargs):
         """

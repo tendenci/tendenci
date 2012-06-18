@@ -178,15 +178,15 @@ class MemberApproveForm(forms.Form):
         suggested_users = []
         self.entry = entry
 
-        suggested_users = entry.suggested_users(grouping=[('email',)])
+        suggested_users = entry.suggested_users(email=entry.email)
         suggested_users.append((0, 'Create new user'))
         self.fields['users'].choices = suggested_users
         self.fields['users'].initial = 0
 
-        if self.entry.is_renewal:            
+        if self.entry.is_renewal:
             self.fields['users'] = CharField(
                 label='',
-                initial=entry.user.pk, 
+                initial=entry.user.pk,
                 widget=HiddenInput
             )
 
