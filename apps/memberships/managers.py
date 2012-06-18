@@ -224,7 +224,7 @@ class MembershipManager(Manager):
             if user.is_anonymous():
                 sqs = anon_sqs(sqs)  # anonymous
             elif user.profile.is_member:
-                sqs = member_sqs(sqs, user=user) # member
+                sqs = member_sqs(sqs, user=user)  # member
             else:
                 sqs = user_sqs(sqs, user=user)  # user
 
@@ -252,7 +252,7 @@ class MembershipManager(Manager):
         from datetime import datetime
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')
-        return self.filter(expire_dt_gt=datetime.now(), **kwargs)
+        return self.filter(expire_dt__gt=datetime.now(), **kwargs)
 
     def expired(self, **kwargs):
         """
@@ -262,7 +262,7 @@ class MembershipManager(Manager):
         from datetime import datetime
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')
-        return self.filter(expire_dt_lte=datetime.now(), **kwargs)
+        return self.filter(expire_dt__lte=datetime.now(), **kwargs)
 
     def corp_roster_search(self, query=None, *args, **kwargs):
         """
