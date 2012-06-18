@@ -21,14 +21,28 @@ class Command(BaseCommand):
         if 'verbosity' in options:
             verbosity = options['verbosity']
             
-        def subscribe_to_list(subscriber_obj, list_id, name, email):
+        def subscribe_to_list(subscriber_obj, list_id, name, email, profile = None):
+            custom_data = []
+            if profile:
+                fields = ['city', 'state', 'zipcode', 'country', 'sex', 'member_number']
+                for field in fields:
+                    data = {}
+                    data['Key'] = field
+                    data['Value'] = getattr(profile, field)
+                    if not data['Value']:
+                        data['Clear'] = True
+                    custom_data.append(data)
+
             try:
                 subscriber = subscriber_obj.get(list_id, email)
+                if str(subscriber.State).lower == 'active':
+                    subscriber = subscriber_obj.update(email, name, custom_data, True)
+                print "%s (%s) Updated" % (name, email)
             except:
                 try:
-                    email_address = subscriber_obj.add(list_id, email, name, [], True)
+                    email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
                     if verbosity >=2:
-                            print "%s (%s)" % (name, email)
+                            print "%s (%s) Added" % (name, email)
                 except:
                     print name, email, ' - NOT ADDED'
         
@@ -100,9 +114,10 @@ class Command(BaseCommand):
             for i, member in enumerate(members, 1):
                 email = member.email
                 name = member.get_full_name()
-                
-                subscribe_to_list(subscriber_obj, list_id, name, email)
-            
+                profile = member.profile
+
+                subscribe_to_list(subscriber_obj, list_id, name, email, profile)
+
             # sync subscribers in this group's subscription
             gss = GS.objects.filter(group=group)
             for gs in gss:
