@@ -489,11 +489,13 @@ class Registration(models.Model):
     @property
     def canceled(self):
         """
-        Return True if all registrants are canceled. Otherwise False.
+        Return True if ALL registrants are canceled. Otherwise False.
         """
+        # Instead of looping though all registrants, just check if there is
+        # any registrant that is not canceled.
         [not_canceled_registrant] = self.registrant_set.filter(
                                 registration=self,
-                                cancel_dt__isnull=False
+                                cancel_dt__isnull=True
                                 )[:1] or [None]
         if not_canceled_registrant:
             return False
