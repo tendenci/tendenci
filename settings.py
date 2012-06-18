@@ -125,11 +125,11 @@ MIDDLEWARE_CLASSES = (
     # 'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'profiles.middleware.ProfileMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
     'mobile.middleware.MobileMiddleware',
-    'profiles.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
