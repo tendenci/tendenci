@@ -1369,6 +1369,9 @@ class AppEntry(TendenciBaseModel):
 
         if self.is_approved:
 
+            # silence old memberships within renewal period
+            Membership.objects.silence_old_memberships(self.user)
+
             # send "approved" notification
             Notice.send_notice(
                 request=request,
