@@ -1164,20 +1164,15 @@ class AppEntry(TendenciBaseModel):
         else:
             judge, judge_pk, judge_username = None, int(), unicode()
 
-        # update old membership [of same type]
+        # update old membership [of same type] -----------
         memberships = user.memberships.filter(
             membership_type=self.membership_type,
             status=True,
             status_detail='active'
-        )
+        ).update(status_detail='archive')
 
-        membership = None
-        for membership in memberships:
-            membership.status_detail = 'archived'
-            membership.save()
-
-        if membership:
-            member_number = membership.member_number
+        if memberships:
+            member_number = memberships[0].member_number
         else:
             member_number = self.app.entries.count() + 1000
 
