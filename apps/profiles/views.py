@@ -31,9 +31,8 @@ from avatar.forms import PrimaryAvatarForm
 from user_groups.models import GroupMembership
 from user_groups.forms import GroupMembershipEditForm
 
-from profiles.models import Profile
-from profiles.forms import (ProfileForm, UserPermissionForm, 
-    UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
+from profiles.models import Profile, UserGroupsForm, \
+    ValidatingPasswordChangeForm, UserMembershipForm
 from profiles.utils import user_add_remove_admin_auth_group
 
 try:
@@ -89,7 +88,7 @@ def index(request, username='', template_name="profiles/index.html"):
 
     try:
         # memberships
-        memberships = user_this.memberships.all()
+        memberships = user_this.memberships.active()
     except:
         memberships = None
 
