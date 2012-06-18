@@ -15,7 +15,7 @@ class Migration(DataMigration):
         Membership = orm['memberships.Membership']
         MembershipArchive = orm['memberships.MembershipArchive']
 
-        MembershipArchive.objects.update(status_detail='archived')
+        MembershipArchive.objects.update(status_detail='archive')
         membership_archives = MembershipArchive.objects.all()
 
         for membership_archive in membership_archives:
