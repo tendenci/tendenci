@@ -304,9 +304,14 @@ class Membership(TendenciBaseModel):
     def is_active(self):
         """
         status = True, status_detail = 'active', and has not expired
+        considers grace period when evaluating expiration date-time
         """
+        from dateutil.relativedelta import relativedelta
+        grace_period = self.membership_type.expiration_grace_period
+        graceful_now = datetime.now() - relativedelta(days=grace_period)
+
         if self.status and self.status_detail == 'active':
-            if any((self.expire_dt > datetime.now(), self.expire_dt == None)):
+            if any((self.expire_dt > graceful_now, self.expire_dt == None)):
                 return True
 
         return False
