@@ -85,6 +85,11 @@ class Profile(TendenciBaseModel):
     objects = ProfileManager()
     actives = ProfileActiveManager()
 
+    class Meta:
+        permissions = (("view_profile", "Can view profile"),)
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+
     def __unicode__(self):
         return self.user.username
 
@@ -118,11 +123,6 @@ class Profile(TendenciBaseModel):
     @property
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
-
-    class Meta:
-        permissions = (("view_profile", "Can view profile"),)
-        verbose_name = "User"
-        verbose_name_plural = "Users"
 
     def save(self, *args, **kwargs):
         from campaign_monitor.utils import update_subscription
