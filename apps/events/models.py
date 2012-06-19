@@ -372,6 +372,7 @@ class Registration(models.Model):
                                           max_digits=10, 
                                           decimal_places=2,
                                           default=0)
+    canceled = models.BooleanField(_('Canceled'), default=False)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True)
     owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
@@ -486,21 +487,6 @@ class Registration(models.Model):
             #notify the admins too
             email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
 
-    @property
-    def canceled(self):
-        """
-        Return True if ALL registrants are canceled. Otherwise False.
-        """
-        # Instead of looping though all registrants, just check if there is
-        # any registrant that is not canceled.
-        [not_canceled_registrant] = self.registrant_set.filter(
-                                registration=self,
-                                cancel_dt__isnull=True
-                                )[:1] or [None]
-        if not_canceled_registrant:
-            return False
-    
-        return True
 
     def status(self):
         """

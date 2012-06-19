@@ -178,7 +178,7 @@
                         {% blocktrans with registrant.cancel_dt|date_short as cancel_date %} Canceled on {{ cancel_date }}{% endblocktrans %}
                     </span>
                 {% else %}
-                    {% if registration.reg_conf_price.quantity == 1 %}
+                    {% if not registration.is_table %}
                       {% if user.is_authenticated %}
                           <a href="{% url event.cancel_registrant event.pk registrant.pk %}">{% trans "Cancel" %}</a>
                       {% else %}

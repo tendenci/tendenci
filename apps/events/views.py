@@ -1691,6 +1691,9 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
 
                 # Log an event for each registrant in the loop
                 EventLog.objects.log(instance=registrant)
+                
+            registration.canceled = True
+            registration.save()
 
         return HttpResponseRedirect(
             reverse('event.registration_confirmation', 
@@ -1773,6 +1776,19 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
                     invoice.subtotal -= registrant.amount
                     invoice.balance -= registrant.amount
                     invoice.save(request.user)
+                    
+            # check if all registrants in this registration are canceled.
+            # if so, update the canceled field.
+            reg8n = registrant.registration
+            exist_not_canceled = Registrant.objects.filter(
+                                registration=reg8n,
+                                cancel_dt__isnull=True
+                                ).exists()
+            if not exist_not_canceled:
+                reg8n.canceled = True
+                reg8n.save()
+                
+            
 
             EventLog.objects.log(instance=registrant)
 
@@ -1994,14 +2010,14 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     # [(110, 11), (111, 10),...]
     reg_form_entries = Registrant.objects.filter(
                                 registration__event=event,
-                                cancel_dt=None
+                                cancel_dt=None,
                                 ).values_list('id', 'custom_reg_form_entry')
     # a dictionary of registrant.id as key and entry as value 
     reg_form_entries_dict = dict(reg_form_entries)
 
     if reg_form_entries:
         reg_form_field_entries = CustomRegFieldEntry.objects.filter(
-                              entry__in=[entry[1] for entry in reg_form_entries],
+                              entry__in=[entry[1] for entry in reg_form_entries if entry[1] <> None],
                               field__display_on_roster=1                                     
                                 ).exclude(field__map_to_field__in=[
                                     'first_name', 
