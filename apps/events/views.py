@@ -6,12 +6,9 @@ import calendar
 from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
-import operator
 import itertools
 
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -25,45 +22,37 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
 
 #from django.forms.models import BaseModelFormSet
-from django.db.models import Q
-from django.forms.models import BaseModelFormSet
-from django.conf import settings
 
 from haystack.query import SearchQuerySet
 from base.http import Http403
 from site_settings.utils import get_setting
 from perms.utils import (has_perm, get_notice_recipients,
-    get_query_filters, update_perms_and_save, get_administrators, has_view_perm)
+    get_query_filters, update_perms_and_save, has_view_perm)
 from event_logs.models import EventLog
-from invoices.models import Invoice
 from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 from files.models import File
 from theme.shortcuts import themed_response as render_to_response
 from exports.utils import run_export_task
 
-from events.search_indexes import EventIndex
-from events.models import (Event, RegistrationConfiguration,
-    Registration, Registrant, Speaker, Organizer, Type, PaymentMethod,
-    RegConfPricing, Addon, AddonOption, RegAddon, CustomRegForm,
+from events.models import (Event,
+    Registration, Registrant, Speaker, Organizer, Type,
+    RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry)
-from events.forms import (EventForm, Reg8nForm, Reg8nEditForm,
+from events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
     RegistrationPreForm)
-from events.utils import (save_registration, email_registrants, 
+from events.utils import (email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
 from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
-from events.addons.utils import (get_active_addons, get_available_addons, 
-    get_addons_for_list)
-from user_groups.models import GroupMembership
-from memberships.models import MembershipType
+from events.addons.utils import get_available_addons
 
 from notification import models as notification
     

@@ -10,13 +10,11 @@ from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
 
-from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption)
 from events.forms import FormForCustomRegForm
-from user_groups.models import Group
 from perms.utils import get_query_filters
 from discounts.models import Discount, DiscountUse
 
