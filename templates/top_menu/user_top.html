@@ -15,6 +15,9 @@
             <div class="sub">
                 <div class="column">
                     <ul>
+                        {% if SITE_GLOBAL_SEARCHINDEX %}
+                            <li><a href="/search"><span class="glyph search">&#76;</span>&nbsp;&nbsp;{% trans "Search All Content" %}</a></li>
+                        {% endif %}
                         {% if MODULE_ARTICLES_ENABLED %}
                             <li><a href="{% url article.search %}">{% trans "Articles" %}</a></li>
                         {% endif %}
