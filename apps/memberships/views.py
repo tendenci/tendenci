@@ -115,16 +115,11 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
         if form.is_valid():
             membership = form.save(commit=False)
 
-            if membership.expire_dt and membership.expire_dt < datetime.now():
-                membership.status_detail = 'expired'
-
             # update all permissions and save the model
             membership = update_perms_and_save(request, form, membership)
 
             # add or remove from group -----
-            is_groupy = (membership.status and (membership.status_detail == 'active'))
-
-            if is_groupy:  # should be in group; make sure they're in
+            if membership.is_active():  # should be in group; make sure they're in
                 membership.membership_type.group.add_user(membership.user)
             else:  # should not be in group; make sure they're out
                 GroupMembership.objects.filter(
@@ -1120,7 +1115,7 @@ def membership_join_report_pdf(request):
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
 
-    mems = Membership.objects.expired()
+    mems = Membership.objects.active()
 
     # get sort order
     sort = request.GET.get('sort', 'subscribe_dt')
@@ -1157,6 +1152,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
 
 @staff_member_required
 def report_expired_members(request, template_name='reports/membership_list.html'):
+
     mems = Membership.objects.expired()
 
     # get sort order
