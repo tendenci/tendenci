@@ -410,7 +410,7 @@ class Membership(TendenciBaseModel):
         """
         Populate the member ID (or member number) to user profile.
         """
-        if all([self.status == True, self.status_detail == 'active']):
+        if self.is_active():
             if self.member_number:
                 [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
                 if not profile:
@@ -438,7 +438,7 @@ class Membership(TendenciBaseModel):
         """
         Clear the member ID (or member number) in user's profile.
         """
-        if any([self.status == 0, self.status_detail != 'active']):
+        if not self.is_active():
             [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
             if profile and profile.member_number:
                 profile.member_number = u''
@@ -452,7 +452,7 @@ class Membership(TendenciBaseModel):
         If the membership is active, populate the member ID to profile.
         Otherwise, clear the member ID from profile.
         """
-        if all([self.status == 1, self.status_detail == 'active']):
+        if self.is_active():
             self.populate_user_member_id()
         else:
             self.clear_user_member_id()
@@ -924,14 +924,11 @@ class AppEntry(TendenciBaseModel):
     membership = models.ForeignKey("Membership", related_name="entries", null=True)
     entry_time = models.DateTimeField(_("Date/Time"))
     hash = models.CharField(max_length=40, null=True, default='')
-
     is_renewal = models.BooleanField()
     is_approved = models.NullBooleanField(_('Approved'), null=True)
     decision_dt = models.DateTimeField(null=True)
     judge = models.ForeignKey(User, null=True, related_name='entries')
-
     invoice = models.ForeignKey(Invoice, null=True)
-
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
