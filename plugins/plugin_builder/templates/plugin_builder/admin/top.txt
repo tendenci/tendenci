@@ -5,7 +5,7 @@ from perms.admin import TendenciBaseModelAdmin
 from S_P_LOW.models import S_S_CAP
 from S_P_LOW.forms import S_S_CAPForm
 
-class S_S_CAPAdmin(admin.ModelAdmin):
+class S_S_CAPAdmin(TendenciBaseModelAdmin):
     list_display = [FIRST_FIELD, 'tags']
     list_filter = []
     search_fields = []
