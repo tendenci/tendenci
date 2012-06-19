@@ -986,6 +986,16 @@ class AppEntry(TendenciBaseModel):
         """Get email string"""
         return self.get_field_value('email')
 
+    def is_active(self):
+        """
+        status = True, status_detail = 'active', and has not expired
+        """
+        if self.status and self.status_detail == 'active':
+            if any((self.expire_dt > datetime.now(), self.expire_dt == None)):
+                return True
+
+        return False
+
     def approval_required(self):
         """
         Returns a boolean value on whether approval is required
