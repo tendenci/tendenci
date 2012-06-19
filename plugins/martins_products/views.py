@@ -45,11 +45,20 @@ def search(request, template_name="martins_products/search.html"):
     """
     app_label = Product._meta.app_label
     model_name = Product._meta.module_name
-    # get the content type
-    try: content_type = ContentType.objects.get(app_label=app_label,model=model_name)
-    except: raise Http404
-    
-    
+
+    query = u''
+    category = u''
+    sub_category = u''
+    formulation = u''
+
+    try:
+        content_type = ContentType.objects.get(
+            app_label=app_label,
+            model=model_name
+        )
+    except:
+        raise Http404
+
     form = ProductSearchForm(content_type, request.GET)
     if form.is_valid():
         query = form.cleaned_data['q']
@@ -58,31 +67,27 @@ def search(request, template_name="martins_products/search.html"):
         formulation = form.cleaned_data['formulation']
     else:
         print 'errors', form.errors
-    
+
     if category:
         query = query + ' category:' + category
     if sub_category:
         query = query + ' sub_category:' + sub_category
-    print 'query', query
-    
-    
+
     if get_setting('site', 'global', 'searchindex') and query:
-        print 'entry 1',
         products = Product.objects.search(query, user=request.user)
     else:
-        print 'entry 2'
         filters = get_query_filters(request.user, 'martins_product.view_product')
         products = Product.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             products = products.select_related()
-    
+
     if formulation:
         products = products.filter(formulation=formulation)
 
     products = products.order_by('-create_dt')
 
     log_defaults = {
-        'event_id' : 1150400,
+        'event_id': 1150400,
         'event_data': '%s searched by %s' % ('Product', request.user),
         'description': '%s searched' % 'Product',
         'user': request.user,
@@ -90,6 +95,6 @@ def search(request, template_name="martins_products/search.html"):
         'source': 'products'
     }
     EventLog.objects.log(**log_defaults)
-    
-    return render_to_response(template_name, {'products':products, 'form':form}, 
+
+    return render_to_response(template_name, {'products': products, 'form': form},
         context_instance=RequestContext(request))
