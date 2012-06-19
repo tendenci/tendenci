@@ -1165,12 +1165,14 @@ class AppEntry(TendenciBaseModel):
             judge, judge_pk, judge_username = None, int(), unicode()
 
         # update old membership [of same type] -----------
-        memberships = user.memberships.filter(
+        user.memberships.filter(
             membership_type=self.membership_type,
             status=True,
             status_detail='active'
         ).update(status_detail='archive')
 
+        # look for previous member number
+        memberships = user.memberships.order_by('-pk')
         if memberships:
             member_number = memberships[0].member_number
         else:
