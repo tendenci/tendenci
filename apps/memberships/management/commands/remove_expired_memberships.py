@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
             for membership in memberships:
                 # update profile
-                membership.clear_user_member_id()
+                membership.user.profile.refresh_member_number()
 
                 # remove from group
                 GroupMembership.objects.filter(
