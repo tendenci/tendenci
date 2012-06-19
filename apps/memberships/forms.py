@@ -1238,11 +1238,12 @@ class ReportForm(forms.Form):
     
     membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
     membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
-    
+
+
 class MembershipForm(TendenciBaseForm):
     STATUS_CHOICES = (
-        ('active','Active'),
-        ('expired','Expired'),
+        ('active', 'Active'),
+        ('inactive', 'In Active'),
     )
 
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
@@ -1252,7 +1253,7 @@ class MembershipForm(TendenciBaseForm):
 
     class Meta:
         model = Membership
-        
+
         fields = (
             'member_number',
             'membership_type',
@@ -1266,10 +1267,9 @@ class MembershipForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
-        
+
         fieldsets = [
             ('Membership Details', {
                 'fields': [
@@ -1297,7 +1297,6 @@ class MembershipForm(TendenciBaseForm):
             ('Administrator Only', {
                 'fields': [
                     'syndicate',
-                    'status',
-                    'status_detail'], 
+                    'status_detail'],
                 'classes': ['admin-only'],
             })]
