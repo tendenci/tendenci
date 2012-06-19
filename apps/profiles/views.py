@@ -87,11 +87,7 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
-    try:
-        # memberships
-        memberships = user_this.memberships.active()
-    except:
-        memberships = None
+    memberships = user_this.memberships.active_strict()
 
     log_defaults = {
         'event_id': 125000,

@@ -244,6 +244,32 @@ class MembershipManager(Manager):
 
         return instance
 
+    def active_strict(self, **kwargs):
+        """
+        This method is just like the active method except,
+        it considers the grace period which is expensive.
+        Only recommended when query returns few results.
+        Returns back list instead of query set.
+        """
+        from datetime import datetime
+        from dateutil.relativedelta import relativedelta
+        from itertools import chain
+        from django.db.models import Q
+        from memberships.models import MembershipType
+
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+
+        query_sets = []
+        for membership_type in MembershipType.objects.all():
+            grace_period = membership_type.expiration_grace_period
+            grace_now = datetime.now() - relativedelta(days=grace_period)
+            query_sets.append(
+                self.filter(Q(expire_dt__gt=grace_now) | Q(expire_dt__isnull=True), **kwargs)
+            )
+
+        return list(chain(*query_sets))
+
     def active(self, **kwargs):
         """
         Returns membership records with status=True
