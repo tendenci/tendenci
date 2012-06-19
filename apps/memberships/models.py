@@ -301,6 +301,16 @@ class Membership(TendenciBaseModel):
         self.guid = self.guid or unicode(uuid.uuid1())
         super(Membership, self).save(*args, **kwargs)
 
+    def is_active(self):
+        """
+        status = True, status_detail = 'active', and has not expired
+        """
+        if self.status and self.status_detail == 'active':
+            if any((self.expire_dt > datetime.now(), self.expire_dt == None)):
+                return True
+
+        return False
+
     def get_name(self):
 
         user = self.user
@@ -982,16 +992,6 @@ class AppEntry(TendenciBaseModel):
     def email(self):
         """Get email string"""
         return self.get_field_value('email')
-
-    def is_active(self):
-        """
-        status = True, status_detail = 'active', and has not expired
-        """
-        if self.status and self.status_detail == 'active':
-            if any((self.expire_dt > datetime.now(), self.expire_dt == None)):
-                return True
-
-        return False
 
     def approval_required(self):
         """
