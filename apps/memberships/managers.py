@@ -259,8 +259,9 @@ class MembershipManager(Manager):
 
     def expired(self, **kwargs):
         """
-        Returns membership records with status=True
-        and status_detail='active'
+        Returns membership records that are 'active' and
+        passed their expiration date. Does not consider grace period.
+        Query is too heavy.
         """
         from datetime import datetime
         kwargs['status'] = kwargs.get('status', True)
