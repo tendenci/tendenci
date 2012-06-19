@@ -180,6 +180,17 @@ class Profile(TendenciBaseModel):
         memberships = self.user.group_member.all()
         return [membership.group for membership in memberships]
 
+    def refresh_member_number(self):
+        memberships = self.user.memberships.active_strict()
+
+        if memberships:
+            self.member_number = self.member_number or memberships[0].member_number
+        else:
+            self.member_number = u''
+
+        self.save()
+        return self.member_number
+
     def roles(self):
         role_set = []
 
