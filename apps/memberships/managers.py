@@ -250,9 +250,12 @@ class MembershipManager(Manager):
         and status_detail='active'
         """
         from datetime import datetime
+        from django.db.models import Q
+
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')
-        return self.filter(expire_dt__gt=datetime.now(), **kwargs)
+        return self.filter(
+            Q(expire_dt__gt=datetime.now()) | Q(expire_dt__isnull=True), **kwargs)
 
     def expired(self, **kwargs):
         """
