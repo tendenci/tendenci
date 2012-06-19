@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
 import operator
+import itertools
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -1961,10 +1962,17 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     event = get_object_or_404(Event, pk=event_id)
     query = ''
     
-    order_field = request.GET.get('order', 'last_name')
-    if order_field not in ('first_name', 'last_name', 'company'):
-        order_field = 'last_name'
-
+    sort_order = request.GET.get('sort_order', 'last_name')
+    sort_type = request.GET.get('sort_type', 'asc')
+    
+    if sort_order not in ('first_name', 'last_name', 'company_name'):
+        sort_order = 'last_name'
+    if sort_type not in ('asc', 'desc'):
+        sort_type = 'asc'
+    sort_field = sort_order
+    if sort_type == 'desc':
+        sort_field = '-%s' % sort_field
+    
     if not roster_view: # default to total page
         return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
 
@@ -2017,10 +2025,26 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                                     {'label': field_entry[1], 
                                     'value': field_entry[2]
                                     })
-                
-    registrants = Registrant.objects.filter(registration__event=event, 
+      
+    if sort_field in ('first_name', 'last_name'):
+        # let registrants without names sink dowm to the bottom
+        regisrants_noname = Registrant.objects.filter(registration__event=event, 
+                                            cancel_dt=None,
+                                            last_name='',
+                                            first_name=''
+                                            ).order_by('id')
+        registrants_withname = Registrant.objects.filter(registration__event=event, 
                                             cancel_dt=None
-                                            ).order_by(order_field)
+                                            ).exclude(
+                                            last_name='',
+                                            first_name=''
+                                            ).order_by(sort_field)
+        c = itertools.chain(registrants_withname, regisrants_noname)
+        registrants = [r for r in c]
+    else:        
+        registrants = Registrant.objects.filter(registration__event=event, 
+                                                cancel_dt=None
+                                                ).order_by(sort_field)
     if roster_fields_dict:
         for registrant in registrants:
             key = str(reg_form_entries_dict[registrant.id])
@@ -2055,6 +2079,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'num_registrants_who_paid':num_registrants_who_paid,
         'num_registrants_who_owe':num_registrants_who_owe,
         'roster_view':roster_view,
+        'sort_order': sort_order,
+        'sort_type': sort_type
         },
         context_instance=RequestContext(request))
 
