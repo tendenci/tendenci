@@ -9,7 +9,7 @@
         {% trans "Lists all memberships that are still active." %}
     {% else %}
         <h1>{% trans "Expired Memberships Report" %}</h1>
-        {% trans "Lists all memberships that have expired." %}
+        {% trans "Lists all memberships that have expired.  Grace periods are not included." %}
     {% endif %}
     {{ mems|length }} {% trans "Members listed" %}
     {% autopaginate mems 50 %}
