@@ -316,6 +316,11 @@ class Membership(TendenciBaseModel):
 
         return False
 
+    def get_expire_dt(self):
+        from dateutil.relativedelta import relativedelta
+        grace_period = self.membership_type.expiration_grace_period
+        return self.expire_dt + relativedelta(days=grace_period)
+
     def get_name(self):
 
         user = self.user
