@@ -11,7 +11,7 @@ from categories.forms import CategoryForm
 from categories.models import Category
 
 @login_required
-def update(request, app_label, model, pk, form_class=CategoryForm, template_name="categories/update.html"):
+def edit_categories(request, app_label, model, pk, form_class=CategoryForm, template_name="categories/update.html"):
     # get the content type
     try: content_type = ContentType.objects.get(app_label=app_label,model=model)
     except: raise Http404

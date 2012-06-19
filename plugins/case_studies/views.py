@@ -10,7 +10,7 @@ from site_settings.utils import get_setting
 
 from models import CaseStudy, Service, Technology
 
-def index(request, slug=None, template_name="case_studies/view.html"):
+def detail(request, slug=None, template_name="case_studies/view.html"):
     if not slug: return HttpResponseRedirect(reverse('case_study'))
     case_study = get_object_or_404(CaseStudy, slug=slug)
     services = Service.objects.all()
@@ -22,15 +22,8 @@ def index(request, slug=None, template_name="case_studies/view.html"):
         raise Http403
 
     if has_view_perm(request.user, 'case_studies.view_casestudy', case_study):
-        log_defaults = {
-            'event_id' : 1000500,
-            'event_data': '%s (%d) viewed by %s' % (case_study._meta.object_name, case_study.pk, request.user),
-            'description': '%s viewed' % case_study._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': case_study,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=case_study)
+
         return render_to_response(template_name, {'case_study': case_study, 'services': services, 'technologies': technologies},
             context_instance=RequestContext(request))
     else:
@@ -50,16 +43,8 @@ def search(request, template_name="case_studies/search.html"):
     case_studies = case_studies.order_by('-create_dt')
     services = Service.objects.all()
     technologies = Technology.objects.all()
-    
-    log_defaults = {
-        'event_id' : 1000400,
-        'event_data': '%s searched by %s' % ('Case Study', request.user),
-        'description': '%s searched' % 'Case Study',
-        'user': request.user,
-        'request': request,
-        'source': 'case_studies'
-    }
-    EventLog.objects.log(**log_defaults)
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'case_studies': case_studies, 'services': services, 'technologies': technologies},
         context_instance=RequestContext(request))
@@ -77,6 +62,8 @@ def service(request, id, template_name="case_studies/search.html"):
 
     case_studies = CaseStudy.objects.search(query, user=request.user)
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'service':service, 'services':services, 'case_studies': case_studies}, 
         context_instance=RequestContext(request))
         
@@ -86,6 +73,8 @@ def technology(request, id, template_name="case_studies/search.html"):
     query = '"technology:%s"' % technology
 
     case_studies = CaseStudy.objects.search(query, user=request.user)
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'technology':technology, 'case_studies': case_studies}, 
         context_instance=RequestContext(request))

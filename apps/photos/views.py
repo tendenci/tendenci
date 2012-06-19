@@ -567,9 +567,7 @@ def photos_batch_add(request, photoset_id=0):
                 for k, v in privacy.items():
                     setattr(photo, k, v)
 
-                photo.save()  # real time search index hooked to save method
-
-                print 'i waited'
+                photo.save()
 
                 # photo group perms = album group perms
                 group_perms = photo_set.perms.filter(group__isnull=False).values_list('group','codename')

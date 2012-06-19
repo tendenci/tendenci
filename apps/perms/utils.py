@@ -41,7 +41,7 @@ def set_perm_bits(request, form, instance):
     return instance
 
 
-def update_perms_and_save(request, form, instance):
+def update_perms_and_save(request, form, instance, **kwargs):
     """
     Adds object row-level permissions for a model instance
     """
@@ -76,7 +76,7 @@ def update_perms_and_save(request, form, instance):
 
     # save again for indexing purposes
     # TODO: find a better solution, saving twice kinda sux
-    instance.save()
+    instance.save(**kwargs)
 
     return instance
 

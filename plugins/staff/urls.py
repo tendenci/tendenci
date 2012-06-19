@@ -10,6 +10,6 @@ urlpatterns = patterns('staff.views',
     url(r'^%s/$' % urlpath, 'search', name="staff"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="staff.search"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='staff.feed'),
-    url(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, 'details', name="staff.view"),
-    url(r'^%s/(?P<slug>[\w\-]+)/(?P<cv>cv)/$' % urlpath, 'details', name="staff.cv"),
+    url(r'^%s/(?P<slug>[\w\-]+)/$' % urlpath, 'detail', name="staff.view"),
+    url(r'^%s/(?P<slug>[\w\-]+)/(?P<cv>cv)/$' % urlpath, 'detail', name="staff.cv"),
 )

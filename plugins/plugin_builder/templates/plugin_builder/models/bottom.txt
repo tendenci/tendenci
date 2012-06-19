@@ -1,3 +1,4 @@
+    tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")

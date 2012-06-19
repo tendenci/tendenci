@@ -145,7 +145,27 @@ def anon_sqs(sqs):
         sqs = sqs.none()
 
     return sqs
-
+    
+def member_sqs(sqs, **kwargs):
+    """
+    users who are members
+    (status+status_detail+(anon OR user OR member)) OR (who_can_view__exact)
+    """
+    user = kwargs.get('user')
+   
+    anon_q = Q(allow_anonymous_view=True)
+    user_q = Q(allow_user_view=True)
+    member_q = Q(allow_member_view=True)
+    status_q = Q(status=1, status_detail='active')
+    perm_q = Q(users_can_view__in=user.username)
+    
+    q = reduce(operator.or_, [anon_q, user_q, member_q])
+    q = reduce(operator.and_, [status_q, q])
+    q = reduce(operator.or_, [q, perm_q])
+    
+    filtered_sqs = sqs.filter(q)
+        
+    return filtered_sqs
 
 def user_sqs(sqs, **kwargs):
     """
@@ -203,6 +223,8 @@ class MembershipManager(Manager):
         else:
             if user.is_anonymous():
                 sqs = anon_sqs(sqs)  # anonymous
+            elif user.profile.is_member:
+                sqs = member_sqs(sqs, user=user)  # member
             else:
                 sqs = user_sqs(sqs, user=user)  # user
 
@@ -221,6 +243,56 @@ class MembershipManager(Manager):
             instance = None
 
         return instance
+
+    def active_strict(self, **kwargs):
+        """
+        This method is just like the active method except,
+        it considers the grace period which is expensive.
+        Only recommended when query returns few results.
+        Returns back list instead of query set.
+        """
+        from datetime import datetime
+        from dateutil.relativedelta import relativedelta
+        from itertools import chain
+        from django.db.models import Q
+        from memberships.models import MembershipType
+
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+
+        query_sets = []
+        for membership_type in MembershipType.objects.all():
+            grace_period = membership_type.expiration_grace_period
+            grace_now = datetime.now() - relativedelta(days=grace_period)
+            query_sets.append(
+                self.filter(Q(expire_dt__gt=grace_now) | Q(expire_dt__isnull=True), **kwargs)
+            )
+
+        return list(chain(*query_sets))
+
+    def active(self, **kwargs):
+        """
+        Returns membership records with status=True
+        and status_detail='active'
+        """
+        from datetime import datetime
+        from django.db.models import Q
+
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        return self.filter(
+            Q(expire_dt__gt=datetime.now()) | Q(expire_dt__isnull=True), **kwargs)
+
+    def expired(self, **kwargs):
+        """
+        Returns membership records that are 'active' and
+        passed their expiration date. Does not consider grace period.
+        Query is too heavy.
+        """
+        from datetime import datetime
+        kwargs['status'] = kwargs.get('status', True)
+        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        return self.filter(expire_dt__lte=datetime.now(), **kwargs)
 
     def corp_roster_search(self, query=None, *args, **kwargs):
         """

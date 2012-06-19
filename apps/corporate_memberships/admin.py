@@ -174,48 +174,22 @@ class CorpAppAdmin(admin.ModelAdmin):
         return instance
     
     def log_deletion(self, request, object, object_repr):
+        source = inspect.getmodule(self).__name__
+        EventLog.objects.log(instance=object, event_type="delete", source=source)
         super(CorpAppAdmin, self).log_deletion(request, object, object_repr)
-        log_defaults = {
-            'event_id' : 689300,
-            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
-                                                    object.name, object.pk, request.user),
-            'description': '%s deleted' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)           
+
 
     def log_change(self, request, object, message):
         update_authenticate_fields(object)
         edit_corpapp_update_memb_app(object)
         super(CorpAppAdmin, self).log_change(request, object, message)
-        log_defaults = {
-            'event_id' : 689200,
-            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
-                                                    object.name, object.pk, request.user),
-            'description': '%s edited' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)               
+
 
     def log_addition(self, request, object):
         update_authenticate_fields(object)
         edit_corpapp_update_memb_app(object)
         super(CorpAppAdmin, self).log_addition(request, object)
-        log_defaults = {
-            'event_id' : 689100,
-            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
-                                                   object.name, object.pk, request.user),
-            'description': '%s added' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-         
-    
+
+
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
 admin.site.register(CorpApp, CorpAppAdmin)

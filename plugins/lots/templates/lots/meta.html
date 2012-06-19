@@ -55,7 +55,7 @@ by <a href="{{ lot.owner.get_absolute_url }}">
 <ul>
 {% if can_delete %}
 <li>
-<a class="delete" href="{% url admin:lots_lot_delete lot.pk %}">Delete</a>
+<a class="delete" href="{% url lots.delete lot.pk %}">Delete</a>
 </li> 
 {% endif %} 
 </ul>

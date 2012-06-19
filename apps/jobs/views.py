@@ -477,19 +477,7 @@ def pricing_edit(request, id, form_class=JobPricingForm, template_name="jobs/pri
             job_pricing = form.save(commit=False)
             job_pricing.save(request.user)
 
-            log_defaults = {
-                'event_id': 265110,
-                'event_data': '%s (%d) edited by %s' % (
-                    job_pricing._meta.object_name,
-                    job_pricing.pk,
-                    request.user
-                ),
-                'description': '%s edited' % job_pricing._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': job_pricing,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=job_pricing)
 
             return HttpResponseRedirect(reverse(
                 'job_pricing.view',
@@ -548,6 +536,7 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
 def pricing_search(request, template_name="jobs/pricing-search.html"):
     job_pricings = JobPricing.objects.all().order_by('duration')
 
+    EventLog.objects.log()
     return render_to_response(template_name, {'job_pricings': job_pricings},
         context_instance=RequestContext(request))
 

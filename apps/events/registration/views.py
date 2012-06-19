@@ -55,9 +55,9 @@ def ajax_user(request, event_id):
     
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     if memberid and allow_memberid:# memberid takes priority over email
-        memberships = Membership.objects.filter(member_number=memberid)
-        if memberships:
-            user = memberships[0].user
+        membership = Membership.objects.first(member_number=memberid)
+        if hasattr(membership, 'user'):
+            user = membership.user
     elif email:
         users = User.objects.filter(email=email)
         if users:
@@ -107,10 +107,10 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     shared_pricing = get_setting('module', 'events', 'sharedpricing')
     
-    if memberid and allow_memberid:# memberid takes priority over email
-        memberships = Membership.objects.filter(member_number=memberid)
-        if memberships:
-            user = memberships[0].user
+    if memberid and allow_memberid:  # memberid takes priority over email
+        membership = Membership.objects.first(member_number=memberid)
+        if hasattr(membership, 'user'):
+            user = membership.user
     elif email:
         users = User.objects.filter(email=email)
         if users:
@@ -314,17 +314,8 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                     send_registrant_email(reg8n, self_reg8n)
                     # email the admins as well
                     email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
-                    
-                # log an event
-                log_defaults = {
-                    'event_id' : 431000,
-                    'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                    'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                    'user': request.user,
-                    'request': request,
-                    'instance': event,
-                }
-                EventLog.objects.log(**log_defaults)
+
+                EventLog.objects.log(instance=event)
                 
                 # redirect to confirmation
                 return redirect('event.registration_confirmation', event_id, reg8n.registrant.hash)

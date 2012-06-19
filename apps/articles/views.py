@@ -22,9 +22,10 @@ from articles.forms import ArticleForm
 from notification import models as notification
 
 
-def index(request, slug=None, template_name="articles/view.html"):
+def detail(request, slug=None, template_name="articles/view.html"):
     if not slug:
         return HttpResponseRedirect(reverse('articles'))
+
     article = get_object_or_404(Article, slug=slug)
 
     # non-admin can not view the non-active content
@@ -33,16 +34,8 @@ def index(request, slug=None, template_name="articles/view.html"):
         raise Http403
 
     if has_view_perm(request.user, 'articles.view_article', article):
-        log_defaults = {
-            'event_id': 435000,
-            'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
-            'description': '%s viewed' % article._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': article,
-        }
-        EventLog.objects.log(**log_defaults)
-        return render_to_response(template_name, {'article': article},
+        EventLog.objects.log(instance=article)
+        return render_to_response(template_name, {'article': article}, 
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -67,15 +60,7 @@ def search(request, template_name="articles/search.html"):
 
     articles = articles.order_by('-release_dt')
 
-    log_defaults = {
-        'event_id': 434000,
-        'event_data': '%s searched by %s' % ('Article', request.user),
-        'description': '%s searched' % 'Article',
-        'user': request.user,
-        'request': request,
-        'source': 'articles'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     # Query list of category and subcategory for dropdown filters
     category = request.GET.get('category')
@@ -97,17 +82,8 @@ def search_redirect(request):
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
 
-    log_defaults = {
-        'event_id': 435001,
-        'event_data': '%s (%d) viewed by %s' % (article._meta.object_name, article.pk, request.user),
-        'description': '%s viewed - print view' % article._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': article,
-    }
-    EventLog.objects.log(**log_defaults)
-
-    if has_perm(request.user, 'articles.view_article', article):
+    if has_perm(request.user,'articles.view_article', article):
+        EventLog.objects.log(instance=article)
         return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
     else:
@@ -128,16 +104,6 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
 
                 # update all permissions and save the model
                 article = update_perms_and_save(request, form, article)
-
-                log_defaults = {
-                    'event_id': 432000,
-                    'event_data': '%s (%d) edited by %s' % (article._meta.object_name, article.pk, request.user),
-                    'description': '%s edited' % article._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': article,
-                }
-                EventLog.objects.log(**log_defaults)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % article)
 
@@ -194,16 +160,6 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
                 # add all permissions and save the model
                 update_perms_and_save(request, form, article)
 
-                log_defaults = {
-                    'event_id': 431000,
-                    'event_data': '%s (%d) added by %s' % (article._meta.object_name, article.pk, request.user),
-                    'description': '%s added' % article._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': article,
-                }
-                EventLog.objects.log(**log_defaults)
-
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % article)
 
                 # send notification to administrator(s) and module recipient(s)
@@ -230,16 +186,6 @@ def delete(request, id, template_name="articles/delete.html"):
 
     if has_perm(request.user, 'articles.delete_article'):
         if request.method == "POST":
-            log_defaults = {
-                'event_id': 433000,
-                'event_data': '%s (%d) deleted by %s' % (article._meta.object_name, article.pk, request.user),
-                'description': '%s deleted' % article._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': article,
-            }
-
-            EventLog.objects.log(**log_defaults)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % article)
 
@@ -292,6 +238,8 @@ def articles_report(request, template_name='reports/articles.html'):
         except Article.DoesNotExist:
             pass
 
+    EventLog.objects.log()
+
     # special sort option
     if sort == 'day':
         stats = sorted(stats, key=lambda item: item['per_day'], reverse=True)
@@ -336,6 +284,7 @@ def export(request, template_name="articles/export.html"):
             'entity',
         ]
         export_id = run_export_task('articles', 'article', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
 
     return render_to_response(template_name, {

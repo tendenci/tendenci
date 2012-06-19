@@ -178,15 +178,15 @@ class MemberApproveForm(forms.Form):
         suggested_users = []
         self.entry = entry
 
-        suggested_users = entry.suggested_users(grouping=[('email',)])
+        suggested_users = entry.suggested_users(email=entry.email)
         suggested_users.append((0, 'Create new user'))
         self.fields['users'].choices = suggested_users
         self.fields['users'].initial = 0
 
-        if self.entry.is_renewal:            
+        if self.entry.is_renewal:
             self.fields['users'] = CharField(
                 label='',
-                initial=entry.user.pk, 
+                initial=entry.user.pk,
                 widget=HiddenInput
             )
 
@@ -203,8 +203,9 @@ class MembershipTypeForm(forms.ModelForm):
                                    widget=PriceInput(),
                                    help_text="Admin fee for the first time processing")
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('admin hold','Admin Hold'),))
-    
+        choices=(('active', 'Active'), ('inactive', 'Inactive'))
+    )
+
     class Meta:
         model = MembershipType
         fields = (
@@ -836,7 +837,15 @@ class AppEntryForm(forms.ModelForm):
             'owner',
             'owner_username',
             'status',
-            'status_detail'
+            'status_detail',
+            'app',
+            'user',
+            'membership',
+            'is_renewal',
+            'is_approved',
+            'decision_dt',
+            'judge',
+            'invoice',
         )
 
     def __init__(self, app=None, *args, **kwargs):
@@ -1229,11 +1238,12 @@ class ReportForm(forms.Form):
     
     membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
     membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
-    
+
+
 class MembershipForm(TendenciBaseForm):
     STATUS_CHOICES = (
-        ('active','Active'),
-        ('expired','Expired'),
+        ('active', 'Active'),
+        ('inactive', 'In Active'),
     )
 
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
@@ -1243,7 +1253,7 @@ class MembershipForm(TendenciBaseForm):
 
     class Meta:
         model = Membership
-        
+
         fields = (
             'member_number',
             'membership_type',
@@ -1257,10 +1267,9 @@ class MembershipForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
-        
+
         fieldsets = [
             ('Membership Details', {
                 'fields': [
@@ -1288,7 +1297,6 @@ class MembershipForm(TendenciBaseForm):
             ('Administrator Only', {
                 'fields': [
                     'syndicate',
-                    'status',
-                    'status_detail'], 
+                    'status_detail'],
                 'classes': ['admin-only'],
             })]

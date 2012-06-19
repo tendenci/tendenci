@@ -1,14 +1,12 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from tinymce.widgets import TinyMCE
 from perms.forms import TendenciBaseForm
-from base.fields import SplitDateTimeField
+from lots.models import Map, Lot, Photo, Line
 
-from lots.models import Lot, Map, Line
 
 class MapForm(TendenciBaseForm):
     name = forms.CharField()
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
+    status_detail = forms.ChoiceField(choices=(('active', 'Active'), ('pending', 'Pending')))
 
     class Meta:
         model = Map
@@ -41,23 +39,29 @@ class MapForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
-                    
+
     def __init__(self, *args, **kwargs):
         super(MapForm, self).__init__(*args, **kwargs)
         self.fields['file'].label = _("Image")
 
+
 class LotForm(TendenciBaseForm):
-    status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
-    
+    status_detail = forms.ChoiceField(choices=(('active', 'Active'), ('pending', 'Pending')))
+
     class Meta:
         model = Lot
         fields = (
-            'name',
             'map',
+            'name',
+            'suite_number',
+            'link',
+            'phone',
+            'hours_open',
             'description',
+            'contact_info',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -66,11 +70,19 @@ class LotForm(TendenciBaseForm):
             'status',
             'status_detail',
         )
+        widgets = {
+          'map': forms.HiddenInput
+        }
 
         fieldsets = [('Map Information', {
-                      'fields': ['name',
-                                 'map',
+                      'fields': ['map',
+                                 'name',
+                                 'suite_number',
+                                 'link',
+                                 'phone',
+                                 'hours_open',
                                  'description',
+                                 'contact_info',
                                  'tags',
                                  ],
                       'legend': ''
@@ -85,9 +97,17 @@ class LotForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
+
+class PhotoForm(forms.ModelForm):
+
+    class Meta:
+        model = Photo
+        fields = ('file',)
+
 
 class LineForm(forms.ModelForm):
     class Meta:

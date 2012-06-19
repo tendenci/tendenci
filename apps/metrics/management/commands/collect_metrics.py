@@ -59,7 +59,7 @@ class Command(BaseCommand):
         """
         from memberships.models import Membership
 
-        return Membership.objects.filter(status_detail="active", status=True)
+        return Membership.objects.active()
 
     def get_visits(self):
         """

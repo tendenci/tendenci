@@ -28,16 +28,8 @@ def search(request, template_name="discounts/search.html"):
     if query:
         discounts = discounts.filter(discount_code__icontains=query)
 
-    log_defaults = {
-        'event_id' : 1010400,
-        'event_data': '%s searched by %s' % ('Discount', request.user),
-        'description': '%s searched' % 'Discount',
-        'user': request.user,
-        'request': request,
-        'source': 'discounts'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    EventLog.objects.log()
+
     return render_to_response(
         template_name,
         {'discounts':discounts},
@@ -50,20 +42,9 @@ def detail(request, id, template_name="discounts/detail.html"):
     
     if not has_perm(request.user, 'discounts.view_discount', discount):
         raise Http403
-        
-    log_defaults = {
-        'event_id': 1010500,
-        'event_data': '%s (%d) viewed by %s' % (
-             discount._meta.object_name,
-             discount.pk, request.user
-        ),
-        'description': '%s viewed' % discount._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': discount,
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log(instance=discount)
+
     return render_to_response(
         template_name, 
         {'discount':discount},
@@ -80,15 +61,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
         if form.is_valid():
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
-            log_defaults = {
-                    'event_id' : 1010100,
-                    'event_data': '%s (%d) added by %s' % (discount._meta.object_name, discount.pk, request.user),
-                    'description': '%s added' % discount._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': discount,
-                }
-            EventLog.objects.log(**log_defaults)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
@@ -111,15 +84,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
         if form.is_valid():
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
-            log_defaults = {
-                    'event_id' : 1010200,
-                    'event_data': '%s (%d) updated by %s' % (discount._meta.object_name, discount.pk, request.user),
-                    'description': '%s updated' % discount._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': discount,
-                }
-            EventLog.objects.log(**log_defaults)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
@@ -143,16 +108,6 @@ def delete(request, id, template_name="discounts/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        log_defaults = {
-            'event_id': 1010300,
-            'event_data': '%s (%d) deleted by %s' % (discount._meta.object_name, discount.pk, request.user),
-            'description': '%s deleted' % discount._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': discount,
-        }
-        EventLog.objects.log(**log_defaults)
-
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % discount)
         discount.delete()
 
@@ -204,6 +159,7 @@ def export(request, template_name="discounts/export.html"):
             'cap',
         ]
         export_id = run_export_task('discounts', 'discount', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
 
     return render_to_response(template_name, {

@@ -159,7 +159,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
             inv = corp_memb_inv_add(request.user, corporate_membership)
             # update corp_memb with inv
             corporate_membership.invoice = inv
-            corporate_membership.save()
+            corporate_membership.save(log=False)
             
             # assign object permissions
             if not creator:
@@ -189,19 +189,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
             }
             send_email_notification('corp_memb_added', recipients, extra_context)
             
-            
-            # log an event
-            log_defaults = {
-                'event_id' : 681000,
-                'event_data': '%s (%d) added by %s' % (corporate_membership._meta.object_name, 
-                                                       corporate_membership.pk, request.user),
-                'description': '%s added' % corporate_membership._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': corporate_membership,
-            }
-            EventLog.objects.log(**log_defaults)
-            
+                        
             # handle online payment
             #if corporate_membership.payment_method.lower() in ['credit card', 'cc']:
             if corporate_membership.payment_method.is_online:
@@ -222,7 +210,7 @@ def add_conf(request, id, template="corporate_memberships/add_conf.html"):
     
 #    if not has_perm(request.user,'corporate_memberships.view_corporatemembership',corporate_membership):
 #        raise Http403
-    
+    EventLog.objects.log(instance=corporate_membership)
     context = {"corporate_membership": corporate_membership}
     return render_to_response(template, context, RequestContext(request))
 
@@ -324,20 +312,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
                     'request': request,
                 }
                 send_email_notification('corp_memb_edited', recipients, extra_context)
-            
-            # log an event
-            log_defaults = {
-                'event_id' : 682000,
-                'event_data': '%s (%d) edited by %s' % (corporate_membership._meta.object_name, 
-                                                       corporate_membership.pk, request.user),
-                'description': '%s edited' % corporate_membership._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': corporate_membership,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            
+
             return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
             
             
@@ -404,24 +379,11 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                 
                 # store individual members
                 for id in members:
-                    membership = Membership.objects.get(id=id)
+                    membership = Membership.objects.first(id=id)
                     ind_memb_renew_entry = IndivMembRenewEntry(corp_memb_renew_entry=corp_renew_entry,
                                                                membership=membership)
                     ind_memb_renew_entry.save()
-                    
-                # log an event
-                log_defaults = {
-                    'event_id' : 681001,
-                    'event_data': '%s (%d) renewed by %s' % (corporate_membership._meta.object_name, 
-                                                           corporate_membership.pk, request.user),
-                    'description': '%s renewed' % corporate_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': corporate_membership,
-                }
-                EventLog.objects.log(**log_defaults)
-                
-                
+
                 # handle online payment
                 if corp_renew_entry.get_payment_method().is_online:
                 #if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
@@ -501,7 +463,8 @@ def renew_conf(request, id, template="corporate_memberships/renew_conf.html"):
         renew_entry = CorpMembRenewEntry.objects.get(pk=corporate_membership.renew_entry_id)
     except CorpMembRenewEntry.DoesNotExist:
         renew_entry = None
-    
+
+    EventLog.objects.log(instance=corporate_membership)
     context = {"corporate_membership": corporate_membership, 
                'corp_app': corp_app,
                'renew_entry': renew_entry,
@@ -597,18 +560,9 @@ def approve(request, id, template="corporate_memberships/approve.html"):
                     
             if msg:      
                 messages.add_message(request, messages.SUCCESS, msg)
-                
-                # log an event
-                log_defaults = {
-                    'event_id' : event_id,
-                    'event_data': event_data,
-                    'description': event_description,
-                    'user': request.user,
-                    'request': request,
-                    'instance': corporate_membership,
-                }
-                EventLog.objects.log(**log_defaults)
-                    
+
+            EventLog.objects.log(instance=corporate_membership)
+
             return HttpResponseRedirect(reverse('corp_memb.view', args=[corporate_membership.id]))
     
     
@@ -665,7 +619,7 @@ def view(request, id, template="corporate_memberships/view.html"):
         else:
             field_obj.is_date = False
             
-    
+    EventLog.objects.log(instance=corporate_membership)
     context = {"corporate_membership": corporate_membership, 'field_objs': field_objs}
     return render_to_response(template, context, RequestContext(request))
 
@@ -718,37 +672,18 @@ def search(request, template_name="corporate_memberships/search.html"):
             
         
     corp_members = corp_members.order_by('name')
-    
-    log_defaults = {
-        'event_id': 684000,
-        'event_data': '%s searched by %s' % ('Corporate memberships', request.user),
-        'description': '%s searched' % 'Corporate memberships',
-        'user': request.user,
-        'request': request,
-        'source': 'corporatemembership'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'corp_members': corp_members}, 
         context_instance=RequestContext(request))
-    
-    
+
 @login_required
 def delete(request, id, template_name="corporate_memberships/delete.html"):
     corp_memb = get_object_or_404(CorporateMembership, pk=id)
 
     if has_perm(request.user,'corporate_memberships.delete_corporatemembership'):   
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 683000,
-                'event_data': '%s (%d) deleted by %s' % (corp_memb._meta.object_name, corp_memb.pk, request.user),
-                'description': '%s deleted' % corp_memb._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': corp_memb,
-            }
-            
-            EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % corp_memb)
             
 #            # send notification to administrators
@@ -774,7 +709,7 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
 def index(request, template_name="corporate_memberships/index.html"):
     corp_apps = CorpApp.objects.filter(status=1, status_detail='active').order_by('name')
     #cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
-    
+    EventLog.objects.log()
     return render_to_response(template_name, {'corp_apps': corp_apps}, 
         context_instance=RequestContext(request))
     
@@ -810,8 +745,7 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
                                                 user=request.user).filter(
                                             corporate_membership_id=corp_memb.id)
     else:
-        memberships = Membership.objects.filter(
-                                            corporate_membership_id=corp_memb.id)
+        memberships = Membership.objects.active(corporate_membership_id=corp_memb.id)
     try:
         page = int(request.GET.get('page', 0))
     except:
@@ -889,8 +823,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     if use_search_index:
         memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
     else:
-        memberships = Membership.objects.filter(
-                                            corporate_membership_id=corp_memb.id)
+        memberships = Membership.objects.active(corporate_membership_id=corp_memb.id)
         
     if request.user.profile.is_superuser or corp_memb.is_rep(request.user):
         pass
@@ -903,7 +836,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     form = RosterSearchForm(request.GET or None)
     #form.fields['name'].choices = name_choices
     form.fields['name'].initial = corp_memb.name
-        
+    EventLog.objects.log(instance=corp_memb)
     return render_to_response(template_name, {'corp_memb': corp_memb,
                                               'memberships': memberships, 
                                               'form': form}, 
@@ -1183,19 +1116,8 @@ def corp_import(request, step=None):
         total_added = len(added)
         total_updated = len(updated) + len(updated_override)
         totals = total_added + total_updated
-        
-        # log an event here
-        log_defaults = {
-            'event_id' : 689005,
-            'event_data': 'corporate membership imported by %s - INSERTS: %d, UPDATES: %d, TOTAL: %d ' \
-                                % (request.user, total_added, total_updated, totals),
-            'description': 'corporate membership import',
-            'user': request.user,
-            'request': request,
-            'source': 'corporate_memberships',
-        }
-        
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log()
 
         return render_to_response(template_name, {
             'corp_membs': corp_membs,
@@ -1245,7 +1167,8 @@ def download_csv_import_template(request, file_ext='.csv'):
     
             
     data_row_list = []
-    
+    EventLog.objects.log()
+
     return render_excel(filename, corp_memb_field_names, data_row_list, file_ext)
 
 @staff_member_required
@@ -1286,7 +1209,8 @@ def corp_import_invalid_records_download(request):
     # clear the session now
     #del request.session['corp_memb.import.file_path']
     #del request.session['corp_memb.import.invalid_skipped']
-    
+    EventLog.objects.log()
+
     return render_excel(filename, title_fields, item_list, '.csv')
 
 @login_required
@@ -1366,7 +1290,8 @@ def corp_export(request):
                     
                 data_row.append('\n')
                 data_row_list.append(data_row)
-                
+            EventLog.objects.log()
+
             return render_excel(filename, label_list, data_row_list, '.csv')
                     
     return render_to_response(template_name, {
@@ -1381,7 +1306,9 @@ def new_over_time_report(request, template_name='reports/corp_mems_over_time.htm
     """
     
     stats = get_over_time_stats()
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'stats':stats,
         }, context_instance=RequestContext(request))
@@ -1391,9 +1318,10 @@ def corp_mems_summary(request, template_name='reports/corp_mems_summary.html'):
     """
     Shows a report of corporate memberships per corporate membership type.
     """
-    
     summary,total = get_summary()
-    
+
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'summary':summary,
         'total':total,
