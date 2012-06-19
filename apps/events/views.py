@@ -1993,7 +1993,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
 
     # paid or non-paid or total
-    registrations = Registration.objects.filter(event=event)
+    registrations = Registration.objects.filter(event=event, canceled=False)
     if roster_view == 'paid':
         registrations = registrations.filter(invoice__balance__lte=0)
     elif roster_view == 'non-paid':
@@ -2042,25 +2042,26 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                                     'value': field_entry[2]
                                     })
       
+    registrants = Registrant.objects.filter(registration__event=event, 
+                                                cancel_dt=None
+                                                )
     if sort_field in ('first_name', 'last_name'):
         # let registrants without names sink dowm to the bottom
-        regisrants_noname = Registrant.objects.filter(registration__event=event, 
-                                            cancel_dt=None,
+        regisrants_noname = registrants.filter(
+                                     last_name='',
+                                     first_name=''          
+                                     ).order_by('id').select_related()
+        registrants_withname = registrants.exclude(
                                             last_name='',
                                             first_name=''
-                                            ).order_by('id')
-        registrants_withname = Registrant.objects.filter(registration__event=event, 
-                                            cancel_dt=None
-                                            ).exclude(
-                                            last_name='',
-                                            first_name=''
-                                            ).order_by(sort_field)
+                                            ).order_by(sort_field).select_related()
         c = itertools.chain(registrants_withname, regisrants_noname)
         registrants = [r for r in c]
     else:        
-        registrants = Registrant.objects.filter(registration__event=event, 
-                                                cancel_dt=None
-                                                ).order_by(sort_field)
+        registrants = registrants.order_by(sort_field).select_related()
+        
+        
+    # assign custom form roster_field_list (if any) to registrants
     if roster_fields_dict:
         for registrant in registrants:
             key = str(reg_form_entries_dict[registrant.id])
@@ -2072,15 +2073,12 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
 
     # need to add a boolean field canceled in Registration
     # and then replace the code below with the aggregate function
-    # to get the total_sum and balance_sum.
-    
-    # get total and balance (sum)
-    for reg8n in registrations:
-        if not reg8n.canceled:  # not cancelled
-            if reg8n.invoice != None:
-                if roster_view != 'paid':
-                    total_sum += float(reg8n.invoice.total)
-                balance_sum += float(reg8n.invoice.balance)
+    # Get the total_sum and balance_sum.
+    d_total = registrations.aggregate(total_sum=Sum('invoice__total'))
+    total_sum = d_total['total_sum']
+    if roster_view != 'paid':
+        d_balance = registrations.aggregate(balance_sum=Sum('invoice__balance'))
+        balance_sum = d_balance['balance_sum']
 
     num_registrants_who_paid = event.registrants(with_balance=False).count()
     num_registrants_who_owe = event.registrants(with_balance=True).count()
