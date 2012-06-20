@@ -1,0 +1,35 @@
+/* general */
+.t h1 {
+	margin: 0 auto 10px 0;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+/* search form */
+.t form.search-form input[type="text"] {
+	width: 60%;
+	margin-bottom: 10px;
+	padding: 5px;
+}
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;
+    margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.products-wrap {
+    width: 90%;
+}
+
+.products-wrap .wrap-search-item {
+    border: none;
+}
+
+.product-search-item {
+    float: left;
+    width: 180px;
+    height: 260px;
+}
