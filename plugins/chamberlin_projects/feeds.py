@@ -15,10 +15,10 @@ class LatestEntriesFeed(SubFeed):
         return items
 
     def item_title(self, item):
-        return item.author
+        return item.title
 
     def item_description(self, item):
-        return item.project
+        return item.project_description
 
     def item_pubdate(self, item):
         return item.create_dt
