@@ -173,13 +173,8 @@ def count_active_memberships(date):
     """
     Counts all active memberships in a given date
     """
-    mems = Membership.objects.filter(
-                create_dt__lte=date,
-                expire_dt__gt=date,
-            )
-    count = mems.count()
-
-    return count
+    return Membership.objects.active(
+        create_dt__lte=date, expire_dt__gt=date).count()
 
 
 def prepare_chart_data(days, height=300):
@@ -267,7 +262,7 @@ def get_over_time_stats():
     for time in times:
         start_dt = time[1]
         d = {}
-        active_mems = Membership.objects.filter(expire_dt__gt=start_dt)
+        active_mems = Membership.objects.active(expire_dt__gt=start_dt)
         d['new'] = active_mems.filter(subscribe_dt__gt=start_dt).count()  # just joined in that time period
         d['renewing'] = active_mems.filter(renewal=True).count()
         d['active'] = active_mems.count()

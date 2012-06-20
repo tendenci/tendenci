@@ -134,8 +134,8 @@ class Category(models.Model):
 class CategoryItem(models.Model):
     content_type = models.ForeignKey(ContentType, db_index=True)
     object_id = models.PositiveIntegerField()
-    category = models.ForeignKey(Category, related_name='%(class)s_category',null=True)
-    parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True)
+    category = models.ForeignKey(Category, related_name='%(class)s_category',null=True,blank=True)
+    parent = models.ForeignKey(Category, related_name='%(class)s_parent', null=True,blank=True)
     object = generic.GenericForeignKey('content_type', 'object_id')
     
     def __unicode__(self):

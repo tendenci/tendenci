@@ -111,7 +111,7 @@ class ImportMembershipsTask(Task):
                 # relation does not hold unique constraints
                 # so we assume the first hit is the correct membership
                 # if it exists.
-                memberships = Membership.objects.filter(
+                memberships = Membership.objects.active(
                     user=user,
                     membership_type=membership_type,
                 )  # oldest on top

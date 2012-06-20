@@ -53,7 +53,7 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
                 indiv_renewal_price = '%s<span class="type-ind-price">%0.2f</span>' % (currency_symbol, indiv_renewal_price)
             if not cmt.renewal_price:
                 cmt.renewal_price = 0
-            
+
             price_display = """%s - <b>%s<span class="type-corp-price">%0.2f</span></b> 
                             (individual members renewal: 
                             <b>%s</b>)""" % (cmt.name, 
@@ -62,13 +62,14 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
                                             indiv_renewal_price)
         price_display = mark_safe(price_display)
         cmt_list.append((cmt.id, price_display))
-            
+
     return cmt_list 
+
 
 def get_indiv_membs_choices(corp):
     im_list = []
-    indiv_memberships = Membership.objects.filter(corporate_membership_id=corp.id)
-    
+    indiv_memberships = Membership.objects.active(corporate_membership_id=corp.id)
+
     for membership in indiv_memberships:
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (reverse('profile', args=[membership.user.username]), 
                                                                       membership.user.get_full_name())

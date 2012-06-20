@@ -89,7 +89,7 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
 LOCAL_STATIC_URL = '/site_media/static/'
 
 # Added 2012-03-01 to use cloudfront CDN
-STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-79/'
+STATIC_URL = '//d15jim10qtjxjw.cloudfront.net/master-80/'
 
 # Avatar default URL, no Gravatars
 AVATAR_GRAVATAR_BACKUP = False
@@ -125,11 +125,11 @@ MIDDLEWARE_CLASSES = (
     # 'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'profiles.middleware.ProfileMiddleware',
     'perms.middleware.ImpersonationMiddleware',
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
     'mobile.middleware.MobileMiddleware',
-    'profiles.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'

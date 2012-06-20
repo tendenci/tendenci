@@ -163,7 +163,7 @@ class FormForCustomRegForm(forms.ModelForm):
     # for anonymousmemberpricing    
     def get_form_label(self):
         return self.form_index + 1 
-    
+
     # for anonymousmemberpricing
     def get_user(self):
         """
@@ -176,18 +176,18 @@ class FormForCustomRegForm(forms.ModelForm):
             email = self.saved_data.get(self.email_key, None)
         else:
             email = None
-        
-        if memberid:# memberid takes priority over email
-            memberships = Membership.objects.filter(member_number=memberid)
-            if memberships:
-                user = memberships[0].user
+
+        if memberid:  # memberid takes priority over email
+            membership = Membership.objects.first(member_number=memberid)
+            if hasattr(membership, 'user'):
+                user = membership.user
         elif email:
             users = User.objects.filter(email=email)
             if users:
                 user = users[0]
-                
+
         return user
-    
+
     # for anonymousmemberpricing
     def _clean_fields(self):
         for name, field in self.fields.items():

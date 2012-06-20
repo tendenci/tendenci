@@ -9,13 +9,14 @@ from django.core.urlresolvers import reverse
 
 class SWFUploadMiddleware(object):
     def process_request(self, request):
-        if 'photoset_id' in request.POST:
-            photoset_id = int(request.POST["photoset_id"])
-            if (request.method == 'POST') and (request.path == reverse('photos.views.photos_batch_add', args=[photoset_id])) and \
-                    request.POST.has_key(settings.SESSION_COOKIE_NAME):
-                request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[settings.SESSION_COOKIE_NAME]
-            if request.POST.has_key('csrftoken'):           
-                request.COOKIES["csrftoken"] = request.POST['csrftoken']
+        if request.method == 'POST':
+            if request.POST.has_key("photoset_id"):
+                photoset_id = int(request.POST["photoset_id"])
+                if (request.path == reverse('photos.views.photos_batch_add', args=[photoset_id])) and \
+                        request.POST.has_key(settings.SESSION_COOKIE_NAME):
+                    request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[settings.SESSION_COOKIE_NAME]
+                if request.POST.has_key('csrftoken'):           
+                    request.COOKIES["csrftoken"] = request.POST['csrftoken']
 
 class MediaUploadMiddleware(object):
     def process_request(self, request):
