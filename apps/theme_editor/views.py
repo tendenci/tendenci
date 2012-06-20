@@ -13,7 +13,7 @@ from event_logs.models import EventLog
 from theme.utils import get_theme, theme_choices as theme_choice_list
 from theme_editor.models import ThemeFileVersion
 from theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
-from theme_editor.utils import get_dir_list, get_file_list, get_file_content
+from theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
 from theme_editor.utils import qstr_is_file, qstr_is_dir, copy
 from theme_editor.utils import handle_uploaded_file, app_templates
 
@@ -61,6 +61,8 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     if pwd == '/':
         pwd = ''
 
+    current_file_path = os.path.join(pwd, current_file)
+
     # get the previous directory name and path
     prev_dir = '/'
     prev_dir_name = 'theme base'
@@ -77,6 +79,8 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
 
     # get the file list
     files, non_editable_files = get_file_list(pwd, ROOT_DIR=theme_root)
+
+    all_files_folders = get_all_files_list(ROOT_DIR=theme_root)
 
     # non-deletable files
     non_deletable_files = ['homepage.html', 'default.html', 'footer.html', 'header.html', 'sidebar.html', 'nav.html', 'styles.less', 'styles.css']
@@ -118,6 +122,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'theme_form': theme_form,
         'upload_form': upload_form,
         'current_theme': selected_theme,
+        'current_file_path': current_file_path,
         'current_file': current_file,
         'prev_dir_name': prev_dir_name,
         'prev_dir': prev_dir,
@@ -130,6 +135,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'archives': archives,
         'is_file': is_file,
         'is_dir': is_dir,
+        'all_files_folders': all_files_folders,
     }, context_instance=RequestContext(request))
 
 

@@ -1,0 +1,16 @@
+{% load theme_editor_tags %}
+{% load theme_editor_filters %}
+{% if value.items %}
+    <li><a href="javascript:;" class="folder">+ {{ key }}</a>
+    <ul>
+    {% for key,value in value.items|sortcontents %}
+        {% if key == "contents" %}
+            {% for item in value %}
+                {% include "theme_editor/file_link.html" %}
+            {% endfor %}
+        {% else %}
+            {% folder_structure value %}
+        {% endif %}
+    {% endfor %}
+    </ul></li>
+{% endif %}
