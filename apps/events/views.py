@@ -2068,6 +2068,11 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         else:
             reg8n_to_invoice_dict[item[0]] = dict(zip(invoice_fields, 
                                                       item[1:]))
+            
+    # registration to list of registrants mapping
+    reg8n_to_reg7n_dict = {}
+    for k, v in reg7n_to_reg8n_dict.iteritems():
+        reg8n_to_reg7n_dict.setdefault(v, []).append(k)
     
     
     
@@ -2111,7 +2116,20 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         key = reg7n_to_reg8n_dict[registrant.id]
         if reg8n_to_invoice_dict.has_key(key):
             registrant.invoice_dict = reg8n_to_invoice_dict[key] 
-          
+       
+    for registrant in registrants:  
+        # assign additional registrants   
+        registrant.additionals = []
+        key = reg7n_to_reg8n_dict[registrant.id]
+        if reg8n_to_reg7n_dict[key]:
+            additional_ids = reg8n_to_reg7n_dict[key]
+            additional_ids.remove(registrant.id)
+            if additional_ids:
+                for r in registrants:
+                    if r.id in additional_ids:
+                        registrant.additionals.append(r)
+        
+                      
 
     total_sum = float(0)
     balance_sum = float(0)

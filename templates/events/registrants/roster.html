@@ -328,7 +328,7 @@
 
 
 
-{% with registrant.additional_registrants as additionals %}
+{% with registrant.additionals as additionals %}
 {% with registrant.registration.regaddon_set.all as regaddons %}
 
 {% if registrant.invoice_dict.balance > 0 %}
