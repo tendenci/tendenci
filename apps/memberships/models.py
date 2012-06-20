@@ -266,18 +266,19 @@ class Membership(TendenciBaseModel):
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     user = models.ForeignKey(User, related_name="memberships")
-    directory = models.ForeignKey(Directory, blank=True, null=True)
     renewal = models.BooleanField(default=False)
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    invoice = models.OneToOneField(Invoice, blank=True, null=True)
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
     expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.ForeignKey(PaymentMethod, blank=True, null=True)
-    ma = models.ForeignKey("App", null=True)
+    ma = models.ForeignKey("App", null=True, blank=True)
     send_notice = models.BooleanField(default=True)
-
     perms = generic.GenericRelation(ObjectPermission,
         object_id_field="object_id", content_type_field="content_type")
+    judged_dt = models.DateTimeField(null=True, blank=True)
+    judge = models.ForeignKey(User, related_name="memberships_judged",
+        null=True, blank=True)
 
     objects = MembershipManager()
 
