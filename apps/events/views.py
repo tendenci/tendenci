@@ -2031,9 +2031,11 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                                     'value': field_entry[2]
                                     })
       
-    registrants = Registrant.objects.filter(registration__event=event, 
-                                                cancel_dt=None
-                                                )
+    registrants = Registrant.objects.filter(registration__event=event,
+                                            cancel_dt=None)
+    if roster_view in ('paid', 'non-paid'):
+        registrants = registrants.filter(registration__in=registrations)
+        
     if sort_field in ('first_name', 'last_name'):
         # let registrants without names sink dowm to the bottom
         regisrants_noname = registrants.filter(
@@ -2060,8 +2062,6 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     total_sum = float(0)
     balance_sum = float(0)
 
-    # need to add a boolean field canceled in Registration
-    # and then replace the code below with the aggregate function
     # Get the total_sum and balance_sum.
     d_total = registrations.aggregate(total_sum=Sum('invoice__total'))
     total_sum = d_total['total_sum']
