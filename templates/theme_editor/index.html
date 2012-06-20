@@ -4,6 +4,8 @@
 {% load humanize %}
 {% load styled_forms %}
 {% load base_filters %}
+{% load theme_editor_tags %}
+{% load theme_editor_filters %}
 
 {% block title %}{{ block.super }}Theme Editor{% endblock %}
 
@@ -12,6 +14,10 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/theme-editor.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/tipsy.css">
 <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}codemirror2/lib/codemirror.css" />
+<style>
+#right_files_list ul { margin-left: 12px; }
+#right_files_list a.folder { font-weight: bold; }
+</style>
 {% endblock %}
         
 {% block body %}
@@ -75,6 +81,25 @@
             <div id="right_files_list">
             <div class="well well-small">
                 <h4>{% trans "Choose a folder or file to edit:" %}</h4>
+                <ul id="file-tree">
+                {% for key,value in all_files_folders.items %}
+                    {% if value.items %}
+                        {% for key,value in value.items|sortcontents %}
+                            {% if key == "contents" %}
+                                {% for item in value %}
+                                    {% include "theme_editor/file_link.html" %}
+                                {% endfor %}
+                            {% else %}
+                                {% folder_structure value %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+                </ul>
+                
+                {% comment %}
+                
+                
                                {%  if pwd %}
                                <div class="pwd" title="{{ pwd }}">
                                {% if pwd|length > 20  %}
@@ -118,7 +143,9 @@
                                {% if not files and not dirs and not non_editable_files %}
                                <p>{% trans "This folder is empty" %}</p>
                                {% endif %}  
-                               </div>
+                
+                {% endcomment %}
+                </div>
                                <div class="well well-small">
                                <h4>Add more files to the editor:</h4>
                                <ol>
@@ -239,5 +266,42 @@ function open_archive(id)
         }
     }
 </script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#file-tree ul li').hide();
+        var current_file = $('#file-tree ul li.highlight')
+        current_file.show();
+        current_file.siblings().show();
+        current_file.parent().parent().show();
+        current_file.parent().parent().children(":first").addClass('open');
+        folder_text = current_file.parent().parent().children(":first").text();
+        current_file.parent().parent().children(":first").text(folder_text.replace('+ ', '– '));
+        current_file.parent().parent().siblings().show();
 
+        current_file.parent().parent().parent().parent().show();
+        current_file.parent().parent().parent().parent().siblings().show();
+        current_file.parent().parent().parent().parent().children(":first").addClass('open');
+        p_folder_text = current_file.parent().parent().parent().parent().children(":first").text();
+        current_file.parent().parent().parent().parent().children(":first").text(p_folder_text.replace('+ ', '– '));
+
+        current_file.parent().parent().parent().parent().parent().parent().children(":first").addClass('open');
+        p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().children(":first").text();
+        current_file.parent().parent().parent().parent().parent().parent().children(":first").text(p_p_folder_text.replace('+ ', '– '));
+
+    });
+
+    $('#file-tree li a.folder').click(function() {
+        if ($(this).hasClass('open')) {
+            console.log("show class");
+            $(this).text($(this).text().replace('– ', '+ '));
+            $(this).removeClass('open');
+            $(this).siblings().children().hide();
+        } else {
+            console.log($(this).text());
+            $(this).addClass('open');
+            $(this).text($(this).text().replace('+ ', '– '));
+            $(this).siblings().children().show();
+        }
+    });
+</script>
 {% endblock %}

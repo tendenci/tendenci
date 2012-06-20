@@ -1,0 +1,7 @@
+<li {% if current_file_path == item.path %}class="highlight"{% endif %}>
+{% if item.editable %}
+    <a href="{% url theme_editor.editor %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
+{% else %}
+    <a href="{{ THEME_URL }}{{ item.path }}" target="_blank">{{ item.name|safe }} <img src="{{ STATIC_URL }}images/icons/external_16x16.png" /></a>
+{% endif %}
+</li>
