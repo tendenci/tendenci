@@ -10,7 +10,7 @@ from django.utils import simplejson as json
 from base.http import Http403
 from perms.utils import has_perm
 from event_logs.models import EventLog
-from theme.utils import get_theme
+from theme.utils import get_theme, theme_choices as theme_choice_list
 from theme_editor.models import ThemeFileVersion
 from theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
 from theme_editor.utils import get_dir_list, get_file_list, get_file_content
@@ -78,6 +78,13 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     # get the file list
     files, non_editable_files = get_file_list(pwd, ROOT_DIR=theme_root)
 
+    # non-deletable files
+    non_deletable_files = ['homepage.html', 'default.html', 'footer.html', 'header.html', 'sidebar.html', 'nav.html', 'styles.less', 'styles.css']
+    
+    # get the number of themes in the themes directory on the site
+    theme_choices = [ i for i in theme_choice_list()]
+    theme_count = len(theme_choices)
+    
     # get a list of revisions
     archives = ThemeFileVersion.objects.filter(relative_file_path=default_file).order_by("-create_dt")
 
@@ -118,6 +125,8 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         'dirs': dirs,
         'files': files,
         'non_editable_files': non_editable_files,
+        'non_deletable_files': non_deletable_files,
+        'theme_count': theme_count,
         'archives': archives,
         'is_file': is_file,
         'is_dir': is_dir,

@@ -128,18 +128,18 @@ class RegistrantForm(forms.Form):
         user = AnonymousUser()
         memberid = self.saved_data.get('memberid', None)
         email = self.saved_data.get('email', None)
-        
-        if memberid:# memberid takes priority over email
-            memberships = Membership.objects.filter(member_number=memberid)
-            if memberships:
-                user = memberships[0].user
+
+        if memberid:  # memberid takes priority over email
+            membership = Membership.objects.first(member_number=memberid)
+            if hasattr(membership, 'user'):
+                user = membership.user
         elif email:
             users = User.objects.filter(email=email)
             if users:
                 user = users[0]
-                
+
         return user
-    
+
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
         

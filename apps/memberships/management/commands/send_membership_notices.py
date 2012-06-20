@@ -110,7 +110,7 @@ class Command(BaseCommand):
             else:
                 start_dt = now - timedelta(days=notice.num_days)
             
-            memberships = Membership.objects.filter(status=1)
+            memberships = Membership.objects.active()
             if notice.notice_type == 'join':
                 memberships = memberships.filter(subscribe_dt__year=start_dt.year,
                                                 subscribe_dt__month=start_dt.month,

@@ -37,7 +37,7 @@ class Profile(TendenciBaseModel):
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
-    company = models.CharField(_('company') , max_length=100, blank=True)
+    company = models.CharField(_('company'), max_length=100, blank=True)
     position_title = models.CharField(_('position title'), max_length=50, blank=True)
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
     sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', u'Male'),('female', u'Female')))
@@ -68,26 +68,31 @@ class Profile(TendenciBaseModel):
     remember_login = models.BooleanField(_('remember login'))
     exported = models.BooleanField(_('exported'))
     direct_mail = models.BooleanField(_('direct mail'), default=False)
-    notes = models.TextField(_('notes'), blank=True) 
-    admin_notes = models.TextField(_('admin notes'), blank=True) 
+    notes = models.TextField(_('notes'), blank=True)
+    admin_notes = models.TextField(_('admin notes'), blank=True)
     referral_source = models.CharField(_('referral source'), max_length=50, blank=True)
     hide_in_search = models.BooleanField(default=False)
     hide_address = models.BooleanField(default=False)
     hide_email = models.BooleanField(default=False)
-    hide_phone = models.BooleanField(default=False)   
+    hide_phone = models.BooleanField(default=False)
     first_responder = models.BooleanField(_('first responder'), default=False)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
-    
+
     perms = generic.GenericRelation(ObjectPermission,
         object_id_field="object_id", content_type_field="content_type")
-    
+
     objects = ProfileManager()
     actives = ProfileActiveManager()
-    
+
+    class Meta:
+        permissions = (("view_profile", "Can view profile"),)
+        verbose_name = "User"
+        verbose_name_plural = "Users"
+
     def __unicode__(self):
         return self.user.username
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ('profile', [self.user.username])
@@ -119,11 +124,6 @@ class Profile(TendenciBaseModel):
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
 
-    class Meta:
-        permissions = (("view_profile","Can view profile"),)
-        verbose_name = "User"
-        verbose_name_plural = "Users"
-
     def save(self, *args, **kwargs):
         from campaign_monitor.utils import update_subscription
         if not self.id:
@@ -136,18 +136,18 @@ class Profile(TendenciBaseModel):
             self.allow_anonymous_view = True
 
         super(Profile, self).save(*args, **kwargs)
-        
+
         if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
             update_subscription(self, self.old_email)
             del self.old_email
-        
+
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):
         boo = False
-       
+
         if user2_compare.is_superuser:
             boo = True
-        else: 
+        else:
             if user2_compare == self.user:
                 boo = True
             else:
@@ -157,14 +157,14 @@ class Profile(TendenciBaseModel):
                 else:
                     if user2_compare.has_perm('profiles.view_profile', self):
                         boo = True
-            
+
         return boo
-    
+
     # if this profile allows edit by user2_compare
     def allow_edit_by(self, user2_compare):
         if user2_compare.is_superuser:
             return True
-        else: 
+        else:
             if user2_compare == self.user:
                 return True
             else:
@@ -179,6 +179,17 @@ class Profile(TendenciBaseModel):
     def get_groups(self):
         memberships = self.user.group_member.all()
         return [membership.group for membership in memberships]
+
+    def refresh_member_number(self):
+        memberships = self.user.memberships.active_strict()
+
+        if memberships:
+            self.member_number = self.member_number or memberships[0].member_number
+        else:
+            self.member_number = u''
+
+        self.save()
+        return self.member_number
 
     def roles(self):
         role_set = []

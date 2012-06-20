@@ -105,7 +105,7 @@
         				<a/>
         			</td>
         			<td>
-		        		{{ membership.subscribe_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+		        		{{ membership.subscribe_dt|date:"M j, Y" }} - {% firstof membership.get_expire_dt|date:"M j, Y" "Forever" %}
 		        		</a>
 
 		        		{% if membership.can_renew and membership.ma %}

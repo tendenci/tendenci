@@ -1,0 +1,30 @@
+{% extends "martins_products/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load product_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Products' %}" href="{% url products.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate products 10 %}
+<div class="t">
+{% product_nav request.user %}
+<h1>{% trans 'Product List' %}</h1>
+{% product_search %}
+<div class="products-wrap clearfix">
+{% for product in products %}
+{% search_result product %}
+{% empty %}
+<p>{% trans '0 products found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock body %}

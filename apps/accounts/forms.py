@@ -110,24 +110,24 @@ class LoginForm(forms.Form):
         # and set the default value for remember me
         hide_remember_me = get_setting('module', 'users', 'usershiderememberme')
         remember_me_default_checked = get_setting('module', 'users', 'usersremembermedefaultchecked')
-        
+
         if remember_me_default_checked:
             self.fields['remember'].initial = True
         if hide_remember_me:
             self.fields['remember'].widget = forms.HiddenInput()
-           
+
     def clean(self):
         if self._errors:
             return
         user = authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"])
-        
+
         if user:
             try:
                 profile = user.get_profile()
             except Profile.DoesNotExist:
                 profile = Profile.objects.create_profile(user=user)
-           
-            if user.is_active and profile.status==1 and profile.status_detail.lower()=='active':
+
+            if user.is_active and profile.status == True and profile.status_detail.lower() == 'active':
                 self.user = user
             else:
                 raise forms.ValidationError(_("This account is currently inactive."))
@@ -138,12 +138,18 @@ class LoginForm(forms.Form):
     def login(self, request):
         if self.is_valid():
             login(request, self.user)
-            messages.add_message(request, messages.SUCCESS, u"Successfully logged in as %(username)s." % {'username': self.user.username})
+
+            messages.add_message(
+                request, messages.SUCCESS,
+                u"Woohoo %s, you've successfully logged in." % \
+                    self.user.first_name or self.user.username
+            )
+
             if self.cleaned_data['remember']:
                 request.session.set_expiry(60 * 60 * 24 * 7 * 3)
             else:
                 request.session.set_expiry(0)
-                
+
             return True
         return False
     

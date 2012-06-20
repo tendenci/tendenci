@@ -9,10 +9,7 @@ class Command(BaseCommand):
         
         verbosity = int(options['verbosity'])
  
-        memberships = Membership.objects.filter(
-            status=1,
-            status_detail='active'
-        )
+        memberships = Membership.objects.active()
 
         for membership in memberships:
             membership.populate_user_member_id(verbosity=verbosity)

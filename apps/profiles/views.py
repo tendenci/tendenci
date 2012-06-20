@@ -32,7 +32,7 @@ from user_groups.models import GroupMembership
 from user_groups.forms import GroupMembershipEditForm
 
 from profiles.models import Profile
-from profiles.forms import (ProfileForm, UserPermissionForm, 
+from profiles.forms import (ProfileForm, UserPermissionForm,
     UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
 from profiles.utils import user_add_remove_admin_auth_group
 
@@ -40,14 +40,11 @@ try:
     notification = get_app('notification')
 except ImproperlyConfigured:
     notification = None
-    
-friends = False
-#if 'friends' in settings.INSTALLED_APPS:
-#    friends = True
-#    from friends.models import Friendship
 
-# view profile  
-@login_required 
+friends = False
+
+
+@login_required
 def index(request, username='', template_name="profiles/index.html"):
     """
     Show profile of username passed.  If no username is passed
@@ -63,14 +60,12 @@ def index(request, username='', template_name="profiles/index.html"):
         profile = user_this.get_profile()
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_this)
-        
-    # security check 
-    if not profile.allow_view_by(request.user): 
+
+    if not profile.allow_view_by(request.user):
         raise Http403
 
     # content counts
-    content_counts = {'total':0, 'invoice':0}
-    from django.db.models import Q
+    content_counts = {'total': 0, 'invoice': 0}
     from invoices.models import Invoice
     inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
@@ -88,18 +83,14 @@ def index(request, username='', template_name="profiles/index.html"):
     if additional_owners:
         if profile.owner in additional_owners:
             additional_owners.remove(profile.owner)
-    
+
     # group list
     group_memberships = user_this.group_member.all()
 
-    try:
-        # memberships
-        memberships = user_this.memberships.all()
-    except:
-        memberships = None
+    memberships = user_this.memberships.active_strict()
 
     log_defaults = {
-        'event_id' : 125000,
+        'event_id': 125000,
         'event_data': '%s (%d) viewed by %s' % (profile._meta.object_name, profile.pk, request.user),
         'description': '%s viewed' % profile._meta.object_name,
         'user': request.user,
@@ -120,7 +111,7 @@ def index(request, username='', template_name="profiles/index.html"):
     return render_to_response(template_name, {
         'can_edit': can_edit,
         "user_this": user_this,
-        "profile":profile,
+        "profile": profile,
         'city_state': city_state,
         'city_state_zip': city_state_zip,
         'content_counts': content_counts,
@@ -138,7 +129,7 @@ def search(request, template_name="profiles/search.html"):
     if request.user.is_anonymous():
         if not allow_anonymous_search:
             raise Http403
-    
+
     if request.user.is_authenticated():
         if not allow_user_search and not request.user.profile.is_superuser:
             raise Http403
@@ -146,10 +137,10 @@ def search(request, template_name="profiles/search.html"):
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
     profiles = Profile.objects.filter(filters).distinct()
-    
+
     if query:
-        profiles = profiles.filter(Q(user__first_name__icontains=query)|Q(user__last_name__icontains=query)|Q(user__email__icontains=query))
-    
+        profiles = profiles.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query))
+
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     log_defaults = {

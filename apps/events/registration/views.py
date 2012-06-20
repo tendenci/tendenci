@@ -55,9 +55,9 @@ def ajax_user(request, event_id):
     
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     if memberid and allow_memberid:# memberid takes priority over email
-        memberships = Membership.objects.filter(member_number=memberid)
-        if memberships:
-            user = memberships[0].user
+        membership = Membership.objects.first(member_number=memberid)
+        if hasattr(membership, 'user'):
+            user = membership.user
     elif email:
         users = User.objects.filter(email=email)
         if users:
@@ -107,10 +107,10 @@ def ajax_pricing(request, event_id, template_name="events/registration/pricing.h
     allow_memberid = get_setting('module', 'events', 'memberidpricing')
     shared_pricing = get_setting('module', 'events', 'sharedpricing')
     
-    if memberid and allow_memberid:# memberid takes priority over email
-        memberships = Membership.objects.filter(member_number=memberid)
-        if memberships:
-            user = memberships[0].user
+    if memberid and allow_memberid:  # memberid takes priority over email
+        membership = Membership.objects.first(member_number=memberid)
+        if hasattr(membership, 'user'):
+            user = membership.user
     elif email:
         users = User.objects.filter(email=email)
         if users:

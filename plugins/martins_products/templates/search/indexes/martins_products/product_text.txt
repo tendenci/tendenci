@@ -1,0 +1,32 @@
+{% load tagging_tags %}
+
+{% tags_for_object object as tags %}
+{% for tag in tags %}
+    tag:{{ tag }} 
+{% endfor %}
+
+{{ object.pk }}
+{{ object.product_id }}
+{{ object.product_name }}
+{{ object.generic_description }}
+{{ object.brand }}
+{{ object.product_features }}
+{{ object.product_code }}
+{{ object.product_specs }}
+{{ object.active_ingredients }}
+{{ object.key_insects }}
+{{ object.use_sites }}
+{{ object.product_label }}
+{{ object.state_registered }}
+
+{% with object.category_set as obj_cats %}
+{% if obj_cats.category %}
+category:{{ obj_cats.category }}
+category:{{ obj_cats.category.pk }}
+{% endif %}
+
+{% if obj_cats.sub_category %}
+sub_category:{{ obj_cats.sub_category }}
+sub_category:{{ obj_cats.sub_category.pk }}
+{% endif %}
+{% endwith %}
