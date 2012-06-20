@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
 import itertools
+from django.db.models import Q
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -2030,11 +2031,46 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                                     {'label': field_entry[1], 
                                     'value': field_entry[2]
                                     })
-      
+                
+                
     registrants = Registrant.objects.filter(registration__event=event,
                                             cancel_dt=None)
     if roster_view in ('paid', 'non-paid'):
         registrants = registrants.filter(registration__in=registrations)
+                
+                
+    # Pricing title - store with the registrant to improve the performance.
+    pricing_titles = RegConfPricing.objects.filter(
+                        reg_conf=event.registration_configuration
+                ).values_list('id', 'title')
+    pricing_titles_dict = dict(pricing_titles)
+    
+    # Store the price and invoice info with registrants to reduce the # of queries.
+    # need 4 mappings:
+    #    1) registrant_ids to pricing_ids 
+    #    2) registration_ids to pricings_ids
+    #    3) registrant_ids to registration_ids
+    #    4) registration_ids to invoices
+    reg7n_pricing_reg8n = registrants.values_list('id', 'pricing__id', 'registration__id')
+    reg7n_to_pricing_dict = dict([(item[0], item[1]) for item in reg7n_pricing_reg8n])
+    reg8n_to_pricing_dict = dict(registrations.values_list('id', 'reg_conf_price__id'))
+    reg7n_to_reg8n_dict = dict([(item[0], item[2]) for item in reg7n_pricing_reg8n])
+    
+    reg8n_to_invoice_objs = registrations.values_list('id', 'invoice__id', 'invoice__total', 
+                                         'invoice__balance', 'invoice__admin_notes',
+                                         'invoice__tender_date')
+    reg8n_to_invoice_dict = {}
+    invoice_fields = ('id', 'total', 'balance', 'admin_notes', 'tender_date')
+    for item in reg8n_to_invoice_objs:
+        if item[1] == None:
+            reg8n_to_invoice_dict[item[0]] = dict(zip(invoice_fields, 
+                                                  (0, 0, 0, '', '')))
+        else:
+            reg8n_to_invoice_dict[item[0]] = dict(zip(invoice_fields, 
+                                                      item[1:]))
+    
+    
+    
         
     if sort_field in ('first_name', 'last_name'):
         # let registrants without names sink dowm to the bottom
@@ -2052,12 +2088,30 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrants = registrants.order_by(sort_field).select_related()
         
         
-    # assign custom form roster_field_list (if any) to registrants
+    
     if roster_fields_dict:
         for registrant in registrants:
+            # assign custom form roster_field_list (if any) to registrants
             key = str(reg_form_entries_dict[registrant.id])
             if roster_fields_dict.has_key(key):
                 registrant.roster_field_list = roster_fields_dict[key]
+                
+    for registrant in registrants:
+        # assign pricing title to the registrants
+        key = reg7n_to_pricing_dict[registrant.id]
+        if not pricing_titles_dict.has_key(key):
+            if reg8n_to_pricing_dict.has_key(reg7n_to_reg8n_dict[registrant.id]):
+                key = reg8n_to_pricing_dict[reg7n_to_reg8n_dict[registrant.id]]
+        if pricing_titles_dict.has_key(key):
+            registrant.price_title = pricing_titles_dict[key]
+        else:
+            registrant.price_title = 'Untitled'
+            
+        # assign invoice dict
+        key = reg7n_to_reg8n_dict[registrant.id]
+        if reg8n_to_invoice_dict.has_key(key):
+            registrant.invoice_dict = reg8n_to_invoice_dict[key] 
+          
 
     total_sum = float(0)
     balance_sum = float(0)
