@@ -78,6 +78,11 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         size = [int(s) if s.isdigit() else 0 for s in size.split('x')]
         size = aspect_ratio(file.image_dimensions(), size, constrain)
 
+        # check for dimensions
+        # greater than zero
+        if not all(size):
+            raise Http404
+
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
