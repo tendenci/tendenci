@@ -1287,9 +1287,9 @@ class AppEntry(TendenciBaseModel):
         from operator import __or__ as OR
 
         kwargs = kwargs or {
-                'first_name': self.user.first_name,
-                'last_name': self.user.last_name,
-                'email': self.user.email
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'email': self.email
             }
 
         lst = []
