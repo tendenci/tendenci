@@ -312,7 +312,13 @@ class Membership(TendenciBaseModel):
         graceful_now = datetime.now() - relativedelta(days=grace_period)
 
         if self.status and self.status_detail == 'active':
-            if any((self.expire_dt > graceful_now, self.expire_dt == None)):
+
+            # membership does not expire
+            if not self.expire_dt:
+                return True
+
+            # membership has not expired
+            if self.expire_dt and self.expire_dt > graceful_now:
                 return True
 
         return False
