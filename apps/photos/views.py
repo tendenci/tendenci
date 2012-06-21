@@ -209,6 +209,9 @@ def photo_original(request, id):
     except IndexError:
         ext = "png"
     
+    if ext == "jpg":
+        ext = "jpeg"
+    
     return HttpResponse(image_data, mimetype="image/%s" % ext)
 
 @login_required
