@@ -914,6 +914,13 @@ class Event(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
+    
+    @property
+    def has_addons(self):
+        return Addon.objects.filter(
+            event=self,
+            status=True
+            ).exists()
 
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010

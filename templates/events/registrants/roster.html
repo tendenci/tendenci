@@ -329,7 +329,7 @@
 
 
 {% with registrant.additionals as additionals %}
-{% with registrant.registration.regaddon_set.all as regaddons %}
+
 
 {% if registrant.invoice_dict.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
@@ -356,6 +356,9 @@
 	    	</a>
 	    {% endfor %}
     {% endif %}
+    
+    {% if has_addons %}
+    {% with registrant.registration.regaddon_set.all as regaddons %}
     {% if regaddons %}
     	<div>
         <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "addons:" %}</a> 
@@ -365,13 +368,14 @@
 	    {% endfor %}
 	    </div>
     {% endif %}
+    {% endwith %}
+    {% endif %}
     
     </td>
     <td>&nbsp;</td>
     
 </tr>
 
-{% endwith %}
 {% endwith %}
 
 {% endfor %}

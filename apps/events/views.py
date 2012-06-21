@@ -1967,6 +1967,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     from django.db.models import Sum
     event = get_object_or_404(Event, pk=event_id)
     query = ''
+    has_addons = event.has_addons
     
     sort_order = request.GET.get('sort_order', 'last_name')
     sort_type = request.GET.get('sort_type', 'asc')
@@ -2155,7 +2156,8 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'num_registrants_who_owe':num_registrants_who_owe,
         'roster_view':roster_view,
         'sort_order': sort_order,
-        'sort_type': sort_type
+        'sort_type': sort_type,
+        'has_addons': has_addons
         },
         context_instance=RequestContext(request))
 
