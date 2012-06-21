@@ -265,7 +265,10 @@ class MembershipManager(Manager):
             grace_period = membership_type.expiration_grace_period
             grace_now = datetime.now() - relativedelta(days=grace_period)
             query_sets.append(
-                self.filter(Q(expire_dt__gt=grace_now) | Q(expire_dt__isnull=True), **kwargs)
+                self.filter(
+                    Q(expire_dt__gt=grace_now) | Q(expire_dt__isnull=True),
+                    membership_type=membership_type,
+                    **kwargs)
             )
 
         return list(chain(*query_sets))
