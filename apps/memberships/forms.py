@@ -441,7 +441,10 @@ class AppForm(TendenciBaseForm):
         'storme_model':App._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('draft', 'Draft'), ('published', 'Published')),
+        choices=(
+            ('draft', 'Draft'),
+            ('published', 'Published')
+        ),
         initial='published'
     )
 
