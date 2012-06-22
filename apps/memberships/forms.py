@@ -1213,21 +1213,22 @@ class ExportForm(forms.Form):
 
         who_can_export = get_setting('module','memberships','memberexport')
 
-        if who_can_export == 'admin-only':
-            if not self.user.profile.is_superuser:
-                raise Http403
-        elif who_can_export == 'membership-of-same-type':
-            if not self.user.profile.is_member:
-                raise Http403
-            membership_types = self.user.memberships.values_list('membership_type').distinct()
-            self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
-        elif who_can_export == 'members':
-            if not self.user.profile.is_member:
-                raise Http403
-        elif who_can_export == 'users':
-            if not self.user.is_authenticated():
-                raise Http403
-        
+        if not self.user.profile.is_superuser:
+            if who_can_export == 'admin-only':
+                if not self.user.profile.is_superuser:
+                    raise Http403
+            elif who_can_export == 'membership-of-same-type':
+                if not self.user.profile.is_member:
+                    raise Http403
+                membership_types = self.user.memberships.values_list('membership_type').distinct()
+                self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
+            elif who_can_export == 'members':
+                if not self.user.profile.is_member:
+                    raise Http403
+            elif who_can_export == 'users':
+                if not self.user.is_authenticated():
+                    raise Http403
+
     def clean_passcode(self):
         value = self.cleaned_data['passcode']
         
