@@ -1008,7 +1008,7 @@ def membership_export(request):
             label_list.extend(extra_field_labels)
 
             data_row_list = []
-            memberships = Membership.objects.filter(ma=app).exclude('archive')
+            memberships = Membership.objects.filter(ma=app).exclude(status_detail='archive')
             for memb in memberships:
                 data_row = []
                 field_entry_d = memb.entry_items
