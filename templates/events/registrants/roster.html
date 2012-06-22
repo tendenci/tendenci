@@ -250,7 +250,7 @@
 	
 
 	<td> <!-- name & phone -->
-	{% if registrant.user %}
+	{% if registrant.user_id %}
 	<div title="View {{ registrant.first_name}}'s profile">
         <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
         {% if registrant.memberid %}
@@ -275,7 +275,7 @@
 
 	<td>{% if registrant.invoice_dict.id %}<a href="{% url invoice.view registrant.invoice_dict.id %}">I-{{ registrant.invoice_dict.id }}</a>{% endif %}</td> <!-- invoice number -->
 	<td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
-	<td><a href="{% url event.registration_confirmation event.pk registrant.registration.pk %}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
+	<td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
 	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
 	<td class="attended-checkbox"><div></div></td>

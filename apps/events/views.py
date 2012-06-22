@@ -2083,15 +2083,15 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         regisrants_noname = registrants.filter(
                                      last_name='',
                                      first_name=''          
-                                     ).order_by('id').select_related()
+                                     ).select_related('user').order_by('id')
         registrants_withname = registrants.exclude(
                                             last_name='',
                                             first_name=''
-                                            ).order_by(sort_field).select_related()
+                                            ).select_related('user').order_by(sort_field)
         c = itertools.chain(registrants_withname, regisrants_noname)
         registrants = [r for r in c]
     else:        
-        registrants = registrants.order_by(sort_field).select_related()
+        registrants = registrants.order_by(sort_field).select_related('user')
         
         
     
@@ -2101,7 +2101,10 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
             key = str(reg_form_entries_dict[registrant.id])
             if roster_fields_dict.has_key(key):
                 registrant.roster_field_list = roster_fields_dict[key]
-                
+
+    num_registrants_who_paid = 0
+    num_registrants_who_owe = 0
+                    
     for registrant in registrants:
         # assign pricing title to the registrants
         key = reg7n_to_pricing_dict[registrant.id]
@@ -2116,7 +2119,12 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         # assign invoice dict
         key = reg7n_to_reg8n_dict[registrant.id]
         if reg8n_to_invoice_dict.has_key(key):
-            registrant.invoice_dict = reg8n_to_invoice_dict[key] 
+            registrant.invoice_dict = reg8n_to_invoice_dict[key]
+            if registrant.invoice_dict['balance'] <= 0:
+                num_registrants_who_paid +=1
+            else:
+                num_registrants_who_owe += 1
+    
        
     for registrant in registrants:  
         # assign additional registrants   
@@ -2136,14 +2144,15 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     balance_sum = float(0)
 
     # Get the total_sum and balance_sum.
-    d_total = registrations.aggregate(total_sum=Sum('invoice__total'))
-    total_sum = d_total['total_sum']
-    if roster_view != 'paid':
-        d_balance = registrations.aggregate(balance_sum=Sum('invoice__balance'))
-        balance_sum = d_balance['balance_sum']
+    totals_d = registrations.aggregate(total_sum=Sum('invoice__total'),
+                                      balance_sum=Sum('invoice__balance')
+                                      )
+    total_sum = totals_d['total_sum']
+    balance_sum = totals_d['balance_sum']
 
-    num_registrants_who_paid = event.registrants(with_balance=False).count()
-    num_registrants_who_owe = event.registrants(with_balance=True).count()
+#    num_registrants_who_paid = event.registrants(with_balance=False).count()
+#    num_registrants_who_owe = event.registrants(with_balance=True).count()
+    
 
     EventLog.objects.log(instance=event)
 
