@@ -621,7 +621,7 @@ def add_registration(*args, **kwargs):
     if event.is_table:
         if reg8n.override_table:
             table_individual_first_price, table_individual_price = split_table_price(
-                                                reg8n.override_table, price.quantity)
+                                                reg8n.override_price_table, price.quantity)
         else:
             table_individual_first_price, table_individual_price = split_table_price(
                                                 event_price, price.quantity)
