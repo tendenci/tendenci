@@ -186,9 +186,6 @@ class FormForCustomRegForm(forms.ModelForm):
         if pricing.allow_anonymous:
             return pricing
                 
-        # superuser can register for anybody
-        if not self.user.is_anonymous() and self.user.is_superuser:
-            return pricing
         
         # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
         # Both 'validated' and 'strict' require validation.
@@ -1032,10 +1029,6 @@ class RegistrantForm(forms.Form):
 
         # if pricing allows anonymous, let go.
         if pricing.allow_anonymous:
-            return pricing
-                
-        # superuser can register for anybody
-        if not self.user.is_anonymous() and self.user.is_superuser:
             return pricing
         
         # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
