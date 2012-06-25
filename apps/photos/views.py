@@ -40,21 +40,13 @@ def search(request, template_name="photos/search.html"):
     if get_setting('site', 'global', 'searchindex') and query:
         photos = Image.objects.search(query, user=request.user).order_by('-create_dt')
     else:
-        filters = get_query_filters(request.user, 'photologue.view_photo')
+        filters = get_query_filters(request.user, 'photos.view_image')
         photos = Image.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             photos = photos.select_related()
     photos = photos.order_by('-create_dt')
 
-    log_defaults = {
-        'event_id' : 990400,
-        'event_data': '%s searched by %s' % ('Image', request.user),
-        'description': '%s searched' % 'Image',
-        'user': request.user,
-        'request': request,
-        'source': 'photos',
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
     
     return render_to_response(template_name, {"photos": photos}, 
         context_instance=RequestContext(request))
@@ -470,15 +462,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
             photo_sets = photo_sets.select_related()
     photo_sets = photo_sets.order_by('-create_dt')
 
-    log_defaults = {
-        'event_id' : 991400,
-        'event_data': '%s searched by %s' % ('PhotoSet', request.user),
-        'description': '%s searched' % 'PhotoSet',
-        'user': request.user,
-        'request': request,
-        'source': 'photos'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {"photo_sets": photo_sets}, 
         context_instance=RequestContext(request))
