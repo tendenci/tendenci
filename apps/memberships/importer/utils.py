@@ -43,10 +43,6 @@ def is_duplicate(csv_dict, csv_dicts, key):
 
 
 def clean_field_name(field):
-
-    if 'email' in field:
-        field = 'email'
-
     field = field.lower()
     field = field.replace('-', '_')
     field = field.replace(' ', '_')
