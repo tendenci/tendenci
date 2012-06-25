@@ -40,7 +40,7 @@
     					<input type="hidden" name="action" value="edit" />
                     	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
                         {% if current_file not in non_deletable_files  %}
-                        <a href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;">Delete this File</a>
+                        <a href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
                         {% endif %}
                         <div style="clear:both"></div>
                     </div>
@@ -156,7 +156,7 @@
                                </form>
                                <br>
                                </li>
-                               <li>Pull down one of Tendenci's built-in app templates and customize it.
+                               <li>Copy down one of Tendenci's built-in app templates and customize it.
                                <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
                                </li>
                                </ol>
@@ -228,7 +228,7 @@ function open_archive(id)
     $(document).ready(function(){
         //bind the modified one
         $('.delete').click(function(){
-            if(window.confirm("Are you sure you want to delete the theme file {{ pwd }}/{{ current_file }} from your theme?")){
+            if(window.confirm("Are you sure you want to delete this file from your theme?")){
                 return true;
             } else {
                 return false;
@@ -303,5 +303,14 @@ function open_archive(id)
             $(this).siblings().children().show();
         }
     });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$('.links').hide();
+});
+$('.non-editable-file').hover(function() {
+   $(this).children('.links').toggle();
+});
 </script>
 {% endblock %}

@@ -227,7 +227,7 @@ def copy_to_theme(request, app=None):
 
     copy(chosen_file, current_dir, full_filename)
 
-    messages.add_message(request, messages.INFO, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
+    messages.add_message(request, messages.SUCCESS, ('Successfully copied %s/%s to the the theme root' % (current_dir, chosen_file)))
 
     log_defaults = {
         'event_id': 1110200,
@@ -275,7 +275,7 @@ def delete_file(request):
 
     os.remove(full_filename)
 
-    messages.add_message(request, messages.INFO, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
+    messages.add_message(request, messages.SUCCESS, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
 
     log_defaults = {
         'event_id': 1110300,
@@ -314,7 +314,7 @@ def upload_file(request, template_name="theme_editor/upload.html"):
                 response = {
                     "success": True
                 }
-                messages.add_message(request, messages.INFO, ('Successfully uploaded %s.' % (upload.name)))
+                messages.add_message(request, messages.SUCCESS, ('Successfully uploaded %s.' % (upload.name)))
 
                 log_defaults = {
                     'event_id': 1110100,
