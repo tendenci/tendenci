@@ -34,7 +34,6 @@ from user_groups.forms import GroupMembershipEditForm
 from profiles.models import Profile
 from profiles.forms import (ProfileForm, UserPermissionForm,
     UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
-from profiles.utils import user_add_remove_admin_auth_group
 
 try:
     notification = get_app('notification')
@@ -188,9 +187,6 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
                     new_user.is_superuser = 0
                     new_user.is_staff = 1
                     
-                    # add them to admin auth group
-                    user_add_remove_admin_auth_group(new_user)
-                        
                 else:
                     new_user.is_superuser = 0
                     new_user.is_staff = 0
@@ -291,17 +287,12 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 elif security_level == 'staff':
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 1
-                    
-                    # add them to admin auth group
-                    user_add_remove_admin_auth_group(user_edit)
                 else:
                     user_edit.is_superuser = 0
                     user_edit.is_staff = 0
                     # remove them from auth_group if any
                     user_edit.groups = []
                     
-                # add them to admin auth group
-                user_add_remove_admin_auth_group(user_edit)
                     
                 # set up user permission
                 profile.allow_user_view, profile.allow_user_edit = False, False
