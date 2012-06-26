@@ -119,6 +119,11 @@
 		</div> <!-- end info -->
 
 		<div class="vitals">
+		{% if event.external_url %}
+		<div class="external-link">
+		<h4><a href="{{ event.external_url }}" target="_blank">View this event's webpage &raquo;</a></h4>
+		</div>
+		{% endif %}
             <div class="time-period">
                 <h4 class="vital-header">{% trans "When?" %}</h4>
 

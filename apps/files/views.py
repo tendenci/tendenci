@@ -99,7 +99,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.basename())
     return response
 
 def search(request, template_name="files/search.html"):

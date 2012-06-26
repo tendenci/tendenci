@@ -317,7 +317,7 @@ class Membership(TendenciBaseModel):
                 return True
 
             # membership has not expired
-            if self.expire_dt and self.expire_dt > graceful_now:
+            if self.expire_dt > graceful_now:
                 return True
 
         return False
