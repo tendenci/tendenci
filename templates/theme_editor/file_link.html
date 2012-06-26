@@ -2,6 +2,6 @@
 {% if item.editable %}
     <a href="{% url theme_editor.editor %}?file={{ item.path }}&theme_edit={{ current_theme }}">{{ item.name }}</a>
 {% else %}
-    <a href="{{ THEME_URL }}{{ item.path }}" target="_blank">{{ item.name|safe }} <img src="{{ STATIC_URL }}images/icons/external_16x16.png" /></a>
+    <span class="non-editable-file">{{ item.name|safe }}<span class="links"> <a href="{{ THEME_URL }}{{ item.path }}" target="_blank" title="View this file in a new window."><span class="glyph">K</span></a> <a href="{% url theme_editor.delete %}?file={{ item.path }}" class="delete" title="Delete this file."><span class="glyph">×</span></a></span></span>
 {% endif %}
 </li>

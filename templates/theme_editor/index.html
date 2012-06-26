@@ -38,13 +38,13 @@
     				<div id="fileupdatemessage"></div>
     				<div class="form_block">
     					<input type="hidden" name="action" value="edit" />
-                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/>
-                        {% if current_file not in non_deletable_files  %}
-                        <a href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;">Delete this File</a>
-                        {% endif %}
-                        <div style="clear:both"></div>
+                    	<input class="btn" style="float: right; margin-left: 10px;" type="submit" value="Save Changes" class="button"/> 
                     </div>
-            </form>
+              </form>
+            {% if current_file not in non_deletable_files  %}
+            <a href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
+            {% endif %}
+            <div style="clear:both"></div>
             
         	<div id="file_version_box">
             	<h2>{% trans "Previous Versions" %} <span class="tooltip" title="Click a version below to load it in the editor. The version will not be restored until you save your changes."><sup><a href="#">?</a></sup></span></h2>
@@ -156,7 +156,7 @@
                                </form>
                                <br>
                                </li>
-                               <li>Pull down one of Tendenci's built-in app templates and customize it.
+                               <li>Copy down one of Tendenci's built-in app templates and customize it.
                                <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
                                </li>
                                </ol>
@@ -228,7 +228,7 @@ function open_archive(id)
     $(document).ready(function(){
         //bind the modified one
         $('.delete').click(function(){
-            if(window.confirm("Are you sure you want to delete the theme file {{ pwd }}/{{ current_file }} from your theme?")){
+            if(window.confirm("Are you sure you want to delete this file from your theme?")){
                 return true;
             } else {
                 return false;
@@ -272,22 +272,28 @@ function open_archive(id)
         var current_file = $('#file-tree ul li.highlight')
         current_file.show();
         current_file.siblings().show();
-        current_file.parent().parent().show();
+        current_file.parents().show();
+        current_file.parents().siblings().show();
+        
         current_file.parent().parent().children(":first").addClass('open');
         folder_text = current_file.parent().parent().children(":first").text();
         current_file.parent().parent().children(":first").text(folder_text.replace('+ ', '– '));
-        current_file.parent().parent().siblings().show();
 
-        current_file.parent().parent().parent().parent().show();
-        current_file.parent().parent().parent().parent().siblings().show();
         current_file.parent().parent().parent().parent().children(":first").addClass('open');
         p_folder_text = current_file.parent().parent().parent().parent().children(":first").text();
         current_file.parent().parent().parent().parent().children(":first").text(p_folder_text.replace('+ ', '– '));
 
         current_file.parent().parent().parent().parent().parent().parent().children(":first").addClass('open');
+        
+        if(current_file.parent().parent().parent().parent().parent().is('#file-tree ul')) {
         p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().children(":first").text();
-        current_file.parent().parent().parent().parent().parent().parent().children(":first").text(p_p_folder_text.replace('+ ', '– '));
-
+        current_file.parent().parent().parent().parent().parent().parent().children(":first").text(p_p_folder_text.replace('+ ', '– ')); 
+        }
+        
+        if(current_file.parent().parent().parent().parent().parent().parent().parent().is('#file-tree ul')) {
+        p_p_p_folder_text = current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text();
+        current_file.parent().parent().parent().parent().parent().parent().parent().parent().children(":first").text(p_p_p_folder_text.replace('+ ', '– '));       
+}
     });
 
     $('#file-tree li a.folder').click(function() {
@@ -303,5 +309,14 @@ function open_archive(id)
             $(this).siblings().children().show();
         }
     });
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+$('.links').hide();
+});
+$('.non-editable-file').hover(function() {
+   $(this).children('.links').toggle();
+});
 </script>
 {% endblock %}

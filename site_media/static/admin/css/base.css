@@ -11,6 +11,11 @@ body {
     background: #fff;
 }
 
+.dashboard #header, .dashboard #footer {
+    background-color: #01437D;
+    color: #fff;
+}
+
 /* LINKS */
 
 a:link, a:visited {
