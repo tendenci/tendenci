@@ -233,6 +233,21 @@ if cm_api_key and cm_client_id:
             add_subscriber = True
             list_map = None
 
+            # Append custom fields from the profile
+            profile = None
+            if hasattr(instance, 'member'):
+                profile = instance.member.profile
+            custom_data = []
+            if profile:
+                fields = ['city', 'state', 'zipcode', 'country', 'sex', 'member_number']
+                for field in fields:
+                    data = {}
+                    data['Key'] = field
+                    data['Value'] = getattr(profile, field)
+                    if not data['Value']:
+                        data['Clear'] = True
+                    custom_data.append(data)
+
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
@@ -250,6 +265,7 @@ if cm_api_key and cm_client_id:
                         try:
                             subscriber = subscriber_obj.get(list_id, email)
                             if str(subscriber.State).lower == 'active':
+                                subscriber = subscriber_obj.update(email, name, custom_data, True)
                                 add_subscriber = False
                         except BadRequest as br:
                             pass
@@ -269,7 +285,7 @@ if cm_api_key and cm_client_id:
                 list_map.save()
                     
             if add_subscriber:
-                email_address = subscriber_obj.add(list_id, email, name, [], True)
+                email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
                 
             
     

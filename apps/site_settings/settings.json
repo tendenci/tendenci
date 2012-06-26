@@ -578,14 +578,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "/profile", 
-        "description": "A global site setting for a url for users to redirect to when they first login. Site setting to redirect non-admin users to a specific page. Can be /dashboard, /profile, or a custom instruction page", 
+        "default_value": "/profiles/", 
+        "description": "A global site setting for a url for users to redirect to when they first login. Site setting to redirect non-admin users to a specific page. Can be /dashboard, /profiles/, or a custom instruction page", 
         "data_type": "string", 
         "update_dt": "2011-05-27 15:38:23", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "profile_redirect", 
-        "value": "/profile", 
+        "value": "/profiles/", 
         "label": "Profile Redirect", 
         "input_value": "", 
         "parent_id": 0, 

@@ -1,0 +1,29 @@
+{% extends "chamberlin_projects/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load project_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Projects' %}" href="{% url chamberlin_projects.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate chamberlin_projects 10 %}
+<div class="t">
+<h1>{% trans 'Project List' %}</h1>
+{% project_search %}
+<div class="chamberlin_projects-wrap clearfix">
+{% for project in chamberlin_projects %}
+{% search_result project %}
+{% empty %}
+<p>{% trans '0 chamberlin_projects found' %}</p>
+{% endfor %}
+</div>
+{% paginate %}
+</div>
+{% endblock body %}

@@ -1,0 +1,79 @@
+{% extends "martins_products/base.html" %}
+{% load product_tags %}
+{% load base_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/products.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+    {% product_nav request.user product %}
+    
+    <div class="product-wrap">
+        <div class="product-info">
+            <div class="product-basic">
+                <div class="product-photo">
+                {% if product.product_image %}
+                    <img src="{% image_url product.product_image size=300x300 crop=True quality=88 %}" />
+                {% endif %}
+                </div>
+        
+            <div class="product-basic-info">
+                <p>Product Name: {{ product.product_name }}</p>
+                <p>Generic Descriptor: {{ product.generic_description|safe }}</p>
+                <p>Product Features: {{ product.product_features|safe }}</p>
+                <p>Key Insects: {{ product.key_insects }}</p>
+                <p>Use Sites: {{ product.use_sites }}</p>
+                <p>Active Ingredients: {{ product.active_ingredients }}</p>
+                <p>Brand: {{ product.brand }}</p>
+            </div>
+        
+            <div class="clear"></div>
+        </div>
+    
+        <div class="product-sub-info">
+            <div class="product-details">
+	    		<p>Product Code: {{ product.product_code }}</p>
+	    		<p>Product Id: {{ product.product_id }}</p>
+            </div>
+        
+            <div class="product-sub-details">
+                <div class="formulation-details">
+                    <p>Formulation Type: {{ product.formulation }}</p>
+                </div>
+        
+                <div class="spec-details">
+                    <p>Specs: {{ product.product_specs|safe }}</p>
+                </div>
+            
+                <div class="clear"></div>
+            </div>
+        
+            <div class="clear"></div>
+        </div>
+    
+        <div class="product-links">
+            <div class="product-primary-links">
+                <div class="product-info-links">
+	    	        <p>MSDS LABEL: <a href="{{ product.msds_label }}">{{ product.msds_label }}</a></p>
+	    	        <p>Product LABEL: <a href="{{ product.product_label }}">{{ product.product_label }}</a></p>
+		            <p>State Registered: <a href="{{ product.state_registered }}">{{ product.state_registered }}</a></p>
+	    	    </div>
+		
+    		    <div class="contact-form-links">
+	    		    <p><a href="{% url contacts %}">Get More Info!</a></p>
+		        </div>
+		    
+	    	    <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+
+    {% include "martins_products/meta.html" %} 
+    </div>
+</div>
+{% endblock body %}

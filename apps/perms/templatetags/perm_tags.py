@@ -107,8 +107,8 @@ def is_admin(parser, token):
         {% is_admin user as context %}
         This has been deprecated in favor of request.user.is_superuser
     """
-    import warnings
-    warnings.warn('stop using is_admin, please use user.is_superuser', DeprecationWarning)
+#     import warnings
+#     warnings.warn('stop using is_admin, please use user.is_superuser', DeprecationWarning)
 
     bits = token.split_contents()
 

@@ -379,7 +379,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                 
                 # store individual members
                 for id in members:
-                    membership = Membership.objects.get(id=id)
+                    membership = Membership.objects.first(id=id)
                     ind_memb_renew_entry = IndivMembRenewEntry(corp_memb_renew_entry=corp_renew_entry,
                                                                membership=membership)
                     ind_memb_renew_entry.save()
@@ -745,8 +745,7 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
                                                 user=request.user).filter(
                                             corporate_membership_id=corp_memb.id)
     else:
-        memberships = Membership.objects.filter(
-                                            corporate_membership_id=corp_memb.id)
+        memberships = Membership.objects.active(corporate_membership_id=corp_memb.id)
     try:
         page = int(request.GET.get('page', 0))
     except:
@@ -824,8 +823,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     if use_search_index:
         memberships = Membership.objects.corp_roster_search(query, user=request.user).filter(corporate_membership_id=corp_memb.id)
     else:
-        memberships = Membership.objects.filter(
-                                            corporate_membership_id=corp_memb.id)
+        memberships = Membership.objects.active(corporate_membership_id=corp_memb.id)
         
     if request.user.profile.is_superuser or corp_memb.is_rep(request.user):
         pass

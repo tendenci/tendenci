@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 
 from base.http import Http403
 from contributions.models import Contribution
@@ -22,7 +23,10 @@ def index(request, id=None, template_name="contributions/view.html"):
 @login_required
 def search(request, template_name="contributions/search.html"):
     query = request.GET.get('q', None)
-    contributions = Contribution.objects.search(query, user=request.user)
+    if request.user.profile.is_superuser:
+        contributions = Contribution.objects.search(query, user=request.user)
+    else:
+        contributions = Contribution.objects.filter(Q(creator=request.user)|Q(owner=request.user))
     contributions = contributions.order_by('-create_dt')
 
     return render_to_response(template_name, {'contributions':contributions}, 

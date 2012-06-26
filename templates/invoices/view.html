@@ -60,7 +60,13 @@
 		{% if object %}
 			<tr>
 				<td>{% trans "Invoice For" %}</td>
-				<td class="td-right"><a href="{%  url event.registration_confirmation obj.event.pk obj.pk %}">{{ object }}</a></td>
+				<td class="td-right">
+				{% if object.event.pk %}
+				<a href="{% url event.registration_confirmation object.event.pk object.pk %}">{{ object }}</a>
+				{% else %}
+				{{ object }}
+				{% endif %}
+				</td>
 			</tr>
 		{% endif %}
 		<tr>

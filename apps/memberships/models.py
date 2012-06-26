@@ -1,5 +1,4 @@
 import re
-import operator
 import hashlib
 import uuid
 import time
@@ -31,7 +30,6 @@ from base.utils import fieldify
 from tinymce import models as tinymce_models
 from payments.models import PaymentMethod
 from user_groups.models import GroupMembership
-from haystack.query import SearchQuerySet
 from event_logs.models import EventLog
 from profiles.models import Profile
 from files.models import File
@@ -260,6 +258,10 @@ class MembershipType(TendenciBaseModel):
 
 
 class Membership(TendenciBaseModel):
+    """
+    Holds all membership records.
+    Memberships that are approved, denied, and pending.
+    """
     guid = models.CharField(max_length=50)
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
@@ -268,15 +270,14 @@ class Membership(TendenciBaseModel):
     renewal = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
-    expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)  # date membership expires
+    expire_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
     payment_method = models.ForeignKey(PaymentMethod, blank=True, null=True)
     ma = models.ForeignKey("App", null=True)
     send_notice = models.BooleanField(default=True)
 
     perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+        object_id_field="object_id", content_type_field="content_type")
 
     objects = MembershipManager()
 
@@ -286,11 +287,11 @@ class Membership(TendenciBaseModel):
         permissions = (("view_membership", "Can view membership"),)
 
     def __unicode__(self):
-        if self.user.get_full_name():
-            label = self.user.get_full_name()
-        else:
-            label = self.user.username
-        return "#%s %s" % (self.member_number, label)
+        label = u''
+        if hasattr(self, 'user'):
+            label = self.user.get_full_name() or self.user.username
+        label = "#%s %s" % (self.member_number, label)
+        return label.strip()
 
     @models.permalink
     def get_absolute_url(self):
@@ -299,6 +300,32 @@ class Membership(TendenciBaseModel):
     def save(self, *args, **kwargs):
         self.guid = self.guid or unicode(uuid.uuid1())
         super(Membership, self).save(*args, **kwargs)
+
+    def is_active(self):
+        """
+        status = True, status_detail = 'active', and has not expired
+        considers grace period when evaluating expiration date-time
+        """
+        from dateutil.relativedelta import relativedelta
+        grace_period = self.membership_type.expiration_grace_period
+        graceful_now = datetime.now() - relativedelta(days=grace_period)
+
+        if self.status and self.status_detail == 'active':
+
+            # membership does not expire
+            if not self.expire_dt:
+                return True
+
+            # membership has not expired
+            if self.expire_dt > graceful_now:
+                return True
+
+        return False
+
+    def get_expire_dt(self):
+        from dateutil.relativedelta import relativedelta
+        grace_period = self.membership_type.expiration_grace_period
+        return self.expire_dt + relativedelta(days=grace_period)
 
     def get_name(self):
 
@@ -366,27 +393,6 @@ class Membership(TendenciBaseModel):
         # assert that we're within the renewal period
         return (datetime.now() >= start_dt and datetime.now() <= end_dt)
 
-    def archive(self, user=None):
-        """
-        Copy self to the MembershipArchive table
-        """
-        arch = MembershipArchive()
-
-        fields = [field.name for field in self.__class__._meta.fields]
-
-        fields.remove('id')
-        fields.remove('guid')
-
-        for field in fields:
-            setattr(arch, field, getattr(self, field))
-
-        arch.membership = self
-        arch.membership_create_dt = self.create_dt
-        arch.membership_update_dt = self.update_dt
-        if user and (not user.is_anonymous()):
-            arch.archive_user = user
-        arch.save()
-
     @classmethod
     def types_in_contract(cls, user):
         """
@@ -410,63 +416,75 @@ class Membership(TendenciBaseModel):
         return in_contract
 
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser: return True
+        if this_user.profile.is_superuser:
+            return True
 
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail == 'active'
         else:
             if this_user in (self.creator, self.owner, self.user):
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail == 'active'
             elif self.allow_user_view:
-                return self.status and self.status_detail=='active'
+                return self.status and self.status_detail == 'active'
             elif has_perm(this_user, 'memberships.view_app', self):
                 return True
-        
+
         return False
-    
+
     def populate_user_member_id(self, verbosity=1):
         """
         Populate the member ID (or member number) to user profile.
         """
-        if all([self.status==1, self.status_detail == 'active']):
+        if self.is_active():
             if self.member_number:
                 [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
                 if not profile:
                     profile = Profile.objects.create_profile(self.user)
-                
-                if any([not profile.member_number, 
-                       profile.member_number <> self.member_number]):
+
+                if any([not profile.member_number,
+                       profile.member_number != self.member_number]):
                     profile.member_number = self.member_number
                     profile.save()
 
                     # set the is_member attr to True for this user
                     setattr(self.user, 'is_member', True)
-                    
-                    if verbosity >=2:
-                        print 'Added member number %s for %s.' % (self.member_number, 
-                                                                  self.user.username)
+
+                    if verbosity > 1:
+                        print 'Added member number %s for %s.' % \
+                            (self.member_number, self.user.username)
                 else:
-                    if verbosity >=2:
+                    if verbosity > 1:
                         print 'Member number already populated for %s' % self.user.username
             else:
-                if verbosity >=2:
+                if verbosity > 1:
                     print '***Membership (ID=%d) does NOT have a member number.' % self.id
-            
-                    
+
     def clear_user_member_id(self):
         """
         Clear the member ID (or member number) in user's profile.
         """
-        if any([self.status==0, self.status_detail <> 'active']):
+        if not self.is_active():
             [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
-            if profile and profile.member_number:                
-                profile.member_number = ''
+            if profile and profile.member_number:
+                profile.member_number = u''
                 profile.save()
 
                 # set the is_member attr to False for this user
                 setattr(self.user, 'is_member', False)
-                
+
+    def populate_or_clear_member_id(self):
+        """
+        If the membership is active, populate the member ID to profile.
+        Otherwise, clear the member ID from profile.
+        """
+        if self.is_active():
+            self.populate_user_member_id()
+        else:
+            self.clear_user_member_id()
+            # set the is_member attr to False for this user
+            setattr(self.user, 'is_member', False)
+
     def populate_or_clear_member_id(self):
         """
         If the membership is active, populate the member ID to profile.
@@ -476,67 +494,6 @@ class Membership(TendenciBaseModel):
             self.populate_user_member_id()
         else:
             self.clear_user_member_id()
-
-
-class MembershipArchive(TendenciBaseModel):
-    """
-    Keep a record of the old memberships.
-    These records are created when a membership is renewed.
-    A reference to the newest (non-archived) membership is
-    included via the 'membership' field.
-    """
-    membership = models.ForeignKey('Membership', null=True, default=None)
-    member_number = models.CharField(_("Member Number"), max_length=50)
-    membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
-    user = models.ForeignKey(User)
-    directory = models.ForeignKey(Directory, blank=True, null=True)
-    renewal = models.BooleanField(default=False)
-    subscribe_dt = models.DateTimeField(_("Subscribe Date"))
-    expire_dt = models.DateTimeField(_("Expire Date Time"), null=True)
-    corporate_membership_id = models.IntegerField(_('Corporate Membership Id'), default=0)
-    invoice = models.ForeignKey(Invoice, null=True)
-    payment_method = models.ForeignKey(PaymentMethod, null=True)
-    ma = models.ForeignKey("App")
-
-    membership_create_dt = models.DateTimeField()   # original create dt for the membership entry
-    membership_update_dt = models.DateTimeField()   # original update dt for the membership entry
-
-    archive_user = models.ForeignKey(User, related_name="membership_archiver", null=True)
-
-    objects = MembershipManager()
-
-    class Meta:
-        verbose_name = _("Archived Membership")
-        verbose_name_plural = _("Archived Memberships")
-        permissions = (("view_archived_membership", "Can view archived membership"),)
-
-    def __unicode__(self):
-        return "%s #%s" % (self.user.get_full_name(), self.member_number)
-
-    @classmethod
-    def archive(cls, membership, **kwargs):
-        """
-        Create archive record
-        Delete membership record
-        """
-        arch = cls()
-        exclude_list = ['id']
-        # create archive record
-        for field_name in cls._meta.get_all_field_names():
-            if field_name not in exclude_list:
-                try:
-                    setattr(arch, field_name, getattr(membership, field_name))
-                except AttributeError:
-                    pass  # field not available in membership
-
-        arch.membership_create_dt = membership.create_dt
-        arch.membership_update_dt = membership.update_dt
-        arch.save()
-
-        # delete membership
-        membership.delete()
-
-        return arch
 
 
 class MembershipImport(models.Model):
@@ -565,14 +522,14 @@ class MembershipImport(models.Model):
     override = models.IntegerField(choices=OVERRIDE_CHOICES, default=0)
     # uniqueness key
     key = models.CharField(max_length=50, choices=KEY_CHOICES, default="email")
-    
+
     creator = models.ForeignKey(User)
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     def get_file(self):
         file = File.objects.get_for_model(self)[0]
         return file
-        
+
     def __unicode__(self):
         return self.get_file().file.path
 
@@ -590,9 +547,9 @@ class Notice(models.Model):
     notice_name = models.CharField(_("Name"), max_length=250)
     num_days = models.IntegerField(default=0)
     notice_time = models.CharField(_("Notice Time"), max_length=20,
-                                   choices=(('before','Before'),
-                                            ('after','After'),
-                                            ('attimeof','At Time Of')))
+                                   choices=(('before', 'Before'),
+                                            ('after', 'After'),
+                                            ('attimeof', 'At Time Of')))
     notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
     system_generated = models.BooleanField(_("System Generated"), default=0)
     membership_type = models.ForeignKey(
@@ -604,36 +561,36 @@ class Notice(models.Model):
             the notice will go out to all members."
         ))
 
-    subject =models.CharField(max_length=255)
-    content_type = models.CharField(_("Content Type"), 
-                                    choices=(('html','HTML'),
-                                            ('text','Plain Text')),
+    subject = models.CharField(max_length=255)
+    content_type = models.CharField(_("Content Type"),
+                                    choices=(('html', 'HTML'),
+                                            ('text', 'Plain Text')),
                                     max_length=10)
     sender = models.EmailField(max_length=255, blank=True, null=True)
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
-    
+
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True)
     creator_username = models.CharField(max_length=50, null=True)
     owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(choices=(('active','Active'),('admin_hold','Admin Hold')), 
+    status_detail = models.CharField(choices=(('active', 'Active'), ('admin_hold', 'Admin Hold')),
                                      default='active', max_length=50)
     status = models.BooleanField(default=True)
-    
+
     def __unicode__(self):
         return self.notice_name
 
     @property
     def footer(self):
         return """
-        This e-mail was generated by Tendenci&reg; Software - a 
-        web based membership management software solution 
+        This e-mail was generated by Tendenci&reg; Software - a
+        web based membership management software solution
         www.tendenci.com developed by Schipul - The Web Marketing Company
         """
-        
+
     def get_entry_items(self, entry, membership):
         items = {}
         if membership:
@@ -641,7 +598,7 @@ class Notice(models.Model):
         else:
             if entry:
                 for field in entry.fields.all():
-                    label = slugify(field.field.label).replace('-','_')
+                    label = slugify(field.field.label).replace('-', '_')
                     items[label] = field.value
         return items
 
@@ -664,7 +621,7 @@ class Notice(models.Model):
         global_setting = partial(get_setting, 'site', 'global')
         corporate_msg = ''
         expiration_dt = ''
-        
+
         context = self.get_entry_items(entry, membership)
 
         if membership:
@@ -739,7 +696,7 @@ class Notice(models.Model):
 
         if isinstance(emails, basestring):
             emails = [emails]  # expecting list of emails
-            
+
         # allowed notice types
         if notice_type == 'join':
             template_type = 'joined'
@@ -757,10 +714,10 @@ class Notice(models.Model):
             return False
 
         field_dict = {
-            'notice_time':'attimeof',
-            'notice_type':notice_type,
-            'status':True,
-            'status_detail':'active',
+            'notice_time': 'attimeof',
+            'notice_type': notice_type,
+            'status': True,
+            'status_detail': 'active',
         }
 
         # send to applicant
@@ -777,7 +734,7 @@ class Notice(models.Model):
                     'membership_%s_to_member' % template_type, {
                     'subject': notice.get_subject(entry=entry, membership=membership),
                     'content': notice.get_content(entry=entry, membership=membership),
-                    'membership_total': Membership.objects.filter(status=True, status_detail='active').count(),
+                    'membership_total': Membership.objects.active().count(),
                     'reply_to': notice.sender,
                     'sender': notice.sender,
                     'sender_display': notice.sender_display,
@@ -788,13 +745,12 @@ class Notice(models.Model):
         admin_recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
         recipients = list(set(membership_recipients + admin_recipients))
 
-
         if recipients and notification:
             notification.send_emails(recipients,
                 'membership_%s_to_admin' % template_type, {
-                'entry':entry,
-                'request':request,
-                'membership_total': Membership.objects.filter(status=True, status_detail='active').count(),
+                'entry': entry,
+                'request': request,
+                'membership_total': Membership.objects.active().count(),
             })
 
         return True
@@ -802,19 +758,20 @@ class Notice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('membership.notice_email_content', [self.id])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(Notice, self).save(*args, **kwargs)
-        
+
 
 class NoticeLog(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice = models.ForeignKey(Notice, related_name="logs")
     notice_sent_dt = models.DateTimeField(auto_now_add=True)
     num_sent = models.IntegerField()
-    
+
+
 class NoticeLogRecord(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice_log = models.ForeignKey(NoticeLog, related_name="log_records")
@@ -822,6 +779,7 @@ class NoticeLogRecord(models.Model):
     action_taken = models.BooleanField(default=0)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
@@ -896,10 +854,11 @@ class App(TendenciBaseModel):
                 initial['field_%s' % field.pk] = user.email
 
         return initial
-    
+
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser: return True
-        
+        if this_user.profile.is_superuser:
+            return True
+
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
                 return self.status and self.status_detail in ['active', 'published']
@@ -910,8 +869,9 @@ class App(TendenciBaseModel):
                 return self.status and self.status_detail in ['active', 'published']
             elif has_perm(this_user, 'memberships.view_app', self):
                 return True
-        
+
         return False
+
 
 class AppFieldManager(models.Manager):
     """
@@ -922,6 +882,7 @@ class AppFieldManager(models.Manager):
 
     def non_admin_visible(self):
         return self.filter(visible=True, admin_only=False).order_by('position')
+
 
 class AppField(models.Model):
     app = models.ForeignKey("App", related_name="fields")
@@ -974,7 +935,7 @@ class AppField(models.Model):
 
     def __unicode__(self):
         return self.label
-        
+
     def execute_function(self, entry):
         user = entry.user
         if self.field_function == "Group":
@@ -986,12 +947,12 @@ class AppField(models.Model):
                     group_membership = GroupMembership(group=group, member=user)
                     group_membership.creator_id = user.id
                     group_membership.creator_username = user.username
-                    group_membership.role='subscriber'
-                    group_membership.owner_id =  user.id
+                    group_membership.role = 'subscriber'
+                    group_membership.owner_id = user.id
                     group_membership.owner_username = user.username
                     group_membership.save()
-    
-    
+
+
 class AppEntry(TendenciBaseModel):
     """
     An entry submitted via a membership application.
@@ -1001,14 +962,11 @@ class AppEntry(TendenciBaseModel):
     membership = models.ForeignKey("Membership", related_name="entries", null=True)
     entry_time = models.DateTimeField(_("Date/Time"))
     hash = models.CharField(max_length=40, null=True, default='')
-
     is_renewal = models.BooleanField()
     is_approved = models.NullBooleanField(_('Approved'), null=True)
     decision_dt = models.DateTimeField(null=True)
     judge = models.ForeignKey(User, null=True, related_name='entries')
-
     invoice = models.ForeignKey(Invoice, null=True)
-    
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -1018,7 +976,7 @@ class AppEntry(TendenciBaseModel):
     class Meta:
         verbose_name = _("Application Entry")
         verbose_name_plural = _("Application Entries")
-        permissions = (("view_appentry","Can view membership application entry"),)
+        permissions = (("view_appentry", "Can view membership application entry"),)
 
     def __unicode__(self):
         return '%s - Submission #%s' % (self.app, self.pk)
@@ -1027,10 +985,10 @@ class AppEntry(TendenciBaseModel):
     def get_absolute_url(self):
         return ('membership.application_entries', [self.pk])
 
-    
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser: return True
-        
+        if this_user.profile.is_superuser:
+            return True
+
         if this_user.is_anonymous():
             if self.allow_anonymous_view:
                 return True
@@ -1041,9 +999,8 @@ class AppEntry(TendenciBaseModel):
                 return True
             elif has_perm(this_user, 'memberships.view_appentry', self):
                 return True
-        
-        return False
 
+        return False
 
     @property
     def name(self):
@@ -1073,7 +1030,7 @@ class AppEntry(TendenciBaseModel):
             return self.membership_type.renewal_require_approval
         else:
             return self.membership_type.require_approval
-    
+
     @property
     def corporate_membership_id(self):
         """Get corporate_membership_id """
@@ -1130,7 +1087,6 @@ class AppEntry(TendenciBaseModel):
 
         # else return none; boom.
 
-
     @property
     def payment_method(self):
         """Get PaymentMethod object"""
@@ -1140,11 +1096,11 @@ class AppEntry(TendenciBaseModel):
         try:
             entry_field = self.fields.get(field__field_type="payment-method")
             return PaymentMethod.objects.get(human_name__exact=entry_field.value.strip())
-        except PaymentMethod.MultipleObjectsReturned as e:
+        except PaymentMethod.MultipleObjectsReturned:
             return PaymentMethod.objects.filter(
                 human_name__exact=entry_field.value.strip()
             )[0]
-        except (AppFieldEntry.DoesNotExist, PaymentMethod.DoesNotExist) as e:
+        except AppFieldEntry.DoesNotExist, PaymentMethod.DoesNotExist:
             pass
 
         # Find an older "approved" membership entry ------------
@@ -1215,23 +1171,27 @@ class AppEntry(TendenciBaseModel):
 
         return user, created
 
-
     def approve(self):
         """
-        # Create membership/archive membership
-        # Bind membership with user
-        # Place user in membership group
-        # Update user profile with membership data (fn,ln,email)
-        # Update entry; mark as approved, bind to membership, update decision_dt
+        - Bind membership with user
+            1. authenticated user
+            2. suggestions per fn, ln, email
+            3. create new user
+        - Update user with membership data (fn, ln, email)
+        - Bind user with group
+        - Update memberhsip status_detail='active'
+        - Update decision_dt=datetime.now()
 
-        order of candidates (for user-binding)
-            authenticated user
-            suggestions per fn, ln, em
-            new user creation
+        More than 1 [active] membership of the same type cannot exist
         """
 
         # get user -------------
         user, created = self.get_or_create_user()
+
+        user.first_name = self.first_name
+        user.last_name = self.last_name
+        user.email = self.email
+        user.save()
 
         # get judge --------------
         if self.judge and self.judge.is_authenticated():
@@ -1239,102 +1199,54 @@ class AppEntry(TendenciBaseModel):
         else:
             judge, judge_pk, judge_username = None, int(), unicode()
 
-        # more than 1 membership of the same type cannot exist
+        # update old membership [of same type] -----------
+        user.memberships.filter(
+            membership_type=self.membership_type,
+            status=True,
+            status_detail='active'
+        ).update(status_detail='archive')
 
-        # if membership; then renewal; create archive
-        membership = user.memberships.get_membership()
-        if membership:
-            archive = MembershipArchive.objects.create(**{
-                'membership':membership,
-                'member_number': membership.member_number,
-                'membership_type': membership.membership_type,
-                'user': membership.user,
-                'directory':membership.directory,
-                'subscribe_dt':membership.subscribe_dt,
-                'expire_dt':membership.expire_dt,
-                'corporate_membership_id':membership.corporate_membership_id,
-                'invoice':membership.invoice,
-                'payment_method':membership.payment_method,
-                'ma':membership.ma,
-                'creator_id':membership.creator_id,
-                'creator_username':membership.creator_username,
-                'owner_id':membership.owner_id,
-                'owner_username':membership.owner_username,
-                'membership_create_dt':membership.create_dt,
-                'membership_update_dt':membership.update_dt,
-            })
+        # look for previous member number
+        memberships = user.memberships.order_by('-pk')
+        if memberships:
+            member_number = memberships[0].member_number
+        else:
+            member_number = self.app.entries.count() + 1000
 
-            # update current membership record
-            membership.membership_type = self.membership_type
-            membership.renewal = self.membership_type.renewal
-            membership.subscribe_dt = datetime.now()
-            membership.expire_dt = self.get_expire_dt()
-            membership.payment_method = self.payment_method
-            membership.ma = self.app
-            membership.corporate_membership_id = self.corporate_membership_id
-            membership.creator = user
-            membership.creator_username = user.username
-            membership.owner = user
-            membership.owner_username = user.username
-            membership.save()
-            
-            # populate the member number to profile
-            membership.populate_user_member_id()
+        membership = Membership.objects.create(**{
+            'member_number': member_number,
+            'membership_type': self.membership_type,
+            'user': user,
+            'renewal': self.membership_type.renewal,
+            'subscribe_dt': datetime.now(),
+            'expire_dt': self.get_expire_dt(),
+            'payment_method': self.payment_method,
+            'ma': self.app,
+            'corporate_membership_id': self.corporate_membership_id,
+            'creator': user,
+            'creator_username': user.username,
+            'owner': user,
+            'owner_username': user.username,
+        })
 
-        try: # get membership
-            membership = Membership.objects.get(**{
-                'membership_type': self.membership_type,
-                'user': user,
+        # populate the member number to profile
+        membership.populate_user_member_id()
+
+        try:
+            # add user to group
+            GroupMembership.objects.create(**{
+                'group': self.membership_type.group,
+                'member': user,
+                'creator_id': judge_pk or user.pk,
+                'creator_username': judge_username,
+                'owner_id': judge_pk or user.pk,
+                'owner_username': judge_username,
                 'status': True,
                 'status_detail': 'active',
             })
-        except: # or create membership
-                
-            membership = Membership.objects.create(**{
-                'member_number': self.app.entries.count() + 1000,
-                'membership_type': self.membership_type,
-                'user':user,
-                'renewal': self.membership_type.renewal,
-                'subscribe_dt':datetime.now(),
-                'expire_dt': self.get_expire_dt(),
-                'payment_method': self.payment_method,
-                'ma':self.app,
-                'corporate_membership_id': self.corporate_membership_id,
-                'creator':user,
-                'creator_username':user.username,
-                'owner':user,
-                'owner_username':user.username,
-            })
-
-        try:
-            # create group-membership object
-            # this adds the user to the group
-            GroupMembership.objects.create(**{
-                'group':self.membership_type.group,
-                'member':user,
-                'creator_id': judge_pk,
-                'creator_username': judge_username,
-                'owner_id':judge_pk,
-                'owner_username':judge_username,
-                'status':True,
-                'status_detail':'active',
-            })
         except:
             pass
 
-        # update user account
-        user.first_name = self.first_name
-        user.last_name = self.last_name
-        user.email = self.email
-
-        try:
-            user.get_profile().email = self.email
-        except:
-            pass
-
-        user.save()
-        
-        # take care of the special functionality - Groups
         # add user to the groups they checked
         field_entries = self.fields.all()
         for field_entry in field_entries:
@@ -1344,19 +1256,17 @@ class AppEntry(TendenciBaseModel):
                     group = Group.objects.get(name=val)
                     try:
                         GroupMembership.objects.create(**{
-                                    'group':group,
-                                    'member':user,
-                                    'creator_id': judge_pk,
+                                    'group': group,
+                                    'member': user,
+                                    'creator_id': judge_pk or user.pk,
                                     'creator_username': judge_username,
-                                    'owner_id':judge_pk,
-                                    'owner_username':judge_username,
-                                    'status':True,
-                                    'status_detail':'active',
+                                    'owner_id': judge_pk or user.pk,
+                                    'owner_username': judge_username,
+                                    'status': True,
+                                    'status_detail': 'active',
                                 })
                     except:
                         pass
-                    
-        
 
         self.is_approved = True
         self.decision_dt = membership.create_dt
@@ -1375,48 +1285,28 @@ class AppEntry(TendenciBaseModel):
         self.judge = judge
         self.save()
 
-    def suggested_users(self, grouping=[('first_name', 'last_name', 'email')]):
+    def suggested_users(self, **kwargs):
         """
-            Generate list of suggestions [people]
-            Use the authenticated user that filled out the application
-            Use the fn, ln, em mentioned within the application
-
-            Grouping Example:
-                grouping=[('first_name', 'last_name'), ('email',)]
-                (first_name AND last_name) OR (email)
-
-            Grouping Example:
-                grouping=[('first_name', 'last_name', 'email)]
-                (first_name AND last_name AND email)
-
-            TODO: I don't like the assumption that we should
-            suggest the authenticated user. Tempted to take it out
-            and add the auth_user after the call.
+        Return list of users.
+        List of users is created via fn, ln, and email passed.
         """
-        user_set = {}
+        from operator import __or__ as OR
 
-        if self.user:  # suggest authenticated user
-            user_set[self.user.pk] = ' '.join([
-                self.user.first_name,
-                self.user.last_name,
-                self.user.username,
-                self.user.email,
-            ])
+        kwargs = kwargs or {
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'email': self.email
+            }
 
-        #  e.g. [<Q object>, <Q object>]; Example <Q object> 'eloy zuniga ezuniga@schipul.com'
-        query_list = [Q(content=' '.join([getattr(self, i) for i in g])) for g in grouping]
+        lst = []
+        for i in kwargs.items():
+            lst.append(Q(i))
 
-        sqs = SearchQuerySet().models(Profile)
-        sqs = sqs.filter(reduce(operator.or_, query_list))
-        sqs_users = [sq.object.user for sq in sqs]
+        users = {}
+        for u in User.objects.filter(reduce(OR, lst)):
+            users[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
 
-        for u in sqs_users:
-            try:
-                user_set[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
-            except:
-                pass
-
-        return user_set.items()
+        return users.items()
 
     def spawn_username(self, *args, **kwargs):
         """
@@ -1427,26 +1317,25 @@ class AppEntry(TendenciBaseModel):
         if not args:
             raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
 
+        max_length = kwargs.get(u'max_length', 9)
+        delimiter = kwargs.get(u'delimiter', u'')
 
-        max_length = kwargs.get('max_length', 9)
-        delimiter = kwargs.get('delimiter','')
+        un = ' '.join(args)  # concat args into one string
+        un = re.sub('\s+', delimiter, un)  # replace spaces w/ delimiter (default: no-space)
+        un = re.sub('[^\w.-]+', u'', un)  # remove non-word-characters
+        un = un.strip('_.- ')  # strip funny-characters from sides
+        un = un[:max_length].lower()  # keep max length and lowercase username
 
-        un = ' '.join(args)             # concat args into one string
-        un = re.sub('\s+',delimiter,un) # replace spaces w/ delimiter (default: no-space)
-        un = re.sub('[^\w.-]+','',un)   # remove non-word-characters
-        un = un.strip('_.- ')           # strip funny-characters from sides
-        un = un[:max_length].lower()    # keep max length and lowercase username
-
-        others = [] # find similiar usernames
+        others = []  # find similiar usernames
         for u in User.objects.filter(username__startswith=un):
             if u.username.replace(un, '0').isdigit():
-                others.append(int(u.username.replace(un,'0')))
+                others.append(int(u.username.replace(un, '0')))
 
         if others and 0 in others:
             # the appended digit will compromise the username length
             # there would have to be more than 99,999 duplicate usernames
             # to kill the database username max field length
-            un = '%s%s' % (un, str(max(others)+1))
+            un = '%s%s' % (un, unicode(max(others) + 1))
 
         return un.lower()
 
@@ -1484,7 +1373,7 @@ class AppEntry(TendenciBaseModel):
             # CREDIT event SALES
             acct_number = self.get_acct_number()
             acct = Acct.objects.get(account_number=acct_number)
-            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount * (-1))
 
     # to lookup for the number, go to /accountings/account_numbers/
     def get_acct_number(self, discount=False):
@@ -1498,7 +1387,6 @@ class AppEntry(TendenciBaseModel):
         Update the object after online payment is received.
         If auto-approve; approve entry; send emails; log.
         """
-        from notification import models as notification
         from notification.utils import send_welcome_email
 
         if self.is_renewal:
@@ -1518,11 +1406,12 @@ class AppEntry(TendenciBaseModel):
 
         if self.is_approved:
 
-            membership_total = Membership.objects.filter(status=True, status_detail='active').count()
+            # silence old memberships within renewal period
+            Membership.objects.silence_old_memberships(self.user)
 
             # send "approved" notification
             Notice.send_notice(
-                request = request,
+                request=request,
                 emails=self.email,
                 notice_type='approve',
                 membership=self.membership,
@@ -1531,7 +1420,7 @@ class AppEntry(TendenciBaseModel):
 
             # log entry approval
             EventLog.objects.log(**{
-                'event_id' : 1082101,
+                'event_id': 1082101,
                 'event_data': '%s (%d) approved by %s' % (self._meta.object_name, self.pk, self.judge),
                 'description': '%s viewed' % self._meta.object_name,
                 'user': request.user,
@@ -1545,14 +1434,12 @@ class AppEntry(TendenciBaseModel):
         content_type = ContentType.objects.get(app_label=self._meta.app_label,
               model=self._meta.module_name)
 
-        try: # get invoice
+        try:  # get invoice
             invoice = Invoice.objects.get(
-                object_type = content_type,
-                object_id = self.pk,
+                object_type=content_type,
+                object_id=self.pk,
             )
-        except: # else; create invoice
-            # cannot use get_or_create method
-            # because too many fields are required
+        except:  # else; create invoice
             invoice = Invoice()
             invoice.object_type = content_type
             invoice.object_id = self.pk
@@ -1560,16 +1447,16 @@ class AppEntry(TendenciBaseModel):
         # update invoice with details
         invoice.estimate = True
         invoice.status_detail = status_detail
-        
+
         invoice.bill_to = '%s %s' % (self.first_name, self.last_name)
         invoice.bill_to_first_name = self.first_name
         invoice.bill_to_last_name = self.last_name
         invoice.bill_to_email = self.email
-        
+
         # if this membership is under a corporate and its corporate membership allows
         # threshold and the threshold is whithin limit, then this membership gets the
         # threshold price.
-        
+
         (use_threshold, threshold_price) = self.get_corp_memb_threshold_price()
         if use_threshold:
             invoice.subtotal = threshold_price
@@ -1580,7 +1467,7 @@ class AppEntry(TendenciBaseModel):
             invoice.total = self.membership_type.price
             invoice.balance = self.membership_type.price
 
-        invoice.due_date = datetime.now() # TODO: change model field to null=True
+        invoice.due_date = datetime.now()  # TODO: change model field to null=True
         invoice.ship_date = datetime.now()  # TODO: change model field to null=True
 
         invoice.save()
@@ -1589,10 +1476,10 @@ class AppEntry(TendenciBaseModel):
         self.save()
 
         return invoice
-    
+
     def get_corp_memb_threshold_price(self):
         """
-        get the threshold price for this individual. 
+        get the threshold price for this individual.
         return tuple (use_threshold, threshold_price)
         """
         from corporate_memberships.models import CorporateMembership
@@ -1600,16 +1487,18 @@ class AppEntry(TendenciBaseModel):
             corp_memb = CorporateMembership.objects.get(id=self.corporate_membership_id)
         except CorporateMembership.DoesNotExist:
             corp_memb = None
-        
+
         if corp_memb:
             allow_threshold = corp_memb.corporate_membership_type.apply_threshold
             threshold_limit = corp_memb.corporate_membership_type.individual_threshold
             threshold_price = corp_memb.corporate_membership_type.individual_threshold_price
-            
+
             if allow_threshold and threshold_limit and threshold_limit > 0:
                 # check how many memberships have joined under this corporate
-                field_entries = AppFieldEntry.objects.filter(field__field_type='corporate_membership_id', 
-                                                             value=corp_memb.id)
+                field_entries = AppFieldEntry.objects.filter(
+                    field__field_type='corporate_membership_id',
+                    value=corp_memb.id
+                )
                 count = field_entries.count()
                 if count <= threshold_limit:
                     return True, threshold_price
@@ -1664,23 +1553,24 @@ class AppFieldEntry(models.Model):
     def corporate_membership_name(self):
         if self.field.field_type == 'corporate_membership_id':
             try:
-                value = int(self.value)
                 #from corporate_memberships.models import CorporateMembership
                 from django.db import connection
                 cursor = connection.cursor()
                 cursor.execute("""
-                    SELECT name 
-                    FROM corporate_memberships_corporatemembership 
-                    WHERE id=%d  
+                    SELECT name
+                    FROM corporate_memberships_corporatemembership
+                    WHERE id=%d
                     LIMIT 1 """ % int(self.value))
                 rows = cursor.fetchall()
-                if rows: return rows[0][0]
+                if rows:
+                    return rows[0][0]
             except:
                 pass
 
         return None
-    
-# Moved from management/__init__.py to here because it breaks 
+
+
+# Moved from management/__init__.py to here because it breaks
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group
 def assign_permissions(app, created_models, verbosity, **kwargs):

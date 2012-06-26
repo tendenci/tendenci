@@ -180,3 +180,13 @@ def querystring_redirect(request):
         return HttpResponsePermanentRedirect(query_string.keys()[0])
 
     raise Http404
+
+
+def redirect_to_with_querystring(request, url):
+    """
+    Generic redirect to pass the querystring along intact
+    """
+    query_string = ''
+    for key in request.GET.keys():
+        query_string = query_string + "%s=%s&" % (key, request.GET[key])
+    return HttpResponsePermanentRedirect('%s?%s' % (url, query_string))

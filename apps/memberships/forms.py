@@ -178,15 +178,15 @@ class MemberApproveForm(forms.Form):
         suggested_users = []
         self.entry = entry
 
-        suggested_users = entry.suggested_users(grouping=[('email',)])
+        suggested_users = entry.suggested_users(email=entry.email)
         suggested_users.append((0, 'Create new user'))
         self.fields['users'].choices = suggested_users
         self.fields['users'].initial = 0
 
-        if self.entry.is_renewal:            
+        if self.entry.is_renewal:
             self.fields['users'] = CharField(
                 label='',
-                initial=entry.user.pk, 
+                initial=entry.user.pk,
                 widget=HiddenInput
             )
 
@@ -203,8 +203,9 @@ class MembershipTypeForm(forms.ModelForm):
                                    widget=PriceInput(),
                                    help_text="Admin fee for the first time processing")
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('admin hold','Admin Hold'),))
-    
+        choices=(('active', 'Active'), ('inactive', 'Inactive'))
+    )
+
     class Meta:
         model = MembershipType
         fields = (
@@ -439,7 +440,13 @@ class AppForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':App._meta.app_label, 
         'storme_model':App._meta.module_name.lower()}))
 
-    status_detail = forms.ChoiceField(choices=(('draft','Draft'),('published','Published')))
+    status_detail = forms.ChoiceField(
+        choices=(
+            ('draft', 'Draft'),
+            ('published', 'Published')
+        ),
+        initial='published'
+    )
 
     class Meta:
         model = App
@@ -836,7 +843,15 @@ class AppEntryForm(forms.ModelForm):
             'owner',
             'owner_username',
             'status',
-            'status_detail'
+            'status_detail',
+            'app',
+            'user',
+            'membership',
+            'is_renewal',
+            'is_approved',
+            'decision_dt',
+            'judge',
+            'invoice',
         )
 
     def __init__(self, app=None, *args, **kwargs):
@@ -1198,21 +1213,22 @@ class ExportForm(forms.Form):
 
         who_can_export = get_setting('module','memberships','memberexport')
 
-        if who_can_export == 'admin-only':
-            if not self.user.profile.is_superuser:
-                raise Http403
-        elif who_can_export == 'membership-of-same-type':
-            if not self.user.profile.is_member:
-                raise Http403
-            membership_types = self.user.memberships.values_list('membership_type').distinct()
-            self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
-        elif who_can_export == 'members':
-            if not self.user.profile.is_member:
-                raise Http403
-        elif who_can_export == 'users':
-            if not self.user.is_authenticated():
-                raise Http403
-        
+        if not self.user.profile.is_superuser:
+            if who_can_export == 'admin-only':
+                if not self.user.profile.is_superuser:
+                    raise Http403
+            elif who_can_export == 'membership-of-same-type':
+                if not self.user.profile.is_member:
+                    raise Http403
+                membership_types = self.user.memberships.values_list('membership_type').distinct()
+                self.fields['app'].queryset = App.objects.filter(membership_types__in=membership_types)
+            elif who_can_export == 'members':
+                if not self.user.profile.is_member:
+                    raise Http403
+            elif who_can_export == 'users':
+                if not self.user.is_authenticated():
+                    raise Http403
+
     def clean_passcode(self):
         value = self.cleaned_data['passcode']
         
@@ -1229,11 +1245,12 @@ class ReportForm(forms.Form):
     
     membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
     membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
-    
+
+
 class MembershipForm(TendenciBaseForm):
     STATUS_CHOICES = (
-        ('active','Active'),
-        ('expired','Expired'),
+        ('active', 'Active'),
+        ('inactive', 'In Active'),
     )
 
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
@@ -1243,7 +1260,7 @@ class MembershipForm(TendenciBaseForm):
 
     class Meta:
         model = Membership
-        
+
         fields = (
             'member_number',
             'membership_type',
@@ -1257,10 +1274,9 @@ class MembershipForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status',
             'status_detail',
         )
-        
+
         fieldsets = [
             ('Membership Details', {
                 'fields': [
@@ -1288,7 +1304,6 @@ class MembershipForm(TendenciBaseForm):
             ('Administrator Only', {
                 'fields': [
                     'syndicate',
-                    'status',
-                    'status_detail'], 
+                    'status_detail'],
                 'classes': ['admin-only'],
             })]

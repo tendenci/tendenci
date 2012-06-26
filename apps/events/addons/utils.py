@@ -39,7 +39,7 @@ def get_available_addons(event, user):
                 continue
             
             # Group members allowed
-            if addon.group and addon.group.user.profile.is_member:
+            if addon.group and addon.group.is_member(user):
                 continue
             
             # user failed all permission checks

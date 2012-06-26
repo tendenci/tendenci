@@ -1,0 +1,19 @@
+{% load base_tags %}
+<div class="wrap-search-item">
+<div class="search-item products-search-item">
+    <h2><a href="{% url products.detail product.product_slug %}">{{ product.product_name }}</a></h2>
+    <div>Product Id: {{ product.product_id }}</div>
+    <div>Generic Description: {{ product.generic_description|safe }}</div>
+    <div>Brand: {{ product.brand }}</div>
+    <div>Product Features: {{ product.product_features|safe }}</div>
+    <div>Product Code: {{ product.product_code }}</div>
+    <div>Product Specifications: {{ product.product_specs|safe }}</div>
+    <div>Active Ingredients: {{ product.active_ingredients }}</div>
+    <div>Key insects: {{ product.key_insects }}</div>
+    <div>Use Sites: {{ product.use_sites }}</div>
+    <div>MSDS LABEL: <a href="{{ product.msds_label }}">{{ product.msds_label }}</a></div>
+    <div>Product LABEL: <a href="{{ product.product_label }}">{{ product.product_label }}</a></div>
+    <div>State Registered: <a href="{{ product.state_registered }}">{{ product.state_registered }}</a></div>
+</div>
+    {% include "martins_products/meta.html" %}
+</div>

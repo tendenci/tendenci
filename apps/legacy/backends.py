@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from models import SchipulEmployee
 from models import LegacyUser
 from utils import get_profile_defaults, legacy_user_developer, legacy_user_admin
-from profiles.utils import user_add_remove_admin_auth_group
 
 import hashlib
 
@@ -55,9 +54,6 @@ class LegacyUserBackend(object):
             user.save()
         except: # most likely a duplicate username, send back failure
             return None
-
-        # if they are an administrator then add them to the auth group "Admin"
-        user_add_remove_admin_auth_group(user)
 
         # create the profile, whole lotta fields
         profile_defaults = get_profile_defaults(legacy_user)

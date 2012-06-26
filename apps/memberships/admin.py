@@ -39,7 +39,9 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                      'allow_renewal', 'renewal_price', 'renewal',  
                      'admin_only', 'status_detail']
     list_filter = ['name', 'price', 'status_detail']
-    
+
+    exclude = ('status',)
+
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
         ('Expiration Method', {'fields': ('never_expires', 'type_exp_method',)}),
@@ -50,7 +52,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
 
         ('Other Options', {'fields': (
             'expiration_grace_period', ('require_approval', 
-            'admin_only'), 'order', 'status', 'status_detail')}),
+            'admin_only'), 'order', 'status_detail')}),
     )
 
     form = MembershipTypeForm
@@ -278,11 +280,14 @@ class AppAdmin(admin.ModelAdmin):
     application_form_link.allow_tags = True
 
     list_display = ('name', application_form_link)
+
+    exclude = ('status',)
+
     fieldsets = (
         (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 
                            'membership_types', 'payment_methods', 'use_for_corp', 'use_captcha')},),
         ('Administrative', {'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms',
-                                       'status','status_detail')}),
+                                       'status_detail')}),
     )
 
     class Media:
@@ -388,7 +393,7 @@ class AppAdmin(admin.ModelAdmin):
                     }),
 
                     ('Administrative', {
-                        'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms','status','status_detail'),
+                        'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms','status_detail'),
                     }),
 
                     ('Form Fields', {
