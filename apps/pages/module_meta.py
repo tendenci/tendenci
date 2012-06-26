@@ -13,12 +13,11 @@ class PageMeta():
 
         ### Assign variables -----------------------  
         geo_location = get_setting('site','global','sitegeographiclocation')
-        site_name = get_setting('site','global','sitedisplayname')
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
         
         # start w/ title
-        value = '%s - %s' % (object.title, site_name)
+        value = '%s' % object.title
         value = value.strip()
 
         if category:
@@ -29,7 +28,7 @@ class PageMeta():
         value = value.strip()
         
         if geo_location:
-            value = '%s %s' % (value, geo_location)
+            value = '%s | %s | ' % (value, geo_location)
 
         return value
 
