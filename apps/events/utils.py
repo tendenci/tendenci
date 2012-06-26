@@ -17,6 +17,7 @@ from events.models import (Event, Place, Speaker, Organizer,
 from events.forms import FormForCustomRegForm
 from perms.utils import get_query_filters
 from discounts.models import Discount, DiscountUse
+from discounts.utils import assign_discount
 
 try:
     from notification import models as notification
@@ -585,15 +586,51 @@ def add_registration(*args, **kwargs):
         if override_price_table == None:
             override_price_table = 0
     
+    
+    # get the list of amount for registrants.
+    amount_list = []
+    if event.is_table:
+        if override_table:
+            amount_list.append(override_price_table)
+            admin_notes += "Price has been overridden."
+        else:
+            amount_list.append(event_price)
+        
+    else:
+        override_price_total = Decimal(0)
+        for i, form in enumerate(registrant_formset.forms):
+            override = False
+            override_price = Decimal(0)
+            if request.user.is_superuser:
+                override = form.cleaned_data.get('override', False)
+                override_price = form.cleaned_data.get('override_price', Decimal(0))
+                
+            price = form.cleaned_data['pricing']
+
+            if override:
+                amount = override_price
+                override_price_total += amount
+            else:
+                amount = price.price
+                
+            amount_list.append(amount)
+            
+        if override_price_total:
+            admin_notes += "Price has been overridden."
+                  
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
     if discount_code:
         [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
         if discount and discount.available_for(1):
-            discount_amount = discount.value
+            amount_list, discount_amount = assign_discount(amount_list, discount)
+                    
+                
             
     if discount_amount:
+        if admin_notes:
+            admin_notes += ' '
         admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount_code)
     
     reg8n_attrs = {
@@ -619,15 +656,10 @@ def add_registration(*args, **kwargs):
     reg8n = Registration.objects.create(**reg8n_attrs)
     
     if event.is_table:
-        if reg8n.override_table:
-            table_individual_first_price, table_individual_price = split_table_price(
-                                                reg8n.override_price_table, price.quantity)
-        else:
-            table_individual_first_price, table_individual_price = split_table_price(
-                                                event_price, price.quantity)
+        table_individual_first_price, table_individual_price = split_table_price(
+                                            amount_list[0], price.quantity)
     
 #    discount_applied = False
-    discount_amount_left = discount_amount
     for i, form in enumerate(registrant_formset.forms):
         override = False
         override_price = Decimal(0)
@@ -637,11 +669,9 @@ def add_registration(*args, **kwargs):
                 override_price = form.cleaned_data.get('override_price', Decimal(0))
                 
             price = form.cleaned_data['pricing']
-
-            if override:
-                amount = override_price
-            else:
-                amount = price.price
+            
+            # this amount has taken account into admin override and discount code
+            amount = amount_list[i]
         else:
             # table individual
             if i == 0:
@@ -651,14 +681,6 @@ def add_registration(*args, **kwargs):
             if reg8n.override_table:
                 override = reg8n.override_table
                 override_price = amount
-                
-        # Apply discount. For multiple registrants, we'll try to
-        # apply one by one until we use up all the discount amount.
-        # For example, if the discount amount is $12, and we register
-        # 3 people with amount of $10, 5, 20, respectively. Then 
-        # the first one gets 10, and the second one gets the remaining 2. 
-        if discount_amount_left > 0:
-            amount, discount_amount_left = apply_discount(amount, discount_amount_left)
         
         # the table registration form does not have the DELETE field   
         if event.is_table or not form in registrant_formset.deleted_forms:

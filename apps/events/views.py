@@ -1053,11 +1053,10 @@ def register(request, event_id=0,
                     reg_form.is_valid(),
                     registrant.is_valid(),
                     addon_formset.is_valid()]):
-                
-                # override event_price to price specified by admin
-                
+                                
                 args = [request, event, reg_form, registrant, addon_formset,
                         pricing, pricing and pricing.price or 0]
+                
                 kwargs = {'admin_notes': '',
                           'custom_reg_form': custom_reg_form}
                 # add registration

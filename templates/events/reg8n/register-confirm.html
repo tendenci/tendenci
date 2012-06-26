@@ -232,6 +232,9 @@
             
             
             <p>{% trans "Payment Method: " %}{{ registration.payment_method }}</p>
+            {% if registration.invoice.admin_notes  or registration.discount_amount %}
+            <p>{{ registration.invoice.admin_notes }} Discount amount: {{ registration.discount_amount|format_currency }} applied.</p>
+            {% endif %}
             
         	{% if registration.invoice %}
             <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">{% trans "View invoice" %}</a>

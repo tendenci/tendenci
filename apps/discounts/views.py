@@ -15,7 +15,7 @@ from theme.shortcuts import themed_response as render_to_response
 from exports.utils import run_export_task
 
 from discounts.models import Discount, DiscountUse
-from discounts.forms import DiscountForm, DiscountCodeForm
+from discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):
@@ -128,6 +128,34 @@ def discounted_price(request, form_class=DiscountCodeForm):
                     "price": unicode(form.new_price()[0]),
                     "discount": unicode(form.new_price()[1]),
                     "message": "Your discount of $ %s has been added." % unicode(form.new_price()[1]),
+                }), mimetype="text/plain")
+        return HttpResponse(json.dumps(
+            {
+                "error": True,
+                "message": "This is not a valid discount code.",
+            }), mimetype="text/plain")
+    else:
+        form = form_class()
+    return HttpResponse(
+        "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
+        mimetype="text/html")
+
+
+@csrf_exempt
+def discounted_prices(request, form_class=DiscountHandlingForm):
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            price_list, discount_total = form.get_discounted_prices()
+            total = sum(price_list)
+            new_prices = ';'.join([str(price) for price in price_list])
+            return HttpResponse(json.dumps(
+                {
+                    "error": False,
+                    "prices": unicode(new_prices),
+                    "discount_total": unicode(discount_total),
+                    "total": unicode(total),
+                    "message": "Your discount of $ %s has been added." % unicode(discount_total),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {
