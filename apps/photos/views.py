@@ -6,8 +6,6 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.template import RequestContext
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -668,19 +666,19 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
-    
+
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
-    
+
     order = get_setting('module', 'photos', 'photoordering')
     if order == 'descending':
         photos = photo_set.get_images(user=request.user).order_by('-pk')
     else:
         photos = photo_set.get_images(user=request.user).order_by('pk')
-    
+
     EventLog.objects.log(**{
-        'event_id' : 991500,
+        'event_id': 991500,
         'event_data': '%s (%d) viewed by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
         'description': '%s viewed' % photo_set._meta.object_name,
         'user': request.user,
@@ -692,6 +690,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         "photos": photos,
         "photo_set": photo_set,
     }, context_instance=RequestContext(request))
+
 
 def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
     """ Generate zip file for the entire photo set
