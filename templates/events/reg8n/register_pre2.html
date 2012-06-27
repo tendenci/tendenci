@@ -1,0 +1,143 @@
+{% extends "events/base-wide.html" %}
+{% load event_tags %}
+{% load styled_forms %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{{ block.super }}Registration Pre {{ event.title }} {{ event.start_dt|date:"M j, Y" }}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/event-registration.css" />
+<style>
+.table-bordered {
+    border: 1px solid #ccc;
+}
+.table {
+    margin-bottom: 18px;
+    width: 100%;
+}
+.table .header{
+	font-weight: bold;
+	font-size: 1.1em;
+	border-bottom: 1px solid #ddd;
+}
+
+.pricing-info-wrap{
+	width: 550px;
+	margin-top: 2em;
+}
+
+.table td{
+	padding: 3px;
+}
+.align-left{
+	text-align: left;
+}
+.align-right{
+	text-align: right;
+}
+
+.register-green-button2 {
+    background-color: green;
+    border: 0 none;
+    border-radius: 5px 5px 5px 5px;
+    color: white;
+    cursor: pointer;
+    padding: 3px;
+}
+
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">    
+    {% event_nav user event %}
+    <div>
+        <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
+        <div class="event-time">
+            <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
+            <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
+        </div>
+         {% include "events/include/spots_status.html" %}	
+    </div>
+    
+    <div class="pricing-info-wrap">
+		<h2>Pricing Information</h2>
+	
+		{% if individual_pricings %}
+		<div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
+		<table class="table table-bordered table-striped">
+			<tr>
+				<td class="header align-left" width="40%">Price Type</td>
+				<td class="header align-right" width="22%">Available Before</td>
+				<td class="header align-right" width="18%">Price</td>
+				<td class="header align-right" width="20%"></td>
+			</tr>
+			{% for pricing in individual_pricings %}
+			<tr>
+				<td class="align-left">{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</td>
+				<td class="align-right">{{ pricing.end_dt|date:'M j g:i A' }}</td>
+				<td class="align-right">{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</td>
+				<td class="align-right">
+					<form action="{% url event.register_individual event.id pricing.id %}" method="get">
+					<input class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+					</form>
+				</td>
+			</tr>
+			
+			{% endfor %}
+			
+		</table>
+	{% endif %}	
+	
+	
+	{% if table_pricings %}
+		<div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
+		<table class="table table-bordered table-striped">
+			<tr>
+				<td class="header align-left" width="40%">Price Type</td>
+				<td class="header align-right" width="22%">Available Before</td>
+				<td class="header align-right" width="18%">Table Price</td>
+				<td class="header align-right" width="20%"></td>
+			</tr>
+			{% for pricing in table_pricings %}
+			<tr>
+				<td class="align-left">{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</td>
+				<td class="align-right">{{ pricing.end_dt|date:'M j g:i A' }}</td>
+				<td class="align-right">{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</td>
+				<td class="align-right">
+					<form action="{% url event.register_table event.id pricing.id %}" method="get">
+					<input class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+					</form>
+				</td>
+			</tr>
+			
+			{% endfor %}
+			
+		
+		</table>
+	{% endif %}	
+	
+	
+	</div>
+	
+    
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+<script>
+	$(document).ready(function(){
+		
+		
+	});
+	
+</script>
+
+{{ block.super }}
+{% endblock %}

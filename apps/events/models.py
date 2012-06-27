@@ -313,7 +313,7 @@ class RegConfPricing(models.Model):
             pass
             #target_str = 'for public'
         elif self.allow_user:
-            target_str = 'for users'
+            target_str = 'for non-members'
         elif self.allow_member:
             target_str = 'for members'
             

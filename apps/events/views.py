@@ -796,7 +796,7 @@ def delete(request, id, template_name="events/delete.html"):
     else:
         raise Http403# Create your views here.
     
-def register_pre(request, event_id, template_name="events/reg8n/register_pre.html"):
+def register_pre(request, event_id, template_name="events/reg8n/register_pre2.html"):
     event = get_object_or_404(Event, pk=event_id)
     
     reg_conf=event.registration_configuration
@@ -813,35 +813,22 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre.htm
     event.limit, event.spots_taken, event.spots_available = limit, spots_taken, spots_available 
     
     pricings = reg_conf.get_available_pricings(request.user, 
-                                               is_strict=anony_reg8n=='strict',
+                                               is_strict=False,
                                                spots_available=spots_available
                                                )
     
     individual_pricings = pricings.filter(quantity=1).order_by('display_order', '-price')
     table_pricings = pricings.filter(quantity__gt=1).order_by('display_order', '-price')
     
-    table_only = not individual_pricings
-    form = RegistrationPreForm(table_pricings, request.POST or None,
-                               table_only=table_only)
-    
-    if request.method == 'POST':
-        if form.is_valid():
-            if table_only:
-                is_table = True
-            else:
-                is_table = form.cleaned_data['is_table'] == '1'
-            pricing = form.cleaned_data['pricing']
-            
-            if not is_table:
-                return HttpResponseRedirect(reverse('event.register_individual', args=(event.pk,),)) 
-            else:
-                return HttpResponseRedirect(reverse('event.register_table', args=(event.pk, pricing.id),)) 
+    if not (individual_pricings or table_pricings):
+        raise Http404
+     
             
     return render_to_response(template_name, {
         'event':event,
-        'form': form,
         'individual_pricings': individual_pricings,
-        'table_only': table_only
+        'table_pricings': table_pricings,
+        'quantity_options': range(31)
     }, context_instance=RequestContext(request))   
     
 
@@ -899,23 +886,23 @@ def register(request, event_id=0,
         # If so, redirect them to the intermediate page to choose individual
         # or table.
         pricings = reg_conf.get_available_pricings(request.user, 
-                                                   is_strict=is_strict,
+                                                   is_strict=False,
                                                    spots_available=spots_available)
-        individual_prices = [p for p in pricings if p.quantity == 1]
-        table_price = [p for p in pricings if p.quantity > 1]
-        
-        if individual_prices and table_price:
-            return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),)) 
-        if individual_prices and not table_price:
-            individual = True
-        elif table_price:
-            if len(table_price) == 1:
-                is_table = True
-                pricing_id = (table_price[0]).id
-            else:
-                return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),)) 
-        else:
+        if not pricings:
             raise Http404
+        
+        if len(pricings) > 1:
+            return HttpResponseRedirect(reverse('event.register_pre', args=(event.pk,),)) 
+        
+
+        pricing = pricings[0]
+        if pricing.quantity == 1:
+            individual = True
+            event.default_pricing = pricing
+        else:
+            is_table = True
+            pricing_id = pricing.id
+   
     else:
         pricings = None
             
@@ -932,12 +919,20 @@ def register(request, event_id=0,
         # get all available pricing for the Price Options to select
         if not pricings:
             pricings = reg_conf.get_available_pricings(request.user, 
-                                                       is_strict=is_strict,
+                                                       is_strict=False,
                                                        spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
         pricings = pricings.order_by('display_order', '-price')
-        # get the default pricing to set for initial
-        [event.default_pricing] = pricings[:1] or [None]
+        
+        try:
+            pricing_id = int(pricing_id)
+        except:
+            pass
+        if pricing_id:
+            
+            if pricing_id:
+                [event.default_pricing] = RegConfPricing.objects.filter(id=pricing_id) or [None]
+
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
         

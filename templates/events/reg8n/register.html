@@ -44,7 +44,7 @@
     <div class="event-info">
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
         {% if event.is_table %}
-        <div class="event-price">{{ event_price|format_currency }} for a Table/Team of {{ pricing.quantity }}</div>
+        <div class="event-price">{{ event_price|format_currency }} {{ pricing.title }} for a Table/Team of {{ pricing.quantity }}</div>
         {% endif %}
         <div class="event-time">
             <div class="line">{{ event.start_dt|date:"M j, Y" }}</div> 
@@ -62,6 +62,21 @@
         </div>
         {% endif %}
     </div>
+    
+     <noscript>
+    	<style type="text/css">
+    		.event-info, .form-wrap{display: none;}
+    		#noscript{padding:3em; font-size: 1.3em;
+    					color: #c09853;
+    					background-color: #fcf8e3;
+    					border: 1px solid #fbeed5;
+    					margin: 2em 0;}
+    	</style>
+    	<div id="noscript" class="alert alert-error">
+    		JavaScript must be enabled in order for you to use this page. Please enable
+    		javascript and <a href="{{ request.path }}">try again</a>.
+    	</div>
+    </noscript>
         
     {% if reg_form.errors.values or has_registrant_form_errors or not within_available_spots %}
         <div class="errors-box">
@@ -91,6 +106,7 @@
             </ul>
         </div>
     {% endif %}
+    
 
     <div class="form-wrap">
         <form action="" method="post">{% csrf_token %}
