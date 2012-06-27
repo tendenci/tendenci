@@ -124,8 +124,6 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
         parent = reduce(dict.get, folders[:-1], files_folders)
         parent[folders[-1]] = subdir
 
-    print files_folders
-
     return files_folders
 
 def get_file_content(file, ROOT_DIR=THEME_ROOT):
