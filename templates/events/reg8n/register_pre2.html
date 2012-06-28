@@ -18,19 +18,32 @@
     margin-bottom: 18px;
     width: 100%;
 }
-.table .header{
-	font-weight: bold;
-	font-size: 1.1em;
-	border-bottom: 1px solid #ddd;
-}
+
 
 .pricing-info-wrap{
 	width: 550px;
 	margin-top: 2em;
 }
 
+.table th{
+	padding: 6px 6px;
+	background: #3E83C9;
+	color: #fff;
+}
+
 .table td{
-	padding: 3px;
+	padding: 6px 11px;
+	border-bottom: 1px solid #95bce2;
+	vertical-align: middle;
+}
+.table td *{
+	padding: 6px 0px;
+}
+.table tr.alt td{
+	background: #ecf6fc;
+}
+.table tr.over td{
+	background: #bcd4ec;
 }
 .align-left{
 	text-align: left;
@@ -46,6 +59,10 @@
     color: white;
     cursor: pointer;
     padding: 3px;
+}
+.register-green-button2:hover {
+	background-color: #234F32;
+	color: #FFC757;
 }
 
 
@@ -69,21 +86,21 @@
 	
 		{% if individual_pricings %}
 		<div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
-		<table class="table table-bordered table-striped">
-			<tr>
-				<td class="header align-left" width="40%">Price Type</td>
-				<td class="header align-right" width="22%">Available Before</td>
-				<td class="header align-right" width="18%">Price</td>
-				<td class="header align-right" width="20%"></td>
+		<table class="table stripe-me" cellspacing="0">
+			<tr class="header-row">
+				<th class="header align-left" width="40%">Price Type</th>
+				<th class="header align-right" width="22%">Available Before</th>
+				<th class="header align-right" width="18%">Price</th>
+				<th class="header align-right" width="20%"></th>
 			</tr>
 			{% for pricing in individual_pricings %}
-			<tr>
+			<tr class="stripe-me">
 				<td class="align-left">{{ pricing.title }}{% if pricing.target_display %} ({{ pricing.target_display }}){% endif %}</td>
 				<td class="align-right">{{ pricing.end_dt|date:'M j g:i A' }}</td>
 				<td class="align-right">{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</td>
 				<td class="align-right">
 					<form action="{% url event.register_individual event.id pricing.id %}" method="get">
-					<input class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+					<input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
 					</form>
 				</td>
 			</tr>
@@ -96,12 +113,12 @@
 	
 	{% if table_pricings %}
 		<div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
-		<table class="table table-bordered table-striped">
-			<tr>
-				<td class="header align-left" width="40%">Price Type</td>
-				<td class="header align-right" width="22%">Available Before</td>
-				<td class="header align-right" width="18%">Table Price</td>
-				<td class="header align-right" width="20%"></td>
+		<table class="table stripe-me" cellspacing="0">
+			<tr  class="header-row">
+				<th class="header align-left" width="40%">Price Type</th>
+				<th class="header align-right" width="22%">Available Before</th>
+				<th class="header align-right" width="18%">Table Price</th>
+				<th class="header align-right" width="20%"></th>
 			</tr>
 			{% for pricing in table_pricings %}
 			<tr>
@@ -110,7 +127,7 @@
 				<td class="align-right">{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }}</td>
 				<td class="align-right">
 					<form action="{% url event.register_table event.id pricing.id %}" method="get">
-					<input class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
+					<input title="{{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ pricing.price }} {{ pricing.title }}" class="register-green-button2" type="submit" name="submit" value="{% trans 'Register Now' %}" />	
 					</form>
 				</td>
 			</tr>
@@ -133,8 +150,15 @@
 {% block extra_body %}
 <script>
 	$(document).ready(function(){
-		
-		
+		$(".stripe-me tr:even").addClass("alt");
+		console.log($(".stripe-me tr:even"));
+		$(".stripe-me tr")
+			.mouseover(function(){
+				$(this).addClass("over");
+			})
+			.mouseout(function(){
+				$(this).removeClass("over");
+			});
 	});
 	
 </script>
