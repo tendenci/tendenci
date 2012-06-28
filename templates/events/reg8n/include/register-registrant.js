@@ -131,8 +131,9 @@ function addRegistrant(ele, prefix, price) {
 }
 
 function add_registrants(e, prefix) {
-    extra_count = $(e).parent().find('.extra-registrants').val();
-    extra_count = parseInt(extra_count);
+    //extra_count = $(e).parent().find('.extra-registrants').val();
+    //extra_count = parseInt(extra_count);
+    extra_count = 1;
     if (extra_count > 0) {
         for(var i=0; i<extra_count; i++){
             addRegistrant(e, prefix, price_price);
