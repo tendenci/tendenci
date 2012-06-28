@@ -85,7 +85,9 @@
 		<h2>Pricing Information</h2>
 	
 		{% if individual_pricings %}
+		{% if table_pricings %}
 		<div style="font-weight: bold; font-size: 1.2em;">For Individuals:</div>
+		{% endif %}
 		<table class="table stripe-me" cellspacing="0">
 			<tr class="header-row">
 				<th class="header align-left" width="40%">Price Type</th>
@@ -112,7 +114,9 @@
 	
 	
 	{% if table_pricings %}
+		{% if individual_pricings %}
 		<div style="font-weight: bold; font-size: 1.2em;">For Table/Team:</div>
+		{% endif %}
 		<table class="table stripe-me" cellspacing="0">
 			<tr  class="header-row">
 				<th class="header align-left" width="40%">Price Type</th>
