@@ -7,15 +7,10 @@ class Command(BaseCommand):
     user the expiration of it's corporate membership.
     """
     def handle(self, *args, **kwargs):
-        from datetime import datetime
         from corporate_memberships.models import CorporateMembership
         from memberships.models import Membership
 
-        corporates = CorporateMembership.objects.filter(
-            status=1,
-            status_detail='active',
-            expiration_dt__gt=datetime.now()
-        )
+        corporates = CorporateMembership.objects.all()
 
         for corporate in corporates:
             memberships = Membership.objects.filter(
@@ -23,6 +18,8 @@ class Command(BaseCommand):
             )
 
             for membership in memberships:
-                membership.status = 'active'
+                membership.status = corporate.status
+                membership.status_detail = corporate.status_detail
                 membership.expire_dt = corporate.expiration_dt
+                membership.user.profile.refresh_member_number()
                 membership.save()
