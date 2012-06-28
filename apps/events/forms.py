@@ -181,11 +181,10 @@ class FormForCustomRegForm(forms.ModelForm):
     
     def clean_pricing(self):
         pricing = self.cleaned_data['pricing']
-        
+
         # if pricing allows anonymous, let go.
         if pricing.allow_anonymous:
             return pricing
-                
         
         # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
         # Both 'validated' and 'strict' require validation.
@@ -205,13 +204,27 @@ class FormForCustomRegForm(forms.ModelForm):
                 
                 if pricing.group and pricing.group.is_member(registrant_user):
                     return pricing
-                
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-            raise forms.ValidationError('Not eligible for the price: %s%s %s' % (
-                                                            
+             
+             
+            err_msg = "" 
+            if pricing.allow_user:
+                err_msg = 'We do not detect you as a site user.'
+            else:
+                if pricing.allow_member:
+                    err_msg = "We do not detect you as the member."
+                else:
+                    if pricing.group:
+                        err_msg = "We do not detect you as a member of %s" % pricing.group.name
+            if not err_msg:
+                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+                err_msg = 'Not eligible for the price.%s%s %s.' % (
                                                             currency_symbol,
                                                             pricing.price,
-                                                            pricing.title,))
+                                                            pricing.title,)
+            err_msg += ' Please choose another price option.'
+            raise forms.ValidationError(err_msg)
+                
+        return pricing
     
     def clean_override_price(self):
         override = self.cleaned_data['override']
@@ -1049,13 +1062,25 @@ class RegistrantForm(forms.Form):
                 
                 if pricing.group and pricing.group.is_member(registrant_user):
                     return pricing
-                
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-            raise forms.ValidationError('Not eligible for the price: %s%s %s' % (
-                                                            
+             
+             
+            err_msg = "" 
+            if pricing.allow_user:
+                err_msg = 'We do not detect you as a site user.'
+            else:
+                if pricing.allow_member:
+                    err_msg = "We do not detect you as the member."
+                else:
+                    if pricing.group:
+                        err_msg = "We do not detect you as a member of %s" % pricing.group.name
+            if not err_msg:
+                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+                err_msg = 'Not eligible for the price.%s%s %s.' % (
                                                             currency_symbol,
                                                             pricing.price,
-                                                            pricing.title,))
+                                                            pricing.title,)
+            err_msg += ' Please choose another price option.'
+            raise forms.ValidationError(err_msg)
                 
         return pricing
     
