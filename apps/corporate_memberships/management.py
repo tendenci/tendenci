@@ -13,17 +13,6 @@ post_syncdb.connect(assign_permissions, sender=corporate_membership)
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 
-#renewal notifications:
-#    on renewal: 
-#        send email to dues reps (corp_memb_renewed_user)
-#        send email to admin (corp_memb_renewed)
-#
-#    on approval:
-#        send email to dues reps (corp_memb_renewal_approved)
-#
-#    after being paid - credit card payment:
-#        send email to admin (corp_memb_paid)
-
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 
