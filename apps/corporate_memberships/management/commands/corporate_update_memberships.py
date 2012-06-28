@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 
+
 class Command(BaseCommand):
     """
     Update the expiration date of memberships
@@ -10,14 +11,18 @@ class Command(BaseCommand):
         from corporate_memberships.models import CorporateMembership
         from memberships.models import Membership
 
-        memberships = Membership.objects.filter(
+        corporates = CorporateMembership.objects.filter(
             status=1,
             status_detail='active',
-            expire_dt__gt=datetime.now(),
-            corporate_membership_id__gt=0
+            expiration_dt__gt=datetime.now()
         )
 
-        for membership in memberships:
-            corporate = CorporateMembership.objects.filter(pk=membership.corporate_membership_id)
-            membership.expire_dt = corporate.expiration_dt
-            membership.save()
+        for corporate in corporates:
+            memberships = Membership.objects.filter(
+                corporate_membership_id=corporate.pk
+            )
+
+            for membership in memberships:
+                membership.status = 'active'
+                membership.expire_dt = corporate.expiration_dt
+                membership.save()
