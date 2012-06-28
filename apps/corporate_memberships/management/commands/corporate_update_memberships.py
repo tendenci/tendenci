@@ -7,6 +7,7 @@ class Command(BaseCommand):
     user the expiration of it's corporate membership.
     """
     def handle(self, **options):
+        from django.core.exceptions import ObjectDoesNotExist
         from corporate_memberships.models import CorporateMembership
         from memberships.models import Membership
         verbosity = int(options['verbosity'])
@@ -22,8 +23,12 @@ class Command(BaseCommand):
                 membership.status = corporate.status
                 membership.status_detail = corporate.status_detail
                 membership.expire_dt = corporate.expiration_dt
-                membership.user.profile.refresh_member_number()
                 membership.save()
+
+                try:
+                    membership.user.profile.refresh_member_number()
+                except ObjectDoesNotExist:
+                    pass
 
                 if verbosity:
                     print membership
