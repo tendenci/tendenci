@@ -611,6 +611,10 @@ class Registrant(models.Model):
                                          decimal_places=2, 
                                          blank=True, 
                                          default=0)
+    discount_amount = models.DecimalField(_('Discount Amount'), 
+                                          max_digits=10, 
+                                          decimal_places=2,
+                                          default=0)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
 

@@ -146,16 +146,21 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
-            price_list, discount_total = form.get_discounted_prices()
+            price_list, discount_total, discount_list, msg = form.get_discounted_prices()
             total = sum(price_list)
             new_prices = ';'.join([str(price) for price in price_list])
+            if sum(discount_list) > 0:
+                discount_detail = '(%s)' % (', '.join(([str(price) for price in discount_list if price >0])))
+            else:
+                discount_detail = ''
             return HttpResponse(json.dumps(
                 {
                     "error": False,
                     "prices": unicode(new_prices),
                     "discount_total": unicode(discount_total),
                     "total": unicode(total),
-                    "message": "Your discount of $ %s has been added." % unicode(discount_total),
+                    "message": "%sYour discount of $ %s %s has been added." % (unicode(msg), unicode(discount_total), 
+                                                                               discount_detail),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {

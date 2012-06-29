@@ -176,7 +176,14 @@ class FormForCustomRegForm(forms.ModelForm):
             email = self.cleaned_data.get('email', '')
             
         if email:
-            [user] = User.objects.filter(email=email)[:1] or [None]
+            [profile] = Profile.objects.filter(user__email=email,
+                                             user__is_active=True,
+                                             status=True,
+                                             status_detail='active'
+                                             ).order_by('-member_number'
+                                            )[:1] or [None]
+            if profile:
+                user = profile.user
        
         return user or AnonymousUser()
     
@@ -206,23 +213,29 @@ class FormForCustomRegForm(forms.ModelForm):
                 if pricing.group and pricing.group.is_member(registrant_user):
                     return pricing
              
-             
+            
+            currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
             err_msg = "" 
-            if pricing.allow_user:
-                err_msg = 'We do not detect you as a site user.'
+            if not email:
+                err_msg = 'An email address is required for this price %s%s %s. ' % (
+                                             currency_symbol, pricing.price, pricing.title
+                                                )
             else:
-                if pricing.allow_member:
-                    err_msg = "We do not detect you as the member."
+                if pricing.allow_user:
+                    err_msg = 'We do not detect %s as a site user.' % email
                 else:
-                    if pricing.group:
-                        err_msg = "We do not detect you as a member of %s" % pricing.group.name
-            if not err_msg:
-                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-                err_msg = 'Not eligible for the price.%s%s %s.' % (
-                                                            currency_symbol,
-                                                            pricing.price,
-                                                            pricing.title,)
-            err_msg += ' Please choose another price option.'
+                    if pricing.allow_member:
+                        err_msg = "We do not detect %s as the member." % email
+                    else:
+                        if pricing.group:
+                            err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
+                if not err_msg:
+                    
+                    err_msg = 'Not eligible for the price.%s%s %s.' % (
+                                                                currency_symbol,
+                                                                pricing.price,
+                                                                pricing.title,)
+                err_msg += ' Please choose another price option.'
             raise forms.ValidationError(err_msg)
                 
         return pricing
@@ -1037,11 +1050,21 @@ class RegistrantForm(forms.Form):
         data = self.cleaned_data['email']
         return data
     
-    def get_user(self, email):
+    def get_user(self, email=None):
         user = None 
+        
+        if not email:
+            email = self.cleaned_data.get('email', '')
             
         if email:
-            [user] = User.objects.filter(email=email)[:1] or [None]
+            [profile] = Profile.objects.filter(user__email=email,
+                                             user__is_active=True,
+                                             status=True,
+                                             status_detail='active'
+                                             ).order_by('-member_number'
+                                            )[:1] or [None]
+            if profile:
+                user = profile.user
        
         return user or AnonymousUser()
     
@@ -1071,23 +1094,29 @@ class RegistrantForm(forms.Form):
                 if pricing.group and pricing.group.is_member(registrant_user):
                     return pricing
              
-             
+            
+            currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
             err_msg = "" 
-            if pricing.allow_user:
-                err_msg = 'We do not detect you as a site user.'
+            if not email:
+                err_msg = 'An email address is required for this price %s%s %s. ' % (
+                                             currency_symbol, pricing.price, pricing.title
+                                                )
             else:
-                if pricing.allow_member:
-                    err_msg = "We do not detect you as the member."
+                if pricing.allow_user:
+                    err_msg = 'We do not detect %s as a site user.' % email
                 else:
-                    if pricing.group:
-                        err_msg = "We do not detect you as a member of %s" % pricing.group.name
-            if not err_msg:
-                currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
-                err_msg = 'Not eligible for the price.%s%s %s.' % (
-                                                            currency_symbol,
-                                                            pricing.price,
-                                                            pricing.title,)
-            err_msg += ' Please choose another price option.'
+                    if pricing.allow_member:
+                        err_msg = "We do not detect %s as the member." % email
+                    else:
+                        if pricing.group:
+                            err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
+                if not err_msg:
+                    
+                    err_msg = 'Not eligible for the price.%s%s %s.' % (
+                                                                currency_symbol,
+                                                                pricing.price,
+                                                                pricing.title,)
+                err_msg += ' Please choose another price option.'
             raise forms.ValidationError(err_msg)
                 
         return pricing

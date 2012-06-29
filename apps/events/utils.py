@@ -621,10 +621,11 @@ def add_registration(*args, **kwargs):
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
+    discount_list = [Decimal(0) for i in range(len(amount_list))]
     if discount_code:
         [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
         if discount and discount.available_for(1):
-            amount_list, discount_amount = assign_discount(amount_list, discount)
+            amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
                     
                 
             
@@ -672,6 +673,9 @@ def add_registration(*args, **kwargs):
             
             # this amount has taken account into admin override and discount code
             amount = amount_list[i]
+            
+            if discount_code and discount_amount:
+                discount_amount = discount_list[i]
         else:
             # table individual
             if i == 0:
@@ -695,6 +699,8 @@ def add_registration(*args, **kwargs):
                                  'is_primary': i==0,
                                  'override': override,
                                  'override_price': override_price}
+            if not event.is_table:
+                registrant_kwargs['discount_amount'] = discount_list[i]
             
             registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
             total_amount += registrant.amount 
@@ -741,6 +747,7 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.amount = amount
     registrant.override = kwargs.get('override', False)
     registrant.override_price = kwargs.get('override_price')
+    registrant.discount_amount = kwargs.get('discount_amount', Decimal(0))
     if registrant.override_price is None:
         registrant.override_price = Decimal(0)
     registrant.is_primary = kwargs.get('is_primary', False)
