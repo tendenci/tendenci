@@ -96,7 +96,7 @@ class PhotoSet(TendenciBaseModel):
 
     def __unicode__(self):
         return self.name
-        
+
     def get_images(self, user=None, status=True, status_detail='active'):
         """
         Returns the images of this photosets and filters according
@@ -106,10 +106,11 @@ class PhotoSet(TendenciBaseModel):
         # user information
         user = user or AnonymousUser()
 
-        filters = get_query_filters(user, 'photologue.view_photo')
+        filters = get_query_filters(user, 'photos.view_image')
         photos = Image.objects.filter(filters).filter(photoset=self.pk).distinct()
 
         return photos
+
 
 class Image(ImageModel, TendenciBaseModel):
     """

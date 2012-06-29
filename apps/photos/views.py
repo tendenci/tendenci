@@ -6,8 +6,6 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 from django.template import RequestContext
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -40,21 +38,13 @@ def search(request, template_name="photos/search.html"):
     if get_setting('site', 'global', 'searchindex') and query:
         photos = Image.objects.search(query, user=request.user).order_by('-create_dt')
     else:
-        filters = get_query_filters(request.user, 'photologue.view_photo')
+        filters = get_query_filters(request.user, 'photos.view_image')
         photos = Image.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             photos = photos.select_related()
     photos = photos.order_by('-create_dt')
 
-    log_defaults = {
-        'event_id' : 990400,
-        'event_data': '%s searched by %s' % ('Image', request.user),
-        'description': '%s searched' % 'Image',
-        'user': request.user,
-        'request': request,
-        'source': 'photos',
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
     
     return render_to_response(template_name, {"photos": photos}, 
         context_instance=RequestContext(request))
@@ -208,6 +198,9 @@ def photo_original(request, id):
         ext = photo.image.file.name.split('.')[-1]
     except IndexError:
         ext = "png"
+    
+    if ext == "jpg":
+        ext = "jpeg"
     
     return HttpResponse(image_data, mimetype="image/%s" % ext)
 
@@ -467,15 +460,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
             photo_sets = photo_sets.select_related()
     photo_sets = photo_sets.order_by('-create_dt')
 
-    log_defaults = {
-        'event_id' : 991400,
-        'event_data': '%s searched by %s' % ('PhotoSet', request.user),
-        'description': '%s searched' % 'PhotoSet',
-        'user': request.user,
-        'request': request,
-        'source': 'photos'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {"photo_sets": photo_sets}, 
         context_instance=RequestContext(request))
@@ -681,19 +666,19 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
-    
+
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
-    
+
     order = get_setting('module', 'photos', 'photoordering')
     if order == 'descending':
         photos = photo_set.get_images(user=request.user).order_by('-pk')
     else:
         photos = photo_set.get_images(user=request.user).order_by('pk')
-    
+
     EventLog.objects.log(**{
-        'event_id' : 991500,
+        'event_id': 991500,
         'event_data': '%s (%d) viewed by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
         'description': '%s viewed' % photo_set._meta.object_name,
         'user': request.user,
@@ -705,6 +690,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         "photos": photos,
         "photo_set": photo_set,
     }, context_instance=RequestContext(request))
+
 
 def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
     """ Generate zip file for the entire photo set

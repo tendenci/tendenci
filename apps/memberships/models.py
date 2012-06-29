@@ -311,7 +311,13 @@ class Membership(TendenciBaseModel):
         graceful_now = datetime.now() - relativedelta(days=grace_period)
 
         if self.status and self.status_detail == 'active':
-            if any((self.expire_dt > graceful_now, self.expire_dt == None)):
+
+            # membership does not expire
+            if not self.expire_dt:
+                return True
+
+            # membership has not expired
+            if self.expire_dt > graceful_now:
                 return True
 
         return False
@@ -1287,9 +1293,9 @@ class AppEntry(TendenciBaseModel):
         from operator import __or__ as OR
 
         kwargs = kwargs or {
-                'first_name': self.user.first_name,
-                'last_name': self.user.last_name,
-                'email': self.user.email
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'email': self.email
             }
 
         lst = []

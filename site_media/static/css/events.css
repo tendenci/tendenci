@@ -422,6 +422,19 @@ ul.errorlist {;
 	color: #000;
 }
 
+.event-wrap .vitals .external-link {
+	margin-bottom: 15px;
+}
+
+.event-wrap .vitals .external-link h4 a {
+	text-decoration: underline;
+}
+
+.event-wrap .vitals .external-link h4 a:hover {
+	text-decoration: underline;
+	color: #000;
+}
+
 .event-wrap .vitals .register-wrap {			
 }
 .event-wrap .vitals .register-btn a {

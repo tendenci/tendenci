@@ -14,7 +14,6 @@ class Command(BaseCommand):
         We put the user in the admin group
         """
         # command to run: python manage.py admin_converter
-        from profiles.utils import user_add_remove_admin_auth_group
         
         if hasattr(settings, 'ADMIN_AUTH_GROUP_NAME'):
             name = settings.ADMIN_AUTH_GROUP_NAME

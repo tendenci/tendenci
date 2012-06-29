@@ -1,0 +1,41 @@
+{% extends "projects/base.html" %}
+{% load project_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block body %}
+<div class="t">
+    {% project_nav request.user project %}
+    
+    <div class="project-wrap">
+        <div>Project Title: <a href="{{ project.get_absolute_url }}">{{ project.title }}</a></div>
+        <div>Project Name: {{ project.project_name }}</div>
+        <div>Program: {{ project.program }}</div>
+        <div>Program Year: {{ project.program_year }}</div>
+        <div>Project Number: {{ project.project_number }}</div>
+        <div>Project Status: {{ project.project_status }}</div>
+        <div>Principal Investigator: {{ project.principal_investigator }}</div>
+        <div>Principal Investigator Company:{{ project.principal_investigator_company }}</div>
+        <div>Participants: {{ project.participants }}</div>
+        <div>RPSEA PM: {{ project.rpsea_pm }}</div>
+        <div>Start Date: {{ project.start_dt }}</div>
+        <div>End Date: {{ project.end_dt }}</div>
+        <div>Project Abstract Date: {{ project.project_abstract_date }}</div>
+        <div>Project Fact Sheet Title: {{ project.project_fact_sheet_title }}</div>
+        <div>Project Fact Sheet Url: {{ project.project_fact_sheet_url }}</div>
+        <div>Website Title: {{ project.website_title }}</div>
+        <div>Website URL: {{ project.website_url }}</div>
+        <div>Article Title: {{ project.article_title }}</div>
+        <div>Article URL: {{ project.article_url }}</div>
+        <div>Project Objectives: {{ project.project_objectives|safe }}</div>
+        <div>Video Embed Code: {{ project.video_embed_code }}</div>
+        <div>Video Title: {{ project.video_title }}</div>
+        <div>Video Description: {{ project.video_description|safe }}</div>
+        <div>Access Type: {{ project.access_type }}</div>
+        <div>Research Category: {{ project.research_category }}</div>
+        {% include "projects/meta.html" %} 
+    </div>
+</div>
+
+{% endblock body %}

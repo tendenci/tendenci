@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models.loading import get_model
 
-from exports.tasks import TendenciExportTask
 from exports.models import Export
 
 
@@ -10,6 +9,7 @@ class Command(BaseCommand):
     help = "Runs an export task for the specified model."
 
     def handle(self, *args, **options):
+        from exports.tasks import TendenciExportTask
         if args:
 
             try:

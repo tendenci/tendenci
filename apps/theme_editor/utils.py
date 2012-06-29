@@ -104,6 +104,30 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
         return sorted(file_list), sorted(others_list)
     return file_list, others_list
 
+def get_all_files_list(ROOT_DIR=THEME_ROOT):
+    """
+    Get a list of files and folders from within
+    the theme folder
+    """
+    files_folders = {}
+    root_dir = os.path.join(ROOT_DIR)
+
+    start = root_dir.rfind(os.sep) + 1
+    for path, dirs, files in os.walk(root_dir):
+        subdir = {'contents': []}
+        folders = path[start:].split(os.sep)
+        for f in files:
+            editable = False
+            if os.path.splitext(os.path.join(path,f))[1] in ALLOWED_EXTENSIONS:
+                editable = True
+            subdir['contents'].append({'name': f,'path': os.path.join(path[len(root_dir)+1:],f), 'editable': editable})
+        parent = reduce(dict.get, folders[:-1], files_folders)
+        parent[folders[-1]] = subdir
+
+    print files_folders
+
+    return files_folders
+
 def get_file_content(file, ROOT_DIR=THEME_ROOT):
     """
     Get the content from the file that selected from

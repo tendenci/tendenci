@@ -234,7 +234,9 @@ if cm_api_key and cm_client_id:
             list_map = None
 
             # Append custom fields from the profile
-            profile = instance.member.profile
+            profile = None
+            if hasattr(instance, 'member'):
+                profile = instance.member.profile
             custom_data = []
             if profile:
                 fields = ['city', 'state', 'zipcode', 'country', 'sex', 'member_number']

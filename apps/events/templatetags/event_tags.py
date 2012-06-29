@@ -338,6 +338,10 @@ class ListEventsNode(ListNode):
                 now = datetime.now().replace(second=0)
                 items = items.filter(start_dt__gt = now)
                 items = items.order_by("start_dt")
+            elif order == "current_and_upcoming":
+                now = datetime.now().replace(second=0)
+                items = items.filter(start_dt__lt = now, end_dt__gt = now)
+                items = items.order_by("start_dt")
             else:
                 items = items.order_by(order)
 
@@ -367,7 +371,9 @@ def list_events(parser, token):
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
-           The order of the items. **Default: Next Upcoming by date**
+           The order of the items. Custom options include ``next_upcoming`` for the 
+           events starting after now, and ``current_and_upcoming`` for events going on
+           as well as upcoming. **Default: Next Upcoming by date**
         ``user``
            Specify a user to only show public items to all. **Default: Viewing user**
         ``type``
