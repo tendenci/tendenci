@@ -16,7 +16,7 @@
      </tr>
      {% if obj %}
       <tr>
-      	<td><a href="{% url donations.views.view obj.id %}">{{obj.id}}</a></td>
+      	<td><a href="{% url donation.view obj.id %}">{{obj.id}}</a></td>
       	<td>{{obj.first_name}}</td>
       	<td>{{obj.last_name}}</td>
       	<td>{{obj.create_dt|date:'long'}}</td>
