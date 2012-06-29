@@ -233,7 +233,7 @@
             
             <p>{% trans "Payment Method: " %}{{ registration.payment_method }}</p>
             {% if registration.invoice.admin_notes  or registration.discount_amount %}
-            <p>{{ registration.invoice.admin_notes }} Discount amount: {{ registration.discount_amount|format_currency }} applied.</p>
+            <p>{{ registration.invoice.admin_notes }} {% if registration.discount_amount %}Discount amount: {{ registration.discount_amount|format_currency }} applied.{% endif %}</p>
             {% endif %}
             
         	{% if registration.invoice %}
