@@ -13,6 +13,7 @@ from django.forms.util import ErrorList
 from django.utils.importlib import import_module
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.safestring import mark_safe
+#from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
 from events.models import Event, Place, RegistrationConfiguration, \
@@ -571,6 +572,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             self.fields['reg_form'].queryset = reg_form_queryset
             if self.reg_form_required:
                 self.fields['reg_form'].required = True
+                
         
     def clean_quantity(self):
         # make sure that quantity is always a positive number
@@ -595,8 +597,8 @@ class Reg8nConfPricingForm(BetterModelForm):
             'price',
             'start_dt',
             'end_dt',
-            'group',
             'reg_form',
+            'group',
             'allow_anonymous',
             'allow_user',
             'allow_member',
@@ -608,8 +610,8 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'quantity',
                     'price',
                     'dates',
-                    'group',
                     'reg_form',
+                    'group',
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
@@ -617,7 +619,13 @@ class Reg8nConfPricingForm(BetterModelForm):
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
-          })
+          'description': '***If the setting <a href="/settings/module/events/anonymousregistration" ' + \
+                        'target="_blank">Anonymous Event Registration</a> is set to' +\
+                        ' "validated" or "strict", the registrants who choose this' + \
+                        ' pricing will be verified if this pricing is restricted to' + \
+                        ' users, members or the specified group. '
+                         #  Note that: cannot use reverse setting url here...
+          })             #  it would break everything.
         ]
         
     def save(self, *args, **kwargs):
