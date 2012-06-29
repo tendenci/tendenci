@@ -1041,8 +1041,8 @@ def register(request, event_id=0,
 
     if request.method == 'POST':
         if 'submit' in request.POST:
-            if not request.user.profile.is_superuser:
-                within_available_spots = event.limit==0 or event.spots_available >= int(total_regt_forms)
+            #if not request.user.profile.is_superuser:
+            within_available_spots = event.limit==0 or event.spots_available >= int(total_regt_forms)
                
             if all([within_available_spots,
                     reg_form.is_valid(),
