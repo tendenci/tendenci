@@ -1,6 +1,6 @@
 import os
 from django.shortcuts import render_to_response, redirect
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import RequestContext
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -115,12 +115,10 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         file_form = form_class({"content": content, "rf_path": default_file})
 
     theme_form = ThemeSelectForm(initial={'theme_edit': selected_theme})
-    upload_form = UploadForm(initial={'file_dir': pwd})
 
     return render_to_response(template_name, {
         'file_form': file_form,
         'theme_form': theme_form,
-        'upload_form': upload_form,
         'current_theme': selected_theme,
         'current_file_path': current_file_path,
         'current_file': current_file,
@@ -289,7 +287,7 @@ def delete_file(request):
     return redirect('theme_editor.editor')
 
 
-def upload_file(request, template_name="theme_editor/upload.html"):
+def upload_file(request):
 
     if not has_perm(request.user, 'theme_editor.add_themefileversion'):
         raise Http403
@@ -300,17 +298,16 @@ def upload_file(request, template_name="theme_editor/upload.html"):
             upload = request.FILES['upload']
             file_dir = form.cleaned_data['file_dir']
             overwrite = form.cleaned_data['overwrite']
-            full_filename = os.path.join(settings.PROJECT_ROOT, "themes",
-                get_theme(), file_dir, upload.name)
+            full_filename = os.path.join(file_dir, upload.name)
 
             if os.path.isfile(full_filename) and not overwrite:
                 response = {
                     "error": "file already exists",
                     "file_name": os.path.join(file_dir, upload.name),
                 }
-                return HttpResponse(json.dumps(response), mimetype='application/json')
+                return HttpResponseRedirect('/theme-editor/editor/')
             else:
-                handle_uploaded_file(upload)
+                handle_uploaded_file(upload, file_dir)
                 response = {
                     "success": True
                 }
@@ -326,7 +323,7 @@ def upload_file(request, template_name="theme_editor/upload.html"):
                 }
                 EventLog.objects.log(**log_defaults)
 
-                return HttpResponse(json.dumps(response), mimetype='application/json')
+                return HttpResponseRedirect('/theme-editor/editor/')
     else:
         form = UploadForm()
 

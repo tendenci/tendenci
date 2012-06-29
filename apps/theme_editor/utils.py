@@ -123,6 +123,8 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
             subdir['contents'].append({'name': f,'path': os.path.join(path[len(root_dir)+1:],f), 'editable': editable})
         parent = reduce(dict.get, folders[:-1], files_folders)
         parent[folders[-1]] = subdir
+        for parent in files_folders:
+            subdir['contents'].append({'folder_path': path})
 
     return files_folders
 
@@ -155,10 +157,8 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
                                   author=request.user)
         archive.save()
 
-
-def handle_uploaded_file(f, file_dir="templates", ROOT_DIR=THEME_ROOT):
-    file_path = os.path.join(ROOT_DIR, file_dir, f.name)
-    print file_path
+def handle_uploaded_file(f, file_dir):
+    file_path = os.path.join(file_dir, f.name)
     destination = open(file_path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
