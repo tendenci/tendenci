@@ -67,10 +67,11 @@
 	.discount-field-wrap input[type="text"]{
 		width: 130px !important;
 	}
-	.discount-field-wrap{
-		width: 150px;
+	.discount-field-wrap, #admin-override-table-wrap{
+		width: 160px;
 		padding: 1em;
 		background: #F5F5F5;
+		margin: 1em 0;
 	}
 </style>
 {% endblock %}
@@ -158,7 +159,7 @@
                     <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
     				<div class="summary-total">
     					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-    					<span class="summary-total-amount" id="summary-total-amount">{{ total_price|floatformat:2 }}</span>
+    					<span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
     				</div>
 
                     <div class="summary-payment">
@@ -182,7 +183,7 @@
 	    					<td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
 	    					<td width="50%" align="right">
 		    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-		    					<span class="item-price">{{ price_entry.price|floatformat:2 }}</span>
+		    					<span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
 	    					</td>
     					</tr>
     					{% endfor %}
@@ -220,26 +221,7 @@
 						</tr>
 					</table>
 					
-					
-					{% if event.is_table %}
-					<div id="admin-override-table" class="override">
-						<div class="error">{{ reg_form.override_table.errors }}</div>
-						<div>{{ reg_form.override_table }} <label for="id_{{ reg_form.override_table.name }}">{% trans reg_form.override_table.label %}</label></div>
-						{% if reg_form.override_table.help_text %}
-	                    <div class="help-text">{{ reg_form.override_table.help_text }}</div>   
-	                    {% endif %}
-					</div>
-					<div id="admin-override-price-table" class="override">
-						<div class="error">{{ reg_form.override_price_table.errors }}</div>
-						<div>{% trans reg_form.override_price_table.label %} {{ reg_form.override_price_table }}</div>
-						{% if reg_form.override_price_table.help_text %}
-	                    <div class="help-text">{{ reg_form.override_price_table.help_text }}</div>   
-	                    {% endif %}
-					</div>
-					{% endif %}
-					
-					
-					
+						
 					
     		   </div>
     		   </div>  {# float-widow#}
@@ -332,6 +314,26 @@
                 </div>
            </div>
             {% endif %}
+            
+            {% if event.is_table %}
+            <div id="admin-override-table-wrap">
+				<div id="admin-override-table" class="override">
+					<div class="error">{{ reg_form.override_table.errors }}</div>
+					<div>{{ reg_form.override_table }} <label for="id_{{ reg_form.override_table.name }}">{% trans reg_form.override_table.label %}</label></div>
+					{% if reg_form.override_table.help_text %}
+	                <div class="help-text">{{ reg_form.override_table.help_text }}</div>   
+	                {% endif %}
+				</div>
+				<div id="admin-override-price-table" class="override">
+					<div class="error">{{ reg_form.override_price_table.errors }}</div>
+					<div>{% trans reg_form.override_price_table.label %} {{ reg_form.override_price_table }}</div>
+					{% if reg_form.override_price_table.help_text %}
+	                <div class="help-text">{{ reg_form.override_price_table.help_text }}</div>   
+	                {% endif %}
+				</div>
+			</div>
+			
+			{% endif %}
             
             {% if reg_form.discount_code %}
                 <div class="form-field discount-field-wrap">

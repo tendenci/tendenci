@@ -280,6 +280,35 @@ function override_update_summary_entry(prefix, registrant_form){
 }
 {% endif %}	
 
+{% if event.is_table and request.user.is_superuser %}
+function table_override_update_summary_entry(prefix, override, override_price){
+	var input_box, idx, price_first, price, diff;
+	var num_items = $('.summary-'+ prefix).length;
+
+	if (override){
+		price = (override_price/num_items).toFixed(2);
+		diff = override_price - num_items * parseFloat(price);
+		if (diff > 0){
+			price_first = (parseFloat(price) + diff).toFixed(2);
+		}else{
+			price_first = price;
+		}
+		
+		updateSummaryEntry(prefix, 0, price_first);
+		
+		for (var i=1; i<num_items; i++){
+			updateSummaryEntry(prefix, i, price);
+		}
+		
+	}else{
+		for (var i=0; i<num_items; i++){
+			price = $('#summary-registrant-' + i).find('.item-price').data('price');
+			updateSummaryEntry(prefix, i, price);
+		}
+	}
+}
+{% endif %}	
+
 $(document).ready(function(){
 	var prefix = 'registrant';
 	
@@ -381,9 +410,35 @@ $(document).ready(function(){
 	// toggle admin override for table
 	var override_tbl_checkboxes = $('#admin-override-table').find('input[type=checkbox]');
 	var override_price_tbl_box = $('#admin-override-price-table');
+	var override_price_tbl_input = $(override_price_tbl_box).find('input[name=override_price_table]');
 	toggle_admin_override(override_tbl_checkboxes, override_price_tbl_box);
+	
 	$(override_tbl_checkboxes).change(function(){
 		toggle_admin_override(override_tbl_checkboxes, override_price_tbl_box);
+		
+		var override = false;
+		var override_price = 0;
+		var should_update = true;
+		if ($(this).is(':checked')){
+			override_price = parseFloat($(override_price_tbl_input).val());
+			if (!isNaN(override_price)){
+				override = true;
+			}else{
+				// cliked but no price entered
+				should_update = false;
+			}
+		}
+		if (should_update){
+			table_override_update_summary_entry('registrant', override, override_price);
+		}
+		
+	});
+	
+	$(override_price_tbl_input).change(function(){
+		if ($(override_tbl_checkboxes).is(':checked')){
+			var override_price = parseFloat($(this).val());
+			table_override_update_summary_entry('registrant', true, override_price);
+		}
 	});
 	
 	{% endif %}
