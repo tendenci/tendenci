@@ -64,6 +64,14 @@
 	.add-registrant-box{
 		margin: 1em 0;
 	}
+	.discount-field-wrap input[type="text"]{
+		width: 130px !important;
+	}
+	.discount-field-wrap{
+		width: 150px;
+		padding: 1em;
+		background: #F5F5F5;
+	}
 </style>
 {% endblock %}
 
@@ -161,14 +169,7 @@
                         </noscript>
                        
                         
-                        {% if reg_form.discount_code %}
-                            <div class="form-field">
-                                <div id="discount-message" class="error">{{ reg_form.discount_code.errors }}</div>
-								<div class="required">{% trans "Discount Code" %}</div>
-								<div class="field">{{ reg_form.discount_code }}</div>
-                                <button type="button" id="discount_check">Check Discount</button>
-                            </div>
-                        {% endif %}
+                        
                         
 
                         
@@ -330,6 +331,15 @@
                 {% include 'events/addons/addon-add-box.html' %}
                 </div>
            </div>
+            {% endif %}
+            
+            {% if reg_form.discount_code %}
+                <div class="form-field discount-field-wrap">
+                    <div id="discount-message" class="error">{{ reg_form.discount_code.errors }}</div>
+					<div class="required">{% trans "Discount Code" %}</div>
+					<div class="field">{{ reg_form.discount_code }}</div>
+                    <button type="button" id="discount_check">Check Discount</button>
+                </div>
             {% endif %}
            
             
