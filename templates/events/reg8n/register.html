@@ -62,7 +62,7 @@
 		text-decoration: none;
 	}
 	.add-registrant-box{
-		margin: 1em 0;
+		margin: 2em 0 1em;
 	}
 	.discount-field-wrap input[type="text"]{
 		width: 130px !important;
@@ -70,7 +70,6 @@
 	.discount-field-wrap, #admin-override-table-wrap{
 		width: 160px;
 		padding: 1em;
-		background: #F5F5F5;
 		margin: 1em 0;
 	}
 </style>
@@ -80,7 +79,7 @@
 <div class="t">    
     {% event_nav user event %}
     <h1>{% trans "Registration" %}</h1>
-    <div class="event-info">
+    <div>
         <div class="event-title"><a href="{% url event event.id %}">{{ event.title }}</a></div>
         {% if event.is_table %}
         <div class="event-price">{{ event_price|format_currency }} {{ pricing.title }} for a Table/Team of {{ pricing.quantity }}</div>
@@ -90,18 +89,23 @@
             <div class="line">{{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}</div>
         </div>
          {% include "events/include/spots_status.html" %}	
-        {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  %}
-        <div class="event-msg">
-            {% blocktrans %} <strong> Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
-        </div>
-        {% endif %}
-        {% if event.is_table %}
-        <div class="event-msg">
-            {% blocktrans %}The first one is the primary registrant and responsible for the billing if applicable.  {% endblocktrans %}
-        </div>
-        {% endif %}
+        
     </div>
     
+    {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  or event.is_table %}
+    <div class="event-info well" style="background-color:#FFFFEB;">
+    {% if not event.registration_configuration.require_guests_info and event.anony_setting == 'open'  %}
+    <div>
+        {% blocktrans %} <strong> Only the first</strong> registrant information is required. The rest of the registrants can be left blank if you don't know the information. {% endblocktrans %}
+    </div>
+    {% endif %}
+    {% if event.is_table %}
+    <div>
+        {% blocktrans %}The first one is the primary registrant and responsible for the billing if applicable.  {% endblocktrans %}
+    </div>
+    {% endif %}
+     </div>   
+    {% endif %}
      <noscript>
     	<style type="text/css">
     		.event-info, .form-wrap{display: none;}
@@ -156,72 +160,72 @@
                 <div class="float-window">
                 
 				<div id="reg-form-box">	
-                    <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
-    				<div class="summary-total">
-    					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
-    					<span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
-    				</div>
-
-                    <div class="summary-payment">
-                        <noscript>
-                        <div>
-                            <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
-                        </div>
-                        </noscript>
-                       
-                        
-                        
-                        
-
-                        
-                    </div>
-
-    				{# price list #}
-    				<table id="summary-price">
-    					{% for price_entry in price_list %}
-    					<tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
-	    					<td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-	    					<td width="50%" align="right">
-		    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-		    					<span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
-	    					</td>
-    					</tr>
-    					{% endfor %}
-                        {% for form in addon_formset.forms %}
-                        <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
-                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
-                            <td width="50%" align="right">
-                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-                                <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
-                            </td>
-                        </tr>
-                        {% endfor %}
-    				</table>
-					<table id="summary-total-price">
-						<tr>
-							<td><div id="total-label">{% trans "Total" %}</div></td>
-							<td align="right">
-								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="total-amount">{{ total_price|floatformat:2 }}</span>
-							</td>
-						</tr>
-                        <tr class="discount-summary">
-                            <td><div id="discount-label">{% trans "Discount" %}</div></td>
-                            <td align="right">
-								<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="discount-amount">0</span>
-							</td>
-                        </tr>
-                        <tr class="line-on-top discount-summary">
-							<td><div id="final-label">{% trans "Total" %}</div></td>
-							<td align="right">
-								<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
-								<span id="final-amount">{{ total_price|floatformat:2 }}</span>
-							</td>
-						</tr>
-					</table>
+					<div style="background:#3E83C9;color:#fff; padding: 3px; font-weight: bold; font-size:1.2em; text-align: center;">
+						<div >Summary</div>
+					</div>
 					
-						
+					<div style="padding: 1em;">
+	                    <div id="original-price" style="display:none;">{{ total_price|floatformat:2 }}</div>
+	    				<div class="summary-total">
+	    					{{ SITE_GLOBAL_CURRENCYSYMBOL }}
+	    					<span class="summary-total-amount" id="summary-total-amount" data-price="{{ total_price}}">{{ total_price|floatformat:2 }}</span>
+	    				</div>
+	
+	                    <div class="summary-payment">
+	                        <noscript>
+	                        <div>
+	                            <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+	                        </div>
+	                        </noscript>
+	                                    
+	                    </div>
+	
+	    				{# price list #}
+	    				<table id="summary-price">
+	    					{% for price_entry in price_list %}
+	    					<tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
+		    					<td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+		    					<td width="50%" align="right">
+			    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+			    					<span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
+		    					</td>
+	    					</tr>
+	    					{% endfor %}
+	                        {% for form in addon_formset.forms %}
+	                        <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
+	                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
+	                            <td width="50%" align="right">
+	                                <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+	                                <span class="item-price">{{ form.chosen_addon.price|floatformat:2 }}</span>
+	                            </td>
+	                        </tr>
+	                        {% endfor %}
+	    				</table>
+						<table id="summary-total-price">
+							<tr>
+								<td><div id="total-label">{% trans "Total" %}</div></td>
+								<td align="right">
+									<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+									<span id="total-amount">{{ total_price|floatformat:2 }}</span>
+								</td>
+							</tr>
+	                        <tr class="discount-summary">
+	                            <td><div id="discount-label">{% trans "Discount" %}</div></td>
+	                            <td align="right">
+									<span class="currency-symbol">- {{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+									<span id="discount-amount">0</span>
+								</td>
+	                        </tr>
+	                        <tr class="line-on-top discount-summary">
+								<td><div id="final-label">{% trans "Total" %}</div></td>
+								<td align="right">
+									<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+									<span id="final-amount">{{ total_price|floatformat:2 }}</span>
+								</td>
+							</tr>
+						</table>
+					
+					</div>	
 					
     		   </div>
     		   </div>  {# float-widow#}
@@ -300,7 +304,7 @@
             
             
             {% if addons %}
-            <div class="addon-wrap" style="background-color: #f5f5f5;padding:10px; margin: 2em 0; border: 1px dashed #ccc;">
+            <div class="addon-wrap">
              <div class="addon-forms">
                     {% include 'events/addons/formset.html' %}
              </div>

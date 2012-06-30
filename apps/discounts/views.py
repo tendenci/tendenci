@@ -159,7 +159,7 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
                     "prices": unicode(new_prices),
                     "discount_total": unicode(discount_total),
                     "total": unicode(total),
-                    "message": "%sYour discount of $ %s %s has been added." % (unicode(msg), unicode(discount_total), 
+                    "message": "%sYour discount of $%s %s has been added." % (unicode(msg), unicode(discount_total), 
                                                                                discount_detail),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
