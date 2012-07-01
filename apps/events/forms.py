@@ -632,11 +632,12 @@ class Reg8nConfPricingForm(BetterModelForm):
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
-          'description': '***If the setting <a href="/settings/module/events/anonymousregistration" ' + \
-                        'target="_blank">Anonymous Event Registration</a> is set to' +\
-                        ' "validated" or "strict", the registrants who choose this' + \
-                        ' pricing will be verified if this pricing is restricted to' + \
-                        ' users, members or a specified group. '
+          'description': 'Note: the registrants will be verified (for users, ' + \
+                        'members or a specific group) only if the setting' + \
+                        ' <strong>Anonymous Event Registration</strong> is ' + \
+                        'set to "validated" or "strict".' + \
+                        ' <a href="/settings/module/events/anonymousregistration" ' + \
+                        'target="_blank">View or update the setting</a>. '
                          #  Note that: cannot use reverse setting url here...
           })             #  it would break everything.
         ]
