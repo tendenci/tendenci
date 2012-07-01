@@ -54,6 +54,7 @@ from events.utils import (email_registrants,
 from events.addons.forms import RegAddonForm
 from events.addons.formsets import RegAddonBaseFormSet
 from events.addons.utils import get_available_addons
+from discounts.models import Discount
 
 from notification import models as notification
     
@@ -1015,6 +1016,12 @@ def register(request, event_id=0,
     
         addon_extra_params.update({'valid_addons':addons})
 
+    
+    # check if we have any valid discount code for the event.
+    # if not, we don't have to display the discount code box.
+    if reg_conf.discount_eligible:
+        reg_conf.discount_eligible = Discount.has_valid_discount()
+        
     # Setting up the formset        
     registrant = RegistrantFormSet(post_data or None, **params)
     addon_formset = RegAddonFormSet(request.POST,
@@ -1166,7 +1173,8 @@ def register(request, event_id=0,
                 has_registrant_form_errors = True
                 break
         if has_registrant_form_errors:
-            break
+            break  
+        
     return render_to_response(template_name, {
         'event':event,
         'event_price': event_price,

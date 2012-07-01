@@ -636,7 +636,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                         'target="_blank">Anonymous Event Registration</a> is set to' +\
                         ' "validated" or "strict", the registrants who choose this' + \
                         ' pricing will be verified if this pricing is restricted to' + \
-                        ' users, members or the specified group. '
+                        ' users, members or a specified group. '
                          #  Note that: cannot use reverse setting url here...
           })             #  it would break everything.
         ]
