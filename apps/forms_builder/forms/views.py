@@ -391,8 +391,9 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
 
-    for field in form_for_form.fields:
-        form_for_form.fields[field].initial = request.GET.get(field, '')
+#    Commenting out lines below as they prevent default values set when editing the form from working. ACR
+#    for field in form_for_form.fields:
+#        form_for_form.fields[field].initial = request.GET.get(field, '')
 
     if request.method == "POST":
         if form_for_form.is_valid():
