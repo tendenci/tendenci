@@ -633,7 +633,7 @@ class Reg8nConfPricingForm(BetterModelForm):
           'legend': '',
           'classes': ['boxy-grey'],
           'description': 'Note: the registrants will be verified (for users, ' + \
-                        'members or a specific group) only if the setting' + \
+                        'members or a specific group) if and only if the setting' + \
                         ' <strong>Anonymous Event Registration</strong> is ' + \
                         'set to "validated" or "strict".' + \
                         ' <a href="/settings/module/events/anonymousregistration" ' + \
