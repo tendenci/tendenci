@@ -1,0 +1,5 @@
+# Install all of our production dependencies only.
+-r scripts/requirements.txt
+
+# Or for production environments delete the above and uncomment the following line:
+# -r scripts/requirements_server.txt

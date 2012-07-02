@@ -1,0 +1,11 @@
+# requirements/dev.txt
+-r common.txt
+django-debug-toolbar==0.9.4
+
+# Consider adding http://harry.pythonanywhere.com/tutorial/1/
+# selenium
+# mock
+
+# git repositories
+git+http://github.com/notanumber/xapian-haystack.git
+
