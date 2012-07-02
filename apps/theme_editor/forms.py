@@ -59,14 +59,6 @@ class UploadForm(forms.Form):
     
     def clean_file_dir(self):
         data = self.cleaned_data['file_dir']
-        if data:
-            data = data.replace('\\','/')
-            data = data.strip('/')
-            data = data.replace('////', '/')
-            data = data.replace('///', '/')
-            data = data.replace('//', '/')
-        else:
-            data ="templates"
         return data
     
     def clean_upload(self):

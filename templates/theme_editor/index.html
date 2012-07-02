@@ -147,19 +147,9 @@
                 {% endcomment %}
                 </div>
                                <div class="well well-small">
-                               <h4>Add more files to the editor:</h4>
-                               <ol>
-                               <li>Upload a new theme file.
-                               <form id="upload_form" action="{% url theme_editor.upload %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                                    {{ upload_form.as_p }}
-                                    <input class=" btn btn-mini" type="submit" value="Upload new theme file" />
-                               </form>
-                               <br>
-                               </li>
-                               <li>Copy down one of Tendenci's built-in app templates and customize it.
+                               <h4>Customize more templates:</h4>
+                               Copy down one of Tendenci's built-in app templates and customize it.
                                <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
-                               </li>
-                               </ol>
                                </div>
                                
            </div>

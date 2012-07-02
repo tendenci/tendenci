@@ -309,3 +309,11 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 .tooltip a:hover {
     text-decoration: underline;
 }
+
+.hidden {
+    position: absolute; 
+    overflow: hidden; 
+    clip: rect(0 0 0 0); 
+    height: 1px; width: 1px; 
+    margin: -1px; padding: 0; border: 0; 
+}

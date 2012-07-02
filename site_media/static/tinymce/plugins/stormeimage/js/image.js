@@ -119,8 +119,8 @@ var ImageDialog = {
 		var img_align = nl.edit_align.value;
 		var img_vspace = nl.edit_vspace.value;
 		var img_hspace = nl.edit_hspace.value;
-		var img_width = nl.edit_width.value;
-		var img_height = nl.edit_height.value;
+		var img_width = parseInt(nl.edit_width.value);
+		var img_height = parseInt(nl.edit_height.value);
         var img_ratio = $(nl.edit_ratio).is(':checked');
         
         var url_parts = img_src.split('/');
@@ -145,6 +145,10 @@ var ImageDialog = {
         
         // update url to correct size
         img_src = url_parts[0] + '/' + url_parts[1] + '/' + url_parts[2] + '/' + img_width + 'x' + img_height;
+        
+        // update img_width and img_height
+        $(nl.edit_width).val(img_width);
+        $(nl.edit_height).val(img_height);
         
 		// set the styles
 		ed.dom.setStyle(n, 'float', nl.edit_float.value);

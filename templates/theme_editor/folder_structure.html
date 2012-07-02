@@ -1,8 +1,18 @@
 {% load theme_editor_tags %}
 {% load theme_editor_filters %}
 {% if value.items %}
-    <li><a href="javascript:;" class="folder">+ {{ key }}</a>
+    <li>
+    <a href="javascript:;" class="folder">+ {{ key }}</a>
+    <span class="upload-link">
+        <span class="glyph"><a onclick="$(this).parent().parent().next('#upload_form').children('p').children('input[type=file]').click()" title="Upload a file to this directory.">+</a></span>
+    </span>
+    <form id="upload_form" action="/theme-editor/upload/" method="POST" enctype="multipart/form-data" encoding="multipart/form-data"><div style="display:none">{% csrf_token %}</div>
+        <p><input class="hidden" type="file" name="upload" id="id_upload" onchange="$(this).parent().parent().submit()" ><input type="hidden" name="file_dir" id="id_file_dir" value="{% for key,value in value.items|sortcontents %}{% if key == "contents" %}{% for item in value %}{{ item.folder_path }}{% endfor %}{% endif %}{% endfor %}"><input type="hidden" name="overwrite" id="id_overwrite"></p>
+        <input class="hidden" type="submit" value="Upload new theme file">
+    </form>
     <ul>
+           
+           
     {% for key,value in value.items|sortcontents %}
         {% if key == "contents" %}
             {% for item in value %}
@@ -12,5 +22,6 @@
             {% folder_structure value %}
         {% endif %}
     {% endfor %}
-    </ul></li>
+    </ul>
+    </li>
 {% endif %}

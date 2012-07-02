@@ -228,7 +228,6 @@ class CorporateMembership(TendenciBaseModel):
     phone = models.CharField(_('phone'), max_length=50, blank=True, null=True)
     email = models.CharField(_('email'), max_length=200,  blank=True, null=True)
     url = models.CharField(_('url'), max_length=100, blank=True, null=True)
-    #authorized_domains = models.CharField(max_length=500, blank=True, null=True)
     secret_code = models.CharField(max_length=50, blank=True, null=True)
     
     renewal = models.BooleanField(default=0)
