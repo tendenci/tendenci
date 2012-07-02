@@ -1117,15 +1117,7 @@ def register(request, event_id=0,
                             email_admins(event, reg8n.invoice.total, self_reg8n, reg8n, registrants)
                         
                     # log an event
-                    log_defaults = {
-                        'event_id' : 431000,
-                        'event_data': '%s (%d) added by %s' % (event._meta.object_name, event.pk, request.user),
-                        'description': '%s registered for event %s' % (request.user, event.get_absolute_url()),
-                        'user': request.user,
-                        'request': request,
-                        'instance': event,
-                    }
-                    EventLog.objects.log(**log_defaults)
+                    EventLog.objects.log(instance=event)
                 
                 else:
                     messages.add_message(request, messages.INFO,
