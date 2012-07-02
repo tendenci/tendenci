@@ -20,7 +20,7 @@ $(document).ready(function(){
             '{% url discount.discounted_prices %}',
             {
                 'code':code,
-                'prices':prices,
+                'prices':prices
             },
             function(data, textStatus, jqXHR){
                 json = $.parseJSON(data);
