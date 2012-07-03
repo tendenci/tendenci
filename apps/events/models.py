@@ -403,13 +403,6 @@ class Registration(models.Model):
             inv.object_id,
         )
         
-        #The discount used will be the same for all discount uses in one
-        #invoice.
-        discounts = inv.discountuse_set.filter(invoice=inv)
-        if discounts:
-            discount = discounts[0].discount.value * discounts.count()
-            description += "\nYour discount of $ %s has been added." % discount
-        
         return description
         
         
