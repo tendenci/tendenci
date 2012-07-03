@@ -2053,7 +2053,6 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     reg7n_to_pricing_dict = dict([(item[0], item[1]) for item in reg7n_pricing_reg8n])
     reg8n_to_pricing_dict = dict(registrations.values_list('id', 'reg_conf_price__id'))
     reg7n_to_reg8n_dict = dict([(item[0], item[2]) for item in reg7n_pricing_reg8n])
-    
     reg8n_to_invoice_objs = registrations.values_list('id', 'invoice__id', 'invoice__total', 
                                          'invoice__balance', 'invoice__admin_notes',
                                          'invoice__tender_date')
@@ -2071,7 +2070,6 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     reg8n_to_reg7n_dict = {}
     for k, v in reg7n_to_reg8n_dict.iteritems():
         reg8n_to_reg7n_dict.setdefault(v, []).append(k)
-    
     
     
         
@@ -2128,7 +2126,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         registrant.additionals = []
         key = reg7n_to_reg8n_dict[registrant.id]
         if reg8n_to_reg7n_dict[key]:
-            additional_ids = reg8n_to_reg7n_dict[key]
+            additional_ids = [id for id in reg8n_to_reg7n_dict[key]]
             additional_ids.remove(registrant.id)
             if additional_ids:
                 for r in registrants:
