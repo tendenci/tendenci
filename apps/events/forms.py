@@ -151,17 +151,18 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
          
-        # add override and override_price to allow admin override the price   
-        if self.event and not self.event.is_table and not self.event.free_event:
-            if (not self.user.is_anonymous() and self.user.is_superuser):
-                self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
-                                                             required=False)
-                self.fields['override_price'] = forms.DecimalField(label="Override Price",
-                                                            max_digits=10, 
-                                                            decimal_places=2,
-                                                            required=False)
-                self.fields['override_price'].widget.attrs.update({'size': '8'})
-                                                              
+        # add override and override_price to allow admin override the price 
+        if hasattr(self.event, 'is_table'):
+            if self.event and not self.event.is_table and not self.event.free_event:
+                if (not self.user.is_anonymous() and self.user.profile.is_superuser):
+                    self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
+                                                                 required=False)
+                    self.fields['override_price'] = forms.DecimalField(label="Override Price",
+                                                                max_digits=10, 
+                                                                decimal_places=2,
+                                                                required=False)
+                    self.fields['override_price'].widget.attrs.update({'size': '8'})
+                                                                  
                 
         
         # initialize internal variables

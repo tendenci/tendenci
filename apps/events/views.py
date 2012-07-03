@@ -1531,7 +1531,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
             max_num=reg8n.registrant_set.filter(registration=reg8n).count(),
             extra=0
         )
-        entry_ids = reg8n.registrant_set.values_list('custom_reg_form_entry', flat=True).order_by('id')
+        entry_ids = reg8n.registrant_set.filter(cancel_dt__isnull=True
+                                                ).values_list('custom_reg_form_entry', 
+                                                              flat=True).order_by('id')
         entries = [CustomRegFormEntry.objects.get(id=id) for id in entry_ids]
         params = {'prefix': 'registrant',
                   'custom_reg_form': custom_reg_form,
@@ -1546,7 +1548,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         RegistrantFormSet = modelformset_factory(Registrant, extra=0,
                                     fields=('first_name', 'last_name', 'email', 'phone', 'company_name'))
         formset = RegistrantFormSet(request.POST or None,
-                                    queryset=Registrant.objects.filter(registration=reg8n).order_by('id'))
+                                    queryset=Registrant.objects.filter(registration=reg8n,
+                                                                       cancel_dt__isnull=True).order_by('id'))
     
     # required fields only stay on the first form
     for i, form in enumerate(formset.forms):

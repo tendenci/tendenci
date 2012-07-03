@@ -27,7 +27,7 @@
     display: none;
 }
 .registrant-header{
-    border-bottom: 1px dotted #95BCE2;
+    border-bottom: 1px dotted #ccc;
     margin: 2em 0 1em;
     padding: 5px 8px;
     font-weight: bold;
