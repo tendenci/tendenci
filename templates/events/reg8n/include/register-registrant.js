@@ -101,9 +101,11 @@ function addRegistrant(ele, prefix, price) {
          $this.attr('checked', false);
          
          {% if request.user.is_superuser %}
-         if ($this.attr('name', 'override')){
-         	toggle_admin_override($this);
-         }
+        if ($this.attr('name').search('override') != -1)
+        {
+        	var price_box = $this.closest('.admin-override').next();
+        	toggle_admin_override($this, price_box);
+        }
          {% endif %}
          
         }
@@ -118,7 +120,6 @@ function addRegistrant(ele, prefix, price) {
     if (isNaN(price)){
     	price = 0;
     }
-    
     
     $(row).insertAfter($('.registrant-form:last')).find('.hidden').removeClass('hidden');
     
