@@ -73,7 +73,7 @@ From the command line in the root of your project (and in your 'tendenci' virtua
     python manage.py migrate
     python manage.py update_settings
 
-Django will magically create the database and tables for you.
+Django will magically create the database and tables for you with SQLLite. (with other Postgres or MySQL you need to create the database first, but it still creates the tables for you.)
 
 ### Install and select your theme
 
@@ -84,7 +84,7 @@ There are multiple themes available to use in `/templates/themes/`. You can inst
 
 ### Search Engine Integration
 
-Determine if you want to set up a search engine for use with TomCat. If you do, you will need to set up Xapian or similar. And of course you do because everyone loves global site search. Please see notes at the bottom of the page.
+Determine if you want to set up a search engine for use with your site. If you do, you will need to set up Xapian or similar. And of course you do because everyone loves global site search. Please see notes at the bottom of the page.
 
 ### Test Your Development Server
 
@@ -111,7 +111,7 @@ Also note we make no attempt to support IE-anything prior to 8.0, and the themes
 
 ### Search Engine
 
-Tendenci is designed to use the django haystack search. To take advantage of global search and full-text search you will need to install an engine behind Haystack. But you're on your own for this one.
+Tendenci is designed to use the django haystack search. To take advantage of global search and full-text search you will need to install an engine behind Haystack. But you're on your own for that one.
 
 How to install a search engine in Django: 
 
