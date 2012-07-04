@@ -60,7 +60,7 @@ Clone project. This will create the Tendenci-5.0 folder in you present working d
 You may want to look at the requirements.txt file first
 
     pip install reportlab==2.5
-    pip install -r requirements.txt
+    pip install -r /scripts/requirements.txt
 
 ### Create Database and Tables
 By default Django and Tendenci use `sqllite3`. SQLlite is for development only and is not recommended if you plan to contribute. See notes on MySQL at the bottom of the page.
