@@ -50,7 +50,7 @@ Verify prompt shows the virtual environment in () and your PWD (Present Working 
 ### Pull Tendenci code
 Clone project. This will create the Tendenci-5.0 folder in you present working directory
 
-    git clone git@github.com:schipul/Tendenci-5.0.git
+    git clone git@github.com:tendenci/tendenci.git
 
 ### Navigate into the new directory:
 
@@ -60,7 +60,7 @@ Clone project. This will create the Tendenci-5.0 folder in you present working d
 You may want to look at the requirements.txt file first
 
     pip install reportlab==2.5
-    pip install -r /scripts/requirements.txt
+    pip install -r scripts/requirements.txt
 
 ### Create Database and Tables
 By default Django and Tendenci use `sqllite3`. SQLlite is for development only and is not recommended if you plan to contribute. See notes on MySQL at the bottom of the page.
