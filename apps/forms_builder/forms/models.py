@@ -63,7 +63,7 @@ class Form(TendenciBaseModel):
         max_length=200,
         blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=False, help_text=
-        _("If checked, the person submitting the form will be sent an email"))
+        _("If checked, the person submitting the form will be sent an email."))
     email_from = models.EmailField(_("Reply-To address"), blank=True, 
         help_text=_("The address the replies to the email will be sent to"))
     email_copies = models.CharField(_("Send copies to"), blank=True, 
@@ -73,7 +73,7 @@ class Form(TendenciBaseModel):
         help_text=_("Redirect to this page after form completion."))
         
     # payments
-    custom_payment = models.BooleanField(_("Is Custom Payment"), default=False)
+    custom_payment = models.BooleanField(_("Form Accepts Payment"), default=False, help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
     payment_methods = models.ManyToManyField("payments.PaymentMethod")
 
     perms = generic.GenericRelation(ObjectPermission,

@@ -302,7 +302,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         can_delete=True
     )
 
-    if event.registration_configuration.regconfpricing_set.all():
+    if event.registration_configuration and\
+             event.registration_configuration.regconfpricing_set.all():
         extra = 0
     else:
         extra = 1
@@ -1816,6 +1817,7 @@ def registrant_export(request, event_id, roster_view=''):
         ('last_name', 'last_name'),
         ('phone', 'phone'),
         ('email', 'email'),
+        ('position_title', 'position_title'),
         ('registration_id', 'registration__pk'),
         ('price type', 'registration__reg_conf_price__title'),
         ('invoice_id', 'registration__invoice__pk'),
@@ -1936,6 +1938,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('last_name', 'last_name'),
         ('phone', 'phone'),
         ('email', 'email'),
+        ('position_title', 'position_title'),
         ('company', 'company_name'),
         ('address', 'address'),
         ('city', 'city'),
@@ -1944,6 +1947,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('country', 'country'),
         ('date', 'create_dt'),
         ('registration_id', 'registration__pk'),
+        ('amount', 'amount'),
         ('price type', 'registration__reg_conf_price__title'),
         ('invoice_id', 'registration__invoice__pk'),
         ('registration price', 'registration__amount_paid'),

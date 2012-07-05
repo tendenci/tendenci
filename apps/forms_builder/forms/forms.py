@@ -204,6 +204,8 @@ class FormAdminForm(TendenciBaseForm):
                   'allow_anonymous_view',
                   'status',
                   'status_detail',
+                  'custom_payment',
+                  'payment_methods',
                  )
 
     def __init__(self, *args, **kwargs): 

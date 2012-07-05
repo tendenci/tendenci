@@ -31,7 +31,7 @@ def get_ACRF_queryset(event=None):
     """
     rc_reg_form_ids = []
     rcp_reg_form_ids = []
-    if event:
+    if event and event.registration_configuration:
         reg_conf = event.registration_configuration
         regconfpricings = event.registration_configuration.regconfpricing_set.all()
         if reg_conf and reg_conf.reg_form:
