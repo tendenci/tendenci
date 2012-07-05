@@ -302,7 +302,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         can_delete=True
     )
 
-    if event.registration_configuration.regconfpricing_set.all():
+    if event.registration_configuration and\
+             event.registration_configuration.regconfpricing_set.all():
         extra = 0
     else:
         extra = 1
