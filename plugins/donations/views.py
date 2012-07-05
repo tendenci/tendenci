@@ -62,7 +62,6 @@ def add(request, form_class=DonationForm, template_name="donations/add.html"):
                                  'state':donation.state,
                                  'zipcode':donation.zip_code,
                                  'country':donation.country,
-                                 'email':donation.email,
                                  'phone':donation.phone}
                 if request.user.is_anonymous():
                     profile_kwarg['creator'] = user
