@@ -286,7 +286,6 @@ def delete_file(request):
     EventLog.objects.log(**log_defaults)
     return redirect('theme_editor.editor')
 
-
 def upload_file(request):
 
     if not has_perm(request.user, 'theme_editor.add_themefileversion'):
@@ -327,5 +326,4 @@ def upload_file(request):
     else:
         form = UploadForm()
 
-    return render_to_response(template_name, {'form': form},
-        context_instance=RequestContext(request))
+    return render_to_response(context_instance=RequestContext(request))
