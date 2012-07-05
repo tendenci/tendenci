@@ -54,6 +54,9 @@ class Email(TendenciBaseModel):
             headers['Reply-To'] = self.reply_to
         if self.sender_display:
             headers['From'] = '%s<%s>' % (self.sender_display, self.sender)
+        if self.priority and self.priority == 1:
+            headers['X-Priority'] = '1'
+            headers['X-MSMail-Priority'] = 'High'
             
         if recipient_list or recipient_bcc_list:
             msg = EmailMessage(self.subject,
