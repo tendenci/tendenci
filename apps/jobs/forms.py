@@ -51,6 +51,9 @@ class JobForm(TendenciBaseForm):
         'storme_model': Job._meta.module_name.lower()}))
 
     captcha = CaptchaField()
+    
+    start_dt = SplitDateTimeField(required=False, label=_('Position starts on:'),
+        initial=datetime.now())
 
     activation_dt = SplitDateTimeField(label=_('Activation Date/Time'),
         initial=datetime.now())
@@ -94,6 +97,7 @@ class JobForm(TendenciBaseForm):
         'tags',
         'pricing',
         'list_type',
+        'start_dt',
         'activation_dt',
         'post_dt',
         'expiration_dt',
@@ -124,6 +128,7 @@ class JobForm(TendenciBaseForm):
                                 'slug',
                                 'description',
                                 'job_url',
+                                'start_dt',
                                 'code',
                                 'location',
                                 'skills',
