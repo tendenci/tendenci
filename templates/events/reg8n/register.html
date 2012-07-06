@@ -15,8 +15,11 @@
 	#populate-fields{
 		margin-top: 1em;
 	}
-	.admin-override{
+	.admin-override, .memberid{
 		margin-left: 2em;
+	}
+	.memberid .help-text{
+		margin-left: 5em;
 	}
 	.admin-override_price{
 		margin-left: 3.5em;
@@ -258,6 +261,13 @@
 				                    {% endif %}
 								</div>
 								{% else %}
+								{% if field.name == 'memberid' %}
+								<div class=" form-field memberid">
+									<div class="error">{{ field.errors }}</div>
+									<div>{% trans field.label %}: {{ field }}</div>
+									<div class="help-text">{{ field.help_text }}</div>   
+								</div>
+								{% else %}
 								<div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
 									<div class="error">{{ field.errors }}</div>
 									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
@@ -266,6 +276,7 @@
 				                    <div class="help-text">{{ field.help_text }}</div>   
 				                    {% endif %}
 								</div>
+								{% endif %}
 								{% endif %}
 							{% endif %}
 							{% endfor %}

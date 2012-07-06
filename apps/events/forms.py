@@ -150,9 +150,14 @@ class FormForCustomRegForm(forms.ModelForm):
                     )
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
+            
+        # member id
+        if hasattr(self.event, 'has_member_price') and self.event.has_member_price:
+            self.fields['memberid'] = forms.CharField(label='Member ID', required=False,
+                                help_text='Please enter a member ID if a member price is selected.')
          
         # add override and override_price to allow admin override the price 
-        if hasattr(self.event, 'is_table'):
+        if hasattr(self.event, 'is_table') and hasattr(self.event, 'free_event'):
             if self.event and not self.event.is_table and not self.event.free_event:
                 if (not self.user.is_anonymous() and self.user.profile.is_superuser):
                     self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
@@ -162,6 +167,7 @@ class FormForCustomRegForm(forms.ModelForm):
                                                                 decimal_places=2,
                                                                 required=False)
                     self.fields['override_price'].widget.attrs.update({'size': '8'})
+                    
                                                                   
                 
         
@@ -240,6 +246,32 @@ class FormForCustomRegForm(forms.ModelForm):
             raise forms.ValidationError(err_msg)
                 
         return pricing
+    
+    def clean_memberid(self):
+        memberid = self.cleaned_data['memberid']
+        pricing = self.cleaned_data['pricing']
+        
+        price_requires_member = False
+        
+        if pricing.allow_member:
+            if not (pricing.allow_anonymous and pricing.allow_user):
+                price_requires_member = True
+                
+        if price_requires_member:
+            if not memberid:
+                raise forms.ValidationError("We don't detect you as a member. " + \
+                                            "Please choose another price option. ")
+        else:
+            if memberid:
+                raise forms.ValidationError("You have entered a member id but " + \
+                                            "have selected an option that does not " + \
+                                            "require membership." + \
+                                            "Please either choose the member option " + \
+                                            "or remove your member id.")
+            
+                    
+        return memberid
+        
     
     def clean_override_price(self):
         override = self.cleaned_data['override']
@@ -1016,6 +1048,11 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
+            
+        # member id
+        if hasattr(self.event, 'has_member_price') and self.event.has_member_price:
+            self.fields['memberid'] = forms.CharField(label='Member ID', required=False,
+                                help_text='Please enter a member ID if a member price is selected.')
                         
         if not self.event.is_table and not self.event.free_event:
             if (not self.user.is_anonymous() and self.user.is_superuser):
@@ -1122,6 +1159,31 @@ class RegistrantForm(forms.Form):
             raise forms.ValidationError(err_msg)
                 
         return pricing
+    
+    def clean_memberid(self):
+        memberid = self.cleaned_data['memberid']
+        pricing = self.cleaned_data['pricing']
+        
+        price_requires_member = False
+        
+        if pricing.allow_member:
+            if not (pricing.allow_anonymous and pricing.allow_user):
+                price_requires_member = True
+                
+        if price_requires_member:
+            if not memberid:
+                raise forms.ValidationError("We don't detect you as a member. " + \
+                                            "Please choose another price option. ")
+        else:
+            if memberid:
+                raise forms.ValidationError("You have entered a member id but " + \
+                                            "have selected an option that does not " + \
+                                            "require membership." + \
+                                            "Please either choose the member option " + \
+                                            "or remove your member id.")
+            
+                    
+        return memberid
     
     def clean_override_price(self):
         override = self.cleaned_data['override']

@@ -198,11 +198,20 @@
             </td>
             <td class="td-right">
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-                        {{ registrant.amount|format_currency }}
+                        {{ registrant.amount|format_currency }} {% if registrant.override %}*{% endif %}
                 </span>
             </td>
         </tr>
         {% endfor %}
+        
+        {% if registration.has_overridden %}
+        <tr>
+        	<td></td>
+        	 <td class="td-right">
+        	 * price was overridden
+        	 </td>
+        </tr>
+        {% endif %}
     	</table>
         
 		<div class="register-more">

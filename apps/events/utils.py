@@ -752,6 +752,7 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.override_price = Decimal(0)
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    registrant.memberid = form.cleaned_data.get('memberid', '')
     
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)

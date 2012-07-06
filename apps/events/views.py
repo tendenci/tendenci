@@ -923,6 +923,9 @@ def register(request, event_id=0,
                                                        is_strict=False,
                                                        spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
+        
+        event.has_member_price = pricings.filter(allow_member=True).exists()
+        
         pricings = pricings.order_by('display_order', '-price')
         
         try:
@@ -1547,7 +1550,8 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
     else:
         # use modelformset_factory for regular registration form
         RegistrantFormSet = modelformset_factory(Registrant, extra=0,
-                                    fields=('first_name', 'last_name', 'email', 'phone', 'company_name'))
+                                    fields=('first_name', 'last_name', 'company_name',
+                                             'phone', 'email', 'comments'))
         formset = RegistrantFormSet(request.POST or None,
                                     queryset=Registrant.objects.filter(registration=reg8n,
                                                                        cancel_dt__isnull=True).order_by('id'))

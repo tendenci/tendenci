@@ -388,6 +388,7 @@ class Registration(models.Model):
     @property
     def hash(self):
         return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
+    
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -559,6 +560,13 @@ class Registration(models.Model):
 
         return invoice
     
+    @property
+    def has_overridden(self):
+        if self.is_table:
+            return self.override_table
+
+        return self.registrant_set.filter(override=True).exists()
+    
 class Registrant(models.Model):
     """
     Event registrant.
@@ -610,6 +618,7 @@ class Registrant(models.Model):
                                           default=0)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
+    memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
