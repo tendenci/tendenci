@@ -74,3 +74,16 @@ class TestCase(TestCase):
         password_field = self.browser.find_element_by_name('password')
         password_field.send_keys(self.user.password)
         password_field.send_keys(Keys.RETURN)
+
+    def save_screenshot(self):
+        relative_url = self.browser.current_url.replace('http://127.0.0.1:8000', '')
+        relative_url = relative_url.replace('/', '_')
+        relative_url = relative_url.strip('_')
+
+        self.browser.save_screenshot(
+            '%s%s.jpg' % (settings.TEST_SCREENSHOTS, relative_url)
+        )
+
+
+
+
