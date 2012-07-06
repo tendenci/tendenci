@@ -289,7 +289,7 @@ function table_override_update_summary_entry(prefix, override, override_price){
 	if (override){
 		price = (override_price/num_items).toFixed(2);
 		diff = override_price - num_items * parseFloat(price);
-		if (diff > 0){
+		if (diff != 0){
 			price_first = (parseFloat(price) + diff).toFixed(2);
 		}else{
 			price_first = price;
