@@ -287,25 +287,26 @@ function table_override_update_summary_entry(prefix, override, override_price){
 	var num_items = $('.summary-'+ prefix).length;
 
 	if (override){
-		price = (override_price/num_items).toFixed(2);
-		diff = override_price - num_items * parseFloat(price);
-		if (diff != 0){
-			price_first = (parseFloat(price) + diff).toFixed(2);
-		}else{
-			price_first = price;
-		}
+		// price = (override_price/num_items).toFixed(2);
+		// diff = override_price - num_items * parseFloat(price);
+		// if (diff != 0){
+			// price_first = (parseFloat(price) + diff).toFixed(2);
+		// }else{
+			// price_first = price;
+		// }
 		
-		updateSummaryEntry(prefix, 0, price_first);
-		
-		for (var i=1; i<num_items; i++){
-			updateSummaryEntry(prefix, i, price);
-		}
+		updateSummaryEntry(prefix, 0, override_price);
+		// updateSummaryEntry(prefix, 0, price_first);
+// 		
+		// for (var i=1; i<num_items; i++){
+			// updateSummaryEntry(prefix, i, price);
+		// }
 		
 	}else{
-		for (var i=0; i<num_items; i++){
-			price = $('#summary-registrant-' + i).find('.item-price').data('price');
-			updateSummaryEntry(prefix, i, price);
-		}
+		//for (var i=0; i<num_items; i++){
+		price = $('#summary-registrant-0').find('.item-price').data('price');
+		updateSummaryEntry(prefix, 0, price);
+		//}
 	}
 }
 {% endif %}	

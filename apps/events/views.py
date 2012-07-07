@@ -1136,12 +1136,13 @@ def register(request, event_id=0,
     # if not free event, store price in the list for each registrant
     price_list = []
     count = 0
-    total_price = Decimal(str(0.00))
+    total_price = Decimal('0')
     event_price = pricing and pricing.price or 0
     individual_price = event_price
     if is_table:
-        individual_price_first, individual_price = split_table_price(
-                                                event_price, pricing.quantity)
+#        individual_price_first, individual_price = split_table_price(
+#                                                event_price, pricing.quantity)
+        individual_price_first, individual_price = event_price, Decimal('0')
 
     # total price calculation when invalid
     for i, form in enumerate(registrant.forms):
@@ -1150,8 +1151,8 @@ def register(request, event_id=0,
             deleted = True
 
         if is_table and i == 0:
-            price_list.append({'price': individual_price_first , 'deleted':deleted})
-            if not deleted:
+            if i == 0:
+                price_list.append({'price': individual_price_first , 'deleted':deleted})
                 total_price += individual_price_first
         else:
             price_list.append({'price': individual_price , 'deleted':deleted})

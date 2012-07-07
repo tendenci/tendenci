@@ -75,6 +75,9 @@
 		padding: 1em;
 		margin: 1em 0;
 	}
+	.item-label{
+		white-space: nowrap;
+	}
 </style>
 {% endblock %}
 
@@ -185,6 +188,17 @@
 	
 	    				{# price list #}
 	    				<table id="summary-price">
+	    					{% if event.is_table %}
+	    					<tr class="summary-registrant" id="summary-registrant-0">
+		    					<td width="50%" class="item-label">{% trans "Table of " %}{{ pricing.quantity }}</td>
+		    					<td width="50%" align="right">
+			    					<span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+			    					{% with price_list|first as price_entry %}
+			    					<span class="item-price" data-price="{{ price_entry.price }}">{{ price_entry.price|floatformat:2 }}</span>
+			    					{% endwith %}
+		    					</td>
+	    					</tr>
+	    					{% else %}
 	    					{% for price_entry in price_list %}
 	    					<tr class="summary-registrant" id="summary-registrant-{{ forloop.counter0 }}" {% if price_entry.deleted %} class="deleted-item"{% endif %}>
 		    					<td width="50%" class="item-label">{% trans "registrant" %}#<span class="item-counter">{{ forloop.counter }}</span></td>
@@ -194,6 +208,7 @@
 		    					</td>
 	    					</tr>
 	    					{% endfor %}
+	    					{% endif %}
 	                        {% for form in addon_formset.forms %}
 	                        <tr class="summary-addon" id="summary-addon-{{ forloop.counter0 }}">
 	                            <td width="50%" class="item-label">{% trans "addon" %}#<span class="item-counter">{{ forloop.counter }}</span></td>

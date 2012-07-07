@@ -657,8 +657,7 @@ def add_registration(*args, **kwargs):
     reg8n = Registration.objects.create(**reg8n_attrs)
     
     if event.is_table:
-        table_individual_first_price, table_individual_price = split_table_price(
-                                            amount_list[0], price.quantity)
+        table_individual_first_price, table_individual_price = amount_list[0], Decimal('0')
     
 #    discount_applied = False
     for i, form in enumerate(registrant_formset.forms):
@@ -682,9 +681,9 @@ def add_registration(*args, **kwargs):
                 amount = table_individual_first_price
             else:
                 amount = table_individual_price
-            if reg8n.override_table:
-                override = reg8n.override_table
-                override_price = amount
+#            if reg8n.override_table:
+#                override = reg8n.override_table
+#                override_price = amount
         
         # the table registration form does not have the DELETE field   
         if event.is_table or not form in registrant_formset.deleted_forms:

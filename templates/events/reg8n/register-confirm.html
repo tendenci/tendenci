@@ -159,10 +159,25 @@
 		      </div>
 	     {% endif %}
 	     
+	    {% if not registration.is_table %}
 	    {% if registrants_count > 1 %}
 	    	<div style="font-weight: bold;">{% trans "Registrants" %} ... ({{ registrants_count }})</div>
 	    {% endif %}
+	    {% else %}
+	    <table width="100%" border="0" cellspaceing="0" cellpadding="0">
+	    	<tr>
+	    		<td style="font-weight: bold; padding-left: 8px;">
+	    			{% trans "Table/Team of " %}{{ registrants_count }}
+	    		</td>
+	    		<td  style="text-align: right;padding:0 20px; font-weight:bold;">
+	    			{% with registrants|first as registrant %}{{ registrant.amount|format_currency }}{% endwith %}
+	    		</td>
+	    	</tr>
+	    </table>
+	    	
+	    {% endif %}
     	<table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+ 	
         {% for registrant in registrants %}
         <tr>
             <td>
@@ -197,14 +212,16 @@
                 {% endif %}
             </td>
             <td class="td-right">
+            	{% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
                         {{ registrant.amount|format_currency }} {% if registrant.override %}*{% endif %}
                 </span>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
         
-        {% if registration.has_overridden %}
+        {% if not registration.is_table and registration.has_overridden %}
         <tr>
         	<td></td>
         	 <td class="td-right">
