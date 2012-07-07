@@ -71,6 +71,14 @@
     div.register-more {
     	padding-left: 10px;
     }
+    .discount-symbol{
+    	color: green;
+    	font-weight: bold;
+    	font-size: 0.7em;
+    }
+    .override-symbol{
+    	color: red;
+    }
 </style>
 
 <div class="t">    
@@ -173,6 +181,14 @@
 	    			{% with registrants|first as registrant %}{{ registrant.amount|format_currency }}{% endwith %}
 	    		</td>
 	    	</tr>
+	    	{% if registration.reg_conf_price %}
+	    	<tr>
+	    		<td colspan="2" style="padding-left: 8px;">
+	    			(Registered as {{ registration.reg_conf_price.title }})
+	    		</td>
+	    	</tr>
+			{% endif %}
+	
 	    </table>
 	    	
 	    {% endif %}
@@ -180,12 +196,16 @@
  	
         {% for registrant in registrants %}
         <tr>
-            <td>
+            <td width="80%">
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
                 {% if registrant.name %}
                     {{ registrant.name }}
                 {% else %}
                     {% trans "Guest #" %}{{ forloop.counter0 }}
+                {% endif %}
+                
+                {% if not registration.is_table and registrant.pricing %}
+                (registered as {{ registrant.pricing.title }})
                 {% endif %}
                 </span>
                 {% if registrant.cancel_dt %}
@@ -211,10 +231,11 @@
                 {% endwith %}
                 {% endif %}
             </td>
-            <td class="td-right">
+            <td class="td-right" width="20%">
             	{% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-                        {{ registrant.amount|format_currency }} {% if registrant.override %}*{% endif %}
+                {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+                       {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} {{ registrant.amount|format_currency }} 
                 </span>
                 {% endif %}
             </td>
@@ -223,12 +244,20 @@
         
         {% if not registration.is_table and registration.has_overridden %}
         <tr>
-        	<td></td>
-        	 <td class="td-right">
-        	 * price was overridden
+        	 <td class="td-right" colspan="2">
+        	 <span class="override-symbol">*</span> means price overridden
         	 </td>
         </tr>
         {% endif %}
+        
+         {% if not registration.is_table and registration.discount_amount > 0 %}
+        <tr>
+        	 <td class="td-right" colspan="2">
+        	 <span class="discount-symbol">d</span> means discount applied
+        	 </td>
+        </tr>
+        {% endif %}
+        
     	</table>
         
 		<div class="register-more">

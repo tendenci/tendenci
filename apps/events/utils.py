@@ -718,13 +718,14 @@ def add_registration(*args, **kwargs):
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
-    
     if discount_code and discount:
-        DiscountUse.objects.create(
-                discount=discount,
-                invoice=invoice,
-            )
-    
+        for dmount in discount_list:
+            if dmount > 0:
+                DiscountUse.objects.create(
+                        discount=discount,
+                        invoice=invoice,
+                    )
+        
     return (reg8n, created)
 
 

@@ -1,7 +1,9 @@
 from decimal import Decimal
 
 def assign_discount(price_list, discount):
-    """Given a list of prices, return a discounted price list.
+    """Given a list of prices and a discount object,
+       return a discount applied price list, discount total,
+       a list of discount amount, and the message.
        If the available count number of uses < len(price_list), 
        apply the discount to the highest price first.
     """
@@ -11,7 +13,7 @@ def assign_discount(price_list, discount):
     if discount.cap != 0:
         limit = discount.cap - discount.num_of_uses()
         if limit <= 0:
-            return price_list, 0
+            return price_list, 0, [], ''
                 
     sorted_prices = [(index, value) for index, value in enumerate(price_list)]
     sorted_prices.sort(key=lambda x: x[1])
