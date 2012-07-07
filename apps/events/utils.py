@@ -592,7 +592,6 @@ def add_registration(*args, **kwargs):
     if event.is_table:
         if override_table:
             amount_list.append(override_price_table)
-            admin_notes += "Price has been overridden."
         else:
             amount_list.append(event_price)
         
@@ -614,9 +613,7 @@ def add_registration(*args, **kwargs):
                 amount = price.price
                 
             amount_list.append(amount)
-            
-        if override_price_total:
-            admin_notes += "Price has been overridden."
+
                   
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
@@ -626,13 +623,6 @@ def add_registration(*args, **kwargs):
         [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
-                    
-                
-            
-    if discount_amount:
-        if admin_notes:
-            admin_notes += ' '
-        admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount_code)
     
     reg8n_attrs = {
         "event": event,

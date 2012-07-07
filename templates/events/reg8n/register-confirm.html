@@ -171,6 +171,7 @@
 	    {% if registrants_count > 1 %}
 	    	<div style="font-weight: bold;">{% trans "Registrants" %} ... ({{ registrants_count }})</div>
 	    {% endif %}
+	    
 	    {% else %}
 	    <table width="100%" border="0" cellspaceing="0" cellpadding="0">
 	    	<tr>
@@ -178,6 +179,8 @@
 	    			{% trans "Table/Team of " %}{{ registrants_count }}
 	    		</td>
 	    		<td  style="text-align: right;padding:0 20px; font-weight:bold;">
+	    			{% if registration.override_table %}<span class="override-symbol">*</span>{% endif %}
+	    			 {% if registration.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
 	    			{% with registrants|first as registrant %}{{ registrant.amount|format_currency }}{% endwith %}
 	    		</td>
 	    	</tr>
@@ -234,26 +237,27 @@
             <td class="td-right" width="20%">
             	{% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
+                {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
                 {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
-                       {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} {{ registrant.amount|format_currency }} 
+                       {{ registrant.amount|format_currency }} 
                 </span>
                 {% endif %}
             </td>
         </tr>
         {% endfor %}
         
-        {% if not registration.is_table and registration.has_overridden %}
+        {% if registration.has_overridden %}
         <tr>
         	 <td class="td-right" colspan="2">
-        	 <span class="override-symbol">*</span> means price overridden
+        	 <span class="override-symbol">*</span> price overridden
         	 </td>
         </tr>
         {% endif %}
         
-         {% if not registration.is_table and registration.discount_amount > 0 %}
+         {% if registration.discount_amount > 0 %}
         <tr>
         	 <td class="td-right" colspan="2">
-        	 <span class="discount-symbol">d</span> means discount applied
+        	 <span class="discount-symbol">d</span> discount applied (discount code: {{ registration.discount_code }})
         	 </td>
         </tr>
         {% endif %}
@@ -287,9 +291,6 @@
             
             
             <p>{% trans "Payment Method: " %}{{ registration.payment_method }}</p>
-            {% if registration.invoice.admin_notes  or registration.discount_amount %}
-            <p>{{ registration.invoice.admin_notes }} {% if registration.discount_amount %}Discount amount: {{ registration.discount_amount|format_currency }} applied.{% endif %}</p>
-            {% endif %}
             
         	{% if registration.invoice %}
             <a href="{% url invoice.view registration.invoice.pk registration.invoice.guid %}">{% trans "View invoice" %}</a>
