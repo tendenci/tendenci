@@ -30,8 +30,6 @@
         <a href="#" class="dropdown-toggle">{% trans "Maps" %}</a>
 
         <ul class="dropdown-menu">
-            <!-- <li><a href="{% url lots.search %}">{% trans "Lots" %}</a></li> -->
-
             {% if nav_object and can_edit_lot %}
 			<li><a href="{% url lots.edit nav_object.pk %}">{% trans "Edit Lot" %}</a></li>
     		{% endif %}

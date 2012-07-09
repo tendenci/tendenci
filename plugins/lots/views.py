@@ -15,7 +15,7 @@ from lots.forms import MapForm, LotForm, PhotoForm, LineForm
 
 
 def index(request, template_name="lots/detail.html"):
-    return HttpResponseRedirect(reverse('lots.search'))
+    return HttpResponseRedirect(reverse('lots'))
 
 
 def map_selection(request, template_name="lots/maps/search.html"):
@@ -288,7 +288,7 @@ def delete(request, pk, template_name="lots/delete.html"):
 
 def detail(request, pk=None, template_name="lots/detail.html"):
     if not pk:
-        return HttpResponseRedirect(reverse('lots.search'))
+        return HttpResponseRedirect(reverse('lots'))
     lot = get_object_or_404(Lot, pk=pk)
 
     if has_perm(request.user, 'lots.view_lot', lot):
