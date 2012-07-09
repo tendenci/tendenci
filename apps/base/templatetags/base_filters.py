@@ -18,14 +18,13 @@ def localize_date(value, to_tz=None):
     from timezones.utils import adjust_datetime_to_timezone
     try:
         if to_tz is None:
-            to_tz=settings.UI_TIME_ZONE
-            
-        from_tz=settings.TIME_ZONE
-        
-        return adjust_datetime_to_timezone(value,from_tz=from_tz,to_tz=to_tz)
+            to_tz = settings.UI_TIME_ZONE
+
+        from_tz = settings.TIME_ZONE
+
+        return adjust_datetime_to_timezone(value, from_tz=from_tz, to_tz=to_tz)
     except AttributeError:
         return ''
-
 localize_date.is_safe = True
 
 
@@ -37,7 +36,7 @@ def date_short(value, arg=None):
     if not value:
         return u''
     if arg is None:
-        s_date_format = get_setting('site','global','dateformat')
+        s_date_format = get_setting('site', 'global', 'dateformat')
         if s_date_format:
             arg = s_date_format
         else:
@@ -60,7 +59,7 @@ def date_long(value, arg=None):
     if not value:
         return u''
     if arg is None:
-        s_date_format = get_setting('site','global','dateformatlong')
+        s_date_format = get_setting('site', 'global', 'dateformatlong')
         if s_date_format:
             arg = s_date_format
         else:
@@ -123,13 +122,12 @@ def domain(link):
 
 @register.filter
 def strip_template_tags(string):
-    import re
     p = re.compile('{[#{%][^#}%]+[%}#]}')
-    return re.sub(p,'',string)
+    return re.sub(p, '', string)
 
 
 @register.filter
-@stringfilter      
+@stringfilter
 def stripentities(value):
     """Strips all [X]HTML tags."""
     from django.utils.html import strip_entities
@@ -137,22 +135,27 @@ def stripentities(value):
 stripentities.is_safe = True
 
 
-@register.filter     
+@register.filter
 def format_currency(value):
     """format currency"""
     from base.utils import tcurrency
     return tcurrency(value)
 format_currency.is_safe = True
 
-@register.filter     
+
+@register.filter
 def get_object(obj):
     """return obj.object if this obj has the attribute of object"""
-    if hasattr(obj, 'object'): return obj.object
-    else: return obj
+    if hasattr(obj, 'object'):
+        return obj.object
+    else:
+        return obj
+
 
 @register.filter
 def scope(object):
     return dir(object)
+
 
 @register.filter
 def obj_type(object):
@@ -160,6 +163,7 @@ def obj_type(object):
     Return object type
     """
     return type(object)
+
 
 @register.filter
 def is_iterable(object):
@@ -173,6 +177,7 @@ def is_iterable(object):
     except TypeError:
         return False
 
+
 @register.filter
 @stringfilter
 def basename(path):
@@ -180,17 +185,17 @@ def basename(path):
     return basename(path)
 
 
-@register.filter     
+@register.filter
 def date_diff(value, date_to_compare=None):
     """Compare two dates and return the difference in days"""
     import datetime
     if not isinstance(value, datetime.datetime):
         return 0
-    
+
     if not isinstance(date_to_compare, datetime.datetime):
         date_to_compare = datetime.datetime.now()
-    
-    return (date_to_compare-value).days
+
+    return (date_to_compare - value).days
 
 
 @register.filter
@@ -198,7 +203,8 @@ def first_chars(string, arg):
     """ returns the first x characters from a string """
     string = str(string)
     if arg:
-        if not arg.isdigit(): return string
+        if not arg.isdigit():
+            return string
         return string[:int(arg)]
     else:
         return string
@@ -233,7 +239,7 @@ def obfuscate_email(email, linktext=None, autoescape=None):
     """
     Given a string representing an email address,
     returns a mailto link with rot13 JavaScript obfuscation.
-    
+
     Accepts an optional argument to use as the link text;
     otherwise uses the email address itself.
     """
@@ -242,7 +248,7 @@ def obfuscate_email(email, linktext=None, autoescape=None):
     else:
         esc = lambda x: x
 
-    email = re.sub('@','\\\\100', re.sub('\.', '\\\\056', \
+    email = re.sub('@', '\\\\100', re.sub('\.', '\\\\056', \
         esc(email))).encode('rot13')
 
     if linktext:
@@ -270,6 +276,7 @@ def split_str(s, args):
         return s
     return s
 
+
 @register.filter_function
 def str_basename(s):
     """
@@ -277,30 +284,33 @@ def str_basename(s):
     """
     return basename(s)
 
+
 @register.filter
 @stringfilter
 def twitterize(value, autoescape=None):
     value = strip_tags(value)
     # Link URLs
     value = urlize(value, nofollow=False, autoescape=autoescape)
-    
+
     # Link twitter usernames for the first person
-    value = re.sub(r'(^[^:]+)',r'<a href="http://twitter.com/\1">\1</a>',value)
+    value = re.sub(r'(^[^:]+)', r'<a href="http://twitter.com/\1">\1</a>', value)
     # Link twitter usernames prefixed with @
-    value = re.sub(r'(\s+|\A)@([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://twitter.com/\2">@\2</a>',value)
+    value = re.sub(r'(\s+|\A)@([a-zA-Z0-9\-_]*)\b', r'\1<a href="http://twitter.com/\2">@\2</a>', value)
     # Link hash tags
-    value = re.sub(r'(\s+|\A)#([a-zA-Z0-9\-_]*)\b',r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>',value)
+    value = re.sub(r'(\s+|\A)#([a-zA-Z0-9\-_]*)\b', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', value)
     return mark_safe(value)
-twitterize.is_safe=True
+twitterize.is_safe = True
 twitterize.needs_autoescape = True
+
 
 @register.filter
 @stringfilter
 def twitterdate(value):
     from datetime import datetime, timedelta
-    time = value.replace(" +0000","")
+    time = value.replace(" +0000", "")
     dt = datetime.strptime(time, "%a, %d %b %Y %H:%M:%S")
     return dt + timedelta(hours=-6)
+
 
 @register.filter
 def thumbnail(file, size='200x200'):
@@ -314,7 +324,7 @@ def thumbnail(file, size='200x200'):
     miniature_filename = os.path.join(filehead, miniature)
     filehead, filetail = os.path.split(file.url)
     miniature_url = filehead + '/' + miniature
-    if os.path.exists(miniature_filename) and os.path.getmtime(filename)>os.path.getmtime(miniature_filename):
+    if os.path.exists(miniature_filename) and os.path.getmtime(filename) > os.path.getmtime(miniature_filename):
         os.unlink(miniature_filename)
     # if the image wasn't already resized, resize it
     if not os.path.exists(miniature_filename):
@@ -327,11 +337,10 @@ def thumbnail(file, size='200x200'):
 
     return miniature_url
 
+
 @register.filter_function
 def datedelta(dt, range_):
-    from datetime import datetime
     from datetime import timedelta
-    from time import strftime
 
     range_type = 'add'
     # parse the range
@@ -353,15 +362,18 @@ def datedelta(dt, range_):
 
     return dt
 
+
 @register.filter
 def split(str, splitter):
     return str.split(splitter)
 
+
 @register.filter
 def tag_split(str):
     str = "".join(str)
-    str = str.replace(", ",",")
+    str = str.replace(", ", ",")
     return str.split(",")
+
 
 @register.filter
 def make_range(value):
@@ -373,13 +385,16 @@ def make_range(value):
     except:
         return []
 
+
 @register.filter
 def underscore_space(value):
-    return value.replace("_"," ")
+    return value.replace("_", " ")
+
 
 @register.filter
 def format_string(value, arg):
     return arg % value
+
 
 @register.filter
 def md5_gs(value, arg=None):
@@ -389,5 +404,5 @@ def md5_gs(value, arg=None):
     hashdt = ''
     if arg and int(arg):
         timestamp = datetime.now() + timedelta(hours=int(arg))
-        hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0',';')).hexdigest()
-    return ''.join([value,hashdt])
+        hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0', ';')).hexdigest()
+    return ''.join([value, hashdt])
