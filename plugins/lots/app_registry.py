@@ -9,4 +9,10 @@ class LotRegistry(PluginRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create lots type of content'
 
+    url = {
+        'add': lazy_reverse('lots.map_add'),
+        'search': lazy_reverse('lots'),
+        'list': lazy_reverse('lots'),
+    }
+
 site.register(Lot, LotRegistry)
