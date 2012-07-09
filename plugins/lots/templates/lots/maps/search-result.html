@@ -1,5 +1,5 @@
 {% load base_tags %}
-{% load base_filters %}
+{% load file_tags %}
 
 <div class="wrap-search-item">
     <div class="search-item lots-search-item">
@@ -8,7 +8,7 @@
             <p>{{ map.description }}</p>
             {% if map.file %}
                 <a href="{% url lots.map_detail map.id %}" title="{{ map.description }}">
-                    <img src="{{ map.file|thumbnail:'200x200'}}" alt="{{ map.description }}">
+                    <img src="{{ map|size:'200x' }}" alt="{{ map.description }}">
                 </a>
             {% endif %}
         </div>

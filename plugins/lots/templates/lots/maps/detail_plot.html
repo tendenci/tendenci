@@ -11,7 +11,7 @@
         <h1 title="some title">{{ map.name }}</h1>
         <p>{{ map.description }}</p>
         <div class="map-photo">
-            <img class="map" src="{{ map|size:'900x444' }}" alt="{{ map.name }}" usemap="#mapmap" />
+            <img class="map" src="{{ map|size:'900x' }}" alt="{{ map.name }}" usemap="#mapmap" />
             <map name="mapmap">
             {% for lot in map.lot_set.all %}
                 <area id="lot-area-{{ lot.pk }}" shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="{% url lots.detail lot.pk %}" alt="{{ lot.suite_number }} {{ lot.name }}" />
