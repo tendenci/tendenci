@@ -288,12 +288,10 @@ function open_archive(id)
 
     $('#file-tree li a.folder').click(function() {
         if ($(this).hasClass('open')) {
-            console.log("show class");
             $(this).text($(this).text().replace('– ', '+ '));
             $(this).removeClass('open');
             $(this).siblings().children().hide();
         } else {
-            console.log($(this).text());
             $(this).addClass('open');
             $(this).text($(this).text().replace('+ ', '– '));
             $(this).siblings().children().show();
