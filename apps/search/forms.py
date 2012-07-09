@@ -28,6 +28,7 @@ apps_not_to_search = [
     'invoice',
     'redirect',
     'user',
+    'story',
 ]
 
 registered_apps = registry_site.get_registered_apps()
