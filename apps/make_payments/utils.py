@@ -36,7 +36,7 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.status = True
     
     inv.estimate = True
-    inv.status_detail = 'estimate'
+    inv.status_detail = 'tendered'
     inv.object_type = ContentType.objects.get(app_label=make_payment._meta.app_label, model=make_payment._meta.module_name)
     inv.object_id = make_payment.id
     inv.subtotal = make_payment.payment_amount
