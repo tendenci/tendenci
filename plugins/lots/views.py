@@ -14,10 +14,6 @@ from lots.models import Map, Lot, Photo, Line
 from lots.forms import MapForm, LotForm, PhotoForm, LineForm
 
 
-def index(request, template_name="lots/detail.html"):
-    return HttpResponseRedirect(reverse('lots'))
-
-
 def map_selection(request, template_name="lots/maps/search.html"):
     query = request.GET.get('q')
 
