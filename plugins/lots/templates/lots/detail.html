@@ -10,7 +10,7 @@
     <div class="lot-wrap">
         <h1>{{ lot.name }}</h1>
         <p>{{ lot.description }}</p>
-        <img src="{{ lot.photo|size:"300x400/constrain" }}" />
+        <img src="{{ lot.photo|size:'300x/constrain' }}" />
         {% include "lots/meta.html" %} 
     </div>
 
