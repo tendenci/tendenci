@@ -40,7 +40,7 @@ class RegAddonForm(forms.Form):
             self.fields[field_name] = forms.ModelChoiceField(
                 label="Options", required=False, empty_label=None,
                 queryset=addon.options.all(),
-                widget=forms.HiddenInput)
+                widget=forms.HiddenInput(attrs={'class': 'option-hidden'}))
         
     def get_form_label(self):
         return self.form_index + 1
@@ -60,6 +60,7 @@ class RegAddonForm(forms.Form):
             option = data[addon.field_name()]
             if not option:
                 raise forms.ValidationError(_('Option required for %s' % (addon.title)))
+
         return data
     
     def save(self, registration):

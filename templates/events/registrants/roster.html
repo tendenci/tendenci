@@ -117,6 +117,16 @@
 		background-repeat: no-repeat;
 		padding-left: 16px;
 	}
+	#registrant-table td {
+	    color: #000000;
+	    font-family: Verdana,Arial,Helvetica,sans-serif;
+	    font-size: 11px;
+	    text-decoration: none;
+	}
+	#registrant-table td a {
+	    text-decoration: none;
+	}
+
 
 </style>
 
@@ -188,42 +198,63 @@
 
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
+
 </div>
+
+<div class='event-info'>
+	<form id="roster-sort-form" method="get">
+		Sort by:
+	<select name="sort_order" size="1">
+		<option value="first_name" {% if sort_order == 'first_name' %}selected="selected"{% endif %}>{% trans "First Name" %}</option>
+		<option value="last_name" {% if sort_order == 'last_name' %}selected="selected"{% endif %}>{% trans "Last Name" %}</option>
+		<option value="company_name" {% if sort_order == 'company_name' %}selected="selected"{% endif %}>{% trans "Company Name" %}</option>
+	</select>
+	<input id="sort-ascending" type="radio" value="asc" name="sort_type"  {% if sort_type == 'asc' %}checked{% endif %} />
+	<label for="sort-ascending">{% trans "Ascending" %}</label>
+	<input id="sort-descending" type="radio" value="desc" name="sort_type" {% if sort_type == 'desc' %}checked{% endif %} />
+	<label for="sort-descending">{% trans "Descending" %}</label>
+	<input type="submit" name="submit" value="Submit" />
+	</form>
+	
+	<span>*** Registrants without names (if any) are listed at the bottom.</span> 
+</div>
+
+
 
 <div class="hr"></div>
 
 <center>
 <table id="registrant-table">
 <tr>
-	<th width="2%"></th>
-	<th width="6%" class='attended' title="Attendance Checkbox"></th>
-	<th width="26%" title="Name and Phone Number">{% trans "Name & Phone" %}</th>
-	<th width="26%" title="Title and Company">{% trans "Title &amp; Company" %}</th>
-    <th width="8%" title="Price Chosen">{% trans "Price Type" %}</th>
+	<th width="2%">#</th>
+	
+	<th width="22%" title="Name and Phone Number">{% trans "Name & Phone" %}</th>
+	<th width="30%" title="Company and Title">{% trans "Title &amp; Company" %}</th>
 	<th width="8%" title="Invoice Number">{% trans "Inv#" %}</th>
 	<th width="8%" title="Invoice Amount">{% trans "Inv$" %}</th>
 	<th width="8%" title="Registration Number">{% trans "Reg#" %}</th>
 	<th width="8%" title="Registration Amount">{% trans "Reg$" %}</th>
 	<th width="8%" title="Balance">{% trans "Balance" %}</th>
+	<th width="6%" class='attended' title="Attendance Checkbox">Attend</th>
 </tr>
 <tr class='row-spacer'><td colspan="9"></td></tr>
 {% for registrant in registrants %}
 
-{% if registrant.registration.invoice.balance > 0 %}
+{% if registrant.invoice_dict.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-top">
 {% else%}
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
 
 	<td class="counter"><a name="roster{{ registrant.pk }}"></a>{{ forloop.counter }}</td>
-	<td class="attended-checkbox"><div></div></td>
+	
 
 	<td> <!-- name & phone -->
-	{% if registrant.user %}
+	{% if registrant.user_id %}
 	<div title="View {{ registrant.first_name}}'s profile">
         <a href="{{ registrant.user.get_absolute_url }}">{% firstof registrant.lastname_firstname registrant.email %}</a>
         {% if registrant.memberid %}
-        <span class="member-icon" title="memberID: {{ registrant.memberid }}">M</span>
+        <span class="member-icon" title="memberID: {{ registrant.memberid }}">Member</span>
         {% endif %}
     </div>
 	{% else %}
@@ -235,47 +266,86 @@
 	{% endif %}
 	</div>
 	{% endif %}
-	
-	<div>{{ registrant.phone }}</div>
-	
-	{% if registrant.comments %}
-	<div>{{ registrant.comments }}</div>
-	{% endif %}
 	</td>
 
 	<td> <!-- title & company -->
-	<div>{{ registrant.position_title }}</div>
-	<div>{{ registrant.company_name }}</div>
+	<div>{% if registrant.company_name %}{{ registrant.company_name }}{% endif %}{% if registrant.position_title %}{% if registrant.company_name %} / {% endif %}{{ registrant.position_title }}{% endif %}</div>
+
 	</td>
 
-    <td>{% firstof registrant.registration.reg_conf_price.title 'Untitled' %}</td>
-	<td><a href="{{ registrant.registration.invoice.get_absolute_url }}">I-{{ registrant.registration.invoice.pk }}</a></td> <!-- invoice number -->
-	<td>${{ registrant.registration.invoice.total }}</td> <!-- invoice amount -->
-	<td><a href="{% url event.registration_confirmation event.pk registrant.registration.pk %}">R-{{ registrant.registration.pk }}</a></td> <!-- registration number -->
+	<td>{% if registrant.invoice_dict.id %}<a href="{% url invoice.view registrant.invoice_dict.id %}">I-{{ registrant.invoice_dict.id }}</a>{% endif %}</td> <!-- invoice number -->
+	<td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
+	<td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
 	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
-	<td>${{ registrant.registration.invoice.balance|floatformat:"2" }}</td> <!-- balance -->
+	<td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
+	<td class="attended-checkbox"><div></div></td>
 </tr>
 
 
-{% with registrant.additional_registrants as additionals %}
-{% with registrant.registration.regaddon_set.all as regaddons %}
+{% if registrant.invoice_dict.balance > 0 %}
+<tr class="{% cycle 'odd' 'even' %} non-paid-middle">
+{% else %}
+<tr class="{% cycle 'odd' 'even' %}">
+{% endif %}
+    <td>&nbsp;</td>
+    <td>
+   {% if registrant.phone %}{{ registrant.phone }}{% endif %}
+   
+     {% if registrant.roster_field_list %}
+	{% for field in registrant.roster_field_list %}
+	{% if field.value %}
+	<div>{{ field.label }}: {{ field.value }}</div>
+	{% endif %}
+	{% endfor %}
+	{% endif %}	
+	
+	 {% if registrant.comments %}
+	<div>{{ registrant.comments }}</div>
+	{% endif %}
+	
+	{% if request.user.is_superuser %}
+        {% if registrant.invoice_dict.admin_notes %}
+           <div> {% trans "admin notes: " %}{{ registrant.invoice_dict.admin_notes }}</div>
+        {% endif %}
+    {% endif %}
+	
+    </td>
+    <td>
+   {% if registrant.email %}{{ registrant.email }}{% endif %}
+   <div>Registered as: {% firstof registrant.price_title 'Untitled' %}</div>
+    </td>
+    <td colspan="5">
 
-{% if registrant.registration.invoice.balance > 0 %}
+        {% if registrant.invoice_dict.tender_date %}
+            {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
+        {% else %}
+            {% trans "Not Tendered" %}
+        {% endif %}
+    </td>
+    <td>&nbsp;</td>
+</tr>
+
+
+
+
+{% with registrant.additionals as additionals %}
+
+
+{% if registrant.invoice_dict.balance > 0 %}
 <tr class="{% cycle 'odd' 'even' %} non-paid-bottom">
 {% else %}
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
-    <td colspan="2"></td>
-    <td colspan="2">
-    	
-    {% if registrant.custom_reg_form_entry  and registrant.roster_field_list %}
-	{% for field in registrant.roster_field_list %}
-	<div>{{ field.label }}: {{ field.value }}</div>
-	{% endfor %}
-	{% endif %}	
+    <td colspan="1"></td>
+    <td colspan="7">
   	
     {% if additionals %}
-        <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "additional registrants:" %}</a> 
+        {% if registrant.invoice_dict.id %}
+        <a href="{% url invoice.view registrant.invoice_dict.id %}">{% trans "Additional registrants on this invoice:" %}</a>
+        {% else %}
+        {% trans "Additional registrants:" %}
+        {% endif %}
+        
 	    {% for reg in additionals %}
 	    	<a href="#roster{{ reg.pk }}">
 	    	{% if reg.lastname_firstname or reg.email%}
@@ -286,32 +356,26 @@
 	    	</a>
 	    {% endfor %}
     {% endif %}
+    
+    {% if has_addons %}
+    {% with registrant.registration.regaddon_set.all as regaddons %}
     {% if regaddons %}
+    	<div>
         <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "addons:" %}</a> 
 	    {% for regaddon in regaddons %}
 	    	{{ regaddon.addon.title }}
             ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
 	    {% endfor %}
+	    </div>
+    {% endif %}
+    {% endwith %}
     {% endif %}
     
-    {% if request.user.is_superuser %}
-        {% if registrant.registration.invoice.admin_notes %}
-            {% trans "admin notes: " %}{{ registrant.registration.invoice.admin_notes }}
-        {% endif %}
-    {% endif %}
     </td>
     <td>&nbsp;</td>
-    <td colspan="5">
-
-        {% if registrant.registration.invoice.tender_date %}
-            {% trans "TENDERED: " %}{{ registrant.registration.invoice.tender_date|date_long }}
-        {% else %}
-            {% trans "Not Tendered" %}
-        {% endif %}
-    </td>
+    
 </tr>
 
-{% endwith %}
 {% endwith %}
 
 {% endfor %}
@@ -319,9 +383,10 @@
 <tr class="bottom-row">
 	<td></td>
 	<td colspan="2" class="total-label">{% trans "Total" %}</td>
-	<td colspan="5"></td>
+	<td colspan="3"></td>
     <td>${{ total_sum|floatformat:2 }}</td>
 	<td>${{ balance_sum|floatformat:2 }}</td>
+	<td></td>
 </tr>
 </table>
 </center>

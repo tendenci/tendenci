@@ -33,7 +33,6 @@ class RegAddonBaseFormSet(BaseFormSet):
         
         for key in self.extra_params.keys():
             defaults[key] = self.extra_params[key]
-        
         if self.data or self.files:
             defaults['data'] = self.data
             defaults['files'] = self.files

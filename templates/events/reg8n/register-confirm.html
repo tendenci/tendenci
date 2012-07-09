@@ -71,6 +71,14 @@
     div.register-more {
     	padding-left: 10px;
     }
+    .discount-symbol{
+    	color: green;
+    	font-weight: bold;
+    	font-size: 0.7em;
+    }
+    .override-symbol{
+    	color: red;
+    }
 </style>
 
 <div class="t">    
@@ -159,18 +167,48 @@
 		      </div>
 	     {% endif %}
 	     
+	    {% if not registration.is_table %}
 	    {% if registrants_count > 1 %}
 	    	<div style="font-weight: bold;">{% trans "Registrants" %} ... ({{ registrants_count }})</div>
 	    {% endif %}
+	    
+	    {% else %}
+	    <table width="100%" border="0" cellspaceing="0" cellpadding="0">
+	    	<tr>
+	    		<td style="font-weight: bold; padding-left: 8px;">
+	    			{% trans "Table/Team of " %}{{ registrants_count }}
+	    		</td>
+	    		<td  style="text-align: right;padding:0 20px; font-weight:bold;">
+	    			{% if registration.override_table %}<span class="override-symbol">*</span>{% endif %}
+	    			 {% if registration.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+	    			{% with registrants|first as registrant %}{{ registrant.amount|format_currency }}{% endwith %}
+	    		</td>
+	    	</tr>
+	    	{% if registration.reg_conf_price %}
+	    	<tr>
+	    		<td colspan="2" style="padding-left: 8px;">
+	    			(Registered as {{ registration.reg_conf_price.title }})
+	    		</td>
+	    	</tr>
+			{% endif %}
+	
+	    </table>
+	    	
+	    {% endif %}
     	<table class="registrants-table" border="0" cellspaceing="0" cellpadding="0">
+ 	
         {% for registrant in registrants %}
         <tr>
-            <td>
+            <td width="80%">
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
                 {% if registrant.name %}
                     {{ registrant.name }}
                 {% else %}
                     {% trans "Guest #" %}{{ forloop.counter0 }}
+                {% endif %}
+                
+                {% if not registration.is_table and registrant.pricing %}
+                (registered as {{ registrant.pricing.title }})
                 {% endif %}
                 </span>
                 {% if registrant.cancel_dt %}
@@ -178,7 +216,7 @@
                         {% blocktrans with registrant.cancel_dt|date_short as cancel_date %} Canceled on {{ cancel_date }}{% endblocktrans %}
                     </span>
                 {% else %}
-                    {% if registration.reg_conf_price.quantity == 1 %}
+                    {% if not registration.is_table %}
                       {% if user.is_authenticated %}
                           <a href="{% url event.cancel_registrant event.pk registrant.pk %}">{% trans "Cancel" %}</a>
                       {% else %}
@@ -196,13 +234,34 @@
                 {% endwith %}
                 {% endif %}
             </td>
-            <td class="td-right">
+            <td class="td-right" width="20%">
+            	{% if not registration.is_table %}
                 <span{% if registrant.cancel_dt %} class="canceled"{% endif %}>
-                        {{ registrant.amount|format_currency }}
+                {% if registrant.override %}<span class="override-symbol">*</span>{% endif %} 
+                {% if registrant.discount_amount > 0 %}<span class="discount-symbol">d</span>{% endif %}
+                       {{ registrant.amount|format_currency }} 
                 </span>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
+        
+        {% if registration.has_overridden %}
+        <tr>
+        	 <td class="td-right" colspan="2">
+        	 <span class="override-symbol">*</span> price overridden
+        	 </td>
+        </tr>
+        {% endif %}
+        
+         {% if registration.discount_amount > 0 %}
+        <tr>
+        	 <td class="td-right" colspan="2">
+        	 <span class="discount-symbol">d</span> discount applied (discount code: {{ registration.discount_code }})
+        	 </td>
+        </tr>
+        {% endif %}
+        
     	</table>
         
 		<div class="register-more">

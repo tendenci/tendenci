@@ -7,6 +7,7 @@ from django import forms
 from perms.forms import TendenciBaseForm
 from discounts.models import Discount
 from base.fields import SplitDateTimeField
+from discounts.utils import assign_discount
 
 END_DT_INITIAL = datetime.now() + timedelta(weeks=4)
 
@@ -111,3 +112,45 @@ class DiscountCodeForm(forms.Form):
         if new_price < 0:
             new_price = Decimal('0.00')
         return (new_price, discount)
+    
+    
+class DiscountHandlingForm(forms.Form):
+    """
+    Process a list of prices, and returns a list of discounted prices.
+    """
+    prices = forms.CharField()
+    code = forms.CharField()
+    
+    def clean(self):
+        code = self.cleaned_data.get('code', '')
+        [self.discount] = Discount.objects.filter(discount_code=code)[:1] or [None]
+        if not self.discount:
+            raise forms.ValidationError('This is not a valid discount code.')
+        
+        if not self.discount.never_expires:
+            now = datetime.now()
+            if self.discount.start_dt > now:
+                raise forms.ValidationError('This discount code is not in effect yet.')
+            if self.discount.end_dt <= now:    
+                raise forms.ValidationError('This discount code has expired.')
+        
+        self.limit = 0
+        if self.discount.cap != 0:
+            self.limit = self.discount.cap - self.discount.num_of_uses()
+            if self.limit <= 0:
+                raise forms.ValidationError('This discount code has passed the limit.')
+        
+        return self.cleaned_data
+        
+    def get_discounted_prices(self):
+        prices = self.cleaned_data['prices']
+        price_list = [Decimal(price) for price in prices.split(';')]
+        
+        return assign_discount(price_list, self.discount)
+        
+            
+            
+        
+        
+        
+

@@ -721,6 +721,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
             membership = form.save(commit=False)
             membership = update_perms_and_save(request, form, membership)
             messages.add_message(request, messages.SUCCESS, 'Successfully updated memberships for %s' % user.get_full_name())
+            membership.populate_or_clear_member_id()
             return HttpResponseRedirect("%s%s" % (reverse('profile', args=[user.username]),'#userview-memberships'))
     else:
         form = form_class(initial={'user':user})

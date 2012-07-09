@@ -1,4 +1,6 @@
 from datetime import datetime
+import operator
+from django.db.models import Q
 
 from django.contrib.auth.models import User, AnonymousUser
 
@@ -12,43 +14,61 @@ def get_active_addons(event):
     addons = Addon.objects.filter(event=event, status=True)
     return addons
 
-def get_available_addons(event, user):
+def get_available_addons(event, user, is_strict=False):
     """
-    Returns the available addons of an event for a given user.
+    Get the available addons of an event for user.
     """
-    
-    addons = get_active_addons(event)
-    
-    if user.profile.is_superuser:
-        # return all if admin is user
-        return addons
-    
-    if not user.is_authenticated():
-        # public addons only
-        addons = addons.filter(allow_anonymous=True)
-    else:
-        exclude_list = []
-        # user permitted addons
-        for addon in addons:
-            # shown to all users
-            if addon.allow_anonymous or addon.allow_user:
-                continue
+    filter_and, filter_or = get_addon_access_filter(user, is_strict=is_strict)
+    q_obj = None
+    if filter_and:
+        q_obj = Q(**filter_and)
+    if filter_or:
+        q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+        if q_obj:
+            q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+        else:
+            q_obj = q_obj_or
             
-            # Members allowed
-            if addon.allow_member and user.profile.is_member:
-                continue
-            
-            # Group members allowed
-            if addon.group and addon.group.is_member(user):
-                continue
-            
-            # user failed all permission checks
-            exclude_list.append(addon.pk)
-        # exclude addons user failed permission checks with
-        addons = addons.exclude(pk__in=exclude_list)
-    
-    # return the QUERYSET
+    addons = Addon.objects.filter(
+                event=event,
+                status=True
+                )
+    if q_obj:
+        addons = addons.filter(q_obj)
+        
     return addons
+
+def get_addon_access_filter(user, is_strict=False):
+    if user.profile.is_superuser: return None, None
+    
+    filter_and, filter_or = None, None
+    
+    if is_strict:
+        if user.is_anonymous():
+            filter_or = {'allow_anonymous': True}
+        elif not user.profile.is_member:
+            filter_or = {'allow_anonymous': True,
+                         'allow_user': True
+                        }
+        else:
+            # user is a member
+            filter_or = {'allow_anonymous': True,
+                         'allow_user': True,
+                         'allow_member': True}
+            # get a list of groups for this user
+            groups_id_list = user.group_member.values_list('group__id', flat=True)
+            if groups_id_list:
+                filter_or.update({'group__id__in': groups_id_list})
+    else:
+        filter_or = {'allow_anonymous': True,
+                    'allow_user': True,
+                    'allow_member': True,
+                    'group__id__gt': 0}
+
+            
+    return filter_and, filter_or
+    
+    
     
 def get_addons_for_list(event, users):
     """

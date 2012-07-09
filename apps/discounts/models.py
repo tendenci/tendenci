@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.db.models import Q
 
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
@@ -55,6 +56,16 @@ class Discount(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return('discount.detail', [self.pk])
+    
+    @staticmethod
+    def has_valid_discount(**kwargs):
+        now = datetime.now()
+        discount_exists = Discount.objects.filter(
+                            Q(never_expires=True) |
+                            Q(start_dt__lt=now,
+                            end_dt__gte=now)
+                            ).exists()
+        return discount_exists
     
 class DiscountUse(models.Model):
     invoice = models.ForeignKey(Invoice)
