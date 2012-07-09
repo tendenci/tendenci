@@ -54,15 +54,14 @@ def map_add(request, template_name="lots/maps/add.html"):
             map = form.save(commit=False)
             map = update_perms_and_save(request, form, map)
 
-            log_defaults = {
+            EventLog.objects.log(**{
                 'event_id': 9999000,
                 'event_data': '%s (%d) added by %s' % (map._meta.object_name, map.pk, request.user),
                 'description': '%s added' % map._meta.object_name,
                 'user': request.user,
                 'request': request,
                 'instance': map,
-            }
-            EventLog.objects.log(**log_defaults)
+            })
 
             messages.add_message(request, messages.INFO, _('Successfully added %s' % map))
             return redirect('lots.map_selection')
