@@ -76,6 +76,3 @@ class MapAdmin(TendenciBaseModelAdmin):
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
-
-admin.site.register(Map, MapAdmin)
-admin.site.register(Lot, LotAdmin)
