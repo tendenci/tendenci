@@ -24,7 +24,7 @@ class EventAdmin(admin.ModelAdmin):
 
 #admin.site.register(Event, EventAdmin)
 #admin.site.register(Type)
-admin.site.register(Registrant)
+#admin.site.register(Registrant)
 
 class CustomRegFieldAdminForm(CustomRegFormForField):
     class Meta:
@@ -39,10 +39,10 @@ class CustomRegFieldAdmin(admin.TabularInline):
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
-    list_display = ("name", "preview_link", "for_event", "notes", 'validate_guest', "status",)
+    list_display = ("name", "preview_link", "for_event", "notes", "status",)
     search_fields = ("name", "notes", "status",)
     fieldsets = (
-        (None, {"fields": ("name", "notes", 'validate_guest', 'status')}),
+        (None, {"fields": ("name", "notes", 'status')}),
     )
     #readonly_fields = ['event']
     

@@ -10,15 +10,14 @@ from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
 
-from profiles.models import Profile
 from site_settings.utils import get_setting
 from events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption)
 from events.forms import FormForCustomRegForm
-from user_groups.models import Group
 from perms.utils import get_query_filters
 from discounts.models import Discount, DiscountUse
+from discounts.utils import assign_discount
 
 try:
     from notification import models as notification
@@ -31,7 +30,7 @@ def get_ACRF_queryset(event=None):
     """
     rc_reg_form_ids = []
     rcp_reg_form_ids = []
-    if event:
+    if event and event.registration_configuration:
         reg_conf = event.registration_configuration
         regconfpricings = event.registration_configuration.regconfpricing_set.all()
         if reg_conf and reg_conf.reg_form:
@@ -428,12 +427,11 @@ def email_registrants(event, email, **kwargs):
         
         email.body = tmp_body  # restore to the original
         
-def email_admins(event, event_price, self_reg8n, reg8n, registrants):
+def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
     email_list = [admin.strip() for admin in admins]
-    
     notification.send_emails(
         email_list,
         'event_registration_confirmation',
@@ -444,7 +442,7 @@ def email_admins(event, event_price, self_reg8n, reg8n, registrants):
             'reg8n': reg8n,
             'registrants': registrants,
             'event': event,
-            'price': event_price,
+            'total_amount': total_amount,
             'is_paid': reg8n.invoice.balance == 0,
             'reg8n_number': reg8n.registrant_set.all().count(),
             'for_admin': True,
@@ -540,6 +538,27 @@ def save_registration(*args, **kwargs):
     reg8n.save_invoice()
     return (reg8n, created)
 
+def split_table_price(total_price, quantity):
+    """
+    Split the price for a team. 
+    Returns a tuple: (first_individual_price, individual_price).
+    """
+    avg = Decimal(str(round(total_price/quantity, 2)))
+    diff = total_price - avg * quantity
+    
+    if diff <> 0:
+        return (avg+diff, avg)
+    return (avg, avg)
+
+def apply_discount(amount, discount_amount):
+    """
+    Take the amount and discount amount as the input, 
+    return the new amount and discount amount left.
+    """
+    if discount_amount > amount:
+        return 0, discount_amount - amount
+    return amount - discount_amount, 0
+
 
 def add_registration(*args, **kwargs):
     """
@@ -559,17 +578,67 @@ def add_registration(*args, **kwargs):
     admin_notes = kwargs.get('admin_notes', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
     
+    override_table = False
+    override_price_table = Decimal(0)
+    if event.is_table and request.user.is_superuser:
+        override_table = reg_form.cleaned_data.get('override_table', False)
+        override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
+        if override_price_table == None:
+            override_price_table = 0
+    
+    
+    # get the list of amount for registrants.
+    amount_list = []
+    if event.is_table:
+        if override_table:
+            amount_list.append(override_price_table)
+        else:
+            amount_list.append(event_price)
+        
+    else:
+        override_price_total = Decimal(0)
+        for i, form in enumerate(registrant_formset.forms):
+            override = False
+            override_price = Decimal(0)
+            if request.user.is_superuser:
+                override = form.cleaned_data.get('override', False)
+                override_price = form.cleaned_data.get('override_price', Decimal(0))
+                
+            price = form.cleaned_data['pricing']
+
+            if override:
+                amount = override_price
+                override_price_total += amount
+            else:
+                amount = price.price
+                
+            amount_list.append(amount)
+
+                  
     # apply discount if any
-    discount = reg_form.get_discount()
-    if discount:
-        admin_notes = "%sDiscount code: %s has been enabled for this registration." % (admin_notes, discount.discount_code)
+    discount_code = reg_form.cleaned_data.get('discount_code', None)
+    discount_amount = Decimal(0)
+    discount_list = [Decimal(0) for i in range(len(amount_list))]
+    if discount_code:
+        [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
+        if discount and discount.available_for(1):
+            amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
     
     reg8n_attrs = {
         "event": event,
         "payment_method": reg_form.cleaned_data.get('payment_method'),
         "amount_paid": str(total_amount),
-        "reg_conf_price": price
+        "reg_conf_price": price,
+        'is_table': event.is_table,
+        'override_table': override_table,
+        'override_price_table': override_price_table
     }
+    if discount_code and discount_amount:
+        reg8n_attrs.update({'discount_code': discount_code,
+                            'discount_amount': discount_amount})
+    
+    if event.is_table:
+        reg8n_attrs['quantity'] = price.quantity
     if request.user.is_authenticated():
         reg8n_attrs['creator'] = request.user
         reg8n_attrs['owner'] = request.user
@@ -577,21 +646,37 @@ def add_registration(*args, **kwargs):
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
     
-    discount_applied = False
-    for form in registrant_formset.forms:
-        if count % price.quantity == 0:
-            amount = event_price
-            # apply the discount to the first registrant only
-            if not discount_applied:
-                if discount:
-                    amount = event_price - Decimal(discount.value)
-                    if amount < 0:
-                        amount = 0
-                discount_applied = True
-        else:
-            amount = Decimal('0.00')
+    if event.is_table:
+        table_individual_first_price, table_individual_price = amount_list[0], Decimal('0')
+    
+#    discount_applied = False
+    for i, form in enumerate(registrant_formset.forms):
+        override = False
+        override_price = Decimal(0)
+        if not event.is_table:
+            if request.user.is_superuser:
+                override = form.cleaned_data.get('override', False)
+                override_price = form.cleaned_data.get('override_price', Decimal(0))
+                
+            price = form.cleaned_data['pricing']
             
-        if not form in registrant_formset.deleted_forms:
+            # this amount has taken account into admin override and discount code
+            amount = amount_list[i]
+            
+            if discount_code and discount_amount:
+                discount_amount = discount_list[i]
+        else:
+            # table individual
+            if i == 0:
+                amount = table_individual_first_price
+            else:
+                amount = table_individual_price
+#            if reg8n.override_table:
+#                override = reg8n.override_table
+#                override_price = amount
+        
+        # the table registration form does not have the DELETE field   
+        if event.is_table or not form in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
                 event,
@@ -599,8 +684,14 @@ def add_registration(*args, **kwargs):
                 price,
                 amount
             ]
-            registrant = create_registrant_from_form(*registrant_args, 
-                                                     custom_reg_form=custom_reg_form)
+            registrant_kwargs = {'custom_reg_form': custom_reg_form,
+                                 'is_primary': i==0,
+                                 'override': override,
+                                 'override_price': override_price}
+            if not event.is_table:
+                registrant_kwargs['discount_amount'] = discount_list[i]
+            
+            registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
             total_amount += registrant.amount 
             
             count += 1
@@ -613,18 +704,18 @@ def add_registration(*args, **kwargs):
     
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
-    
     created = True
     
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
-    
-    if discount:
-        DiscountUse.objects.create(
-                discount=discount,
-                invoice=invoice,
-            )
-    
+    if discount_code and discount:
+        for dmount in discount_list:
+            if dmount > 0:
+                DiscountUse.objects.create(
+                        discount=discount,
+                        invoice=invoice,
+                    )
+        
     return (reg8n, created)
 
 
@@ -642,9 +733,16 @@ def create_registrant_from_form(*args, **kwargs):
 
     registrant = Registrant()
     registrant.registration = reg8n
+    registrant.pricing = price
     registrant.amount = amount
-    
+    registrant.override = kwargs.get('override', False)
+    registrant.override_price = kwargs.get('override_price')
+    registrant.discount_amount = kwargs.get('discount_amount', Decimal(0))
+    if registrant.override_price is None:
+        registrant.override_price = Decimal(0)
+    registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
+    registrant.memberid = form.cleaned_data.get('memberid', '')
     
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
@@ -679,7 +777,7 @@ def create_registrant_from_form(*args, **kwargs):
                     if not registrant.company_name:
                         registrant.company_name = user_profile.company
                     registrant.position_title = user_profile.position_title
-                
+
     registrant.save()
     return registrant
 
@@ -1096,7 +1194,11 @@ def get_custom_registrants_initials(entries, **kwargs):
         fields_d = {}
         field_entries = entry.field_entries.all()
         for field_entry in field_entries:
-            fields_d['field_%d' % field_entry.field.id] = field_entry.value
+            if field_entry.field.map_to_field:
+                field_key = field_entry.field.map_to_field
+            else:
+                field_key = 'field_%d' % field_entry.field.id
+            fields_d[field_key] = field_entry.value
         initials.append(fields_d)
     return initials
 

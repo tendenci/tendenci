@@ -2,6 +2,7 @@ from django.conf import settings
 from site_settings.utils import get_setting
 from user_groups.models import GroupMembership, Group
 from memberships.models import Membership, App
+from perms.utils import get_query_filters
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
     from django.core.mail.message import EmailMessage
@@ -112,9 +113,12 @@ def group_choices(user):
     returns a list of (group.pk, group.label) for groups viewable
     for the given user.
     """
-    groups = Group.objects.search(user=user)
+
+    filters = get_query_filters(user, 'groups.view_group', perms_field=False)
+    groups = Group.objects.filter(filters).exclude(type="membership").distinct()
+
     choices = [(group.pk, "%s (%s)" % (group.label, group.name)) for group in groups]
-    
+
     return choices
 
 def app_choices(user):

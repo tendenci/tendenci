@@ -1,11 +1,10 @@
 .event-info {
     padding: 10px;
-    background-color: #F5F5F5;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
     text-align: left;   
-    margin-bottom: 10px;
+    margin: 1em 0;
     width: 61%;
 }
 .event-title {
@@ -35,14 +34,14 @@
     font-size: 14px;
     cursor: pointer;
 }
-.even-registrant, .odd-registrant{
+.odd-registrant, .even-registrant{
     background-color: #f5f5f5;
     padding: 10px;
 }
+
 #reg-form-box{
     border: 1px solid #ccc;
     background-color: #fff;
-    padding: 1em;
     -moz-border-radius: 4px;
     border-radius: 4px;
     width: 200px;
@@ -104,7 +103,7 @@ div.delete-button-wrap{
     border: 2px solid #FF8B78;
     margin-bottom: 20px;
     padding: 10px;
-    width: 80%;
+    width: 61%;
 }
 .deleted-item td{
     text-decoration: line-through;
@@ -118,6 +117,7 @@ div.delete-button-wrap{
     border: 1px solid #CCC;
     cursor: pointer;
     color: darkred;
+    background-color: #fff;
 }
 
 .extra-registrants {
@@ -152,3 +152,10 @@ div.delete-button-wrap{
 .admin {color: #800; font-weight: bold;}
 .discount-summary {display: none;}
 .showhide {font-size: 18px;}
+
+.addon-wrap{
+	background-color: #f5f5f5;
+	padding:10px; 
+	margin: 2em 0;
+	width: 68%; 
+}

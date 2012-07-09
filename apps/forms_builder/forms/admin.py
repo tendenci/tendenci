@@ -19,11 +19,20 @@ from django.utils.translation import ugettext_lazy as _
 from event_logs.models import EventLog
 from perms.admin import TendenciBaseModelAdmin
 
-from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
+from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from forms_builder.forms.settings import UPLOAD_ROOT
-from forms_builder.forms.forms import FormAdminForm, FormForField
+from forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
+
+class PricingAdminForm(PricingForm):
+    class Meta:
+        model = Pricing
+
+class PricingAdmin(admin.TabularInline):
+    model = Pricing
+    form = PricingAdminForm
+    extra = 0
 
 class FieldAdminForm(FormForField):
     class Meta:
@@ -38,7 +47,7 @@ class FieldAdmin(admin.TabularInline):
 
 class FormAdmin(TendenciBaseModelAdmin):
 
-    inlines = (FieldAdmin,)
+    inlines = (PricingAdmin, FieldAdmin,)
     list_display = ("title", "id", "intro", "email_from", "email_copies", 
         "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
@@ -59,6 +68,7 @@ class FormAdmin(TendenciBaseModelAdmin):
             'status',
             'status_detail'
         )}),
+        (_("Payment"), {"fields": ("custom_payment", "payment_methods")}),
     )
     
     form = FormAdminForm

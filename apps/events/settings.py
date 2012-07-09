@@ -1,6 +1,5 @@
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-
 FIELD_MAX_LENGTH = 2000
 LABEL_MAX_LENGTH = 255
 

@@ -1,5 +1,6 @@
 import uuid
 from hashlib import md5
+import operator
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +12,7 @@ from django.template.defaultfilters import slugify
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import AutoField
 from django.contrib.contenttypes import generic
+from django.db.models import Q
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
@@ -32,7 +34,6 @@ from events.settings import (FIELD_MAX_LENGTH,
                              FIELD_TYPE_CHOICES, 
                              USER_FIELD_CHOICES)
 from base.utils import localize_date
-
 
 
 class TypeColorSet(models.Model):
@@ -109,6 +110,463 @@ class Place(models.Model):
         return [s for s in (self.city, self.state) if s]
 
 
+
+class RegistrationConfiguration(models.Model):
+    """
+    Event registration
+    Extends the event model
+    """
+    # TODO: use shorter name
+    # TODO: do not use fixtures, use RAWSQL to prepopulate
+    # TODO: set widget here instead of within form class
+    payment_method = models.ManyToManyField(GlobalPaymentMethod)
+    payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
+
+    limit = models.IntegerField(_('Registration Limit'), default=0)
+    enabled = models.BooleanField(_('Enable Registration'), default=False)
+    
+    require_guests_info = models.BooleanField(_('Require Guests Info'), help_text="If checked, " + \
+                        "the required fields in registration form are also required for guests.  ",
+                        default=False)
+
+    is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
+    discount_eligible = models.BooleanField(default=True)
+
+    # custom reg form
+    use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
+                                 verbose_name=_("Custom Registration Form"),
+                                 related_name='regconfs',
+                                 help_text="You'll have the chance to edit the selected form")
+    # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
+    bind_reg_form_to_conf_only = models.BooleanField(_(' '),
+                                 choices=((True, 'Use one form for all pricings'),
+                                          (False, 'Use separate form for each pricing')),
+                                 default=True)
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
+    @property
+    def can_pay_online(self):
+        """
+        Check online payment dependencies.
+        Return boolean.
+        """
+        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
+        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
+        has_api = settings.MERCHANT_LOGIN is not ''
+
+        return all([has_method, has_account, has_api])
+    
+    def get_available_pricings(self, user, is_strict=False, spots_available=-1):
+        """
+        Get the available pricings for this user. 
+        """
+        filter_and, filter_or = RegConfPricing.get_access_filter(user, 
+                                                                 is_strict=is_strict,
+                                                                 spots_available=spots_available)
+        q_obj = None
+        if filter_and:
+            q_obj = Q(**filter_and)
+        if filter_or:
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
+            if q_obj:
+                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+            else:
+                q_obj = q_obj_or
+        pricings = RegConfPricing.objects.filter(
+                    reg_conf=self,
+                    status=True
+                    )
+        if q_obj:
+            pricings = pricings.filter(q_obj)
+            
+        return pricings
+       
+
+
+class RegConfPricing(models.Model):
+    """
+    Registration configuration pricing
+    """
+    reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
+    
+    title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
+    quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
+    group = models.ForeignKey(Group, blank=True, null=True)
+    display_order = models.IntegerField(default=1, help_text="The pricing will be sorted by this field.")
+    
+    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
+    
+    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
+                                 verbose_name=_("Custom Registration Form"),
+                                 related_name='regconfpricings',
+                                 help_text="You'll have the chance to edit the selected form")
+    
+    start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
+    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
+    
+    allow_anonymous = models.BooleanField(_("Public can use this pricing"))
+    allow_user = models.BooleanField(_("Signed in user can use this pricing"))
+    allow_member = models.BooleanField(_("All members can use this pricing"))
+    
+    status = models.BooleanField(default=True)
+    
+    def delete(self, *args, **kwargs):
+        """
+        Note that the delete() method for an object is not necessarily
+        called when deleting objects in bulk using a QuerySet.
+        """
+        #print "%s, %s" % (self, "status set to false" )
+        self.status = False
+        self.save(*args, **kwargs)
+    
+    def __unicode__(self):
+        if self.title:
+            return '%s' % self.title
+        return '%s' % self.pk
+
+    def available(self):
+        if not self.reg_conf.enabled or not self.status:
+            return False
+        if hasattr(self, 'event'):
+            if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
+                return False
+        return True
+    
+    @property
+    def registration_has_started(self):
+        if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
+            return True
+        return False
+        
+    @property
+    def registration_has_ended(self):
+        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            return True
+        return False
+    
+    @property
+    def is_open(self):
+        status = [
+            self.reg_conf.enabled,
+            self.within_time,
+        ]
+        return all(status)
+    
+    @property
+    def within_time(self):
+        if localize_date(self.start_dt, from_tz=self.timezone) \
+            <= localize_date(datetime.now())                    \
+            <= localize_date(self.end_dt, from_tz=self.timezone):
+            return True
+        return False
+    
+    @property
+    def timezone(self):
+        return self.reg_conf.event.timezone.zone
+    
+    @staticmethod
+    def get_access_filter(user, is_strict=False, spots_available=-1):
+        if user.profile.is_superuser: return None, None
+        now = datetime.now()
+        filter_and, filter_or = None, None
+        
+        if is_strict:
+            if user.is_anonymous():
+                filter_or = {'allow_anonymous': True}
+            elif not user.profile.is_member:
+                filter_or = {'allow_anonymous': True,
+                             'allow_user': True
+                            }
+            else:
+                # user is a member
+                filter_or = {'allow_anonymous': True,
+                             'allow_user': True,
+                             'allow_member': True}
+                # get a list of groups for this user
+                groups_id_list = user.group_member.values_list('group__id', flat=True)
+                if groups_id_list:
+                    filter_or.update({'group__id__in': groups_id_list})
+        else:
+            filter_or = {'allow_anonymous': True,
+                        'allow_user': True,
+                        'allow_member': True,
+                        'group__id__gt': 0}
+
+        
+        filter_and = {'start_dt__lt': now,
+                      'end_dt__gt': now,
+                      }
+        
+        if spots_available <> -1:
+            if not user.profile.is_superuser:
+                filter_and['quantity__lte'] = spots_available
+                
+        return filter_and, filter_or
+    
+    def target_display(self):        
+        target_str = ''
+        
+#        if self.allow_anonymous:
+#            pass
+#            #target_str = 'for public'
+#        elif self.allow_user:
+#            target_str = 'for users'
+#        elif self.allow_member:
+#            target_str = 'for members'
+#            
+#        if self.group:
+#            if target_str:
+#                target_str += ' and '
+#            target_str += 'for members of "%s"' % self.group.name
+#            
+#        if not any([self.allow_anonymous,
+#                    self.allow_user,
+#                    self.allow_member,
+#                    self.group
+#                    ]):
+#            target_str = 'admin only' 
+            
+        if self.quantity > 1:
+            if not target_str:
+                target_str = 'for '
+            else:
+                target_str += ' - '
+            target_str += 'a team of %d' % self.quantity
+            
+        return target_str
+        
+    
+class Registration(models.Model):
+
+    guid = models.TextField(max_length=40, editable=False)
+    note = models.TextField(blank=True)
+    event = models.ForeignKey('Event')
+    invoice = models.ForeignKey(Invoice, blank=True, null=True)
+    
+    # This field will not be used if dynamic pricings are enabled for registration
+    # The pricings should then be found in the Registrant instances
+    reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
+    
+    reminder = models.BooleanField(default=False)
+    
+    # TODO: Payment-Method must be soft-deleted
+    # so that it may always be referenced
+    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
+    amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
+    
+    is_table = models.BooleanField(_('Is table registration'), default=False)
+    # used for table
+    quantity = models.IntegerField(_('Number of registrants for a table'), default=1)
+    # admin price override for table
+    override_table = models.BooleanField(_('Admin Price Override?'), default=False)
+    override_price_table = models.DecimalField(_('Override Price'), max_digits=21, 
+                                         decimal_places=2, 
+                                         blank=True, 
+                                         default=0)
+    discount_code = models.CharField(_('Discount Code'), max_length=100,
+                                     blank=True, null=True)
+    discount_amount = models.DecimalField(_('Discount Amount'), 
+                                          max_digits=10, 
+                                          decimal_places=2,
+                                          default=0)
+    canceled = models.BooleanField(_('Canceled'), default=False)
+
+    creator = models.ForeignKey(User, related_name='created_registrations', null=True)
+    owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        permissions = (("view_registration","Can view registration"),)
+
+    def __unicode__(self):
+        return 'Registration - %s' % self.event.title
+
+    @property
+    def hash(self):
+        return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
+    
+
+    # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed on invoice.
+        If not supplied, the default description will be generated.
+        """
+        description = 'Tendenci Invoice %d for Event (%d): %s - %s (Reg# %d).' % (
+            inv.id,
+            self.event.pk,
+            self.event.title,
+            self.event.start_dt.strftime('%Y-%m-%d'),
+            inv.object_id,
+        )
+        
+        return description
+        
+        
+    def make_acct_entries(self, user, inv, amount, **kwargs):
+        """
+        Make the accounting entries for the event sale
+        """
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        
+        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
+        if not inv.is_tendered:
+            make_acct_entries_initial(user, ae, amount)
+        else:
+            # payment has now been received
+            make_acct_entries_closing(user, ae, amount)
+            
+            # #CREDIT event SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+    
+    # to lookup for the number, go to /accountings/account_numbers/        
+    def get_acct_number(self, discount=False):
+        if discount:
+            return 462000
+        else:
+            return 402000
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update the object after online payment is received.
+        """
+        from datetime import datetime
+        try:
+            from notification import models as notification
+        except:
+            notification = None
+        from perms.utils import get_notice_recipients
+        from events.utils import email_admins
+
+        site_label = get_setting('site', 'global', 'sitedisplayname')
+        site_url = get_setting('site', 'global', 'siteurl')
+        self_reg8n = get_setting('module', 'users', 'selfregistration')
+
+        payment_attempts = self.invoice.payment_set.count()
+
+        registrants = self.registrant_set.all().order_by('id')
+        for registrant in registrants:
+            #registrant.assign_mapped_fields()
+            if registrant.custom_reg_form_entry:
+                registrant.name = registrant.custom_reg_form_entry.__unicode__()
+            else:
+                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
+
+        # only send email on success! or first fail
+        if payment.is_paid or payment_attempts <= 1:
+            notification.send_emails(
+                [self.registrant.email],  # recipient(s)
+                'event_registration_confirmation',  # template
+                {
+                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
+                    'SITE_GLOBAL_SITEURL': site_url,
+                    'site_label': site_label,
+                    'site_url': site_url,
+                    'self_reg8n': self_reg8n,
+                    'reg8n': self,
+                    'registrants': registrants,
+                    'event': self.event,
+                    'total_amount': self.invoice.total,
+                    'is_paid': payment.is_paid,
+                },
+                True,  # notice saved in db
+            )
+            #notify the admins too
+            email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
+
+
+    def status(self):
+        """
+        Returns registration status.
+        """
+        config = self.event.registration_configuration
+
+        balance = self.invoice.balance
+        payment_required = config.payment_required
+
+        if self.canceled:
+            return 'cancelled'
+
+        if balance > 0:
+            if payment_required:
+                return 'payment-required'
+            else:
+                return 'registered-with-balance'
+        else:
+            return 'registered'
+        
+
+    @property
+    def registrant(self):
+        """
+        Gets primary registrant.
+        Get first registrant w/ email address
+        Order by insertion (primary key)
+        """        
+        [registrant] = self.registrant_set.filter(is_primary=True)[:1] or [None]
+        if not registrant:
+            [registrant] = self.registrant_set.all().order_by("pk")[:1] or [None]
+        
+        return registrant
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.guid = str(uuid.uuid1())
+        super(Registration, self).save(*args, **kwargs)
+
+    def save_invoice(self, *args, **kwargs):
+        status_detail = kwargs.get('status_detail', 'tendered')
+        admin_notes = kwargs.get('admin_notes', None)
+        
+        object_type = ContentType.objects.get(app_label=self._meta.app_label, 
+            model=self._meta.module_name)
+
+        try: # get invoice
+            invoice = Invoice.objects.get(
+                object_type = object_type,
+                object_id = self.pk,
+            )
+        except ObjectDoesNotExist: # else; create invoice
+            # cannot use get_or_create method
+            # because too many fields are required
+            invoice = Invoice()
+            invoice.object_type = object_type
+            invoice.object_id = self.pk
+
+        # update invoice with details
+        invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
+        invoice.estimate = True
+        invoice.status_detail = status_detail
+        invoice.subtotal = self.amount_paid
+        invoice.total = self.amount_paid
+        invoice.balance = invoice.total
+        invoice.tender_date = datetime.now()
+        invoice.due_date = datetime.now()
+        invoice.ship_date = datetime.now()
+        invoice.admin_notes = admin_notes
+        invoice.save()
+
+        self.invoice = invoice
+
+        self.save()
+
+        return invoice
+    
+    @property
+    def has_overridden(self):
+        if self.is_table:
+            return self.override_table
+
+        return self.registrant_set.filter(override=True).exists()
+    
 class Registrant(models.Model):
     """
     Event registrant.
@@ -147,8 +605,20 @@ class Registrant(models.Model):
     
     meal_option = models.CharField(max_length=200, default='')
     comments = models.TextField(default='')
+    
+    is_primary = models.BooleanField(_('Is primary registrant'), default=False)
+    override = models.BooleanField(_('Admin Price Override?'), default=False)
+    override_price = models.DecimalField(_('Override Price'), max_digits=21, 
+                                         decimal_places=2, 
+                                         blank=True, 
+                                         default=0)
+    discount_amount = models.DecimalField(_('Discount Amount'), 
+                                          max_digits=10, 
+                                          decimal_places=2,
+                                          default=0)
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
+    memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
@@ -163,7 +633,12 @@ class Registrant(models.Model):
             return self.custom_reg_form_entry.get_lastname_firstname()
         else:
             return '%s, %s' % (self.last_name, self.first_name)
-
+        
+    def register_pricing(self):
+        # The pricing is a field recently added. The previous registrations
+        # store the pricing in registration. 
+        return self.pricing or self.registration.reg_conf_price
+        
     @property
     def lastname_firstname(self):
         fn = self.first_name or None
@@ -271,370 +746,6 @@ class Registrant(models.Model):
                 setattr(self, 'field', self.custom_reg_form_entry.get_value_of_mapped_field(field))
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
-
-
-class RegistrationConfiguration(models.Model):
-    """
-    Event registration
-    Extends the event model
-    """
-    # TODO: use shorter name
-    # TODO: do not use fixtures, use RAWSQL to prepopulate
-    # TODO: set widget here instead of within form class
-    payment_method = models.ManyToManyField(GlobalPaymentMethod)
-    payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
-
-    limit = models.IntegerField(_('Registration Limit'), default=0)
-    enabled = models.BooleanField(_('Enable Registration'), default=False)
-
-    is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
-    discount_eligible = models.BooleanField(default=True)
-
-    # custom reg form
-    use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
-    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True,
-                                 verbose_name=_("Custom Registration Form"),
-                                 related_name='regconfs',
-                                 help_text="You'll have the chance to edit the selected form")
-    # a custom reg form can be bound to either RegistrationConfiguration or RegConfPricing
-    bind_reg_form_to_conf_only = models.BooleanField(_(' '),
-                                 choices=((True, 'Use one form for all pricings'),
-                                          (False, 'Use separate form for each pricing')),
-                                 default=True)
-
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-
-    @property
-    def can_pay_online(self):
-        """
-        Check online payment dependencies.
-        Return boolean.
-        """
-        has_method = GlobalPaymentMethod.objects.filter(is_online=True).exists()
-        has_account = get_setting('site', 'global', 'merchantaccount') is not ''
-        has_api = settings.MERCHANT_LOGIN is not ''
-
-        return all([has_method, has_account, has_api])
-
-
-class RegConfPricing(models.Model):
-    """
-    Registration configuration pricing
-    """
-    reg_conf = models.ForeignKey(RegistrationConfiguration, blank=True, null=True)
-    
-    title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
-    quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
-    group = models.ForeignKey(Group, blank=True, null=True)
-    display_order = models.IntegerField(default=1, help_text="The pricing will be sorted by this field.")
-    
-    price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
-    
-    reg_form = models.ForeignKey("CustomRegForm", blank=True, null=True, 
-                                 verbose_name=_("Custom Registration Form"),
-                                 related_name='regconfpricings',
-                                 help_text="You'll have the chance to edit the selected form")
-    
-    start_dt = models.DateTimeField(_('Start Date'), default=datetime.now())
-    end_dt = models.DateTimeField(_('End Date'), default=datetime.now() + timedelta(days=30, hours=6))
-    
-    allow_anonymous = models.BooleanField(_("Public can use this pricing"))
-    allow_user = models.BooleanField(_("Signed in user can use this pricing"))
-    allow_member = models.BooleanField(_("All members can use this pricing"))
-    
-    status = models.BooleanField(default=True)
-    
-    def delete(self, *args, **kwargs):
-        """
-        Note that the delete() method for an object is not necessarily
-        called when deleting objects in bulk using a QuerySet.
-        """
-        #print "%s, %s" % (self, "status set to false" )
-        self.status = False
-        self.save(*args, **kwargs)
-    
-    def __unicode__(self):
-        if self.title:
-            return '%s' % self.title
-        return '%s' % self.pk
-
-    def available(self):
-        if not self.reg_conf.enabled or not self.status:
-            return False
-        if hasattr(self, 'event'):
-            if localize_date(datetime.now()) > localize_date(self.event.end_dt, from_tz=self.timezone):
-                return False
-        return True
-    
-    @property
-    def registration_has_started(self):
-        if localize_date(datetime.now()) >= localize_date(self.start_dt, from_tz=self.timezone):
-            return True
-        return False
-        
-    @property
-    def registration_has_ended(self):
-        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
-            return True
-        return False
-    
-    @property
-    def is_open(self):
-        status = [
-            self.reg_conf.enabled,
-            self.within_time,
-        ]
-        return all(status)
-    
-    @property
-    def within_time(self):
-        if localize_date(self.start_dt, from_tz=self.timezone) \
-            <= localize_date(datetime.now())                    \
-            <= localize_date(self.end_dt, from_tz=self.timezone):
-            return True
-        return False
-    
-    @property
-    def timezone(self):
-        return self.reg_conf.event.timezone.zone
-    
-class Registration(models.Model):
-
-    guid = models.TextField(max_length=40, editable=False)
-    note = models.TextField(blank=True)
-    event = models.ForeignKey('Event')
-    invoice = models.ForeignKey(Invoice, blank=True, null=True)
-    
-    # This field will not be used if dynamic pricings are enabled for registration
-    # The pricings should then be found in the Registrant instances
-    reg_conf_price = models.ForeignKey(RegConfPricing, null=True)
-    
-    reminder = models.BooleanField(default=False)
-    
-    # TODO: Payment-Method must be soft-deleted
-    # so that it may always be referenced
-    payment_method = models.ForeignKey(GlobalPaymentMethod, null=True)
-    amount_paid = models.DecimalField(_('Amount Paid'), max_digits=21, decimal_places=2)
-
-    creator = models.ForeignKey(User, related_name='created_registrations', null=True)
-    owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        permissions = (("view_registration","Can view registration"),)
-
-    def __unicode__(self):
-        return 'Registration - %s' % self.event.title
-
-    @property
-    def hash(self):
-        return md5(".".join([str(self.event.pk), str(self.pk)])).hexdigest()
-
-    # Called by payments_pop_by_invoice_user in Payment model.
-    def get_payment_description(self, inv):
-        """
-        The description will be sent to payment gateway and displayed on invoice.
-        If not supplied, the default description will be generated.
-        """
-        description = 'Tendenci Invoice %d for Event (%d): %s - %s (Reg# %d).' % (
-            inv.id,
-            self.event.pk,
-            self.event.title,
-            self.event.start_dt.strftime('%Y-%m-%d'),
-            inv.object_id,
-        )
-        
-        #The discount used will be the same for all discount uses in one
-        #invoice.
-        discounts = inv.discountuse_set.filter(invoice=inv)
-        if discounts:
-            discount = discounts[0].discount.value * discounts.count()
-            description += "\nYour discount of $ %s has been added." % discount
-        
-        return description
-        
-        
-    def make_acct_entries(self, user, inv, amount, **kwargs):
-        """
-        Make the accounting entries for the event sale
-        """
-        from accountings.models import Acct, AcctEntry, AcctTran
-        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
-        
-        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
-        if not inv.is_tendered:
-            make_acct_entries_initial(user, ae, amount)
-        else:
-            # payment has now been received
-            make_acct_entries_closing(user, ae, amount)
-            
-            # #CREDIT event SALES
-            acct_number = self.get_acct_number()
-            acct = Acct.objects.get(account_number=acct_number)
-            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
-    
-    # to lookup for the number, go to /accountings/account_numbers/        
-    def get_acct_number(self, discount=False):
-        if discount:
-            return 462000
-        else:
-            return 402000
-
-    def auto_update_paid_object(self, request, payment):
-        """
-        Update the object after online payment is received.
-        """
-        from datetime import datetime
-        try:
-            from notification import models as notification
-        except:
-            notification = None
-        from perms.utils import get_notice_recipients
-        from events.utils import email_admins
-
-        site_label = get_setting('site', 'global', 'sitedisplayname')
-        site_url = get_setting('site', 'global', 'siteurl')
-        self_reg8n = get_setting('module', 'users', 'selfregistration')
-
-        payment_attempts = self.invoice.payment_set.count()
-
-        registrants = self.registrant_set.all().order_by('id')
-        for registrant in registrants:
-            #registrant.assign_mapped_fields()
-            if registrant.custom_reg_form_entry:
-                registrant.name = registrant.custom_reg_form_entry.__unicode__()
-            else:
-                registrant.name = ' '.join([registrant.first_name, registrant.last_name])
-
-        # only send email on success! or first fail
-        if payment.is_paid or payment_attempts <= 1:
-            notification.send_emails(
-                [self.registrant.email],  # recipient(s)
-                'event_registration_confirmation',  # template
-                {
-                    'SITE_GLOBAL_SITEDISPLAYNAME': site_label,
-                    'SITE_GLOBAL_SITEURL': site_url,
-                    'site_label': site_label,
-                    'site_url': site_url,
-                    'self_reg8n': self_reg8n,
-                    'reg8n': self,
-                    'registrants': registrants,
-                    'event': self.event,
-                    'price': self.invoice.total,
-                    'is_paid': payment.is_paid,
-                },
-                True,  # notice saved in db
-            )
-            #notify the admins too
-            email_admins(self.event, self.invoice.total, self_reg8n, self, registrants)
-
-    @property
-    def canceled(self):
-        """
-        Return True if all registrants are canceled. Otherwise False.
-        """
-        registrants = self.registrant_set.all()
-        for registrant in registrants:
-            if not registrant.cancel_dt:
-                return False
-        return True
-
-    def status(self):
-        """
-        Returns registration status.
-        """
-        config = self.event.registration_configuration
-
-        balance = self.invoice.balance
-        payment_required = config.payment_required
-
-        if self.canceled:
-            return 'cancelled'
-
-        if balance > 0:
-            if payment_required:
-                return 'payment-required'
-            else:
-                return 'registered-with-balance'
-        else:
-            return 'registered'
-
-    @property
-    def registrant(self):
-        """
-        Gets primary registrant.
-        Get first registrant w/ email address
-        Order by insertion (primary key)
-        """
-        registrant = None
-        
-        if self.event.registration_configuration.use_custom_reg_form:
-            registrants = self.registrant_set.all().order_by("pk")
-            for reg in registrants:
-                if reg.custom_reg_form_entry:
-                    email = reg.custom_reg_form_entry.get_email()
-                    if email:
-                        registrant = reg
-                        registrant.email = email
-                        break
-            if (not registrant) and registrants:
-                # this registrant probably didn't use the custom reg form,
-                # but the custom reg form is now enabled
-                registrant = registrants[0]
-                
-        else:
-            try:
-                registrant = self.registrant_set.filter(
-                    email__isnull=False).order_by("pk")[0]
-            except:
-                pass
-
-        return registrant
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.guid = str(uuid.uuid1())
-        super(Registration, self).save(*args, **kwargs)
-
-    def save_invoice(self, *args, **kwargs):
-        status_detail = kwargs.get('status_detail', 'tendered')
-        admin_notes = kwargs.get('admin_notes', None)
-        
-        object_type = ContentType.objects.get(app_label=self._meta.app_label, 
-            model=self._meta.module_name)
-
-        try: # get invoice
-            invoice = Invoice.objects.get(
-                object_type = object_type,
-                object_id = self.pk,
-            )
-        except ObjectDoesNotExist: # else; create invoice
-            # cannot use get_or_create method
-            # because too many fields are required
-            invoice = Invoice()
-            invoice.object_type = object_type
-            invoice.object_id = self.pk
-
-        # update invoice with details
-        invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
-        invoice.estimate = True
-        invoice.status_detail = status_detail
-        invoice.subtotal = self.amount_paid
-        invoice.total = self.amount_paid
-        invoice.balance = invoice.total
-        invoice.tender_date = datetime.now()
-        invoice.due_date = datetime.now()
-        invoice.ship_date = datetime.now()
-        invoice.admin_notes = admin_notes
-        invoice.save()
-
-        self.invoice = invoice
-
-        self.save()
-
-        return invoice
 
 
 class Payment(models.Model):
@@ -809,6 +920,13 @@ class Event(TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
+    
+    @property
+    def has_addons(self):
+        return Addon.objects.filter(
+            event=self,
+            status=True
+            ).exists()
 
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
@@ -908,14 +1026,31 @@ class Event(TendenciBaseModel):
         if start_dt and not end_dt:
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
+            
+    def get_spots_status(self):
+        """
+        Return a tuple of (spots_taken, spots_available) for this event.
+        """
+        limit = self.registration_configuration.limit
+        spots_taken = Registrant.objects.filter(
+                                    registration__event=self, 
+                                    cancel_dt__isnull=True).count()
+                                    
+        if limit == 0:
+            # no limit
+            return (spots_taken, -1)
+        
+        if spots_taken >= limit:
+            return  (spots_taken, 0)
+
+        return (spots_taken, limit-spots_taken)
+        
+        
 
     
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     notes = models.TextField(_("Notes"), max_length=2000, blank=True)
-    validate_guest = models.BooleanField(_("Validate Guest"), default=False,
-                                         help_text="If checked, required fields for " + \
-                                         "the primary registrant will also be required for the guests")
     
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)

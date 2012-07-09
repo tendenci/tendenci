@@ -33,6 +33,24 @@ DATABASES = {
     }
 }
 
+
+"""
+# If you are using MySQL with pyodbc and TDS, your connection would look something like this
+# where 'tendenci' is the odbc name for the mysql database connection. See install.md for more.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'tendenci',
+        'USER': '<YOUR DATABASE USER NAME>',
+        'PASSWORD': '<YOUR DATABASE PASSWORD>',
+        'HOST': '',
+        'PORT': '',
+        'OPTIONS': {"init_command": "SET storage_engine=INNODB",}
+    }
+}
+"""
+
+
 # email
 EMAIL_HOST = '4.78.3.131'
 EMAIL_PORT = 25
@@ -40,8 +58,16 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = 'DO-NOT-REPLY-TENDENCI@schipul.net'
-#DEFAULT_FROM_EMAIL = 'amazon-no-reply@schipul.net'
 
+"""
+For development try FakeSMTP which intercepts SMTP messages for testing
+https://github.com/Nilhcem/FakeSMTP
+
+and change these two lines:
+EMAIL_HOST = '127.0.0.1'
+EMAIL_PORT = 25
+
+"""
 
 # user agent for external retrieval of files/images
 TENDENCI_USER_AGENT = 'Tendenci/5.0 +http://www.tendenci.com'

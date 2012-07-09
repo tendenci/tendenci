@@ -70,6 +70,7 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
+                self.email.priority = 1
                 self.email.subject = 'Recurring payment transaction error on %s' % ( 
                                                                             self.site_display_name)
                 
@@ -77,7 +78,7 @@ class RecurringPaymentEmailNotices(object):
             except TemplateDoesNotExist:
                 pass
         
-    def email_admins_transaction_result(self, payment_transaction):
+    def email_admins_transaction_result(self, payment_transaction, success=True):
         """Send admins the result after the transaction is processed.
         """
         self.email.recipient = self.admin_emails
@@ -96,8 +97,13 @@ class RecurringPaymentEmailNotices(object):
                                                 })
                 self.email.body = email_content
                 self.email.content_type = "html"
-                self.email.subject = 'Recurring payment transaction processed on %s' % ( 
+                if not success:
+                    self.email.subject = 'Recurring payment transaction failed on %s' % ( 
                                                                             self.site_display_name)
+                    self.email.priority = 1
+                else:
+                    self.email.subject = 'Recurring payment transaction processed on %s' % ( 
+                                                                                self.site_display_name)
                 
                 self.email.send()
             except TemplateDoesNotExist:
@@ -280,7 +286,7 @@ def run_a_recurring_payment(rp, verbosity=0):
                         
                     # send out email notifications - for both successful and failed transactions
                     # to admin
-                    rp_email_notice.email_admins_transaction_result(payment_transaction)
+                    rp_email_notice.email_admins_transaction_result(payment_transaction, success=success)
                     # to customer
                     if payment_transaction.message_code not in UNSUCCESSFUL_TRANS_CODE:
                         rp_email_notice.email_customer_transaction_result(payment_transaction)

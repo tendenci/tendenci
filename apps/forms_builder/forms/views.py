@@ -392,7 +392,9 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
 
     for field in form_for_form.fields:
-        form_for_form.fields[field].initial = request.GET.get(field, '')
+        field_default = request.GET.get(field, None)
+        if field_default:
+            form_for_form.fields[field].initial = field_default
 
     if request.method == "POST":
         if form_for_form.is_valid():

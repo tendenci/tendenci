@@ -1,24 +1,35 @@
 $(document).ready(function(){
     $('#discount_check').click(function(){
         code = $('#id_discount_code').val();
-        price = $('#total-amount').html();
-        // only 1 registrant set is discounted
-        count = 1;
+       // price = $('#total-amount').html();
+        //count = 1;
+        var prices = '';
+        {% if event.is_table %}
+         prices = $('#summary-total-price span#total-amount').html();
+        {% else %}
+        $('#summary-price span.item-price').each(function(){
+        	if (prices == ''){
+        		prices = $(this).html();
+        	}else{
+        		prices = prices + ';' +  $(this).html();
+        	}
+        });
+        {% endif %}
+        
         $.post(
-            '{% url discount.discounted_price %}',
+            '{% url discount.discounted_prices %}',
             {
                 'code':code,
-                'price':price,
-                'count':count,
+                'prices':prices
             },
             function(data, textStatus, jqXHR){
                 json = $.parseJSON(data);
                 //alert(json['message'])
                 $('#discount-message').html(json["message"]);
                 if (!json["error"]){
-                    $('#summary-total-amount').html(json["price"]);
-                    $('#discount-amount').html(json["discount"]);
-                    $('#final-amount').html(json["price"]);
+                    $('#summary-total-amount').html(json["total"]);
+                    $('#discount-amount').html(json["discount_total"]);
+                    $('#final-amount').html(json["total"]);
                     $('.discount-summary').show()
                 } else {
                     $('#summary-total-amount').html($('#total-amount').html());

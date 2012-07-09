@@ -300,11 +300,8 @@ def upload_file(request):
             full_filename = os.path.join(file_dir, upload.name)
 
             if os.path.isfile(full_filename) and not overwrite:
-                response = {
-                    "error": "file already exists",
-                    "file_name": os.path.join(file_dir, upload.name),
-                }
-                return HttpResponseRedirect('/theme-editor/editor/')
+                messages.add_message(request, messages.ERROR, ('File %s already exists in that folder.' % (upload.name)))
+                return HttpResponseRedirect('/theme-editor/editor')
             else:
                 handle_uploaded_file(upload, file_dir)
                 response = {

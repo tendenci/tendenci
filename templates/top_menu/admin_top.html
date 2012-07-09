@@ -18,7 +18,7 @@
                                          {{ app|title }}
                                      </a>
                                 </li>
-                                {% if app.url.settings %}
+                                {% if app.has_settings and app.url.settings %}
                                 <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
                                 {% endif %}
                                 {% if app.url.search %}
@@ -42,7 +42,7 @@
                                      {{ app|title }}
                                  </a>
                             </li>
-                            {% if app.url.settings %}
+                            {% if app.has_settings and app.url.settings %}
                             <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
                             {% endif %}
                             {% if app.url.search %}
@@ -68,7 +68,7 @@
                                      {{ app|title }}
                                  </a>
                             </li>
-                            {% if app.url.settings %}
+                            {% if app.has_settings and app.url.settings %}
                             <li><a href="{{ app.url.settings }}" class="glyph gear" title="{{ app|title }} settings">&#83;</a></li>
                             {% endif %}
                             {% if app.url.search %}

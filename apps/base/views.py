@@ -223,6 +223,7 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
+    from event_logs.models import EventLog
     if not request.user.profile.is_superuser:
         raise Http404
     EventLog.objects.log()
