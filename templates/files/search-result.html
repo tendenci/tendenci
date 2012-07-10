@@ -19,7 +19,7 @@
     </div>
 
     <div class="meta">
-        <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.creator }}</a></div>
+        <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.owner }}</a></div>
     </div>
 
     <!-- delete-file form -->
