@@ -128,7 +128,7 @@ def build_settings_form(user, settings):
                         box_choices = get_box_list(user)[1:]
                         choices = (('Content',choices),('Boxes',box_choices))
                 except:
-                    choices = tuple([(s,s)for s in setting.input_value.split(',')])
+                    choices = tuple([(s.strip(),s.strip())for s in setting.input_value.split(',')])
                     required = True
 
             options = {
@@ -143,7 +143,7 @@ def build_settings_form(user, settings):
             else:
                 if user.is_superuser:
                     fields.update({"%s" % setting.name : forms.ChoiceField(**options) })
-            
+
         elif setting.input_type == 'file':
             from files.models import File as TendenciFile
             file_display = ''
