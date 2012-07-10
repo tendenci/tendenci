@@ -1,9 +1,14 @@
 import os
 from django.conf import settings
 from site_settings.utils import get_setting
+from theme.middleware import get_current_request
 
 def get_theme():
-    theme = get_setting('module', 'theme_editor', 'theme')
+    request = get_current_request()
+    if request:
+        theme = request.session.get('theme', get_setting('module', 'theme_editor', 'theme'))
+    else:
+        theme = get_setting('module', 'theme_editor', 'theme')
     return theme
 
 def get_theme_root(theme=None):
