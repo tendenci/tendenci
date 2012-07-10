@@ -83,7 +83,7 @@ def template_html(request, template_id):
     
     art_content = ""    
     articles = request.GET.get('articles', 1)
-    articles_days = request.GET.get('article_days', 60)
+    articles_days = request.GET.get('articles_days', 60)
     if articles:
         articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
     
@@ -164,7 +164,7 @@ def template_render(request, template_id):
     
     art_content = ""    
     articles = request.GET.get('articles', 1)
-    articles_days = request.GET.get('article_days', 60)
+    articles_days = request.GET.get('articles_days', 60)
     if articles:
         articles_list, articles_content = newsletter_articles_list(request, articles_days, simplified)
     
