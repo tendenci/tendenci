@@ -80,5 +80,5 @@
         {% endif %}
         </div>
     </li>
-    <li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}<li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>

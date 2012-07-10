@@ -17,7 +17,7 @@
         "updated_by": ""
     },
     {
-        "default_value": "true", 
+        "default_value": "false", 
         "description": "Module is enabled or not.", 
         "data_type": "boolean", 
         "update_dt": "2011-11-29 13:33:17", 

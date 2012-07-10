@@ -62,6 +62,7 @@
         	   {% if registered_apps.people %}
                 <div class="column app-list">
                     {% for app in registered_apps.people %}
+                        {% if app.enabled %}
                         <ul>
                             <li class="app">
                                  <a href="{{ app.url.search }}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
@@ -78,6 +79,7 @@
                             <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
                             {% endif %}
                         </ul>
+                        {% endif %}
                     {% endfor %}
                     <ul>
                         <li class="app"><a href="{% url reports-user-activity %}">{% trans "Activity Report" %}</a></li>
