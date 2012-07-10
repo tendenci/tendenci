@@ -1291,7 +1291,9 @@ class AppEntry(TendenciBaseModel):
 
         lst = []
         for i in kwargs.items():
-            lst.append(Q(i))
+            key, value = i
+            if value:
+                lst.append(Q(i))
 
         users = {}
         for u in User.objects.filter(reduce(OR, lst)):
