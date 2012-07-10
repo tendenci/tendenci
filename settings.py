@@ -156,6 +156,7 @@ MIDDLEWARE_CLASSES = (
     'base.middleware.Http403Middleware',
     'redirects.middleware.RedirectMiddleware',
     'mobile.middleware.MobileMiddleware',
+    'theme.middleware.RequestMiddleware',
 )
 
 ROOT_URLCONF = 'Tendenci50.urls'
