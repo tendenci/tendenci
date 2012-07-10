@@ -14,13 +14,13 @@
             <img class="map" src="{{ map|size:'900x' }}" alt="{{ map.name }}" usemap="#mapmap" />
             <map name="mapmap">
             {% for lot in map.lot_set.all %}
-                <area id="lot-area-{{ lot.pk }}" shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="{% url lots.detail lot.pk %}" alt="{{ lot.suite_number }} {{ lot.name }}" />
+                <area id="lot-area-{{ lot.pk }}" shape="poly" coords="{% for line in lot.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="{% url lots.detail lot.slug %}" alt="{{ lot.suite_number }} {{ lot.name }}" />
             {% endfor %}                
             </map>
         </div>
 
         {% for lot in lots %}
-            <div class="lot-listing" data-lot-pk="{{ lot.pk }}"><a href="{% url lots.detail lot.pk %}">{{ lot.suite_number }} {{ lot.name }}</a></div>
+            <div class="lot-listing" data-lot-pk="{{ lot.pk }}"><a href="{% url lots.detail lot.slug %}">{{ lot.suite_number }} {{ lot.name }}</a></div>
         {% endfor %}
 
         {% include "lots/maps/meta.html" %} 

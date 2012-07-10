@@ -12,6 +12,7 @@ class MapForm(TendenciBaseForm):
         model = Map
         fields = (
             'name',
+            'slug',
             'file',
             'description',
             'allow_anonymous_view',
@@ -24,6 +25,7 @@ class MapForm(TendenciBaseForm):
 
         fieldsets = [('Map Information', {
                       'fields': ['name',
+                                 'slug',
                                  'file',
                                  'description',
                                  ],
@@ -56,6 +58,7 @@ class LotForm(TendenciBaseForm):
         fields = (
             'map',
             'name',
+            'slug',
             'suite_number',
             'link',
             'phone',
@@ -77,6 +80,7 @@ class LotForm(TendenciBaseForm):
         fieldsets = [('Map Information', {
                       'fields': ['map',
                                  'name',
+                                 'slug',
                                  'suite_number',
                                  'link',
                                  'phone',

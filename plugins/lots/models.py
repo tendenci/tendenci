@@ -21,6 +21,8 @@ class Map(File):
     def __unicode__(self):
         return self.get_name()
 
+    slug = SlugField(_('URL Path'), unique=True)
+
     @property
     def content_type(self):
         return 'lots'

@@ -16,7 +16,7 @@
             </div>
             <p class="map-title">
                 <a title="Opens in new window" target="_blank" 
-                href="{% url lots.map_detail map.pk %}">
+                href="{% url lots.map_detail map.slug %}">
                 {{ map.name }}</a>
             </p>
         </div>
@@ -50,6 +50,18 @@
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+<script type="text/javascript">
+    var slugit = new Slugify({
+        input_element : 'input#id_name',
+        slug_element : 'input#id_slug',
+        submit_element : 'input[type="submit"]',
+        help: false,
+        limit : 150
+    });
+</script>
+
+
 <script type="text/javascript">
 {% include "lots/media/js/maps.js" %}
 $(document).ready(function(){

@@ -130,11 +130,12 @@ def map_delete(request, pk, template_name="lots/maps/delete.html"):
 
 
 @login_required
-def map_detail(request, pk=None, template_name='lots/maps/detail_plot.html'):
-    if not pk:
+def map_detail(request, slug=u'', template_name='lots/maps/detail_plot.html'):
+
+    if not slug:
         return HttpResponseRedirect(reverse('lots.map_selection'))
 
-    map = get_object_or_404(Map, pk=pk)
+    map = get_object_or_404(Map, slug=slug)
 
     if not has_perm(request.user, 'lots.view_map', map):
         raise Http403
@@ -191,7 +192,7 @@ def add(request, pk=None, template_name="lots/add.html"):
                 point.save()
 
             messages.add_message(request, messages.INFO, 'Successfully added %s' % lot)
-            return redirect('lots.map_detail', map.pk)
+            return redirect('lots.map_detail', map.slug)
     else:
         form = LotForm(initial={"map": map})
 
@@ -240,7 +241,7 @@ def edit(request, pk, template_name="lots/edit.html"):
                 formset.save()
 
             messages.add_message(request, messages.INFO, _('Successfully updated %s' % lot))
-            return redirect('lots.map_detail', lot.map.pk)
+            return redirect('lots.map_detail', lot.map.slug)
     else:
         form = LotForm(instance=lot)
         photo_formset = PhotoFormSet(queryset=Photo.objects.filter(lot=lot), prefix="photos")
@@ -282,10 +283,10 @@ def delete(request, pk, template_name="lots/delete.html"):
         raise Http403
 
 
-def detail(request, pk=None, template_name="lots/detail.html"):
-    if not pk:
+def detail(request, slug=u'', template_name="lots/detail.html"):
+    if not slug:
         return HttpResponseRedirect(reverse('lots'))
-    lot = get_object_or_404(Lot, pk=pk)
+    lot = get_object_or_404(Lot, slug=slug)
 
     if has_perm(request.user, 'lots.view_lot', lot):
         log_defaults = {
