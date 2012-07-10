@@ -58,7 +58,7 @@ class Article(TendenciBaseModel):
     objects = ArticleManager()
 
     class Meta:
-        permissions = (("view_article", "Can view article"))
+        permissions = (("view_article", "Can view article"),)
         verbose_name = "Article"
         verbose_name_plural = "Articles"
 
