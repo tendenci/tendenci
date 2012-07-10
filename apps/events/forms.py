@@ -249,7 +249,9 @@ class FormForCustomRegForm(forms.ModelForm):
     
     def clean_memberid(self):
         memberid = self.cleaned_data['memberid']
-        pricing = self.cleaned_data['pricing']
+        pricing = self.cleaned_data.get('pricing', None)
+        if not pricing:
+            return memberid
         
         price_requires_member = False
         
@@ -1162,7 +1164,9 @@ class RegistrantForm(forms.Form):
     
     def clean_memberid(self):
         memberid = self.cleaned_data['memberid']
-        pricing = self.cleaned_data['pricing']
+        pricing = self.cleaned_data.get('pricing', None)
+        if not pricing:
+            return memberid
         
         price_requires_member = False
         
@@ -1181,7 +1185,7 @@ class RegistrantForm(forms.Form):
                                             "require membership." + \
                                             "Please either choose the member option " + \
                                             "or remove your member id.")
-            
+                
                     
         return memberid
     
