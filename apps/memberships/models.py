@@ -1149,9 +1149,9 @@ class AppEntry(TendenciBaseModel):
         # get user -------------
         if self.user:
             user = self.user
-        elif self.suggested_users():
-            user_pk, user_label = self.suggested_users()[0]
-            user = User.objects.get(pk=user_pk)
+        # elif self.suggested_users():
+        #     user_pk, user_label = self.suggested_users()[0]
+        #     user = User.objects.get(pk=user_pk)
         else:
             created = True
             user = User.objects.create_user(**{
