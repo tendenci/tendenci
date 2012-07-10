@@ -6,9 +6,10 @@ from django.contrib.contenttypes import generic
 
 from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
-from martins_products.models import Product, Formulation
+from martins_products.models import Product, Formulation, Category
 from martins_products.forms import ProductForm
 from categories.models import Category, CategoryItem
+
 
 class CategoryItemInline(generic.GenericTabularInline):
     model = CategoryItem
@@ -152,3 +153,4 @@ class ProductAdmin(admin.ModelAdmin):
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Formulation)
+admin.site.register(Category)
