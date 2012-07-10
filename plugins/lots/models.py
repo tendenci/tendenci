@@ -1,4 +1,5 @@
 from django.db import models
+from base.fields import SlugField
 from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel
@@ -38,6 +39,7 @@ class Lot(TendenciBaseModel):
     """
     map = models.ForeignKey(Map)
     name = models.CharField(_(u'Name'), max_length=200)
+    slug = SlugField(_('URL Path'), unique=True)
 
     phone = models.CharField(max_length=20, blank=True)
     link = models.URLField(blank=True)
