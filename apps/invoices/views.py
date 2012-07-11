@@ -27,15 +27,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
             if form.is_valid():
                 invoice = form.save()
                 # log an event here for invoice edit
-                log_defaults = {
-                    'event_id' : 312000,
-                    'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
-                    'description': '%s edited' % invoice._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': invoice,
-                }
-                EventLog.objects.log(**log_defaults)  
+                EventLog.objects.log(instance=invoice)  
         else:
             form = form_class(initial={'admin_notes':invoice.admin_notes})
     else:
@@ -82,7 +74,7 @@ def search(request, template_name="invoices/search.html"):
             invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
-
+    EventLog.objects.log()
     return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
         context_instance=RequestContext(request))
     
@@ -102,16 +94,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
             invoice.balance = invoice.total - invoice.payments_credits 
             invoice.save()
             
-            # log an event for invoice edit
-            log_defaults = {
-                'event_id' : 312000,
-                'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
-                'description': '%s edited' % invoice._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': invoice,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=invoice)
             
             notif_context = {
                 'request': request,
@@ -177,7 +160,9 @@ def detail(request, id, template_name="invoices/detail.html"):
         account_numbers.append({"account_number":row[0],
                                 "description":row[1],
                                 "total":abs(row[2])})
-    
+
+    EventLog.objects.log(instance=invoice)
+
     return render_to_response(template_name, {'invoice': invoice,
                                               'account_numbers': account_numbers,
                                               'acct_entries':acct_entries,
@@ -267,7 +252,7 @@ def export(request, template_name="invoices/export.html"):
         ]
         
         export_id = run_export_task('invoices', 'invoice', fields)
-        
+        EventLog.objects.log()
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {

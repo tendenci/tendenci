@@ -2,7 +2,9 @@ from datetime import datetime
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
+
 from base.http import Http403
+from event_logs.models import EventLog
 from exports.models import Export
 
 
@@ -30,6 +32,8 @@ def download(request, export_id):
         raise Http403
 
     export = get_object_or_404(Export, pk=export_id)
+
+    EventLog.objects.log(instance=export)
 
     if export.status == "completed":
         response = export.result

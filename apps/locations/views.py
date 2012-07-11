@@ -27,20 +27,12 @@ from locations.importer.tasks import ImportLocationsTask
 from files.models import File
 from djcelery.models import TaskMeta
 
-def index(request, id=None, template_name="locations/view.html"):
+def detail(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
     location = get_object_or_404(Location, pk=id)
     
     if has_view_perm(request.user,'locations.view_location',location):
-        log_defaults = {
-            'event_id' : 835000,
-            'event_data': '%s (%d) viewed by %s' % (location._meta.object_name, location.pk, request.user),
-            'description': '%s viewed' % location._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': location,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=location)
         return render_to_response(template_name, {'location': location}, 
             context_instance=RequestContext(request))
     else:
@@ -60,16 +52,8 @@ def search(request, template_name="locations/search.html"):
 
     locations = locations.order_by('-create_dt')
 
-    log_defaults = {
-        'event_id' : 834000,
-        'event_data': '%s listed by %s' % ('Location', request.user),
-        'description': '%s listed' % 'Location',
-        'user': request.user,
-        'request': request,
-        'source': 'locations'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    EventLog.objects.log()
+
     return render_to_response(template_name, {'locations':locations}, 
         context_instance=RequestContext(request))
 
@@ -98,15 +82,7 @@ def nearest(request, template_name="locations/nearest.html"):
                 locations.append(location)
             locations.sort(key=lambda x: x.distance)
 
-    log_defaults = {
-        'event_id' : 834100,
-        'event_data': '%s nearest to %s' % ('Location', request.user),
-        'description': '%s nearest' % 'Location',
-        'user': request.user,
-        'request': request,
-        'source': 'locations'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {
         'locations':locations,
@@ -118,15 +94,7 @@ def print_view(request, id, template_name="locations/print-view.html"):
     location = get_object_or_404(Location, pk=id)    
 
     if has_view_perm(request.user,'locations.view_location',location):
-        log_defaults = {
-            'event_id' : 835000,
-            'event_data': '%s (%d) viewed by %s' % (location._meta.object_name, location.pk, request.user),
-            'description': '%s viewed' % location._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': location,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=location)
 
         return render_to_response(template_name, {'location': location}, 
             context_instance=RequestContext(request))
@@ -146,16 +114,6 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
                 # update all permissions and save the model
                 location = update_perms_and_save(request, form, location)
 
-                log_defaults = {
-                    'event_id' : 832000,
-                    'event_data': '%s (%d) edited by %s' % (location._meta.object_name, location.pk, request.user),
-                    'description': '%s edited' % location._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': location,
-                }
-                EventLog.objects.log(**log_defaults)               
-                
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % location)
                                                               
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))             
@@ -177,17 +135,7 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
 
                 # update all permissions and save the model
                 location = update_perms_and_save(request, form, location)
- 
-                log_defaults = {
-                    'event_id' : 831000,
-                    'event_data': '%s (%d) added by %s' % (location._meta.object_name, location.pk, request.user),
-                    'description': '%s added' % location._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': location,
-                }
-                EventLog.objects.log(**log_defaults)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % location)
                 
                 return HttpResponseRedirect(reverse('location', args=[location.pk]))
@@ -205,16 +153,6 @@ def delete(request, id, template_name="locations/delete.html"):
 
     if has_perm(request.user,'locations.delete_location'):   
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 833000,
-                'event_data': '%s (%d) deleted by %s' % (location._meta.object_name, location.pk, request.user),
-                'description': '%s deleted' % location._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': location,
-            }
-            
-            EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % location)
             location.delete()
                 
@@ -249,7 +187,7 @@ def locations_import_upload(request, template_name='locations/import-upload-file
                     messages.add_message(request, messages.ERROR, err)
                 locport.delete()
                 return redirect('locations_import_upload_file')
-
+            EventLog.objects.log()
             return redirect('locations_import_preview', locport.id)
     else:
         form = UploadForm()
@@ -392,7 +330,7 @@ def export(request, template_name="locations/export.html"):
         ]
         
         export_id = run_export_task('locations', 'location', fields)
-        
+        EventLog.objects.log()
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {

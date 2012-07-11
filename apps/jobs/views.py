@@ -35,7 +35,7 @@ except:
 from base.utils import send_email_notification
 
 
-def details(request, slug=None, template_name="jobs/view.html"):
+def detail(request, slug=None, template_name="jobs/view.html"):
     if not slug:
         return HttpResponseRedirect(reverse('jobs'))
     job = get_object_or_404(Job.objects.select_related(), slug=slug)
@@ -43,18 +43,7 @@ def details(request, slug=None, template_name="jobs/view.html"):
     can_view = has_view_perm(request.user, 'jobs.view_job', job)
 
     if can_view:
-        log_defaults = {
-            'event_id': 255000,
-            'event_data': '%s (%d) viewed by %s' % (
-                 job._meta.object_name,
-                 job.pk, request.user
-            ),
-            'description': '%s viewed' % job._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': job,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=job)
         return render_to_response(template_name, {'job': job},
             context_instance=RequestContext(request))
     else:
@@ -79,16 +68,8 @@ def search(request, template_name="jobs/search.html"):
     if my_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_jobs.html"
         jobs = jobs.filter(creator_username=request.user.username)
-    
-    log_defaults = {
-        'event_id': 254000,
-        'event_data': '%s searched by %s' % ('Job', request.user),
-        'description': '%s searched' % 'Job',
-        'user': request.user,
-        'request': request,
-        'source': 'jobs'
-    }
-    EventLog.objects.log(**log_defaults)
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'jobs': jobs},
         context_instance=RequestContext(request))
@@ -104,15 +85,7 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     can_view = has_view_perm(request.user, 'jobs.view_job', job)
 
     if can_view:
-        log_defaults = {
-            'event_id': 255001,
-            'event_data': '%s (%d) viewed by %s' % (job._meta.object_name, job.pk, request.user),
-            'description': '%s viewed - print view' % job._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': job,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=job)
 
         return render_to_response(template_name, {'job': job},
             context_instance=RequestContext(request))
@@ -203,16 +176,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
             
             #save relationships
             job.save()
-            
-            log_defaults = {
-                'event_id': 251000,
-                'event_data': '%s (%d) added by %s' % (job._meta.object_name, job.pk, request.user),
-                'description': '%s added' % job._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': job,
-            }
-            EventLog.objects.log(**log_defaults)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % job)
 
@@ -341,16 +304,6 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
             #save relationships
             job.save()
 
-            log_defaults = {
-                'event_id': 252000,
-                'event_data': '%s (%d) edited by %s' % (job._meta.object_name, job.pk, request.user),
-                'description': '%s edited' % job._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': job,
-            }
-            EventLog.objects.log(**log_defaults)
-
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % job)
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
@@ -399,16 +352,6 @@ def delete(request, id, template_name="jobs/delete.html"):
 
     if has_perm(request.user, 'jobs.delete_job', job):
         if request.method == "POST":
-            log_defaults = {
-                'event_id': 433000,
-                'event_data': '%s (%d) deleted by %s' % (job._meta.object_name, job.pk, request.user),
-                'description': '%s deleted' % job._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': job,
-            }
-
-            EventLog.objects.log(**log_defaults)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job)
 
             # send notification to administrators
@@ -441,19 +384,7 @@ def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-
                 job_pricing.status = 1
                 job_pricing.save(request.user)
 
-                log_defaults = {
-                    'event_id': 265100,
-                    'event_data': '%s (%d) added by %s' % (
-                        job_pricing._meta.object_name,
-                        job_pricing.pk,
-                        request.user
-                    ),
-                    'description': '%s added' % job_pricing._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': job_pricing,
-                }
-                EventLog.objects.log(**log_defaults)
+                EventLog.objects.log(instance=job_pricing)
 
                 return HttpResponseRedirect(reverse('job_pricing.view', args=[job_pricing.id]))
         else:
@@ -495,6 +426,7 @@ def pricing_view(request, id, template_name="jobs/pricing-view.html"):
     job_pricing = get_object_or_404(JobPricing, id=id)
 
     if has_perm(request.user, 'jobs.view_jobpricing', job_pricing):
+        EventLog.objects.log(instance=job_pricing)
         return render_to_response(template_name, {'job_pricing': job_pricing},
             context_instance=RequestContext(request))
     else:
@@ -509,20 +441,7 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
         raise Http403
 
     if request.method == "POST":
-        log_defaults = {
-            'event_id': 265120,
-            'event_data': '%s (%d) deleted by %s' % (
-                job_pricing._meta.object_name,
-                job_pricing.pk,
-                request.user
-            ),
-            'description': '%s deleted' % job_pricing._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': job_pricing,
-        }
-
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=job_pricing)
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job_pricing)
 
         job_pricing.delete()
@@ -548,6 +467,7 @@ def pending(request, template_name="jobs/pending.html"):
     if not all([can_view_jobs, can_change_jobs]):
         raise Http403
 
+    EventLog.objects.log()
     jobs = Job.objects.filter(status_detail__contains='pending')
     return render_to_response(template_name, {'jobs': jobs},
             context_instance=RequestContext(request))
@@ -663,6 +583,7 @@ def export(request, template_name="jobs/export.html"):
             'non_member_count',
         ]
         export_id = run_export_task('jobs', 'job', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {

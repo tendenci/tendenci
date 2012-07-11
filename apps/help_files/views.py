@@ -41,15 +41,7 @@ def index(request, template_name="help_files/index.html"):
     featured = HelpFile.objects.filter(filters).filter(is_featured=True).distinct()[:5]
     faq = HelpFile.objects.filter(filters).filter(is_faq=True).distinct()[:3]
 
-    log_defaults = {
-        'event_id' : 1000600,
-        'event_data': '%s index searched by %s' % ('Help File', request.user),
-        'description': '%s index searched' % 'Help File',
-        'user': request.user,
-        'request': request,
-        'source': 'help_files'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, locals(), 
         context_instance=RequestContext(request))
@@ -67,15 +59,7 @@ def search(request, template_name="help_files/search.html"):
         if not request.user.is_anonymous():
             help_files = help_files.select_related()
 
-    log_defaults = {
-        'event_id' : 1000400,
-        'event_data': '%s searched by %s' % ('Help File', request.user),
-        'description': '%s searched' % 'Help File',
-        'user': request.user,
-        'request': request,
-        'source': 'help_files'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'help_files':help_files}, 
         context_instance=RequestContext(request))
@@ -91,35 +75,19 @@ def topic(request, id, template_name="help_files/topic.html"):
     if not request.user.is_anonymous():
         help_files = help_files.select_related()
 
-    log_defaults = {
-        'event_id' : 1000400,
-        'event_data': '%s topic searched by %s' % ('Help File', request.user),
-        'description': '%s topic searched' % 'Help File',
-        'user': request.user,
-        'request': request,
-        'source': 'help_files'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=topic)
 
     return render_to_response(template_name, {'topic':topic, 'help_files':help_files}, 
         context_instance=RequestContext(request))
 
 
-def details(request, slug, template_name="help_files/details.html"):
+def detail(request, slug, template_name="help_files/details.html"):
     """Help file details"""
     help_file = get_object_or_404(HelpFile, slug=slug)
 
     if has_view_perm(request.user, 'help_files.view_helpfile', help_file):
         HelpFile.objects.filter(pk=help_file.pk).update(view_totals=help_file.view_totals+1)
-        log_defaults = {
-            'event_id' : 1000500,
-            'event_data': '%s (%d) viewed by %s' % (help_file._meta.object_name, help_file.pk, request.user),
-            'description': '%s viewed' % help_file._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': help_file,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=help_file)
         return render_to_response(template_name, {'help_file': help_file}, 
             context_instance=RequestContext(request))
     else:
@@ -137,16 +105,6 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
                 help_file = update_perms_and_save(request, form, help_file)
                 form.save_m2m()
 
-                log_defaults = {
-                    'event_id' : 1000100,
-                    'event_data': '%s (%d) added by %s' % (help_file._meta.object_name, help_file.pk, request.user),
-                    'description': '%s added' % help_file._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': help_file,
-                }
-                EventLog.objects.log(**log_defaults)
-                
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % help_file)
                 
                 # send notification to administrator(s) and module recipient(s)
@@ -179,16 +137,6 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
                 help_file = update_perms_and_save(request, form, help_file)
                 form.save_m2m()
 
-                log_defaults = {
-                    'event_id' : 1000200,
-                    'event_data': '%s (%d) edited by %s' % (help_file._meta.object_name, help_file.pk, request.user),
-                    'description': '%s edited' % help_file._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': help_file,
-                }
-                EventLog.objects.log(**log_defaults)
-                
                 messages.add_message(request, messages.SUCCESS, 'Successfully edited %s' % help_file)
                 
                 # send notification to administrator(s) and module recipient(s)
@@ -224,6 +172,7 @@ def request_new(request, template_name="help_files/request_new.html"):
                     }
                     notification.send_emails(recipients,'help_file_requested', extra_context)
             messages.add_message(request, messages.INFO, 'Thanks for requesting a new help file!')
+            EventLog.objects.log()
             return HttpResponseRedirect(reverse('help_files'))
     else:
         form = RequestForm()
@@ -255,7 +204,7 @@ def requests(request, template_name="help_files/request_list.html"):
         raise Http403
     
     requests = Request.objects.all()
-    
+    EventLog.objects.log()
     return render_to_response(template_name, {
         'requests': requests,
         }, context_instance=RequestContext(request))
@@ -284,6 +233,7 @@ def export(request, template_name="help_files/export.html"):
             'view_totals',
         ]
         export_id = run_export_task('help_files', 'helpfile', fields)
+        EventLog.objects.log()
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
