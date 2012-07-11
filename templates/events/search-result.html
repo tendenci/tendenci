@@ -46,11 +46,7 @@
         </div> 
 
         <div class="description">
-        {% if event.meta.description %}
-            {{ event.meta.description }}
-        {% else %}
-            {{ event.get_description }}
-        {% endif %}
+            {{ event.description|striptags|safe|truncatewords:40 }}
         </div>
 
         {% if event.registration_configuration.enabled %}
