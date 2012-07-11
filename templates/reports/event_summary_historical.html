@@ -6,10 +6,6 @@
 <h1>{% trans "Tendenci&reg; Event Log Summary Report" %}</h1>
 
 <div>
-    <p>You can <a href="{% url reports-events-summary-historical %}">view historical reports</a> or go to the <a href="{% url event_log.search %}">Event log search</a> to see the latest event logs.</p>
-</div>
-
-<div>
 	<a href="./?{% month_url previous %}">{% trans "Previous" %}</a>
 	{{ date_range.0|date:"M Y" }}
 	<a href="./?{% month_url next %}">{% trans "Next" %}</a>
@@ -20,8 +16,8 @@
 {% for day, items in chart_data.items %}
 	<td>
 		{% for item in items %}
-            {% if item.application %}
-			<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}" title="{{ item.application }} ({{ item.count }})">
+            {% if item.source %}
+			<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}" title="{{ item.source }} ({{ item.count }})">
 				<div style="width: 24px; height: {{ item.height }}px; background-color: #{{ item.color }}"> </div>
 			</a>
             {% endif %}
@@ -34,12 +30,12 @@
 </table>
 <ul class="events-summary">
 {% for item in summary_data.0 %}
-    {% if item.application %}
+    {% if item.source %}
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
-    {% if item.application %}
-	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count }})</a>
+    {% if item.source %}
+	<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
     {% endif %}
 	</li>
 	{% endif %}
@@ -48,11 +44,11 @@
 
 <ul class="events-summary">
 {% for item in summary_data.1 %}
-    {% if item.application %}
+    {% if item.source %}
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
-	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count }})</a>
+	<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
 	</li>
 	{% endif %}
 {% endfor %}
@@ -60,23 +56,24 @@
 
 <ul class="events-summary">
 {% for item in summary_data.2 %}
-    {% if item.application %}
+    {% if item.source %}
 	<li>
 	<span style="background-color: #{{ item.color }};"> &nbsp;  &nbsp; </span>
 	&nbsp;
-	<a href="{% url reports-events-application item.application %}?{{ request.META.QUERY_STRING }}">{{ item.application }} ({{ item.count }})</a>
+	<a href="{% url reports-events-source item.source %}?{{ request.META.QUERY_STRING }}">{{ item.source }} ({{ item.count }})</a>
 	</li>
 	{% endif %}
 {% endfor %}
 </ul>
 
+
+
 <div style="clear: both;"></div>
-{% comment %}
+
 <form>{% csrf_token %}
 <table>{{ form }}</table>
 <input type="submit" value="submit">
 </form>
-{% endcomment %}
 
 {% endblock content %}
 
