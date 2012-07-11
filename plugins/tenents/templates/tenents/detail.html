@@ -10,7 +10,11 @@
     <div class="tenent-wrap">
         <h1>{{ tenent.name }}</h1>
         <p>{{ tenent.description }}</p>
+
+        {% if tenent.photo %}
         <img src="{{ tenent.photo|size:'300x/constrain' }}" />
+        {% endif %}
+
         {% include "tenents/meta.html" %} 
     </div>
 

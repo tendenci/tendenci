@@ -40,7 +40,7 @@ def tenents_maps(request, template_name="tenents/maps/search.html"):
 
 
 @login_required
-def tenents_maps_detail(request, slug=u'', template_name='tenents/maps/detail_ptenent.html'):
+def tenents_maps_detail(request, slug=u'', template_name='tenents/maps/detail_plot.html'):
 
     if not slug:
         return HttpResponseRedirect(reverse('tenents.maps'))
@@ -86,7 +86,7 @@ def tenents_maps_add(request, template_name="tenents/maps/add.html"):
             })
 
             messages.add_message(request, messages.INFO, _('Successfully added %s' % map))
-            return redirect('tenents.map_selection')
+            return HttpResponseRedirect(reverse('tenents.map_selection'))
     else:
         form = MapForm(user=request.user)
 
@@ -119,7 +119,8 @@ def tenents_maps_edit(request, pk=None, template_name="tenents/maps/edit.html"):
             })
 
             messages.add_message(request, messages.INFO, _('Successfully changed %s' % map))
-            return redirect('tenents.map_selection')
+            return HttpResponseRedirect(reverse('tenents.map_selection'))
+
     else:
         form = MapForm(instance=map)
 
@@ -146,7 +147,6 @@ def tenents_maps_delete(request, pk, template_name="tenents/maps/delete.html"):
 
             map.delete()
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % map)
-
             return HttpResponseRedirect(reverse('tenents.maps'))
 
         return render_to_response(template_name, {'map': map},
@@ -158,20 +158,14 @@ def tenents_maps_delete(request, pk, template_name="tenents/maps/delete.html"):
 @login_required
 def tenents_add(request, pk=None, template_name="tenents/add.html"):
 
-    print 'bloop'
-
     if not has_perm(request.user, 'tenents.add_tenent'):
         return Http403
 
-    print 'blah'
-
     map = get_object_or_404(Map, pk=pk)
-
-    print 'blah'
 
     if not map:
         messages.add_message(request, messages.INFO, _('Please select a Map.'))
-        return redirect('tenents.map_selection')
+        return HttpResponseRedirect(reverse('tenents.map_selection'))
 
     PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=1)
     LineFormSet = modelformset_factory(Line, form=LineForm, extra=0)
@@ -199,7 +193,7 @@ def tenents_add(request, pk=None, template_name="tenents/add.html"):
                 point.save()
 
             messages.add_message(request, messages.INFO, 'Successfully added %s' % tenent)
-            return redirect('tenents.map_detail', map.slug)
+            return HttpResponseRedirect(reverse('tenents.maps', args=[map.slug]))
     else:
         form = TenentForm(initial={"map": map})
 
@@ -221,7 +215,7 @@ def tenents_edit(request, pk, template_name="tenents/edit.html"):
 
     tenent = get_object_or_404(Tenent, pk=pk)
 
-    PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=0)
+    PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=1)
     LineFormSet = inlineformset_factory(Tenent, Line, extra=0)
 
     if request.method == "POST":
@@ -248,11 +242,13 @@ def tenents_edit(request, pk, template_name="tenents/edit.html"):
                 formset.save()
 
             messages.add_message(request, messages.INFO, _('Successfully updated %s' % tenent))
-            return redirect('tenents.map_detail', tenent.map.slug)
+            return redirect('tenents.maps', tenent.map.slug)
     else:
         form = TenentForm(instance=tenent)
         photo_formset = PhotoFormSet(queryset=Photo.objects.filter(tenent=tenent), prefix="photos")
         formset = LineFormSet(instance=tenent, queryset=Line.objects.none(), prefix="lines")
+
+    print 'photo_formset', photo_formset
 
     return render_to_response(template_name, {
         'photo_formset': photo_formset,
@@ -341,8 +337,31 @@ def tenents_detail(request, slug=u'', template_name="tenents/detail.html"):
 
 
 @login_required
-def tenents_kinds(request, pk=None, template_name='tenents/kinds/detail.html'):
-    return render_to_response(template_name, {},
+def tenents_kinds(request, template_name='tenents/kinds/search.html'):
+
+    for perm in ['add', 'change', 'delete']:
+        if not has_perm(request.user, 'tenents.%s_tenent' % perm):
+            return Http403
+
+    kinds = Kind.objects.all()
+    EventLog.objects.log()
+    return render_to_response(template_name, {
+        'kinds': kinds
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def tenents_kinds_detail(request, pk=None, template_name='tenents/kinds/detail.html'):
+    if not pk:
+        return HttpResponseRedirect(reverse('tenents.maps'))
+
+    kind = get_object_or_404(Kind, pk=pk)
+
+    if not has_perm(request.user, 'tenents.edit_tenent', map):
+        raise Http403
+
+    EventLog.objects.log(instance=kind)
+    return render_to_response(template_name, {'kind': kind},
         context_instance=RequestContext(request))
 
 
@@ -357,14 +376,14 @@ def tenents_kinds_add(request, pk=None, template_name='tenents/kinds/add.html'):
         return Http403
 
     if request.method == "POST":
-        form = KindForm(request.POST, user=request.user)
+        form = KindForm(request.POST)
         if form.is_valid():
             kind = form.save()
             EventLog.objects.log(instance=kind)
             messages.add_message(request, messages.INFO, _('Successfully added %s' % kind))
-            return redirect('tenents.kinds', kind.pk)
+            return HttpResponseRedirect(reverse('tenents.kinds.detail', args=[kind.pk]))
     else:
-        form = KindForm(user=request.user)
+        form = KindForm()
 
     return render_to_response(template_name, {'form': form},
         context_instance=RequestContext(request))
@@ -386,9 +405,9 @@ def tenents_kinds_edit(request, pk=None, template_name='tenents/kinds/edit.html'
             kind = form.save()
             EventLog.objects.log(instance=kind)
             messages.add_message(request, messages.INFO, _('Successfully changed %s' % kind))
-            return redirect('tenents.kinds', kind.pk)
+            return HttpResponseRedirect(reverse('tenents.kinds.detail', args=[kind.pk]))
     else:
-        form = KindForm(instance=map)
+        form = KindForm(instance=kind)
 
     return render_to_response(template_name, {'form': form},
         context_instance=RequestContext(request))
@@ -407,7 +426,7 @@ def tenents_kinds_delete(request, pk=None, template_name='tenents/kinds/delete.h
         EventLog.objects.log(instance=kind)
         kind.delete()
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % kind)
-        return HttpResponseRedirect(reverse('tenents'))
+        return HttpResponseRedirect(reverse('tenents.kinds'))
 
     return render_to_response(template_name, {'kind': kind},
         context_instance=RequestContext(request))

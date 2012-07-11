@@ -1,0 +1,17 @@
+
+<div class="editor-bar">
+    <div class="perm-status">
+        <ul>
+            <li>{{ kind.obj_perms }}</li>
+            <li>{{ kind.obj_status }}</li>
+        </ul>
+    </div>
+    <div class="edit-links">
+        <ul>
+            <li><a class="eventlog-link" href="{% url event_log.search %}?q=app-id:%20tenents-{{ kind.pk }}">Event logs</a></li>
+            <li><a class="edit-link" href="{% url tenents.kinds.edit kind.pk %}">Edit</a></li>
+            <li><a class="delete" href="{% url tenents.kinds.delete kind.pk %}">Delete</a></li>
+        </ul>
+    </div>
+</div> 
+

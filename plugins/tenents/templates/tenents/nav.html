@@ -36,7 +36,10 @@
 
         {% if can_add_map %}
         <li><a href="{% url tenents.maps.add %}">{% trans "Add Map" %}</a></li>
+        <li><a href="{% url tenents.kinds.add %}">{% trans "Add Kind" %}</a></li>
+        <li><a href="{% url tenents.kinds %}">{% trans "Browse Kinds" %}</a></li>
         {% endif %}
+
         <li><a href="{% url tenents.maps %}">{% trans "Browse Maps" %}</a></li>
 
         </ul>

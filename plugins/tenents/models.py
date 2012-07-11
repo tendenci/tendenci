@@ -38,7 +38,7 @@ class Kind(models.Model):
     Kind of tenent. Used for organizing and filtering.
     """
     name = models.CharField(max_length=200)
-    color = models.CharField(max_length=10)
+    color = models.CharField(max_length=10, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -82,7 +82,10 @@ class Tenent(TendenciBaseModel):
 class Photo(File):
     """
     This is the photo associated
-    with a tenent. A tenent can have multiple photos.
+    with a tenent. A tenent can have one photo.
+    The photo can be deleted without affecting
+    the tenent.  If the tenent is deleted, the
+    photo is also deleted.
     """
     tenent = models.OneToOneField(Tenent)
 

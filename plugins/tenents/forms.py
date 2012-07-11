@@ -59,6 +59,7 @@ class TenentForm(TendenciBaseForm):
             'map',
             'name',
             'slug',
+            'kind',
             'suite_number',
             'link',
             'phone',
@@ -81,6 +82,7 @@ class TenentForm(TendenciBaseForm):
                       'fields': ['map',
                                  'name',
                                  'slug',
+                                 'kind',
                                  'suite_number',
                                  'link',
                                  'phone',
@@ -104,6 +106,10 @@ class TenentForm(TendenciBaseForm):
                                  'status_detail'],
                       'classes': ['admin-only'],
                     })]
+
+    def __init__(self, *args, **kwargs):
+        super(TenentForm, self).__init__(*args, **kwargs)
+        self.fields['kind'].empty_label = None
 
 
 class KindForm(forms.ModelForm):

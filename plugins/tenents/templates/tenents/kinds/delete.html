@@ -1,0 +1,26 @@
+{% extends "tenents/base.html" %}
+{% load base_filters %}
+{% load tenent_tags %}
+{% load i18n %}
+
+{% block body %}
+{% tenent_nav request.user %}
+
+<div class="t">
+    <div class="map-wrap">
+        <h1>{{ kind.name }}</h1>
+        <p>
+            Deleting this will remove all the tenents 
+            associated with this map as well.
+        </p>
+        <div class="delete-form">
+            <form method="POST" action="{% url tenents.kinds.delete kind.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="{% trans 'Please delete' %}">
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock body %}
