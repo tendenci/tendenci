@@ -1,0 +1,17 @@
+{% load base_tags %}
+{% load file_tags %}
+
+<div class="wrap-search-item">
+    <div class="search-item tenents-search-item">
+        <h2><a href="{% url tenents.maps map.slug %}">{{ map.name }}</a></h2>
+        <div class="map-wrap">
+            <p>{{ map.description }}</p>
+            {% if map.file %}
+                <a href="{% url tenents.maps map.slug %}" title="{{ map.description }}">
+                    <img src="{{ map|size:'200x' }}" alt="{{ map.description }}">
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% include "tenents/maps/meta.html" %}
+</div>

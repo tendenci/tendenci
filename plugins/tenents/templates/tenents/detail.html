@@ -1,0 +1,19 @@
+{% extends "tenents/base.html" %}
+{% load tenent_tags %}
+{% load file_tags %}
+{% load base_filters %}
+
+{% block body %}
+{% tenent_nav request.user tenent %}
+<div class="t">
+
+    <div class="tenent-wrap">
+        <h1>{{ tenent.name }}</h1>
+        <p>{{ tenent.description }}</p>
+        <img src="{{ tenent.photo|size:'300x/constrain' }}" />
+        {% include "tenents/meta.html" %} 
+    </div>
+
+</div>
+{% endblock body %}
+

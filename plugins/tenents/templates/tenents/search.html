@@ -1,0 +1,30 @@
+{% extends "tenents/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load tenent_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="{% trans 'Tenents' %}" href="{% url tenents.maps.feed %}" />
+{% endblock %}
+
+{% block body %}
+{% autopaginate tenents 10 %}
+<div class="t">
+    {% tenent_nav request.user %}
+    <h1>{% trans 'Tenent List' %}</h1>
+    {% tenent_search %}
+    <div class="tenents-wrap clearfix">
+        {% for tenent in tenents %}
+            {% search_result tenent %}
+        {% empty %}
+        <p>{% trans '0 tenents found' %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+</div>
+{% endblock body %}

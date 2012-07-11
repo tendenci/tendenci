@@ -1,0 +1,10 @@
+{% load base_tags %}
+{% load file_tags %}
+<div class="wrap-search-item">
+    <div class="search-item tenents-search-item">
+        <h3><a href="{{ tenent.get_absolute_url }}">{{ tenent.name }}</a></h3>
+        <a href="{{ tenent.get_absolute_url }}"><img src="{{ tenent.photo|size:'300x' }}"></a>
+        <p>{{ tenent.description }}</p>
+    </div>
+{% include "tenents/meta.html" %}
+</div>
