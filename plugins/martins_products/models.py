@@ -6,7 +6,6 @@ from tagging.fields import TagField
 from files.models import File
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
-from categories.models import CategoryItem
 from martins_products.managers import ProductManager
 
 class Category(models.Model):
@@ -14,6 +13,13 @@ class Category(models.Model):
     
     def __unicode__(self):
         return unicode(self.name)
+    
+    class Meta:
+        ordering = ['name']
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("product.category", [self.pk])
 
 
 class Formulation(models.Model):
@@ -28,8 +34,8 @@ class Product(TendenciBaseModel):
     Products plugin comments
     """
     tags = TagField(blank=True, help_text='Tag 1, Tag 2, ...')
-    category_num = models.CharField(_(u'Category Id'), max_length=200,) # To avoid conflicting column names
-    #category = models.ForeignKey(Category)
+    category_num = models.CharField(_(u'Category Id'), max_length=200, blank=True,) # To avoid conflicting column names
+    category = models.ForeignKey('Category', null=True, blank=True,)
     product_id = models.CharField(_(u'Product Id'), max_length=200, blank=True,)
     product_name = models.CharField(_(u'Product Name'), max_length=200,)
     product_slug = models.SlugField(max_length=200, unique=True,)
@@ -47,9 +53,9 @@ class Product(TendenciBaseModel):
     state_registered = models.CharField(_(u'State Registered'), max_length=200, blank=True,)
     product_image = models.ForeignKey('ProductPhoto',
         help_text=_('Photo that represents this product.'), null=True, default=None, blank=True,)
-    categories = generic.GenericRelation(CategoryItem,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    # categories = generic.GenericRelation(CategoryItem,
+#                                          object_id_field="object_id",
+#                                          content_type_field="content_type")
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -64,10 +70,10 @@ class Product(TendenciBaseModel):
         verbose_name = "Product"
         verbose_name_plural = "Products"
     
-    @property
-    def content_type(self):
-        return 'stories'
-    
+#    @property
+#    def content_type(self):
+#        return 'stories'
+#    
     @property
     def category_set(self):
         items = {}

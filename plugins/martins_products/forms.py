@@ -4,10 +4,8 @@ from os.path import splitext
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from categories.models import CategoryItem
 from martins_products.models import Product, Category, Formulation, ProductPhoto
 from perms.forms import TendenciBaseForm
-from categories.forms import CategoryField, CategoryItem
 from tinymce.widgets import TinyMCE
 from base.fields import SplitDateTimeField
 
@@ -89,25 +87,24 @@ class ProductForm(TendenciBaseForm):
 
 class ProductSearchForm(forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)
-    category = CategoryField(label=_('Category'), choices=[], required=False,)
-    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), required=False,)
+#    sub_category = CategoryField(label=_('Sub Category'), choices=[], required=False)
     formulation = forms.ModelChoiceField(queryset=Formulation.objects.all(), required=False,)
 
     def __init__(self, content_type, *args, **kwargs):
         super(ProductSearchForm, self).__init__(*args, **kwargs)
 
         # set up the category choices
-        categories = CategoryItem.objects.filter(content_type=content_type,
-                                                 parent__exact=None)
-        categories = list(set([cat.category.name for cat in categories]))
+        categories = Category.objects.all()
+        categories = list(set([cat.name for cat in categories]))
         categories = [[cat, cat] for cat in categories]
         categories.insert(0, ['', '------------'])
         self.fields['category'].choices = tuple(categories)
 
         # set up the sub category choices
-        sub_categories = CategoryItem.objects.filter(content_type=content_type,
-                                                     category__exact=None)
-        sub_categories = list(set([cat.parent.name for cat in sub_categories]))
-        sub_categories = [[cat, cat] for cat in sub_categories]
-        sub_categories.insert(0, ['', '------------'])
-        self.fields['sub_category'].choices = tuple(sub_categories)
+#        sub_categories = CategoryItem.objects.filter(content_type=content_type,
+#                                                     category__exact=None)
+#        sub_categories = list(set([cat.parent.name for cat in sub_categories]))
+#        sub_categories = [[cat, cat] for cat in sub_categories]
+#        sub_categories.insert(0, ['', '------------'])
+#        self.fields['sub_category'].choices = tuple(sub_categories)
