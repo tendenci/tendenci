@@ -1,7 +1,7 @@
 from django.conf import settings
 
 mobile_agents = [
-    'iPad',
+#    'iPad',  # Removed on 2012-07-11
     'iPhone',
     'iPod',
     'Android',
@@ -29,7 +29,8 @@ mobile_agents = [
     'DoCoMo',
     'ZuneHD',
     'ReqwirelessWeb',
-    'SEJ001'
+    'SEJ001',
+    'SonyEricsson'
 ]
 
 def user_agent(request):
