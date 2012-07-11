@@ -9,6 +9,7 @@ from django.template.loader import (BaseLoader, get_template_from_string,
     find_template_loader, make_origin)
 from django.utils._os import safe_join
 from theme.utils import get_theme_root
+from theme.middleware import get_current_request
 
 non_theme_source_loaders = None
 
@@ -32,17 +33,21 @@ class Loader(BaseLoader):
         Any paths that don't lie inside one of the
         template dirs are excluded from the result set, for security reasons.
         """
-        theme_templates = os.path.join(get_theme_root(), 'templates')
-        try:
-            yield safe_join(theme_templates, template_name)
-        except UnicodeDecodeError:
-            # The template dir name was a bytestring that wasn't valid UTF-8.
-            raise
-        except ValueError:
-            # The joined path was located outside of this particular
-            # template_dir (it might be inside another one, so this isn't
-            # fatal).
-            pass
+        theme_templates = []
+        if get_current_request().mobile:
+            theme_templates.append(os.path.join(get_theme_root(), 'mobile'))
+        theme_templates.append(os.path.join(get_theme_root(), 'templates'))
+        for template_path in theme_templates:
+            try:
+                yield safe_join(template_path, template_name)
+            except UnicodeDecodeError:
+                # The template dir name was a bytestring that wasn't valid UTF-8.
+                raise
+            except ValueError:
+                # The joined path was located outside of this particular
+                # template_dir (it might be inside another one, so this isn't
+                # fatal).
+                pass
     
     def load_template_source(self, template_name, template_dirs=None):
         tried = []

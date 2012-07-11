@@ -46,6 +46,7 @@ urlpatterns = patterns('events',
         name="event.registration_edit"),
     url(r'^registration/(?P<reg8n_id>\d+)/edit/(?P<hash>\w+)/$', 'views.registration_edit', 
         name="event.registration_edit"),
+    url(r'^registrant/checkin/', 'views.registrant_check_in', name='event.registrant_check_in'),
 
     # cancel event registration
     url(r'^(?P<event_id>\d+)/registrants/cancel/(?P<registrant_id>\d+)/$', 
