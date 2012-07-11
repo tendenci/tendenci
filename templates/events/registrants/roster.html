@@ -126,7 +126,17 @@
 	#registrant-table td a {
 	    text-decoration: none;
 	}
-
+	.attended-checkbox input[type="checkbox"]{
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
+	}
+	.attended-checkedin-text{
+		color: green !important;
+	}
+	#checked-in-total{
+		text-align: center;
+	}
 
 </style>
 
@@ -278,7 +288,7 @@
 	<td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
 	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
 	<td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
-	<td class="attended-checkbox"><div></div></td>
+	<td class="attended-checkbox"><input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}" value="1" {% if registrant.checked_in %}checked{% endif %} /></td>
 </tr>
 
 
@@ -322,7 +332,7 @@
             {% trans "Not Tendered" %}
         {% endif %}
     </td>
-    <td>&nbsp;</td>
+    <td class="attended-checkedin-text">{% if registrant.checked_in and registrant.checked_in_dt %}{{ registrant.checked_in_dt|date:'m/d h:iA' }}{% endif %}</td>
 </tr>
 
 
@@ -386,7 +396,7 @@
 	<td colspan="3"></td>
     <td>${{ total_sum|floatformat:2 }}</td>
 	<td>${{ balance_sum|floatformat:2 }}</td>
-	<td></td>
+	<td id="checked-in-total">{% if total_checked_in > 0 %}{{ total_checked_in }}{% endif %}</td>
 </tr>
 </table>
 </center>
@@ -448,6 +458,57 @@
 			container:	'more-options-wrap',
 			trigger:	'more-options-trigger',
 			target:		'more-options-target'
+		});
+	</script>
+	
+	<script>
+		$(document).ready(function(){
+			var $total_checked_td = $('#checked-in-total');
+			var total_checked_in = parseInt($total_checked_td.html());
+			if (isNaN(total_checked_in)){
+				total_checked_in = 0;
+			}
+			
+			$('.attended-checkbox input[type=checkbox]').change(function(){
+				var $this = $(this);
+				var action = 'not_checked_in';
+				var id = $this.data('reg');
+				
+				if ($this.is(':checked')){
+					action = 'checked_in';	
+				}
+				
+				$.post(
+		            '{% url event.registrant_check_in %}',
+		            {
+		                'id':id,
+		                'action':action
+		            },
+		            function(data, textStatus, jqXHR){
+		                json = $.parseJSON(data);
+		                if (!json["error"]){
+		                    $this.closest('tr').next().find('.attended-checkedin-text').html(json['checked_in_dt'])
+								.css({opacity: 0.1}).animate({opacity: 1}, 900);
+							if (action == 'checked_in'){
+								total_checked_in = total_checked_in + 1;
+							}else{
+								total_checked_in = total_checked_in - 1;
+								if (total_checked_in < 0){
+									total_checked_in = 0;
+								}
+							}
+							if (total_checked_in == 0){
+								$total_checked_td.html('');
+							}else{
+								$total_checked_td.html(total_checked_in);
+							}
+			
+			            } 
+		            }
+		        );
+				
+			});
+			
 		});
 	</script>
 {% endblock %}

@@ -21,6 +21,8 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import simplejson as json
 
 #from django.forms.models import BaseModelFormSet
 
@@ -2042,6 +2044,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                                             cancel_dt=None)
     if roster_view in ('paid', 'non-paid'):
         registrants = registrants.filter(registration__in=registrations)
+        
+    # get the total checked in
+    total_checked_in = registrants.filter(checked_in=True).count()
                 
                 
     # Pricing title - store with the registrant to improve the performance.
@@ -2168,9 +2173,40 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'roster_view':roster_view,
         'sort_order': sort_order,
         'sort_type': sort_type,
-        'has_addons': has_addons
+        'has_addons': has_addons,
+        'total_checked_in': total_checked_in
         },
         context_instance=RequestContext(request))
+    
+@csrf_exempt
+@login_required
+def registrant_check_in(request):
+    """
+    Check in or uncheck in a registrant.
+    """
+    response_d = {'error': True}
+    if request.method == 'POST':
+        registrant_id = request.POST.get('id', None)
+        action = request.POST.get('action', None)
+        if registrant_id and action:
+            [registrant] = Registrant.objects.filter(id=registrant_id)[:1] or [None]
+            if registrant:
+                if action == 'checked_in':
+                    if not registrant.checked_in:
+                        registrant.checked_in = True
+                        registrant.checked_in_dt = datetime.now()
+                        registrant.save()
+                    response_d['checked_in_dt'] = registrant.checked_in_dt
+                    if isinstance(response_d['checked_in_dt'], datetime):
+                        response_d['checked_in_dt'] = response_d['checked_in_dt'].strftime('%m/%d %I:%M%p')
+                elif action == 'not_checked_in':
+                    if registrant.checked_in:
+                        registrant.checked_in = False
+                        registrant.save()
+                    response_d['checked_in_dt'] = ''
+                response_d['error'] = False
+                        
+    return HttpResponse(json.dumps(response_d), mimetype="text/plain")
 
 @login_required
 def registrant_details(request, id=0, hash='', template_name='events/registrants/details.html'):

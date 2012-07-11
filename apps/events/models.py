@@ -166,6 +166,7 @@ class RegistrationConfiguration(models.Model):
         filter_and, filter_or = RegConfPricing.get_access_filter(user, 
                                                                  is_strict=is_strict,
                                                                  spots_available=spots_available)
+
         q_obj = None
         if filter_and:
             q_obj = Q(**filter_and)
@@ -619,6 +620,9 @@ class Registrant(models.Model):
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
+    
+    checked_in = models.BooleanField(_('Is Checked In?'), default=False)
+    checked_in_dt = models.DateTimeField(null=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
