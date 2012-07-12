@@ -89,3 +89,11 @@
 .t .reset-drawing {
     margin: 15px 0;
 }
+
+.no-tenent-maps {
+    background-color: #F6F6F6;
+    padding: 20px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}

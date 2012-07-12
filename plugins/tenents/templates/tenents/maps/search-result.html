@@ -7,9 +7,9 @@
         <div class="map-wrap">
             <p>{{ map.description }}</p>
             {% if map.file %}
-                <a href="{% url tenents.maps map.slug %}" title="{{ map.description }}">
-                    <img src="{{ map|size:'200x' }}" alt="{{ map.description }}">
-                </a>
+            <a href="{% url tenents.maps map.slug %}" title="{{ map.description }}">
+                <img src="{{ map|size:'200x' }}" alt="{{ map.description }}">
+            </a>
             {% endif %}
         </div>
     </div>
