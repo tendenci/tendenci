@@ -88,7 +88,7 @@ urlpatterns = patterns('',
 
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
-    url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
+    url(r'^robots.txt', 'base.views.robots_txt', name="robots"),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
