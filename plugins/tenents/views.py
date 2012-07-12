@@ -68,7 +68,7 @@ def tenents_maps_add(request, template_name="tenents/maps/add.html"):
             })
 
             messages.add_message(request, messages.INFO, _('Successfully added %s' % map))
-            return HttpResponseRedirect(reverse('tenents.map_selection'))
+            return HttpResponseRedirect(reverse('tenents.maps'))
     else:
         form = MapForm(user=request.user)
 
@@ -101,7 +101,7 @@ def tenents_maps_edit(request, pk=None, template_name="tenents/maps/edit.html"):
             })
 
             messages.add_message(request, messages.INFO, _('Successfully changed %s' % map))
-            return HttpResponseRedirect(reverse('tenents.map_selection'))
+            return HttpResponseRedirect(reverse('tenents.maps'))
 
     else:
         form = MapForm(instance=map)
@@ -147,7 +147,7 @@ def tenents_add(request, pk=None, template_name="tenents/add.html"):
 
     if not map:
         messages.add_message(request, messages.INFO, _('Please select a Map.'))
-        return HttpResponseRedirect(reverse('tenents.map_selection'))
+        return HttpResponseRedirect(reverse('tenents.maps'))
 
     PhotoFormSet = modelformset_factory(Photo, form=PhotoForm, extra=1)
     LineFormSet = modelformset_factory(Line, form=LineForm, extra=0)
