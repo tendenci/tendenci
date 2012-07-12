@@ -211,7 +211,16 @@ class Image(ImageModel, TendenciBaseModel):
         images = images.order_by('-id')
         try: return Image.objects.get(id=min(images))
         except ValueError: return None
-        
+
+    def get_first(self, set=None):
+        # decide which set to pull from
+        if set: images = Image.objects.filter(photoset=set)
+        else: return None
+        images = images.values_list("id", flat=True)
+        images = images.order_by('-id')
+        try: return Image.objects.get(id=max(images))
+        except ValueError: return None
+
     def get_license(self):
         if self.license:
             return self.license

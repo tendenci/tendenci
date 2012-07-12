@@ -108,15 +108,17 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     })
 
     # default prev/next URL
-    photo_prev_url, photo_next_url = '', ''
+    photo_prev_url, photo_next_url, photo_first_url = '', '', ''
 
     if set_id:
         photo_set = get_object_or_404(PhotoSet, id=set_id)
         photo_prev = photo.get_prev(set=set_id)
         photo_next = photo.get_next(set=set_id)            
+        photo_first = photo.get_first(set=set_id)
 
         if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id, set_id])
         if photo_next: photo_next_url = reverse("photo", args= [photo_next.id, set_id])
+        if photo_first: photo_first_url = reverse("photo", args= [photo_first.id, set_id])
 
         photo_sets = list(photo.photoset.all())
         if photo_set in photo_sets:
@@ -144,6 +146,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     return render_to_response(template_name, {
         "photo_prev_url": photo_prev_url,
         "photo_next_url": photo_next_url,
+        "photo_first_url": photo_first_url,
         "photo": photo,
         "photo_sets": photo_sets,
         "photo_set_id": set_id,
