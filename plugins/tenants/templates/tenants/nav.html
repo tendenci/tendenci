@@ -25,7 +25,7 @@
         </ul>
     </li>
 
-    <li class="dropdown active" data-dropdown="dropdown">
+    <li class="dropdown {{ default_tab }}" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Maps" %}</a>
 
         <ul class="dropdown-menu">
@@ -42,11 +42,11 @@
         <li><a href="{% url tenants.maps %}">{% trans "Browse Maps" %}</a></li>
         </ul>
     </li>
+
     {% endif %}
 
-    {% list_maps as nav_maps %}
     {% for nav_map in nav_maps %}
-        <li class="dropdown" data-dropdown="dropdown">
+        <li class="dropdown {{ nav_map.active_tab }}" data-dropdown="dropdown">
             <a href="{% url tenants.maps nav_map.slug %}">{{ nav_map.name }}</a>
         </li>
     {% endfor %}

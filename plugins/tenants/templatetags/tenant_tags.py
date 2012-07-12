@@ -77,10 +77,26 @@ def list_maps(parser, token):
 
 
 @register.inclusion_tag("tenants/nav.html", takes_context=True)
-def tenant_nav(context, user, job=None):
+def tenant_nav(context, user, obj=None):
+    import re
+
+    default_tab = 'active'
+    nav_maps = Map.objects.all()
+
+    for nav_map in nav_maps:
+        nav_map.active_tab = u''
+        full_path = context['request'].get_full_path()
+        result = re.search('%s/$' % nav_map.slug, full_path)
+
+        if result:
+            nav_map.active_tab = 'active'
+            default_tab = u''
+
     context.update({
-        'nav_object': job,
-        "user": user
+        'nav_object': obj,
+        'user': user,
+        'nav_maps': nav_maps,
+        'default_tab': default_tab,
     })
     return context
 
