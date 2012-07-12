@@ -1,0 +1,24 @@
+{% extends "tenants/base.html" %}
+{% load base_filters %}
+{% load tenant_tags %}
+{% load i18n %}
+
+{% block body %}
+{% tenant_nav request.user tenant %}
+
+<div class="t">
+    <div class="tenant-wrap">
+        <h1>{{ tenant.suite_number }} {{ tenant.name }}</h1>
+        <p>{{ tenant.description }}</p>
+
+        <div class="delete-form">
+            <form method="POST" action="{% url tenants.delete tenant.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="submit" name="submit" value="{% trans 'Please delete' %}">
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock body %}

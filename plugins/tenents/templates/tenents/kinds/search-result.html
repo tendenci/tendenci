@@ -1,9 +1,0 @@
-{% load base_tags %}
-{% load file_tags %}
-
-<div class="wrap-search-item">
-    <div class="search-item tenents-search-item">
-        <h2><a href="{% url tenents.kinds.detail kind.pk %}">{{ kind.name }}</a></h2>
-    </div>
-    {% include "tenents/kinds/meta.html" %}
-</div>

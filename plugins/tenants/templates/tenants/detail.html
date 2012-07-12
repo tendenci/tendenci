@@ -1,0 +1,23 @@
+{% extends "tenants/base.html" %}
+{% load tenant_tags %}
+{% load file_tags %}
+{% load base_filters %}
+
+{% block body %}
+{% tenant_nav request.user tenant %}
+<div class="t">
+
+    <div class="tenant-wrap">
+        <h1>{{ tenant.name }}</h1>
+        <p>{{ tenant.description }}</p>
+
+        {% if tenant.photo %}
+        <img src="{{ tenant.photo|size:'300x/constrain' }}" />
+        {% endif %}
+
+        {% include "tenants/meta.html" %} 
+    </div>
+
+</div>
+{% endblock body %}
+

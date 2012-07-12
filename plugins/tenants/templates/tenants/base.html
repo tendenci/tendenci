@@ -1,0 +1,10 @@
+{% extends "base-wide.html" %}
+
+{% block title %}{{SITE_GLOBAL_SITEPRIMARYKEYWORDS }} Tenants, {{SITE_GLOBAL_SITESECONDARYKEYWORDS }} Tenants{% endblock %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <style type="text/css">
+        {% include "tenants/media/css/tenants.css" %}
+    </style>
+{% endblock %}

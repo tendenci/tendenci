@@ -1,0 +1,54 @@
+{% load base_tags %}
+{% load perm_tags %}
+{% load tenant_tags %}
+{% load i18n %}
+
+{% has_perm user tenants.add_tenant as can_add_tenant %}
+{% has_perm user tenants.add_map as can_add_map %}
+
+{% if nav_object %}
+    {% has_perm user tenants.view_tenant nav_object as can_view_tenant %}
+    {% has_perm user tenants.change_tenant nav_object as can_edit_tenant %}
+{% else %}
+    {% has_perm user tenants.view_tenant as can_view_tenant %}
+    {% has_perm user tenants.change_tenant as can_edit_tenant %}
+{% endif %}
+
+<ul id="module-tabs" class="tabs">
+    {% if user.is_authenticated %}
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+        <ul class="dropdown-menu">
+            <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
+            <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
+            <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
+        </ul>
+    </li>
+
+    <li class="dropdown active" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Maps" %}</a>
+
+        <ul class="dropdown-menu">
+            {% if nav_object and can_edit_tenant %}
+    		<li><a href="{% url tenants.edit nav_object.pk %}">{% trans "Edit Tenant" %}</a></li>
+    		{% endif %}
+
+        {% if can_add_map %}
+        <li><a href="{% url tenants.maps.add %}">{% trans "Add Map" %}</a></li>
+        <li><a href="{% url tenants.kinds.add %}">{% trans "Add Kind" %}</a></li>
+        <li><a href="{% url tenants.kinds %}">{% trans "Browse Kinds" %}</a></li>
+        {% endif %}
+
+        <li><a href="{% url tenants.maps %}">{% trans "Browse Maps" %}</a></li>
+        </ul>
+    </li>
+    {% endif %}
+
+    {% list_maps as nav_maps %}
+    {% for nav_map in nav_maps %}
+        <li class="dropdown" data-dropdown="dropdown">
+            <a href="{% url tenants.maps nav_map.slug %}">{{ nav_map.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
