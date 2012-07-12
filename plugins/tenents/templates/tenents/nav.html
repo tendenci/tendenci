@@ -47,7 +47,7 @@
     {% list_maps as nav_maps %}
     {% for nav_map in nav_maps %}
         <li class="dropdown" data-dropdown="dropdown">
-            <a href="{% url tenents.maps nav_map.pk %}">{{ nav_map.name }}</a>
+            <a href="{% url tenents.maps nav_map.slug %}">{{ nav_map.name }}</a>
         </li>
     {% endfor %}
 </ul>

@@ -73,7 +73,7 @@ def list_maps(parser, token):
     if 'order' not in kwargs:
         kwargs['order'] = '-create_dt'
 
-    return ListTenentsNode(context_var, *args, **kwargs)
+    return ListMapsNode(context_var, *args, **kwargs)
 
 
 @register.inclusion_tag("tenents/nav.html", takes_context=True)
