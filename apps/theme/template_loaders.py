@@ -34,7 +34,8 @@ class Loader(BaseLoader):
         template dirs are excluded from the result set, for security reasons.
         """
         theme_templates = []
-        if get_current_request().mobile:
+        current_request = get_current_request()
+        if current_request and current_request.mobile:
             theme_templates.append(os.path.join(get_theme_root(), 'mobile'))
         theme_templates.append(os.path.join(get_theme_root(), 'templates'))
         for template_path in theme_templates:
