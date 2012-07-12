@@ -248,6 +248,9 @@
 	<th width="8%" title="Invoice Amount">{% trans "Inv$" %}</th>
 	<th width="8%" title="Registration Number">{% trans "Reg#" %}</th>
 	<th width="8%" title="Registration Amount">{% trans "Reg$" %}</th>
+	{% if has_addons %}
+	<th width="8%" title="Addon Amount">{% trans "Addon$" %}</th>
+	{% endif %}
 	<th width="8%" title="Balance">{% trans "Balance" %}</th>
 	<th width="6%" class='attended' title="Attendance Checkbox">Attend</th>
 </tr>
@@ -291,6 +294,13 @@
 	<td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
 	<td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
 	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
+	{% if has_addons %}
+	{% if registrant.is_primary and registrant.addons %}
+	<td>${{ registrant.addons_amount|floatformat:"2" }}</td> <!-- addon amount -->
+	{% else %}
+	<td></td>
+	{% endif %}
+	{% endif %}
 	<td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
 	<td class="attended-checkbox"><input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}" value="1" {% if registrant.checked_in %}checked{% endif %} /></td>
 </tr>
@@ -328,7 +338,7 @@
    {% if registrant.email %}{{ registrant.email }}{% endif %}
    <div>Registered as: {% firstof registrant.price_title 'Untitled' %}</div>
     </td>
-    <td colspan="5">
+    <td colspan="{% if has_addons %}6{% else %}5{% endif %}">
 
         {% if registrant.invoice_dict.tender_date %}
             {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
@@ -351,7 +361,7 @@
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
     <td colspan="1"></td>
-    <td colspan="7">
+    <td colspan="{% if has_addons %}8{% else %}7{% endif %}">
   	
     {% if additionals %}
         {% if registrant.invoice_dict.id %}
@@ -372,17 +382,11 @@
     {% endif %}
     
     {% if has_addons %}
-    {% with registrant.registration.regaddon_set.all as regaddons %}
-    {% if regaddons %}
+    {% if registrant.is_primary and registrant.addons %}
     	<div>
-        <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "addons:" %}</a> 
-	    {% for regaddon in regaddons %}
-	    	{{ regaddon.addon.title }}
-            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
-	    {% endfor %}
-	    </div>
+        {% trans "addons:" %}
+	    {{ registrant.addons }}
     {% endif %}
-    {% endwith %}
     {% endif %}
     
     </td>
@@ -391,14 +395,17 @@
 </tr>
 
 {% endwith %}
-
 {% endfor %}
+
 <tr class='row-spacer'><td colspan="10"></td></tr>
 <tr class="bottom-row">
 	<td></td>
 	<td colspan="2" class="total-label">{% trans "Total" %}</td>
 	<td colspan="3"></td>
     <td>${{ total_sum|floatformat:2 }}</td>
+    {% if has_addons %}
+    <td>${{ addon_total_sum|floatformat:2 }}</td>
+    {% endif %}
 	<td>${{ balance_sum|floatformat:2 }}</td>
 	<td id="checked-in-total">{% if total_checked_in > 0 %}{{ total_checked_in }}{% endif %}</td>
 </tr>

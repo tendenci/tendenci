@@ -41,7 +41,8 @@ from exports.utils import run_export_task
 from events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
-    CustomRegFormEntry, CustomRegField, CustomRegFieldEntry)
+    CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
+    RegAddonOption)
 from events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
@@ -2068,6 +2069,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     reg8n_to_invoice_objs = registrations.values_list('id', 'invoice__id', 'invoice__total', 
                                          'invoice__balance', 'invoice__admin_notes',
                                          'invoice__tender_date')
+        
     reg8n_to_invoice_dict = {}
     invoice_fields = ('id', 'total', 'balance', 'admin_notes', 'tender_date')
     for item in reg8n_to_invoice_objs:
@@ -2145,7 +2147,27 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
                     if r.id in additional_ids:
                         registrant.additionals.append(r)
         
-                      
+    # assign addons
+    addon_total_sum = Decimal('0')
+    if has_addons:
+        reg8n_to_addons_list = RegAddonOption.objects.filter(
+                                            regaddon__registration__in=registrations
+                                            ).values_list(
+                                            'regaddon__registration__id', 
+                                            'regaddon__addon__title', 
+                                            'option__title', 
+                                            'regaddon__amount')
+        if reg8n_to_addons_list:
+            addon_total_sum = sum([item[3] for item in reg8n_to_addons_list])
+            for registrant in registrants:
+                if registrant.is_primary:
+                    registrant.addons = ''
+                    registrant.addons_amount = Decimal('0')
+                    for addon_item in reg8n_to_addons_list:
+                        if addon_item[0] == registrant.registration_id:
+                            registrant.addons += '%s(%s) ' % (addon_item[1], addon_item[2])
+                            registrant.addons_amount += addon_item[3]
+                                   
 
     total_sum = float(0)
     balance_sum = float(0)
@@ -2174,6 +2196,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         'sort_order': sort_order,
         'sort_type': sort_type,
         'has_addons': has_addons,
+        'addon_total_sum': addon_total_sum,
         'total_checked_in': total_checked_in
         },
         context_instance=RequestContext(request))
