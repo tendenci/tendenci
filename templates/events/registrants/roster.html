@@ -184,6 +184,10 @@
 	.total .label {
 		display: inline;
 	}
+	.roster-sort-wrap, .attendees-export-links, #admin-bar{
+		display: none !important;
+	}
+
 </style>
 
 
@@ -193,7 +197,7 @@
 
 <div class='event-info'>
 	<h1>{{ event.title }} - {% trans "Registrant Roster" %} {{ roster_view|capfirst }}</h1>
-
+	<div class="attendees-export-links">
     {% if roster_view == 'non-paid' %}
         <div><a href="{% url event.registrant.export.non_paid event.pk %}">{% trans "Export Only Non-Paid Registrants" %}</a></div>
     {% endif %}
@@ -205,13 +209,13 @@
     {% if roster_view == 'total' %}
         <div><a href="{% url event.registrant.export.total event.pk %}">{% trans "Export Non-Paid and Paid Registrants (one file)" %}</a></div>
     {% endif %}
-
+	</div>
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
 
 </div>
 
-<div class='event-info'>
+<div class='event-info roster-sort-wrap'>
 	<form id="roster-sort-form" method="get">
 		Sort by:
 	<select name="sort_order" size="1">
