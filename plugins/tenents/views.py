@@ -25,21 +25,11 @@ def tenents_maps(request, template_name="tenents/maps/search.html"):
         if not request.user.is_anonymous():
             maps = maps.select_related()
 
-    EventLog.objects.log(**{
-        'event_id': 9999400,
-        'event_data': '%s searched by %s' % ('Map', request.user),
-        'description': '%s searched' % 'Map',
-        'user': request.user,
-        'request': request,
-        'source': 'maps'
-    })
-
-    return render_to_response(template_name, {
-        'maps': maps
-    }, context_instance=RequestContext(request))
+    EventLog.objects.log()
+    return render_to_response(template_name, {'maps': maps},
+        context_instance=RequestContext(request))
 
 
-@login_required
 def tenents_maps_detail(request, slug=u'', template_name='tenents/maps/detail_plot.html'):
 
     if not slug:
@@ -50,15 +40,7 @@ def tenents_maps_detail(request, slug=u'', template_name='tenents/maps/detail_pl
     if not has_perm(request.user, 'tenents.view_map', map):
         raise Http403
 
-    EventLog.objects.log(**{
-        'event_id': 9999500,
-        'event_data': '%s (%d) viewed by %s' % (map._meta.object_name, map.pk, request.user),
-        'description': '%s viewed' % map._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': map,
-    })
-
+    EventLog.objects.log(instance=map)
     tenents = Tenent.objects.filter(map=map, status=True, status_detail='active')
 
     return render_to_response(template_name, {'map': map, 'tenents': tenents},
