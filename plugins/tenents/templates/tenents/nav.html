@@ -1,37 +1,36 @@
 {% load base_tags %}
 {% load perm_tags %}
+{% load tenent_tags %}
 {% load i18n %}
 
 {% has_perm user tenents.add_tenent as can_add_tenent %}
 {% has_perm user tenents.add_map as can_add_map %}
 
 {% if nav_object %}
-	{% has_perm user tenents.view_tenent nav_object as can_view_tenent %}
-	{% has_perm user tenents.change_tenent nav_object as can_edit_tenent %}
+    {% has_perm user tenents.view_tenent nav_object as can_view_tenent %}
+    {% has_perm user tenents.change_tenent nav_object as can_edit_tenent %}
 {% else %}
-	{% has_perm user tenents.view_tenent as can_view_tenent %}
-	{% has_perm user tenents.change_tenent as can_edit_tenent %}
+    {% has_perm user tenents.view_tenent as can_view_tenent %}
+    {% has_perm user tenents.change_tenent as can_edit_tenent %}
 {% endif %}
 
-    <ul id="module-tabs" class="tabs">
-	
+<ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}
-	<li class="dropdown" data-dropdown="dropdown">
-	    <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
+    <li class="dropdown" data-dropdown="dropdown">
+        <a href="#" class="dropdown-toggle">{% trans "Tendenci" %}</a>
         <ul class="dropdown-menu">
             <a href="{% url dashboard %}" title="Tendenci Home Page">{% trans "Dashboard" %}</a>
             <li><a href="{% url profile.index %}">{% trans "My Profile" %}</a></li>
             <li><a href="{% url auth_logout %}">{% trans "Log Off" %}</a></li>
         </ul>
-	</li>
-    {% endif %}
+    </li>
 
-	<li class="dropdown active" data-dropdown="dropdown">
+    <li class="dropdown active" data-dropdown="dropdown">
         <a href="#" class="dropdown-toggle">{% trans "Maps" %}</a>
 
         <ul class="dropdown-menu">
             {% if nav_object and can_edit_tenent %}
-			<li><a href="{% url tenents.edit nav_object.pk %}">{% trans "Edit Tenent" %}</a></li>
+    		<li><a href="{% url tenents.edit nav_object.pk %}">{% trans "Edit Tenent" %}</a></li>
     		{% endif %}
 
         {% if can_add_map %}
@@ -41,9 +40,15 @@
         {% endif %}
 
         <li><a href="{% url tenents.maps %}">{% trans "Browse Maps" %}</a></li>
-
         </ul>
+    </li>
+    {% endif %}
 
-	</li>
-	</ul>
+    {% list_maps as nav_maps %}
+    {% for nav_map in nav_maps %}
+        <li class="dropdown" data-dropdown="dropdown">
+            <a href="{% url tenents.maps nav_map.pk %}">{{ nav_map.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
 
