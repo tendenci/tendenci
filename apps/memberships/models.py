@@ -1288,16 +1288,17 @@ class AppEntry(TendenciBaseModel):
                 # 'last_name': self.last_name,
                 'email': self.email
             }
-
+            
+        users = {}
         lst = []
         for i in kwargs.items():
             key, value = i
             if value:
                 lst.append(Q(i))
 
-        users = {}
-        for u in User.objects.filter(reduce(OR, lst)):
-            users[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
+        if lst:        
+            for u in User.objects.filter(reduce(OR, lst)):
+                users[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
 
         return users.items()
 
