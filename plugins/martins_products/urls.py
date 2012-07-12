@@ -6,4 +6,5 @@ urlpatterns = patterns('martins_products.views',
     url(r'^products/search/$', 'search', name="products.search"),
     url(r'^products/feed/$', LatestEntriesFeed(), name='products.feed'),
     url(r'^products/(?P<slug>[\w\-]+)/$', 'detail', name="products.detail"),
+        url(r'^products/category/(?P<id>\d+)/$', 'category', name="products.category"),
 )

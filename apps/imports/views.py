@@ -56,7 +56,7 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
                                    'total': len(data_dict_list),
                                    'data_dict_list': data_dict_list}
             
-            
+            EventLog.objects.log()
             return HttpResponseRedirect(reverse('imports.views.user_upload_preview', args=[id]))
     else:
         form = form_class()

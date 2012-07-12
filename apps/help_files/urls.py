@@ -16,5 +16,5 @@ urlpatterns = patterns('help_files.views',
     url(r'^%s/topic/(?P<id>\d+)/$' % urlpath, 'topic', name='help_files.topic'),
     url(r'^%s/requests/$' % urlpath, 'requests', name='help_files.requests'),
     url(r'^%s/request/$' % urlpath, 'request_new', name='help_files.request'),
-    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'details', name='help_file.details'),
+    url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'detail', name='help_file.details'),
 )
