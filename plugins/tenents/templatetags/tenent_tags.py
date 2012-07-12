@@ -1,6 +1,6 @@
 from django.template import Library, TemplateSyntaxError
 
-from tenents.models import Tenent
+from tenents.models import Tenent, Map
 from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
@@ -20,6 +20,41 @@ def list_tenents(parser, token):
     {% for tenent in tenents %}
         {{ tenent.something }}
     {% endfor %}
+    """
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    context_var = bits[2]
+
+    if len(bits) < 3:
+        message = "'%s' tag requires more than 2" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[1] != "as":
+        message = "'%s' second argument must be 'as'" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    kwargs = parse_tag_kwargs(bits)
+
+    if 'order' not in kwargs:
+        kwargs['order'] = '-create_dt'
+
+    return ListTenentsNode(context_var, *args, **kwargs)
+
+
+class ListMapsNode(ListNode):
+    model = Map
+    perms = 'maps.view_map'
+
+
+@register.tag
+def list_maps(parser, token):
+    """
+    Example:
+    {% list_maps as maps [user=user limit=3 tags=bloop bleep q=searchterm] %}
+    {% for map in maps %}
+        {{ map.name }}
+    {% endfor %}
+
     """
     args, kwargs = [], {}
     bits = token.split_contents()
