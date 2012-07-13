@@ -746,6 +746,22 @@
         "scope_category": "global", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "robots.txt", 
+        "description": "This setting determines whether your website is visible to search engines like Google and Yahoo. <strong>Private</strong> will block search engines, <strong>Public</strong> will allow them in, and <strong>Custom</strong> will let you customize this in your theme. The default for the custom option is the same as private.", 
+        "data_type": "string", 
+        "update_dt": "2012-07-12 10:18:26", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "robotstxt", 
+        "value": "true", 
+        "label": "Search Engine Visibility (robots.txt)", 
+        "input_value": "[('base/robots_private.txt','Private'),('base/robots_public.txt','Public'),('robots.txt','Custom')]", 
+        "parent_id": 0, 
+        "scope": "site", 
+        "scope_category": "global", 
+        "store": true, 
+        "updated_by": ""
     }
-    
 ]

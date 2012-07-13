@@ -16,6 +16,8 @@ class Category(models.Model):
     
     class Meta:
         ordering = ['name']
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
 
     @models.permalink
     def get_absolute_url(self):
@@ -53,9 +55,8 @@ class Product(TendenciBaseModel):
     state_registered = models.CharField(_(u'State Registered'), max_length=200, blank=True,)
     product_image = models.ForeignKey('ProductPhoto',
         help_text=_('Photo that represents this product.'), null=True, default=None, blank=True,)
-    # categories = generic.GenericRelation(CategoryItem,
-#                                          object_id_field="object_id",
-#                                          content_type_field="content_type")
+    hover_image = models.ForeignKey('HoverPhoto',
+        help_text=_('Photo that will show when the product is hovered over in search.'), null=True, default=None, blank=True,)
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
@@ -69,20 +70,6 @@ class Product(TendenciBaseModel):
         permissions = (("view_product","Can view product"),)
         verbose_name = "Product"
         verbose_name_plural = "Products"
-    
-#    @property
-#    def content_type(self):
-#        return 'stories'
-#    
-    @property
-    def category_set(self):
-        items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
-            if cat.category:
-                items["category"] = cat.category
-            elif cat.parent:
-                items["sub_category"] = cat.parent
-        return items
 
     def photo(self):
         if self.product_image and self.product_image.file:
@@ -96,6 +83,11 @@ class Product(TendenciBaseModel):
 
 
 class ProductPhoto(File):
+    @property
+    def content_type(self):
+        return 'products'
+        
+class HoverPhoto(File):
     @property
     def content_type(self):
         return 'products'

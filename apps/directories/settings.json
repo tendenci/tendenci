@@ -35,23 +35,6 @@
     }, 
     {
         "default_value": "true", 
-        "description": "Run Renewal Reminders is a bit field defining whether or not to run the script that generates an email reminding the user to renew their directoru.  0=no 1=yes", 
-        "data_type": "boolean", 
-        "update_dt": "2010-08-12 17:19:12", 
-        "input_type": "select", 
-        "client_editable": true, 
-        "name": "rundirectoriesrenewalreminders", 
-        "value": "false", 
-        "label": "Run Renewal Reminders", 
-        "input_value": "true,false", 
-        "parent_id": 0, 
-        "scope": "module", 
-        "scope_category": "directories", 
-        "store": false, 
-        "updated_by": ""
-    }, 
-    {
-        "default_value": "true", 
         "description": "Module is enabled or not.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-12 17:19:12", 

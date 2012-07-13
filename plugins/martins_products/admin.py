@@ -31,7 +31,8 @@ class ProductAdmin(TendenciBaseModelAdmin):
                                  'product_label',
                                  'state_registered',
                                  'tags',
-                                 'photo_upload'
+                                 'photo_upload',
+                                 'hover_photo_upload',
                                 ]
                       }),
                       ('Permissions', {
