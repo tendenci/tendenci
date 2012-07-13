@@ -97,3 +97,62 @@
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
+
+.tenant-directory {
+    width: 100%;
+    border: 1px solid #CCC;
+    margin: 10px 0;
+}
+.tenant-directory tr {
+    cursor: pointer;
+}
+.tenant-directory tr:nth-child(2n+1) {
+    background-color: #F6F6F6;
+}
+.tenant-directory td {
+    padding: 10px;
+}
+.tenant-number {
+    width: 10px;
+}
+.tenant-phone {
+    width: 100px;
+}
+
+.left-wrap {
+    float: left;
+    margin-right: 30px;
+}
+
+.right-wrap {
+    float: left;
+    width: 40%;
+}
+
+.tenant-name {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+.hours-open {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+.hours-open h2 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+}
+#container .hours-open p {
+    margin: 0;
+    line-height: 1.5em;
+}
+
+.contact-info h2 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+}
+#container .contact-info p {
+    margin: 0;
+    line-height: 1.5em;
+}
