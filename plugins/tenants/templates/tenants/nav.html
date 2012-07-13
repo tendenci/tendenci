@@ -29,17 +29,14 @@
         <a href="#" class="dropdown-toggle">{% trans "Maps" %}</a>
 
         <ul class="dropdown-menu">
-            {% if nav_object and can_edit_tenant %}
-    		<li><a href="{% url tenants.edit nav_object.pk %}">{% trans "Edit Tenant" %}</a></li>
-    		{% endif %}
 
         {% if can_add_map %}
         <li><a href="{% url tenants.maps.add %}">{% trans "Add Map" %}</a></li>
         <li><a href="{% url tenants.kinds.add %}">{% trans "Add Kind" %}</a></li>
         <li><a href="{% url tenants.kinds %}">{% trans "Browse Kinds" %}</a></li>
         {% endif %}
-
         <li><a href="{% url tenants.maps %}">{% trans "Browse Maps" %}</a></li>
+
         </ul>
     </li>
     {% endif %}
