@@ -83,7 +83,7 @@ def tenant_nav(context, user, obj=None):
     obj_is_tenant = isinstance(obj, Tenant)
 
     full_path = context['request'].get_full_path()
-    full_path = re.match('.+/(.*)/$', full_path).group(1)
+    full_path = re.match('.*/(.*)/$', full_path).group(1)
 
     default_tab = 'active'
     nav_maps = Map.objects.all()
