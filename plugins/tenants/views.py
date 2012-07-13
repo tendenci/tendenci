@@ -31,6 +31,8 @@ def tenants_maps(request, template_name="tenants/maps/search.html"):
 
 
 def tenants_maps_detail(request, slug=u'', template_name='tenants/maps/detail.html'):
+    from django.contrib.contenttypes.models import ContentType
+    from tagging.models import TaggedItem
 
     if not slug:
         return HttpResponseRedirect(reverse('tenants.maps'))
@@ -41,9 +43,24 @@ def tenants_maps_detail(request, slug=u'', template_name='tenants/maps/detail.ht
         raise Http403
 
     EventLog.objects.log(instance=map)
-    tenants = Tenant.objects.filter(map=map, status=True, status_detail='active')
 
-    return render_to_response(template_name, {'map': map, 'tenants': tenants},
+    ct_tenant = ContentType.objects.get_for_model(Tenant)
+    tags = TaggedItem.objects.filter(
+        content_type=ct_tenant).values_list('tag__name', flat=True).distinct()
+
+    tenants_by_tag = []
+    for tag in tags:
+
+        tenants = TaggedItem.objects.get_by_model(Tenant, tag).filter(
+            map=map, status=True, status_detail='active')
+
+        if tenants:
+            tenants_by_tag.append({
+                'tag_name': tag,
+                'tenants': tenants
+            })
+
+    return render_to_response(template_name, {'map': map, 'tenants_by_tag': tenants_by_tag},
         context_instance=RequestContext(request))
 
 

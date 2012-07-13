@@ -18,21 +18,24 @@
             </map>
         </div>
 
-        {% if tenants %}
+        {% if tenants_by_tag %}
             <table class="tenant-directory">
-            {% for tenant in tenants %}
-                <tr class="tenant-listing" data-tenant-pk="{{ tenant.pk }}">
+            {% for tenant_by_tag in tenants_by_tag %}
+                <tr><td colspan="3">{{ tenant_by_tag.tag_name|title }}</td></tr>
+                {% for tenant in tenant_by_tag.tenants %}
+                    <tr class="tenant-listing" data-tenant-pk="{{ tenant.pk }}">
 
-                    <td class="tenant-number"><a href="{% url tenants tenant.slug %}">
-                        {{ tenant.suite_number }}</a></td>
+                        <td class="tenant-number"><a href="{% url tenants tenant.slug %}">
+                            {{ tenant.suite_number }}</a></td>
 
-                    <td class="tenant-name">
-                    <a href="{% url tenants tenant.slug %}">
-                        {{ tenant.name }}</a></td>
+                        <td class="tenant-name">
+                        <a href="{% url tenants tenant.slug %}">
+                            {{ tenant.name }}</a></td>
 
-                    <td class="tenant-phone">{{ tenant.phone }}</td>
+                        <td class="tenant-phone">{{ tenant.phone }}</td>
 
-                </tr>
+                    </tr>
+                {% endfor %}
             {% endfor %}
             </table>
         {% endif %}
