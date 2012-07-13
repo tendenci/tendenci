@@ -7,15 +7,41 @@
 {% tenant_nav request.user tenant %}
 <div class="t">
 
-    <div class="tenant-wrap">
-        <h1>{{ tenant.name }}</h1>
-        <p>{{ tenant.description }}</p>
 
-        {% if tenant.photo %}
-        <img src="{{ tenant.photo|size:'300x/constrain' }}" />
-        {% endif %}
+
+
+
+    <div class="tenant-wrap">
+
+        <div class="left-wrap">
+            <div class="photo-wrap">
+                {% if tenant.photo %}
+                <img src="{{ tenant.photo|size:'500x500/constrain' }}" />
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="right-wrap">
+
+            <div class="tenant-name">
+                <h1>{{ tenant.name }}</h1>
+            </div>
+
+            <div class="hours-open">
+                <h2>Hours Open</h2>
+                {{ tenant.hours_open|linebreaks|urlize }}
+            </div>
+
+            <div class="contact-info">
+                <h2>Contact</h2>
+                {{ tenant.contact_info|linebreaks|urlize }}
+            </div>
+
+
+        </div>
 
         {% include "tenants/meta.html" %} 
+
     </div>
 
 </div>
