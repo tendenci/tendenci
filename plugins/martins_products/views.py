@@ -66,9 +66,6 @@ def search(request, template_name="martins_products/search.html"):
     else:
         print 'errors', form.errors
 
-    if category:
-        query = query + ' category:' + category
-
     if get_setting('site', 'global', 'searchindex') and query:
         products = Product.objects.search(query, user=request.user)
     else:
@@ -79,6 +76,9 @@ def search(request, template_name="martins_products/search.html"):
 
     if formulation:
         products = products.filter(formulation=formulation)
+    
+    if category:
+        products = products.filter(category=category)
 
     products = products.order_by('-create_dt')
 

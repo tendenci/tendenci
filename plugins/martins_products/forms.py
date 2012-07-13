@@ -129,11 +129,11 @@ class ProductSearchForm(forms.Form):
         super(ProductSearchForm, self).__init__(*args, **kwargs)
 
         # set up the category choices
-        categories = Category.objects.all()
-        categories = list(set([cat.name for cat in categories]))
-        categories = [[cat, cat] for cat in categories]
-        categories.insert(0, ['', '------------'])
-        self.fields['category'].choices = tuple(categories)
+#        categories = Category.objects.all()
+#        categories = list(set([cat.name for cat in categories]))
+#        categories = [[cat, cat] for cat in categories]
+#        categories.insert(0, ['', '------------'])
+#        self.fields['category'].choices = tuple(categories)
 
         # set up the sub category choices
 #        sub_categories = CategoryItem.objects.filter(content_type=content_type,
