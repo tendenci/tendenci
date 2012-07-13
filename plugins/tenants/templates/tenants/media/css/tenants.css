@@ -121,12 +121,12 @@
 
 .left-wrap {
     float: left;
-    margin-right: 30px;
+    padding-right: 30px;
+    background-color: white;
 }
 
 .right-wrap {
-    float: left;
-    width: 40%;
+    width: 100%;
 }
 
 .tenant-name {
