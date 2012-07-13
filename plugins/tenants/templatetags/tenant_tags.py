@@ -80,24 +80,36 @@ def list_maps(parser, token):
 def tenant_nav(context, user, obj=None):
     import re
 
+    obj_is_tenant = isinstance(obj, Tenant)
+
+    full_path = context['request'].get_full_path()
+    full_path = re.match('.+/(.*)/$', full_path).group(1)
+
     default_tab = 'active'
     nav_maps = Map.objects.all()
 
     for nav_map in nav_maps:
         nav_map.active_tab = u''
-        full_path = context['request'].get_full_path()
-        result = re.search('%s/$' % nav_map.slug, full_path)
 
-        if result:
-            nav_map.active_tab = 'active'
-            default_tab = u''
+        if obj_is_tenant:
+            if full_path in nav_map.tenant_set.values_list('slug', flat=True):
+                nav_map.active_tab = 'active'
+                default_tab = u''
+        else:
+            if nav_map.slug == full_path:
+                nav_map.active_tab = 'active'
+                default_tab = u''
+
+        context.update({
+        'nav_maps': nav_maps,
+        'default_tab': default_tab
+        })
 
     context.update({
         'nav_object': obj,
         'user': user,
-        'nav_maps': nav_maps,
-        'default_tab': default_tab,
     })
+
     return context
 
 
