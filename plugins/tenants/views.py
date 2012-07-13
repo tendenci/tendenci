@@ -30,7 +30,7 @@ def tenants_maps(request, template_name="tenants/maps/search.html"):
         context_instance=RequestContext(request))
 
 
-def tenants_maps_detail(request, slug=u'', template_name='tenants/maps/detail_plot.html'):
+def tenants_maps_detail(request, slug=u'', template_name='tenants/maps/detail.html'):
 
     if not slug:
         return HttpResponseRedirect(reverse('tenants.maps'))
