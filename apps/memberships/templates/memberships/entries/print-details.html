@@ -26,6 +26,8 @@
         <h2>{{ entry.app.name }} {% trans "Submission" %}</h2>
         {% endif %}
 
+        <div id="submitted-dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}</div>
+        
         {% if entry.is_approved %}
         <div id="member-number">{{ entry.membership.member_number }}</div>
         {% endif %}
