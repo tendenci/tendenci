@@ -43,30 +43,13 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             
             # create invoice
             invoice = make_payment_inv_add(user, mp)
-            # log an event for invoice add
-            log_defaults = {
-                'event_id' : 311000,
-                'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
-                'description': '%s added' % invoice._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': invoice,
-            }
-            EventLog.objects.log(**log_defaults)  
-            
+
+            EventLog.objects.log(instance=invoice)
+
             # updated the invoice_id for mp, so save again
             mp.save(user)
-            
-            # log an event for make_payment
-            log_defaults = {
-                'event_id' : 671000,
-                'event_data': '%s (%d) added by %s' % (mp._meta.object_name, mp.pk, request.user),
-                'description': '%s added' % mp._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': mp,
-            }
-            EventLog.objects.log(**log_defaults)
+
+            EventLog.objects.log(instance=mp)
             
             # send notification to administrators
             # get admin notice recipients
@@ -121,10 +104,9 @@ def add_confirm(request, id, template_name="make_payments/add_confirm.html"):
 def view(request, id=None, template_name="make_payments/view.html"):
     mp = get_object_or_404(MakePayment, pk=id)
     if not mp.allow_view_by(request.user): raise Http403
-    
+
+    EventLog.objects.log(instance=mp)
+
     mp.payment_amount = tcurrency(mp.payment_amount)
     return render_to_response(template_name, {'mp':mp}, 
         context_instance=RequestContext(request))
-    
-    
-    
