@@ -152,7 +152,9 @@ class FormForCustomRegForm(forms.ModelForm):
             self.fields['pricing'].empty_label = None
             
         # member id
-        if hasattr(self.event, 'has_member_price') and self.event.has_member_price:
+        if hasattr(self.event, 'has_member_price') and \
+                    get_setting('module', 'events', 'requiresmemberid') and \
+                    self.event.has_member_price:
             self.fields['memberid'] = forms.CharField(label='Member ID', required=False,
                                 help_text='Please enter a member ID if a member price is selected.')
          
@@ -1052,7 +1054,9 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].required=True
             
         # member id
-        if hasattr(self.event, 'has_member_price') and self.event.has_member_price:
+        if hasattr(self.event, 'has_member_price') and \
+                 get_setting('module', 'events', 'requiresmemberid') and \
+                 self.event.has_member_price:
             self.fields['memberid'] = forms.CharField(label='Member ID', required=False,
                                 help_text='Please enter a member ID if a member price is selected.')
                         
