@@ -10,6 +10,12 @@
 	custom_reg_form_disabled = false;
 	{% endif %}
 </script>
+<script>
+    var corp_members_disabled = true;
+   {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+   corp_members_disabled = false;
+   {% endif %}
+</script>
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script> 
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script> 
 <script type="text/javascript" src="{{ STATIC_URL }}js/admin-module-toggle.js"></script>

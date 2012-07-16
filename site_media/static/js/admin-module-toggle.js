@@ -19,6 +19,9 @@ django.jQuery('document').ready(function() {
         if (custom_reg_form_disabled){
         	hidden_modules.push('Events');
         }
+        if (corp_members_disabled){
+        	hidden_modules.push('Corporate_Memberships');
+        }
         var content_main = django.jQuery('#content-main');
         var modules = content_main.find('div.module');
 

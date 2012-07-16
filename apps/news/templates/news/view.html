@@ -36,10 +36,10 @@
 		         	<div>{{ news.first_name }} {{ news.last_name }}</div>
 		         {% endif %}	
 		         {% if news.phone %}    
-		         <div>{{ news.phone }}</div>
+		         <div>{% trans "Phone" %}: {{ news.phone }}</div>
 		         {% endif %}	
 		         {% if news.fax %} 
-		         <div>{{ news.fax }}</div>	
+		         <div>{% trans "Fax" %}: {{ news.fax }}</div>	
 		         {% endif %}	
 		         {% if news.email %} 
 		         <div>{{ news.email|urlize }}</div>	

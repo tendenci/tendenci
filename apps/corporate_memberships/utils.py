@@ -153,7 +153,7 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.subtotal = inv.total
         inv.balance = inv.total
         inv.estimate = 1
-        inv.status_detail = 'estimate'
+        inv.status_detail = 'tendered'
         inv.save(user)
 
 

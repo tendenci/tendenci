@@ -38,7 +38,7 @@ def donation_inv_add(user, donation, **kwargs):
     inv.status = True
         
     inv.estimate = True
-    inv.status_detail = 'estimate'
+    inv.status_detail = 'tendered'
     inv.object_type = ContentType.objects.get(app_label=donation._meta.app_label, 
                                               model=donation._meta.module_name)
     inv.object_id = donation.id

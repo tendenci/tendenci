@@ -14,6 +14,7 @@ from django.conf import settings
 # local
 from base.cache import IMAGE_PREVIEW_CACHE
 from theme.shortcuts import themed_response as render_to_response
+from site_settings.utils import get_setting
 
 
 def image_preview(request, app_label, model, id,  size):
@@ -235,3 +236,14 @@ def homepage(request, template_name="homepage.html"):
     EventLog.objects.log()
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+
+def robots_txt(request):
+    options = ['base/robots_private.txt', 'base/robots_public.txt', 'robots.txt']
+    template_name = "robots.txt"
+
+    robots_setting = get_setting('site', 'global', 'robotstxt')
+    if robots_setting in options:
+        template_name = robots_setting
+
+    return render_to_response(template_name, {}, context_instance=RequestContext(request), mimetype="text/plain")

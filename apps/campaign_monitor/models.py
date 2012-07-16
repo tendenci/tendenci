@@ -229,7 +229,7 @@ if cm_api_key and cm_client_id:
 
         (name, email) = get_name_email(instance)
         if email_re.match(email):
-            add_list = True
+            add_list = False
             add_subscriber = True
             list_map = None
 
@@ -258,8 +258,6 @@ if cm_api_key and cm_client_id:
                     
                     try:
                         list_stats = list.stats()
-                        #print 'number active:',  list_stats.TotalActiveSubscribers
-                        add_list = False            # at this stage, we're sure the list is ON the C. M.
                     
                         # check if this user has already subscribed, if not, subscribe it
                         try:
@@ -271,23 +269,26 @@ if cm_api_key and cm_client_id:
                             pass
                     except Unauthorized as e:
                         list = List()
+                        add_list = True
             except ListMap.DoesNotExist:
                 list = List()
-                    
-            if add_list:
-                # this list might be deleted on campaign monitor, add it back
-                list_id = list.create(cm_client_id, instance.group.name, "", False, "")
-                subscriber_obj = Subscriber(list_id)
-                if not list_map:
-                    list_map = ListMap()
-                    list_map.group = instance.group
-                list_map.list_id = list_id
-                list_map.save()
-                    
-            if add_subscriber:
-                email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
-                
-            
+                add_list = True
+
+            try:
+                if add_list:
+                    # this list might be deleted on campaign monitor, add it back
+                    list_id = list.create(cm_client_id, instance.group.name, "", False, "")
+                    subscriber_obj = Subscriber(list_id)
+                    if not list_map:
+                        list_map = ListMap()
+                        list_map.group = instance.group
+                    list_map.list_id = list_id
+                    list_map.save()
+                        
+                if add_subscriber:
+                    email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
+            except BadRequest as br:
+                pass
     
     def delete_cm_subscriber(sender, instance=None, **kwargs):
         """Delete the subscriber from the campaign monitor list

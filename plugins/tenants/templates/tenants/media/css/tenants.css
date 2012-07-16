@@ -1,0 +1,158 @@
+.t {
+	width: 900px;
+}
+
+/* general */
+.t h1 {
+	margin: 0 auto 10px 0;
+}
+
+.t h2 {
+	margin: 0 auto 10px 0;
+}
+
+/* options */
+.t div.quick-options {
+    position: absolute;
+	margin-right: 5px;
+    right: 0;
+    top: 15px;
+}
+
+.t .quick-options ul {
+	margin: 0; padding: 0;
+	list-style-type: none;
+}
+
+.t .dropdown-options {
+	float: right;
+	display: none; /* todo: port-over dropdown js */
+}
+.t .dropdown-options span {
+	font-size: .7em;
+}
+.t .dropdown-options ul {
+	display: none;
+}
+
+/* Index page */
+.t .tenants {width: 45%; float: left; margin-bottom: 20px;}
+.t .tenants h2 {font-weight: bold;}
+
+.t .tenant-item { position: relative; }
+.t .tenant-item .photo {position: absolute; left: 200px;top: -50px;}
+
+/* search form */
+.t form.search-form input[type="text"] tenant-wrap
+
+.t form.search-form input[type="submit"] {
+	padding: 5px;
+    margin-bottom: 10px;
+	cursor: pointer;
+}
+
+.t .tenants-wrap {
+	margin-bottom: 20px;
+}
+
+.t .tenant-search-item {
+    padding: 10px 0 10px 0;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.map-wrap {
+    margin-bottom: 10px;
+}
+
+.map-photo {
+    text-align:center;
+}
+
+.map-photo img {
+    height:auto;
+    width:100%;
+}
+
+.map-title {
+    font-style: italic;
+}
+
+#line-hidden {
+    display: none;
+}
+
+#lines-formset {
+    display: none;
+}
+
+.t .reset-drawing {
+    margin: 15px 0;
+}
+
+.no-tenant-maps {
+    background-color: #F6F6F6;
+    padding: 20px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.tenant-directory {
+    width: 100%;
+    border: 1px solid #CCC;
+    margin: 10px 0;
+}
+.tenant-directory tr {
+    cursor: pointer;
+}
+.tenant-directory tr:nth-child(2n+1) {
+    background-color: #F6F6F6;
+}
+.tenant-directory td {
+    padding: 10px;
+}
+.tenant-number {
+    width: 10px;
+}
+.tenant-phone {
+    width: 100px;
+}
+
+.left-wrap {
+    float: left;
+    padding-right: 30px;
+    background-color: white;
+}
+
+.right-wrap {
+    width: 100%;
+}
+
+.tenant-name {
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+
+.hours-open {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #EAEAEA;
+    margin: 10px 0 20px;
+}
+.hours-open h2 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+}
+#container .hours-open p {
+    margin: 0;
+    line-height: 1.5em;
+}
+
+.contact-info h2 {
+    font-size: 20px;
+    margin: 0 0 5px 0;
+}
+#container .contact-info p {
+    margin: 0;
+    line-height: 1.5em;
+}

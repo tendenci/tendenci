@@ -134,13 +134,93 @@ def source_colors(data):
         item['color'] = EventLogBaseColor.get_color(item['source'])
 
 
+def application_colors(data):
+    for item in data:
+        item['color'] = EventLogBaseColor.get_color(item['application'])
+
+
 def event_colors(data):
     for item in data:
         item['color'] = get_color(str(item['event_id']))
 
 
+def action_colors(data):
+    for item in data:
+        item['color'] = get_color(str(item['action']))
+
+
 @superuser_required
 def event_summary_report(request):
+    queryset = EventLog.objects.all()
+    form = EventsFilterForm(request.GET)
+    if form.is_valid():
+        queryset = form.process_filter(queryset)
+
+    from_date, to_date = request_month_range(request)
+    next_day = to_date+timedelta(days=1)
+    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=next_day)
+
+    chart_data = queryset\
+                .extra(select={'day': 'DATE(create_dt)'})\
+                .values('day', 'application')\
+                .annotate(count=Count('pk'))\
+                .order_by('day', '-count')
+    chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, application_colors)
+
+    summary_data = queryset\
+                .values('application')\
+                .annotate(count=Count('pk'))\
+                .order_by('-count')
+    application_colors(summary_data)
+
+    m = 1+len(summary_data)/3
+    mm = 2*m
+    summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
+
+    return render_to_response(
+                'reports/event_summary.html',
+                {'chart_data': chart_data, 'summary_data': summary_data,
+                 'form': form, 'date_range': (from_date, to_date)},
+                context_instance=RequestContext(request))
+
+
+@superuser_required
+def event_application_summary_report(request, application):
+    queryset = EventLog.objects.filter(application=application)
+    form = EventsFilterForm(request.GET)
+    if form.is_valid():
+        queryset = form.process_filter(queryset)
+
+    from_date, to_date = request_month_range(request)
+    next_day = to_date+timedelta(days=1)
+    queryset = queryset.filter(create_dt__gte=from_date, create_dt__lte=next_day)
+
+    chart_data = queryset\
+                .extra(select={'day': 'DATE(create_dt)'})\
+                .values('day', 'action')\
+                .annotate(count=Count('pk'))\
+                .order_by('day', '-count')
+    chart_data = day_bars(chart_data, from_date.year, from_date.month, 300, action_colors)
+
+    summary_data = queryset\
+                .values('action', 'description')\
+                .annotate(count=Count('pk'))\
+                .order_by('-count')
+    action_colors(summary_data)
+
+    return render_to_response(
+                'reports/event_application_summary.html',
+                {'chart_data': chart_data, 'summary_data': summary_data,
+                 'form': form, 'date_range': (from_date, to_date),
+                 'application': application},
+                context_instance=RequestContext(request))
+
+
+@superuser_required
+def event_summary_historical_report(request):
+    """
+    This report queries based on source for historical reporting purposes
+    """
     queryset = EventLog.objects.all()
     form = EventsFilterForm(request.GET)
     if form.is_valid():
@@ -168,7 +248,7 @@ def event_summary_report(request):
     summary_data = summary_data[:m], summary_data[m:mm], summary_data[mm:]
 
     return render_to_response(
-                'reports/event_summary.html',
+                'reports/event_summary_historical.html',
                 {'chart_data': chart_data, 'summary_data': summary_data,
                  'form': form, 'date_range': (from_date, to_date)},
                 context_instance=RequestContext(request))

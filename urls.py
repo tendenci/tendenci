@@ -20,8 +20,6 @@ urlpatterns = patterns('',
     #Reports:
     (r'^reports/', include('reports.urls')),
     (r'^metrics/', include('metrics.urls')),
-    url(r'^event-logs/reports/summary/$', 'event_logs.views.event_summary_report', name='reports-events-summary'),
-    url(r'^event-logs/reports/summary/([^/]+)/$', 'event_logs.views.event_source_summary_report', name='reports-events-source'),
     url(r'^users/reports/users-activity-top10/$', 'profiles.views.user_activity_report', name='reports-user-activity'),
     url(r'^users/reports/active-logins/$', 'profiles.views.user_access_report', name='reports-user-access'),
     url(r'^users/reports/admin/$', 'profiles.views.admin_users_report', name='reports-admin-users'),
@@ -90,7 +88,7 @@ urlpatterns = patterns('',
 
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
-    url(r'^robots.txt', direct_to_template, {"template": "robots.txt", }, name="robots"),
+    url(r'^robots.txt', 'base.views.robots_txt', name="robots"),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),

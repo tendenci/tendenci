@@ -1,0 +1,40 @@
+{% extends "tenants/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load tenant_tags %}
+
+{% block body %}
+{% autopaginate maps 10 %}
+<div class="t">
+    {% tenant_nav request.user %}
+
+    <div class="maps-wrap">
+
+        {% if maps %}
+            <h1 style="margin:auto 10px">{% trans 'Maps' %}</h1>
+            {% for map in maps %}
+                {% include 'tenants/maps/search-result.html' %}
+            {% empty %}
+                <p>{% trans '0 maps found' %}</p>
+            {% endfor %}
+        {% else %}
+            <div class="no-tenant-maps">
+                <div>
+                    There are currently no maps.
+                    {% if user.is_superuser %}
+                    <a href="{% url tenants.maps.add %}">
+                        You should add the first one.</a>
+                    {% else %}
+                    <a href="/">Return to the homepage.</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+    {% paginate %}
+
+</div>
+{% endblock body %}

@@ -421,7 +421,7 @@ class RecurringPayment(models.Model):
         
         inv.balance = inv.total
         inv.estimate = 1
-        inv.status_detail = 'estimate'
+        inv.status_detail = 'tendered'
         inv.save(self.user)
         
         rp_invoice = RecurringPaymentInvoice(

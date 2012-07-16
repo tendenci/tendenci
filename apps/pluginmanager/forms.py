@@ -8,4 +8,10 @@ class PluginAppForm(forms.ModelForm):
     def clean_package(self):
         package = self.cleaned_data['package']
         package = package.strip().replace(' ', '_')
+
+        try:
+            __import__(package)
+        except:
+            raise forms.ValidationError('This plugin does not exist. Please add the name of a valid plugin.')
+
         return package

@@ -7,7 +7,7 @@ from django.contrib.contenttypes import generic
 from tagging.fields import TagField
 from base.fields import SlugField
 from timezones.fields import TimeZoneField
-from perms.models import TendenciBaseModel 
+from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
 from categories.models import CategoryItem
 from articles.managers import ArticleManager
@@ -15,6 +15,7 @@ from tinymce import models as tinymce_models
 from meta.models import Meta as MetaTags
 from articles.module_meta import ArticleMeta
 from entities.models import Entity
+
 
 class Article(TendenciBaseModel):
     guid = models.CharField(max_length=40)
@@ -35,7 +36,7 @@ class Article(TendenciBaseModel):
     featured = models.BooleanField()
     design_notes = models.TextField(_('Design Notes'), blank=True)
     tags = TagField(blank=True)
-  
+
     # for podcast feeds
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True)
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
@@ -57,7 +58,7 @@ class Article(TendenciBaseModel):
     objects = ArticleManager()
 
     class Meta:
-        permissions = (("view_article","Can view article"),)
+        permissions = (("view_article", "Can view article"),)
         verbose_name = "Article"
         verbose_name_plural = "Articles"
 
@@ -66,21 +67,21 @@ class Article(TendenciBaseModel):
         This method is standard across all models that are
         related to the Meta model.  Used to generate dynamic
         methods coupled to this instance.
-        """    
+        """
         return ArticleMeta().get_meta(self, name)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("article", [self.slug])
 
     def __unicode__(self):
         return self.headline
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(Article, self).save(*args, **kwargs)
-    
+
     def age(self):
         return datetime.now() - self.create_dt
 

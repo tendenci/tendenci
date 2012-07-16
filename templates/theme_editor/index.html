@@ -65,7 +65,7 @@
             {% endif %}
         </td>
         <td width="20%" valign="top">
-            {% if theme_count > 1 %}
+            {# if theme_count > 1 #}
             <div class="theme-selection well well-small">
                 <h4>{% trans 'Currently editing:' %}</h4>
                 <form method="GET" action="">
@@ -76,7 +76,7 @@
                 {% endifnotequal %}
                 <p><strong>{% trans "Active theme:" %}</strong> {{ ACTIVE_THEME }}. <a href="/settings/module/theme_editor">{% trans "Change?" %}</a></p>
                 </div>
-                {% endif %}
+                {# endif #}
             </div>
             <div id="right_files_list">
             <div class="well well-small">
@@ -288,12 +288,10 @@ function open_archive(id)
 
     $('#file-tree li a.folder').click(function() {
         if ($(this).hasClass('open')) {
-            console.log("show class");
             $(this).text($(this).text().replace('– ', '+ '));
             $(this).removeClass('open');
             $(this).siblings().children().hide();
         } else {
-            console.log($(this).text());
             $(this).addClass('open');
             $(this).text($(this).text().replace('+ ', '– '));
             $(this).siblings().children().show();

@@ -12,13 +12,10 @@ from theme.shortcuts import themed_response
 
 @login_required
 def index(request, template_name="dashboard/index.html"):
-    try:
-        profile_redirect = Setting.objects.get(scope = 'site', scope_category = 'global', name = 'profile_redirect')
-    except Setting.DoesNotExist:
-        profile_redirect = ''
-    if profile_redirect and profile_redirect.value != '/dashboard' and not request.user.profile.is_superuser:
-        return redirect(profile_redirect.value)
-    
+    profile_redirect = get_setting('site', 'global', 'profile_redirect')
+    if profile_redirect and profile_redirect != '/dashboard' and not request.user.profile.is_superuser:
+        return redirect(profile_redirect)
+
     # self signup  free trial version
     has_paid = True
     activate_url = ''

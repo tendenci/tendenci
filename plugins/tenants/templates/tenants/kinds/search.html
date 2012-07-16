@@ -1,0 +1,26 @@
+{% extends "tenants/base.html" %}
+
+{% load search_tags %}
+{% load i18n %}
+{% load pagination_tags %}
+{% load tenant_tags %}
+
+{% block body %}
+
+{% autopaginate kinds 10 %}
+<div class="t">
+    {% tenant_nav request.user %}
+
+    <div class="kinds-wrap">
+        <h1 style="margin:auto 10px">{% trans 'Browse Kinds' %}</h1>
+
+        {% for kind in kinds %}
+            {% include 'tenants/kinds/search-result.html' %}
+        {% empty %}
+            <p>{% trans '0 kinds found' %}</p>
+        {% endfor %}
+    </div>
+    {% paginate %}
+
+</div>
+{% endblock body %}

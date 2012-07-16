@@ -131,16 +131,6 @@ def delete(request, id, template_name="forms/delete.html"):
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % form_instance)
 
-        log_defaults = {
-            'event_id' : 587300,
-            'event_data': '%s (%d) deleted by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-            'description': '%s deleted' % form_instance._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': form_instance,
-        }
-        EventLog.objects.log(**log_defaults)
-            
         form_instance.delete()
         return HttpResponseRedirect(reverse('forms'))
 
@@ -214,17 +204,7 @@ def copy(request, id):
             position = field.position,
             default = field.default,
             )
-            
-    log_defaults = {
-        'event_id' : 587100,
-        'event_data': '%s (%d) added by %s' % (new_form._meta.object_name, new_form.pk, request.user),
-        'description': '%s added' % new_form._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': new_form,
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
     return redirect('form_edit', new_form.pk)
 
@@ -236,7 +216,9 @@ def entries(request, id, template_name="forms/entries.html"):
         raise Http403
 
     entries = form.entries.all()
-    
+
+    EventLog.objects.log(instance=form)
+
     return render_to_response(template_name, {'form':form,'entries': entries},
         context_instance=RequestContext(request))
 
@@ -276,16 +258,8 @@ def entries_export(request, id):
     if not has_perm(request.user,'forms.change_form',form_instance):
         raise Http403
 
-    log_defaults = {
-        'event_id' : 587600,
-        'event_data': '%s (%d) exported by %s' % (form_instance._meta.object_name, form_instance.pk, request.user),
-        'description': '%s exported' % form_instance._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': form_instance,
-    }
-    EventLog.objects.log(**log_defaults)
-            
+    EventLog.objects.log(instance=form_instance)
+
     entries = form_instance.entries.all()
 
     if entries:      
@@ -374,6 +348,8 @@ def search(request, template_name="forms/search.html"):
         forms = forms.filter(Q(title__icontains=query)|Q(intro__icontains=query)|Q(response__icontains=query))
 
     forms = forms.order_by('-pk')
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'forms':forms}, 
         context_instance=RequestContext(request))
@@ -507,9 +483,10 @@ def export(request, template_name="forms/export.html"):
     
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         export_id = run_export_task('forms_builder.forms', 'form', [])
+        EventLog.objects.log()
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {

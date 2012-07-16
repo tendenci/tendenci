@@ -1,0 +1,10 @@
+{% load base_tags %}
+{% load file_tags %}
+<div class="wrap-search-item">
+    <div class="search-item tenants-search-item">
+        <h3><a href="{{ tenant.get_absolute_url }}">{{ tenant.name }}</a></h3>
+        <a href="{{ tenant.get_absolute_url }}"><img src="{{ tenant.photo|size:'300x' }}"></a>
+        <p>{{ tenant.description }}</p>
+    </div>
+{% include "tenants/meta.html" %}
+</div>

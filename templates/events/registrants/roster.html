@@ -122,11 +122,22 @@
 	    font-family: Verdana,Arial,Helvetica,sans-serif;
 	    font-size: 11px;
 	    text-decoration: none;
+	    text-align: left;
 	}
 	#registrant-table td a {
 	    text-decoration: none;
 	}
-
+	.attended-checkbox input[type="checkbox"]{
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
+	}
+	.attended-checkedin-text{
+		color: green !important;
+	}
+	#checked-in-total{
+		text-align: center;
+	}
 
 </style>
 
@@ -174,6 +185,10 @@
 	.total .label {
 		display: inline;
 	}
+	.roster-sort-wrap, .attendees-export-links, #admin-bar{
+		display: none !important;
+	}
+
 </style>
 
 
@@ -183,7 +198,7 @@
 
 <div class='event-info'>
 	<h1>{{ event.title }} - {% trans "Registrant Roster" %} {{ roster_view|capfirst }}</h1>
-
+	<div class="attendees-export-links">
     {% if roster_view == 'non-paid' %}
         <div><a href="{% url event.registrant.export.non_paid event.pk %}">{% trans "Export Only Non-Paid Registrants" %}</a></div>
     {% endif %}
@@ -195,13 +210,13 @@
     {% if roster_view == 'total' %}
         <div><a href="{% url event.registrant.export.total event.pk %}">{% trans "Export Non-Paid and Paid Registrants (one file)" %}</a></div>
     {% endif %}
-
+	</div>
 	<h3>{{ event.place.address }} {{ event.place.city_state|join:", "}} {{ event.place.zip }}</h3>
 	<div id="event-time">{{ event.start_dt|date }} {{ event.start_dt|date:"fA" }} - {{ event.end_dt|date:"fA" }}</div>
 
 </div>
 
-<div class='event-info'>
+<div class='event-info roster-sort-wrap'>
 	<form id="roster-sort-form" method="get">
 		Sort by:
 	<select name="sort_order" size="1">
@@ -234,6 +249,9 @@
 	<th width="8%" title="Invoice Amount">{% trans "Inv$" %}</th>
 	<th width="8%" title="Registration Number">{% trans "Reg#" %}</th>
 	<th width="8%" title="Registration Amount">{% trans "Reg$" %}</th>
+	{% if has_addons %}
+	<th width="8%" title="Addon Amount">{% trans "Addon$" %}</th>
+	{% endif %}
 	<th width="8%" title="Balance">{% trans "Balance" %}</th>
 	<th width="6%" class='attended' title="Attendance Checkbox">Attend</th>
 </tr>
@@ -277,8 +295,15 @@
 	<td>${{ registrant.invoice_dict.total }}</td> <!-- invoice amount -->
 	<td><a href="{% url event.registration_confirmation event.pk registrant.registration_id %}">R-{{ registrant.registration_id }}</a></td> <!-- registration number -->
 	<td>${{ registrant.amount|floatformat:"2" }}</td> <!-- registration amount -->
+	{% if has_addons %}
+	{% if registrant.is_primary and registrant.addons %}
+	<td>${{ registrant.addons_amount|floatformat:"2" }}</td> <!-- addon amount -->
+	{% else %}
+	<td></td>
+	{% endif %}
+	{% endif %}
 	<td>${{ registrant.invoice_dict.balance|floatformat:"2" }}</td> <!-- balance -->
-	<td class="attended-checkbox"><div></div></td>
+	<td class="attended-checkbox"><input type="checkbox" name="checked_in" data-reg="{{ registrant.id }}" value="1" {% if registrant.checked_in %}checked{% endif %} /></td>
 </tr>
 
 
@@ -314,7 +339,7 @@
    {% if registrant.email %}{{ registrant.email }}{% endif %}
    <div>Registered as: {% firstof registrant.price_title 'Untitled' %}</div>
     </td>
-    <td colspan="5">
+    <td colspan="{% if has_addons %}6{% else %}5{% endif %}">
 
         {% if registrant.invoice_dict.tender_date %}
             {% trans "TENDERED: " %}{{ registrant.invoice_dict.tender_date|date_long }}
@@ -322,7 +347,7 @@
             {% trans "Not Tendered" %}
         {% endif %}
     </td>
-    <td>&nbsp;</td>
+    <td class="attended-checkedin-text">{% if registrant.checked_in and registrant.checked_in_dt %}{{ registrant.checked_in_dt|date:'m/d h:iA' }}{% endif %}</td>
 </tr>
 
 
@@ -337,7 +362,7 @@
 <tr class="{% cycle 'odd' 'even' %}">
 {% endif %}
     <td colspan="1"></td>
-    <td colspan="7">
+    <td colspan="{% if has_addons %}8{% else %}7{% endif %}">
   	
     {% if additionals %}
         {% if registrant.invoice_dict.id %}
@@ -358,17 +383,11 @@
     {% endif %}
     
     {% if has_addons %}
-    {% with registrant.registration.regaddon_set.all as regaddons %}
-    {% if regaddons %}
+    {% if registrant.is_primary and registrant.addons %}
     	<div>
-        <a href="{{ registrant.registration.invoice.get_absolute_url }}">{% trans "addons:" %}</a> 
-	    {% for regaddon in regaddons %}
-	    	{{ regaddon.addon.title }}
-            ({% for regoption in regaddon.regaddonoption_set.all %}{{ regoption.option.title }}{% if not forloop.last %},{% endif %}{% endfor %})
-	    {% endfor %}
-	    </div>
+        {% trans "addons:" %}
+	    {{ registrant.addons }}
     {% endif %}
-    {% endwith %}
     {% endif %}
     
     </td>
@@ -377,16 +396,19 @@
 </tr>
 
 {% endwith %}
-
 {% endfor %}
+
 <tr class='row-spacer'><td colspan="10"></td></tr>
 <tr class="bottom-row">
 	<td></td>
 	<td colspan="2" class="total-label">{% trans "Total" %}</td>
 	<td colspan="3"></td>
     <td>${{ total_sum|floatformat:2 }}</td>
+    {% if has_addons %}
+    <td>${{ addon_total_sum|floatformat:2 }}</td>
+    {% endif %}
 	<td>${{ balance_sum|floatformat:2 }}</td>
-	<td></td>
+	<td id="checked-in-total">{% if total_checked_in > 0 %}{{ total_checked_in }}{% endif %}</td>
 </tr>
 </table>
 </center>
@@ -448,6 +470,57 @@
 			container:	'more-options-wrap',
 			trigger:	'more-options-trigger',
 			target:		'more-options-target'
+		});
+	</script>
+	
+	<script>
+		$(document).ready(function(){
+			var $total_checked_td = $('#checked-in-total');
+			var total_checked_in = parseInt($total_checked_td.html());
+			if (isNaN(total_checked_in)){
+				total_checked_in = 0;
+			}
+			
+			$('.attended-checkbox input[type=checkbox]').change(function(){
+				var $this = $(this);
+				var action = 'not_checked_in';
+				var id = $this.data('reg');
+				
+				if ($this.is(':checked')){
+					action = 'checked_in';	
+				}
+				
+				$.post(
+		            '{% url event.registrant_check_in %}',
+		            {
+		                'id':id,
+		                'action':action
+		            },
+		            function(data, textStatus, jqXHR){
+		                json = $.parseJSON(data);
+		                if (!json["error"]){
+		                    $this.closest('tr').next().find('.attended-checkedin-text').html(json['checked_in_dt'])
+								.css({opacity: 0.1}).animate({opacity: 1}, 900);
+							if (action == 'checked_in'){
+								total_checked_in = total_checked_in + 1;
+							}else{
+								total_checked_in = total_checked_in - 1;
+								if (total_checked_in < 0){
+									total_checked_in = 0;
+								}
+							}
+							if (total_checked_in == 0){
+								$total_checked_td.html('');
+							}else{
+								$total_checked_td.html(total_checked_in);
+							}
+			
+			            } 
+		            }
+		        );
+				
+			});
+			
 		});
 	</script>
 {% endblock %}
