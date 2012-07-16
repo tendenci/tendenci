@@ -29,7 +29,7 @@
     
     <div class="form-wrap">
         <h1>{{ form.title }}</h1>
-        <p>{{ form.intro|safe|urlize|linebreaks }}</p>
+        <div>{{ form.intro|safe|urlize }}</div>
 
     	<div class="form-builder-wrap">
         	<form method="post" enctype="multipart/form-data">{% csrf_token %}
