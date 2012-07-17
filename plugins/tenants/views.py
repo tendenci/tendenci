@@ -45,14 +45,16 @@ def tenants_maps_detail(request, slug=u'', template_name='tenants/maps/detail.ht
     EventLog.objects.log(instance=map)
 
     ct_tenant = ContentType.objects.get_for_model(Tenant)
-    tags = TaggedItem.objects.filter(
-        content_type=ct_tenant).values_list('tag__name', flat=True).distinct()
+    tags = TaggedItem.objects.filter(content_type=ct_tenant).values_list(
+        'tag__name', flat=True).distinct().order_by('tag__name')
 
     tenants_by_tag = []
     for tag in tags:
 
-        tenants = TaggedItem.objects.get_by_model(Tenant, tag).filter(
-            map=map, status=True, status_detail='active')
+        decorated_tag = '"%s"' % tag
+
+        tenants = TaggedItem.objects.get_by_model(Tenant, decorated_tag).filter(
+            map=map, status=True, status_detail='active').order_by('name')
 
         if tenants:
             tenants_by_tag.append({
