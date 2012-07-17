@@ -21,6 +21,7 @@ from django.contrib.auth import authenticate
 from social_auth.backends import BaseOAuth, OAuthBackend, USERNAME
 
 from site_settings.models import Setting
+from site_settings.utils import get_setting
 
 # Facebook configuration
 FACEBOOK_SERVER = 'graph.facebook.com'
@@ -101,8 +102,8 @@ class FacebookAuth(BaseOAuth):
     def enabled(cls):
         """Return backend enabled status by checking Setting Model"""
         try:
-            FACEBOOK_APP_ID = Setting.objects.get(name='facebook_app_id')
-            FACEBOOK_API_SECRET = Setting.objects.get(name='facebook_api_secret')
+            FACEBOOK_APP_ID = get_setting(scope='module', scope_category='users', name='facebook_app_id')
+            FACEBOOK_API_SECRET = get_setting(scope='module', scope_category='users', name='facebook_api_secret')
         except Setting.DoesNotExist:
             return False
         return True
