@@ -37,7 +37,7 @@
             <ul class="dropdown-menu">
         {% endif %}
             {% if can_edit_setting %}
-                <li><a href="{% url settings.index "module" "profiles" %}">{% trans "Settings" %}</a></li>
+                <li><a href="{% url settings.index "module" "users" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url profile.search %}">{% trans "Search Users" %}</a></li>
             {% if can_add_profile %}
