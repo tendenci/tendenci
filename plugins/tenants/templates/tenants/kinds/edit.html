@@ -18,7 +18,14 @@
 {% endblock body %}
 
 {% block extra_body %}
+{{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.color_picker.min.js"></script>
+
+<script type="text/javascript">
+    $('#id_color').colorPicker();
+</script>
+
 <script type="text/javascript">
     var slugit = new Slugify({
         input_element : 'input#id_name',

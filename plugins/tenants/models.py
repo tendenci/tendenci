@@ -5,6 +5,17 @@ from tagging.fields import TagField
 from perms.models import TendenciBaseModel
 from files.models import File
 from tenants.managers import TenantManager, MapManager
+from tenants.widgets import ColorPickerWidget
+
+
+class ColorField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 10
+        super(ColorField, self).__init__(*args, **kwargs)
+
+    def formfield(self, **kwargs):
+        kwargs['widget'] = ColorPickerWidget
+        return super(ColorField, self).formfield(**kwargs)
 
 
 class Map(File):
@@ -38,7 +49,7 @@ class Kind(models.Model):
     Kind of tenant. Used for organizing and filtering.
     """
     name = models.CharField(max_length=200)
-    color = models.CharField(max_length=10, null=True, blank=True)
+    color = ColorField(blank=True)
 
     def __unicode__(self):
         return self.name

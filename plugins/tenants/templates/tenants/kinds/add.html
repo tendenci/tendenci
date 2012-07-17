@@ -11,9 +11,18 @@
             {% csrf_token %}
             <div class="forms">
                 {{ form|styled_form }}
-                <input type="submit" value="Submit">
+                <input type="submit" value="Add Kind">
             </div>
         </form>
     </div>
 </div>
 {% endblock body %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.color_picker.min.js"></script>
+
+<script type="text/javascript">
+    $('#id_color').colorPicker();
+</script>
+{% endblock %}
