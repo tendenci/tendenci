@@ -182,7 +182,7 @@ def tenants_add(request, pk=None, template_name="tenants/add.html"):
         photo_formset = PhotoFormSet(request.POST, request.FILES, prefix="photos")
         formset = LineFormSet(request.POST, prefix="lines")
 
-        if photo_formset.is_valid():
+        if form.is_valid() and photo_formset.is_valid():
             tenant = form.save(commit=False)
             tenant = update_perms_and_save(request, form, tenant)
 
