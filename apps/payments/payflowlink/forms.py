@@ -30,3 +30,6 @@ class PayflowLinkPaymentForm(forms.Form):
     statetoship = forms.CharField(max_length=40, widget=forms.HiddenInput)
     ziptoship = forms.CharField(max_length=7, widget=forms.HiddenInput)
     countrytoship = forms.CharField(max_length=20, widget=forms.HiddenInput)
+    
+    comment1 = forms.CharField(max_length=1600, widget=forms.HiddenInput)
+    comment2 = forms.CharField(max_length=250, widget=forms.HiddenInput)

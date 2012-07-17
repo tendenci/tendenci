@@ -541,6 +541,19 @@ class Registration(models.Model):
             invoice = Invoice()
             invoice.object_type = object_type
             invoice.object_id = self.pk
+        
+        # primary registrant is responsible for billing    
+        primary_registrant = self.registrant
+        invoice.bill_to_first_name = primary_registrant.first_name
+        invoice.bill_to_last_name = primary_registrant.last_name
+        invoice.bill_to_company = primary_registrant.company_name
+        invoice.bill_to_phone = primary_registrant.phone
+        invoice.bill_to_email = primary_registrant.email
+        invoice.bill_to_address = primary_registrant.address
+        invoice.bill_to_city = primary_registrant.city
+        invoice.bill_to_state = primary_registrant.state
+        invoice.bill_to_zip_code = primary_registrant.zip
+        invoice.bill_to_country =  primary_registrant.country       
 
         # update invoice with details
         invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
