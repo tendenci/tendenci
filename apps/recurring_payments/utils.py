@@ -27,12 +27,15 @@ class RecurringPaymentEmailNotices(object):
         self.site_display_name = get_setting('site', 'global', 'sitedisplayname')
         self.site_contact_name = get_setting('site', 'global', 'sitecontactname')
         self.site_contact_email = get_setting('site', 'global', 'sitecontactemail')
+        self.reply_to_email = get_setting('module', 'payments', 'paymentrecipients')
+        if not self.reply_to_email:
+            self.reply_to_email = self.site_contact_email
         self.site_url = get_setting('site', 'global', 'siteurl')
     
         self.email = Email()
         self.email.sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         self.email.sender_display = self.site_display_name
-        self.email.reply_to = self.site_contact_email
+        self.email.reply_to = self.reply_to_email
         
         self.admin_emails = self.get_admin_emails() 
 
