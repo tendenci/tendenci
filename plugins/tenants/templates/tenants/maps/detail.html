@@ -13,7 +13,11 @@
             <img class="map" src="{{ map|size:'900x' }}" alt="{{ map.name }}" usemap="#mapmap" />
             <map name="mapmap">
             {% for tenant in map.tenant_set.all %}
+
+                {% if tenant.line_set.all %}
                 <area id="tenant-area-{{ tenant.pk }}" shape="poly" coords="{% for line in tenant.line_set.all %}{{ line.x1 }},{{ line.y1 }}{% if not forloop.last %},{% endif %}{% endfor %}" href="{% url tenants tenant.slug %}" alt="{{ tenant.suite_number }} {{ tenant.name }}" />
+                {% endif %}
+
             {% endfor %}                
             </map>
         </div>
@@ -21,7 +25,8 @@
         {% if tenants_by_tag %}
             <table class="tenant-directory">
             {% for tenant_by_tag in tenants_by_tag %}
-                <tr><td colspan="3">{{ tenant_by_tag.tag_name|title }}</td></tr>
+                <tr><td colspan="4">
+                    {% firstof tenant_by_tag.tag_name|title 'Miscellaneous' %}</td></tr>
                 {% for tenant in tenant_by_tag.tenants %}
                     <tr class="tenant-listing" data-tenant-pk="{{ tenant.pk }}">
 
@@ -31,6 +36,8 @@
                         <td class="tenant-name">
                         <a href="{% url tenants tenant.slug %}">
                             {{ tenant.name }}</a></td>
+
+                        <td class="tenant-kind">{{ tenant.kind }}</td>
 
                         <td class="tenant-phone">{{ tenant.phone }}</td>
 
@@ -78,7 +85,11 @@
     // tenant-listing links to map area
     $('.tenant-listing').mouseover(function(){
         var pk = $(this).attr('data-tenant-pk');
-        $('#tenant-area-' + pk).mouseover();
+
+        var tenant_area = $('#tenant-area-' + pk)
+        if(tenant_area) {
+            tenant_area.mouseover();
+        };
     });
 
     // tenant-listing links to map area

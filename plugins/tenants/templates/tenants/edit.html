@@ -3,6 +3,7 @@
 {% load styled_forms %}
 {% load tenant_tags %}
 
+
 {% block body %}
 <div class="t">
     {% tenant_nav request.user %}
@@ -49,6 +50,7 @@
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jcanvas.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/slug.js"></script>
+
 <script type="text/javascript">
     var slugit = new Slugify({
         input_element : 'input#id_name',

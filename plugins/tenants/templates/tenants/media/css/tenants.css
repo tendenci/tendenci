@@ -115,6 +115,10 @@
 .tenant-number {
     width: 10px;
 }
+.tenant-kind {
+    width: 100px;
+    text-align: right;
+}
 .tenant-phone {
     width: 100px;
 }

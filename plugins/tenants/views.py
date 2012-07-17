@@ -60,6 +60,13 @@ def tenants_maps_detail(request, slug=u'', template_name='tenants/maps/detail.ht
                 'tenants': tenants
             })
 
+    tenants = Tenant.objects.filter(tags='')
+    if tenants:
+        tenants_by_tag.append({
+            'tag_name': u'',
+            'tenants': tenants
+        })
+
     return render_to_response(template_name, {'map': map, 'tenants_by_tag': tenants_by_tag},
         context_instance=RequestContext(request))
 
@@ -246,8 +253,6 @@ def tenants_edit(request, pk, template_name="tenants/edit.html"):
         form = TenantForm(instance=tenant)
         photo_formset = PhotoFormSet(queryset=Photo.objects.filter(tenant=tenant), prefix="photos")
         formset = LineFormSet(instance=tenant, queryset=Line.objects.none(), prefix="lines")
-
-    print 'photo_formset', photo_formset
 
     return render_to_response(template_name, {
         'photo_formset': photo_formset,
