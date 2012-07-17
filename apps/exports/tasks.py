@@ -3,7 +3,6 @@ from django.forms.models import model_to_dict
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
-from celery.registry import tasks
 from perms.models import TendenciBaseModel
 from exports.utils import render_csv
 
