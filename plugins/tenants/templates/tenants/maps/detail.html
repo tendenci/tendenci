@@ -26,7 +26,7 @@
             <table class="tenant-directory">
             {% for tenant_by_tag in tenants_by_tag %}
                 <tr><td colspan="4">
-                    {% firstof tenant_by_tag.tag_name|title 'Miscellaneous' %}</td></tr>
+                    {% firstof tenant_by_tag.tag_name 'Miscellaneous' %}</td></tr>
                 {% for tenant in tenant_by_tag.tenants %}
                     <tr class="tenant-listing" data-tenant-pk="{{ tenant.pk }}">
 
