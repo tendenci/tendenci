@@ -102,7 +102,6 @@ class EventLogManager(Manager):
         stack = inspect.stack()
 
         # Set the following fields to blank
-        event_log.description = ""
         event_log.guid = ""
         event_log.source = ""
         event_log.event_id = 0
@@ -125,6 +124,11 @@ class EventLogManager(Manager):
         event_log.entity = None
         if 'entity' in kwargs:
             event_log.entity = kwargs['entity']
+
+        # Allow a description to be added in special cases like impersonation
+        event_log.description = ""
+        if 'description' in kwargs:
+            event_log.description = kwargs['description']
 
         # Application is the name of the app that the event is coming from
         #
@@ -194,10 +198,15 @@ class EventLogManager(Manager):
             # check for impersonation and set the correct user, descriptions, etc
             impersonated_user = getattr(user, 'impersonated_user', None)
             if impersonated_user:
-                event_log.event_data = '%s (impersonating %s)' % (
-                    event_log.event_data,
-                    impersonated_user.username,
-                )
+                if event_log.description:
+                    event_log.description = '%s (impersonating %s)' % (
+                        event_log.description,
+                        impersonated_user.username,
+                    )
+                else:
+                    event_log.description = '(impersonating %s)' % (
+                        impersonated_user.username,
+                    )
 
             if isinstance(user, AnonymousUser):
                 event_log.username = 'anonymous'

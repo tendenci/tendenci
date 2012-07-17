@@ -31,16 +31,8 @@ def search(request, template_name="navs/search.html"):
     if query:
         navs = navs.filter(Q(title__icontains=query)|Q(description__icontains=query))
 
-    log_defaults = {
-        'event_id' : 195400,
-        'event_data': '%s searched by %s' % ('Nav', request.user),
-        'description': '%s searched' % 'Nav',
-        'user': request.user,
-        'request': request,
-        'source': 'navs'
-    }
-    EventLog.objects.log(**log_defaults)
-    
+    EventLog.objects.log()
+
     return render_to_response(
         template_name,
         {'navs':navs},
@@ -53,20 +45,9 @@ def detail(request, id, template_name="navs/detail.html"):
     
     if not has_view_perm(request.user, 'navs.view_nav', nav):
         raise Http403
-        
-    log_defaults = {
-        'event_id': 195500,
-        'event_data': '%s (%d) viewed by %s' % (
-             nav._meta.object_name,
-             nav.pk, request.user
-        ),
-        'description': '%s viewed' % nav._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': nav,
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log(instance=nav)
+
     return render_to_response(
         template_name,
         {'current_nav':nav},
@@ -77,26 +58,18 @@ def detail(request, id, template_name="navs/detail.html"):
 def add(request, form_class=NavForm, template_name="navs/add.html"):
     if not has_perm(request.user, 'navs.add_nav'):
         raise Http403
-    
+
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
         if form.is_valid():
             nav = form.save(commit=False)
             nav = update_perms_and_save(request, form, nav)
-            log_defaults = {
-                    'event_id' : 195100,
-                    'event_data': '%s (%d) added by %s' % (nav._meta.object_name, nav.pk, request.user),
-                    'description': '%s added' % nav._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': nav,
-                }
-            EventLog.objects.log(**log_defaults)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % nav)
             return redirect('navs.edit_items', id=nav.id)
     else:
         form = form_class(user=request.user)
-        
+
     return render_to_response(
         template_name,
         {'form':form},
@@ -115,20 +88,12 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
             nav = form.save(commit=False)
             nav = update_perms_and_save(request, form, nav)
             cache_nav(nav)
-            log_defaults = {
-                    'event_id' : 195200,
-                    'event_data': '%s (%d) updated by %s' % (nav._meta.object_name, nav.pk, request.user),
-                    'description': '%s updated' % nav._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': nav,
-                }
-            EventLog.objects.log(**log_defaults)
+
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
             return redirect('navs.edit_items', id=nav.id)
     else:
         form = form_class(user=request.user, instance=nav)
-        
+
     return render_to_response(
         template_name,
         {'form':form, 'current_nav':nav},
@@ -140,13 +105,13 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
     nav = get_object_or_404(Nav, id=id)
     if not has_perm(request.user, 'navs.change_nav', nav):
         raise Http403
-    
+
     ItemFormSet = modelformset_factory(NavItem,
                         form=ItemForm,
                         extra=0,
                         can_delete=True)
     page_select = PageSelectForm()
-    
+
     if request.method == "POST":
         formset = ItemFormSet(request.POST)
         if formset.is_valid():
@@ -159,7 +124,9 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
                 item.save()
             cache_nav(nav)
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % nav)
-            
+
+            EventLog.objects.log(instance=nav)
+
             redirect_to = request.REQUEST.get('next', '')
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
@@ -167,7 +134,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
                 return redirect('navs.detail', id=nav.id)
     else:
         formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('ordering'))
-        
+
     return render_to_response(
         template_name,
         {'page_select':page_select, 'formset':formset, 'current_nav':nav},
@@ -180,21 +147,12 @@ def delete(request, id, template_name="navs/delete.html"):
 
     if has_perm(request.user,'navs.delete_nav'):
         if request.method == "POST":
-#             log_defaults = {
-#                 'event_id' : 583000,
-#                 'event_data': '%s (%d) deleted by %s' % (nav._meta.object_name, nav.pk, request.user),
-#                 'description': '%s deleted' % nav._meta.object_name,
-#                 'user': request.user,
-#                 'request': request,
-#                 'instance': nav,
-#             }
-#             EventLog.objects.log(**log_defaults)
-#             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % nav)
-            
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % nav)
+
             nav.delete()
             return HttpResponseRedirect(reverse('navs.search'))
     
-        return render_to_response(template_name, {'current_nav': nav}, 
+        return render_to_response(template_name, {'current_nav': nav},
             context_instance=RequestContext(request))
     else:
         raise Http403
@@ -203,7 +161,7 @@ def delete(request, id, template_name="navs/delete.html"):
 def page_select(request, form_class=PageSelectForm):
     if not request.user.profile.is_superuser:
         raise Http403
-    
+
     if request.method=="POST":
         form = form_class(request.POST)
         if form.is_valid():
@@ -211,9 +169,9 @@ def page_select(request, form_class=PageSelectForm):
             infos = []
             for page in pages:
                 infos.append({
-                    "url":page.get_absolute_url(),
-                    "label":page.title,
-                    "id":page.id,
+                    "url": page.get_absolute_url(),
+                    "label": page.title,
+                    "id": page.id,
                 })
             return HttpResponse(json.dumps({
                 "pages": infos,
@@ -225,13 +183,15 @@ def page_select(request, form_class=PageSelectForm):
 @login_required
 def export(request, template_name="navs/export.html"):
     """Export Navs"""
-    
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         export_id = run_export_task('navs', 'nav', [])
+
+        EventLog.objects.log()
+
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))

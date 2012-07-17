@@ -53,22 +53,17 @@ def membership_search(request, template_name="memberships/search.html"):
         members = Membership.objects.search(query, user=request.user)
         if mem_type:
             members = members.filter(mem_type=mem_type)
+        members = members.order_by('last_name')
     else:
         filters = get_query_filters(request.user, 'memberships.view_membership')
         members = Membership.objects.filter(filters).distinct()
         if mem_type:
             members = members.filter(membership_type__pk=mem_type)
         members = members.exclude(status_detail='expired')
+        members = members.order_by('user__last_name')
     types = MembershipType.objects.all()
 
-    EventLog.objects.log(**{
-        'event_id': 474000,
-        'event_data': '%s searched by %s' % ('Membership', request.user),
-        'description': '%s searched' % 'Membership',
-        'user': request.user,
-        'request': request,
-        'source': 'memberships'
-    })
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'members': members, 'types': types},
         context_instance=RequestContext(request))
@@ -84,15 +79,7 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     if not has_perm(request.user, 'memberships.view_membership', membership):
         raise Http403
 
-    # log membership details view
-    EventLog.objects.log(**{
-        'event_id': 475000,
-        'event_data': '%s (%d) viewed by %s' % (membership._meta.object_name, membership.pk, request.user),
-        'description': '%s viewed' % membership._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': membership,
-    })
+    EventLog.objects.log(instance=membership)
 
     return render_to_response(template_name, {'membership': membership},
         context_instance=RequestContext(request))
@@ -131,16 +118,6 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
             # update member-number on profile
             membership.user.profile.refresh_member_number()
 
-            # log membership details view
-            EventLog.objects.log(**{
-                'event_id': 472000,
-                'event_data': '%s (%d) edited by %s' % (membership._meta.object_name, membership.pk, request.user),
-                'description': '%s edited' % membership._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': membership,
-            })
-
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % membership)
 
             return redirect('membership.details', membership.pk)
@@ -162,15 +139,7 @@ def membership_delete(request, id, template_name="memberships/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        # log membership delete
-        EventLog.objects.log(**{
-            'event_id': 473000,
-            'event_data': '%s (%d) deleted by %s' % (membership._meta.object_name, membership.pk, request.user),
-            'description': '%s deleted' % membership._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': membership,
-        })
+
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % membership)
 
         return HttpResponseRedirect(reverse('membership.search'))
@@ -237,15 +206,7 @@ def application_details(request, template_name="memberships/applications/details
         if not is_verified:
             return redirect(reverse('membership.application_details_corp_pre', args=[slug]))
 
-    # log application details view
-    EventLog.objects.log(**{
-        'event_id': 655000,
-        'event_data': '%s (%d) viewed by %s' % (app._meta.object_name, app.pk, user),
-        'description': '%s viewed' % app._meta.object_name,
-        'user': user,
-        'request': request,
-        'instance': app,
-    })
+    EventLog.objects.log(instance=app)
 
     initial_dict = {}
     if hasattr(user, 'memberships'):
@@ -366,24 +327,10 @@ def application_details(request, template_name="memberships/applications/details
                 )
 
                 # log - entry approval
-                EventLog.objects.log(**{
-                    'event_id': 1082101,
-                    'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, entry.judge),
-                    'description': '%s viewed' % entry._meta.object_name,
-                    'user': user,
-                    'request': request,
-                    'instance': entry,
-                })
+                EventLog.objects.log(instance=entry)
 
             # log - entry submission
-            EventLog.objects.log(**{
-                'event_id': 1081000,
-                'event_data': '%s (%d) submitted by %s' % (entry._meta.object_name, entry.pk, request.user),
-                'description': '%s viewed' % entry._meta.object_name,
-                'user': user,
-                'request': request,
-                'instance': entry,
-            })
+            EventLog.objects.log(instance=entry)
 
             return redirect(entry.confirmation_url)
 
@@ -541,15 +488,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
     if not entry.allow_view_by(request.user):
         raise Http403
 
-    # log entry view
-    EventLog.objects.log(**{
-        'event_id': 1085000,
-        'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
-        'description': '%s viewed' % entry._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': entry,
-    })
+    EventLog.objects.log(instance=entry)
 
     if request.method == "POST":
         form = MemberApproveForm(entry, request.POST)
@@ -592,15 +531,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     membership_type=entry.membership_type,
                 )
 
-                # log entry approved
-                EventLog.objects.log(**{
-                    'event_id': 1085000,
-                    'event_data': '%s (%d) approved by %s' % (entry._meta.object_name, entry.pk, request.user),
-                    'description': '%s approved' % entry._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': entry,
-                })
+                EventLog.objects.log(instance=entry, action="approve")
 
             else:  # if not approved
                 entry.disapprove()
@@ -614,15 +545,7 @@ def application_entries(request, id=None, template_name="memberships/entries/det
                     membership_type=entry.membership_type,
                 )
 
-                # log entry disapproved
-                EventLog.objects.log(**{
-                    'event_id': 1082102,
-                    'event_data': '%s (%d) disapproved by %s' % (entry._meta.object_name, entry.pk, request.user),
-                    'description': '%s disapproved' % entry._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': entry,
-                })
+                EventLog.objects.log(instance=entry, action="disapprove")
 
             return redirect(reverse('membership.application_entries', args=[entry.pk]))
 
@@ -673,20 +596,12 @@ def entry_edit(request, id=0, template_name="memberships/entries/edit.html"):
     if not request.user.profile.is_superuser:
         raise Http403  # not permitted
 
-    # log entry view
-    EventLog.objects.log(**{
-        'event_id': 1085000,
-        'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
-        'description': '%s viewed' % entry._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': entry,
-    })
-
     if request.method == "POST":
         form = EntryEditForm(request.POST, instance=entry)
         if form.is_valid():
             entry = form.save()
+
+            EventLog.objects.log(instance=entry)
 
             messages.add_message(
                 request,
@@ -716,15 +631,7 @@ def entry_delete(request, id=0, template_name="memberships/entries/delete.html")
         raise Http403  # not permitted
 
     if request.method == "POST":
-        # log entry delete
-        EventLog.objects.log(**{
-            'event_id': 1080000,
-            'event_data': '%s (%d) viewed by %s' % (entry._meta.object_name, entry.pk, request.user),
-            'description': '%s viewed' % entry._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': entry,
-        })
+        EventLog.objects.log(instance=entry)
         messages.add_message(request, messages.INFO, "Deleted %s" % entry)
         entry.delete()
 
@@ -759,15 +666,7 @@ def application_entries_search(request, template_name="memberships/entries/searc
     apps = App.objects.all()
     types = MembershipType.objects.all()
 
-    # log entry search view
-    EventLog.objects.log(**{
-        'event_id': 1084000,
-        'event_data': '%s listed by %s' % ('Membership Entries', request.user),
-        'description': '%s listed' % 'Membership Entries',
-        'user': request.user,
-        'request': request,
-        'source': 'memberships',
-    })
+    EventLog.objects.log()
 
     return render_to_response(template_name, {
         'entries': entries,
@@ -781,6 +680,8 @@ def notice_email_content(request, id, template_name="memberships/notices/email_c
     if not request.user.profile.is_superuser:
         raise Http403
     notice = get_object_or_404(Notice, pk=id)
+
+    EventLog.objects.log(instance=notice)
 
     return render_to_response(template_name, {
         'notice': notice,
@@ -820,6 +721,8 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
 
             import_valid, import_errs = is_import_valid(file_path)
+
+            EventLog.objects.log()
 
             if not import_valid:
                 for err in import_errs:
@@ -862,6 +765,8 @@ def membership_import_preview(request, id):
                 membership_import=memport
             )
 
+            EventLog.objects.log()
+
             # return the form to use it for the confirm view
             template_name = 'memberships/import-preview.html'
             return render_to_response(template_name, {
@@ -900,6 +805,8 @@ def membership_import_confirm(request, id):
 
         if form.is_valid():
             cleaned_data = form.cleaned_data
+
+            EventLog.objects.log()
 
             if not settings.CELERY_IS_ACTIVE:
                 result = ImportMembershipsTask()
@@ -970,6 +877,9 @@ def membership_join_report(request):
     mems30days = mems.filter(subscribe_dt__gte=now - timedelta(days=30))
     mems60days = mems.filter(subscribe_dt__gte=now - timedelta(days=60))
     mems90days = mems.filter(subscribe_dt__gte=now - timedelta(days=90))
+
+    EventLog.objects.log()
+
     return render_to_response(
                 'reports/membership_joins.html', {
                     'mems30days': mems30days,
@@ -1084,6 +994,8 @@ def membership_export(request):
 
                 data_row_list.append(data_row)
 
+            EventLog.objects.log()
+
             return render_csv(file_name, label_list, data_row_list)
 
     return render_to_response(template_name, {
@@ -1109,6 +1021,9 @@ def membership_join_report_pdf(request):
     report = ReportNewMems(queryset=mems)
     resp = HttpResponse(mimetype='application/pdf')
     report.generate_by(PDFGenerator, filename=resp)
+
+    EventLog.objects.log()
+
     return resp
 
 
@@ -1143,6 +1058,8 @@ def report_active_members(request, template_name='reports/membership_list.html')
                     mem.valid_invoice = mem.get_entry().invoice.pk
 
         mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {
             'mems': mems,
@@ -1182,6 +1099,8 @@ def report_expired_members(request, template_name='reports/membership_list.html'
 
         mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
             'mems': mems,
             'active': False,
@@ -1194,6 +1113,8 @@ def report_members_summary(request, template_name='reports/membership_summary.ht
 
     chart_data = prepare_chart_data(days)
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
                 'chart_data': chart_data,
                 'date_range': (days[0], days[-1]),
@@ -1204,6 +1125,8 @@ def report_members_summary(request, template_name='reports/membership_summary.ht
 def report_members_over_time(request, template_name='reports/membership_over_time.html'):
     stats = get_over_time_stats()
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, {
         'stats': stats,
     }, context_instance=RequestContext(request))
@@ -1213,8 +1136,9 @@ def report_members_over_time(request, template_name='reports/membership_over_tim
 def report_members_stats(request, template_name='reports/membership_stats.html'):
     """Shows a report of memberships per membership type.
     """
-
     summary, total = get_membership_stats()
+
+    EventLog.objects.log()
 
     return render_to_response(template_name, {
         'summary': summary,

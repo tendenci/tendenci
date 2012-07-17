@@ -23,5 +23,7 @@ def index(request, template_name="metrics/index.html"):
     week_sums = last_week.aggregate(total_visits=Sum('visits'))
     month_sums = Metric.objects.filter(create_dt__gte=one_month_ago).aggregate(total_visits=Sum('visits'))
 
+    EventLog.objects.log()
+
     return render_to_response(template_name, locals(), 
         context_instance=RequestContext(request))

@@ -34,15 +34,7 @@ def detail(request, slug=None, template_name="news/view.html"):
     if not has_perm(request.user, 'news.view_news', news):
         raise Http403
 
-    log_defaults = {
-        'event_id': 305500,
-        'event_data': '%s (%d) viewed by %s' % (news._meta.object_name, news.pk, request.user),
-        'description': '%s viewed' % news._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': news,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=news)
 
     return render_to_response(template_name, {'news': news},
         context_instance=RequestContext(request))
@@ -58,15 +50,7 @@ def search(request, template_name="news/search.html"):
 
     news = news.order_by('-release_dt')
 
-    log_defaults = {
-        'event_id': 305400,
-        'event_data': '%s searched by %s' % ('News', request.user),
-        'description': '%s searched' % 'News',
-        'user': request.user,
-        'request': request,
-        'source': 'news'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'search_news': news},
         context_instance=RequestContext(request))
@@ -82,15 +66,7 @@ def print_view(request, slug, template_name="news/print-view.html"):
     if not has_perm(request.user, 'news.view_news', news):
         raise Http403
 
-    log_defaults = {
-        'event_id': 305501,
-        'event_data': '%s (%d) viewed by %s' % (news._meta.object_name, news.pk, request.user),
-        'description': '%s viewed - print view' % news._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': news,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=news)
 
     return render_to_response(template_name, {'news': news},
         context_instance=RequestContext(request))
@@ -113,16 +89,6 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
-
-            log_defaults = {
-                'event_id': 305200,
-                'event_data': '%s (%d) edited by %s' % (news._meta.object_name, news.pk, request.user),
-                'description': '%s edited' % news._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': news,
-            }
-            EventLog.objects.log(**log_defaults)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
@@ -179,16 +145,6 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
 
-            log_defaults = {
-                'event_id': 305100,
-                'event_data': '%s (%d) added by %s' % (news._meta.object_name, news.pk, request.user),
-                'description': '%s added' % news._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': news,
-            }
-            EventLog.objects.log(**log_defaults)
-
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % news)
 
             # send notification to administrators
@@ -218,15 +174,6 @@ def delete(request, id, template_name="news/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        log_defaults = {
-            'event_id': 305300,
-            'event_data': '%s (%d) deleted by %s' % (news._meta.object_name, news.pk, request.user),
-            'description': '%s deleted' % news._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': news,
-        }
-        EventLog.objects.log(**log_defaults)
         messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % news)
 
         # send notification to administrators
@@ -279,6 +226,7 @@ def export(request, template_name="news/export.html"):
             'entity',
             'categories',
         ]
+        EventLog.objects.log()
         export_id = run_export_task('news', 'news', fields)
         return redirect('export.status', export_id)
 
