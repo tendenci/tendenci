@@ -37,7 +37,11 @@
                         <a href="{% url tenants tenant.slug %}">
                             {{ tenant.name }}</a></td>
 
-                        <td class="tenant-kind">{{ tenant.kind }}</td>
+                        <td class="tenant-kind">
+                            {{ tenant.kind }}
+                            <div class="colored-box" 
+                            style="background-color:{{ tenant.kind.color }}"></div>
+                        </td>
 
                         <td class="tenant-phone">{{ tenant.phone }}</td>
 

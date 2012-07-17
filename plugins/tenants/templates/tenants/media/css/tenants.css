@@ -116,7 +116,7 @@
     width: 10px;
 }
 .tenant-kind {
-    width: 100px;
+    width: 200px;
     text-align: right;
 }
 .tenant-phone {
@@ -159,4 +159,11 @@
 #container .contact-info p {
     margin: 0;
     line-height: 1.5em;
+}
+
+.colored-box {
+    width: 25px;
+    height: 15px;
+    float: right;
+    margin-left: 10px;
 }
