@@ -60,47 +60,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     class Media:
         js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
               "%sjs/membtype.js" % settings.STATIC_URL,)
-        
-    def log_deletion(self, request, object, object_repr):
-        super(MembershipTypeAdmin, self).log_deletion(request, object, object_repr)
-        log_defaults = {
-            'event_id' : 475300,
-            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
-                                                    object.name, object.pk, request.user),
-            'description': '%s deleted' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)           
-
-    def log_change(self, request, object, message):
-        super(MembershipTypeAdmin, self).log_change(request, object, message)
-        log_defaults = {
-            'event_id' : 475200,
-            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
-                                                    object.name, object.pk, request.user),
-            'description': '%s edited' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)               
-
-    def log_addition(self, request, object):
-        super(MembershipTypeAdmin, self).log_addition(request, object)
-        log_defaults = {
-            'event_id' : 475100,
-            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
-                                                   object.name, object.pk, request.user),
-            'description': '%s added' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-        
-    
+            
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         
@@ -189,46 +149,7 @@ class NoticeAdmin(admin.ModelAdmin):
             "%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
-        
-    def log_deletion(self, request, object, object_repr):
-        super(NoticeAdmin, self).log_deletion(request, object, object_repr)
-        log_defaults = {
-            'event_id' : 903000,
-            'event_data': '%s %s(%d) deleted by %s' % (object._meta.object_name, 
-                                                    object.notice_name, object.pk, request.user),
-            'description': '%s deleted' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)           
-
-    def log_change(self, request, object, message):
-        super(NoticeAdmin, self).log_change(request, object, message)
-        log_defaults = {
-            'event_id' : 902000,
-            'event_data': '%s %s(%d) edited by %s' % (object._meta.object_name, 
-                                                    object.notice_name, object.pk, request.user),
-            'description': '%s edited' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)               
-
-    def log_addition(self, request, object):
-        super(NoticeAdmin, self).log_addition(request, object)
-        log_defaults = {
-            'event_id' : 901000,
-            'event_data': '%s %s(%d) added by %s' % (object._meta.object_name, 
-                                                   object.notice_name, object.pk, request.user),
-            'description': '%s added' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-        
+                
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
         
@@ -314,43 +235,6 @@ class AppAdmin(admin.ModelAdmin):
     form = AppForm
     add_form_template = "memberships/admin/add_form.html"
     actions = [export_as_json]
-
-    def log_deletion(self, request, object, object_repr):
-        super(AppAdmin, self).log_deletion(request, object, object_repr)
-        log_defaults = {
-            'event_id' : 653000,
-            'event_data': '%s (%d) deleted by %s' % (object._meta.object_name, object.pk, request.user),
-            'description': '%s deleted' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)           
-
-    def log_change(self, request, object, message):
-        super(AppAdmin, self).log_change(request, object, message)
-        log_defaults = {
-            'event_id' : 652000,
-            'event_data': '%s (%d) edited by %s' % (object._meta.object_name, object.pk, request.user),
-            'description': '%s edited' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)               
-
-    def log_addition(self, request, object):
-        super(AppAdmin, self).log_addition(request, object)
-        log_defaults = {
-            'event_id' : 651000,
-            'event_data': '%s (%d) added by %s' % (object._meta.object_name, object.pk, request.user),
-            'description': '%s added' % object._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': object,
-        }
-        EventLog.objects.log(**log_defaults)
-
 
     def add_view(self, request, form_url='', extra_context=None):
         self.inline_instances = [] # clear inline instances
