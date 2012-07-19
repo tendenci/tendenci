@@ -143,7 +143,7 @@ setup(
         "django-simple-captcha>=0.1.7",
         "django-tagging>=0.3.1",
         "django-tinymce==1.5.1.dev100",
-        "django-haystack==1.2.4",
+        "django-haystack==1.2.7",
         "feedparser>=4.1",
         "httplib2>=0.4.0",
         "pytz>=2010h",
@@ -167,9 +167,11 @@ setup(
         "pdfminer==20110515",
         "slate==0.3",
         "stripe==1.7.2",
+        "pycrypto==2.6",
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
+        "Geraldo==0.4.15"
         "django-tastypie",
     ],
 )

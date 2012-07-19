@@ -13,7 +13,7 @@ def get_apps():
     apps = []
     #json_data_path = rel('plugins.json')
     json_data_path = rel('apps.json')
-    
+
     #print 'json_data_path = ', json_data_path
     if not os.path.exists(json_data_path):
         #print 'Not exist'

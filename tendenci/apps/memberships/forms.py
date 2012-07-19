@@ -450,6 +450,22 @@ class AppForm(TendenciBaseForm):
 
     class Meta:
         model = App
+        fields = (
+            'name',
+            'slug',
+            'description',
+            'confirmation_text',
+            'notes',
+            'membership_types',
+            'payment_methods',
+            'use_for_corp',
+            'use_captcha',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status_detail', 
+            )
 
     def __init__(self, *args, **kwargs): 
         super(AppForm, self).__init__(*args, **kwargs)

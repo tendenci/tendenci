@@ -21,6 +21,23 @@ class HelpFileAdminForm(TendenciBaseForm):
     
     class Meta:
         model = HelpFile
+        fields = (
+            'question',
+            'slug',
+            'answer',
+            'level',
+            'topics',
+            'is_faq',
+            'is_featured',
+            'is_video',
+            'syndicate',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
 
     def __init__(self, *args, **kwargs): 
         super(HelpFileAdminForm, self).__init__(*args, **kwargs)

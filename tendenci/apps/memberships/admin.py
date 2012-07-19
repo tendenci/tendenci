@@ -202,8 +202,6 @@ class AppAdmin(admin.ModelAdmin):
 
     list_display = ('name', application_form_link)
 
-    exclude = ('status',)
-
     fieldsets = (
         (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 
                            'membership_types', 'payment_methods', 'use_for_corp', 'use_captcha')},),

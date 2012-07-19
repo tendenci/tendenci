@@ -17,6 +17,7 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
 
         # Update the list_display to add view_on_site and edit_link if they
         # are not already added. - JMO 2012-05-15
+        self.list_display = list(self.list_display)
         if 'action_checkbox' in self.list_display:
             index = self.list_display.index('action_checkbox')
             self.list_display.pop(index)

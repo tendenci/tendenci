@@ -14,7 +14,18 @@ class BoxForm(TendenciBaseForm):
 
     class Meta:
         model = Box
-        
+        fields = (
+            'title',
+            'content',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+            )
+
     def __init__(self, *args, **kwargs): 
         super(BoxForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
