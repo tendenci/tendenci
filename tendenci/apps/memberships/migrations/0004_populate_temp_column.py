@@ -14,7 +14,7 @@ class Migration(DataMigration):
       sql = """
             UPDATE memberships_membership 
             SET payment_method_temp = payment_method
-            WHERE payment_method <> "";
+            WHERE payment_method <> '';
             """
       cursor.execute(sql)
       transaction.commit_unless_managed()

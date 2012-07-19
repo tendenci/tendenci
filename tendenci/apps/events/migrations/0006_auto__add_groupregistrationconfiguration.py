@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
             ('early_dt', self.gf('django.db.models.fields.DateTimeField')()),
             ('regular_dt', self.gf('django.db.models.fields.DateTimeField')()),
             ('late_dt', self.gf('django.db.models.fields.DateTimeField')()),
-            ('end_dt', self.gf('django.db.models.fields.DateTimeField')(default=0)),
+            ('end_dt', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('update_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))

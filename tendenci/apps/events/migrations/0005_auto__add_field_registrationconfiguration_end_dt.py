@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'RegistrationConfiguration.end_dt'
-        db.add_column('events_registrationconfiguration', 'end_dt', self.gf('django.db.models.fields.DateTimeField')(default=0), keep_default=False)
+        db.add_column('events_registrationconfiguration', 'end_dt', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now), keep_default=False)
 
 
     def backwards(self, orm):
