@@ -195,7 +195,7 @@ def theme_extends(parser, token):
     nodelist = parser.parse()
     if nodelist.get_nodes_by_type(ExtendsNode):
         raise TemplateSyntaxError("'%s' cannot appear more than once in the same template" % bits[0])
-    print parent_name
+
     return ThemeExtendsNode(nodelist, parent_name, parent_name_expr)
 
 def theme_include(parser, token):
