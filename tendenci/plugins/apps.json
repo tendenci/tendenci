@@ -1,0 +1,142 @@
+[
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.staff",
+  "id": 1,
+  "title": "Staff"
+ },
+ {
+  "is_enabled": false,
+  "is_installed": false,
+  "package": "plugins.testimonials",
+  "id": 3,
+  "title": "Testimonials"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.quotes",
+  "id": 4,
+  "title": "Quotes"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.videos",
+  "id": 5,
+  "title": "Videos"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.case_studies",
+  "id": 7,
+  "title": "Case Studies"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.services",
+  "id": 9,
+  "title": "Services"
+ },
+ {
+  "is_enabled": false,
+  "is_installed": false,
+  "package": "plugins.blog",
+  "id": 12,
+  "title": "Blog"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.museums",
+  "id": 14,
+  "title": "Museums"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.attorneys",
+  "id": 19,
+  "title": "attorneys"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.products",
+  "id": 20,
+  "title": "products"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.courses",
+  "id": 22,
+  "title": "courses"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.before_and_after",
+  "id": 23,
+  "title": "before_and_after"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.architecture_projects",
+  "id": 24,
+  "title": "arhc projects"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.ebevents",
+  "id": 25,
+  "title": "EB Events"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.speakers",
+  "id": 27,
+  "title": "speakers"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.testimonials",
+  "id": 28,
+  "title": "testimonials"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.trainings",
+  "id": 29,
+  "title": "trainings"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.plugin_builder",
+  "id": 30,
+  "title": "plugin_builder"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.chamberlin_projects",
+  "id": 32,
+  "title": "chamberlin_projects"
+ },
+ {
+  "is_enabled": true,
+  "is_installed": true,
+  "package": "plugins.rfps",
+  "id": 33,
+  "title": "jmo"
+ }
+]

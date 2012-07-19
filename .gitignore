@@ -50,3 +50,4 @@ plugins/apps.json
 /themes/thinksmart/templates/sidebar.html
 
 docs/build/
+docs/local/

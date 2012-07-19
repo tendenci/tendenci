@@ -1,0 +1,36 @@
+[
+	{
+		"name": "postordering", 
+        "value": "descending",
+        "label": "Post Ordering", 
+        "input_value": "ascending, descending", 
+        "default_value": "descending", 
+        "description": "Ordering used for posts", 
+        "data_type": "string",
+        "update_dt": "2011-06-01 12:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "blog", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+		"name": "enabled", 
+        "value": "true",
+        "label": "Enabled", 
+        "input_value": "true, false", 
+        "default_value": "false", 
+        "description": "Module is enabled or not.", 
+        "data_type": "boolean",
+        "update_dt": "2011-06-01 12:00:00",
+        "input_type": "select",
+        "client_editable": true,
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "blog", 
+        "store": true, 
+        "updated_by": ""
+    }
+]

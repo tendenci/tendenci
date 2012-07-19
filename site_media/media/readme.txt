@@ -1,1 +1,0 @@
-Media uploaded by the end user will end up in this directory.

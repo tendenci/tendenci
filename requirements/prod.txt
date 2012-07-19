@@ -1,2 +1,0 @@
-# requirements/prod.txt
--r common.txt
