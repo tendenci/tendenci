@@ -127,7 +127,9 @@ setup(
     platforms=['any'],
     classifiers=CLASSIFIERS,
     include_package_data=True,
-    dependency_links=[],
+    dependency_links=[
+        "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo"
+    ],
     install_requires=[
         "Django==1.4",
         "Reportlab==2.5",
@@ -171,7 +173,7 @@ setup(
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
-        "Geraldo==0.4.15",
+        "Geraldo",
         "django-tastypie",
     ],
 )
