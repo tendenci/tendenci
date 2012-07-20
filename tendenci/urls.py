@@ -108,9 +108,9 @@ handler500 = 'base.views.custom_error'
 # serve static files
 if settings.DEBUG:
     urlpatterns += patterns('',
-        (r'^site_media/(?P<path>.*)$',
+        (r'^static/(?P<path>.*)$',
             'django.views.static.serve',
-            {'document_root': join(settings.PROJECT_ROOT, 'site_media')}),
+            {'document_root': join(settings.PROJECT_ROOT, 'static')}),
 
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),

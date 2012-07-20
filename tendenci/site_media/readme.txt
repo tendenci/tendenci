@@ -1,1 +1,0 @@
-All media served by the web site goes here. 
