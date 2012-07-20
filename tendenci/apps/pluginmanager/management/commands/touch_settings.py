@@ -6,7 +6,6 @@ class Command(BaseCommand):
 
     @commit_on_success
     def handle(self, *args, **kwargs):
-        path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../../../settings.py')
-        wsgi = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../../../deploy/deploy.wsgi')
-        os.system('touch '+path)
+        from django.conf import settings
+        wsgi = os.path.join(settings.LOCAL_ROOT, 'tendenci-site', 'wsgi.py')
         os.system('touch '+wsgi)
