@@ -7,6 +7,20 @@ from before_and_after.models import BeforeAndAfter, Category, Subcategory
 class BnAForm(TendenciBaseForm):
     class Meta:
         model = BeforeAndAfter
+        fields = (
+            'title',
+            'category',
+            'subcategory',
+            'description',
+            'tags',
+            'admin_notes',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
         
     description = forms.CharField(
         widget=TinyMCE(attrs={'style':'width:100%'},

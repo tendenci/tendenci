@@ -8,6 +8,24 @@ from base.fields import SplitDateTimeField
 class ProductForm(TendenciBaseForm):
     class Meta:
         model = Product
+        fields = (
+            'name',
+            'slug',
+            'brand',
+            'url',
+            'item_number',
+            'category',
+            'subcategory',
+            'summary',
+            'description',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
     
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     description = forms.CharField(required=True,widget=TinyMCE(attrs={'style':'width:100%'},mce_attrs={'storme_app_label':u'products','storme_model':Product._meta.module_name.lower()}))

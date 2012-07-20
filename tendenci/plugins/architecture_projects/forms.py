@@ -36,6 +36,25 @@ class ArchitectureProjectForm(TendenciBaseForm):
 
     class Meta:
         model = ArchitectureProject
+        fields = (
+            'architect',
+            'project_title',
+            'client',
+            'slug',
+            'url',
+            'overview',
+            'execution',
+            'categories',
+            'building_types',
+            'results',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
 
 class FileForm(forms.ModelForm):
     class Meta:

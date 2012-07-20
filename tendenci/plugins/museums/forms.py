@@ -9,6 +9,40 @@ from base.fields import SplitDateTimeField
 class MuseumForm(TendenciBaseForm):
     class Meta:
         model = Museum
+        fields = (
+            'name',
+            'slug',
+            'phone',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'website',
+            'building_photo',
+            'about'
+            'hours',
+            'free_times',
+            'parking_information',
+            'free_parking',
+            'street_parking',
+            'paid_parking',
+            'dining_information',
+            'restaurant',
+            'snacks',
+            'shopping_information',
+            'events',
+            'special_offers',
+            'facebook',
+            'twitter',
+            'flickr',
+            'youtube',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
     
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     about = forms.CharField(required=False,

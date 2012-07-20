@@ -9,3 +9,15 @@ class QuoteForm(TendenciBaseForm):
     
     class Meta:
         model = Quote
+        fields = (
+            'quote',
+            'author',
+            'source',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )

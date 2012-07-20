@@ -20,6 +20,33 @@ ALLOWED_LOGO_EXT = (
 class ProductForm(TendenciBaseForm):
     class Meta:
         model = Product
+        fields = (
+           'product_id',
+           'product_name',
+           'product_slug',
+           'product_code',
+           'product_features',
+           'product_specs',
+           'brand',
+           'generic_description',
+           'category',
+           'formulation',
+           'active_ingredients',
+           'key_insects',
+           'use_sites',
+           'msds_label',
+           'product_label',
+           'state_registered',
+           'tags',
+           'photo_upload',
+           'hover_photo_upload',
+           'allow_anonymous_view',
+           'user_perms',
+           'group_perms',
+           'member_perms',
+           'status',
+           'status_detail',
+        )
 
     status_detail = forms.ChoiceField(choices=(('active', 'Active'), ('pending', 'Pending')))
     generic_description = forms.CharField(required=True,

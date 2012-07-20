@@ -9,6 +9,42 @@ from base.fields import SplitDateTimeField
 class ProjectForm(TendenciBaseForm):
     class Meta:
         model = Project
+        fields = (
+            'title',
+            'slug',
+            'project_name',
+            'program',
+            'program_year',
+            'project_number',
+            'project_status',
+            'principal_investigator',
+            'principal_investigator_company',
+            'participants',
+            'rpsea_pm',
+            'start_dt',
+            'end_dt',
+            'project_abstract',
+            'project_abstract_date',
+            'project_fact_sheet_title',
+            'project_fact_sheet_url',
+            'website_title',
+            'website_url',
+            'article_title',
+            'article_url',
+            'project_objectives',
+            'video_embed_code',
+            'video_title',
+            'video_description',
+            'access_type',
+            'research_category',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
     
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     project_objectives = forms.CharField(required=True,widget=TinyMCE(attrs={'style':'width:100%'},mce_attrs={'storme_app_label':u'projects','storme_model':Project._meta.module_name.lower()}))

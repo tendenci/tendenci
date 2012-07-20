@@ -16,6 +16,21 @@ class VideoForm(TendenciBaseForm):
     
     class Meta:
         model = Video
+        fields = (
+            'title',
+            'slug',
+            'category',
+            'image',
+            'video_url',
+            'tags',
+            'description',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
 
     def __init__(self, *args, **kwargs): 
         super(VideoForm, self).__init__(*args, **kwargs)

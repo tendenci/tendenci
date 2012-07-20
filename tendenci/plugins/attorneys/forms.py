@@ -6,6 +6,33 @@ from attorneys.models import Attorney, Photo
 class AttorneyForm(TendenciBaseForm):
     class Meta:
         model = Attorney
+        fields = (
+            'first_name',
+            'middle_initial',
+            'last_name',
+            'slug',
+            'category',
+            'position',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zip',
+            'phone',
+            'fax',
+            'email',
+            'bio',
+            'education',
+            'casework',
+            'admissions',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
         
     bio = forms.CharField(
         required = False,

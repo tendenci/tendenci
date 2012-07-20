@@ -8,6 +8,28 @@ from base.fields import SplitDateTimeField
 class RFPForm(TendenciBaseForm):
     class Meta:
         model = RFP
+        fields = (
+            'name',
+            'slug',
+            'program',
+            'rfp_status',
+            'release_dt',
+            'proposal_due_dt',
+            'expired_dt',
+            'rfp_file',
+            'rfp_file_closed',
+            'questions_title',
+            'questions_expiration_dt',
+            'contract_doc',
+            'contract_doc_description',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
     
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     contract_doc_description = forms.CharField(required=True,widget=TinyMCE(attrs={'style':'width:100%'},mce_attrs={'storme_app_label':u'rfps','storme_model':RFP._meta.module_name.lower()}))

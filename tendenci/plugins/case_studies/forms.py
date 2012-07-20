@@ -35,7 +35,24 @@ class CaseStudyForm(TendenciBaseForm):
             self.fields['results'].widget.mce_attrs['app_instance_id'] = 0
 
     class Meta:
-        model = CaseStudy
+        model = CaseStudy 
+        fields = (
+            'client',
+            'slug',
+            'url',
+            'overview',
+            'execution',
+            'services',
+            'technologies',
+            'results',
+            'tags',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
 
 class FileForm(forms.ModelForm):
     class Meta:

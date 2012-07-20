@@ -56,6 +56,34 @@ class StaffForm(TendenciBaseForm):
 
     class Meta:
         model = Staff
+        fields = (
+            'name',
+            'slug',
+            'start_date',
+            'department',
+            'position',
+            'tiny_bio',
+            'question',
+            'answer',
+            'biography',
+            'cv',         
+            'email',
+            'phone',
+            'personal_sites',
+            'tags',
+            'facebook',
+            'twitter',
+            'linkedin',
+            'get_satisfaction',
+            'flickr',
+            'slideshare',
+            'allow_anonymous_view',
+            'user_perms',
+            'group_perms',
+            'member_perms',
+            'status',
+            'status_detail',
+        )
 
 class FileForm(forms.ModelForm):
     class Meta:
