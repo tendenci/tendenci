@@ -173,7 +173,7 @@ setup(
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
-        "Geraldo",
+        #"Geraldo",
         "django-tastypie",
     ],
 )

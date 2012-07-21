@@ -13,6 +13,9 @@ class PluginApp(models.Model):
     def __unicode__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        self.title = self.package.title().replace('_',' ')
+        return super(PluginApp, self).save(*args, **kwargs)
 
 ###
 # Signals
@@ -26,7 +29,7 @@ def _update_apps(instance=None, created=False):
     from django.conf import settings
     from django.db.models.loading import cache as app_cache
     from pluginmanager import plugin_apps
-    settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS)
+    settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS, settings.LOCAL_ROOT)
     app_cache.loaded = False  # clear cache
 
     call_command('syncdb', interactive=False, migrate_all=False)
@@ -34,6 +37,7 @@ def _update_apps(instance=None, created=False):
     call_command('touch_settings')
     # update the site settings (in database) if any
     if instance:
+        print instance
         call_command('update_settings', smart_str(instance.package))
 
 
@@ -57,9 +61,10 @@ import os
 
 def db2json():
     #path = os.path.abspath(os.path.dirname(__file__))
-    path = os.path.join(os.path.split(os.path.split(os.path.abspath(os.path.dirname(__file__)))[0])[0], 'plugins')
+    from django.conf import settings
+    path = settings.LOCAL_ROOT
     plugins = list(PluginApp.objects.all().values('id', 'title', 'package', 'is_enabled', 'is_installed'))
     data = simplejson.dumps(plugins, indent=1)
-    f = open(os.path.join(path, 'apps.json'), 'w')
+    f = open(os.path.join(path, 'plugins_list.json'), 'w')
     f.write(data)
     f.close()

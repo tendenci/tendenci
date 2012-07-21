@@ -59,3 +59,4 @@ class AttorneyForm(TendenciBaseForm):
 class PhotoForm(TendenciBaseForm):
     class Meta:
         model = Photo
+        fields = ('file',)

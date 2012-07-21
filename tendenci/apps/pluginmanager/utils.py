@@ -83,3 +83,22 @@ def _make_writeable(filename):
         st = os.stat(filename)
         new_permissions = stat.S_IMODE(st.st_mode) | stat.S_IWUSR
         os.chmod(filename, new_permissions)
+
+def plugin_options():
+    """
+    Returns a string of the available themes in THEMES_DIR
+    """
+    options = []
+    plugins = sorted(plugin_choices())
+    for plugin in plugins:
+        if plugin not in settings.INSTALLED_APPS:
+            options.append((plugin, plugin.title().replace('_',' ')))
+    return options
+
+def plugin_choices():
+    """
+    Returns a list of available themes in PLUGINS_PATH
+    """
+    for plugin in os.listdir(settings.PLUGINS_PATH):
+        if os.path.isdir(os.path.join(settings.PLUGINS_PATH, plugin)):
+            yield plugin

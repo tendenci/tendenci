@@ -11,6 +11,20 @@ from base.fields import SplitDateTimeField
 class TrainingForm(TendenciBaseForm):
     class Meta:
         model = Training
+        fields = (
+            'title',
+            'author_instructor',
+            'description',
+            'training_type',
+            'points',
+            'tags',
+            'status',
+            'status_detail',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )
     
     status_detail = forms.ChoiceField(choices=(('active','Active'),('pending','Pending')))
     description = forms.CharField(required=False,widget=TinyMCE(attrs={'style':'width:100%'},mce_attrs={'storme_app_label':u'trainings','storme_model':Training._meta.module_name.lower()}))
