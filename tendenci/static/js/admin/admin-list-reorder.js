@@ -33,7 +33,7 @@ $(document).ready(function() {
         //input.attr('type', 'hidden')
         input.hide()
         
-        var label = $('<span><img src="/site_media/static/images/icons/drag_icon_16x16.png" /></span>')
+        var label = $('<span><img src="/static/images/icons/drag_icon_16x16.png" /></span>')
         $(pos_td).append(label)
     });
     
@@ -70,7 +70,7 @@ $(document).ready(function() {
                 var label = $(pos_td).children('span').first()
                 
                 input.attr('value', index)
-                label.html('<img src="/site_media/static/images/icons/drag_icon_16x16.png" />')
+                label.html('<img src="/static/images/icons/drag_icon_16x16.png" />')
             });
             
             // Update row classes

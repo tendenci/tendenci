@@ -113,7 +113,7 @@ div.delete-button-wrap{
 }
 .delete-button{
     padding: 6px 10px 6px 15px;
-    background: url("/site_media/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
+    background: url("/static/admin/img/admin/icon_deletelink.gif") no-repeat scroll 5px 50%;
     border: 1px solid #CCC;
     cursor: pointer;
     color: darkred;

@@ -141,7 +141,7 @@ a.progressCancel:hover
 	height: 14px;
 	width: 14px;
 	
-	background-image: url("/site_media/static/swfupload/cancelbutton.gif");
+	background-image: url("/static/swfupload/cancelbutton.gif");
 	background-repeat: no-repeat;
 	background-position: -14px 0px;
 	float: right;
@@ -228,7 +228,7 @@ span.select-photos a#stop-upload{
 }
 
 span.select-photos a#choose-photos {
-	background-image:url(/site_media/static/swfupload/arrow-right_16x16.gif);
+	background-image:url(/static/swfupload/arrow-right_16x16.gif);
 	background-repeat: no-repeat;
 	background-position: left;
 	padding-left: 20px;

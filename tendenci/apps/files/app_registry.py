@@ -10,7 +10,7 @@ class FileRegistry(CoreRegistry):
     description = 'Stores file links and infomation for files ' \
                   'uploaded through wysiwyg and other parts in ' \
                   'the system'
-    icon = '/site_media/static/images/icons/files-color-64x64.png'
+    icon = '/static/images/icons/files-color-64x64.png'
     
     event_logs = {
         'files':{

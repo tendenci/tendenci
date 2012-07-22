@@ -8,7 +8,7 @@ class ProfileRegistry(PeopleRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'User Profiles.'
-    icon = '/site_media/static/images/icons/users-color-64x64.png'
+    icon = '/static/images/icons/users-color-64x64.png'
     
     event_logs = {
         'profile':{

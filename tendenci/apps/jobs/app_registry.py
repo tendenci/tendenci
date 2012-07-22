@@ -9,7 +9,7 @@ class JobRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create %s listings for hiring' %  get_setting('module', 'jobs', 'label')
-    icon = '/site_media/static/images/icons/jobs-color-64x64.png'
+    icon = '/static/images/icons/jobs-color-64x64.png'
     
     # jobs - GREEN base - complement is DEEP RED
     event_logs = {

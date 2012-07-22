@@ -26,7 +26,7 @@
 		
 		{# show member icon if not allowanonymousview/allowsiteuserview #}
 		{% if not article.allow_anonymous_view and article.allow_user_view   %}
-			&nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/site_media/static/images/icons/member.gif" height="13" width="15" 
+			&nbsp;&nbsp;<img src="{{ SITE_GLOBAL_SITEURL }}/static/images/icons/member.gif" height="13" width="15" 
 			border="0" alt="Member View Only">
 		{% endif %}
 		</td></tr>

@@ -9,7 +9,7 @@ class LocationRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'A list of locations associated with your organization' \
         'Includes a search that sort by nearest location.'
-    icon = '/site_media/static/images/icons/locations-color-64x64.png'
+    icon = '/static/images/icons/locations-color-64x64.png'
 
     event_logs = {
         'location':{

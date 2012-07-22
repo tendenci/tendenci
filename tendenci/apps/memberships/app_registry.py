@@ -8,7 +8,7 @@ class MembershipRegistry(PeopleRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Membership management application.'
-    icon = '/site_media/static/images/icons/memberships-color-64x64.png'
+    icon = '/static/images/icons/memberships-color-64x64.png'
     
     event_logs = {
         'membership':{
