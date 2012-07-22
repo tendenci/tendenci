@@ -7,25 +7,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Renaming column for 'MembershipArchive.payment_method' to match new field type.
-        db.rename_column('memberships_membershiparchive', 'payment_method', 'payment_method_id')
-        # Changing field 'MembershipArchive.payment_method'
-        db.alter_column('memberships_membershiparchive', 'payment_method_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['payments.PaymentMethod'], null=True))
+        # Add field 'MembershipArchive.payment_method'
+        db.add_column('memberships_membershiparchive', 'payment_method', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['payments.PaymentMethod'], null=True))
 
-        # Adding index on 'MembershipArchive', fields ['payment_method']
-        db.create_index('memberships_membershiparchive', ['payment_method_id'])
-
+        # Delete the old column
+        db.delete_column('memberships_membershiparchive', 'payment_method')
 
     def backwards(self, orm):
-        
-        # Renaming column for 'MembershipArchive.payment_method' to match new field type.
-        db.rename_column('memberships_membershiparchive', 'payment_method_id', 'payment_method')
-        # Changing field 'MembershipArchive.payment_method'
-        db.alter_column('memberships_membershiparchive', 'payment_method', self.gf('django.db.models.fields.CharField')(max_length=50))
-
-        # Removing index on 'MembershipArchive', fields ['payment_method']
-        db.delete_index('memberships_membershiparchive', ['payment_method_id'])
+        raise RuntimeError("Cannot reverse this migration.")
 
 
     models = {
