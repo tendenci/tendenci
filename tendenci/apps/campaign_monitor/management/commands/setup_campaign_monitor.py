@@ -113,7 +113,7 @@ class Command(BaseCommand):
                                     
                 
                 # add/update the client_id in the local_settings.py
-                local_setting_file = os.path.join(getattr(settings, 'PROJECT_ROOT'), 'local_settings.py')
+                local_setting_file = os.path.join(getattr(settings, 'PROJECT_ROOT'), 'settings.py')
                 f = open(local_setting_file, 'r')
                 content = f.read()
                 if client_id == '[CAMPAIGNMONITOR_API_CLIENT_ID]':

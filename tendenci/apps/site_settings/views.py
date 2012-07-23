@@ -38,7 +38,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
             lang = get_setting('site', 'global', 'localizationlanguage')
             #if lang in ['en-us', 'es']
             if django_settings.LANGUAGE_CODE <> lang:
-                local_setting_file = os.path.join(getattr(django_settings, 'PROJECT_ROOT'), 'local_settings.py')
+                local_setting_file = os.path.join(getattr(django_settings, 'PROJECT_ROOT'), 'local.py')
                 f = open(local_setting_file, 'r')
                 content = f.read()
                 f.close()

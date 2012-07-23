@@ -29,7 +29,7 @@ def _update_apps(instance=None, created=False):
     from django.conf import settings
     from django.db.models.loading import cache as app_cache
     from pluginmanager import plugin_apps
-    settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS, settings.LOCAL_ROOT)
+    settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS, settings.PROJECT_ROOT)
     app_cache.loaded = False  # clear cache
 
     call_command('syncdb', interactive=False, migrate_all=False)
@@ -62,7 +62,7 @@ import os
 def db2json():
     #path = os.path.abspath(os.path.dirname(__file__))
     from django.conf import settings
-    path = settings.LOCAL_ROOT
+    path = settings.PROJECT_ROOT
     plugins = list(PluginApp.objects.all().values('id', 'title', 'package', 'is_enabled', 'is_installed'))
     data = simplejson.dumps(plugins, indent=1)
     f = open(os.path.join(path, 'plugins_list.json'), 'w')

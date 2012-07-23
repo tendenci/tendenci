@@ -55,7 +55,7 @@ def add(request, form_class=NewsletterAddForm, template_name="newsletters/add.ht
     # separate blocks, thus we have to render them separately in the template.
     # get a list of default templates
     default_templates = []
-    default_dir = os.path.join(os.path.join(settings.PROJECT_ROOT, "templates"), 'newsletters/templates/default')
+    default_dir = os.path.join(os.path.join(settings.TENDENCI_ROOT, "templates"), 'newsletters/templates/default')
     
     if os.path.isdir(default_dir):
         default_templates = os.listdir(default_dir)

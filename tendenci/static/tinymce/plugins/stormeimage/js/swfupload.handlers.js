@@ -416,9 +416,10 @@ FileProgress.prototype.SetComplete = function() {
 	this.fileProgressElement.className = "progressContainer blue";
 	this.fileProgressElement.childNodes[3].className = "progressBarComplete";
 	this.fileProgressElement.childNodes[3].style.width = "";
-
+	console.log('hello');
 	$el = $(this.fileProgressElement);
 	var oSelf = this;
+	console.log(oSelf);
 	$.get("/files/tinymce/template/"+ oSelf.data.id +"/", function(template){
 		$el.slideUp("fast", function(){
 			$(this).html(template);

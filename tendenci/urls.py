@@ -2,7 +2,6 @@ from os.path import join
 from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
-from django.conf import settings
 from django.contrib import admin
 from theme.utils import get_theme_root, get_theme, theme_choices
 from registry import autodiscover as reg_autodiscover
@@ -110,7 +109,7 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$',
             'django.views.static.serve',
-            {'document_root': join(settings.PROJECT_ROOT, 'static')}),
+            {'document_root': join(settings.TENDENCI_ROOT, 'static')}),
 
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
             'base.views.plugin_static_serve'),
