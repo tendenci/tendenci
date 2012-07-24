@@ -175,5 +175,7 @@ setup(
         "django-ses==0.4.1",
         #"Geraldo",
         "django-tastypie",
+        'django-storages==1.1.5',
+        'django-s3-folder-storage',
     ],
 )
