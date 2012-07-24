@@ -290,7 +290,7 @@ def swfupload(request):
             file.allow_anonymous_view = True
             file.save()
         except Exception, e:
-            print e
+            print e           
 
         d = {
             "id" : file.id,

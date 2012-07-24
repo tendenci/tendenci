@@ -20,8 +20,18 @@ class SWFUploadMiddleware(object):
 
 class MediaUploadMiddleware(object):
     def process_request(self, request):
+        swf_cookie_name = settings.SWFUPLOAD_COOKIE_NAME
+        
         if (request.method == 'POST') and (request.path == reverse('file.swfupload')) and \
-                request.POST.has_key(settings.SESSION_COOKIE_NAME):
-            request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[settings.SESSION_COOKIE_NAME]
+                request.POST.has_key(swf_cookie_name):
+            request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
+            
         if request.POST.has_key('csrftoken'):           
             request.COOKIES["csrftoken"] = request.POST['csrftoken']
+            
+    def process_response(self, request, response):
+        # set cookie for swfupload
+        if request.COOKIES.has_key(settings.SESSION_COOKIE_NAME):
+            response.set_cookie(settings.SWFUPLOAD_COOKIE_NAME,
+                                request.COOKIES[settings.SESSION_COOKIE_NAME])
+        return response
