@@ -10,7 +10,7 @@
 {% block extra_head %}
 {{ block.super }}
 
-<link type="text/css" href="/static/css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+<link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
 <link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
 
 <style>
@@ -319,11 +319,11 @@
 <script>
 	if (!(window.jQuery)) { 
 		var s = document.createElement('script');
-		s.setAttribute('src', '/static/js/jquery-1.4.2.min.js'); 
+		s.setAttribute('src', '{{ STATIC_URL }}js/jquery-1.4.2.min.js'); 
 		s.setAttribute('type', 'text/javascript');
 		document.getElementsByTagName('head')[0].appendChild(s);}
 </script>
-<script type="text/javascript" src="/static/js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery_tabs/jquery-ui-1.8.custom.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}tablesorter/jquery.tablesorter.min.js"></script> 
 
  {% if is_active %}

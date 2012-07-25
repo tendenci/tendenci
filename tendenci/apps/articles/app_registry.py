@@ -1,3 +1,4 @@
+from django.conf import settings
 from registry import site
 from registry.base import CoreRegistry, lazy_reverse
 from models import Article
@@ -8,7 +9,7 @@ class ArticleRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create articles to display basic content throughout the site'
-    icon = '/static/images/icons/articles-color-64x64.png'
+    icon = '%simages/icons/articles-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'article':{

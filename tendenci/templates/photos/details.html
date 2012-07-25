@@ -15,7 +15,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" type="text/css" href="/static/css/photos.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 {% endblock %}
 
 {% block body %}
@@ -97,8 +97,8 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="/static/js/tendenci5.api.client.js"></script>
-<script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/tendenci5.api.client.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.tools.min.js"></script>
 <script type="text/javascript">
 
 // photo: delete confirmation

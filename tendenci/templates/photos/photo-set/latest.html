@@ -9,7 +9,7 @@
 {% block title %}{% blocktrans %}Latest Photo Sets{% endblocktrans %}{% endblock %}
 {% block extra_head %}
 {{ block.super }}
-<link rel="stylesheet" type="text/css" href="/static/css/photos.css">
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
 <link rel="alternate" type="application/rss+xml" title="Latest photo albums" href="{% url photo.feed.latest-albums %}" />
 {% endblock %}
 

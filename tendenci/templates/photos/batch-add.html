@@ -6,8 +6,8 @@
 {% block title %}{% blocktrans %}Manual Upload Form{% endblocktrans %}{% endblock %}
 {% block extra_head %}
     {{ block.super }}
-	<link rel="stylesheet" type="text/css" href="/static/css/photos.css">
-	<link rel="stylesheet" type="text/css" href="/static/swfupload/swfupload.visual.css">
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/photos.css">
+	<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}swfupload/swfupload.visual.css">
 {% endblock %}
 
 {% block body %}
@@ -32,10 +32,10 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script src="/static/swfupload/swfupload.js" type="text/javascript"></script>
-<script src="/static/swfupload/swfupload.cookies.js" type="text/javascript"></script>
-<script src="/static/swfupload/swfupload.handlers.js" type="text/javascript"></script>
-<script src="/static/swfupload/swfupload.swfobject.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.cookies.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.handlers.js" type="text/javascript"></script>
+<script src="{{ STATIC_URL }}swfupload/swfupload.swfobject.js" type="text/javascript"></script>
 <script language="javascript" type="text/javascript">
 
 	for(var i=0; i<10; i++){ // bg image via js
@@ -50,7 +50,7 @@
 		debug: false,
 		
 		upload_url: "{% url photos.views.photos_batch_add photoset_id %}",
-		flash_url: "/static/swfupload/swfupload.swf",
+		flash_url: "{{ STATIC_URL }}swfupload/swfupload.swf",
 		post_params: {
 			"title" : "", 
 			"caption" : "", 
