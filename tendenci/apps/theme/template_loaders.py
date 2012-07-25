@@ -39,7 +39,6 @@ class Loader(BaseLoader):
             theme_templates.append(os.path.join(get_theme_root(), 'mobile'))
         theme_templates.append(os.path.join(get_theme_root(), 'templates'))
         for template_path in theme_templates:
-            print template_path
             try:
                 yield safe_join(template_path, template_name)
             except UnicodeDecodeError:

@@ -167,7 +167,7 @@ class Command(BaseCommand):
                 if appname.find('.') != -1:
                     appname = appname.replace('.', '/')
                 json_file = os.path.abspath(os.path.join(
-                                django_settings.TENDENCI_ROOT,
+                                django_settings.TENDENCI_ROOT,'..',
                                 '/'.join(appname.split('.')),
                                 'settings.json'  
                             ))
