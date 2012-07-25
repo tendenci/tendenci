@@ -9,7 +9,7 @@ from products.models import Product
 from perms.utils import get_notice_recipients, has_perm, has_view_perm, get_query_filters
 from event_logs.models import EventLog
 
-from notification import models as notification
+from tendenci.apps.notification import models as notification
 
 
 def detail(request, slug=None, template_name="products/detail.html"):

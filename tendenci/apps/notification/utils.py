@@ -1,5 +1,5 @@
-from perms.utils import get_notice_recipients
-from notification.models import send_emails
+from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.notification.models import send_emails
 
 def send_notifications(scope, scope_category, name, label, extra_context=None):
     """
@@ -18,7 +18,7 @@ def send_welcome_email(user):
     """
     from django.utils.http import int_to_base36
     from django.contrib.auth.tokens import default_token_generator
-    from site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
 
     token_generator = default_token_generator
 

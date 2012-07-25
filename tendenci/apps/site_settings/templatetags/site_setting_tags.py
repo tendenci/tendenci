@@ -1,6 +1,6 @@
 from django.template import Library, Node 
 
-from site_settings.utils import get_setting as gs
+from tendenci.apps.site_settings.utils import get_setting as gs
 
 register = Library()
 

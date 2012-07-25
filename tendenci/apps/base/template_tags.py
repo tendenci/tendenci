@@ -7,13 +7,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
 
-from perms.utils import get_query_filters
+from tendenci.apps.perms.utils import get_query_filters
+
 
 def parse_tag_kwargs(bits):
     """
     Takes in template tag bits and parses out the kwargs
 
-    from base.template_tags import parse_tag_kwargs
+    from tendenci.apps.base.template_tags import parse_tag_kwargs
 
     bits = token.split_contents()
     kwargs = parse_tag_kwargs(bits)
@@ -35,7 +36,7 @@ class ListNode(Node):
     Searches haystack based on template tag arg and kwargs
     and will return a SearchQuerySet
 
-    from base.template_tags import ListNode
+    from tendenci.apps.base.template_tags import ListNode
 
     class MyModelListNode(ListNode):
         model = MyModel

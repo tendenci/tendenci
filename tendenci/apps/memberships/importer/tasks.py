@@ -4,18 +4,18 @@ from dateutil.parser import parse as dt_parse
 from django.contrib.auth.models import User
 from django.conf import settings
 from celery.task import Task
-from profiles.models import Profile
-from corporate_memberships.models import CorporateMembership
-from memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
-from memberships.utils import spawn_username
-from memberships.importer.utils import parse_mems_from_csv, clean_field_name
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.corporate_memberships.models import CorporateMembership
+from tendenci.apps.memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
+from tendenci.apps.memberships.utils import spawn_username
+from tendenci.apps.memberships.importer.utils import parse_mems_from_csv, clean_field_name
 
 
 class ImportMembershipsTask(Task):
 
     def run(self, memport, fields, **kwargs):
         from django.template.defaultfilters import slugify
-        from memberships.utils import get_user
+        from tendenci.apps.memberships.utils import get_user
 
         app = memport.app
         file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)

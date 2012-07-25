@@ -1,9 +1,9 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from perms.forms import TendenciBaseForm
-from pages.models import Page
-from navs.models import Nav, NavItem
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.pages.models import Page
+from tendenci.apps.navs.models import Nav, NavItem
 
 class NavForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(

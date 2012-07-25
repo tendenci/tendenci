@@ -3,7 +3,7 @@ from django.utils.functional import lazy
 from django.contrib.admin import site as admin_site
 from django.utils.translation import ugettext_lazy as _
 
-from registry.exceptions import *
+from tendenci.apps.registry.exceptions import *
 
 lazy_reverse = lazy(reverse, str)
 
@@ -60,9 +60,9 @@ class Registry(object):
 
     Example Registry:
 
-    from registry import site
-    from registry.base import CoreRegistry, lazy_reverse
-    from models import ExmpleModel
+    from tendenci.apps.registry import site
+    from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+    from tendenci.apps.models import ExmpleModel
 
     class ExampleRegistry(CoreRegistry):
         version = '1.0'

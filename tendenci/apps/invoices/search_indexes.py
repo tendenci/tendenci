@@ -1,9 +1,10 @@
-from django.db.models import signals
-
 from haystack import indexes
 from haystack import site
-from invoices.models import Invoice
-from search.indexes import CustomSearchIndex
+
+from django.db.models import signals
+
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.search.indexes import CustomSearchIndex
 
 class InvoiceIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

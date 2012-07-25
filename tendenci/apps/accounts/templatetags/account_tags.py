@@ -1,5 +1,5 @@
 from django.template import Library
-from accounts.forms import LoginForm
+from tendenci.apps.accounts.forms import LoginForm
 
 register = Library()
 

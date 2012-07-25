@@ -2,10 +2,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from entities.models import Entity
-from perms.models import TendenciBaseModel
-from perms.object_perms import ObjectPermission
-from base.fields import SlugField
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
 

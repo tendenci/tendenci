@@ -6,7 +6,7 @@ Created on 28-02-2011
 
 from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
-from sitemaps import TendenciSitemap
+from tendenci.apps.sitemaps import TendenciSitemap
 
 
 _sitemap_cache = []

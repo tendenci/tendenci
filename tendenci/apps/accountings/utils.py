@@ -1,4 +1,4 @@
-from accountings.models import Acct, AcctEntry, AcctTran
+from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
 
 def make_acct_entries(user, invoice, amount, **kwargs):
     """

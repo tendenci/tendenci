@@ -3,10 +3,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.contrib.contenttypes import generic
 
-from perms.object_perms import ObjectPermission
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tagging.fields import TagField
-from perms.models import TendenciBaseModel
-from boxes.managers import BoxManager
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.boxes.managers import BoxManager
 from tinymce import models as tinymce_models
 
 class Box(TendenciBaseModel):

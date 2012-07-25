@@ -10,25 +10,25 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
-from base.http import Http403
-from base.utils import check_template
-from event_logs.models import EventLog
-from meta.models import Meta as MetaTags
-from meta.forms import MetaForm
-from perms.utils import (update_perms_and_save, get_notice_recipients,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import check_template
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.perms.utils import (update_perms_and_save, get_notice_recipients,
     has_perm,  get_query_filters)
-from categories.forms import CategoryForm
-from categories.models import Category
-from site_settings.utils import get_setting
-from theme.shortcuts import themed_response as render_to_response
-from files.models import file_directory
-from exports.utils import run_export_task
+from tendenci.apps.categories.forms import CategoryForm
+from tendenci.apps.categories.models import Category
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.files.models import file_directory
+from tendenci.apps.exports.utils import run_export_task
 
-from pages.models import Page, HeaderImage
-from pages.forms import PageForm
+from tendenci.apps.pages.models import Page, HeaderImage
+from tendenci.apps.pages.forms import PageForm
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
 

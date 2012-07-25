@@ -10,9 +10,9 @@ class Command(BaseCommand):
     Move data from RegistrationConfiguration to RegConfPricing
     """
     def handle(self, *event_ids, **options):
-        from events.models import RegistrationConfiguration
-        from events.models import RegConfPricing
-        from events.models import Registration
+        from tendenci.apps.events.models import RegistrationConfiguration
+        from tendenci.apps.events.models import RegConfPricing
+        from tendenci.apps.events.models import Registration
         from django.db import connection, transaction
 
         select_sql = "SELECT * FROM events_registrationconfiguration"

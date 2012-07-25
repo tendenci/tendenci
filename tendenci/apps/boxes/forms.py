@@ -1,5 +1,5 @@
-from boxes.models import Box
-from perms.forms import TendenciBaseForm
+from tendenci.apps.boxes.models import Box
+from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
 from tinymce.widgets import TinyMCE
 

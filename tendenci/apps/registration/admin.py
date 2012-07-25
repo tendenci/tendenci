@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from registration.models import RegistrationProfile
+from tendenci.apps.registration.models import RegistrationProfile
 
 
 class RegistrationAdmin(admin.ModelAdmin):

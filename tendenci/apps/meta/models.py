@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.functional import curry
 from django.db.models.signals import post_init
-from meta.utils import generate_meta_keywords
+from tendenci.apps.meta.utils import generate_meta_keywords
 
 class Meta(models.Model):
     """

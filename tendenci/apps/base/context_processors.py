@@ -1,5 +1,7 @@
-from django.conf import settings
 from datetime import datetime
+
+from django.conf import settings
+
 
 def static_url(request):
     return {'STATIC_URL': settings.STATIC_URL, 'LOCAL_STATIC_URL': settings.LOCAL_STATIC_URL, 'TINYMCE_JS_URL': settings.TINYMCE_JS_URL}

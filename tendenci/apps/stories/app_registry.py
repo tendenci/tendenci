@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import CoreRegistry, lazy_reverse
-from models import Story
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.stories.models import Story
 
 
 class StoryRegistry(CoreRegistry):

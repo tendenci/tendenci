@@ -3,7 +3,7 @@ from celery.task import Task
 from celery.registry import tasks
 from BeautifulSoup import BeautifulStoneSoup
 from parse_uri import ParseUri
-from wp_importer.utils import get_media, get_posts, get_pages
+from tendenci.apps.wp_importer.utils import get_media, get_posts, get_pages
 from django.core.mail import send_mail
 from django.conf import settings
 

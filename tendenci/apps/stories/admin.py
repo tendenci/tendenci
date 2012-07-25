@@ -1,4 +1,4 @@
 from django.contrib import admin
-from stories.models import Story
+from tendenci.apps.stories.models import Story
 
 admin.site.register(Story)

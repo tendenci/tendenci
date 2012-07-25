@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import redirect_to
 
-from pluginmanager.models import PluginApp
+from tendenci.apps.pluginmanager.models import PluginApp
 
-urlpatterns = patterns('legacy.views',
+urlpatterns = patterns('tendenci.apps.legacy.views',
     # static redirects
     url(r'^$', redirect_to, {'url': '/accounts/login/'}),
     url(r'^users/$', redirect_to, {'url': '/accounts/login/'}),

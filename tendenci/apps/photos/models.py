@@ -1,5 +1,7 @@
 import uuid
-
+from haystack.query import SearchQuerySet
+from photologue.models import *
+from tagging.fields import TagField
 
 from django.db import models
 from django.contrib.auth.models import User, AnonymousUser
@@ -8,16 +10,12 @@ from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-
-from photologue.models import *
-from tagging.fields import TagField
-from perms.models import TendenciBaseModel
-from perms.object_perms import ObjectPermission
-from perms.utils import get_query_filters
-from photos.managers import PhotoManager, PhotoSetManager
-from meta.models import Meta as MetaTags
-from photos.module_meta import PhotoMeta
-from haystack.query import SearchQuerySet
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.photos.module_meta import PhotoMeta
 
 
 class PhotoSet(TendenciBaseModel):
@@ -177,7 +175,7 @@ class Image(ImageModel, TendenciBaseModel):
 
     def meta_keywords(self):
         return ''
-#        from base.utils import generate_meta_keywords
+#        from tendenci.apps.base.utils import generate_meta_keywords
 #        keywords = caching.cache_get(PHOTOS_KEYWORDS_CACHE, key=self.pk)    
 #        if not keywords:
 #            value = self.title + ' ' + self.caption + ' ' + self.tags

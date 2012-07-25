@@ -1,7 +1,7 @@
-from registry import site
-from site_settings.utils import get_setting
-from registry.base import CoreRegistry, lazy_reverse
-from models import Job
+from tendenci.apps.registry import site
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.jobs.models import Job
 
 
 class JobRegistry(CoreRegistry):

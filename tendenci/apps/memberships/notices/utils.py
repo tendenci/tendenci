@@ -1,4 +1,4 @@
-from memberships.models import Notice
+from tendenci.apps.memberships.models import Notice
 
 def get_membership_notice_choices():
     notice_list = [(0, 'SELECT A NOTICE')]

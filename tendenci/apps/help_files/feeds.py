@@ -1,9 +1,9 @@
-from rss.feedsmanager import SubFeed
-from site_settings.utils import get_setting
-from perms.utils import PUBLIC_FILTER
-from sitemaps import TendenciSitemap
+from tendenci.apps.rss.feedsmanager import SubFeed
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import PUBLIC_FILTER
+from tendenci.apps.sitemaps import TendenciSitemap
 
-from help_files.models import HelpFile
+from tendenci.apps.help_files.models import HelpFile
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Helpfiles' % get_setting('site','global','sitedisplayname')

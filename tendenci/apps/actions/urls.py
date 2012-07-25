@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('actions.views',                  
+urlpatterns = patterns('tendenci.apps.actions.views',
     #url(r'^$', 'emails.views.search', name="emails"),
     #url(r'^search/$', 'emails.views.search', name="email.search"),
     url(r'^step4/(?P<action_id>\d+)/$', 'step4', name="action.step4"),

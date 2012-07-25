@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import CoreRegistry, lazy_reverse
-from models import Invoice
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.invoices.models import Invoice
 
 
 class InvoiceRegistry(CoreRegistry):

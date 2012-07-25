@@ -6,7 +6,7 @@ No extra configurations are needed to make this work.
 import urlparse
 from xml.etree import ElementTree
 
-from social_auth.backends import ConsumerBasedOAuth, OAuthBackend
+from tendenci.apps.social_auth.backends import ConsumerBasedOAuth, OAuthBackend
 
 
 LINKEDIN_SERVER = 'linkedin.com'

@@ -1,10 +1,10 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
-from directories.models import DirectoryPricing
-from invoices.models import Invoice
-from payments.models import Payment
-from site_settings.utils import get_setting
+from tendenci.apps.directories.models import DirectoryPricing
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.site_settings.utils import get_setting
 
 def get_duration_choices(user):
     currency_symbol = get_setting('site', 'global', 'currencysymbol')

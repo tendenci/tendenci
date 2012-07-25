@@ -1,13 +1,13 @@
 import operator
+from haystack.query import SearchQuerySet
 
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
-from haystack.query import SearchQuerySet
-from perms.managers import TendenciBaseManager
-from site_settings.utils import get_setting
-#from memberships.models import Membership
+from tendenci.apps.perms.managers import TendenciBaseManager
+from tendenci.apps.site_settings.utils import get_setting
+
 
 class MemberAppManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):
@@ -255,7 +255,7 @@ class MembershipManager(Manager):
         from dateutil.relativedelta import relativedelta
         from itertools import chain
         from django.db.models import Q
-        from memberships.models import MembershipType
+        from tendenci.apps.memberships.models import MembershipType
 
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')

@@ -1,7 +1,9 @@
 from re import compile
+
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
+
 
 slug_re = compile(r'^[-\w\/]+$')
 validate_slug = RegexValidator(slug_re, _(u"Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."), 'invalid')

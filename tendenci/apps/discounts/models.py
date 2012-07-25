@@ -4,10 +4,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.db.models import Q
 
-from perms.models import TendenciBaseModel
-from perms.object_perms import ObjectPermission
-from invoices.models import Invoice
-from discounts.managers import DiscountManager
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.discounts.managers import DiscountManager
 
 class Discount(TendenciBaseModel):
     class Meta:

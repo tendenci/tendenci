@@ -4,8 +4,8 @@ from django.db.models import Q
 
 from django.contrib.auth.models import User, AnonymousUser
 
-from site_settings.utils import get_setting
-from events.models import Event, Addon, AddonOption
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.events.models import Event, Addon, AddonOption
 
 def get_active_addons(event):
     """

@@ -6,12 +6,12 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from base.fields import SlugField
-from resumes.managers import ResumeManager
-from perms.object_perms import ObjectPermission
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.resumes.managers import ResumeManager
+from tendenci.apps.perms.object_perms import ObjectPermission
 from tinymce import models as tinymce_models
-from meta.models import Meta as MetaTags
-from resumes.module_meta import ResumeMeta
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.resumes.module_meta import ResumeMeta
 
 class Resume(models.Model):
     guid = models.CharField(max_length=40)

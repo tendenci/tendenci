@@ -6,17 +6,17 @@ from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 from tinymce import models as tinymce_models
-from meta.models import Meta as MetaTags
-from categories.models import CategoryItem
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.categories.models import CategoryItem
 
-from base.fields import SlugField
-from perms.models import TendenciBaseModel
-from perms.object_perms import ObjectPermission
-from entities.models import Entity
-from files.models import File
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.files.models import File
 
-from pages.managers import PageManager
-from pages.module_meta import PageMeta
+from tendenci.apps.pages.managers import PageManager
+from tendenci.apps.pages.module_meta import PageMeta
 
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40)

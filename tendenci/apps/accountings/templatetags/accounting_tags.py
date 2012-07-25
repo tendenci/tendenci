@@ -5,7 +5,7 @@ register = Library()
 
 @register.inclusion_tag("accountings/acct_entry_item.html", takes_context=True)
 def acct_entry_item(context, acct_entry, entry_class=''):
-    #from accountings.models import AcctTran
+    #from tendenci.apps.accountings.models import AcctTran
     acct_trans = acct_entry.accttran_acctentry.all()
     
     # calculate the total_debit and total_credit and update the context

@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import url, patterns
-from redirects.models import Redirect
+from tendenci.apps.redirects.models import Redirect
 
 def group_aruments(seq, group=254):
     """

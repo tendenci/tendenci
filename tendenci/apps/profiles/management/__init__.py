@@ -10,8 +10,8 @@ from django.db.models.signals import post_syncdb
 # TODO: Or we can create a migration file for this function,
 # as suggested by the site.
 # http://south.aeracode.org/docs/commands.html?highlight=post_syncdb#initial-data-and-post-syncdb
-if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
+if "tendenci.apps.notification" in settings.INSTALLED_APPS:
+    from tendenci.apps.notification import models as notification
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
         notification.create_notice_type("user_added", _("User Added"), _("A user has been added."))

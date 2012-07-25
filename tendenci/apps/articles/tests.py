@@ -7,7 +7,7 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
-from articles.models import Article
+from tendenci.apps.articles.models import Article
 
 class ArticleTest(TestCase):
     def setUp(self):

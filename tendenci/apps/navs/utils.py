@@ -2,8 +2,8 @@ from django.core.cache import cache
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
-from navs.cache import NAV_PRE_KEY
-from navs.models import Nav
+from tendenci.apps.navs.cache import NAV_PRE_KEY
+from tendenci.apps.navs.models import Nav
 
 def cache_nav(nav):
     """

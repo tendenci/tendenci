@@ -1,6 +1,6 @@
 from django.template import Library, TemplateSyntaxError
-from base.template_tags import ListNode, parse_tag_kwargs
-from help_files.models import HelpFile
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.help_files.models import HelpFile
 
 register = Library()
 

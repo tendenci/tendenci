@@ -4,7 +4,7 @@ from django.utils.translation import ugettext_lazy as _
 from projects.models import Project, Presentation, Report, Article, Picture
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import SplitDateTimeField
 
 class ProjectForm(TendenciBaseForm):
     class Meta:

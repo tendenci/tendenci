@@ -8,14 +8,14 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.conf import settings
 
-from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, get_query_filters
-from event_logs.models import EventLog
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from discounts.models import Discount, DiscountUse
-from discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
+from tendenci.apps.discounts.models import Discount, DiscountUse
+from tendenci.apps.discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
 
 @login_required
 def search(request, template_name="discounts/search.html"):

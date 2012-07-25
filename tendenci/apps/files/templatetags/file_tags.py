@@ -1,5 +1,5 @@
 from django.template import Library, Node, TemplateSyntaxError, Variable, VariableDoesNotExist
-from files.models import File
+from tendenci.apps.files.models import File
 
 register = Library()
 

@@ -4,11 +4,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib import messages
-from emails.forms import EmailForm, AmazonSESVerifyEmailForm
-from emails.models import Email
-from site_settings.utils import get_setting
-from base.http import Http403
-from perms.utils import has_perm
+from tendenci.apps.emails.forms import EmailForm, AmazonSESVerifyEmailForm
+from tendenci.apps.emails.models import Email
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
 
 @login_required 
 def add(request, form_class=EmailForm, template_name="emails/edit.html"):
@@ -97,7 +97,7 @@ def amazon_ses_verify_email(request, form_class=AmazonSESVerifyEmailForm,
     # admin only
     if not request.user.profile.is_superuser:raise Http403
 
-    from emails.amazon_ses import AmazonSES
+    from tendenci.apps.emails.amazon_ses import AmazonSES
     form = form_class(request.POST or None)
     
     if request.method == "POST":
@@ -119,7 +119,7 @@ def amazon_ses_list_verified_emails(request, template_name="emails/amazon_ses/li
     # admin only
     if not request.user.profile.is_superuser:raise Http403
     
-    from emails.amazon_ses import AmazonSES
+    from tendenci.apps.emails.amazon_ses import AmazonSES
     amazon_ses = AmazonSES()
     verified_emails = amazon_ses.listVerifiedEmailAddresses()
     if verified_emails:
@@ -134,7 +134,7 @@ def amazon_ses_send_quota(request, template_name="emails/amazon_ses/send_quota.h
     # admin only
     if not request.user.profile.is_superuser:raise Http403
     
-    from emails.amazon_ses import AmazonSES
+    from tendenci.apps.emails.amazon_ses import AmazonSES
     amazon_ses = AmazonSES()
     send_quota = amazon_ses.getSendQuota()
     

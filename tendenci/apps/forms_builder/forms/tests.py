@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from forms_builder.forms.models import Form, FIELD_CHOICES, \
+from tendenci.apps.forms_builder.forms.models import Form, FIELD_CHOICES, \
     STATUS_DRAFT, STATUS_PUBLISHED
 
 

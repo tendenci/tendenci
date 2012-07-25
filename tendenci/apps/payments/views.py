@@ -3,14 +3,14 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from payments.models import Payment
-from payments.authorizenet.utils import prepare_authorizenet_sim_form
-from invoices.models import Invoice
-from base.http import Http403
-from base.utils import tcurrency
-from event_logs.models import EventLog
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.payments.authorizenet.utils import prepare_authorizenet_sim_form
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import tcurrency
+from tendenci.apps.event_logs.models import EventLog
 
-from site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.html"):
     # check if they have the right to view the invoice
@@ -58,11 +58,11 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
                 form = prepare_authorizenet_sim_form(request, payment)
                 post_url = settings.AUTHNET_POST_URL
             elif merchant_account == 'firstdata':
-                from payments.firstdata.utils import prepare_firstdata_form
+                from tendenci.apps.payments.firstdata.utils import prepare_firstdata_form
                 form = prepare_firstdata_form(request, payment)
                 post_url = settings.FIRSTDATA_POST_URL
             elif merchant_account == 'paypalpayflowlink':
-                from payments.payflowlink.utils import prepare_payflowlink_form
+                from tendenci.apps.payments.payflowlink.utils import prepare_payflowlink_form
                 form = prepare_payflowlink_form(request, payment)
                 post_url = settings.PAYFLOWLINK_POST_URL
             else:   # more vendors 

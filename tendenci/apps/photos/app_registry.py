@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import CoreRegistry, lazy_reverse
-from photos.models import PhotoSet, Image
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.photos.models import PhotoSet, Image
 
 class PhotoRegistry(CoreRegistry):
     version = '1.0'

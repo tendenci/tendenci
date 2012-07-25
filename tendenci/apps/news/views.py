@@ -5,19 +5,19 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from base.http import Http403
-from event_logs.models import EventLog
-from meta.models import Meta as MetaTags
-from site_settings.utils import get_setting
-from meta.forms import MetaForm
-from perms.utils import (get_notice_recipients, has_perm,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.perms.utils import (get_notice_recipients, has_perm,
     update_perms_and_save, get_query_filters)
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from news.models import News
-from news.forms import NewsForm
-from notification import models as notification
+from tendenci.apps.news.models import News
+from tendenci.apps.news.forms import NewsForm
+from tendenci.apps.notification import models as notification
 
 
 def detail(request, slug=None, template_name="news/view.html"):

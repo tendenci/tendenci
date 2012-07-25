@@ -1,4 +1,4 @@
-from registry import site
+from tendenci.apps.registry import site
 
 
 def registered_apps(request):

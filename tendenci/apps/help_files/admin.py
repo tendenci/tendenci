@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.conf import settings
 
-from perms.admin import TendenciBaseModelAdmin
-from models import Topic, HelpFile, Request
-from forms import HelpFileAdminForm
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.help_files.models import Topic, HelpFile, Request
+from tendenci.apps.help_files.forms import HelpFileAdminForm
 
 class HelpFileAdmin(TendenciBaseModelAdmin):
 

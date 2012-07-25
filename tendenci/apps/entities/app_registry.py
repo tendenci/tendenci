@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import LogRegistry, lazy_reverse
-from entities.models import Entity
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.entities.models import Entity
 
 class EntityRegistry(LogRegistry):
     # entities - TURQUOISE base - complement is ?????

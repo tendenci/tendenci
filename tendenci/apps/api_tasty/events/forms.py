@@ -1,6 +1,6 @@
 from django import forms
-from events.models import Event
-from api_tasty.forms import TendenciForm
+from tendenci.apps.events.models import Event
+from tendenci.apps.api_tasty.forms import TendenciForm
 
 class EventForm(TendenciForm):
     """Profile Form

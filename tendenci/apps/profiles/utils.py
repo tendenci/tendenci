@@ -1,8 +1,8 @@
 from django.conf import settings
-from site_settings.utils import get_setting
-from user_groups.models import GroupMembership, Group
-from memberships.models import Membership, App
-from perms.utils import get_query_filters
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.user_groups.models import GroupMembership, Group
+from tendenci.apps.memberships.models import Membership, App
+from tendenci.apps.perms.utils import get_query_filters
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):
     from django.core.mail.message import EmailMessage

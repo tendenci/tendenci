@@ -1,4 +1,4 @@
-from contacts.models import Contact
+from tendenci.apps.contacts.models import Contact
 from django import forms
 from captcha.fields import CaptchaField
 from django.utils.translation import ugettext_lazy as _ 

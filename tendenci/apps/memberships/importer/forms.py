@@ -2,8 +2,8 @@ import os
 from django import forms
 from django.template.defaultfilters import slugify
 from django.conf import settings
-from memberships.utils import csv_to_dict
-from memberships.models import AppField, App
+from tendenci.apps.memberships.utils import csv_to_dict
+from tendenci.apps.memberships.models import AppField, App
 
 INTERACTIVE_CHOICES = (
     (1, 'Interactive'),

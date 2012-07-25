@@ -9,11 +9,11 @@ class Command(BaseCommand):
     """
     
     def handle(self, *args, **options):
-        from user_groups.models import Group
-        from subscribers.models import GroupSubscription as GS, SubscriberData as SD
-        from subscribers.utils import get_subscriber_name_email
-        from campaign_monitor.models import ListMap, Campaign, Template
-        from campaign_monitor.utils import sync_campaigns, sync_templates
+        from tendenci.apps.user_groups.models import Group
+        from tendenci.apps.subscribers.models import GroupSubscription as GS, SubscriberData as SD
+        from tendenci.apps.subscribers.utils import get_subscriber_name_email
+        from tendenci.apps.campaign_monitor.models import ListMap, Campaign, Template
+        from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
         from createsend import CreateSend, Client, List, Subscriber, \
             BadRequest, Unauthorized
         

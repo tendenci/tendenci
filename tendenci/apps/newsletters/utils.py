@@ -17,62 +17,74 @@ def get_start_dt(duration_days, end_dt=None):
     
 
 def newsletter_articles_list(request, articles_days, simplified):
-    from articles.models import Article
-    end_dt = datetime.datetime.now()
-    start_dt = get_start_dt(articles_days, end_dt)
-    
-    articles = Article.objects.filter(release_dt__lte=end_dt)
-    if start_dt:
-        articles = articles.filter(release_dt__gt=start_dt)
-    articles = articles.filter(status_detail='active', status=True, allow_anonymous_view=True)
-    articles = articles.order_by("-release_dt")
-    art_content = render_to_string('newsletters/articles_list.txt', 
-                                   {'articles': articles,
-                                    'start_dt': start_dt,
-                                    'end_dt': end_dt,
-                                    'simplified':simplified},
-                                   context_instance=RequestContext(request))
-    
+    articles = []
+    art_content = ''
+    try:
+        from tendenci.apps.articles.models import Article
+        end_dt = datetime.datetime.now()
+        start_dt = get_start_dt(articles_days, end_dt)
+        
+        articles = Article.objects.filter(release_dt__lte=end_dt)
+        if start_dt:
+            articles = articles.filter(release_dt__gt=start_dt)
+        articles = articles.filter(status_detail='active', status=True, allow_anonymous_view=True)
+        articles = articles.order_by("-release_dt")
+        art_content = render_to_string('newsletters/articles_list.txt', 
+                                       {'articles': articles,
+                                        'start_dt': start_dt,
+                                        'end_dt': end_dt,
+                                        'simplified':simplified},
+                                       context_instance=RequestContext(request))
+    except ImportError:
+        pass
     return articles, art_content
 
 def newsletter_news_list(request, news_days, simplified):
-    from news.models import News
-    end_dt = datetime.datetime.now()
-    start_dt = get_start_dt(news_days, end_dt)
-    
-    news = News.objects.filter(release_dt__lte=end_dt)
-    if start_dt:
-        news = news.filter(release_dt__gt=start_dt)
-    news = news.filter(status_detail='active', status=True, allow_anonymous_view=True)
-    news = news.order_by("-release_dt")
-    news_content = render_to_string('newsletters/news_list.txt', 
-                                   {'news': news,
-                                    'start_dt': start_dt,
-                                    'end_dt': end_dt,
-                                    'simplified':simplified},
-                                   context_instance=RequestContext(request))
-    
+    news = []
+    news_content = ''
+    try:
+        from tendenci.apps.news.models import News
+        end_dt = datetime.datetime.now()
+        start_dt = get_start_dt(news_days, end_dt)
+        
+        news = News.objects.filter(release_dt__lte=end_dt)
+        if start_dt:
+            news = news.filter(release_dt__gt=start_dt)
+        news = news.filter(status_detail='active', status=True, allow_anonymous_view=True)
+        news = news.order_by("-release_dt")
+        news_content = render_to_string('newsletters/news_list.txt', 
+                                       {'news': news,
+                                        'start_dt': start_dt,
+                                        'end_dt': end_dt,
+                                        'simplified':simplified},
+                                       context_instance=RequestContext(request))
+    except ImportError:
+        pass
     return news, news_content
 
 
 def newsletter_pages_list(request, pages_days, simplified):
-    from pages.models import Page
-    end_dt = datetime.datetime.now()
-    start_dt = get_start_dt(pages_days, end_dt)
-    
-    if start_dt:
-        pages = Page.objects.filter(update_dt__gt=start_dt)
-    else:
-        pages = Page.objects.all()
-    pages = pages.filter(status_detail='active', status=True, allow_anonymous_view=True)
-    pages = pages.order_by("-update_dt")
-    page_content = render_to_string('newsletters/pages_list.txt', 
-                                   {'pages': pages,
-                                    'start_dt': start_dt,
-                                    'end_dt': end_dt,
-                                    'simplified':simplified},
-                                   context_instance=RequestContext(request))
-    
+    pages = []
+    page_content = ''
+    try:
+        from tendenci.apps.pages.models import Page
+        end_dt = datetime.datetime.now()
+        start_dt = get_start_dt(pages_days, end_dt)
+        
+        if start_dt:
+            pages = Page.objects.filter(update_dt__gt=start_dt)
+        else:
+            pages = Page.objects.all()
+        pages = pages.filter(status_detail='active', status=True, allow_anonymous_view=True)
+        pages = pages.order_by("-update_dt")
+        page_content = render_to_string('newsletters/pages_list.txt', 
+                                       {'pages': pages,
+                                        'start_dt': start_dt,
+                                        'end_dt': end_dt,
+                                        'simplified':simplified},
+                                       context_instance=RequestContext(request))
+    except ImportError:
+        pass
     return pages, page_content
 
 
@@ -80,7 +92,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     jobs = []
     job_content = ''
     try:
-        from jobs.models import Job
+        from tendenci.apps.jobs.models import Job
         end_dt = datetime.datetime.now()
         start_dt = get_start_dt(jobs_days, end_dt)
         

@@ -3,10 +3,10 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from articles.models import Article
-from perms.forms import TendenciBaseForm
+from tendenci.apps.articles.models import Article
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import SplitDateTimeField
 
 class ArticleForm(TendenciBaseForm):
     body = forms.CharField(required=False,

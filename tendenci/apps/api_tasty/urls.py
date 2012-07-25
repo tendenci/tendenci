@@ -1,15 +1,15 @@
 from django.conf.urls.defaults import *
 
-from api_tasty.api import SafeApi
-from api_tasty.settings.resources import SettingResource
-from api_tasty.users.resources import UserResource
-from api_tasty.profiles.resources import ProfileResource
-from api_tasty.discounts.resources import DiscountResource
-from api_tasty.entities.resources import EntityResource
-from api_tasty.payments.resources import PaymentMethodResource
-from api_tasty.memberships.resources import (MembershipResource, 
+from tendenci.apps.api_tasty.api import SafeApi
+from tendenci.apps.api_tasty.settings.resources import SettingResource
+from tendenci.apps.api_tasty.users.resources import UserResource
+from tendenci.apps.api_tasty.profiles.resources import ProfileResource
+from tendenci.apps.api_tasty.discounts.resources import DiscountResource
+from tendenci.apps.api_tasty.entities.resources import EntityResource
+from tendenci.apps.api_tasty.payments.resources import PaymentMethodResource
+from tendenci.apps.api_tasty.memberships.resources import (MembershipResource, 
     MembershipTypeResource, AppResource)
-from api_tasty.events.resources import (EventResource, TypeResource,
+from tendenci.apps.api_tasty.events.resources import (EventResource, TypeResource,
     PlaceResource)
 
 api = SafeApi(api_name='v1')

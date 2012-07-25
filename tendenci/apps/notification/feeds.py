@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import linebreaks, escape, striptags
 from django.utils.translation import ugettext_lazy as _
 
-from notification.models import Notice
-from notification.atomformat import Feed
+from tendenci.apps.notification.models import Notice
+from tendenci.apps.notification.atomformat import Feed
 
 
 ITEMS_PER_FEED = getattr(settings, 'ITEMS_PER_FEED', 20)

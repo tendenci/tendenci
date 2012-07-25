@@ -1,5 +1,5 @@
 from django import forms
-from emails.models import Email
+from tendenci.apps.emails.models import Email
 
 class EmailForm(forms.ModelForm):
     STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)

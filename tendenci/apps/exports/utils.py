@@ -3,7 +3,7 @@ import datetime
 import csv
 from StringIO import StringIO
 from django.http import HttpResponse
-from exports.models import Export
+from tendenci.apps.exports.models import Export
 
 
 def full_model_to_dict(instance, fields=None, exclude=None):

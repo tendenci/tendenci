@@ -2,17 +2,17 @@ import inspect
 from time import strptime
 from datetime import datetime, timedelta
 from operator import and_
-
+from haystack.query import SearchQuerySet
 from socket import gethostbyname, gethostname
+
 from django.db.models import Manager
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from django.conf import settings
 
-from robots.models import Robot
+from tendenci.apps.robots.models import Robot
 
-from haystack.query import SearchQuerySet
 
 default_keyword_args = (
     'request',
@@ -88,7 +88,7 @@ class EventLogManager(Manager):
     def log(self, **kwargs):
         """
         Simple Example:
-            from event_logs.models import EventLog
+            from tendenci.apps.event_logs.models import EventLog
             EventLog.objects.log()
         
         If you have a Tendenci Base Object, then use the following

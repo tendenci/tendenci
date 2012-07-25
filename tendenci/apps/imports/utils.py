@@ -10,8 +10,8 @@ from django.core.validators import email_re
 
 import xlrd
 from xlwt import Workbook, XFStyle
-from user_groups.models import GroupMembership
-from profiles.models import Profile
+from tendenci.apps.user_groups.models import GroupMembership
+from tendenci.apps.profiles.models import Profile
 
 
 # number rows to process per request

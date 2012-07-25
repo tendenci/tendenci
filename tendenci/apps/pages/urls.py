@@ -1,14 +1,14 @@
 from django.conf.urls.defaults import patterns, url
-from pages.feeds import LatestEntriesFeed
+from tendenci.apps.pages.feeds import LatestEntriesFeed
 
-urlpatterns = patterns('',                  
-    url(r'^$', 'pages.views.index', name="pages"),
-    url(r'^search/$', 'pages.views.search', name="page.search"),
-    url(r'^print-view/(?P<slug>[\w\-\/]+)/$', 'pages.views.print_view', name="page.print_view"),
-    url(r'^export/$', 'pages.views.export', name="page.export"),
-    url(r'^add/$', 'pages.views.add', name="page.add"),
-    url(r'^edit/(?P<id>\d+)/$', 'pages.views.edit', name="page.edit"),
-    url(r'^edit/meta/(?P<id>\d+)/$', 'pages.views.edit_meta', name="page.edit.meta"),
-    url(r'^delete/(?P<id>\d+)/$', 'pages.views.delete', name="page.delete"),
+urlpatterns = patterns('tendenci.apps.pages.views',
+    url(r'^$', 'index', name="pages"),
+    url(r'^search/$', 'search', name="page.search"),
+    url(r'^print-view/(?P<slug>[\w\-\/]+)/$', 'print_view', name="page.print_view"),
+    url(r'^export/$', 'export', name="page.export"),
+    url(r'^add/$', 'add', name="page.add"),
+    url(r'^edit/(?P<id>\d+)/$', 'edit', name="page.edit"),
+    url(r'^edit/meta/(?P<id>\d+)/$', 'edit_meta', name="page.edit.meta"),
+    url(r'^delete/(?P<id>\d+)/$', 'delete', name="page.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='page.feed'),
 )

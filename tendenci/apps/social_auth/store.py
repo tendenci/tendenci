@@ -6,7 +6,7 @@ from openid.association import Association as OIDAssociation
 from openid.store.interface import OpenIDStore
 from openid.store.nonce import SKEW
 
-from social_auth.models import Association, Nonce
+from tendenci.apps.social_auth.models import Association, Nonce
 
 
 class DjangoOpenIDStore(OpenIDStore):

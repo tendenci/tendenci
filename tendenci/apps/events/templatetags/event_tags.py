@@ -10,14 +10,14 @@ from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
 
-from base.template_tags import ListNode, parse_tag_kwargs
-from site_settings.utils import get_setting
-from perms.utils import get_query_filters
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import get_query_filters
 
-from events.models import Event, Registrant, Type, RegConfPricing
-from events.utils import get_pricing, registration_earliest_time
-from events.utils import registration_has_started, get_event_spots_taken
-from events.utils import registration_has_ended
+from tendenci.apps.events.models import Event, Registrant, Type, RegConfPricing
+from tendenci.apps.events.utils import get_pricing, registration_earliest_time
+from tendenci.apps.events.utils import registration_has_started, get_event_spots_taken
+from tendenci.apps.events.utils import registration_has_ended
 
 register = Library()
 

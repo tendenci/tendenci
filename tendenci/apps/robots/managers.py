@@ -2,7 +2,8 @@ from django.db.models import Manager
 from django.core.cache import cache
 from django.conf import settings
 
-from robots.cache import CACHE_PRE_KEY, cache_all_robots
+from tendenci.apps.robots.cache import CACHE_PRE_KEY, cache_all_robots
+
 
 class RobotManager(Manager):
     def get_by_agent(self, user_agent):

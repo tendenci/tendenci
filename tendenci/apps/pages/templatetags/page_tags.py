@@ -2,8 +2,8 @@ from datetime import datetime
 
 from django.template import Library, TemplateSyntaxError, Variable
 
-from base.template_tags import ListNode, parse_tag_kwargs
-from pages.models import Page
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.pages.models import Page
 
 register = Library()
 

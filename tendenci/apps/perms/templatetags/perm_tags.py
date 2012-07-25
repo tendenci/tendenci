@@ -1,7 +1,8 @@
 from django.template import Library, Node, Variable
 from django.contrib.auth.models import User
-from perms import utils
-from perms.fields import groups_with_perms
+
+from tendenci.apps.perms import utils
+from tendenci.apps.perms.fields import groups_with_perms
 
 register = Library()
 

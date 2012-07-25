@@ -1,6 +1,5 @@
 from django.conf.urls.defaults import patterns, url
-from articles.feeds import LatestEntriesFeed
 
-urlpatterns = patterns('dashboard',                  
+urlpatterns = patterns('tendenci.apps.dashboard',
     url(r'^$', 'views.index', name="dashboard"),
 )

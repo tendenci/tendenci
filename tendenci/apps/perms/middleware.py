@@ -3,13 +3,14 @@ from os.path import basename, splitext
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.models import User
 
+
 def get_imp_message(request, user):
     """
         Get the message to post to super users via django
         message framework when they are impersonating 
         another user
     """
-    from site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
     site_url = get_setting('site','global','siteurl')
 
     query_string = ''
@@ -80,7 +81,7 @@ def log_impersonation(request, new_user):
     """
         Log the impersonation in event logs
     """
-    from event_logs.models import EventLog
+    from tendenci.apps.event_logs.models import EventLog
     log_defaults = {
         'event_id' : 1080000,
         'event_data': '%s impersonated by %s' % (new_user, request.user),

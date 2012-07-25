@@ -4,13 +4,13 @@ from django.conf import settings
 #from django.http import Http404
 from django.core.urlresolvers import reverse
 from forms import PayflowLinkPaymentForm
-from payments.models import Payment
-from payments.utils import payment_processing_object_updates
-from event_logs.models import EventLog
-from notification.utils import send_notifications
-from payments.utils import log_payment, send_payment_notice
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.payments.utils import payment_processing_object_updates
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.notification.utils import send_notifications
+from tendenci.apps.payments.utils import log_payment, send_payment_notice
 
-#from site_settings.utils import get_setting
+#from tendenci.apps.site_settings.utils import get_setting
 
 
 def prepare_payflowlink_form(request, payment):

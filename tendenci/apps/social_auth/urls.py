@@ -1,7 +1,6 @@
-"""URLs module"""
 from django.conf.urls.defaults import patterns, url
 
-from social_auth.views import auth, complete, associate, associate_complete, \
+from tendenci.apps.social_auth.views import auth, complete, associate, associate_complete, \
                               disconnect
 
 

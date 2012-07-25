@@ -5,6 +5,7 @@ from django.utils.encoding import smart_str
 def get_apps(local_root):
     """ Get apps from json files"""
     apps = []
+    return apps
     json_data_path = os.path.join(local_root, 'plugins_list.json')
 
     if not os.path.exists(json_data_path):

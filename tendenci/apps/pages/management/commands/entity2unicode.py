@@ -14,7 +14,7 @@ class Command(BaseCommand):
         return self.h.unescape(entity)
 
     def handle(self, *args, **options):
-        from pages.models import Page
+        from tendenci.apps.pages.models import Page
 
         pages = Page.objects.all()
         self.h = HTMLParser.HTMLParser()

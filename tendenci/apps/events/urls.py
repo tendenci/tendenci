@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
-from events.feeds import LatestEntriesFeed
+from tendenci.apps.events.feeds import LatestEntriesFeed
 
-urlpatterns = patterns('events',                  
+urlpatterns = patterns('tendenci.apps.events',
     url(r'^$', 'views.month_redirect', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
     url(r'^search/$', 'views.search', name="event.search"),

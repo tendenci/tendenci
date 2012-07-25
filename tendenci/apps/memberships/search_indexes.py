@@ -1,7 +1,9 @@
-from django.utils.html import strip_tags, strip_entities
 from haystack import indexes, site
-from memberships.models import App, AppEntry, Membership
-from perms.indexes import TendenciBaseSearchIndex
+
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.memberships.models import App, AppEntry, Membership
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class MembershipIndex(TendenciBaseSearchIndex):

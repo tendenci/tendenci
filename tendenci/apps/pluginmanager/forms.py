@@ -1,6 +1,6 @@
 from django import forms
-from pluginmanager.models import PluginApp
-from pluginmanager.utils import plugin_options
+from tendenci.apps.pluginmanager.models import PluginApp
+from tendenci.apps.pluginmanager.utils import plugin_options
 
 class PluginAppForm(forms.ModelForm):
     package = forms.ChoiceField(widget=forms.Select(), label="Plugin")

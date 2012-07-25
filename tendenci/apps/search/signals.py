@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
-from search.models import UnindexedItem
+
+from tendenci.apps.search.models import UnindexedItem
 
 def save_unindexed_item(sender, **kwargs):
     instance = kwargs['instance']

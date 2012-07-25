@@ -7,10 +7,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 
 from captcha.fields import CaptchaField
-from discounts.models import Discount
-from site_settings.utils import get_setting
+from tendenci.apps.discounts.models import Discount
+from tendenci.apps.site_settings.utils import get_setting
 
-from events.models import Addon, AddonOption, RegAddon, RegAddonOption
+from tendenci.apps.events.models import Addon, AddonOption, RegAddon, RegAddonOption
 
 class RegAddonForm(forms.Form):
     """RegAddon form during registration.

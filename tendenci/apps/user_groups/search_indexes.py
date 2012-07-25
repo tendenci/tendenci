@@ -1,7 +1,8 @@
 from haystack import indexes
 from haystack import site
-from user_groups.models import Group
-from perms.indexes import TendenciBaseSearchIndex
+
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class GroupIndex(TendenciBaseSearchIndex):

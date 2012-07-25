@@ -7,12 +7,12 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
 from captcha.fields import CaptchaField
-from jobs.models import Job
-from perms.forms import TendenciBaseForm
+from tendenci.apps.jobs.models import Job
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from base.fields import SplitDateTimeField
-from jobs.models import JobPricing
-from jobs.utils import get_payment_method_choices, pricing_choices
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.jobs.models import JobPricing
+from tendenci.apps.jobs.utils import get_payment_method_choices, pricing_choices
 
 
 request_duration_defaults = {

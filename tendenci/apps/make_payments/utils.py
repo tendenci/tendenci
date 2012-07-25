@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.contrib.contenttypes.models import ContentType
-from invoices.models import Invoice
+from tendenci.apps.invoices.models import Invoice
 
 def make_payment_inv_add(user, make_payment, **kwargs):
     inv = Invoice()

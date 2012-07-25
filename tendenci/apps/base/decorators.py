@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponseRedirect
 
+
 def ssl_required(view_func):
     """Decorator to force url to be accessed over SSL (https).
     """

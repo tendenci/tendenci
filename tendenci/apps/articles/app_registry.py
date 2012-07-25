@@ -1,7 +1,7 @@
 from django.conf import settings
-from registry import site
-from registry.base import CoreRegistry, lazy_reverse
-from models import Article
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.articles.models import Article
 
 
 class ArticleRegistry(CoreRegistry):

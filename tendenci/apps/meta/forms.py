@@ -1,5 +1,5 @@
 from django import forms
-from meta.models import Meta as MetaTag
+from tendenci.apps.meta.models import Meta as MetaTag
 
 class MetaForm(forms.ModelForm):
     class Meta:

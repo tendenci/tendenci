@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from rss.feedsmanager import SubFeed
-from site_settings.utils import get_setting
-from perms.utils import PUBLIC_FILTER
-from sitemaps import TendenciSitemap
+from tendenci.apps.rss.feedsmanager import SubFeed
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import PUBLIC_FILTER
+from tendenci.apps.sitemaps import TendenciSitemap
 
-from articles.models import Article
+from tendenci.apps.articles.models import Article
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Articles' % get_setting('site','global','sitedisplayname')

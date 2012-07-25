@@ -5,15 +5,15 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from base.http import Http403
-from perms.utils import has_perm, get_query_filters
-from site_settings.utils import get_setting
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm, get_query_filters
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from redirects.models import Redirect
-from redirects.forms import RedirectForm
-from redirects import dynamic_urls
+from tendenci.apps.redirects.models import Redirect
+from tendenci.apps.redirects.forms import RedirectForm
+from tendenci.apps.redirects import dynamic_urls
 
 
 @login_required

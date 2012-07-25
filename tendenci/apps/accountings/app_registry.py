@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import LogRegistry, lazy_reverse
-from accountings.models import Acct
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.accountings.models import Acct
 
 class AccountingRegistry(LogRegistry):
     event_logs = {

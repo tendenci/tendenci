@@ -7,8 +7,9 @@ from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
 import itertools
-from django.db.models import Q
+from haystack.query import SearchQuerySet
 
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -26,41 +27,40 @@ from django.utils import simplejson as json
 
 #from django.forms.models import BaseModelFormSet
 
-from haystack.query import SearchQuerySet
-from base.http import Http403
-from site_settings.utils import get_setting
-from perms.utils import (has_perm, get_notice_recipients,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import (has_perm, get_notice_recipients,
     get_query_filters, update_perms_and_save, has_view_perm)
-from event_logs.models import EventLog
-from meta.models import Meta as MetaTags
-from meta.forms import MetaForm
-from files.models import File
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.files.models import File
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from events.models import (Event,
+from tendenci.apps.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
     RegAddonOption)
-from events.forms import (EventForm, Reg8nEditForm,
+from tendenci.apps.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
     RegistrationPreForm)
-from events.utils import (email_registrants, 
+from tendenci.apps.events.utils import (email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
-from events.addons.forms import RegAddonForm
-from events.addons.formsets import RegAddonBaseFormSet
-from events.addons.utils import get_available_addons
-from discounts.models import Discount
+from tendenci.apps.events.addons.forms import RegAddonForm
+from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
+from tendenci.apps.events.addons.utils import get_available_addons
+from tendenci.apps.discounts.models import Discount
 
-from notification import models as notification
-    
+from tendenci.apps.notification import models as notification
+
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """
     Preview a custom registration form.
@@ -190,7 +190,7 @@ def search(request, redirect=False, template_name="events/search.html"):
     )
 
 def icalendar(request):
-    from events.utils import get_vevents
+    from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
 
@@ -221,7 +221,7 @@ def icalendar(request):
     return response
 
 def icalendar_single(request, id):
-    from events.utils import get_vevents
+    from tendenci.apps.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
 
@@ -1821,7 +1821,7 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
 
 def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
     from datetime import date
-    from events.utils import next_month, prev_month
+    from tendenci.apps.events.utils import next_month, prev_month
 
     if type: # redirect to /events/month/ if type does not exist
         if not Type.objects.filter(slug=type).exists():
@@ -2319,7 +2319,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
 @login_required
 def message_add(request, event_id, form_class=MessageAddForm, template_name='events/message/add.html'):
-    from emails.models import Email
+    from tendenci.apps.emails.models import Email
     event = get_object_or_404(Event, pk=event_id)
     if not has_perm(request.user,'events.change_event',event): raise Http403
 

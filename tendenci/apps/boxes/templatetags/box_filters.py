@@ -1,7 +1,7 @@
 
 from django.template import Library
 
-from boxes.utils import render_content as rc
+from tendenci.apps.boxes.utils import render_content as rc
 
 register = Library()
 

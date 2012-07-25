@@ -20,7 +20,7 @@ def generate_colors():
     have to iterate over the apps in the event registry
     for every event id.
     """
-    from registry import site
+    from tendenci.apps.registry import site
     d = {}
     apps = site.get_registered_apps().all_apps
     for app in apps:

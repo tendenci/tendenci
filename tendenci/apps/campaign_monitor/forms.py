@@ -3,8 +3,8 @@ from django import forms
 from django.conf import settings
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
-from campaign_monitor.models import Template, Campaign, ListMap
-from events.models import Type
+from tendenci.apps.campaign_monitor.models import Template, Campaign, ListMap
+from tendenci.apps.events.models import Type
 from createsend import CreateSend
 from createsend import Campaign as CSC
 

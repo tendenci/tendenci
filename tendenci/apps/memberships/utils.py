@@ -1,14 +1,16 @@
 import os
 import csv
 from datetime import datetime, date, timedelta
+
 from django.http import Http404
 from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.db.models import Q
-from perms.utils import has_perm
-from memberships.models import App, AppField, AppEntry, Membership, MembershipType
+
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.memberships.models import App, AppField, AppEntry, Membership, MembershipType
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -465,7 +467,7 @@ def make_csv(**kwargs):
     Make a CSV file
     """
     from django.template.defaultfilters import slugify
-    from imports.utils import render_excel
+    from tendenci.apps.imports.utils import render_excel
 
     slug = kwargs.get('slug')
 

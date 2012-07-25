@@ -3,12 +3,12 @@ import re
 import cPickle
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from site_settings.utils import get_setting
-from event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
 from actions.models import ActionRecap
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
 
@@ -164,7 +164,7 @@ def distribute_newsletter_v2(action, request=None, **kwargs):
     from django.core import mail
     
     if not request:
-        from site_settings.context_processors import settings
+        from tendenci.apps.site_settings.context_processors import settings
         extra_contexts = settings(None)
         context_instance = None
     else:

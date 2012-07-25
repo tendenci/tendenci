@@ -6,7 +6,7 @@ from cStringIO import StringIO
 from django.core.cache import cache as django_cache
 from django.conf import settings
 
-from base.utils import image_rescale
+from tendenci.apps.base.utils import image_rescale
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
@@ -14,8 +14,8 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
     *pre_key is either:
-        from photos.cache import PHOTO_PRE_KEY
-        from files.cache import FILE_IMAGE_PRE_KEY
+        from tendenci.apps.photos.cache import PHOTO_PRE_KEY
+        from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
     """
     size = validate_image_size(size)  # make sure it's not too big
     binary = None

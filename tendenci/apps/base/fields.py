@@ -1,17 +1,18 @@
 from time import strptime, strftime
+from south.modelsinspector import add_introspection_rules
 
 from django.forms import fields, ValidationError
 from django.db.models import CharField
 from django.utils.translation import ugettext_lazy as _
 
-from base import forms
-from base.widgets import SplitDateTimeWidget
-from south.modelsinspector import add_introspection_rules
+from tendenci.apps.base import forms
+from tendenci.apps.base.widgets import SplitDateTimeWidget
+
 
 # introspection rules for south migration for the slugfield
-add_introspection_rules([],['^base\.fields\.SlugField'])
-add_introspection_rules([],['^timezones\.fields\.TimeZoneField'])
-add_introspection_rules([],['^tinymce\.models\.HTMLField'])
+add_introspection_rules([],['^tendenci\.apps\.base\.fields\.SlugField'])
+add_introspection_rules([],['^tendenci\.apps\.timezones\.fields\.TimeZoneField'])
+add_introspection_rules([],['^tendenci\.apps\.tinymce\.models\.HTMLField'])
 
 class SlugField(CharField):
     """

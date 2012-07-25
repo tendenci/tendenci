@@ -5,8 +5,8 @@ from django.conf import settings
 from django.template import Context
 from django.template.loader import get_template
 from django.contrib.contenttypes.models import ContentType
-from invoices.models import Invoice
-from site_settings.utils import get_setting
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.site_settings.utils import get_setting
 
 def generate_admin_email_body(entry):
     """

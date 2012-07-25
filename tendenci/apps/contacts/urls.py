@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('contacts',                  
+urlpatterns = patterns('tendenci.apps.contacts',
     url(r'^contacts/$', 'views.search', name="contacts"),
     url(r'^contacts/(?P<id>\d+)/$', 'views.details', name="contact"),
     url(r'^contacts/search/$', 'views.search_redirect', name="contact.search"),
@@ -10,4 +10,5 @@ urlpatterns = patterns('contacts',
     # site contact form
     url(r'^contact/$', 'views.index', name="form"),
     url(r'^contact/confirmation$', 'views.confirmation', name="form.confirmation"),
+
 )

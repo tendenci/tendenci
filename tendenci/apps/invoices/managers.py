@@ -1,5 +1,6 @@
-from django.db.models import Manager
 from haystack.query import SearchQuerySet
+
+from django.db.models import Manager
 
 class InvoiceManager(Manager):
     def create_invoice(self, user, **kwargs):
@@ -22,7 +23,7 @@ class InvoiceManager(Manager):
             invoice haystack to query invoices. 
             Returns a SearchQuerySet
         """
-        from invoices.models import Invoice
+        from tendenci.apps.invoices.models import Invoice
         sqs = SearchQuerySet()
        
         if query: 

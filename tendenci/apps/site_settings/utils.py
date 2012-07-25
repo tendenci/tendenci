@@ -1,7 +1,8 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
-from site_settings.models import Setting
-from site_settings.cache import SETTING_PRE_KEY
+
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 
 
 def delete_all_settings_cache():
@@ -110,7 +111,7 @@ def get_setting(scope, scope_category, name):
             else:
                 value = 0  # default to 0
         if setting.data_type == 'file':
-            from files.models import File as TFile
+            from tendenci.apps.files.models import File as TFile
             try:
                 tfile = TFile.objects.get(pk=value)
             except TFile.DoesNotExist:
@@ -158,8 +159,8 @@ def get_form_list(user):
     Generate a list of 2-tuples of form id and form title
     This will be used as a special select
     """
-    from forms_builder.forms.models import Form
-    from perms.utils import get_query_filters
+    from tendenci.apps.forms_builder.forms.models import Form
+    from tendenci.apps.perms.utils import get_query_filters
     filters = get_query_filters(user, 'forms.view_form')
     forms = Form.objects.filter(filters)
     #To avoid hitting the database n time by calling .object
@@ -176,8 +177,8 @@ def get_box_list(user):
     Generate a list of 2-tuples of form id and form title
     This will be used as a special select
     """
-    from boxes.models import Box
-    from perms.utils import get_query_filters
+    from tendenci.apps.boxes.models import Box
+    from tendenci.apps.perms.utils import get_query_filters
     filters = get_query_filters(user, 'boxes.view_box')
     boxes = Box.objects.filter(filters)
     #To avoid hitting the database n time by calling .object

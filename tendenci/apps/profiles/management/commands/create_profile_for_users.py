@@ -8,7 +8,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from django.contrib.auth.models import User
-        from profiles.models import Profile
+        from tendenci.apps.profiles.models import Profile
 
         users = User.objects.all()
         for user in users:

@@ -1,7 +1,8 @@
 from django import forms
 
-from entities.models import Entity
-from perms.forms import TendenciBaseForm
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.perms.forms import TendenciBaseForm
+
 
 class EntityForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(

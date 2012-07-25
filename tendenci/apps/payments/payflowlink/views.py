@@ -6,8 +6,8 @@ from django.conf import settings
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
-from payments.payflowlink.utils import payflowlink_thankyou_processing
-from payments.utils import log_silent_post
+from tendenci.apps.payments.payflowlink.utils import payflowlink_thankyou_processing
+from tendenci.apps.payments.utils import log_silent_post
 
 @csrf_exempt
 def thank_you(request, template_name='payments/receipt.html'):

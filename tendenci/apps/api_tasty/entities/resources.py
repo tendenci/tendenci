@@ -1,6 +1,6 @@
 from tastypie import fields
-from entities.models import Entity
-from api_tasty.resources import TendenciResource
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.api_tasty.resources import TendenciResource
 
 class EntityResource(TendenciResource):
     class Meta(TendenciResource.Meta):

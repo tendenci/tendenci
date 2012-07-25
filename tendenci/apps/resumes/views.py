@@ -8,23 +8,23 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
-from base.http import Http403
-from base.utils import now_localized
-from perms.object_perms import ObjectPermission
-from perms.utils import (update_perms_and_save, get_notice_recipients,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import now_localized
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import (update_perms_and_save, get_notice_recipients,
     has_perm, has_view_perm, get_query_filters)
-from event_logs.models import EventLog
-from meta.models import Meta as MetaTags
-from meta.forms import MetaForm
-from site_settings.utils import get_setting
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from resumes.models import Resume
-from resumes.forms import ResumeForm
+from tendenci.apps.resumes.models import Resume
+from tendenci.apps.resumes.forms import ResumeForm
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
 

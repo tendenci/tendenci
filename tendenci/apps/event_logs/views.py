@@ -11,17 +11,17 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import Count
 
-from base.http import render_to_403
-from base.http import Http403
-from perms.utils import has_perm
-from perms.decorators import superuser_required
-from registry import site
+from tendenci.apps.base.http import render_to_403
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.perms.decorators import superuser_required
+from tendenci.apps.registry import site
 
-from event_logs.utils import day_bars, month_days,\
+from tendenci.apps.event_logs.utils import day_bars, month_days,\
     request_month_range
-from event_logs.models import EventLog, EventLogBaseColor, EventLogColor
-from event_logs.forms import EventLogSearchForm, EventsFilterForm
-from event_logs.colors import non_model_event_logs, get_color
+from tendenci.apps.event_logs.models import EventLog, EventLogBaseColor, EventLogColor
+from tendenci.apps.event_logs.forms import EventLogSearchForm, EventsFilterForm
+from tendenci.apps.event_logs.colors import non_model_event_logs, get_color
 
 
 def index(request, id=None, template_name="event_logs/view.html"):

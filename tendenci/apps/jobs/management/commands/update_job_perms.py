@@ -6,7 +6,7 @@ class Command(BaseCommand):
     """
     def handle(self, *event_ids, **options):
         from django.contrib.auth.models import Permission
-        from jobs.models import JobPricing
+        from tendenci.apps.jobs.models import JobPricing
 
         # update permission
         Permission.objects.filter(codename='view_job_pricing').update(codename='view_jobpricing')

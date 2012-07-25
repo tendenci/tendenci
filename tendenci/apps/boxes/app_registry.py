@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import CoreRegistry, lazy_reverse
-from models import Box
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+from tendenci.apps.boxes.models import Box
 
 
 class BoxRegistry(CoreRegistry):

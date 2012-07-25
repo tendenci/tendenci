@@ -2,7 +2,8 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
-from base.http import Http403, render_to_403
+from tendenci.apps.base.http import Http403, render_to_403
+
 
 class Http403Middleware(object):
     def process_exception(self, request, exception):

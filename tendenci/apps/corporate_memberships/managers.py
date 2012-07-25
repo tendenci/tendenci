@@ -1,6 +1,7 @@
+from haystack.query import SearchQuerySet
+
 from django.db.models import Manager
 from django.db.models import Q
-from haystack.query import SearchQuerySet
 
 
 class CorporateMembershipManager(Manager):
@@ -9,7 +10,7 @@ class CorporateMembershipManager(Manager):
         haystack to query corporate memberships.
         Returns a SearchQuerySet
         """
-        from corporate_memberships.models import CorporateMembership
+        from tendenci.apps.corporate_memberships.models import CorporateMembership
 
         sqs = SearchQuerySet().models(CorporateMembership)
 

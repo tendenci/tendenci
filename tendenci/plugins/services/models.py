@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from base.fields import SlugField
+from tendenci.apps.base.fields import SlugField
 from perms.models import TendenciBaseModel 
 from perms.object_perms import ObjectPermission
 from managers import ServiceManager

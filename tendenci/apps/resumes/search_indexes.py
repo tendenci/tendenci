@@ -1,9 +1,10 @@
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 from haystack import site
-from resumes.models import Resume
-from perms.indexes import TendenciBaseSearchIndex
+
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.resumes.models import Resume
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class ResumeIndex(TendenciBaseSearchIndex):

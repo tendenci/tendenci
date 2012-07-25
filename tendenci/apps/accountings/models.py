@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from accountings.managers import AcctEntryManager, AcctTranManager
+from tendenci.apps.accountings.managers import AcctEntryManager, AcctTranManager
 
 class Acct(models.Model):
     account_number = models.IntegerField(unique=True)

@@ -2,14 +2,14 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from event_logs.models import EventLog
-from perms.utils import get_notice_recipients
-from perms.utils import update_perms_and_save
-from models import Page 
-from forms import PageAdminForm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.perms.utils import update_perms_and_save
+from tendenci.apps.pages.models import Page 
+from tendenci.apps.pages.forms import PageAdminForm
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
     

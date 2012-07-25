@@ -2,9 +2,10 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from contributions.managers import ContributionManager
-from perms.models import TendenciBaseModel
-from entities.models import Entity
+
+from tendenci.apps.contributions.managers import ContributionManager
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.entities.models import Entity
 
 class Contribution(TendenciBaseModel):
     guid = models.CharField(max_length=40) 

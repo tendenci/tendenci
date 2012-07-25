@@ -7,7 +7,7 @@ from django.forms.widgets import Widget, TextInput
 from django.utils.safestring import mark_safe
 from django.template.defaultfilters import date as date_filter
 
-from base.widgets import SplitDateTimeWidget
+from tendenci.apps.base.widgets import SplitDateTimeWidget
 from widgets import UseCustomRegWidget
 
 

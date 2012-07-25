@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from redirects.managers import RedirectManager
+from tendenci.apps.redirects.managers import RedirectManager
 
 HTTP_STATUS_CHOICES = (
     (301, '301 - Permanent Redirect'),

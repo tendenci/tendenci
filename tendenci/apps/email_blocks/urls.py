@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('email_blocks.views',                  
+urlpatterns = patterns('tendenci.apps.email_blocks.views',
     url(r'^$', 'search', name="email_blocks"),
     url(r'^(?P<id>\d+)/$', 'view', name="email_block.view"),
     url(r'^search/$', 'search', name="email_block.search"),

@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('',                  
-    url(r'^$', 'metrics.views.index', name="metrics"),
+urlpatterns = patterns('tendenci.apps.metrics.views',
+    url(r'^$', 'index', name="metrics"),
 )

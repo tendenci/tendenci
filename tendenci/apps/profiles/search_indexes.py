@@ -1,7 +1,8 @@
 from haystack import indexes
 from haystack import site
-from profiles.models import Profile
-from perms.indexes import TendenciBaseSearchIndex
+
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class ProfileIndex(TendenciBaseSearchIndex):

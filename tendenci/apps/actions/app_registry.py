@@ -1,5 +1,5 @@
-from registry import site
-from registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import LogRegistry, lazy_reverse
 from actions.models import Action
 
 class ActionRegistry(LogRegistry):

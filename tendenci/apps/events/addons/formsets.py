@@ -5,8 +5,8 @@ from django.forms.formsets import BaseFormSet
 from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
-from site_settings.utils import get_setting
-from events.addons.utils import can_use_addon
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.events.addons.utils import can_use_addon
 
 class RegAddonBaseFormSet(BaseFormSet):
     """

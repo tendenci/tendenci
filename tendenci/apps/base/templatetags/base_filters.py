@@ -32,7 +32,7 @@ localize_date.is_safe = True
 def date_short(value, arg=None):
     """Formats a date according to the given format."""
     from django.utils.dateformat import format
-    from site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
     if not value:
         return u''
     if arg is None:
@@ -55,7 +55,7 @@ date_short.is_safe = False
 def date_long(value, arg=None):
     """Formats a date according to the given format."""
     from django.utils.dateformat import format
-    from site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
     if not value:
         return u''
     if arg is None:
@@ -138,7 +138,7 @@ stripentities.is_safe = True
 @register.filter
 def format_currency(value):
     """format currency"""
-    from base.utils import tcurrency
+    from tendenci.apps.base.utils import tcurrency
     return tcurrency(value)
 format_currency.is_safe = True
 

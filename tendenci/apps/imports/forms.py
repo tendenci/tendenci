@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from user_groups.models import Group
-from imports.utils import get_header_list_from_content
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.imports.utils import get_header_list_from_content
 
 KEY_CHOICES = (('email','Email'),
                ('first_name,last_name,email','First Name and Last Name and Email'),

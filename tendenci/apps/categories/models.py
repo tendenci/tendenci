@@ -3,7 +3,7 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 
-from categories.utils import prep_category
+from tendenci.apps.categories.utils import prep_category
 
 class CategoryManager(Manager):
     def update(self, object, value, type):

@@ -1,6 +1,6 @@
 from django import forms
 
-from redirects.models import Redirect
+from tendenci.apps.redirects.models import Redirect
 
 class RedirectForm(forms.ModelForm):
     def clean_from_url(self):

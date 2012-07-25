@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import *
-from help_files.feeds import LatestEntriesFeed
-from site_settings.utils import get_setting
+from tendenci.apps.help_files.feeds import LatestEntriesFeed
+from tendenci.apps.site_settings.utils import get_setting
 
 urlpath = get_setting('module', 'help_files', 'url')
 if not urlpath:
     urlpath = "help-files"
 
-urlpatterns = patterns('help_files.views',
+urlpatterns = patterns('tendenci.apps.help_files.views',
     url(r'^%s/$' % urlpath, 'index', name='help_files'),
     url(r'^%s/search/$' % urlpath, 'search', name='help_files.search'),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='help_files.feed'),

@@ -3,18 +3,20 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.management import call_command
 from django.conf import settings
-from site_settings.crypt import encrypt, decrypt
+
+from tendenci.apps.site_settings.crypt import encrypt, decrypt
+
 
 INPUT_TYPE_CHOICES = (
     ('text','Text'),
-    ('select','Select'),         
+    ('select','Select'),
     ('file', 'File'),
 )
 
 DATA_TYPE_CHOICES = (
     ('string','string'),
     ('boolean','boolean'),
-    ('integer','int'),         
+    ('integer','int'),
     ('file', 'file'),
 )
 
@@ -53,7 +55,7 @@ class Setting(models.Model):
             if self.is_secure:
                 return decrypt(self.value)
         except AttributeError: #cached setting with no is_secure
-            from site_settings.utils import (delete_setting_cache,
+            from tendenci.apps.site_settings.utils import (delete_setting_cache,
                 cache_setting, delete_all_settings_cache)
             # delete the cache for this setting
             # print "clearing cache for setting: %s" % self.name
@@ -77,7 +79,7 @@ class Setting(models.Model):
         
         #call touch settings if this is the setting theme
         if self.name == 'theme':
-            from theme.utils import theme_options
+            from tendenci.apps.theme.utils import theme_options
             self.input_value = theme_options()
             super(Setting, self).save(*args, **kwargs)
             call_command('touch_settings')
@@ -86,9 +88,9 @@ class Setting(models.Model):
         
         #update the cache when value has changed
         if orig and self.value != orig.value:
-            from site_settings.utils import (delete_setting_cache,
+            from tendenci.apps.site_settings.utils import (delete_setting_cache,
                 cache_setting, delete_all_settings_cache)
-            from site_settings.cache import SETTING_PRE_KEY
+            from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
             
             # delete the cache for all the settings to reset the context
             delete_all_settings_cache()

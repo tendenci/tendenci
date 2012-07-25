@@ -1,6 +1,8 @@
 from django import forms
-from files.models import File
-from perms.forms import TendenciBaseForm
+
+from tendenci.apps.files.models import File
+from tendenci.apps.perms.forms import TendenciBaseForm
+
 
 class FileForm(TendenciBaseForm):
     class Meta:

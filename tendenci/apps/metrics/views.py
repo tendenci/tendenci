@@ -4,8 +4,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Avg, Max, Min, Count, Sum
 
-from base.http import Http403
-from metrics.models import Metric
+from tendenci.apps.base.http import Http403
+from tendenci.apps.metrics.models import Metric
 
 @login_required
 def index(request, template_name="metrics/index.html"):

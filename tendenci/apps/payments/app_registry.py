@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import LogRegistry, lazy_reverse
-from payments.models import Payment
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.payments.models import Payment
 
 
 class PaymentRegistry(LogRegistry):

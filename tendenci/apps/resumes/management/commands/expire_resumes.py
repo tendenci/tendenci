@@ -9,7 +9,7 @@ class Command(BaseCommand):
     example: python manage.py expire_resumes
     """
     def handle(self, *args, **kwargs):
-        from resumes.models import Resume
+        from tendenci.apps.resumes.models import Resume
         for resume in Resume.objects.filter(status_detail='active'):
             if resume.expiration_dt < datetime.now():
                 resume.status_detail = 'expired'

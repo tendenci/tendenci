@@ -2,14 +2,14 @@ from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import direct_to_template
 from django.contrib.auth import views as auth_views
 
-from registration.views import activate
+from tendenci.apps.registration.views import activate
 
 
-from profiles.views import password_change, password_change_done
-from accounts.forms import RegistrationCustomForm, PasswordResetForm, SetPasswordCustomForm
-from accounts.views import register
+from tendenci.apps.profiles.views import password_change, password_change_done
+from tendenci.apps.accounts.forms import RegistrationCustomForm, PasswordResetForm, SetPasswordCustomForm
+from tendenci.apps.accounts.views import register
 
-urlpatterns = patterns('',
+urlpatterns = patterns('tendenci.apps',
                        # Activation keys get matched by \w+ instead of the more specific
                        # [a-fA-F0-9]{40} because a bad activation key should still get to the view;
                        # that way it can return a sensible "invalid key" message instead of a

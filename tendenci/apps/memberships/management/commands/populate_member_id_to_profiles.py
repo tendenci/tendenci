@@ -5,7 +5,7 @@ class Command(BaseCommand):
     Populate the member IDs (or member numbers) to profiles.
     """
     def handle(self, *args, **options):
-        from memberships.models import Membership
+        from tendenci.apps.memberships.models import Membership
         
         verbosity = int(options['verbosity'])
  

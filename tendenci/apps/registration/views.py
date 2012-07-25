@@ -11,8 +11,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth import login, authenticate
 
-from registration.forms import RegistrationForm
-from registration.models import RegistrationProfile
+from tendenci.apps.registration.forms import RegistrationForm
+from tendenci.apps.registration.models import RegistrationProfile
 
 
 def activate(request, activation_key,

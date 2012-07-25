@@ -1,5 +1,6 @@
 from django import forms
-from invoices.models import Invoice
+
+from tendenci.apps.invoices.models import Invoice
 
 class AdminNotesForm(forms.ModelForm):
     class Meta:

@@ -2,11 +2,11 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from perms.models import TendenciBaseModel
-from entities.models import Entity
-from emails.models import Email
-from user_groups.models import Group
-from articles.models import Article
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.emails.models import Email
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.articles.models import Article
 
 class Action(TendenciBaseModel):
     guid = models.CharField(max_length=50)

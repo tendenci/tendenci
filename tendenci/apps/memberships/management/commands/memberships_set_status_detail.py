@@ -7,7 +7,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         from datetime import datetime
-        from memberships.models import Membership
+        from tendenci.apps.memberships.models import Membership
         verbosity = int(options['verbosity'])
 
         # memberships will remain "expired" because of their dt

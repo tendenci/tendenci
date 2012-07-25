@@ -2,8 +2,8 @@ from datetime import datetime
 
 from django.template import Library, TemplateSyntaxError, Variable
 
-from base.template_tags import ListNode, parse_tag_kwargs
-from discounts.models import Discount
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.discounts.models import Discount
 
 register = Library()
 

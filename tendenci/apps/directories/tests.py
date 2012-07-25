@@ -7,7 +7,7 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
-from directories.models import Directory
+from tendenci.apps.directories.models import Directory
 
 class DirectoryTest(TestCase):
     def setUp(self):

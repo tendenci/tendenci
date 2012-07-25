@@ -1,8 +1,8 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
 
-from site_settings.models import Setting
-from site_settings.cache import SETTING_PRE_KEY
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 
 def settings(request):
     """Context processor for settings

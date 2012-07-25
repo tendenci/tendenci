@@ -3,8 +3,8 @@ from django.forms.models import model_to_dict
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
-from perms.models import TendenciBaseModel
-from exports.utils import render_csv
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.exports.utils import render_csv
 
 class TendenciExportTask(Task):
     """Export Task for Celery

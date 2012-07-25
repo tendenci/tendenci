@@ -2,8 +2,8 @@ from django.template import Node, Library, TemplateSyntaxError, Variable
 from django.template.loader import get_template
 from django.contrib.auth.models import AnonymousUser
 
-from forms_builder.forms.forms import FormForForm
-from forms_builder.forms.models import Form
+from tendenci.apps.forms_builder.forms.forms import FormForForm
+from tendenci.apps.forms_builder.forms.models import Form
 
 register = Library()
 

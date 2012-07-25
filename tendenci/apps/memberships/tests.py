@@ -1,11 +1,11 @@
-from base.test import TestCase
+from tendenci.apps.base.test import TestCase
 from selenium.common.exceptions import NoSuchElementException
 
 
 class MembershipTest(TestCase):
 
     def test_create_membership_entry(self):
-        from memberships.models import App
+        from tendenci.apps.memberships.models import App
         apps = App.objects.all()
 
         if not apps:

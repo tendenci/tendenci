@@ -2,8 +2,9 @@ from django.db import models
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
-from perms.managers import ObjectPermissionManager
-from user_groups.models import Group
+
+from tendenci.apps.perms.managers import ObjectPermissionManager
+from tendenci.apps.user_groups.models import Group
 
 
 class ObjectPermission(models.Model):

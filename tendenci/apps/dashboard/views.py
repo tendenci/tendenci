@@ -5,10 +5,10 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from dateutil import parser
 
-from event_logs.models import EventLog
-from site_settings.models import Setting
-from site_settings.utils import get_setting
-from theme.shortcuts import themed_response
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.shortcuts import themed_response
 
 @login_required
 def index(request, template_name="dashboard/index.html"):

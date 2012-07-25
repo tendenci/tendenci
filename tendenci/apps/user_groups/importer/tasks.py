@@ -1,5 +1,7 @@
 from celery.task import Task
-from user_groups.importer.utils import parse_subs_from_csv
+
+from tendenci.apps.user_groups.importer.utils import parse_subs_from_csv
+
 
 class ImportSubscribersTask(Task):
 

@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 
-from perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 
 class EmailBlock(TendenciBaseModel):
     guid = models.CharField(max_length=50)

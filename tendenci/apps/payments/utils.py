@@ -2,8 +2,8 @@ import os
 from datetime import datetime
 from django.conf import settings
 
-from event_logs.models import EventLog
-from notification.utils import send_notifications
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.notification.utils import send_notifications
 
 # update the object
 def payment_processing_object_updates(request, payment, **kwargs):
@@ -18,7 +18,7 @@ def payment_processing_object_updates(request, payment, **kwargs):
         import traceback
         from django.core.mail import send_mail
         from django.conf import settings
-        from site_settings.utils import get_setting
+        from tendenci.apps.site_settings.utils import get_setting
         
         err_msg = traceback.format_exc()
         subject = 'Payment error from %s (ID:%d)' % (get_setting('site', 'global', 'siteurl'), 

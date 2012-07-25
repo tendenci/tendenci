@@ -1,7 +1,7 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from accountings.models import Acct
+from tendenci.apps.accountings.models import Acct
 
 def account_numbers(request, template_name="accountings/account_numbers.html"):
     accts = Acct.objects.all().order_by('account_number')

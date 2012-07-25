@@ -3,10 +3,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
-from perms.object_perms import ObjectPermission
-from perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
 from timezones.fields import TimeZoneField
-from contacts.managers import ContactManager
+from tendenci.apps.contacts.managers import ContactManager
 
 class Address(models.Model):
     address = models.CharField(max_length=100, blank=True)

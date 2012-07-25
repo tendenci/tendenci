@@ -7,11 +7,11 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.template import Template
 
-from base.http import Http403
-from perms.utils import has_perm
-from event_logs.models import EventLog
-from wp_exporter.utils import gen_xml
-from wp_exporter.forms import ExportForm
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.wp_exporter.utils import gen_xml
+from tendenci.apps.wp_exporter.forms import ExportForm
 
 def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"):
     if not request.user.profile.is_superuser:

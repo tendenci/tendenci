@@ -4,16 +4,16 @@ from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.conf import settings
 
-from base.http import Http403
-from theme.shortcuts import themed_response as render_to_response
-from perms.utils import has_perm
-from event_logs.models import EventLog
-from notification.utils import send_notifications
-from site_settings.utils import get_setting
-from exports.utils import run_export_task
+from tendenci.apps.base.http import Http403
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.notification.utils import send_notifications
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.exports.utils import run_export_task
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm
 
-from invoices.models import Invoice
-from invoices.forms import AdminNotesForm, AdminAdjustForm
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -104,10 +104,10 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
                 'invoice_edited', notif_context)
             
             # make accounting entries
-            from accountings.models import AcctEntry
+            from tendenci.apps.accountings.models import AcctEntry
             ae = AcctEntry.objects.create_acct_entry(request.user, 'invoice', invoice.id)
             if invoice.variance < 0:
-                from accountings.utils import make_acct_entries_discount
+                from tendenci.apps.accountings.utils import make_acct_entries_discount
                 #this is a discount
                 opt_d = {}
                 opt_d['discount'] = True
@@ -122,7 +122,7 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
                 make_acct_entries_discount(request.user, invoice, ae, opt_d)
                 
             else:
-                from accountings.utils import make_acct_entries_initial
+                from tendenci.apps.accountings.utils import make_acct_entries_initial
                 make_acct_entries_initial(request.user, ae, invoice.variance)
             
             return HttpResponseRedirect(invoice.get_absolute_url())
@@ -139,7 +139,7 @@ def detail(request, id, template_name="invoices/detail.html"):
     
     if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
     
-    from accountings.models import AcctEntry
+    from tendenci.apps.accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)
     # to be calculated in accounts_tags
     total_debit = 0

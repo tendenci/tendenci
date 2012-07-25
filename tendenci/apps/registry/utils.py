@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 
-from site_settings.utils import check_setting, get_setting
+from tendenci.apps.site_settings.utils import check_setting, get_setting
 
 lazy_reverse = lazy(reverse, str)
 

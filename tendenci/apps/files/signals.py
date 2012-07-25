@@ -1,7 +1,8 @@
 from django.contrib.contenttypes.models import ContentType
-from perms.object_perms import ObjectPermission
 from django.db.models import signals
-from files.models import File
+
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.files.models import File
 
 
 def save_files(sender, **kwargs):
@@ -60,7 +61,7 @@ def save_files(sender, **kwargs):
 
 
 def delete_files(sender, **kwargs):
-    from files.models import File
+    from tendenci.apps.files.models import File
     # get content type and instance
     content_type = ContentType.objects.get_for_model(sender)
     instance = kwargs['instance']
@@ -72,7 +73,7 @@ def delete_files(sender, **kwargs):
 
 
 def init_signals():
-    from registry import site
+    from tendenci.apps.registry import site
     apps = site.get_registered_apps()
 
     for app in apps:

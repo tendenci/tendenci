@@ -4,13 +4,13 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from tagging.models import Tag
-from site_settings.utils import get_setting
-from categories.models import Category
-from pages.models import Page
-from articles.models import Article
-from news.models import News
-from events.models import Event
-from resumes.models import Resume
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.categories.models import Category
+from tendenci.apps.pages.models import Page
+from tendenci.apps.articles.models import Article
+from tendenci.apps.news.models import News
+from tendenci.apps.events.models import Event
+from tendenci.apps.resumes.models import Resume
     
 
 def gen_xml(data):
@@ -190,7 +190,7 @@ def encode_news(xml, offset=0):
         
 def encode_jobs(xml, offset=0):
     try:
-        from jobs.models import Job
+        from tendenci.apps.jobs.models import Job
         jobs = Job.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Job)
         for job in jobs:

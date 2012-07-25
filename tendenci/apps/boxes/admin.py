@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.conf import settings
 
-from perms.admin import TendenciBaseModelAdmin
-from boxes.models import Box 
-from boxes.forms import BoxForm
+from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.apps.boxes.models import Box 
+from tendenci.apps.boxes.forms import BoxForm
 
 class BoxAdmin(TendenciBaseModelAdmin):
     list_display = ('edit_link', 'pk', 'title', 'tags', 'content', 'admin_perms', 'admin_status')

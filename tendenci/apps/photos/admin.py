@@ -1,9 +1,9 @@
 from django.contrib import admin
-from photos.models import Image, Pool
-from photos.forms import PhotoAdminForm
-from event_logs.models import EventLog
-from perms.utils import get_notice_recipients, update_perms_and_save
-from notification.context_processors import notification
+from tendenci.apps.photos.models import Image, Pool
+from tendenci.apps.photos.forms import PhotoAdminForm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import get_notice_recipients, update_perms_and_save
+from tendenci.apps.notification.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('title', 'caption', 'update_dt', 'create_dt', 'tags',)

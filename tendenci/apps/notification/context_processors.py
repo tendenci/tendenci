@@ -1,4 +1,4 @@
-from notification.models import Notice
+from tendenci.apps.notification.models import Notice
 
 def notification(request):
     if request.user.is_authenticated():

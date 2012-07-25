@@ -4,8 +4,8 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
-from exports.utils import full_model_to_dict, render_csv
-from events.models import Event
+from tendenci.apps.exports.utils import full_model_to_dict, render_csv
+from tendenci.apps.events.models import Event
 
 class EventsExportTask(Task):
     """Export Task for Celery

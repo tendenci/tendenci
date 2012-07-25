@@ -10,17 +10,17 @@ from django.utils import simplejson as json
 from django.conf import settings
 from django.db.models import Q
 
-from theme.shortcuts import themed_response as render_to_response
-from base.http import Http403
-from event_logs.models import EventLog
-from site_settings.utils import get_setting
-from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
-from pages.models import Page
-from exports.utils import run_export_task
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.base.http import Http403
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from tendenci.apps.pages.models import Page
+from tendenci.apps.exports.utils import run_export_task
 
-from navs.models import Nav, NavItem
-from navs.forms import NavForm, PageSelectForm, ItemForm
-from navs.utils import cache_nav
+from tendenci.apps.navs.models import Nav, NavItem
+from tendenci.apps.navs.forms import NavForm, PageSelectForm, ItemForm
+from tendenci.apps.navs.utils import cache_nav
 
 @login_required
 def search(request, template_name="navs/search.html"):

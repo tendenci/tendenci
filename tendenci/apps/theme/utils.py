@@ -1,7 +1,7 @@
 import os
 from django.conf import settings
-from site_settings.utils import get_setting
-from theme.middleware import get_current_request
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.theme.middleware import get_current_request
 
 def get_theme():
     request = get_current_request()

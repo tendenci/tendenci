@@ -1,4 +1,4 @@
 from django.contrib import admin
-from entities.models import Entity
+from tendenci.apps.entities.models import Entity
 
 #admin.site.register(Entity)

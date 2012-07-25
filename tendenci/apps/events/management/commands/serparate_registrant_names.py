@@ -69,7 +69,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         verbosity = options['verbosity']
         count = 0
-        from events.models import Registrant
+        from tendenci.apps.events.models import Registrant
         registrants = Registrant.objects.all()
         if registrants:
             for registrant in registrants:

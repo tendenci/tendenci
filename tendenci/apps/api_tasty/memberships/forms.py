@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
-from memberships.models import Membership
-from api_tasty.forms import TendenciForm
+from tendenci.apps.memberships.models import Membership
+from tendenci.apps.api_tasty.forms import TendenciForm
 
 class MembershipForm(TendenciForm):
     create_user = forms.BooleanField(required=False)

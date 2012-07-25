@@ -8,16 +8,17 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 
-from base.http import Http403
-from site_settings.utils import get_setting
-from contacts.models import Contact, Address, Phone, Email, URL
-from contacts.forms import ContactForm, SubmitContactForm
-from contacts.utils import listed_in_email_block
-from perms.object_perms import ObjectPermission
-from perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
-from event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
+from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm
+from tendenci.apps.contacts.utils import listed_in_email_block
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
+from tendenci.apps.event_logs.models import EventLog
 
-try: from notification import models as notification
+
+try: from tendenci.apps.notification import models as notification
 except: notification = None
 
 @login_required

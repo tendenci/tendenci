@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 
+
 def member_choices(group, member_label):
     """
     Creates a list of 2 tuples of a user's pk and the selected 

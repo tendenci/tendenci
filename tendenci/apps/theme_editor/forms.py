@@ -9,8 +9,8 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 # local
-from theme.utils import get_theme_root, get_theme, theme_choices
-from theme_editor.utils import archive_file
+from tendenci.apps.theme.utils import get_theme_root, get_theme, theme_choices
+from tendenci.apps.theme_editor.utils import archive_file
 
 THEME_ROOT = get_theme_root()
 FILE_EXTENTIONS = (

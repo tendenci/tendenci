@@ -6,13 +6,13 @@ from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode, BlockNode
 from django.contrib.auth.models import AnonymousUser, User
 
-from boxes.models import Box
-from perms.utils import get_query_filters
-from site_settings.models import Setting
-from site_settings.forms import build_settings_form
+from tendenci.apps.boxes.models import Box
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.forms import build_settings_form
 
-from theme.template_loaders import get_default_template
-from theme.utils import get_theme_template
+from tendenci.apps.theme.template_loaders import get_default_template
+from tendenci.apps.theme.utils import get_theme_template
 
 register = Library()
 

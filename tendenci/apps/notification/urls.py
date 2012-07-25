@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-from notification.views import (notices, mark_all_seen, feed_for_user,
+from tendenci.apps.notification.views import (notices, mark_all_seen, feed_for_user,
     single, email)
 
 urlpatterns = patterns('',

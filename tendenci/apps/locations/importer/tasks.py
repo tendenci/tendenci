@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 from celery.task import Task
 from celery.registry import tasks
 
-from locations.models import Location
-from locations.importer.utils import parse_locs_from_csv
+from tendenci.apps.locations.models import Location
+from tendenci.apps.locations.importer.utils import parse_locs_from_csv
 
 
 class ImportLocationsTask(Task):

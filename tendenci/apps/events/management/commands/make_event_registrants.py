@@ -31,8 +31,8 @@ class Command(BaseCommand):
     )
 
     def handle(self, *event_ids, **options):
-        from events.models import Event, PaymentMethod
-        from events.utils import save_registration
+        from tendenci.apps.events.models import Event, PaymentMethod
+        from tendenci.apps.events.utils import save_registration
 
         event_kwargs = {
             'entity': 1,

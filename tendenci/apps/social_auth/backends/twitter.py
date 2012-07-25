@@ -13,7 +13,7 @@ class for details on how to extend it.
 """
 from django.utils import simplejson
 
-from social_auth.backends import ConsumerBasedOAuth, OAuthBackend, USERNAME
+from tendenci.apps.social_auth.backends import ConsumerBasedOAuth, OAuthBackend, USERNAME
 
 
 # Twitter configuration

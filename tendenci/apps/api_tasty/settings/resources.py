@@ -1,9 +1,9 @@
 from tastypie import fields
-from site_settings.models import Setting
+from tendenci.apps.site_settings.models import Setting
 
-from api_tasty.resources import TendenciResource
-from api_tasty.validation import TendenciValidation
-from api_tasty.settings.forms import SettingForm
+from tendenci.apps.api_tasty.resources import TendenciResource
+from tendenci.apps.api_tasty.validation import TendenciValidation
+from tendenci.apps.api_tasty.settings.forms import SettingForm
 
 class SettingResource(TendenciResource):
     """This resource will clean the given data based on the generated

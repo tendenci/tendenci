@@ -9,15 +9,15 @@ from django.http import HttpResponse
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 
-from memberships.forms import MembershipTypeForm
-from user_groups.models import Group
-from event_logs.models import EventLog
-from perms.utils import update_perms_and_save 
-from memberships.models import  Membership, MembershipType, Notice, App, AppField, AppEntry
-from memberships.forms import AppForm, NoticeForm, AppFieldForm, AppEntryForm
-from memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
-from payments.models import PaymentMethod
-from site_settings.utils import get_setting
+from tendenci.apps.memberships.forms import MembershipTypeForm
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import update_perms_and_save 
+from tendenci.apps.memberships.models import  Membership, MembershipType, Notice, App, AppField, AppEntry
+from tendenci.apps.memberships.forms import AppForm, NoticeForm, AppFieldForm, AppEntryForm
+from tendenci.apps.memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
+from tendenci.apps.payments.models import PaymentMethod
+from tendenci.apps.site_settings.utils import get_setting
 
 
 class MembershipAdmin(admin.ModelAdmin):

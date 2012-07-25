@@ -1,5 +1,5 @@
 from django.contrib import admin
-from event_logs.models import EventLog, EventLogColor, EventLogBaseColor
+from tendenci.apps.event_logs.models import EventLog, EventLogColor, EventLogBaseColor
 
 class EventLogAdmin(admin.ModelAdmin):
     list_display = ['pk', 'create_dt', 'content_type', 'object_id', 'event_id', 

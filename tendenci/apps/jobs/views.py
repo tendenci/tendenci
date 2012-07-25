@@ -11,28 +11,28 @@ from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-from base.http import Http403
-from base.utils import now_localized
-from event_logs.models import EventLog
-from meta.models import Meta as MetaTags
-from meta.forms import MetaForm
-from site_settings.utils import get_setting
-from perms.utils import (get_notice_recipients, update_perms_and_save, has_perm, get_query_filters,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import now_localized
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.meta.forms import MetaForm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import (get_notice_recipients, update_perms_and_save, has_perm, get_query_filters,
     has_view_perm)
-from categories.forms import CategoryForm, CategoryForm2
-from categories.models import Category
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.categories.forms import CategoryForm, CategoryForm2
+from tendenci.apps.categories.models import Category
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from jobs.models import Job, JobPricing
-from jobs.forms import JobForm, JobPricingForm
-from jobs.utils import job_set_inv_payment, get_job_unique_slug
+from tendenci.apps.jobs.models import Job, JobPricing
+from tendenci.apps.jobs.forms import JobForm, JobPricingForm
+from tendenci.apps.jobs.utils import job_set_inv_payment, get_job_unique_slug
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
-from base.utils import send_email_notification
+from tendenci.apps.base.utils import send_email_notification
 
 
 def detail(request, slug=None, template_name="jobs/view.html"):

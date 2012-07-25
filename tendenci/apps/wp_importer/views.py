@@ -9,18 +9,18 @@ from django.conf import settings
 from django.contrib import messages
 from django import forms
 from django.db import models
-from wp_importer.forms import BlogImportForm
-from wp_importer.models import BlogImport
-from wp_importer.tasks import WPImportTask
+from tendenci.apps.wp_importer.forms import BlogImportForm
+from tendenci.apps.wp_importer.models import BlogImport
+from tendenci.apps.wp_importer.tasks import WPImportTask
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from parse_uri import ParseUri
 from djcelery.models import TaskMeta
 
-from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save
-from event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save
+from tendenci.apps.event_logs.models import EventLog
 
 @login_required
 def index(request, template_name="wp_importer/index.html"):

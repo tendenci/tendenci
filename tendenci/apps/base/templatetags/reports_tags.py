@@ -1,7 +1,7 @@
 from datetime import datetime, date, timedelta
 from django import template
 from django.http import QueryDict
-QueryDict
+
 
 register = template.Library()
 

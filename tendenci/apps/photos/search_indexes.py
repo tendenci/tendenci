@@ -1,10 +1,10 @@
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 from haystack import site
 
-from photos.models import PhotoSet, Image
-from perms.indexes import TendenciBaseSearchIndex
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.photos.models import PhotoSet, Image
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 
 class PhotoSetIndex(TendenciBaseSearchIndex):

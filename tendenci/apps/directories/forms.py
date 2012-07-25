@@ -5,14 +5,14 @@ from os.path import splitext, basename
 from django import forms
 
 from tinymce.widgets import TinyMCE
-from perms.forms import TendenciBaseForm
-from base.fields import SplitDateTimeField
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.fields import SplitDateTimeField
 from django.utils.translation import ugettext_lazy as _
 
-from directories.models import Directory, DirectoryPricing
-from directories.utils import (get_payment_method_choices,
+from tendenci.apps.directories.models import Directory, DirectoryPricing
+from tendenci.apps.directories.utils import (get_payment_method_choices,
     get_duration_choices)
-from directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
+from tendenci.apps.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
 
 ALLOWED_LOGO_EXT = (

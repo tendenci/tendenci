@@ -1,10 +1,11 @@
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 from haystack import site
-from perms.indexes import TendenciBaseSearchIndex
-from perms.object_perms import ObjectPermission
-from discounts.models import Discount
+
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.discounts.models import Discount
 
 class DiscountIndex(TendenciBaseSearchIndex):
     discount_code = indexes.CharField(model_attr='discount_code')

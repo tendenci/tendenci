@@ -1,11 +1,11 @@
 from tastypie import fields
-from profiles.models import Profile
-from entities.models import Entity
-from api_tasty.validation import TendenciValidation
-from api_tasty.resources import TendenciResource
-from api_tasty.users.resources import UserResource
-from api_tasty.entities.resources import EntityResource
-from api_tasty.profiles.forms import ProfileForm
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.api_tasty.validation import TendenciValidation
+from tendenci.apps.api_tasty.resources import TendenciResource
+from tendenci.apps.api_tasty.users.resources import UserResource
+from tendenci.apps.api_tasty.entities.resources import EntityResource
+from tendenci.apps.api_tasty.profiles.forms import ProfileForm
 
 class ProfileResource(TendenciResource):
     """Profile API

@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models.loading import get_model
 
-from exports.models import Export
+from tendenci.apps.exports.models import Export
 
 
 class Command(BaseCommand):
@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = "Runs an export task for the specified model."
 
     def handle(self, *args, **options):
-        from exports.tasks import TendenciExportTask
+        from tendenci.apps.exports.tasks import TendenciExportTask
         if args:
 
             try:
@@ -21,15 +21,15 @@ class Command(BaseCommand):
 
             # special case models
             if export.app_label == 'events' and export.model_name == 'event':
-                from events.tasks import EventsExportTask
+                from tendenci.apps.events.tasks import EventsExportTask
                 result = EventsExportTask()
                 response = result.run()
             elif export.app_label == 'forms_builder.forms' and export.model_name == 'form':
-                from forms_builder.forms.tasks import FormsExportTask
+                from tendenci.apps.forms_builder.forms.tasks import FormsExportTask
                 result = FormsExportTask()
                 response = result.run()
             elif export.app_label == 'navs' and export.model_name == 'nav':
-                from navs.tasks import NavsExportTask
+                from tendenci.apps.navs.tasks import NavsExportTask
                 result = NavsExportTask()
                 response = result.run()
             else:

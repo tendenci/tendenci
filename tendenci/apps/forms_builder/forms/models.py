@@ -5,12 +5,12 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
-from forms_builder.forms.managers import FormManager
-from perms.models import TendenciBaseModel
-from perms.object_perms import ObjectPermission
-from user_groups.models import Group, GroupMembership
-from site_settings.utils import get_setting
+from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from tendenci.apps.forms_builder.forms.managers import FormManager
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.site_settings.utils import get_setting
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -216,7 +216,7 @@ class FormEntry(models.Model):
         Subscribe FormEntry to group specified.
         """
         # avoiding circular imports
-        from subscribers.models import GroupSubscription as GS
+        from tendenci.apps.subscribers.models import GroupSubscription as GS
         try:
             GS.objects.get(group=group, subscriber=self)
         except GS.DoesNotExist:
@@ -227,7 +227,7 @@ class FormEntry(models.Model):
         Unsubscribe FormEntry from group specified
         """
         # avoiding circular imports
-        from subscribers.models import GroupSubscription as GS
+        from tendenci.apps.subscribers.models import GroupSubscription as GS
         try:
             sub = GS.objects.get(group=group, subscriber=self)
             sub.delete()

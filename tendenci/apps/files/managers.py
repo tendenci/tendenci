@@ -1,11 +1,14 @@
 import os
 import re
 from datetime import datetime
+from haystack.query import SearchQuerySet
+
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
-from haystack.query import SearchQuerySet
-from perms.managers import TendenciBaseManager
 from django.conf import settings
+
+from tendenci.apps.perms.managers import TendenciBaseManager
+
 
 def save_to_disk(f, instance):
     """

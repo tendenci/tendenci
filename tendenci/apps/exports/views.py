@@ -3,9 +3,9 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from base.http import Http403
-from event_logs.models import EventLog
-from exports.models import Export
+from tendenci.apps.base.http import Http403
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.exports.models import Export
 
 
 @login_required

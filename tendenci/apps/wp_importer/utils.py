@@ -10,11 +10,11 @@ from datetime import datetime
 from BeautifulSoup import BeautifulStoneSoup
 from parse_uri import ParseUri
 
-from pages.models import Page
-from articles.models import Article
-from redirects.models import Redirect
-from files.models import File
-from wp_importer.models import AssociatedFile
+from tendenci.apps.pages.models import Page
+from tendenci.apps.articles.models import Article
+from tendenci.apps.redirects.models import Redirect
+from tendenci.apps.files.models import File
+from tendenci.apps.wp_importer.models import AssociatedFile
 
 from django.contrib.auth.models import User
 from django.conf import settings

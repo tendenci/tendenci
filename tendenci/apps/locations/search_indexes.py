@@ -1,9 +1,10 @@
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 from haystack import site
-from locations.models import Location
-from perms.indexes import TendenciBaseSearchIndex
+
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.locations.models import Location
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
 
 class LocationIndex(TendenciBaseSearchIndex):
     description = indexes.CharField(model_attr='description')

@@ -22,11 +22,11 @@ class Command(BaseCommand):
             verbosity = options['verbosity']
             
         from django.conf import settings
-        from memberships.models import Notice, Membership, NoticeLog, NoticeLogRecord
-        from base.utils import fieldify
-        from emails.models import Email
-        from profiles.models import Profile
-        from site_settings.utils import get_setting
+        from tendenci.apps.memberships.models import Notice, Membership, NoticeLog, NoticeLogRecord
+        from tendenci.apps.base.utils import fieldify
+        from tendenci.apps.emails.models import Email
+        from tendenci.apps.profiles.models import Profile
+        from tendenci.apps.site_settings.utils import get_setting
         
         site_display_name = get_setting('site', 'global', 'sitedisplayname')
         site_contact_name = get_setting('site', 'global', 'sitecontactname')

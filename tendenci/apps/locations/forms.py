@@ -1,5 +1,5 @@
-from locations.models import Location
-from perms.forms import TendenciBaseForm
+from tendenci.apps.locations.models import Location
+from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
 
 class LocationForm(TendenciBaseForm):

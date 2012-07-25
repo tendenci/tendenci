@@ -9,9 +9,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from actions.forms import ActionSLAForm, ActionStep5Form
 from actions.models import Action
-from site_settings.utils import get_setting
-from base.http import Http403
-from perms.utils import has_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
 
 # in order to send email instantly, the number of members in group should be less than LIMIT
 # no longer needed cause we're queueing the emails on amazon
@@ -56,9 +56,9 @@ def step5(request, action_id, form_class=ActionStep5Form, template_name="actions
             add_article = form.cleaned_data['add_article']
             if add_article:
                 # add an article
-                from articles.models import Article
-                from categories.models import Category
-                from perms.object_perms import ObjectPermission
+                from tendenci.apps.articles.models import Article
+                from tendenci.apps.categories.models import Category
+                from tendenci.apps.perms.object_perms import ObjectPermission
                 from django.template.defaultfilters import slugify
                 
                 # article slug is a unique field, if the slug already exists,

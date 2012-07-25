@@ -16,7 +16,7 @@ class Command(BaseCommand):
         """
         Set the website theme via theme name
         """
-        from site_settings.models import Setting
+        from tendenci.apps.site_settings.models import Setting
 
         try:
             setting = Setting.objects.get(

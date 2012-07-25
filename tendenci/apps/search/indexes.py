@@ -1,7 +1,8 @@
+from haystack import indexes
+
 from django.db.models import signals
 
-from haystack import indexes
-from search.signals import save_unindexed_item
+from tendenci.apps.search.signals import save_unindexed_item
 
 class CustomSearchIndex(indexes.SearchIndex):
     """

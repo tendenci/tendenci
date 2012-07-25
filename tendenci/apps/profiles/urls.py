@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('profiles.views',                  
+urlpatterns = patterns('tendenci.apps.profiles.views',
     url(r'^$','index', name="profile.index"),
     url(r'^admins/$', 'admin_list', name="profile.admins"),
     url(r'^search/$', 'search', name="profile.search"),

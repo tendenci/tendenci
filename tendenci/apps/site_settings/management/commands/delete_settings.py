@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from site_settings.models import Setting
+from tendenci.apps.site_settings.models import Setting
 
 
 class Command(BaseCommand):

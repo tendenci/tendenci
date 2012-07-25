@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('corporate_memberships.views', 
+urlpatterns = patterns('tendenci.apps.corporate_memberships.views', 
     url(r'^$', 'search', name="corp_memb"),
-    url(r"^(?P<slug>.*)/add_pre/$", "add_pre", name="corp_memb.add_pre"),                 
+    url(r"^(?P<slug>.*)/add_pre/$", "add_pre", name="corp_memb.add_pre"),
     url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),
     url(r"^(?P<slug>.*)/add/(?P<hash>[\d\w]+)$", "add", name="corp_memb.anonymous_add"),
     url(r"^add_conf/(?P<id>\d+)/$", "add_conf", name="corp_memb.add_conf"),

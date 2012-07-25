@@ -2,8 +2,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, Permission
 from django.db.models.base import Model
 
-from perms.object_perms import ObjectPermission
-from perms.utils import can_view
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import can_view
 
 
 class ObjectPermBackend(object):

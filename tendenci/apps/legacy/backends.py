@@ -1,8 +1,7 @@
 from django.contrib.auth.models import User
 
-from models import SchipulEmployee
-from models import LegacyUser
-from utils import get_profile_defaults, legacy_user_developer, legacy_user_admin
+from tendenci.apps.legacy.models import SchipulEmployee, LegacyUser
+from tendenci.apps.legacy.utils import get_profile_defaults, legacy_user_developer, legacy_user_admin
 
 import hashlib
 

@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('user_groups.views',
+urlpatterns = patterns('tendenci.apps.user_groups.views',
     url(r'^$',                              'search',     name='groups'),
     url(r'^add/$',                          'group_add_edit', name='group.add'),
     url(r'^search/$',                       'search_redirect',   name='group.search'),

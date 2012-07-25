@@ -5,11 +5,11 @@ from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib import messages
 
-from base.http import Http403
-from site_settings.models import Setting
-from site_settings.forms import build_settings_form
-from perms.utils import has_perm
-from site_settings.utils import get_setting
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.models import Setting
+from tendenci.apps.site_settings.forms import build_settings_form
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):

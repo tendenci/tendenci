@@ -6,9 +6,9 @@ from datetime import timedelta
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from stories.models import Story
-from perms.forms import TendenciBaseForm
-from base.fields import SplitDateTimeField
+from tendenci.apps.stories.models import Story
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.base.fields import SplitDateTimeField
 
 ALLOWED_LOGO_EXT = (
     '.jpg',

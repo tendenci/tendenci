@@ -28,7 +28,7 @@ from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext, get_language, activate
 
-from site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 
 # favour django-mailer but fall back to django.core.mail
 if 'mailer' in settings.INSTALLED_APPS:

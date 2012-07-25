@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 
-from user_groups.models import Group, GroupMembership
-from user_groups.utils import member_choices
-from perms.forms import TendenciBaseForm
+from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.utils import member_choices
+from tendenci.apps.perms.forms import TendenciBaseForm
 
 
 class GroupAdminForm(TendenciBaseForm):

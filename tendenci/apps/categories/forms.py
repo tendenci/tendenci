@@ -2,7 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
-from categories.models import CategoryItem
+from tendenci.apps.categories.models import CategoryItem
 
 class CategoryField(forms.ChoiceField):
     """

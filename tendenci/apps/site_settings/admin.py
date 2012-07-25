@@ -1,5 +1,5 @@
 from django.contrib import admin
-from site_settings.models import Setting
+from tendenci.apps.site_settings.models import Setting
 
 class SettingAdmin(admin.ModelAdmin):
     list_display = ['name','label','value','scope','scope_category']

@@ -5,7 +5,7 @@ class Command(BaseCommand):
     example: python manage.py events_init_end_dt
     """
     def handle(self, *event_ids, **options):
-        from events.models import RegistrationConfiguration
+        from tendenci.apps.events.models import RegistrationConfiguration
         reg8n_configs = RegistrationConfiguration.objects.all()
 
         for config in reg8n_configs:

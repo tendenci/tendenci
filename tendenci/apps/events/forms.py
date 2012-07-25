@@ -16,23 +16,23 @@ from django.utils.safestring import mark_safe
 #from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
-from events.models import Event, Place, RegistrationConfiguration, \
+from tendenci.apps.events.models import Event, Place, RegistrationConfiguration, \
     Payment, Sponsor, Organizer, Speaker, Type, \
     TypeColorSet, Registrant, RegConfPricing, Addon, \
     AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
     CustomRegFieldEntry
 
-from payments.models import PaymentMethod
-from perms.forms import TendenciBaseForm
+from tendenci.apps.payments.models import PaymentMethod
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from base.fields import SplitDateTimeField
-from emails.models import Email
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.emails.models import Email
 from form_utils.forms import BetterModelForm
-from discounts.models import Discount
-from events.settings import FIELD_MAX_LENGTH
-from site_settings.utils import get_setting
-from memberships.models import Membership
-from profiles.models import Profile
+from tendenci.apps.discounts.models import Discount
+from tendenci.apps.events.settings import FIELD_MAX_LENGTH
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.memberships.models import Membership
+from tendenci.apps.profiles.models import Profile
 
 from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
 from widgets import UseCustomRegWidget

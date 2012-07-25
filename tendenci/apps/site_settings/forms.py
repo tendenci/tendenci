@@ -10,9 +10,9 @@ from django.forms.models import model_to_dict
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 
-from site_settings.utils import (delete_setting_cache, cache_setting,
+from tendenci.apps.site_settings.utils import (delete_setting_cache, cache_setting,
     delete_all_settings_cache, get_form_list, get_box_list)
-from site_settings.cache import SETTING_PRE_KEY
+from tendenci.apps.site_settings.cache import SETTING_PRE_KEY
 
 def clean_settings_form(self):
     """
@@ -57,7 +57,7 @@ def save_settings_form(self):
             if setting.input_type == "file":
                 if field_value:
                     # save a file object and set the value at that file object's id.
-                    from files.models import File as TendenciFile
+                    from tendenci.apps.files.models import File as TendenciFile
                     uploaded_file = TendenciFile()
                     uploaded_file.owner = self.user
                     uploaded_file.owner_username = self.user.username
@@ -145,7 +145,7 @@ def build_settings_form(user, settings):
                     fields.update({"%s" % setting.name : forms.ChoiceField(**options) })
 
         elif setting.input_type == 'file':
-            from files.models import File as TendenciFile
+            from tendenci.apps.files.models import File as TendenciFile
             file_display = ''
             try:
                 try: val = int(setting.get_value())

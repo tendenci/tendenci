@@ -1,3 +1,6 @@
+from haystack.query import SearchQuerySet
+from haystack.backends import SQ
+
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group as Auth_Group, Permission
 from django.contrib.contenttypes.models import ContentType
@@ -5,11 +8,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 
-from profiles.models import Profile
-from perms.object_perms import ObjectPermission
-
-from haystack.query import SearchQuerySet
-from haystack.backends import SQ
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.perms.object_perms import ObjectPermission
 
 
 PUBLIC_FILTER = {'status':True,'status_detail':"active",'allow_anonymous_view':True}
@@ -206,7 +206,7 @@ def get_administrators():
 
 # get a list of the admin notice recipients
 def get_notice_recipients(scope, scope_category, setting_name):
-    from site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
     from django.core.validators import email_re
 
     recipients = []

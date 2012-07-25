@@ -6,7 +6,7 @@ class Command(BaseCommand):
     example: python manage.py memberships_update_entries
     """
     def handle(self, *args, **kwargs):
-        from memberships.models import AppEntry, AppFieldEntry, AppField
+        from tendenci.apps.memberships.models import AppEntry, AppFieldEntry, AppField
 
         try:
             corp_field = AppField.objects.get(field_type='corporate_membership_id')

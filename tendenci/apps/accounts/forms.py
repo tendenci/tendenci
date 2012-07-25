@@ -12,11 +12,11 @@ from django.template import Context, loader
 from django.utils.http import int_to_base36
 
 from captcha.fields import CaptchaField
-from registration.forms import RegistrationForm
-from profiles.models import Profile
-from registration.models import RegistrationProfile
-from site_settings.utils import get_setting
-from accounts.utils import send_registration_activation_email
+from tendenci.apps.registration.forms import RegistrationForm
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.registration.models import RegistrationProfile
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.accounts.utils import send_registration_activation_email
 
 
 class SetPasswordCustomForm(SetPasswordForm):

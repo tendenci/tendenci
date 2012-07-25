@@ -8,15 +8,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 
-from base.fields import SplitDateTimeField
-from perms.forms import TendenciBaseForm
-from site_settings.utils import get_setting
-from user_groups.models import Group, GroupMembership
-from memberships.models import App, Membership
-from event_logs.models import EventLog
-
-from profiles.models import Profile
-from profiles.utils import (get_groups, get_memberships, 
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.memberships.models import App, Membership
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.profiles.utils import (get_groups, get_memberships, 
     group_choices, app_choices, update_user)
 
 attrs_dict = {'class': 'required' }

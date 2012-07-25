@@ -1,9 +1,9 @@
-from rss.feedsmanager import SubFeed
-from site_settings.utils import get_setting
-from perms.utils import PUBLIC_FILTER
-from sitemaps import TendenciSitemap
+from tendenci.apps.rss.feedsmanager import SubFeed
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import PUBLIC_FILTER
+from tendenci.apps.sitemaps import TendenciSitemap
 
-from resumes.models import Resume
+from tendenci.apps.resumes.models import Resume
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Resumes' % get_setting('site','global','sitedisplayname')

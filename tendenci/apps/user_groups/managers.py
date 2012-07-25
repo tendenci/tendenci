@@ -1,11 +1,11 @@
 import operator
+from haystack.query import SearchQuerySet
 
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from haystack.query import SearchQuerySet
-from perms.managers import TendenciBaseManager
+from tendenci.apps.perms.managers import TendenciBaseManager
 
 class GroupManager(TendenciBaseManager):
     pass

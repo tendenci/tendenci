@@ -1,5 +1,6 @@
 from django.utils import importlib
-from registry.sites import site
+
+from tendenci.apps.registry.sites import site
 
 
 def autodiscover():

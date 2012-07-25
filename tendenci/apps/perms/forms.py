@@ -1,7 +1,4 @@
-from perms.fields import GroupPermissionField, groups_with_perms
-from perms.fields import UserPermissionField
-from perms.fields import MemberPermissionField
-from perms.fields import group_choices
+from tendenci.apps.perms.fields import GroupPermissionField, groups_with_perms, UserPermissionField, MemberPermissionField, group_choices
 from form_utils.forms import BetterModelForm
 
 
@@ -60,8 +57,7 @@ class TendenciBaseForm(BetterModelForm):
         return value
 
     def __init__(self, *args, **kwargs):
-        from perms.fields import user_perm_bits
-        from perms.fields import member_perm_bits
+        from tendenci.apps.perms.fields import user_perm_bits, member_perm_bits
         if 'user' in kwargs:
             self.user = kwargs.pop('user', None)
         else:

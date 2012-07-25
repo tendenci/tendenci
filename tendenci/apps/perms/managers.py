@@ -1,11 +1,11 @@
+from haystack.query import SearchQuerySet
+from haystack.backends import SQ
+
 from django.db import models
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User, AnonymousUser
-
-from haystack.query import SearchQuerySet
-from haystack.backends import SQ
 
 
 class ObjectPermissionManager(models.Manager):
@@ -114,7 +114,7 @@ class ObjectPermissionManager(models.Manager):
         # treat the tuples differently. They are passed in as
         # ((group,perm,),(group,perm,) ..... (group,perm.))
         if group_with_perms:
-            from user_groups.models import Group
+            from tendenci.apps.user_groups.models import Group
             for group, perm in group_or_groups:
                 if isinstance(group, unicode):
                     if group.isdigit():
@@ -461,7 +461,7 @@ class TendenciBaseManager(models.Manager):
             #user_perm_q = SQ(users_can_view__in=[user.pk])
         else:
             # to pull directly from db, get a list of object_ids instead of groups
-            from perms.object_perms import ObjectPermission
+            from tendenci.apps.perms.object_perms import ObjectPermission
 
             app_label = self.model._meta.app_label
             model_name = self.model.__name__

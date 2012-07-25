@@ -1,7 +1,7 @@
 from django.template import Library, Node, TemplateSyntaxError, Variable
 #from django.template.loader import get_template
 
-from pluginmanager.models import PluginApp
+from tendenci.apps.pluginmanager.models import PluginApp
 
 register = Library()
 

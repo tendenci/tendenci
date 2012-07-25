@@ -1,8 +1,11 @@
 import xlrd
+
 from django.db.models import Q
 from django.core.validators import email_re
-from forms_builder.forms.models import FieldEntry
-from subscribers.models import SubscriberData, GroupSubscription
+
+from tendenci.apps.forms_builder.forms.models import FieldEntry
+from tendenci.apps.subscribers.models import SubscriberData, GroupSubscription
+
 
 def get_subscriber(email, group):
     """

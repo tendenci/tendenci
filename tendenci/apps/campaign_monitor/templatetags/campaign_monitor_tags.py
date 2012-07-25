@@ -3,8 +3,8 @@ from django.template import Node, Library, TemplateSyntaxError, Variable, Variab
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from campaign_monitor.models import Template, Campaign
-from base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.campaign_monitor.models import Template, Campaign
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 

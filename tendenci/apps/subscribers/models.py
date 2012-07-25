@@ -2,9 +2,9 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from user_groups.models import Group
-from forms_builder.forms.models import FormEntry, FieldEntry
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry
+from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 
 class GroupSubscription(models.Model):
     """
@@ -82,7 +82,7 @@ class SubscriberData(models.Model):
 
 def post_save_subscriber(sender, instance=None, created=False, **kwargs):
     if instance:
-        from subscribers.utils import update_subscriber_data
+        from tendenci.apps.subscribers.utils import update_subscriber_data
         update_subscriber_data(instance.pk)
 
 post_save.connect(post_save_subscriber, sender=GroupSubscription)

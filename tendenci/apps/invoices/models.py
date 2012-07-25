@@ -1,17 +1,15 @@
 import uuid
-# guid = str(uuid.uuid1()) # based on the host ID and current time
-#guid = str(uuid.uuid4())) # make a random UUID
 from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
-from perms.utils import has_perm
-from invoices.managers import InvoiceManager
-
-from event_logs.models import EventLog
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.invoices.managers import InvoiceManager
+from tendenci.apps.event_logs.models import EventLog
 
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
@@ -128,7 +126,7 @@ class Invoice(models.Model):
         return boo
     
     def tender(self, user):
-        from accountings.utils import make_acct_entries
+        from tendenci.apps.accountings.utils import make_acct_entries
         """ mark it as tendered if we have records """ 
         if not self.is_tendered:
             # make accounting entry
@@ -186,7 +184,7 @@ class Invoice(models.Model):
      
     # this function is to make accounting entries    
     def make_payment(self, user, amount):
-        from accountings.utils import make_acct_entries
+        from tendenci.apps.accountings.utils import make_acct_entries
         if self.is_tendered:
             self.balance -= amount
             self.payments_credits += amount

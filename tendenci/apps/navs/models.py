@@ -2,10 +2,10 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from perms.object_perms import ObjectPermission
-from perms.models import TendenciBaseModel
-from pages.models import Page
-from navs.managers import NavManager
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.pages.models import Page
+from tendenci.apps.navs.managers import NavManager
 
 class Nav(TendenciBaseModel):
     class Meta:

@@ -1,7 +1,7 @@
 """Admin settings"""
 from django.contrib import admin
 
-from social_auth.models import UserSocialAuth, Nonce, Association
+from tendenci.apps.social_auth.models import UserSocialAuth, Nonce, Association
 
 
 class UserSocialAuthOption(admin.ModelAdmin):

@@ -15,30 +15,30 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 
 from djcelery.models import TaskMeta
 from geraldo.generators import PDFGenerator
-from notification.utils import send_welcome_email
+from tendenci.apps.notification.utils import send_welcome_email
 
-from site_settings.utils import get_setting
-from event_logs.models import EventLog
-from base.http import Http403
-from base.utils import send_email_notification
-from perms.utils import update_perms_and_save, get_query_filters
-from perms.utils import has_perm
-from corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
+from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from reports import ReportNewMems
-from files.models import File
-from exports.utils import render_csv
+from tendenci.apps.files.models import File
+from tendenci.apps.exports.utils import render_csv
 
-from memberships.models import (App, AppEntry, Membership,
+from tendenci.apps.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, AppField, MembershipImport)
-from memberships.forms import (AppCorpPreForm, MembershipForm,
+from tendenci.apps.memberships.forms import (AppCorpPreForm, MembershipForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
     AppEntryForm)
-from memberships.utils import (is_import_valid, prepare_chart_data,
+from tendenci.apps.memberships.utils import (is_import_valid, prepare_chart_data,
     get_days, get_over_time_stats, get_status_filter,
     get_membership_stats, NoMembershipTypes)
-from memberships.importer.forms import ImportMapForm, UploadForm
-from memberships.importer.utils import parse_mems_from_csv
-from memberships.importer.tasks import ImportMembershipsTask
+from tendenci.apps.memberships.importer.forms import ImportMapForm, UploadForm
+from tendenci.apps.memberships.importer.utils import parse_mems_from_csv
+from tendenci.apps.memberships.importer.tasks import ImportMembershipsTask
 
 
 def membership_index(request):
@@ -90,7 +90,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     """
     Membership edit.
     """
-    from user_groups.models import GroupMembership
+    from tendenci.apps.user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
 
     if not has_perm(request.user, 'memberships.change_membership', membership):
@@ -152,7 +152,7 @@ def download_template(request, slug=''):
     """
     Return a csv [download response] of the application specified via slug
     """
-    from memberships.utils import make_csv
+    from tendenci.apps.memberships.utils import make_csv
     return make_csv(slug=slug)
 
 

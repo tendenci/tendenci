@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
-from notification.models import (NoticeType, NoticeSetting, Notice,
+from tendenci.apps.notification.models import (NoticeType, NoticeSetting, Notice,
     ObservedItem, NoticeEmail)
     
 class NoticeTypeAdmin(admin.ModelAdmin):

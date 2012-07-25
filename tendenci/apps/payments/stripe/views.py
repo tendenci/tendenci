@@ -12,9 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 import simplejson
 
-from payments.utils import payment_processing_object_updates
-from payments.utils import log_payment, send_payment_notice
-from payments.models import Payment
+from tendenci.apps.payments.utils import payment_processing_object_updates
+from tendenci.apps.payments.utils import log_payment, send_payment_notice
+from tendenci.apps.payments.models import Payment
 from forms import StripeCardForm, BillingInfoForm
 import stripe
 from utils import payment_update_stripe

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from tastypie.models import ApiKey
-from perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 
 class ApiKeyForm(forms.ModelForm):
     """

@@ -4,7 +4,7 @@ import simplejson as json
 from django.conf import settings as django_settings
 from django.core.management.base import BaseCommand, CommandError
 
-from site_settings.models import Setting
+from tendenci.apps.site_settings.models import Setting
 
 
 class Command(BaseCommand):
@@ -167,9 +167,9 @@ class Command(BaseCommand):
                 if appname.find('.') != -1:
                     appname = appname.replace('.', '/')
                 json_file = os.path.abspath(os.path.join(
-                                django_settings.APPS_PATH,
-                                appname,
-                                'settings.json'           
+                                django_settings.TENDENCI_ROOT,
+                                '/'.join(appname.split('.')),
+                                'settings.json'  
                             ))
             if os.path.isfile(json_file):
                 with open(json_file, 'r') as f:

@@ -1,11 +1,11 @@
 from django.contrib.auth.models import User
 from tastypie import fields
-from api_tasty.resources import TendenciResource
-from api_tasty.validation import TendenciValidation
-from api_tasty.users.resources import UserResource
-from api_tasty.payments.resources import PaymentMethodResource
-from api_tasty.memberships.forms import MembershipForm
-from memberships.models import Membership, MembershipType, App
+from tendenci.apps.api_tasty.resources import TendenciResource
+from tendenci.apps.api_tasty.validation import TendenciValidation
+from tendenci.apps.api_tasty.users.resources import UserResource
+from tendenci.apps.api_tasty.payments.resources import PaymentMethodResource
+from tendenci.apps.api_tasty.memberships.forms import MembershipForm
+from tendenci.apps.memberships.models import Membership, MembershipType, App
 
 
 class MembershipTypeResource(TendenciResource):

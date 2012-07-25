@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.core.mail.message import EmailMessage
 
-from perms.models import TendenciBaseModel
+from tendenci.apps.perms.models import TendenciBaseModel
 from tinymce import models as tinymce_models
 
 class Email(TendenciBaseModel):

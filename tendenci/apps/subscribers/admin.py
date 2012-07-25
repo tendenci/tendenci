@@ -1,5 +1,5 @@
 from django.contrib import admin
-from subscribers.models import GroupSubscription, SubscriberData
+from tendenci.apps.subscribers.models import GroupSubscription, SubscriberData
 
 class DataAdmin(admin.TabularInline):
     model = SubscriberData

@@ -4,11 +4,13 @@ import uuid
 import Image
 import re
 from slate import PDF
+
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from perms.models import TendenciBaseModel
-from files.managers import FileManager
+
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.files.managers import FileManager
 
 
 def file_directory(instance, filename):

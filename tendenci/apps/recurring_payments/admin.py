@@ -7,8 +7,8 @@ from django.db import models
 from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.forms import RecurringPaymentForm
 
-from event_logs.models import EventLog
-from base.utils import tcurrency
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.base.utils import tcurrency
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign

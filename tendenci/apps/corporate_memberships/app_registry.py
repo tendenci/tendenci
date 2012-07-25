@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import PeopleRegistry, lazy_reverse
-from models import CorporateMembership
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
+from tendenci.apps.corporate_memberships.models import CorporateMembership
 
 
 class CorporateMembershipRegistry(PeopleRegistry):

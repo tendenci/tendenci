@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import SplitDateTimeField
 from form_utils.forms import BetterForm
 
 INITIAL_START_DT = datetime.now() - timedelta(weeks=4)

@@ -8,8 +8,8 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import (BaseLoader, get_template_from_string,
     find_template_loader, make_origin)
 from django.utils._os import safe_join
-from theme.utils import get_theme_root
-from theme.middleware import get_current_request
+from tendenci.apps.theme.utils import get_theme_root
+from tendenci.apps.theme.middleware import get_current_request
 
 non_theme_source_loaders = None
 

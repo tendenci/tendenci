@@ -1,11 +1,13 @@
 from datetime import datetime
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 from haystack import site
-from news.models import News
-from categories.models import Category
-from perms.indexes import TendenciBaseSearchIndex
+
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.news.models import News
+from tendenci.apps.categories.models import Category
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+
 
 class NewsIndex(TendenciBaseSearchIndex):
     headline = indexes.CharField(model_attr='headline')

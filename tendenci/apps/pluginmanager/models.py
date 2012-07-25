@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.encoding import smart_str
-from perms.utils import update_admin_group_perms
+from tendenci.apps.perms.utils import update_admin_group_perms
 
 
 class PluginApp(models.Model):

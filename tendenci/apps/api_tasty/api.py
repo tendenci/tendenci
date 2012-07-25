@@ -3,7 +3,7 @@ from tastypie.utils import is_valid_jsonp_callback_value
 from tastypie.utils.mime import determine_format, build_content_type
 from tastypie.api import Api
 from tastypie.exceptions import BadRequest
-from api_tasty.serializers import SafeSerializer
+from tendenci.apps.api_tasty.serializers import SafeSerializer
 
 class SafeApi(Api):
     """

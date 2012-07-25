@@ -1,6 +1,7 @@
 from haystack import indexes
 from haystack import site
-from redirects.models import Redirect
+
+from tendenci.apps.redirects.models import Redirect
 
 
 class RedirectIndex(indexes.RealTimeSearchIndex):

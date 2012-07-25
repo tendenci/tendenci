@@ -1,6 +1,6 @@
-from registry import site
-from registry.base import LogRegistry, lazy_reverse
-from contacts.models import Contact
+from tendenci.apps.registry import site
+from tendenci.apps.registry.base import LogRegistry, lazy_reverse
+from tendenci.apps.contacts.models import Contact
 
 class ContactRegistry(LogRegistry):
     # contacts - TEAL/LIME-GREEN base

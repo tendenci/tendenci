@@ -16,20 +16,20 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
 
-from theme.shortcuts import themed_response as render_to_response
-from base.http import Http403
-from perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
-from site_settings.utils import get_setting
-from event_logs.models import EventLog
-from files.utils import get_image
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.files.utils import get_image
 from djcelery.models import TaskMeta
 
-from photos.cache import PHOTO_PRE_KEY
-from photos.search_indexes import PhotoSetIndex
-from photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
-from photos.utils import get_privacy_settings
-from photos.tasks import ZipPhotoSetTask
+from tendenci.apps.photos.cache import PHOTO_PRE_KEY
+from tendenci.apps.photos.search_indexes import PhotoSetIndex
+from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
+from tendenci.apps.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
+from tendenci.apps.photos.utils import get_privacy_settings
+from tendenci.apps.photos.tasks import ZipPhotoSetTask
 
 def search(request, template_name="photos/search.html"):
     """ Photos search """
@@ -369,7 +369,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 
 @login_required
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
-    from perms.object_perms import ObjectPermission
+    from tendenci.apps.perms.object_perms import ObjectPermission
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
@@ -490,7 +490,7 @@ def photos_batch_add(request, photoset_id=0):
         photoset_id is passed via url
     """
     import uuid
-    from perms.object_perms import ObjectPermission
+    from tendenci.apps.perms.object_perms import ObjectPermission
 
 
     # photoset permission required to add photos

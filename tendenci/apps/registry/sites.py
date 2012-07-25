@@ -1,7 +1,8 @@
 import copy
-from registry.exceptions import AlreadyRegistered, NotRegistered
-from registry.utils import RegisteredApps
-from registry.cache import cache_reg_apps, get_reg_apps, delete_reg_apps_cache
+
+from tendenci.apps.registry.exceptions import AlreadyRegistered, NotRegistered
+from tendenci.apps.registry.utils import RegisteredApps
+from tendenci.apps.registry.cache import cache_reg_apps, get_reg_apps, delete_reg_apps_cache
 
 class RegistrySite(object):
     """
@@ -21,7 +22,7 @@ class RegistrySite(object):
         to the model.
         """
         if not registry_class:
-            from registry.base import CoreRegistry
+            from tendenci.apps.registry.base import CoreRegistry
             registry_class = CoreRegistry
 
         if not hasattr(model, '_meta'):

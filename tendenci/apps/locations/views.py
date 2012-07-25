@@ -9,22 +9,22 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from base.http import Http403
-from site_settings.utils import get_setting
-from event_logs.models import EventLog
-from perms.utils import (has_perm, has_view_perm,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.perms.utils import (has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
-from perms.decorators import admin_required
-from theme.shortcuts import themed_response as render_to_response
-from exports.utils import run_export_task
+from tendenci.apps.perms.decorators import admin_required
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.exports.utils import run_export_task
 
-from locations.models import Location, LocationImport
-from locations.forms import LocationForm
-from locations.utils import get_coordinates
-from locations.importer.forms import UploadForm, ImportMapForm
-from locations.importer.utils import is_import_valid, parse_locs_from_csv
-from locations.importer.tasks import ImportLocationsTask
-from files.models import File
+from tendenci.apps.locations.models import Location, LocationImport
+from tendenci.apps.locations.forms import LocationForm
+from tendenci.apps.locations.utils import get_coordinates
+from tendenci.apps.locations.importer.forms import UploadForm, ImportMapForm
+from tendenci.apps.locations.importer.utils import is_import_valid, parse_locs_from_csv
+from tendenci.apps.locations.importer.tasks import ImportLocationsTask
+from tendenci.apps.files.models import File
 from djcelery.models import TaskMeta
 
 def detail(request, id=None, template_name="locations/view.html"):

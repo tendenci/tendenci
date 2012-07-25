@@ -15,8 +15,8 @@ import urllib
 from django.conf import settings
 from django.utils import simplejson
 
-from social_auth.backends import OAuthBackend, USERNAME
-from social_auth.backends.google import BaseGoogleOAuth
+from tendenci.apps.social_auth.backends import OAuthBackend, USERNAME
+from tendenci.apps.social_auth.backends.google import BaseGoogleOAuth
 
 
 # Orkut configuration

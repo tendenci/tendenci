@@ -1,10 +1,10 @@
 from datetime import datetime
 from django.template import Library, TemplateSyntaxError, Variable
-from base.template_tags import ListNode, parse_tag_kwargs
-from perms.utils import get_query_filters
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.perms.utils import get_query_filters
 from django.contrib.auth.models import AnonymousUser, User
-from navs.models import Nav
-from navs.utils import get_nav, cache_nav
+from tendenci.apps.navs.models import Nav
+from tendenci.apps.navs.utils import get_nav, cache_nav
 
 register = Library()
 

@@ -10,7 +10,7 @@ class Command(BaseCommand):
     example: python manage.py story_photos_to_files.py
     """
     def handle(self, *args, **kwargs):
-        from stories.models import Story, StoryPhoto
+        from tendenci.apps.stories.models import Story, StoryPhoto
 
         status, output = commands.getstatusoutput('sudo chown -R ubuntu:www-data %s' % settings.MEDIA_ROOT)
         if status > 0:

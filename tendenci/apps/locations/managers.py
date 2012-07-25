@@ -1,4 +1,4 @@
-from perms.managers import TendenciBaseManager
+from tendenci.apps.perms.managers import TendenciBaseManager
 
 class LocationManager(TendenciBaseManager):
     """

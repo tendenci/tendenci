@@ -4,7 +4,7 @@ from django import forms
 from django.template.defaultfilters import slugify
 from django.conf import settings
 
-from memberships.utils import csv_to_dict
+from tendenci.apps.memberships.utils import csv_to_dict
 
 
 class UploadForm(forms.Form):

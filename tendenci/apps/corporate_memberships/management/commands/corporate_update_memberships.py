@@ -8,8 +8,8 @@ class Command(BaseCommand):
     """
     def handle(self, **options):
         from django.core.exceptions import ObjectDoesNotExist
-        from corporate_memberships.models import CorporateMembership
-        from memberships.models import Membership
+        from tendenci.apps.corporate_memberships.models import CorporateMembership
+        from tendenci.apps.memberships.models import Membership
         verbosity = int(options['verbosity'])
 
         corporates = CorporateMembership.objects.all()

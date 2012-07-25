@@ -15,24 +15,24 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 
-from site_settings.utils import get_setting
-from event_logs.models import EventLog
-from memberships.models import Membership
-from theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.memberships.models import Membership
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
 
-from events.models import Event, RegConfPricing, Registrant, Addon
-from events.utils import email_admins
-from events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
-from events.registration.utils import get_available_pricings, reg_status
-from events.registration.utils import can_use_pricing, get_active_pricings 
-from events.registration.utils import process_registration, send_registrant_email
-from events.registration.utils import get_pricings_for_list
-from events.registration.forms import RegistrantForm, RegistrationForm
-from events.registration.formsets import RegistrantBaseFormSet
-from events.addons.forms import RegAddonForm
-from events.addons.formsets import RegAddonBaseFormSet
-from events.addons.utils import get_active_addons, get_available_addons, get_addons_for_list
-from events.forms import FormForCustomRegForm
+from tendenci.apps.events.models import Event, RegConfPricing, Registrant, Addon
+from tendenci.apps.events.utils import email_admins
+from tendenci.apps.events.registration.constants import REG_CLOSED, REG_FULL, REG_OPEN
+from tendenci.apps.events.registration.utils import get_available_pricings, reg_status
+from tendenci.apps.events.registration.utils import can_use_pricing, get_active_pricings 
+from tendenci.apps.events.registration.utils import process_registration, send_registrant_email
+from tendenci.apps.events.registration.utils import get_pricings_for_list
+from tendenci.apps.events.registration.forms import RegistrantForm, RegistrationForm
+from tendenci.apps.events.registration.formsets import RegistrantBaseFormSet
+from tendenci.apps.events.addons.forms import RegAddonForm
+from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
+from tendenci.apps.events.addons.utils import get_active_addons, get_available_addons, get_addons_for_list
+from tendenci.apps.events.forms import FormForCustomRegForm
 
 def ajax_user(request, event_id):
     """Ajax query for user validation

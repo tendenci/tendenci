@@ -2,7 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
-from event_logs.models import EventLog
+
+from tendenci.apps.event_logs.models import EventLog
+
 
 # Abstract base class for authority fields
 class TendenciBaseModel(models.Model):
@@ -33,7 +35,7 @@ class TendenciBaseModel(models.Model):
 
     @property
     def obj_perms(self):
-        from perms.fields import has_groups_perms
+        from tendenci.apps.perms.fields import has_groups_perms
         t = '<span class="perm-%s">%s</span>'
  
         if self.allow_anonymous_view:

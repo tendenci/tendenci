@@ -11,8 +11,8 @@ class Command(BaseCommand):
         """
         Set the website theme via theme name
         """
-        from site_settings.models import Setting
-        from site_settings.utils import delete_all_settings_cache
+        from tendenci.apps.site_settings.models import Setting
+        from tendenci.apps.site_settings.utils import delete_all_settings_cache
         
         if scope and scope_category and name and value:
             try:

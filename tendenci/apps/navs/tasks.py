@@ -4,8 +4,8 @@ from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
 from celery.registry import tasks
-from exports.utils import full_model_to_dict, render_csv
-from navs.models import Nav
+from tendenci.apps.exports.utils import full_model_to_dict, render_csv
+from tendenci.apps.navs.models import Nav
 
 class NavsExportTask(Task):
     """Export Task for Celery

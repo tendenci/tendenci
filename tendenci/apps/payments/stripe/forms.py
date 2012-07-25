@@ -1,6 +1,6 @@
 from django import forms
 from widgets import NoNameTextInput
-from payments.models import Payment
+from tendenci.apps.payments.models import Payment
 #from form_utils.forms import BetterModelForm
 
 

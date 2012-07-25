@@ -4,12 +4,12 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
-from base.fields import SlugField
-from perms.models import TendenciBaseModel
-from entities.models import Entity
-from files.models import File
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.files.models import File
+from tendenci.apps.user_groups.managers import GroupManager
 
-from user_groups.managers import GroupManager
 
 class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)

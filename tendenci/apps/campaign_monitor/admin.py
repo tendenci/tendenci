@@ -1,6 +1,6 @@
 from django.contrib import admin
-from campaign_monitor.models import Campaign, Template
-from campaign_monitor.forms import CampaignForm, TemplateForm
+from tendenci.apps.campaign_monitor.models import Campaign, Template
+from tendenci.apps.campaign_monitor.forms import CampaignForm, TemplateForm
 
 class TemplateAdmin(admin.ModelAdmin):
     form = TemplateForm

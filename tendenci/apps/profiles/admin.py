@@ -1,5 +1,7 @@
 from django.contrib import admin
-from profiles.models import Profile
+
+from tendenci.apps.profiles.models import Profile
+
 
 class ProfileAdmin(admin.ModelAdmin):
     pass

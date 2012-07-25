@@ -12,7 +12,7 @@ class Command(BaseCommand):
         if 'verbosity' in options:
             verbosity = options['verbosity']
 
-        from events.models import Registration
+        from tendenci.apps.events.models import Registration
         registrations = Registration.objects.filter(invoice__subtotal__gt=0)
         
         if registrations:

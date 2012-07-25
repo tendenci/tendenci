@@ -11,22 +11,22 @@ from django.contrib import messages
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 
-from theme.shortcuts import themed_response as render_to_response
-from base.http import Http403
-from perms.utils import (has_perm, update_perms_and_save,
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
-from event_logs.models import EventLog
-from site_settings.utils import get_setting
-from invoices.models import Invoice
-from exports.utils import run_export_task
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.exports.utils import run_export_task
 
-from forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
+from tendenci.apps.forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
-from forms_builder.forms.models import Form, Field, FormEntry, Pricing
-from forms_builder.forms.utils import (generate_admin_email_body, 
+from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, Pricing
+from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body, 
     generate_submitter_email_body, generate_email_subject,
     make_invoice_for_entry, update_invoice_for_entry)
-from forms_builder.forms.formsets import BaseFieldFormSet
+from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):

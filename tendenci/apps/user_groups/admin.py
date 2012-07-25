@@ -1,9 +1,10 @@
 from django.contrib import admin
 
 # Add your admin site registrations here, eg.
-from perms.object_perms import ObjectPermission
-from user_groups.models import Group, GroupMembership
-from user_groups.forms import GroupAdminForm
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.forms import GroupAdminForm
+
 
 class GroupAdmin(admin.ModelAdmin):
     list_display = ['name', 'label', 'show_as_option','allow_self_add','allow_self_remove']

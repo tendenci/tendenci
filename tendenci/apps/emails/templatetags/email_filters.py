@@ -1,6 +1,6 @@
 from django import template
 
-from site_settings.utils import get_setting
+from tendenci.apps.site_settings.utils import get_setting
 from django.utils.safestring import mark_safe
 
 register = template.Library()

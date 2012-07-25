@@ -16,9 +16,9 @@ class RedirectManager(Manager):
         if hasattr(user,'impersonated_user'):
             if isinstance(user.impersonated_user, User):
                 user = user.impersonated_user
-                
+
         is_an_admin = user.profile.is_superuser
-            
+
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query)) 
             if user:
@@ -29,5 +29,5 @@ class RedirectManager(Manager):
             if user:
                 if not is_an_admin:
                     return []
-    
+
         return sqs.models(self.model).order_by('-update_dt')

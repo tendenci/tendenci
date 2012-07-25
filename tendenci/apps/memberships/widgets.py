@@ -6,7 +6,7 @@ from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
 from django.forms.util import flatatt
-from memberships.models import NOTICE_TYPES
+from tendenci.apps.memberships.models import NOTICE_TYPES
 
 
 PERIOD_UNIT_CHOICE = (

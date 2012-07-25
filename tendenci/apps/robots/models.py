@@ -1,6 +1,7 @@
 from django.db import models
 
-from robots.managers import RobotManager
+from tendenci.apps.robots.managers import RobotManager
+
 
 STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
 

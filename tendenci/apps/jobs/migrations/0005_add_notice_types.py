@@ -10,8 +10,8 @@ class Migration(DataMigration):
         from django.conf import settings
         from django.utils.translation import ugettext_noop as _
         
-        if "notification" in settings.INSTALLED_APPS:
-            from notification import models as notification
+        if "tendenci.apps.notification" in settings.INSTALLED_APPS:
+            from tendenci.apps.notification import models as notification
             notification.create_notice_type("job_approved_user_notice", _("Job Approved User Notice"), _("A job has been approved - user notice."))
         else:
             print "Skipping creation of NoticeTypes as notification app not found"
@@ -232,7 +232,7 @@ class Migration(DataMigration):
             'salary_from': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'salary_to': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'skills': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'slug': ('base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'start_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
@@ -309,7 +309,7 @@ class Migration(DataMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'slug': ('base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),

@@ -4,12 +4,12 @@ import hashlib
 from django.conf import settings
 from django.http import Http404
 from forms import SIMPaymentForm
-from payments.models import Payment
-from payments.utils import payment_processing_object_updates
-from payments.utils import log_payment, send_payment_notice
-from site_settings.utils import get_setting
-from event_logs.models import EventLog
-from notification.utils import send_notifications
+from tendenci.apps.payments.models import Payment
+from tendenci.apps.payments.utils import payment_processing_object_updates
+from tendenci.apps.payments.utils import log_payment, send_payment_notice
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.notification.utils import send_notifications
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.MERCHANT_LOGIN,

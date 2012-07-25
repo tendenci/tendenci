@@ -19,7 +19,7 @@ from meta.models import Meta as MetaTags
 from meta.forms import MetaForm
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
 

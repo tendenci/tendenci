@@ -3,12 +3,14 @@ import os
 import warnings
 from optparse import make_option
 from pysolr import Solr
+from haystack.query import SearchQuerySet
+
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import AppCommand
 from django.db import reset_queries
 from django.utils.encoding import smart_str
-from haystack.query import SearchQuerySet
+
 try:
     from django.utils import importlib
 except ImportError:

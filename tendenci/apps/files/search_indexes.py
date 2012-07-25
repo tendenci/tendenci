@@ -1,9 +1,11 @@
-from django.utils.html import strip_tags, strip_entities
-
 from haystack import indexes
 from haystack import site
-from files.models import File
-from perms.indexes import TendenciBaseSearchIndex
+
+from django.utils.html import strip_tags, strip_entities
+
+from tendenci.apps.files.models import File
+from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+
 
 class FileIndex(TendenciBaseSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
@@ -28,7 +30,7 @@ class FileIndex(TendenciBaseSearchIndex):
         We do a calculation for all files except images.
         """
         from django.contrib.contenttypes.models import ContentType
-        from event_logs.models import EventLog
+        from tendenci.apps.event_logs.models import EventLog
 
         # calculate click if not image
         if obj.type() != 'image':

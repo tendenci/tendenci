@@ -16,24 +16,24 @@ from django.db.models import Q
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from entities.models import Entity
-from events.managers import EventManager, RegistrantManager, EventTypeManager
-from perms.object_perms import ObjectPermission
-from perms.models import TendenciBaseModel
-from meta.models import Meta as MetaTags
-from events.module_meta import EventMeta
-from user_groups.models import Group
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.events.managers import EventManager, RegistrantManager, EventTypeManager
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.events.module_meta import EventMeta
+from tendenci.apps.user_groups.models import Group
 
-from invoices.models import Invoice
-from files.models import File
-from site_settings.utils import get_setting
-from payments.models import PaymentMethod as GlobalPaymentMethod
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.files.models import File
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.payments.models import PaymentMethod as GlobalPaymentMethod
 
-from events.settings import (FIELD_MAX_LENGTH, 
+from tendenci.apps.events.settings import (FIELD_MAX_LENGTH, 
                              LABEL_MAX_LENGTH, 
                              FIELD_TYPE_CHOICES, 
                              USER_FIELD_CHOICES)
-from base.utils import localize_date
+from tendenci.apps.base.utils import localize_date
 
 
 class TypeColorSet(models.Model):
@@ -412,8 +412,8 @@ class Registration(models.Model):
         """
         Make the accounting entries for the event sale
         """
-        from accountings.models import Acct, AcctEntry, AcctTran
-        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
         
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
@@ -440,11 +440,11 @@ class Registration(models.Model):
         """
         from datetime import datetime
         try:
-            from notification import models as notification
+            from tendenci.apps.notification import models as notification
         except:
             notification = None
-        from perms.utils import get_notice_recipients
-        from events.utils import email_admins
+        from tendenci.apps.perms.utils import get_notice_recipients
+        from tendenci.apps.events.utils import email_admins
 
         site_label = get_setting('site', 'global', 'sitedisplayname')
         site_url = get_setting('site', 'global', 'siteurl')
@@ -948,7 +948,7 @@ class Event(TendenciBaseModel):
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
-        from base.utils import format_datetime_range
+        from tendenci.apps.base.utils import format_datetime_range
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
 
     @property

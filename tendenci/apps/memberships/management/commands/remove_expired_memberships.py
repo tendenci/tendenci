@@ -10,8 +10,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from datetime import datetime
         from dateutil.relativedelta import relativedelta
-        from memberships.models import Membership, MembershipType
-        from user_groups.models import GroupMembership
+        from tendenci.apps.memberships.models import Membership, MembershipType
+        from tendenci.apps.user_groups.models import GroupMembership
 
         for membership_type in MembershipType.objects.all():
             grace_period = membership_type.expiration_grace_period

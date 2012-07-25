@@ -9,19 +9,18 @@ from django.http import (HttpResponseRedirect, HttpResponse, Http404,
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
 
-from base.http import Http403
-from site_settings.utils import get_setting
-from perms.decorators import admin_required
-from perms.object_perms import ObjectPermission
-from perms.utils import (update_perms_and_save, has_perm, has_view_perm,
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.decorators import admin_required
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.perms.utils import (update_perms_and_save, has_perm, has_view_perm,
     get_query_filters)
-from event_logs.models import EventLog
-from theme.shortcuts import themed_response as render_to_response
-
-from files.cache import FILE_IMAGE_PRE_KEY
-from files.models import File
-from files.utils import get_image, aspect_ratio
-from files.forms import FileForm, MostViewedForm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.files.cache import FILE_IMAGE_PRE_KEY
+from tendenci.apps.files.models import File
+from tendenci.apps.files.utils import get_image, aspect_ratio
+from tendenci.apps.files.forms import FileForm, MostViewedForm
 
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):

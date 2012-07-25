@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import date
+from djcelery.models import TaskMeta
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -14,25 +15,20 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.http import HttpResponse
 
-from djcelery.models import TaskMeta
-from base.http import Http403
-from site_settings.utils import get_setting
-from perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
-from entities.models import Entity
-from event_logs.models import EventLog
-from event_logs.utils import request_month_range, day_bars
-from event_logs.views import event_colors
+from tendenci.apps.base.http import Http403
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.event_logs.utils import request_month_range, day_bars
+from tendenci.apps.event_logs.views import event_colors
+from tendenci.apps.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm
+from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
+from tendenci.apps.user_groups.importer.forms import UploadForm
+from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
+from tendenci.apps.notification import models as notification
 
-from user_groups.models import Group, GroupMembership
-from user_groups.forms import GroupForm, GroupMembershipForm
-from user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
-from user_groups.importer.forms import UploadForm
-from user_groups.importer.tasks import ImportSubscribersTask
-
-try:
-    from notification import models as notification
-except:
-    notification = None
 
 def search(request, template_name="user_groups/search.html"):
     """
@@ -587,7 +583,7 @@ def group_subscriber_export(request, group_slug):
     import xlwt
     from ordereddict import OrderedDict
     from django.db import connection
-    from forms_builder.forms.models import FieldEntry
+    from tendenci.apps.forms_builder.forms.models import FieldEntry
     
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
@@ -651,7 +647,7 @@ def group_all_export(request, group_slug):
     import xlwt
     from ordereddict import OrderedDict
     from django.db import connection
-    from forms_builder.forms.models import FieldEntry
+    from tendenci.apps.forms_builder.forms.models import FieldEntry
 
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')

@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.db import models
 from django.conf import settings
 
-from social_auth.fields import JSONField
+from tendenci.apps.social_auth.fields import JSONField
 
 # If User class is overridden, it *must* provide the following fields,
 # or it won't be playing nicely with django.contrib.auth module:

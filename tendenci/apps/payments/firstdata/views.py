@@ -2,8 +2,8 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
-from payments.firstdata.utils import firstdata_thankyou_processing
-from event_logs.models import EventLog
+from tendenci.apps.payments.firstdata.utils import firstdata_thankyou_processing
+from tendenci.apps.event_logs.models import EventLog
 # http://www.firstdata.com/en_us/customer-center/merchants/support/first-data-global-gateway-api-software-landing#/content-product-1
 # http://www.firstdata.com/downloads/marketing-merchant/fd_globalgatewayconnect_usermanualnorthamerica.pdf
 

@@ -1,9 +1,11 @@
 import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from entities.managers import EntityManager
+from tendenci.apps.entities.managers import EntityManager
+
 
 class Entity(models.Model):
     guid = models.CharField(max_length=40)

@@ -1,16 +1,17 @@
 import uuid
+
+from timezones.fields import TimeZoneField
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.contrib.contenttypes import generic
 
-from timezones.fields import TimeZoneField
-from perms.models import TendenciBaseModel
-from entities.models import Entity
-from perms.object_perms import ObjectPermission
-
-from profiles.managers import ProfileManager, ProfileActiveManager
+from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 
 
 class Profile(TendenciBaseModel):
@@ -125,7 +126,7 @@ class Profile(TendenciBaseModel):
         return all([self._can_login(), self.user.is_superuser])
 
     def save(self, *args, **kwargs):
-        from campaign_monitor.utils import update_subscription
+        from tendenci.apps.campaign_monitor.utils import update_subscription
         if not self.id:
             self.guid = str(uuid.uuid1())
 

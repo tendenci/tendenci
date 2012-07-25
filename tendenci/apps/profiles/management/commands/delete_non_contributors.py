@@ -16,12 +16,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from django.contrib.auth.models import User
-        from directories.models import Directory
-        from articles.models import Article
-        from events.models import Event
-        from photos.models import Photo
-        from pages.models import Page
-        from news.models import News
+        from tendenci.apps.directories.models import Directory
+        from tendenci.apps.articles.models import Article
+        from tendenci.apps.events.models import Event
+        from tendenci.apps.photos.models import Photo
+        from tendenci.apps.pages.models import Page
+        from tendenci.apps.news.models import News
 
         contribs = []
 

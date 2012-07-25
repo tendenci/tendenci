@@ -6,11 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 
-from base.http import Http403
-from perms.utils import has_perm
-from event_logs.models import EventLog
-from subscribers.models import GroupSubscription
-from forms_builder.forms.models import Form
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.subscribers.models import GroupSubscription
+from tendenci.apps.forms_builder.forms.models import Form
 
 @login_required
 def subscribers(request, id, template_name="subscribers/subscribers.html"):

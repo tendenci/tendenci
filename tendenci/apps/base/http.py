@@ -1,6 +1,7 @@
 from django.http import HttpResponseForbidden
 from django.template import loader
 
+
 class Http403(Exception):
     pass
 

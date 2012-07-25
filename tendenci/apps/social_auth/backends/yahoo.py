@@ -3,7 +3,7 @@ Yahoo OpenID support
 
 No extra configurations are needed to make this work.
 """
-from social_auth.backends import OpenIDBackend, OpenIdAuth
+from tendenci.apps.social_auth.backends import OpenIDBackend, OpenIdAuth
 
 
 YAHOO_OPENID_URL = 'http://yahoo.com'

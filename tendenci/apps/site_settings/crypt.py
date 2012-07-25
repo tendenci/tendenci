@@ -1,6 +1,8 @@
 import base64
 from Crypto.Cipher import AES
+
 from django.conf import settings
+
 
 def encrypt(value):
     """Return the encrypted value of the setting.
@@ -28,7 +30,7 @@ def test():
     """Check if original values and decrypted values
     will still be equal to each other.
     """
-    from site_settings.models import Setting
+    from tendenci.apps.site_settings.models import Setting
     s = Setting.objects.all()
     for x in s:
         code = encrypt(x.value)

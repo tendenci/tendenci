@@ -2,8 +2,8 @@ import re
 from django.template import Node, Library, TemplateSyntaxError, Variable, VariableDoesNotExist
 from django.core.urlresolvers import reverse
 
-from photos.models import Image, Pool
-from base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.photos.models import Image, Pool
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 

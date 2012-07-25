@@ -11,8 +11,9 @@ from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.utils.importlib import import_module
 
-from theme.utils import get_theme_root
-from theme_editor.models import ThemeFileVersion
+from tendenci.apps.theme.utils import get_theme_root
+from tendenci.apps.theme_editor.models import ThemeFileVersion
+
 
 template_directory = "/templates"
 style_directory = "/media/css"

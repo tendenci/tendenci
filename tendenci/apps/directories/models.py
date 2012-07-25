@@ -9,17 +9,17 @@ from django.contrib.contenttypes import generic
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from tinymce import models as tinymce_models
-from meta.models import Meta as MetaTags
-from base.fields import SlugField
-from perms.models import TendenciBaseModel 
-from perms.object_perms import ObjectPermission
-from categories.models import CategoryItem
-from entities.models import Entity
-from invoices.models import Invoice
+from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.apps.base.fields import SlugField
+from tendenci.apps.perms.models import TendenciBaseModel 
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.categories.models import CategoryItem
+from tendenci.apps.entities.models import Entity
+from tendenci.apps.invoices.models import Invoice
 
-from directories.module_meta import DirectoryMeta
-from directories.managers import DirectoryManager
-from directories.choices import ADMIN_DURATION_CHOICES
+from tendenci.apps.directories.module_meta import DirectoryMeta
+from tendenci.apps.directories.managers import DirectoryManager
+from tendenci.apps.directories.choices import ADMIN_DURATION_CHOICES
 
 
 def file_directory(instance, filename):
@@ -128,8 +128,8 @@ class Directory(TendenciBaseModel):
         """
         Make the accounting entries for the directory sale
         """
-        from accountings.models import Acct, AcctEntry, AcctTran
-        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:

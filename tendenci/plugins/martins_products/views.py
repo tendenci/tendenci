@@ -12,7 +12,7 @@ from site_settings.utils import get_setting
 from event_logs.models import EventLog
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
 

@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
-from metrics.models import Metric
+from tendenci.apps.metrics.models import Metric
 
 
 class Command(BaseCommand):
@@ -49,7 +49,7 @@ class Command(BaseCommand):
         """
         Get all users from the profiles_profile table
         """
-        from profiles.models import Profile
+        from tendenci.apps.profiles.models import Profile
 
         return Profile.objects.filter(status_detail="active", status=True)
 
@@ -57,7 +57,7 @@ class Command(BaseCommand):
         """
         Get all members from the memberships_membership table
         """
-        from memberships.models import Membership
+        from tendenci.apps.memberships.models import Membership
 
         return Membership.objects.active()
 
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         1. Filter the visits by this month only
         2. Filter the visits by non-bots
         """
-        from event_logs.models import EventLog
+        from tendenci.apps.event_logs.models import EventLog
         today = date.today()
         
         # if the script runs today, we collect the data from yesterday

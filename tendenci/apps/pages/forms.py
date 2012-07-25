@@ -1,13 +1,13 @@
 import imghdr
 from os.path import splitext, basename
 
-from pages.models import Page
-from perms.forms import TendenciBaseForm
+from tendenci.apps.pages.models import Page
+from tendenci.apps.perms.forms import TendenciBaseForm
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from tinymce.widgets import TinyMCE
-from base.utils import get_template_list
+from tendenci.apps.base.utils import get_template_list
 
 template_choices = [('default.html','Default')]
 template_choices += get_template_list()

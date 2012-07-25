@@ -3,7 +3,7 @@ import simplejson as json
 
 from django.core.management.base import BaseCommand, CommandError
 
-from site_settings.models import Setting
+from tendenci.apps.site_settings.models import Setting
 
 
 class Command(BaseCommand):

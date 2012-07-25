@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns("memberships.views",
+urlpatterns = patterns("tendenci.apps.memberships.views",
 
     # memberships
     url(r"^$", "membership_index", name="membership.index"),
@@ -10,7 +10,7 @@ urlpatterns = patterns("memberships.views",
     url(r"^(?P<id>\d+)/edit/$", "membership_edit", name="membership.edit"),
 
     # notices
-    (r'^notices/', include('memberships.notices.urls')),
+    (r'^notices/', include('tendenci.apps.memberships.notices.urls')),
 
     # import
     url(r"^import/$", "membership_import_upload", name="membership_import"),

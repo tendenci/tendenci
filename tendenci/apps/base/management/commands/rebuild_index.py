@@ -1,8 +1,10 @@
+from haystack.management.commands.clear_index import Command as ClearCommand
+
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from haystack.management.commands.clear_index import Command as ClearCommand
-from update_index import Command as UpdateCommand
+
+from tendenci.apps.update_index import Command as UpdateCommand
 
 
 class Command(BaseCommand):

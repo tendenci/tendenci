@@ -12,9 +12,9 @@ from django.shortcuts import redirect
 from django.conf import settings
 
 # local
-from base.cache import IMAGE_PREVIEW_CACHE
-from theme.shortcuts import themed_response as render_to_response
-from site_settings.utils import get_setting
+from tendenci.apps.base.cache import IMAGE_PREVIEW_CACHE
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def image_preview(request, app_label, model, id,  size):
@@ -35,12 +35,8 @@ def image_preview(request, app_label, model, id,  size):
     original_size = size
     
     if not response:
-        from base.utils import parse_image_sources, make_image_object_from_url, image_rescale
-        
-        from pages.models import Page
-        from articles.models import Article
-        from news.models import News
- 
+        from tendenci.apps.base.utils import parse_image_sources, make_image_object_from_url, image_rescale
+
         # set sizes
         size_min = (30,30)
         size_cap = (512,512)
@@ -50,19 +46,9 @@ def image_preview(request, app_label, model, id,  size):
         else: size = int(size), int(size)
 
         if size > size_cap: size = size_cap
-    
+
         image_urls = []
-        
-        # siphon image urls; make fake image (starting image)
-        if isinstance(instance,Page):
-            image_urls = parse_image_sources(instance.content)
-            
-        if isinstance(instance,Article):
-            image_urls = parse_image_sources(instance.body)
-                  
-        if isinstance(instance,News):
-            image_urls = parse_image_sources(instance.body)
-                                 
+
         image = Pil.new('RGBA',size_min)
     
         # find biggest image, dimension-wise
@@ -125,7 +111,7 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     from django.utils.http import http_date
     from django.views.static import was_modified_since, directory_index
 
-    import settings
+    from django.conf import settings
 
     document_root = os.path.join(settings.PROJECT_ROOT,'plugins',plugin,'media')
 
@@ -224,14 +210,14 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
-    from event_logs.models import EventLog
+    from tendenci.apps.event_logs.models import EventLog
     if not request.user.profile.is_superuser:
         raise Http404
     EventLog.objects.log()
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
-    from event_logs.models import EventLog
+    from tendenci.apps.event_logs.models import EventLog
 
     EventLog.objects.log()
 

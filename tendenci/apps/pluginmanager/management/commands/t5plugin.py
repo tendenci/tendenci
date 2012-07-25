@@ -3,7 +3,7 @@ import os
 from django.core.management.base import CommandError, LabelCommand
 from django.utils.importlib import import_module
 
-from pluginmanager.utils import copy_helper
+from tendenci.apps.pluginmanager.utils import copy_helper
 
 class Command(LabelCommand):
     help = "Creates a Django app directory structure for the given app name in the current directory."

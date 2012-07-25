@@ -5,9 +5,9 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
-from base.http import Http403
-from contributions.models import Contribution
-from perms.utils import has_perm
+from tendenci.apps.base.http import Http403
+from tendenci.apps.contributions.models import Contribution
+from tendenci.apps.perms.utils import has_perm
 
 @login_required
 def index(request, id=None, template_name="contributions/view.html"):

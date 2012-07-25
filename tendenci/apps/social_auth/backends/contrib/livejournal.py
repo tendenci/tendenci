@@ -6,7 +6,7 @@ username.livejournal.com. Username is retrieved from the identity url.
 """
 import urlparse
 
-from social_auth.backends import OpenIDBackend, OpenIdAuth, USERNAME
+from tendenci.apps.social_auth.backends import OpenIDBackend, OpenIdAuth, USERNAME
 
 
 # LiveJournal conf

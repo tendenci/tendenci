@@ -17,13 +17,13 @@ from django.utils.encoding import smart_str
 from django.utils import simplejson
 from django.db.models import Q
 
-from imports.utils import render_excel
+from tendenci.apps.imports.utils import render_excel
 
-from base.http import Http403
-from perms.utils import has_perm
-from event_logs.models import EventLog
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
 
-from corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
+from tendenci.apps.corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
                                           CorporateMembershipType,
                                           CorporateMembershipRep, 
                                           Creator,
@@ -31,7 +31,7 @@ from corporate_memberships.models import (CorpApp, CorpField, CorporateMembershi
                                           IndivMembRenewEntry,
                                           CorpFieldEntry,
                                           AuthorizedDomain)
-from corporate_memberships.forms import (CorpMembForm, 
+from tendenci.apps.corporate_memberships.forms import (CorpMembForm, 
                                          CreatorForm,
                                          CorpApproveForm,
                                          CorpMembRepForm, 
@@ -39,7 +39,7 @@ from corporate_memberships.forms import (CorpMembForm,
                                          CorpMembRenewForm,
                                          CSVForm,
                                          ExportForm)
-from corporate_memberships.utils import (get_corporate_membership_type_choices,
+from tendenci.apps.corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          get_payment_method_choices,
                                          corp_memb_inv_add, 
                                          dues_rep_emails_list,
@@ -48,15 +48,15 @@ from corporate_memberships.utils import (get_corporate_membership_type_choices,
                                          new_corp_mems_from_csv,
                                          get_over_time_stats,
                                          get_summary)
-#from memberships.models import MembershipType
-from memberships.models import Membership
+#from tendenci.apps.memberships.models import MembershipType
+from tendenci.apps.memberships.models import Membership
 
-from perms.utils import get_notice_recipients
-from base.utils import send_email_notification
-from files.models import File
-from profiles.models import Profile
-from corporate_memberships.settings import use_search_index
-from site_settings.utils import get_setting
+from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.apps.base.utils import send_email_notification
+from tendenci.apps.files.models import File
+from tendenci.apps.profiles.models import Profile
+from tendenci.apps.corporate_memberships.settings import use_search_index
+from tendenci.apps.site_settings.utils import get_setting
 
 
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):

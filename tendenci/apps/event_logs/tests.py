@@ -7,7 +7,7 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 
-from event_logs.models import EventLog
+from tendenci.apps.event_logs.models import EventLog
 
 class EventLogTest(TestCase):
     def setUp(self):

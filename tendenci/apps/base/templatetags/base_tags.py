@@ -2,23 +2,24 @@ import re
 import urllib2
 from hashlib import md5
 
+from tagging.templatetags.tagging_tags import TagsForObjectNode
+from tagging.models import Tag
 from BeautifulSoup import BeautifulStoneSoup
+
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
-from base.utils import url_exists
-from profiles.models import Profile
-from tagging.templatetags.tagging_tags import TagsForObjectNode
-from tagging.models import Tag
+from tendenci.apps.base.utils import url_exists
+from tendenci.apps.profiles.models import Profile
 
 register = Library()
 
 
 @register.inclusion_tag("base/fb_like_iframe.html")
 def fb_like_button_iframe(url, show_faces='false', width=400, height=30):
-    from site_settings.utils import get_setting
+    from tendenci.apps.site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
     url = '%s%s' % (site_url,url)
     if show_faces.lower() == 'true':

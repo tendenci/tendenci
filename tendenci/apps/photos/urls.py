@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import url, patterns
-from photos.feeds import LatestAlbums, LatestAlbumPhotos
+from tendenci.apps.photos.feeds import LatestAlbums, LatestAlbumPhotos
 
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns('tendenci.apps',
 
     ## photos ##
 

@@ -14,23 +14,23 @@ from django.db.models import Q
 from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
 
-from memberships.fields import PriceInput
-from models import (CorporateMembershipType, 
+from tendenci.apps.memberships.fields import PriceInput
+from tendenci.apps.corporate_memberships.models import (CorporateMembershipType, 
                     CorpApp, 
                     CorpField, 
                     CorporateMembership, 
                     Creator,
                     CorporateMembershipRep, 
                     CorpMembRenewEntry)
-from corporate_memberships.utils import (get_corpapp_default_fields_list, 
+from tendenci.apps.corporate_memberships.utils import (get_corpapp_default_fields_list, 
                                          update_auth_domains, 
                                          get_payment_method_choices,
                                          get_indiv_membs_choices,
                                          get_corporate_membership_type_choices,
                                          csv_to_dict)
-from corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from base.fields import SplitDateTimeField
-from payments.models import PaymentMethod
+from tendenci.apps.corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.apps.payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 

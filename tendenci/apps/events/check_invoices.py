@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
-from events.models import Registration
-from invoices.models import Invoice
+from tendenci.apps.events.models import Registration
+from tendenci.apps.invoices.models import Invoice
 
 regs = Registration.objects.all()
 

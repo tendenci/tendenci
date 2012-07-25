@@ -1,5 +1,5 @@
 from django.template import Library, Node, Variable
-from categories.models import Category
+from tendenci.apps.categories.models import Category
 
 register = Library()
 

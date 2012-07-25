@@ -1,7 +1,7 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 
-from base.template_tags import ListNode, parse_tag_kwargs
-from news.models import News
+from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.apps.news.models import News
 
 register = Library()
 

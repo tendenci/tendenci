@@ -4,8 +4,8 @@ from django.template.loader import get_template, Template
 from django.http import HttpResponse
 from django.conf import settings
 
-from theme.utils import get_theme_template
-from theme.template_loaders import get_default_template
+from tendenci.apps.theme.utils import get_theme_template
+from tendenci.apps.theme.template_loaders import get_default_template
 
 def themed_response(*args, **kwargs):
     """Returns a HttpResponse whose content is filled with the result of calling

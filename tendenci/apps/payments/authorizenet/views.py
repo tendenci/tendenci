@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from payments.authorizenet.utils import authorizenet_thankyou_processing
+from tendenci.apps.payments.authorizenet.utils import authorizenet_thankyou_processing
 
 
 @csrf_exempt

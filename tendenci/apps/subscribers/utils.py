@@ -1,4 +1,4 @@
-from subscribers.models import SubscriberData, GroupSubscription
+from tendenci.apps.subscribers.models import SubscriberData, GroupSubscription
 
 def get_members_and_subscribers(group):
     members = group.groupmembership_set.all()

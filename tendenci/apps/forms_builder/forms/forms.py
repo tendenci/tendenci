@@ -11,16 +11,16 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
-from site_settings.utils import get_setting
-from payments.models import PaymentMethod
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.payments.models import PaymentMethod
 from tinymce.widgets import TinyMCE
-from perms.forms import TendenciBaseForm
+from tendenci.apps.perms.forms import TendenciBaseForm
 from captcha.fields import CaptchaField
-from user_groups.models import Group
+from tendenci.apps.user_groups.models import Group
 
 
-from forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
+from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 

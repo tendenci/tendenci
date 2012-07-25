@@ -10,17 +10,17 @@ from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
 
-from site_settings.utils import get_setting
-from events.models import (Event, Place, Speaker, Organizer,
+from tendenci.apps.site_settings.utils import get_setting
+from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption)
-from events.forms import FormForCustomRegForm
-from perms.utils import get_query_filters
-from discounts.models import Discount, DiscountUse
-from discounts.utils import assign_discount
+from tendenci.apps.events.forms import FormForCustomRegForm
+from tendenci.apps.perms.utils import get_query_filters
+from tendenci.apps.discounts.models import Discount, DiscountUse
+from tendenci.apps.discounts.utils import assign_discount
 
 try:
-    from notification import models as notification
+    from tendenci.apps.notification import models as notification
 except:
     notification = None
     
@@ -92,7 +92,7 @@ def render_registrant_excel(sheet, rows_list, balance_index, styles, start=0):
 def get_ievent(request, d, event_id):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
-    from events.models import Event
+    from tendenci.apps.events.models import Event
     
     site_url = get_setting('site', 'global', 'siteurl')
     
@@ -149,7 +149,7 @@ def get_ievent(request, d, event_id):
 def get_vevents(request, d):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
-    from events.models import Event
+    from tendenci.apps.events.models import Event
     
     site_url = get_setting('site', 'global', 'siteurl')
     

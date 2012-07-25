@@ -1,4 +1,5 @@
 import os
+
 from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import RequestContext
@@ -7,15 +8,16 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
-from base.http import Http403
-from perms.utils import has_perm
-from event_logs.models import EventLog
-from theme.utils import get_theme, theme_choices as theme_choice_list
-from theme_editor.models import ThemeFileVersion
-from theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
-from theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
-from theme_editor.utils import qstr_is_file, qstr_is_dir, copy
-from theme_editor.utils import handle_uploaded_file, app_templates
+
+from tendenci.apps.base.http import Http403
+from tendenci.apps.perms.utils import has_perm
+from tendenci.apps.event_logs.models import EventLog
+from tendenci.apps.theme.utils import get_theme, theme_choices as theme_choice_list
+from tendenci.apps.theme_editor.models import ThemeFileVersion
+from tendenci.apps.theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
+from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
+from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
+from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates
 
 DEFAULT_FILE = 'templates/homepage.html'
 

@@ -1,4 +1,5 @@
 from itertools import groupby
+
 from django.forms import MultipleChoiceField, CheckboxInput
 from django.contrib.contenttypes.models import ContentType
 from django.forms.widgets import CheckboxSelectMultiple
@@ -6,8 +7,9 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 
-from perms.object_perms import ObjectPermission
-from user_groups.models import Group
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.user_groups.models import Group
+
 
 user_perm_options = {
     'label': 'User Permissions',

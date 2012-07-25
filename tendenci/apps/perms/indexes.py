@@ -1,8 +1,10 @@
 from haystack import indexes
+
 from django.db.models import signals
 
-from perms.object_perms import ObjectPermission
-from search.indexes import CustomSearchIndex
+from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.apps.search.indexes import CustomSearchIndex
+
 
 class TendenciBaseSearchIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

@@ -5,10 +5,10 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from captcha.fields import CaptchaField
-from resumes.models import Resume
-from perms.forms import TendenciBaseForm
+from tendenci.apps.resumes.models import Resume
+from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from base.fields import SplitDateTimeField
+from tendenci.apps.base.fields import SplitDateTimeField
 
 class ResumeForm(TendenciBaseForm):
 

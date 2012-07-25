@@ -4,7 +4,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
-from user_groups.models import ImportFile
+from tendenci.apps.user_groups.models import ImportFile
 
 class UploadForm(forms.ModelForm):
     """

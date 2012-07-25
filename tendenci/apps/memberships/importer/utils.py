@@ -1,8 +1,8 @@
 import re
 from datetime import datetime
 from dateutil.parser import parse as dt_parse
-from memberships.models import Membership, MembershipType
-from memberships.utils import csv_to_dict, get_user
+from tendenci.apps.memberships.models import Membership, MembershipType
+from tendenci.apps.memberships.utils import csv_to_dict, get_user
 
 
 def clean_username(un):
@@ -61,7 +61,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         join dt, renew dt, expire dt,
         added, skipped, renewal
     """
-    from base.utils import is_blank
+    from tendenci.apps.base.utils import is_blank
 
     # initialize membership import settings
     membership_import = kwargs['membership_import']

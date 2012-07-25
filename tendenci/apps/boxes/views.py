@@ -2,9 +2,9 @@ from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
-from theme.shortcuts import themed_response as render_to_response
-from base.http import Http403
-from exports.utils import run_export_task
+from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.apps.base.http import Http403
+from tendenci.apps.exports.utils import run_export_task
 
 
 @login_required

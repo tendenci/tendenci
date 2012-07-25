@@ -6,7 +6,7 @@ class ProfileMiddleware(object):
         Creates a profile for logged in users without one.
     """
     def process_request(self, request):
-        from profiles.models import Profile
+        from tendenci.apps.profiles.models import Profile
         if request.user.is_anonymous():
             request.user.profile = Profile(status=False, status_detail="inactive", user=User(is_staff=False, is_superuser=False, is_active=False))
         else:
