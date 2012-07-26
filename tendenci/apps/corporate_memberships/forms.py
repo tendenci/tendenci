@@ -30,7 +30,7 @@ from tendenci.apps.corporate_memberships.utils import (get_corpapp_default_field
                                          csv_to_dict)
 from tendenci.apps.corporate_memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.apps.payments.models import PaymentMethod
+from tendenci.core.payments.models import PaymentMethod
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 

@@ -7,8 +7,8 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.template.defaultfilters import slugify
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.theme.utils import get_theme_root
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.theme.utils import get_theme_root
 
 STOP_WORDS = ['able','about','across','after','all','almost','also','am',
               'among','an','and','any','are','as','at','be','because',
@@ -162,7 +162,7 @@ def send_email_notification(notice_name, recipients, extra_context):
     recipients - a list of emails
     """
     try:
-        from tendenci.apps.notification import models as notification
+        from tendenci.contrib.notifications import models as notification
     except:
         notification = None
     if notification and recipients:

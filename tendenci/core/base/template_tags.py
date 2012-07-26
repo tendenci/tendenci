@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
 
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.core.perms.utils import get_query_filters
 
 
 def parse_tag_kwargs(bits):

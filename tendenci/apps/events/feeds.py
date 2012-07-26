@@ -1,7 +1,7 @@
 from tendenci.apps.rss.feedsmanager import SubFeed
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import PUBLIC_FILTER
-from tendenci.apps.sitemaps import TendenciSitemap
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import PUBLIC_FILTER
+from tendenci.core.sitemaps import TendenciSitemap
 
 from tendenci.apps.events.models import Event
 

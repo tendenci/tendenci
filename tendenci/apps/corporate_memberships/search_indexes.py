@@ -2,7 +2,7 @@ from haystack import indexes
 from haystack import site
 
 from tendenci.apps.corporate_memberships.models import CorporateMembership, CorpMembRenewEntry
-from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 class CorporateMembershipIndex(TendenciBaseSearchIndex):
     corporate_membership_type = indexes.CharField(model_attr='corporate_membership_type')

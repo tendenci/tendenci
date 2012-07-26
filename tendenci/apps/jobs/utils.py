@@ -2,9 +2,9 @@
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.jobs.models import Job, JobPricing
-from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.payments.models import Payment
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.contrib.invoices.models import Invoice
+from tendenci.core.payments.models import Payment
+from tendenci.core.site_settings.utils import get_setting
 
 def get_payment_method_choices(user):
     if user.profile.is_superuser:

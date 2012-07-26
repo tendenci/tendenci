@@ -1,4 +1,4 @@
-from tendenci.apps.perms.managers import TendenciBaseManager
+from tendenci.core.perms.managers import TendenciBaseManager
 from tendenci.core.base.utils import now_localized
 
 class ResumeManager(TendenciBaseManager):

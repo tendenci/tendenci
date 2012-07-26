@@ -7,14 +7,14 @@ from django.contrib.contenttypes import generic
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
-from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.news.managers import NewsManager
 from tinymce import models as tinymce_models
-from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.apps.news.module_meta import NewsMeta
-from tendenci.apps.entities.models import Entity
-from tendenci.apps.categories.models import CategoryItem
-from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.contrib.entities.models import Entity
+from tendenci.core.categories.models import CategoryItem
+from tendenci.core.perms.object_perms import ObjectPermission
 
 class News(TendenciBaseModel):
     guid = models.CharField(max_length=40)

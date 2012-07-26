@@ -34,8 +34,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from createsend import CreateSend, Client, List, Subscriber, \
                 BadRequest, Unauthorized
-        from tendenci.apps.site_settings.utils import get_setting
-        from tendenci.apps.emails.models import Email
+        from tendenci.core.site_settings.utils import get_setting
+        from tendenci.core.emails.models import Email
             
             
         def get_contact_email():

@@ -13,10 +13,10 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.memberships.models import AppField, Membership
-from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.payments.models import Payment
+from tendenci.contrib.invoices.models import Invoice
+from tendenci.core.payments.models import Payment
 
 
 # get the corpapp default fields list from json
@@ -278,7 +278,7 @@ def corp_memb_update_perms(corp_memb, **kwargs):
     view and change permissions only - no delete permission assigned 
     because we don't want them to delete corporate membership records.
     """
-    from tendenci.apps.perms.object_perms import ObjectPermission
+    from tendenci.core.perms.object_perms import ObjectPermission
     from tendenci.apps.corporate_memberships.models import CorporateMembershipRep
     
     ObjectPermission.objects.remove_all(corp_memb)

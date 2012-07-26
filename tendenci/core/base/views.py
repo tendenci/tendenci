@@ -13,8 +13,8 @@ from django.conf import settings
 
 # local
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.site_settings.utils import get_setting
 
 
 def image_preview(request, app_label, model, id,  size):
@@ -210,14 +210,14 @@ def memcached_status(request):
 
 
 def feedback(request, template_name="base/feedback.html"):
-    from tendenci.apps.event_logs.models import EventLog
+    from tendenci.core.event_logs.models import EventLog
     if not request.user.profile.is_superuser:
         raise Http404
     EventLog.objects.log()
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
-    from tendenci.apps.event_logs.models import EventLog
+    from tendenci.core.event_logs.models import EventLog
 
     EventLog.objects.log()
 

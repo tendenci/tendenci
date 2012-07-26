@@ -5,7 +5,7 @@ from django.utils.encoding import iri_to_uri
 
 from tendenci.apps.events.models import CustomRegForm, CustomRegField, Registrant
 from tendenci.apps.events.forms import CustomRegFormAdminForm, CustomRegFormForField 
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.event_logs.models import EventLog
 
 class EventAdmin(admin.ModelAdmin):
 #    form = EventForm

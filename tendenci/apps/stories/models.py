@@ -6,14 +6,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.categories.models import CategoryItem
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.categories.models import CategoryItem
+from tendenci.core.site_settings.utils import get_setting
 from tagging.fields import TagField
-from tendenci.apps.files.models import File, file_directory
-from tendenci.apps.perms.models import TendenciBaseModel
+from tendenci.core.files.models import File, file_directory
+from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.stories.managers import StoryManager
-from tendenci.apps.entities.models import Entity
+from tendenci.contrib.entities.models import Entity
 
 
 class Story(TendenciBaseModel):

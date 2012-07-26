@@ -7,9 +7,9 @@ class Command(BaseCommand):
     each membership accordingly.
     """
     def handle(self, *args, **kwargs):
-        from tendenci.apps.site_settings.utils import get_setting
+        from tendenci.core.site_settings.utils import get_setting
         from tendenci.apps.memberships.models import Membership
-        from tendenci.apps.user_groups.models import GroupMembership
+        from tendenci.contrib.user_groups.models import GroupMembership
         protection = get_setting('module', 'memberships', 'memberprotection')
 
         if protection == 'public':

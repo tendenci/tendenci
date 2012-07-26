@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import slugify
 from django.db.models import Q
 
-from tendenci.apps.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm
 from tendenci.apps.memberships.models import App, AppField, AppEntry, Membership, MembershipType
 
 
@@ -467,7 +467,7 @@ def make_csv(**kwargs):
     Make a CSV file
     """
     from django.template.defaultfilters import slugify
-    from tendenci.apps.imports.utils import render_excel
+    from tendenci.core.imports.utils import render_excel
 
     slug = kwargs.get('slug')
 

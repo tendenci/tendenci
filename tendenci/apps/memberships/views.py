@@ -15,18 +15,18 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 
 from djcelery.models import TaskMeta
 from geraldo.generators import PDFGenerator
-from tendenci.apps.notification.utils import send_welcome_email
+from tendenci.contrib.notifications.utils import send_welcome_email
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import send_email_notification
-from tendenci.apps.perms.utils import update_perms_and_save, get_query_filters
-from tendenci.apps.perms.utils import has_perm
+from tendenci.core.perms.utils import update_perms_and_save, get_query_filters
+from tendenci.core.perms.utils import has_perm
 from tendenci.apps.corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from reports import ReportNewMems
-from tendenci.apps.files.models import File
-from tendenci.apps.exports.utils import render_csv
+from tendenci.core.files.models import File
+from tendenci.core.exports.utils import render_csv
 
 from tendenci.apps.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, AppField, MembershipImport)
@@ -90,7 +90,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     """
     Membership edit.
     """
-    from tendenci.apps.user_groups.models import GroupMembership
+    from tendenci.contrib.user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
 
     if not has_perm(request.user, 'memberships.change_membership', membership):

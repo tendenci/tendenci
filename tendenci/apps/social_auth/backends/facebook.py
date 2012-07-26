@@ -20,8 +20,8 @@ from django.contrib.auth import authenticate
 
 from tendenci.apps.social_auth.backends import BaseOAuth, OAuthBackend, USERNAME
 
-from tendenci.apps.site_settings.models import Setting
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.models import Setting
+from tendenci.core.site_settings.utils import get_setting
 
 # Facebook configuration
 FACEBOOK_SERVER = 'graph.facebook.com'

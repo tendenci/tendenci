@@ -5,15 +5,15 @@ from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.exports.utils import run_export_task
-from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.exports.utils import run_export_task
+from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
 from tendenci.apps.help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from tendenci.apps.help_files.forms import RequestForm, HelpFileForm
-from tendenci.apps.notification import models as notification
+from tendenci.contrib.notifications import models as notification
 
 
 def index(request, template_name="help_files/index.html"):

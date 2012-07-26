@@ -4,7 +4,7 @@ from django.forms import widgets
 from tendenci.apps.help_files.models import Request, HelpFile, Topic
 from tinymce.widgets import TinyMCE
 from captcha.fields import CaptchaField
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.core.perms.forms import TendenciBaseForm
 
 class RequestForm(forms.ModelForm):
     captcha = CaptchaField()

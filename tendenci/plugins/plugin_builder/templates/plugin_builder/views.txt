@@ -9,7 +9,7 @@ from perms.utils import get_notice_recipients, has_perm
 from event_logs.models import EventLog
 
 try:
-    from tendenci.apps.notification import models as notification
+    from tendenci.contrib.notifications import models as notification
 except:
     notification = None
 

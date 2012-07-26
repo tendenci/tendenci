@@ -9,8 +9,8 @@ from django.db.models import signals
 from tendenci.apps.events.models import Event, Registrant
 from tendenci.apps.events.utils import count_event_spots_taken
 from tendenci.apps.events.models import Type as EventType
-from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
-from tendenci.apps.perms.object_perms import ObjectPermission
+from tendenci.core.perms.indexes import TendenciBaseSearchIndex
+from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.search.indexes import CustomSearchIndex
 
 class EventIndex(TendenciBaseSearchIndex):

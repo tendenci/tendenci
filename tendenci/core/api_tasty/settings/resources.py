@@ -1,5 +1,5 @@
 from tastypie import fields
-from tendenci.apps.site_settings.models import Setting
+from tendenci.core.site_settings.models import Setting
 
 from tendenci.core.api_tasty.resources import TendenciResource
 from tendenci.core.api_tasty.validation import TendenciValidation

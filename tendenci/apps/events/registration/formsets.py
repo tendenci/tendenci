@@ -5,7 +5,7 @@ from django.forms.formsets import BaseFormSet
 from django.forms.util import ErrorList
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.events.registration.utils import can_use_pricing
 
 class RegistrantBaseFormSet(BaseFormSet):

@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
 
 site_url = get_setting('site', 'global', 'siteurl')

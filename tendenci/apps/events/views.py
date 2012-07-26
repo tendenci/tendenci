@@ -28,15 +28,15 @@ from django.utils import simplejson as json
 #from django.forms.models import BaseModelFormSet
 
 from tendenci.core.base.http import Http403
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import (has_perm, get_notice_recipients,
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
     get_query_filters, update_perms_and_save, has_view_perm)
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.files.models import File
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.core.meta.forms import MetaForm
+from tendenci.core.files.models import File
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
@@ -57,9 +57,9 @@ from tendenci.apps.events.utils import (email_registrants,
 from tendenci.apps.events.addons.forms import RegAddonForm
 from tendenci.apps.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.apps.events.addons.utils import get_available_addons
-from tendenci.apps.discounts.models import Discount
+from tendenci.contrib.discounts.models import Discount
 
-from tendenci.apps.notification import models as notification
+from tendenci.contrib.notifications import models as notification
 
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """
@@ -2319,7 +2319,7 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
 
 @login_required
 def message_add(request, event_id, form_class=MessageAddForm, template_name='events/message/add.html'):
-    from tendenci.apps.emails.models import Email
+    from tendenci.core.emails.models import Email
     event = get_object_or_404(Event, pk=event_id)
     if not has_perm(request.user,'events.change_event',event): raise Http403
 

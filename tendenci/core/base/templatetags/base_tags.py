@@ -12,14 +12,14 @@ from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
 from tendenci.core.base.utils import url_exists
-from tendenci.apps.profiles.models import Profile
+from tendenci.contrib.profiles.models import Profile
 
 register = Library()
 
 
 @register.inclusion_tag("base/fb_like_iframe.html")
 def fb_like_button_iframe(url, show_faces='false', width=400, height=30):
-    from tendenci.apps.site_settings.utils import get_setting
+    from tendenci.core.site_settings.utils import get_setting
     site_url = get_setting('site', 'global', 'siteurl')
     url = '%s%s' % (site_url,url)
     if show_faces.lower() == 'true':

@@ -6,10 +6,10 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 #from django.contrib.auth.models import User
 
-from tendenci.apps.registration.forms import RegistrationForm
+from tendenci.contrib.registration.forms import RegistrationForm
 from forms import LoginForm
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.decorators import ssl_required
 
 @ssl_required
@@ -124,7 +124,7 @@ def register(request, success_url=None,
             # add to the default group(s)
             default_user_groups =[g.strip() for g in (get_setting('module', 'users', 'defaultusergroup')).split(',')]
             if default_user_groups:
-                from tendenci.apps.user_groups.models import Group, GroupMembership
+                from tendenci.contrib.user_groups.models import Group, GroupMembership
                 from django.db.models import Q
                 for group_name in default_user_groups:
                     groups = Group.objects.filter(Q(name=group_name) | Q(label=group_name)).filter(allow_self_add=1, status=1, status_detail='active')

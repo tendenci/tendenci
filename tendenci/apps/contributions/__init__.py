@@ -3,11 +3,11 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import AnonymousUser
 
 from tendenci.apps.contributions.models import Contribution
-from tendenci.apps.pages.models import Page
+from tendenci.contrib.pages.models import Page
 from tendenci.apps.news.models import News
 from tendenci.apps.photos.models import PhotoSet, Image
 from tendenci.apps.stories.models import Story
-from tendenci.apps.files.models import File
+from tendenci.core.files.models import File
 
 
 def save_contribution(sender, **kwargs):

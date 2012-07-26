@@ -7,7 +7,7 @@ from django.db import models
 from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.forms import RecurringPaymentForm
 
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.event_logs.models import EventLog
 from tendenci.core.base.utils import tcurrency
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):

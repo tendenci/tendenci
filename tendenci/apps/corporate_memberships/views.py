@@ -17,11 +17,11 @@ from django.utils.encoding import smart_str
 from django.utils import simplejson
 from django.db.models import Q
 
-from tendenci.apps.imports.utils import render_excel
+from tendenci.core.imports.utils import render_excel
 
 from tendenci.core.base.http import Http403
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.perms.utils import has_perm
+from tendenci.core.event_logs.models import EventLog
 
 from tendenci.apps.corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
                                           CorporateMembershipType,
@@ -51,12 +51,12 @@ from tendenci.apps.corporate_memberships.utils import (get_corporate_membership_
 #from tendenci.apps.memberships.models import MembershipType
 from tendenci.apps.memberships.models import Membership
 
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.base.utils import send_email_notification
-from tendenci.apps.files.models import File
-from tendenci.apps.profiles.models import Profile
+from tendenci.core.files.models import File
+from tendenci.contrib.profiles.models import Profile
 from tendenci.apps.corporate_memberships.settings import use_search_index
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
 
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):

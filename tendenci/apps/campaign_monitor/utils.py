@@ -1,6 +1,6 @@
 from createsend import Client
 from django.conf import settings
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.campaign_monitor.models import Campaign, Template
 from createsend import CreateSend, Client, Subscriber
 from createsend.createsend import BadRequest

@@ -16,12 +16,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
 
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
-from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.files.utils import get_image
+from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.files.utils import get_image
 from djcelery.models import TaskMeta
 
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
@@ -369,7 +369,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 
 @login_required
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
-    from tendenci.apps.perms.object_perms import ObjectPermission
+    from tendenci.core.perms.object_perms import ObjectPermission
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
@@ -490,7 +490,7 @@ def photos_batch_add(request, photoset_id=0):
         photoset_id is passed via url
     """
     import uuid
-    from tendenci.apps.perms.object_perms import ObjectPermission
+    from tendenci.core.perms.object_perms import ObjectPermission
 
 
     # photoset permission required to add photos

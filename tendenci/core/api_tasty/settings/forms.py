@@ -1,5 +1,5 @@
 from django import forms
-from tendenci.apps.site_settings.models import Setting
+from tendenci.core.site_settings.models import Setting
 
 class SettingForm(forms.ModelForm):
     """
@@ -49,7 +49,7 @@ class SettingForm(forms.ModelForm):
         
     def clean(self):
         """
-        Clean method is based on clean_settings_form from tendenci.apps.site_settings.forms.
+        Clean method is based on clean_settings_form from tendenci.core.site_settings.forms.
         """
         setting = self.instance
         cleaned_data = super(SettingForm, self).clean()
@@ -74,7 +74,7 @@ class SettingForm(forms.ModelForm):
                         raise forms.ValidationError("'%s' must be a File pk" % setting.label)
                     
                     #if the value is an int use it as pk to get a File
-                    from tendenci.apps.files.models import File as TendenciFile
+                    from tendenci.core.files.models import File as TendenciFile
                     try:
                         tfile = TendenciFile.objects.get(pk=field_value)
                     except TendenciFile.DoesNotExist:

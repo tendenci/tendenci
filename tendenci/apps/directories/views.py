@@ -9,20 +9,20 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
-from tendenci.apps.perms.utils import (get_notice_recipients,
+from tendenci.core.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.meta.forms import MetaForm
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.exports.utils import run_export_task
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.meta.models import Meta as MetaTags
+from tendenci.core.meta.forms import MetaForm
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.forms import DirectoryForm, DirectoryPricingForm
 from tendenci.apps.directories.utils import directory_set_inv_payment
-from tendenci.apps.notification import models as notification
+from tendenci.contrib.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
 
 

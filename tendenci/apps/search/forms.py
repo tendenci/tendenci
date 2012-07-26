@@ -8,8 +8,8 @@ from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.registry import site as registry_site
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.registry import site as registry_site
 try:
     from tendenci.apps.corporate_memberships.models import CorporateMembership as CorpMemb
 except:

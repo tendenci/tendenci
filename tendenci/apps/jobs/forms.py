@@ -8,7 +8,7 @@ from django.template.defaultfilters import slugify
 
 from captcha.fields import CaptchaField
 from tendenci.apps.jobs.models import Job
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.apps.jobs.models import JobPricing

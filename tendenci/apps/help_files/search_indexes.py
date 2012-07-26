@@ -5,7 +5,7 @@ from haystack import site
 from django.utils.html import strip_tags, strip_entities
 
 from tendenci.apps.help_files.models import HelpFile
-from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 class HelpFileIndex(TendenciBaseSearchIndex):
     question = indexes.CharField(model_attr='question')

@@ -3,8 +3,8 @@ from django.template import RequestContext
 from django.http import Http404
 
 from tendenci.core.base.http import Http403
-from tendenci.apps.perms.utils import has_perm
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.perms.utils import has_perm
+from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.tendenci_guide.models import Guide
 
 def guide_page(request, slug=None, template_name="tendenci_guide/detail.html"):

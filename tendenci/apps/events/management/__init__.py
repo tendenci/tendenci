@@ -2,7 +2,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 from django.db.models.signals import post_syncdb
 
-from tendenci.apps.notification import models as notification
+from tendenci.contrib.notifications import models as notification
 
 def create_notice_types(app, created_models, verbosity, **kwargs):
     notification.create_notice_type(

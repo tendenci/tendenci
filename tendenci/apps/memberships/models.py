@@ -17,22 +17,22 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
 
 from tendenci.core.base.utils import day_validate
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.utils import get_notice_recipients, has_perm
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.invoices.models import Invoice
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.utils import get_notice_recipients, has_perm
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.contrib.invoices.models import Invoice
 from tendenci.apps.directories.models import Directory
-from tendenci.apps.user_groups.models import Group
+from tendenci.contrib.user_groups.models import Group
 from tendenci.apps.memberships.managers import MembershipManager, \
     MemberAppManager, MemberAppEntryManager
 from tendenci.core.base.utils import fieldify
 from tinymce import models as tinymce_models
-from tendenci.apps.payments.models import PaymentMethod
-from tendenci.apps.user_groups.models import GroupMembership
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.profiles.models import Profile
-from tendenci.apps.files.models import File
+from tendenci.core.payments.models import PaymentMethod
+from tendenci.contrib.user_groups.models import GroupMembership
+from tendenci.core.event_logs.models import EventLog
+from tendenci.contrib.profiles.models import Profile
+from tendenci.core.files.models import File
 
 
 FIELD_CHOICES = (
@@ -676,7 +676,7 @@ class Notice(models.Model):
 
         Allowed Notice Types: joined, renewed, approved, disapproved
         """
-        from tendenci.apps.notification import models as notification
+        from tendenci.contrib.notifications import models as notification
 
         notice_type = kwargs.get('notice_type') or 'joined'
         membership_type = kwargs.get('membership_type')
@@ -1381,7 +1381,7 @@ class AppEntry(TendenciBaseModel):
         Update the object after online payment is received.
         If auto-approve; approve entry; send emails; log.
         """
-        from tendenci.apps.notification.utils import send_welcome_email
+        from tendenci.contrib.notifications.utils import send_welcome_email
 
         if self.is_renewal:
             # if auto-approve renews
@@ -1568,7 +1568,7 @@ class AppFieldEntry(models.Model):
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group
 def assign_permissions(app, created_models, verbosity, **kwargs):
-    from tendenci.apps.perms.utils import update_admin_group_perms
+    from tendenci.core.perms.utils import update_admin_group_perms
     update_admin_group_perms()
 from django.db.models.signals import post_syncdb
 #from memberships import models as membership_models

@@ -10,8 +10,8 @@ class Migration(DataMigration):
         from django.conf import settings
         from django.utils.translation import ugettext_noop as _
         
-        if "tendenci.apps.notification" in settings.INSTALLED_APPS:
-            from tendenci.apps.notification import models as notification
+        if "tendenci.contrib.notifications" in settings.INSTALLED_APPS:
+            from tendenci.contrib.notifications import models as notification
             notification.create_notice_type("job_approved_user_notice", _("Job Approved User Notice"), _("A job has been approved - user notice."))
         else:
             print "Skipping creation of NoticeTypes as notification app not found"

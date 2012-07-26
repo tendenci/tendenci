@@ -16,18 +16,18 @@ from django.db.models import Q
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from tendenci.apps.entities.models import Entity
+from tendenci.contrib.entities.models import Entity
 from tendenci.apps.events.managers import EventManager, RegistrantManager, EventTypeManager
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.apps.events.module_meta import EventMeta
-from tendenci.apps.user_groups.models import Group
+from tendenci.contrib.user_groups.models import Group
 
-from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.files.models import File
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.payments.models import PaymentMethod as GlobalPaymentMethod
+from tendenci.contrib.invoices.models import Invoice
+from tendenci.core.files.models import File
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.payments.models import PaymentMethod as GlobalPaymentMethod
 
 from tendenci.apps.events.settings import (FIELD_MAX_LENGTH, 
                              LABEL_MAX_LENGTH, 
@@ -440,10 +440,10 @@ class Registration(models.Model):
         """
         from datetime import datetime
         try:
-            from tendenci.apps.notification import models as notification
+            from tendenci.contrib.notifications import models as notification
         except:
             notification = None
-        from tendenci.apps.perms.utils import get_notice_recipients
+        from tendenci.core.perms.utils import get_notice_recipients
         from tendenci.apps.events.utils import email_admins
 
         site_label = get_setting('site', 'global', 'sitedisplayname')

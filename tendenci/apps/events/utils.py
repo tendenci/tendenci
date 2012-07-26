@@ -10,17 +10,17 @@ from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
 
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption)
 from tendenci.apps.events.forms import FormForCustomRegForm
-from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.discounts.models import Discount, DiscountUse
-from tendenci.apps.discounts.utils import assign_discount
+from tendenci.core.perms.utils import get_query_filters
+from tendenci.contrib.discounts.models import Discount, DiscountUse
+from tendenci.contrib.discounts.utils import assign_discount
 
 try:
-    from tendenci.apps.notification import models as notification
+    from tendenci.contrib.notifications import models as notification
 except:
     notification = None
     

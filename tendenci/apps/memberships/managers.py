@@ -5,8 +5,8 @@ from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
-from tendenci.apps.perms.managers import TendenciBaseManager
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.perms.managers import TendenciBaseManager
+from tendenci.core.site_settings.utils import get_setting
 
 
 class MemberAppManager(TendenciBaseManager):

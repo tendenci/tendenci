@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
-from tendenci.apps.user_groups.models import Group, GroupMembership
-from tendenci.apps.forms_builder.forms.models import FormEntry
-from tendenci.apps.subscribers.models import GroupSubscription
-from tendenci.apps.files.models import file_directory
+from tendenci.contrib.user_groups.models import Group, GroupMembership
+from tendenci.contrib.forms_builder.forms.models import FormEntry
+from tendenci.contrib.subscribers.models import GroupSubscription
+from tendenci.core.files.models import file_directory
 
 class ListMap(models.Model):
     group = models.ForeignKey(Group)

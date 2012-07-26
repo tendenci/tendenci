@@ -8,7 +8,7 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **kwargs):
         from django.db.models.signals import post_syncdb
-        from tendenci.apps.notification import models as notifications
+        from tendenci.contrib.notifications import models as notifications
 
         tuples = post_syncdb.send(
             sender=notifications,

@@ -4,7 +4,7 @@ from tastypie import fields
 
 from tendenci.core.api_tasty.auth import DeveloperApiKeyAuthentication
 from tendenci.core.api_tasty.serializers import SafeSerializer
-from tendenci.apps.payments.models import PaymentMethod
+from tendenci.core.payments.models import PaymentMethod
 
 class PaymentMethodResource(ModelResource):
     class Meta:

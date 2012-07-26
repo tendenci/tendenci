@@ -22,17 +22,17 @@ from tendenci.apps.events.models import Event, Place, RegistrationConfiguration,
     AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
     CustomRegFieldEntry
 
-from tendenci.apps.payments.models import PaymentMethod
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.core.payments.models import PaymentMethod
+from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
-from tendenci.apps.emails.models import Email
+from tendenci.core.emails.models import Email
 from form_utils.forms import BetterModelForm
-from tendenci.apps.discounts.models import Discount
+from tendenci.contrib.discounts.models import Discount
 from tendenci.apps.events.settings import FIELD_MAX_LENGTH
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.memberships.models import Membership
-from tendenci.apps.profiles.models import Profile
+from tendenci.contrib.profiles.models import Profile
 
 from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
 from widgets import UseCustomRegWidget

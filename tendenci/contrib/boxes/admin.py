@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.contrib.boxes.models import Box 
 from tendenci.contrib.boxes.forms import BoxForm
 

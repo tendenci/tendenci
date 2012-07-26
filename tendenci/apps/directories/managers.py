@@ -1,5 +1,5 @@
-from tendenci.apps.perms.managers import TendenciBaseManager
-from tendenci.apps.categories.models import Category
+from tendenci.core.perms.managers import TendenciBaseManager
+from tendenci.core.categories.models import Category
 
 
 class DirectoryManager(TendenciBaseManager):

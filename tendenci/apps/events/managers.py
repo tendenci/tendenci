@@ -6,7 +6,7 @@ from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from tendenci.apps.perms.managers import TendenciBaseManager
+from tendenci.core.perms.managers import TendenciBaseManager
 
 
 class EventManager(TendenciBaseManager):

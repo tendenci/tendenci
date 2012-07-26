@@ -11,7 +11,7 @@ class Command(BaseCommand):
         from datetime import datetime
         from dateutil.relativedelta import relativedelta
         from tendenci.apps.memberships.models import Membership, MembershipType
-        from tendenci.apps.user_groups.models import GroupMembership
+        from tendenci.contrib.user_groups.models import GroupMembership
 
         for membership_type in MembershipType.objects.all():
             grace_period = membership_type.expiration_grace_period

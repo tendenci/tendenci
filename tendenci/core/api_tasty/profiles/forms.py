@@ -1,5 +1,5 @@
 from django import forms
-from tendenci.apps.profiles.models import Profile
+from tendenci.contrib.profiles.models import Profile
 from tendenci.core.api_tasty.forms import TendenciForm
 
 class ProfileForm(TendenciForm):

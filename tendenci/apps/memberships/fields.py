@@ -2,7 +2,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 from widgets import TypeExpMethodWidget, NoticeTimeTypeWidget
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
         
 

@@ -21,8 +21,8 @@ from django.core.files.storage import FileSystemStorage
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.apps.corporate_memberships.models import (CorporateMembership,
     AuthorizedDomain)
-from tendenci.apps.user_groups.models import Group
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.contrib.user_groups.models import Group
+from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.memberships.models import (Membership, MembershipType, Notice, App,
     AppEntry, AppField, AppFieldEntry)
 from tendenci.apps.memberships.fields import (TypeExpMethodField, PriceInput,
@@ -1218,7 +1218,7 @@ class ExportForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         from tendenci.core.base.http import Http403
-        from tendenci.apps.site_settings.utils import get_setting
+        from tendenci.core.site_settings.utils import get_setting
         from tendenci.apps.memberships.models import Membership
 
         self.user = kwargs.pop('user', None)

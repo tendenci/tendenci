@@ -2,7 +2,7 @@
 import re
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 
 direct_response_fields = (
                         'response_code',

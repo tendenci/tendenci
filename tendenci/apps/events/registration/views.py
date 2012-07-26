@@ -15,10 +15,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import render_to_string
 from django.forms.models import model_to_dict
 
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.memberships.models import Membership
-from tendenci.apps.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.theme.shortcuts import themed_response as render_to_response
 
 from tendenci.apps.events.models import Event, RegConfPricing, Registrant, Addon
 from tendenci.apps.events.utils import email_admins

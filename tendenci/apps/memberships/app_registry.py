@@ -1,6 +1,7 @@
 from django.conf import settings
-from tendenci.apps.registry import site
-from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
+
+from tendenci.core.registry import site
+from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
 from tendenci.apps.memberships.models import Membership, AppEntry
 
 

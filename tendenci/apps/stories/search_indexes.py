@@ -5,9 +5,9 @@ from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
 
 from tendenci.apps.stories.models import Story
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.categories.models import Category
-from tendenci.apps.perms.indexes import TendenciBaseSearchIndex
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.categories.models import Category
+from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 
 class StoryIndex(TendenciBaseSearchIndex):

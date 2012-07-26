@@ -6,7 +6,7 @@ from tendenci.apps.corporate_memberships.models import CorpApp, CorpField
 from tendenci.apps.corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
 from tendenci.apps.corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields, edit_corpapp_update_memb_app
 
-from tendenci.apps.event_logs.models import EventLog
+from tendenci.core.event_logs.models import EventLog
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  

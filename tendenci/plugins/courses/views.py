@@ -20,7 +20,7 @@ from courses.utils import (can_retry, get_passed_attempts, get_top_tests,
     get_best_passed_attempt, get_course_recipients)
 
 try:
-    from tendenci.apps.notification import models as notification
+    from tendenci.contrib.notifications import models as notification
 except:
     notification = None
 

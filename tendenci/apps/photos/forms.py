@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 
 from tendenci.apps.photos.models import Image, PhotoSet, License
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.core.perms.forms import TendenciBaseForm
 
 class LicenseField(forms.ModelChoiceField):
     def label_from_instance(self, obj):

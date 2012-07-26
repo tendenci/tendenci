@@ -16,22 +16,22 @@ from tinymce import models as tinymce_models
 from tendenci.core.base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.invoices.models import Invoice
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.contrib.invoices.models import Invoice
 from tendenci.apps.memberships.models import MembershipType, App, Membership
-from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from tendenci.contrib.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from tendenci.apps.corporate_memberships.managers import CorporateMembershipManager
-#from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.user_groups.models import GroupMembership
-from tendenci.apps.payments.models import PaymentMethod
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.profiles.models import Profile
+#from tendenci.core.site_settings.utils import get_setting
+from tendenci.contrib.user_groups.models import GroupMembership
+from tendenci.core.payments.models import PaymentMethod
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.contrib.profiles.models import Profile
 
 from tendenci.core.base.utils import send_email_notification
 from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
-from tendenci.apps.imports.utils import get_unique_username
+from tendenci.core.imports.utils import get_unique_username
 
 
 FIELD_CHOICES = (
@@ -366,10 +366,10 @@ class CorporateMembership(TendenciBaseModel):
         """
         from datetime import datetime
         try:
-            from tendenci.apps.notification import models as notification
+            from tendenci.contrib.notifications import models as notification
         except:
             notification = None
-        from tendenci.apps.perms.utils import get_notice_recipients
+        from tendenci.core.perms.utils import get_notice_recipients
          
         # approve it
         if self.renew_entry_id:
@@ -390,7 +390,7 @@ class CorporateMembership(TendenciBaseModel):
 
  
     def get_payment_method(self):
-        from tendenci.apps.payments.models import PaymentMethod
+        from tendenci.core.payments.models import PaymentMethod
  
         # return payment method if defined
         if self.payment_method:
@@ -867,7 +867,7 @@ class CorpMembRenewEntry(models.Model):
         return self.corporate_membership.auto_update_paid_object(request, payment)
 
     def get_payment_method(self):
-        from tendenci.apps.payments.models import PaymentMethod
+        from tendenci.core.payments.models import PaymentMethod
 
         # return payment method if defined
         if self.payment_method and self.payment_method.isdigit():

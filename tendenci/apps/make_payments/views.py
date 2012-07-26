@@ -8,14 +8,14 @@ from django.utils.html import strip_entities, strip_tags
 from tendenci.apps.make_payments.forms import MakePaymentForm
 from tendenci.apps.make_payments.utils import make_payment_inv_add, make_payment_email_user
 from tendenci.apps.make_payments.models import MakePayment
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import tcurrency
-from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.perms.utils import get_notice_recipients
+from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.utils import get_notice_recipients
 
 try:
-    from tendenci.apps.notification import models as notification
+    from tendenci.contrib.notifications import models as notification
 except:
     notification = None
 

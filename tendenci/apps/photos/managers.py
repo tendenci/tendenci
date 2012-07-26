@@ -1,4 +1,4 @@
-from tendenci.apps.perms.managers import TendenciBaseManager
+from tendenci.core.perms.managers import TendenciBaseManager
 
 class PhotoSetManager(TendenciBaseManager):
     """

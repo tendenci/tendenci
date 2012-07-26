@@ -12,10 +12,10 @@ from django.template import Context, loader
 from django.utils.http import int_to_base36
 
 from captcha.fields import CaptchaField
-from tendenci.apps.registration.forms import RegistrationForm
-from tendenci.apps.profiles.models import Profile
-from tendenci.apps.registration.models import RegistrationProfile
-from tendenci.apps.site_settings.utils import get_setting
+from tendenci.contrib.registration.forms import RegistrationForm
+from tendenci.contrib.profiles.models import Profile
+from tendenci.contrib.registration.models import RegistrationProfile
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.contrib.accounts.utils import send_registration_activation_email
 
 

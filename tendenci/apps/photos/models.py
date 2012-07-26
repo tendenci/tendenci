@@ -10,11 +10,11 @@ from django.contrib.contenttypes import generic
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
-from tendenci.apps.perms.models import TendenciBaseModel
-from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
+from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.photos.managers import PhotoManager, PhotoSetManager
-from tendenci.apps.meta.models import Meta as MetaTags
+from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.apps.photos.module_meta import PhotoMeta
 
 

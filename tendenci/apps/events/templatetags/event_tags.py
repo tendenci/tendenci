@@ -11,8 +11,8 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.db.models import Q
 
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.perms.utils import get_query_filters
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import get_query_filters
 
 from tendenci.apps.events.models import Event, Registrant, Type, RegConfPricing
 from tendenci.apps.events.utils import get_pricing, registration_earliest_time

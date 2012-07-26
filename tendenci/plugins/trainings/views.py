@@ -18,7 +18,7 @@ from event_logs.models import EventLog
 from perms.utils import update_perms_and_save
 
 try:
-    from tendenci.apps.notification import models as notification
+    from tendenci.contrib.notifications import models as notification
 except:
     notification = None
 

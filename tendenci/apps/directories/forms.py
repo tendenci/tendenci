@@ -5,7 +5,7 @@ from os.path import splitext, basename
 from django import forms
 
 from tinymce.widgets import TinyMCE
-from tendenci.apps.perms.forms import TendenciBaseForm
+from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
 from django.utils.translation import ugettext_lazy as _
 

@@ -1,7 +1,8 @@
 from django.conf import settings
-from tendenci.apps.registry import site
-from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
+
+from tendenci.core.registry import site
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.jobs.models import Job
 
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
-from tendenci.apps.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.help_files.models import Topic, HelpFile, Request
 from tendenci.apps.help_files.forms import HelpFileAdminForm
 
