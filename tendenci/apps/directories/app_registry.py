@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.directories.models import Directory
@@ -8,7 +9,7 @@ class DirectoryRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create directories to list businesses'
-    icon = '/static/images/icons/directories-color-64x64.png'
+    icon = '%simages/icons/directories-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'directory':{

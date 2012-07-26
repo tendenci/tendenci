@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.news.models import News
@@ -8,7 +9,7 @@ class NewsRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create news to let your vistors keep current'
-    icon = '/static/images/icons/news-color-64x64.png'
+    icon = '%simages/icons/news-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'news':{

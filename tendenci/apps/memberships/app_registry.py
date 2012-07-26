@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
 from tendenci.apps.memberships.models import Membership, AppEntry
@@ -8,7 +9,7 @@ class MembershipRegistry(PeopleRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Membership management application.'
-    icon = '/static/images/icons/memberships-color-64x64.png'
+    icon = '%simages/icons/memberships-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'membership':{

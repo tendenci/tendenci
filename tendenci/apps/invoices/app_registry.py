@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.invoices.models import Invoice
@@ -8,7 +9,7 @@ class InvoiceRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Invoices for the entire system'
-    icon = '/static/images/icons/invoicing-color-64x64.png'
+    icon = '%simages/icons/invoicing-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'invoices':{

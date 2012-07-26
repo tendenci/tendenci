@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.photos.models import PhotoSet, Image
@@ -7,7 +8,7 @@ class PhotoRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Upload photos for the world to see!'
-    icon = '/static/images/icons/photo-albums-color-64x64.png'
+    icon = '%simages/icons/photo-albums-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'photo':{
@@ -30,7 +31,7 @@ class PhotoSetRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Upload photos for the world to see!'
-    icon = '/static/images/icons/photo-albums-color-64x64.png'
+    icon = '%simages/icons/photo-albums-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'photosets':{

@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
 from tendenci.apps.profiles.models import Profile
@@ -8,7 +9,7 @@ class ProfileRegistry(PeopleRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'User Profiles.'
-    icon = '/static/images/icons/users-color-64x64.png'
+    icon = '%simages/icons/users-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'profile':{

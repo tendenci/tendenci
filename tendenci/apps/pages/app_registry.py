@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.pages.models import Page
@@ -8,7 +9,7 @@ class PageRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create pages to display basic content throughout the site'
-    icon = '/static/images/icons/pages-color-64x64.png'
+    icon = '%simages/icons/pages-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'page':{

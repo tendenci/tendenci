@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.forms_builder.forms.models import Form
@@ -9,7 +10,7 @@ class FormRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'Create custom forms to take information ' \
                   'throughout the site'
-    icon = '/static/images/icons/cms-forms-color-64x64.png'
+    icon = '%simages/icons/cms-forms-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {
         'form': {

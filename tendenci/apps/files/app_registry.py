@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.files.models import File
@@ -10,7 +11,7 @@ class FileRegistry(CoreRegistry):
     description = 'Stores file links and infomation for files ' \
                   'uploaded through wysiwyg and other parts in ' \
                   'the system'
-    icon = '/static/images/icons/files-color-64x64.png'
+    icon = '%simages/icons/files-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'files':{

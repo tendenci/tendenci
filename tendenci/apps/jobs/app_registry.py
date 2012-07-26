@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
@@ -9,7 +10,7 @@ class JobRegistry(CoreRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Create %s listings for hiring' %  get_setting('module', 'jobs', 'label')
-    icon = '/static/images/icons/jobs-color-64x64.png'
+    icon = '%simages/icons/jobs-color-64x64.png' % settings.STATIC_URL
     
     # jobs - GREEN base - complement is DEEP RED
     event_logs = {

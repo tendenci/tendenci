@@ -25,7 +25,7 @@ from tendenci.apps.files.utils import get_image
 from djcelery.models import TaskMeta
 
 from tendenci.apps.photos.cache import PHOTO_PRE_KEY
-from tendenci.apps.photos.search_indexes import PhotoSetIndex
+#from tendenci.apps.photos.search_indexes import PhotoSetIndex
 from tendenci.apps.photos.models import Image, Pool, PhotoSet, AlbumCover, License
 from tendenci.apps.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 from tendenci.apps.photos.utils import get_privacy_settings

@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import CoreRegistry, lazy_reverse
 from tendenci.apps.locations.models import Location
@@ -9,7 +10,7 @@ class LocationRegistry(CoreRegistry):
     author_email = 'programmers@schipul.com'
     description = 'A list of locations associated with your organization' \
         'Includes a search that sort by nearest location.'
-    icon = '/static/images/icons/locations-color-64x64.png'
+    icon = '%simages/icons/locations-color-64x64.png' % settings.STATIC_URL
 
     event_logs = {
         'location':{

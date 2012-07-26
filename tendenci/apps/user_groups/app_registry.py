@@ -1,3 +1,4 @@
+from django.conf import settings
 from tendenci.apps.registry import site
 from tendenci.apps.registry.base import PeopleRegistry, lazy_reverse
 from tendenci.apps.user_groups.models import Group
@@ -8,7 +9,7 @@ class GroupRegistry(PeopleRegistry):
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'User Groups.'
-    icon = '/static/images/icons/groups-color-64x64.png'
+    icon = '%simages/icons/groups-color-64x64.png' % settings.STATIC_URL
     
     event_logs = {
         'group':{
