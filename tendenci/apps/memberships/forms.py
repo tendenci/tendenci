@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.apps.corporate_memberships.models import (CorporateMembership,
     AuthorizedDomain)
 from tendenci.apps.user_groups.models import Group
@@ -1217,7 +1217,7 @@ class ExportForm(forms.Form):
     )
     
     def __init__(self, *args, **kwargs):
-        from tendenci.apps.base.http import Http403
+        from tendenci.core.base.http import Http403
         from tendenci.apps.site_settings.utils import get_setting
         from tendenci.apps.memberships.models import Membership
 

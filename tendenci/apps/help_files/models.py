@@ -5,7 +5,7 @@ from django.contrib.contenttypes import generic
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from tinymce import models as tinymce_models
 from managers import HelpFileManager
 

@@ -1,4 +1,4 @@
-from tendenci.apps.base.test import TestCase
+from tendenci.core.base.test import TestCase
 from selenium.common.exceptions import NoSuchElementException
 
 

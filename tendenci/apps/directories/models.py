@@ -10,7 +10,7 @@ from tagging.fields import TagField
 from timezones.fields import TimeZoneField
 from tinymce import models as tinymce_models
 from tendenci.apps.meta.models import Meta as MetaTags
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.categories.models import CategoryItem
@@ -128,8 +128,8 @@ class Directory(TendenciBaseModel):
         """
         Make the accounting entries for the directory sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:

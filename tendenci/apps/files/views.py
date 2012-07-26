@@ -9,7 +9,7 @@ from django.http import (HttpResponseRedirect, HttpResponse, Http404,
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.decorators import admin_required
 from tendenci.apps.perms.object_perms import ObjectPermission

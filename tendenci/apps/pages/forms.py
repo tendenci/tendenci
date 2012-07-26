@@ -7,7 +7,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.utils import get_template_list
+from tendenci.core.base.utils import get_template_list
 
 template_choices = [('default.html','Default')]
 template_choices += get_template_list()

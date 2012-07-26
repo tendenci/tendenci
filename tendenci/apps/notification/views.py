@@ -9,7 +9,7 @@ from tendenci.apps.notification.models import *
 from tendenci.apps.notification.decorators import basic_auth_required, simple_basic_auth_callback
 from tendenci.apps.notification.feeds import NoticeUserFeed
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 
 @basic_auth_required(realm='Notices Feed', callback_func=simple_basic_auth_callback)
 def feed_for_user(request):

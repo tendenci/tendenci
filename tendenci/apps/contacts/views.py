@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
 from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm

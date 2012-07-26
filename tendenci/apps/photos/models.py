@@ -175,7 +175,7 @@ class Image(ImageModel, TendenciBaseModel):
 
     def meta_keywords(self):
         return ''
-#        from tendenci.apps.base.utils import generate_meta_keywords
+#        from tendenci.core.base.utils import generate_meta_keywords
 #        keywords = caching.cache_get(PHOTOS_KEYWORDS_CACHE, key=self.pk)    
 #        if not keywords:
 #            value = self.title + ' ' + self.caption + ' ' + self.tags

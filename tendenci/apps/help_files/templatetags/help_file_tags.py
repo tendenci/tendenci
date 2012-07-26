@@ -1,5 +1,5 @@
 from django.template import Library, TemplateSyntaxError
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.help_files.models import HelpFile
 
 register = Library()

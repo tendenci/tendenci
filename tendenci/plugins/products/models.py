@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from perms.models import TendenciBaseModel
 from perms.object_perms import ObjectPermission
 from products.managers import ProductManager, ProductFileManager

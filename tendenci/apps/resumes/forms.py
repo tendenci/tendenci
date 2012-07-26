@@ -8,7 +8,7 @@ from captcha.fields import CaptchaField
 from tendenci.apps.resumes.models import Resume
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class ResumeForm(TendenciBaseForm):
 

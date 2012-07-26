@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from tendenci.apps.email_blocks.forms import EmailBlockForm
 from tendenci.apps.email_blocks.models import EmailBlock
 #from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 
 @login_required 

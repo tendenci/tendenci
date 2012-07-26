@@ -17,7 +17,7 @@ from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog

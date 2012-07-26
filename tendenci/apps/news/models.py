@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from timezones.fields import TimeZoneField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.news.managers import NewsManager

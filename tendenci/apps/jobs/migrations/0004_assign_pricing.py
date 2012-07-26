@@ -217,7 +217,7 @@ class Migration(DataMigration):
             'salary_from': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'salary_to': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'skills': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'slug': ('tendenci.apps.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
+            'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'start_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),

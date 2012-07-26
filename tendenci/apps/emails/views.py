@@ -7,7 +7,7 @@ from django.contrib import messages
 from tendenci.apps.emails.forms import EmailForm, AmazonSESVerifyEmailForm
 from tendenci.apps.emails.models import Email
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 
 @login_required 

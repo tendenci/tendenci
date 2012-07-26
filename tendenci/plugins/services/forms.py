@@ -8,7 +8,7 @@ from captcha.fields import CaptchaField
 from models import Service
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class ServiceForm(TendenciBaseForm):
 

@@ -25,7 +25,7 @@ from tendenci.apps.events.models import Event, Place, RegistrationConfiguration,
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.apps.emails.models import Email
 from form_utils.forms import BetterModelForm
 from tendenci.apps.discounts.models import Discount

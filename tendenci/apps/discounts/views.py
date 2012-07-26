@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.conf import settings
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response

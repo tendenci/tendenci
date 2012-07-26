@@ -21,7 +21,7 @@ urlpatterns = patterns('',
 
 # Tendenci Patterns
 urlpatterns += patterns('',
-    url(r'^$', 'tendenci.apps.base.views.homepage', name="home"),
+    url(r'^$', 'tendenci.core.base.views.homepage', name="home"),
 
     #Reports:
     (r'^reports/', include('tendenci.apps.reports.urls')),
@@ -33,7 +33,7 @@ urlpatterns += patterns('',
     url(r'^users/reports/contacts-referral/$', 'tendenci.apps.user_groups.views.users_added_report', {'kind': 'referral'}, name='reports-contacts-referral'),
 
     (r'^notifications/', include('tendenci.apps.notification.urls')),
-    (r'^base/', include('tendenci.apps.base.urls')),
+    (r'^base/', include('tendenci.core.base.urls')),
     (r'^avatar/', include('avatar.urls')),
     (r'^dashboard/', include('tendenci.apps.dashboard.urls')),
     (r'^categories/', include('tendenci.apps.categories.urls')),
@@ -51,7 +51,7 @@ urlpatterns += patterns('',
     (r'^invoices/', include('tendenci.apps.invoices.urls')),
     (r'^py/', include('tendenci.apps.make_payments.urls')),
     (r'^payments/', include('tendenci.apps.payments.urls')),
-    (r'^accountings/', include('tendenci.apps.accountings.urls')),
+    (r'^accountings/', include('tendenci.contrib.accountings.urls')),
     (r'^emails/', include('tendenci.apps.emails.urls')),
     (r'^rss/', include('tendenci.apps.rss.urls')),
     (r'^imports/', include('tendenci.apps.imports.urls')),
@@ -59,13 +59,13 @@ urlpatterns += patterns('',
     (r'^news/', include('tendenci.apps.news.urls')),
     (r'^settings/', include('tendenci.apps.site_settings.urls')),
     (r'^files/', include('tendenci.apps.files.urls')),
-    (r'^accounts/', include('tendenci.apps.accounts.urls')),
+    (r'^accounts/', include('tendenci.contrib.accounts.urls')),
     (r'^search/', include('tendenci.apps.search.urls')),
     (r'^event-logs/', include('tendenci.apps.event_logs.urls')),
     (r'^contributions/', include('tendenci.apps.contributions.urls')),
     (r'^theme-editor/', include('tendenci.apps.theme_editor.urls')),
     (r'^exports/', include('tendenci.apps.exports.urls')),
-    (r'^boxes/', include('tendenci.apps.boxes.urls')),
+    (r'^boxes/', include('tendenci.contrib.boxes.urls')),
     (r'^sitemap.xml', include('tendenci.apps.sitemaps.urls')),
 
     (r'^subscribers/', include('tendenci.apps.subscribers.urls')),
@@ -79,14 +79,14 @@ urlpatterns += patterns('',
     url(r'social_auth/', include('tendenci.apps.social_auth.urls')),
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.apps.tendenci_guide.urls')),
-    url(r'^api_tasty/', include('tendenci.apps.api_tasty.urls')),
+    url(r'^api_tasty/', include('tendenci.core.api_tasty.urls')),
 
     # third party (inside environment)
     (r'^tinymce/', include('tinymce.urls')),
     (r'^captcha/', include('captcha.urls')),
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
-    url(r'^robots.txt', 'tendenci.apps.base.views.robots_txt', name="robots"),
+    url(r'^robots.txt', 'tendenci.core.base.views.robots_txt', name="robots"),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
@@ -112,7 +112,7 @@ if settings.DEBUG:
             {'document_root': join(settings.TENDENCI_ROOT, 'static')}),
 
         (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
-            'tendenci.apps.base.views.plugin_static_serve'),
+            'tendenci.core.base.views.plugin_static_serve'),
     )
     urlpatterns += patterns('',
         (r'^themes/(?P<path>.*)$',

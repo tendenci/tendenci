@@ -15,7 +15,7 @@ from django.contrib.sites.models import Site
 from django.contrib import messages
 from django.http import HttpResponse
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.apps.entities.models import Entity

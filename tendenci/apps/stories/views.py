@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib import messages
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.apps.event_logs.models import EventLog

@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.theme.utils import get_theme, theme_choices as theme_choice_list

@@ -8,8 +8,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.base.utils import now_localized
+from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import now_localized
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import (update_perms_and_save, get_notice_recipients,
     has_perm, has_view_perm, get_query_filters)

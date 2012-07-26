@@ -11,8 +11,8 @@ from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.base.utils import now_localized
+from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import now_localized
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm
@@ -32,7 +32,7 @@ try:
     from tendenci.apps.notification import models as notification
 except:
     notification = None
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.core.base.utils import send_email_notification
 
 
 def detail(request, slug=None, template_name="jobs/view.html"):

@@ -3,7 +3,7 @@ from django import forms
 from rfps.models import RFP
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class RFPForm(TendenciBaseForm):
     class Meta:

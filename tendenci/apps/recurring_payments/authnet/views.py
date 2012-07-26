@@ -12,9 +12,9 @@ from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
 from recurring_payments.authnet.utils import get_token, get_test_mode
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 #from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.decorators import ssl_required
+from tendenci.core.base.decorators import ssl_required
 
 @login_required
 def manage_payment_info(request, recurring_payment_id, 

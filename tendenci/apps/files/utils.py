@@ -6,7 +6,7 @@ from cStringIO import StringIO
 from django.core.cache import cache as django_cache
 from django.conf import settings
 
-from tendenci.apps.base.utils import image_rescale
+from tendenci.core.base.utils import image_rescale
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):

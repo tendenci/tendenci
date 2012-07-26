@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm, get_query_filters
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response

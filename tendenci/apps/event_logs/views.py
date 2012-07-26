@@ -11,8 +11,8 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import Count
 
-from tendenci.apps.base.http import render_to_403
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import render_to_403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.perms.decorators import superuser_required
 from tendenci.apps.registry import site

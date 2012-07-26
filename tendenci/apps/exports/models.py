@@ -2,7 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from picklefield.fields import PickledObjectField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 
 class Export(models.Model):
     STATUS_CHOICES = (

@@ -16,7 +16,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
 
-from tendenci.apps.base.utils import day_validate
+from tendenci.core.base.utils import day_validate
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.utils import get_notice_recipients, has_perm
@@ -26,7 +26,7 @@ from tendenci.apps.directories.models import Directory
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.memberships.managers import MembershipManager, \
     MemberAppManager, MemberAppEntryManager
-from tendenci.apps.base.utils import fieldify
+from tendenci.core.base.utils import fieldify
 from tinymce import models as tinymce_models
 from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.user_groups.models import GroupMembership
@@ -1354,8 +1354,8 @@ class AppEntry(TendenciBaseModel):
         """
         Make the accounting entries for the event sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:

@@ -19,7 +19,7 @@ from django.db.models import Q
 
 from tendenci.apps.imports.utils import render_excel
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
 
@@ -52,7 +52,7 @@ from tendenci.apps.corporate_memberships.utils import (get_corporate_membership_
 from tendenci.apps.memberships.models import Membership
 
 from tendenci.apps.perms.utils import get_notice_recipients
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.core.base.utils import send_email_notification
 from tendenci.apps.files.models import File
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.corporate_memberships.settings import use_search_index

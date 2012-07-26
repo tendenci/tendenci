@@ -6,7 +6,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.categories.forms import CategoryForm
 from tendenci.apps.categories.models import Category
 

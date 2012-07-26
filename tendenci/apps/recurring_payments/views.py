@@ -22,10 +22,10 @@ from recurring_payments.utils import (RecurringPaymentEmailNotices,
                                       run_a_recurring_payment)
 from recurring_payments.authnet.cim import CIMCustomerProfile
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.base.decorators import ssl_required
-from tendenci.apps.base.utils import tcurrency
+from tendenci.core.base.decorators import ssl_required
+from tendenci.core.base.utils import tcurrency
 from tendenci.apps.site_settings.utils import get_setting
 
 @ssl_required

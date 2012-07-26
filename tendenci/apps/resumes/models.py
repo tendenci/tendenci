@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from tendenci.apps.resumes.managers import ResumeManager
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tinymce import models as tinymce_models

@@ -3,7 +3,7 @@ from django import forms
 from chamberlin_projects.models import Project
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class ProjectForm(TendenciBaseForm):
     class Meta:

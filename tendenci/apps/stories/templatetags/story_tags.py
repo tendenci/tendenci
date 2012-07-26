@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 
 from tendenci.apps.perms.utils import get_query_filters
-from tendenci.apps.base.template_tags import ListNode, parse_tag_kwargs
+from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.apps.stories.models import Story
 
 register = Library()

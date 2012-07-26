@@ -14,12 +14,12 @@ from django.contrib import messages
 # for password change
 from django.views.decorators.csrf import csrf_protect
 
-from tendenci.apps.base.decorators import ssl_required
+from tendenci.core.base.decorators import ssl_required
 
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.perms.utils import (has_perm, update_perms_and_save,
     get_notice_recipients, get_query_filters)
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 

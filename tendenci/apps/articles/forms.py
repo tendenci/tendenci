@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.articles.models import Article
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class ArticleForm(TendenciBaseForm):
     body = forms.CharField(required=False,

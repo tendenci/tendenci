@@ -1,5 +1,5 @@
 from tendenci.apps.perms.managers import TendenciBaseManager
-from tendenci.apps.base.utils import now_localized
+from tendenci.core.base.utils import now_localized
 
 class ResumeManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):

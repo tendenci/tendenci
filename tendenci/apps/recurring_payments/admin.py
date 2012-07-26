@@ -8,7 +8,7 @@ from recurring_payments.models import RecurringPayment, PaymentProfile
 from recurring_payments.forms import RecurringPaymentForm
 
 from tendenci.apps.event_logs.models import EventLog
-from tendenci.apps.base.utils import tcurrency
+from tendenci.core.base.utils import tcurrency
 
 class NoAddAnotherModelAdmin(admin.ModelAdmin):
     """Remove the add-another + sign

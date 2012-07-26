@@ -5,7 +5,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib import messages
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.site_settings.models import Setting
 from tendenci.apps.site_settings.forms import build_settings_form
 from tendenci.apps.perms.utils import has_perm

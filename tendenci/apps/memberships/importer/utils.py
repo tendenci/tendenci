@@ -61,7 +61,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         join dt, renew dt, expire dt,
         added, skipped, renewal
     """
-    from tendenci.apps.base.utils import is_blank
+    from tendenci.core.base.utils import is_blank
 
     # initialize membership import settings
     membership_import = kwargs['membership_import']

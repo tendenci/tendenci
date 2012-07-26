@@ -18,7 +18,7 @@ from django.utils.translation import ugettext as _
 from parse_uri import ParseUri
 from djcelery.models import TaskMeta
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm, update_perms_and_save
 from tendenci.apps.event_logs.models import EventLog
 

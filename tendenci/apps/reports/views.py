@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 
 @login_required
 def index(request, template_name="reports/index.html"):

@@ -9,7 +9,7 @@ from django.contrib.contenttypes import generic
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.categories.models import CategoryItem
 from tagging.fields import TagField
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.jobs.managers import JobManager
@@ -131,8 +131,8 @@ class Job(TendenciBaseModel):
         """
         Make the accounting entries for the job sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:

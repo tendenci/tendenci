@@ -1,5 +1,5 @@
 from django.db import models
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 from perms.models import TendenciBaseModel

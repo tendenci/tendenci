@@ -27,7 +27,7 @@ from django.utils import simplejson as json
 
 #from django.forms.models import BaseModelFormSet
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.perms.utils import (has_perm, get_notice_recipients,
     get_query_filters, update_perms_and_save, has_view_perm)

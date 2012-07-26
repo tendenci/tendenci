@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.template.defaultfilters import slugify
 
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
 from tendenci.apps.event_logs.models import EventLog
@@ -23,7 +23,7 @@ from tendenci.apps.directories.models import Directory, DirectoryPricing
 from tendenci.apps.directories.forms import DirectoryForm, DirectoryPricingForm
 from tendenci.apps.directories.utils import directory_set_inv_payment
 from tendenci.apps.notification import models as notification
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.core.base.utils import send_email_notification
 
 
 def details(request, slug=None, template_name="directories/view.html"):

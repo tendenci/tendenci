@@ -19,7 +19,7 @@ from tendenci.apps.campaign_monitor.utils import temporary_id, extract_files
 from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
 from tendenci.apps.campaign_monitor.utils import apply_template_media
 from tendenci.apps.site_settings.utils import get_setting
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.events.models import Event, Type
 from tendenci.apps.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
     newsletter_news_list, newsletter_pages_list

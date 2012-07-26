@@ -10,8 +10,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
-from tendenci.apps.base.http import Http403
-from tendenci.apps.base.utils import check_template
+from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import check_template
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.meta.forms import MetaForm

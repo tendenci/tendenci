@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 
 from tendenci.apps.theme.shortcuts import themed_response as render_to_response
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.exports.utils import run_export_task

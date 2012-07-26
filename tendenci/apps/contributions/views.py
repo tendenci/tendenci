@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.contributions.models import Contribution
 from tendenci.apps.perms.utils import has_perm
 

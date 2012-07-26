@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.tendenci_guide.models import Guide

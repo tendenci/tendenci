@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.meta.models import Meta as MetaTags
 from tendenci.apps.site_settings.utils import get_setting

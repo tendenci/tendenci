@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.imports.forms import UserImportForm
 from tendenci.apps.imports.utils import extract_from_excel, render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
 from tendenci.apps.event_logs.models import EventLog

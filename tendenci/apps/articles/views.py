@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.event_logs.models import EventLog

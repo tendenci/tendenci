@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.db.models import Avg, Max, Min, Count, Sum
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.metrics.models import Metric
 
 @login_required

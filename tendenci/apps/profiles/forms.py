@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.apps.perms.forms import TendenciBaseForm
 from tendenci.apps.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership

@@ -3,7 +3,7 @@ from django import forms
 from S_P_LOW.models import S_S_CAP
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class S_S_CAPForm(TendenciBaseForm):
     class Meta:

@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
-from tendenci.apps.base.utils import day_validate
+from tendenci.core.base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
 from tendenci.apps.site_settings.utils import get_setting
@@ -28,7 +28,7 @@ from tendenci.apps.payments.models import PaymentMethod
 from tendenci.apps.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
 
-from tendenci.apps.base.utils import send_email_notification
+from tendenci.core.base.utils import send_email_notification
 from tendenci.apps.corporate_memberships.settings import use_search_index
 from tendenci.apps.corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
 from tendenci.apps.imports.utils import get_unique_username
@@ -339,8 +339,8 @@ class CorporateMembership(TendenciBaseModel):
         """
         Make the accounting entries for the corporate membership sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
         
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:

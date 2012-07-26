@@ -3,7 +3,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 
 
 class PageSecurityCheck(object):

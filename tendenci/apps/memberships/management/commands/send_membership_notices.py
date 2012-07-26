@@ -23,7 +23,7 @@ class Command(BaseCommand):
             
         from django.conf import settings
         from tendenci.apps.memberships.models import Notice, Membership, NoticeLog, NoticeLogRecord
-        from tendenci.apps.base.utils import fieldify
+        from tendenci.core.base.utils import fieldify
         from tendenci.apps.emails.models import Email
         from tendenci.apps.profiles.models import Profile
         from tendenci.apps.site_settings.utils import get_setting

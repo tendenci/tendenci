@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.template import Template
 
-from tendenci.apps.base.http import Http403
+from tendenci.core.base.http import Http403
 from tendenci.apps.perms.utils import has_perm
 from tendenci.apps.event_logs.models import EventLog
 from tendenci.apps.wp_exporter.utils import gen_xml

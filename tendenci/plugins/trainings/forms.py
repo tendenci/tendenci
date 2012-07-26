@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from trainings.models import Training, Completion
 from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.apps.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField
 
 class TrainingForm(TendenciBaseForm):
     class Meta:

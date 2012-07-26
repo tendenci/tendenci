@@ -4,7 +4,7 @@ from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 
-from tendenci.apps.base.fields import SlugField
+from tendenci.core.base.fields import SlugField
 from tendenci.apps.perms.models import TendenciBaseModel
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.files.models import File

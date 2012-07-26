@@ -33,7 +33,7 @@ from tendenci.apps.events.settings import (FIELD_MAX_LENGTH,
                              LABEL_MAX_LENGTH, 
                              FIELD_TYPE_CHOICES, 
                              USER_FIELD_CHOICES)
-from tendenci.apps.base.utils import localize_date
+from tendenci.core.base.utils import localize_date
 
 
 class TypeColorSet(models.Model):
@@ -412,8 +412,8 @@ class Registration(models.Model):
         """
         Make the accounting entries for the event sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
         
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
@@ -948,7 +948,7 @@ class Event(TendenciBaseModel):
     # this function is to display the event date in a nice way.
     # example format: Thursday, August 12, 2010 8:30 AM - 05:30 PM - GJQ 8/12/2010
     def dt_display(self, format_date='%a, %b %d, %Y', format_time='%I:%M %p'):
-        from tendenci.apps.base.utils import format_datetime_range
+        from tendenci.core.base.utils import format_datetime_range
         return format_datetime_range(self.start_dt, self.end_dt, format_date, format_time)
 
     @property
