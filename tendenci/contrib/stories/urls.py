@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
-from tendenci.apps.stories.feeds import LatestEntriesFeed
+from tendenci.contrib.stories.feeds import LatestEntriesFeed
 
-urlpatterns = patterns('tendenci.apps.stories.views',
+urlpatterns = patterns('tendenci.contrib.stories.views',
     url(r'^$', 'search', name="stories"),
     url(r'^(?P<id>\d+)/$', 'details', name="story"),
     url(r'^print/(?P<id>\d+)/$', 'print_details', name="story.print_details"),

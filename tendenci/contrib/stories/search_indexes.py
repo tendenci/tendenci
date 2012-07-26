@@ -4,7 +4,7 @@ from haystack import site
 from datetime import datetime
 from django.utils.html import strip_tags, strip_entities
 
-from tendenci.apps.stories.models import Story
+from tendenci.contrib.stories.models import Story
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import Category
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex

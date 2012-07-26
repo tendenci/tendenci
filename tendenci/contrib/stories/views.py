@@ -16,8 +16,8 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
-from tendenci.apps.stories.models import Story
-from tendenci.apps.stories.forms import StoryForm, UploadStoryImageForm
+from tendenci.contrib.stories.models import Story
+from tendenci.contrib.stories.forms import StoryForm, UploadStoryImageForm
 
 
 def details(request, id=None, template_name="stories/view.html"):

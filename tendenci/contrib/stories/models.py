@@ -12,7 +12,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tagging.fields import TagField
 from tendenci.core.files.models import File, file_directory
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.apps.stories.managers import StoryManager
+from tendenci.contrib.stories.managers import StoryManager
 from tendenci.contrib.entities.models import Entity
 
 

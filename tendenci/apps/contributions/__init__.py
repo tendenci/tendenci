@@ -6,7 +6,7 @@ from tendenci.apps.contributions.models import Contribution
 from tendenci.contrib.pages.models import Page
 from tendenci.apps.news.models import News
 from tendenci.apps.photos.models import PhotoSet, Image
-from tendenci.apps.stories.models import Story
+from tendenci.contrib.stories.models import Story
 from tendenci.core.files.models import File
 
 

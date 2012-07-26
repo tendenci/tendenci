@@ -2,12 +2,12 @@ from datetime import datetime
 
 from django.db.models import Q
 
-from tendenci.apps.rss.feedsmanager import SubFeed
+from tendenci.core.rss.feedsmanager import SubFeed
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import PUBLIC_FILTER
 from tendenci.core.sitemaps import TendenciSitemap
 
-from tendenci.apps.stories.models import Story
+from tendenci.contrib.stories.models import Story
 
 class LatestEntriesFeed(SubFeed):
     title =  '%s Latest Stories' % get_setting('site','global','sitedisplayname')

@@ -2,7 +2,7 @@ from django.conf import settings
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-from tendenci.apps.stories.models import Story
+from tendenci.contrib.stories.models import Story
 
 
 class StoryRegistry(CoreRegistry):
