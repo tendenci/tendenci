@@ -21,7 +21,7 @@
 {% endblock %}
         
 {% block body %}
-<h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} - <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
+<h1 id="to-editor" class="file-editor-header">{% trans "Theme Editor" %} : <a href="/">{{ SITE_GLOBAL_SITEURL }}</a></h1>
 {% spaceless %}{% include "base/messages.html" %}{% endspaceless %}
 {% if current_file %}
 <div class="file_attrs"><big><b>{% trans "Currently Editing" %}</b> <span class="highlight">{{ pwd }}/{{ current_file }}</span> in your theme <span class="highlight">{{ current_theme }}</span></big>
