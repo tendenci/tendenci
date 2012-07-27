@@ -14,6 +14,11 @@ def create_initial_superuser(sender, **kwargs):
         u.is_superuser = False
         u.save()
 
+signals.post_syncdb.disconnect(
+    create_superuser,
+    sender=auth_app,
+    dispatch_uid = "django.contrib.auth.management.create_superuser")
+
 signals.post_syncdb.connect(
     create_initial_superuser,
     sender=auth_app,
