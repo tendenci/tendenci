@@ -99,6 +99,7 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         if file_form.is_valid():
             if file_form.save(request, default_file, ROOT_DIR=theme_root):
                 message = "Successfully updated %s" % current_file
+                message_status = messages.SUCCESS
 
                 log_defaults = {
                     'event_id': 1110000,
@@ -111,7 +112,9 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
                 EventLog.objects.log(**log_defaults)
             else:
                 message = "Cannot update"
-            request.user.message_set.create(message=_(message))
+                message_status = messages.WARNING
+            messages.add_message(request, message_status, message)
+
     else:
         content = get_file_content(default_file,  ROOT_DIR=theme_root)
         file_form = form_class({"content": content, "rf_path": default_file})
