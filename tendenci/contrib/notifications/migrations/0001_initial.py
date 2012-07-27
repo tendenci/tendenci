@@ -16,7 +16,7 @@ class Migration(SchemaMigration):
             ('description', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('default', self.gf('django.db.models.fields.IntegerField')()),
         ))
-        db.send_create_signal('notification', ['NoticeType'])
+        db.send_create_signal('notifications', ['NoticeType'])
 
         # Adding model 'NoticeSetting'
         db.create_table('notifications_noticesetting', (
@@ -26,7 +26,7 @@ class Migration(SchemaMigration):
             ('medium', self.gf('django.db.models.fields.CharField')(max_length=1)),
             ('send', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
-        db.send_create_signal('notification', ['NoticeSetting'])
+        db.send_create_signal('notifications', ['NoticeSetting'])
 
         # Adding unique constraint on 'NoticeSetting', fields ['user', 'notice_type', 'medium']
         db.create_unique('notifications_noticesetting', ['user_id', 'notice_type_id', 'medium'])
@@ -42,14 +42,14 @@ class Migration(SchemaMigration):
             ('archived', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('on_site', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
-        db.send_create_signal('notification', ['Notice'])
+        db.send_create_signal('notifications', ['Notice'])
 
         # Adding model 'NoticeQueueBatch'
         db.create_table('notifications_noticequeuebatch', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('pickled_data', self.gf('django.db.models.fields.TextField')()),
         ))
-        db.send_create_signal('notification', ['NoticeQueueBatch'])
+        db.send_create_signal('notifications', ['NoticeQueueBatch'])
 
         # Adding model 'ObservedItem'
         db.create_table('notifications_observeditem', (
@@ -61,7 +61,7 @@ class Migration(SchemaMigration):
             ('added', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('signal', self.gf('django.db.models.fields.TextField')()),
         ))
-        db.send_create_signal('notification', ['ObservedItem'])
+        db.send_create_signal('notifications', ['ObservedItem'])
 
 
     def backwards(self, orm):

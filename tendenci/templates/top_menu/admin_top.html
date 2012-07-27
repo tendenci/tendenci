@@ -8,7 +8,7 @@
     	<li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
         	<div class="sub">
             	<div class="column">
-            	<h4><a href="{% url dashboard %}">{% trans "App List" %}</a></h4>
+            	<h4><a href="{% url dashboard %}">{% trans "Core" %}</a></h4>
                 	<div class="column app-list">  
                         {% for app in registered_apps.core %}
                             {% if app.enabled %}
@@ -34,7 +34,7 @@
                 </div>
                 {% if registered_apps.plugins %}
                 <div class="column app-list">
-                    <h4><a href="{% url admin:pluginmanager_pluginapp_changelist %}">{% trans "Plugins" %}</a></h4>
+                    <h4><a href="{% url admin:pluginmanager_pluginapp_changelist %}">{% trans "Apps" %}</a></h4>
                     {% for app in registered_apps.plugins %}
                         <ul>
                             <li class="app">

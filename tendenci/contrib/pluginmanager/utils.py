@@ -91,14 +91,15 @@ def plugin_options():
     options = []
     plugins = sorted(plugin_choices())
     for plugin in plugins:
-        if plugin not in settings.INSTALLED_APPS:
-            options.append((plugin, plugin.title().replace('_',' ')))
+        plugin_package = '.'.join(['tendenci', 'apps', plugin])
+        if plugin_package not in settings.INSTALLED_APPS:
+            options.append((plugin_package, plugin.title().replace('_',' ')))
     return options
 
 def plugin_choices():
     """
     Returns a list of available themes in PLUGINS_PATH
     """
-    for plugin in os.listdir(settings.PLUGINS_PATH):
-        if os.path.isdir(os.path.join(settings.PLUGINS_PATH, plugin)):
+    for plugin in os.listdir(settings.APPS_PATH):
+        if os.path.isdir(os.path.join(settings.APPS_PATH, plugin)):
             yield plugin

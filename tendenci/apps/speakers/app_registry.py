@@ -1,10 +1,10 @@
 from tendenci.core.registry import site
-from tendenci.core.registry.base import PluginRegistry
+from tendenci.core.registry.base import AppRegistry
 
 from tendenci.apps.speakers.models import Speaker
 
 
-class SpeakerRegistry(PluginRegistry):
+class SpeakerRegistry(AppRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'

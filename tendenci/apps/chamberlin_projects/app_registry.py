@@ -1,9 +1,9 @@
 from tendenci.core.registry import site
-from tendenci.core.registry.base import PluginRegistry, lazy_reverse
+from tendenci.core.registry.base import AppRegistry, lazy_reverse
 from tendenci.apps.chamberlin_projects.models import Project
 
 
-class ProjectRegistry(PluginRegistry):
+class ProjectRegistry(AppRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'

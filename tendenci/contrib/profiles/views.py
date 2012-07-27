@@ -36,7 +36,7 @@ from tendenci.contrib.profiles.forms import (ProfileForm, UserPermissionForm,
     UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
 
 try:
-    notification = get_app('notification')
+    notification = get_app('notifications')
 except ImproperlyConfigured:
     notification = None
 

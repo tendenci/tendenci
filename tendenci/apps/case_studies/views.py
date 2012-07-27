@@ -8,7 +8,7 @@ from tendenci.core.perms.utils import has_perm, has_view_perm, get_query_filters
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 
-from tendenci.apps.models import CaseStudy, Service, Technology
+from tendenci.apps.case_studies.models import CaseStudy, Service, Technology
 
 def detail(request, slug=None, template_name="case_studies/view.html"):
     if not slug: return HttpResponseRedirect(reverse('case_study'))

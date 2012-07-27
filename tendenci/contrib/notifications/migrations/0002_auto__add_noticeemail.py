@@ -16,7 +16,7 @@ class Migration(SchemaMigration):
             ('title', self.gf('django.db.models.fields.TextField')(blank=True)),
             ('content', self.gf('django.db.models.fields.TextField')(blank=True)),
         ))
-        db.send_create_signal('notification', ['NoticeEmail'])
+        db.send_create_signal('notifications', ['NoticeEmail'])
 
 
     def backwards(self, orm):

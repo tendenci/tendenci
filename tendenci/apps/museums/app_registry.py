@@ -1,8 +1,8 @@
 from tendenci.core.registry import site
-from tendenci.core.registry.base import PluginRegistry, lazy_reverse
+from tendenci.core.registry.base import AppRegistry, lazy_reverse
 from tendenci.apps.museums.models import Museum
 
-class MuseumRegistry(PluginRegistry):
+class MuseumRegistry(AppRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'

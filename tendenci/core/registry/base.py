@@ -193,12 +193,12 @@ class CoreRegistry(Registry):
         self.fields['app_type'] = 'core'
 
 
-class PluginRegistry(Registry):
+class AppRegistry(Registry):
     """
     Registry for plugin applications
     """
     def __init__(self, model):
-        super(PluginRegistry, self).__init__(model)
+        super(AppRegistry, self).__init__(model)
 
         # application type
         self.fields['app_type'] = 'plugin'

@@ -24,24 +24,24 @@ urlpatterns = patterns('tendenci.apps.legacy.views',
 
 quotes = PluginApp.objects.filter(is_enabled=True).filter(package__contains='quotes')
 if quotes:
-    urlpatterns += patterns('legacy.views',
+    urlpatterns += patterns('tendenci.apps.legacy.views',
         url(r'^(q|quotes)/?(v/)?((?P<view>(view|search))\.asp|(?P<id>\d+)/?)?$', 'redirect', {'content_type': 'quotes'}),
     )
 
 attorneys = PluginApp.objects.filter(is_enabled=True).filter(package__contains='attorneys')
 if attorneys:
-    urlpatterns += patterns('legacy.views',
+    urlpatterns += patterns('tendenci.apps.legacy.views',
         url(r'^attorneys/?(v/)?((?P<view>(view|search)))\.asp/$', 'redirect', {'content_type': 'attorneys'}),
     )
 
 before_and_after = PluginApp.objects.filter(is_enabled=True).filter(package__contains='before_and_after')
 if before_and_after:
-    urlpatterns += patterns('legacy.views',
+    urlpatterns += patterns('tendenci.apps.legacy.views',
         url(r'^catalogs/?(plasticsurgery/)?((?P<view>(view|search)))\.asp/$', 'redirect', {'content_type': 'before_and_after'}),
     )
 
 products = PluginApp.objects.filter(is_enabled=True).filter(package__contains='products')
 if products:
-    urlpatterns += patterns('legacy.views',
+    urlpatterns += patterns('tendenci.apps.legacy.views',
         url(r'^catalogs/?(items/)?((?P<view>(view|search)))\.asp/$', 'redirect', {'content_type': 'products'}),
     )

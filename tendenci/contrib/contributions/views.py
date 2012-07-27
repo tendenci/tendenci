@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 
 from tendenci.core.base.http import Http403
-from tendenci.apps.contributions.models import Contribution
+from tendenci.contrib.contributions.models import Contribution
 from tendenci.core.perms.utils import has_perm
 
 @login_required

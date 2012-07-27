@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import AnonymousUser
 
-from tendenci.apps.contributions.models import Contribution
+from tendenci.contrib.contributions.models import Contribution
 
 def save_contribution(sender, **kwargs):
     instance = kwargs['instance']

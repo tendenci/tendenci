@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.contrib.auth.models import AnonymousUser
 
-from tendenci.apps.contributions.models import Contribution
+from tendenci.contrib.contributions.models import Contribution
 from tendenci.contrib.pages.models import Page
 from tendenci.apps.news.models import News
 from tendenci.apps.photos.models import PhotoSet, Image

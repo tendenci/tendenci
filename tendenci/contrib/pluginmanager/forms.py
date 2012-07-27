@@ -3,7 +3,7 @@ from tendenci.contrib.pluginmanager.models import PluginApp
 from tendenci.contrib.pluginmanager.utils import plugin_options
 
 class PluginAppForm(forms.ModelForm):
-    package = forms.ChoiceField(widget=forms.Select(), label="Plugin")
+    package = forms.ChoiceField(widget=forms.Select(), label="App Name")
 
     class Meta:
         model = PluginApp
@@ -11,12 +11,10 @@ class PluginAppForm(forms.ModelForm):
             'package',
             'description',
             'is_enabled',
-            'is_installed',
         )
 
     def __init__(self, *args, **kwargs):
         super(PluginAppForm, self).__init__(*args, **kwargs)
-        print plugin_options()
         self.fields['package'].choices = plugin_options()
 
     def clean_package(self):

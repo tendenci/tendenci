@@ -7,14 +7,14 @@ class PluginApp(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     package = models.CharField(max_length=255)
-    is_installed = models.BooleanField(default=False, blank=True)
-    is_enabled = models.BooleanField(default=False, blank=True)
+    is_installed = models.BooleanField(default=True, blank=True)
+    is_enabled = models.BooleanField(default=True, blank=True)
 
     def __unicode__(self):
         return self.title
 
     def save(self, *args, **kwargs):
-        self.title = self.package.title().replace('_',' ')
+        self.title = self.package.replace('tendenci.apps.','').replace('_',' ').title()
         return super(PluginApp, self).save(*args, **kwargs)
 
 ###
@@ -28,7 +28,7 @@ def _update_apps(instance=None, created=False):
     db2json()
     from django.conf import settings
     from django.db.models.loading import cache as app_cache
-    from pluginmanager import plugin_apps
+    from tendenci.contrib.pluginmanager import plugin_apps
     settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS, settings.PROJECT_ROOT)
     app_cache.loaded = False  # clear cache
 

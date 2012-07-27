@@ -1,6 +1,6 @@
 from django.template import Library, Node, TemplateSyntaxError, Variable
 from django.utils.translation import ugettext as _
-from tendenci.apps.contributions.models import Contribution
+from tendenci.contrib.contributions.models import Contribution
 register = Library()
 
 @register.inclusion_tag("contributions/options.html", takes_context=True)
