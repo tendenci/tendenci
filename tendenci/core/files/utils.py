@@ -162,10 +162,7 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key):
     if unique_key:
         key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop))
     else:
-        if hasattr(file,'path'):
-            key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(stat(file.path).st_mtime), file.name, str_size, str_crop))
-        else:
-            key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(stat(file.name).st_mtime), file.name, str_size, str_crop))
+        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop))
     # Remove spaces so key is valid for memcached
     key = key.replace(" ","_")
 
