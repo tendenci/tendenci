@@ -371,7 +371,9 @@
 			debug: false,
 			
 			upload_url: "/files/swfupload/",
-			flash_url: "{{ STATIC_URL }}swfupload/swfupload.swf",
+			//flash_url: "{{ STATIC_URL }}swfupload/swfupload.swf",
+			flash_url: "/static/swfupload/swfupload.swf",
+			
 			post_params: {
 				"storme_app_label" : ImageDialog.storme_app_label,
 				"storme_model" : ImageDialog.storme_model,
@@ -413,7 +415,9 @@
 			// SWFObject settings
 			minimum_flash_version : "9.0.28",
 			});
+			
 		};
+		
     </script>
 </body> 
 </html> 
