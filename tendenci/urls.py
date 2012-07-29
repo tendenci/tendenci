@@ -95,7 +95,7 @@ urlpatterns += patterns('',
     url(r'^en/', include('tendenci.apps.legacy.urls')),
 
     url(r'^', include('tendenci.contrib.contacts.urls')),
-    #url(r'^', include('tendenci.apps.articles.urls')),
+    url(r'^', include('tendenci.apps.articles.urls')),
     url(r'^', include('tendenci.apps.jobs.urls')),
     url(r'^', include('tendenci.apps.directories.urls')),
     url(r'^', include('tendenci.apps.help_files.urls')),
