@@ -22,7 +22,6 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.utils import get_notice_recipients, has_perm
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.contrib.invoices.models import Invoice
-from tendenci.apps.directories.models import Directory
 from tendenci.contrib.user_groups.models import Group
 from tendenci.apps.memberships.managers import MembershipManager, \
     MemberAppManager, MemberAppEntryManager
@@ -34,6 +33,9 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.contrib.profiles.models import Profile
 from tendenci.core.files.models import File
 
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^tinymce.models.HTMLField"])
+add_introspection_rules([], ["^tendenci.core.base.fields.SlugField"])
 
 FIELD_CHOICES = (
     ("text", _("Text")),
@@ -266,7 +268,6 @@ class Membership(TendenciBaseModel):
     member_number = models.CharField(_("Member Number"), max_length=50)
     membership_type = models.ForeignKey("MembershipType", verbose_name=_("Membership Type"))
     user = models.ForeignKey(User, related_name="memberships")
-    directory = models.ForeignKey(Directory, blank=True, null=True)
     renewal = models.BooleanField(default=False)
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     subscribe_dt = models.DateTimeField(_("Subscribe Date"))
