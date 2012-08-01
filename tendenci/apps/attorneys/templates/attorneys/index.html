@@ -10,9 +10,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "attorneys/media/css/attorneys.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/attorneys.css">
 {% endblock %}
 
 {% block body %}
