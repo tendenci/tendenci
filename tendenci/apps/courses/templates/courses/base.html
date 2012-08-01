@@ -4,7 +4,5 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-    {% include "courses/media/css/courses.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/courses.css">
 {% endblock %}
