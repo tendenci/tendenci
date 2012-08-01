@@ -29,9 +29,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "case_studies/media/css/casestudy.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/casestudy.css">
 {% endblock %}
 
 
