@@ -1,0 +1,43 @@
+div.product-photo {
+    float: left;
+}
+
+div.product-details {
+    float: left;
+    position: relative;
+    width : 33%;
+}
+
+div.fproduct-sub-details {
+    float: right;
+    position: relative;
+    width : 66%;
+}
+
+div.formulation-details {
+    float: left;
+    position: relative;
+    width : 33%;
+}
+
+div.spec-details {
+    float: right;
+    position: relative;
+    width : 33%;
+}
+
+div.product-info-links {
+    float: left;
+    position: relative;
+    width: 50%;
+}
+
+div.contact-form-links{
+    float: right;
+    position: relative;
+    width: 50%;
+}
+
+div.clear {
+    clear: both;
+}
