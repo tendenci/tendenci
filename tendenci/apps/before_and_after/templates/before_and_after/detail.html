@@ -28,9 +28,7 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <style type="text/css">
-        {% include "before_and_after/media/css/before_and_after.css" %}
-    </style>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/before_and_after.css">
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jcarousel/skins/bna/skin.css" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jcarousel/skins/tango/skin.css" />
 {% endblock %}

@@ -15,9 +15,7 @@
 
 {% block extra_head %}
     {{ block.super }}
-    <style type="text/css">
-        {% include "before_and_after/media/css/before_and_after.css" %}
-    </style>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/before_and_after.css">
 {% endblock %}
 
 {% block body %}
