@@ -1,0 +1,30 @@
+{% extends "tendenci_guide/base.html" %}
+{% load base_filters %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+.guide-nav { float:left; width: 20%; padding-right: 20px; }
+.guide-nav li {list-style: none; margin-bottom: 4px; }
+.guide-nav li a { padding: 4px; display: block; }
+.guide-nav li a.active { border: 1px solid #333; }
+.guide-content { float:left; width: 75%; }
+.guide-content h3 { padding-top: 20px; clear: both; display: block; }
+</style>
+{% endblock extra_head %}
+
+{% block body %}
+<div class="guide-nav">
+<h3>{{ guide.section }}</h3>
+<ul>
+    {% for g in section_guides %}
+    <li><a {% ifequal guide.slug g.slug %}class="active" {% endifequal %}href="{% url tendenci_guide.guide_page g.slug %}">{{ g.title }}</a></li>
+    {% endfor %}
+</ul>
+</div>
+<div class="guide-content">
+<h1>{{ guide.title|title }}</h1>
+<div>{{ guide.content|safe }}</div>
+{% if next %}<h3>Next: <a href="{% url tendenci_guide.guide_page next.slug %}">{{ next.title }}</a></h3>{% endif %}
+</div>
+{% endblock body %}
