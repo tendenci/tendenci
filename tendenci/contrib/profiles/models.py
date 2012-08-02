@@ -126,7 +126,6 @@ class Profile(TendenciBaseModel):
         return all([self._can_login(), self.user.is_superuser])
 
     def save(self, *args, **kwargs):
-        from tendenci.apps.campaign_monitor.utils import update_subscription
         if not self.id:
             self.guid = str(uuid.uuid1())
 
@@ -138,9 +137,13 @@ class Profile(TendenciBaseModel):
 
         super(Profile, self).save(*args, **kwargs)
 
-        if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
-            update_subscription(self, self.old_email)
-            del self.old_email
+        try:
+            from tendenci.apps.campaign_monitor.utils import update_subscription
+            if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
+                update_subscription(self, self.old_email)
+                del self.old_email
+        except ImportError:
+            pass
 
     # if this profile allows view by user2_compare
     def allow_view_by(self, user2_compare):
