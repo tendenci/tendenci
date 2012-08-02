@@ -4,8 +4,6 @@ from django.contrib.auth.models import AnonymousUser
 
 from tendenci.contrib.contributions.models import Contribution
 from tendenci.contrib.pages.models import Page
-from tendenci.apps.news.models import News
-from tendenci.apps.photos.models import PhotoSet, Image
 from tendenci.contrib.stories.models import Story
 from tendenci.core.files.models import File
 
@@ -49,8 +47,5 @@ def save_contribution(sender, **kwargs):
     contrib.save()
 
 post_save.connect(save_contribution, sender=Page, weak=False)
-post_save.connect(save_contribution, sender=News, weak=False)
-post_save.connect(save_contribution, sender=PhotoSet, weak=False)
-post_save.connect(save_contribution, sender=Image, weak=False)
 post_save.connect(save_contribution, sender=Story, weak=False)
 post_save.connect(save_contribution, sender=File, weak=False)
