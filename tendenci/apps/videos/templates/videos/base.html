@@ -8,9 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "videos/media/css/video.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/video.css">
 {% endblock %}
 
 {% block sidebar %}
