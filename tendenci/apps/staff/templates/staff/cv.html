@@ -47,9 +47,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "staff/media/css/staff.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/staff.css">
 {% endblock %}
 
 {% block body %}
