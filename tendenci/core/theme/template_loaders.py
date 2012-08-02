@@ -22,6 +22,7 @@ if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     def s3_file_exists(fullpath):
         # need to use cache for better performance
         # only the relative path
+        # TODO: set up cache for templates
         relative_path = fullpath.replace(settings.S3_SITE_ROOT_URL, '').lstrip('/')
         return s3bs.exists(relative_path)
 
@@ -74,6 +75,7 @@ class Loader(BaseLoader):
         for filepath in self.get_template_sources(template_name, template_dirs):
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                 # check cache first - need to set up the cache
+                # TODO: set up cache for templates
                 relative_path = filepath.replace('%s/%s' % (settings.S3_ROOT_URL, settings.AWS_STORAGE_BUCKET_NAME), '').lstrip('/')
                 s3bsf = S3BotoStorageFile(relative_path, 'r', s3bs)
                 content = s3bsf.read()
