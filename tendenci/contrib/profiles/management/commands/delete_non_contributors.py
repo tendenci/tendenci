@@ -16,38 +16,56 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from django.contrib.auth.models import User
-        from tendenci.apps.directories.models import Directory
-        from tendenci.apps.articles.models import Article
-        from tendenci.apps.events.models import Event
-        from tendenci.apps.photos.models import Photo
-        from tendenci.contrib.pages.models import Page
-        from tendenci.apps.news.models import News
 
         contribs = []
+        
+        try:
+            from tendenci.apps.directories.models import Directory
+            for directory in Directory.objects.all():
+                contribs.append(directory.creator)
+                contribs.append(directory.owner)
+        except ImportError:
+            pass
+        
+        try:
+            from tendenci.apps.articles.models import Article
+            for article in Article.objects.all():
+                contribs.append(article.creator)
+                contribs.append(article.owner)
+        except ImportError:
+            pass
+        
+        try:
+            from tendenci.apps.events.models import Event
+            for event in Event.objects.all():
+                contribs.append(event.creator)
+                contribs.append(event.owner)
+        except ImportError:
+            pass
 
-        for directory in Directory.objects.all():
-            contribs.append(directory.creator)
-            contribs.append(directory.owner)
+        try:
+            from tendenci.apps.photos.models import Photo
+            for photo in Photo.objects.all():
+                contribs.append(photo.creator)
+                contribs.append(photo.owner)
+        except ImportError:
+            pass
 
-        for article in Article.objects.all():
-            contribs.append(article.creator)
-            contribs.append(article.owner)
+        try:
+            from tendenci.contrib.pages.models import Page
+            for page in Page.objects.all():
+                contribs.append(page.creator)
+                contribs.append(page.owner)
+        except ImportError:
+            pass
 
-        for event in Event.objects.all():
-            contribs.append(event.creator)
-            contribs.append(event.owner)
-
-        for photo in Photo.objects.all():
-            contribs.append(photo.creator)
-            contribs.append(photo.owner)
-
-        for page in Page.objects.all():
-            contribs.append(page.creator)
-            contribs.append(page.owner)
-
-        for news in News.objects.all():
-            contribs.append(news.creator)
-            contribs.append(news.owner)
+        try:
+            from tendenci.apps.news.models import News
+            for news in News.objects.all():
+                contribs.append(news.creator)
+                contribs.append(news.owner)
+        except ImportError:
+            pass
 
         contribs = list(set(contribs))  # remove duplicates
         slackers = User.objects.exclude(username__in=[c.username for c in contribs])
