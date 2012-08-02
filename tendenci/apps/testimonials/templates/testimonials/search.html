@@ -8,9 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "testimonials/media/css/testimonial.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/testimonial.css">
 <link rel="alternate" type="application/rss+xml" title="Latest Testimonials" href="{% url testimonial.feed %}" />
 {% endblock %}
 
