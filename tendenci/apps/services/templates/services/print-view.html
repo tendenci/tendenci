@@ -7,9 +7,7 @@
 {% block meta_canonical_url %}<link rel="canonical" href="{{ service.get_canonical_url }}" />{% endblock %}
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "services/media/css/services.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/services.css" />
 {% endblock %}
 
 {% block body %}
