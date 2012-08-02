@@ -128,7 +128,7 @@ setup(
     classifiers=CLASSIFIERS,
     include_package_data=True,
     dependency_links=[
-        "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo"
+        "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14"
     ],
     install_requires=[
         "Django==1.4.1",
@@ -173,9 +173,9 @@ setup(
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
-        #"Geraldo",
+        "Geraldo==0.4.14",
         "django-tastypie",
-        'django-storages==1.1.5',
-        'django-s3-folder-storage',
+#         'django-storages==1.1.5',
+#         'django-s3-folder-storage',
     ],
 )
