@@ -1,9 +1,0 @@
-{% load tagging_tags %}
-
-{{ object.S_S_LOW }}
-
-
-{% tags_for_object object as tags %}
-{% for tag in tags %}
-tag:{{ tag }} 
-{% endfor %}

@@ -1,4 +1,0 @@
-# S_S_CAP
-# S_S_LOW
-# S_P_CAP
-# S_P_LOW
