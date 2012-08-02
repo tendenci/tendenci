@@ -131,7 +131,7 @@ setup(
         "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo"
     ],
     install_requires=[
-        "Django==1.4",
+        "Django==1.4.1",
         "Reportlab==2.5",
         "PIL==1.1.7",
         "South==0.7.3",
