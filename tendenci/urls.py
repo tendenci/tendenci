@@ -24,7 +24,6 @@ urlpatterns += patterns('',
     url(r'^$', 'tendenci.core.base.views.homepage', name="home"),
 
     #Reports:
-    (r'^reports/', include('tendenci.apps.reports.urls')),
     (r'^metrics/', include('tendenci.contrib.metrics.urls')),
     url(r'^users/reports/users-activity-top10/$', 'tendenci.contrib.profiles.views.user_activity_report', name='reports-user-activity'),
     url(r'^users/reports/active-logins/$', 'tendenci.contrib.profiles.views.user_access_report', name='reports-user-access'),
