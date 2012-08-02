@@ -359,7 +359,6 @@ def display_less(request, path):
     if path:
         full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, 
                                     path)
-        print full_path
         url_obj = urllib2.urlopen(full_path)
         content = url_obj.read()
     return HttpResponse(content, mimetype="text/css")

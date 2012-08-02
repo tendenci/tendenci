@@ -22,7 +22,7 @@ def theme(request):
     if settings.USE_S3_STORAGE:
         contexts['THEME_URL'] = '%s/%s/%s/themes/%s/' % (settings.S3_ROOT_URL, 
                                                          settings.AWS_STORAGE_BUCKET_NAME, 
-                                                         settings.S3_STORAGE_SITE_NAME,
+                                                         settings.AWS_LOCATION,
                                                          theme)
     else:
         contexts['THEME_URL'] = '/themes/' + theme + '/'

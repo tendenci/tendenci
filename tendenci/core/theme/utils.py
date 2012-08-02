@@ -14,7 +14,7 @@ def get_theme():
 def get_theme_root(theme=None):
     if theme is None: # default theme
         theme = get_theme()
-    theme_root = os.path.join(settings.THEMES_DIR, theme)
+    theme_root = (os.path.join(settings.THEMES_DIR, theme)).replace('\\', '/')
     return theme_root
     
 def get_theme_template(template_name, theme=None):
@@ -41,6 +41,14 @@ def theme_choices():
     """
     Returns a list of available themes in THEMES_DIR
     """
-    for theme in os.listdir(settings.THEMES_DIR):
-        if os.path.isdir(os.path.join(settings.THEMES_DIR, theme)):
+    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+        from storages.backends.s3boto import S3BotoStorage
+        s3bs = S3BotoStorage()
+        print s3bs.listdir('themes/thinksmart')
+        dirs, files=s3bs.listdir('themes/thinksmart')
+        for theme in files:
             yield theme
+    else:
+        for theme in os.listdir(settings.THEMES_DIR):
+            if os.path.isdir(os.path.join(settings.THEMES_DIR, theme)):
+                yield theme

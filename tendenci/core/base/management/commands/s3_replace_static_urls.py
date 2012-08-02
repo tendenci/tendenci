@@ -22,7 +22,7 @@ class Command(BaseCommand):
         
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             backet_name = settings.AWS_STORAGE_BUCKET_NAME
-            backet_site_folder_name = settings.S3_STORAGE_SITE_NAME
+            backet_site_folder_name = settings.AWS_LOCATION
             conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
                                    settings.AWS_SECRET_ACCESS_KEY)
             bucket = conn.get_bucket(backet_name)

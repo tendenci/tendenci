@@ -20,16 +20,16 @@ class Command(BaseCommand):
         if all([settings.AWS_ACCESS_KEY_ID,
                 settings.AWS_SECRET_ACCESS_KEY,
                 settings.AWS_STORAGE_BUCKET_NAME,
-                settings.S3_STORAGE_SITE_NAME]):
+                settings.AWS_LOCATION]):
             backet_name = settings.AWS_STORAGE_BUCKET_NAME
-            backet_site_folder_name = settings.S3_STORAGE_SITE_NAME
+            backet_site_folder_name = settings.AWS_LOCATION
             
             conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
                                    settings.AWS_SECRET_ACCESS_KEY)
             bucket = conn.get_bucket(backet_name)
             k = Key(bucket)
             
-            theme_root = settings.THEMES_DIR
+            theme_root = settings.ORIGINAL_THEMES_DIR
             if os.path.isdir(theme_root):
                 for dirpath, dirnames, filenames in os.walk(theme_root):
                     for filename in filenames:

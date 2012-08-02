@@ -2,16 +2,28 @@
 Wrapper for loading template based on a selected Theme.
 """
 import os
+import urllib2
 
 from django.conf import settings
 from django.template import TemplateDoesNotExist
 from django.template.loader import (BaseLoader, get_template_from_string,
     find_template_loader, make_origin)
 from django.utils._os import safe_join
+from storages.backends.s3boto import S3BotoStorage, S3BotoStorageFile
+
 from tendenci.core.theme.utils import get_theme_root
 from tendenci.core.theme.middleware import get_current_request
 
 non_theme_source_loaders = None
+
+if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+    s3bs = S3BotoStorage()
+    
+    def s3_file_exists(fullpath):
+        # need to use cache for better performance
+        # only the relative path
+        relative_path = fullpath.replace(settings.S3_SITE_ROOT_URL, '').lstrip('/')
+        return s3bs.exists(relative_path)
 
 class Loader(BaseLoader):
     """Loader that includes a theme's templates files that enables 
@@ -38,29 +50,46 @@ class Loader(BaseLoader):
         if current_request and current_request.mobile:
             theme_templates.append(os.path.join(get_theme_root(), 'mobile'))
         theme_templates.append(os.path.join(get_theme_root(), 'templates'))
-        for template_path in theme_templates:
-            try:
-                yield safe_join(template_path, template_name)
-            except UnicodeDecodeError:
-                # The template dir name was a bytestring that wasn't valid UTF-8.
-                raise
-            except ValueError:
-                # The joined path was located outside of this particular
-                # template_dir (it might be inside another one, so this isn't
-                # fatal).
-                pass
+        
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            for template_path in theme_templates:
+                fullpath = (os.path.join(template_path, template_name)).replace('\\', '/')
+                if s3_file_exists(fullpath):
+                    yield (os.path.join(template_path, template_name)).replace('\\', '/')
+        else:
+            for template_path in theme_templates:
+                try:
+                    yield safe_join(template_path, template_name)
+                except UnicodeDecodeError:
+                    # The template dir name was a bytestring that wasn't valid UTF-8.
+                    raise
+                except ValueError:
+                    # The joined path was located outside of this particular
+                    # template_dir (it might be inside another one, so this isn't
+                    # fatal).
+                    pass
     
     def load_template_source(self, template_name, template_dirs=None):
         tried = []
         for filepath in self.get_template_sources(template_name, template_dirs):
-            try:
-                file = open(filepath)
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                # check cache first - need to set up the cache
+                relative_path = filepath.replace('%s/%s' % (settings.S3_ROOT_URL, settings.AWS_STORAGE_BUCKET_NAME), '').lstrip('/')
+                s3bsf = S3BotoStorageFile(relative_path, 'r', s3bs)
+                content = s3bsf.read()
+                s3bsf.close()
+                print 'relative_path=', relative_path
+                return content, filepath
+                
+            else:
                 try:
-                    return (file.read().decode(settings.FILE_CHARSET), filepath)
-                finally:
-                    file.close()
-            except IOError:
-                tried.append(filepath)
+                    file = open(filepath)
+                    try:
+                        return (file.read().decode(settings.FILE_CHARSET), filepath)
+                    finally:
+                        file.close()
+                except IOError:
+                    tried.append(filepath)
         if tried:
             error_msg = "Tried %s" % tried
         else:
