@@ -9,7 +9,7 @@
                 {% if forloop.first %}<a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="{% image_url f size=160x160 quality=90 %}" /></a><br />{% endif %}
             {% endfor %}
             {% else %}
-                <a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="/plugin-media/products/images/default.jpg" /></a><br />
+                <a href="{{ product.get_absolute_url }}"><img alt="{{ product.name }}" src="{{ STATIC_URL}}images/products-default.jpg" /></a><br />
             {% endif %}
         </div>
         <div class="product-description">

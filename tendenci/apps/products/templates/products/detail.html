@@ -13,9 +13,8 @@
 <meta property="og:title" content="{{ product.name }}"/>
 <meta property="og:description" content="{{ product.description|striptags|truncatewords:"20" }}"/>
 <meta property="og:url" content="{{ SITE_GLOBAL_SITEURL }}{{ product.get_absolute_url }}" />
-
+<link rel="stylesheet" href="{{ STATIC_URL }}css/products.css">
 <style type="text/css">
-{% include "products/media/css/products.css" %}
 .product-image { float: left; width: 240px;}
 .product-image p { text-align: center; }
 .product-image .small-img { padding: 4px; border: solid 2px #ddd; }
