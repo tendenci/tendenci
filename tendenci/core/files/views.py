@@ -1,5 +1,6 @@
 import os
 import simplejson as json
+import urllib2
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -8,6 +9,7 @@ from django.http import (HttpResponseRedirect, HttpResponse, Http404,
     HttpResponseServerError)
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
+from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
@@ -348,4 +350,17 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
         'form': form,
         'event_logs':event_logs
         }, context_instance=RequestContext(request))
+
+def display_less(request, path):
+    """
+    Display the .less files
+    """
+    content = ''
+    if path:
+        full_path = '%s/%s.less' % (settings.S3_SITE_ROOT_URL, 
+                                    path)
+        print full_path
+        url_obj = urllib2.urlopen(full_path)
+        content = url_obj.read()
+    return HttpResponse(content, mimetype="text/css")
 

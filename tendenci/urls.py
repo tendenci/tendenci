@@ -92,7 +92,7 @@ urlpatterns += patterns('',
     
     # other t4 to t5 legacy redirects
     url(r'^en/', include('tendenci.apps.legacy.urls')),
-
+ 
     url(r'^', include('tendenci.contrib.contacts.urls')),
     url(r'^', include('tendenci.apps.articles.urls')),
     url(r'^', include('tendenci.apps.jobs.urls')),
@@ -103,6 +103,13 @@ urlpatterns += patterns('',
 
 handler500 = 'apps.base.views.custom_error'
 
+
+if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+    urlpatterns += patterns('',
+    # serve .less files - this is to resolve the cross domain issue for less js
+    url(r'^(?P<path>.*).less$', 'tendenci.core.files.views.display_less',  name='less_file'),
+)
+                            
 # serve static files
 if settings.DEBUG:
     urlpatterns += patterns('',

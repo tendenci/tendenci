@@ -18,6 +18,15 @@ def theme(request):
     toggle_template = request.session.get('toggle_template', 'FALSE')
     contexts['TOGGLE_TEMPLATE'] = toggle_template
     contexts['THEME'] = theme
-    contexts['THEME_URL'] = '/themes/' + theme + '/'
+    
+    if settings.USE_S3_STORAGE:
+        contexts['THEME_URL'] = '%s/%s/%s/themes/%s/' % (settings.S3_ROOT_URL, 
+                                                         settings.AWS_STORAGE_BUCKET_NAME, 
+                                                         settings.S3_STORAGE_SITE_NAME,
+                                                         theme)
+    else:
+        contexts['THEME_URL'] = '/themes/' + theme + '/'
+    contexts['LOCAL_THEME_URL'] = '/themes/' + theme + '/'
+        
     contexts['ACTIVE_THEME'] = get_setting('module', 'theme_editor', 'theme')
     return contexts
