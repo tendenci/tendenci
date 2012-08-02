@@ -107,7 +107,12 @@ handler500 = 'apps.base.views.custom_error'
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     urlpatterns += patterns('',
     # serve .less files - this is to resolve the cross domain issue for less js
-    url(r'^(?P<path>.*).less$', 'tendenci.core.files.views.display_less',  name='less_file'),
+    url(r'^(?P<path>.*).less$', 
+        'tendenci.core.files.views.display_less',  name='less_file'),
+    # this is basically for those images with relative urls in the theme .css files. 
+    url(r'^themes/(?P<path>.*)$',
+            'tendenci.core.files.views.redirect_to_s3',
+                name='redirect_to_s3'),
 )
                             
 # serve static files

@@ -78,7 +78,6 @@ class Loader(BaseLoader):
                 s3bsf = S3BotoStorageFile(relative_path, 'r', s3bs)
                 content = s3bsf.read()
                 s3bsf.close()
-                print 'relative_path=', relative_path
                 return content, filepath
                 
             else:
