@@ -9,9 +9,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style type="text/css">
-{% include "speakers/media/css/speaker.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/speaker.css" />
 <link rel="alternate" type="application/rss+xml" title="Latest Speaker" href="{% url speaker.feed %}" />
 {% endblock %}
 
