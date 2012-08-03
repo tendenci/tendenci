@@ -1,11 +1,13 @@
+#### utils.py
+
+import os
 import Image
-from os import stat
+import urllib2
 from os.path import exists
 from cStringIO import StringIO
-
-from django.core.cache import cache as django_cache
 from django.conf import settings
-
+from django.shortcuts import Http404
+from django.core.cache import cache as django_cache
 from tendenci.core.base.utils import image_rescale
 
 
@@ -17,12 +19,13 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         from tendenci.apps.photos.cache import PHOTO_PRE_KEY
         from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
     """
+
     size = validate_image_size(size)  # make sure it's not too big
     binary = None
 
-    if cache:
-        key = generate_image_cache_key(file, size, pre_key, crop, unique_key)
-        binary = django_cache.get(key)  # check if key exists
+    # if cache:
+    #     key = generate_image_cache_key(file, size, pre_key, crop, unique_key)
+    #     binary = django_cache.get(key)  # check if key exists
 
     if not binary:
         kwargs = {
@@ -49,10 +52,15 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     except:
         quality = 90
 
-    if hasattr(file, 'path') and exists(file.path):
-        image = Image.open(file.path)  # get image
+    if settings.USE_S3_STORAGE:
+        file_path = os.path.join(settings.MEDIA_URL, unicode(file))
+        response = urllib2.urlopen('http:%s' % file_path)  # can raise 404
+        image = Image.open(StringIO(response.read()))
     else:
-        return None
+        if hasattr(file, 'path') and exists(file.path):
+            image = Image.open(file.path)  # get image
+        else:
+            raise Http404
 
     # handle infamous error
     # IOError: cannot write mode P as JPEG
@@ -153,7 +161,7 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key):
     """
     str_size = 'x'.join([str(i) for i in size])
 
-    if crop: 
+    if crop:
         str_crop = "cropped"
     else:
         str_crop = ""
@@ -164,6 +172,6 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key):
     else:
         key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop))
     # Remove spaces so key is valid for memcached
-    key = key.replace(" ","_")
+    key = key.replace(" ", "_")
 
     return key
