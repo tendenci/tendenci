@@ -138,7 +138,7 @@ def search(request, template_name="profiles/search.html"):
     profiles = Profile.objects.filter(filters).distinct()
 
     if query:
-        profiles = profiles.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query))
+        profiles = profiles.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query))
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
