@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from tendenci.apps.recurring_payments.models import RecurringPayment
-from tendenci.apps.memberships.fields import PriceInput
+from tendenci.apps.recurring_payments.fields import PriceInput
 from tendenci.apps.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectInput, BillingDateSelectWidget
 from tendenci.apps.recurring_payments.fields import BillingCycleField
 
