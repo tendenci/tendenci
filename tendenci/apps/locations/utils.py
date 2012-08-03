@@ -1,4 +1,7 @@
+import os
+import csv
 
+from django.template.defaultfilters import slugify
 
 def geocode_api(**kwargs):
     import simplejson, urllib
@@ -70,3 +73,49 @@ def distance_via_sphere(lat1, long1, lat2, long2):
     # Remember to multiply arc by the radius of the earth 
     # in your favorite set of units to get length.
     return arc * 3960
+
+def csv_to_dict(file_path, **kwargs):
+    """
+    Returns a list of dicts. Each dict represents record.
+    """
+    machine_name = kwargs.get('machine_name', False)
+
+    # null byte; assume xls; not csv
+    if has_null_byte(file_path):
+        return []
+
+    csv_file = csv.reader(open(file_path, 'rU'))
+    colnames = csv_file.next()  # row 1;
+
+    if machine_name:
+        colnames = [slugify(c).replace('-', '') for c in colnames]
+        
+    cols = xrange(len(colnames))
+    lst = []
+    
+    # make sure colnames are unique
+    duplicates = {}
+    for i in cols:
+        for j in cols:
+            # compare with previous and next fields
+            if i != j and colnames[i] == colnames[j]:
+                number = duplicates.get(colnames[i], 0) + 1
+                duplicates[colnames[i]] = number
+                colnames[j] = colnames[j] + "-" + str(number)
+    
+    for row in csv_file:
+        entry = {}
+        rows = len(row) - 1
+        for col in cols:
+            if col > rows:
+                break  # go to next row
+            entry[colnames[col]] = row[col]
+        lst.append(entry)
+
+    return lst  # list of dictionaries
+
+def has_null_byte(file_path):
+    f = open(file_path, 'r')
+    data = f.read()
+    f.close()
+    return ('\0' in data)
