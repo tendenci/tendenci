@@ -21,18 +21,16 @@ def save_file_to_s3(file_path, dirpath=None, public=False):
         if not dirpath:
             dirpath = settings.ORIGINAL_THEMES_DIR
             
-        key = '%s/%s/%s' % (settings.AWS_LOCATION,
-                            file_path.replace(os.path.dirname(dirpath), ''), 
-                            filename)
+        key = '%s%s' % (settings.AWS_LOCATION,
+                            file_path.replace(os.path.dirname(dirpath), ''))
         k.key = key
-        
         if os.path.splitext(filename)[1] == '.less':
             content_type = 'text/css'
         else:
             content_type = mimetypes.guess_type(filename)[0] or k.DefaultContentType
         k.set_metadata('Content-Type', content_type) 
-        #k.set_contents_from_filename(file_path, replace=True)
-        print key
+        k.set_contents_from_filename(file_path, replace=True)
+        #print key
         
         if public:
             k.set_acl('public-read')
