@@ -109,9 +109,14 @@ if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     # serve .less files - this is to resolve the cross domain issue for less js
     url(r'^(?P<path>.*).less$', 
         'tendenci.core.files.views.display_less',  name='less_file'),
-    # this is basically for those images with relative urls in the theme .css files. 
+    url(r'^static/(?P<path>.*)$',
+            'tendenci.core.files.views.redirect_to_s3',
+             {'file_type': 'static'},
+                name='redirect_to_s3'),
+    # this is basically for those images with relative urls in the theme .css files.
     url(r'^themes/(?P<path>.*)$',
             'tendenci.core.files.views.redirect_to_s3',
+            {'file_type': 'themes'},
                 name='redirect_to_s3'),
 )
                             

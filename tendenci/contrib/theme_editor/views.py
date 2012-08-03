@@ -29,7 +29,10 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         raise Http403
 
     selected_theme = request.GET.get("theme_edit", get_theme())
-    theme_root = os.path.join(settings.THEMES_DIR, selected_theme)
+    if settings.USE_S3_STORAGE:
+        theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
+    else:
+        theme_root = os.path.join(settings.THEMES_DIR, selected_theme)
 
     # get the default file and clean up any input
     default_file = request.GET.get("file", DEFAULT_FILE)

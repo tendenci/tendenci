@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 # local
 from tendenci.core.theme.utils import get_theme_root, get_theme, theme_choices
 from tendenci.contrib.theme_editor.utils import archive_file
+from tendenci.libs.boto_s3.utils import save_file_to_s3
 
 THEME_ROOT = get_theme_root()
 FILE_EXTENTIONS = (
@@ -41,6 +42,14 @@ class FileForm(forms.Form):
             file = File(f)
             file.write(content)
             file.close()
+            
+            # copy to s3 storage
+            if os.path.splitext(file_path)[1] == '.html':
+                public = False
+            else:
+                public = True
+            save_file_to_s3(file_path, public=public)
+            
             return True
         else:
             return False

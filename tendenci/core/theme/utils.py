@@ -42,12 +42,10 @@ def theme_choices():
     Returns a list of available themes in THEMES_DIR
     """
     if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-        from storages.backends.s3boto import S3BotoStorage
-        s3bs = S3BotoStorage()
-        dirs, files=s3bs.listdir('themes/thinksmart')
-        for theme in files:
-            yield theme
+        themes_dir = settings.ORIGINAL_THEMES_DIR
     else:
-        for theme in os.listdir(settings.THEMES_DIR):
-            if os.path.isdir(os.path.join(settings.THEMES_DIR, theme)):
-                yield theme
+        themes_dir = settings.THEMES_DIR
+        
+    for theme in os.listdir(themes_dir):
+        if os.path.isdir(os.path.join(themes_dir, theme)):
+            yield theme

@@ -363,12 +363,15 @@ def display_less(request, path):
         content = url_obj.read()
     return HttpResponse(content, mimetype="text/css")
 
-def redirect_to_s3(request, path):
+def redirect_to_s3(request, path, file_type='themes'):
     """
     Redirect to S3
     """
     if path:
-        url = '%s/%s' % (settings.THEMES_DIR, path)
+        if file_type == 'static':
+            url = '%s%s' % (settings.STATIC_URL, path)
+        else:
+            url = '%s/%s' % (settings.THEMES_DIR, path)
         return HttpResponseRedirect(url)
     raise Http404
     
