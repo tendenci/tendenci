@@ -20,7 +20,6 @@ from tendenci.apps.campaign_monitor.utils import sync_campaigns, sync_templates
 from tendenci.apps.campaign_monitor.utils import apply_template_media
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
-from tendenci.apps.events.models import Event, Type
 from tendenci.core.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
     newsletter_news_list, newsletter_pages_list
 
@@ -104,20 +103,24 @@ def template_html(request, template_id):
     pages_days = request.GET.get('pages_days', 7)
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
-        
-    events = request.GET.get('events', 1)
-    events_type = request.GET.get('events_type')
-    start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
-    event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
-    end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
-    event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
-    if events:
-        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
-        if events_type:
-            events_list = events_list.filter(type__pk=events_type)
-            events_type = Type.objects.filter(pk=events_type)[0]
-        events_list = events_list.order_by('start_dt')
-
+    try:
+        from tendenci.apps.events.models import Event, Type    
+        events = request.GET.get('events', 1)
+        events_type = request.GET.get('events_type')
+        start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
+        event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
+        end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
+        event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
+        if events:
+            events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+            if events_type:
+                events_list = events_list.filter(type__pk=events_type)
+                events_type = Type.objects.filter(pk=events_type)[0]
+            events_list = events_list.order_by('start_dt')
+    except ImportError:
+        events_list = []
+        events_type = None   
+    
     text = DTemplate(apply_template_media(template))
     context = RequestContext(request, 
             {
@@ -185,19 +188,23 @@ def template_render(request, template_id):
     pages_days = request.GET.get('pages_days', 7)
     if pages:
         pages_list, pages_content = newsletter_pages_list(request, pages_days, simplified)
-        
-    events = request.GET.get('events', 1)
-    events_type = request.GET.get('events_type')
-    start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
-    event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
-    end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
-    event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
-    if events:
-        events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
-        if events_type:
-            events_list = events_list.filter(type__pk=events_type)
-            events_type = Type.objects.filter(pk=events_type)[0]
-        events_list = events_list.order_by('start_dt')
+    try:
+        from tendenci.apps.events.models import Event, Type    
+        events = request.GET.get('events', 1)
+        events_type = request.GET.get('events_type')
+        start_y, start_m, start_d = request.GET.get('event_start_dt', str(datetime.date.today())).split('-')
+        event_start_dt = datetime.date(int(start_y), int(start_m), int(start_d))
+        end_y, end_m, end_d = request.GET.get('event_end_dt', str(datetime.date.today() + datetime.timedelta(days=90))).split('-')
+        event_end_dt = datetime.date(int(end_y), int(end_m), int(end_d))
+        if events:
+            events_list = Event.objects.filter(start_dt__lt=event_end_dt, end_dt__gt=event_start_dt, status_detail='active', status=True, allow_anonymous_view=True)
+            if events_type:
+                events_list = events_list.filter(type__pk=events_type)
+                events_type = Type.objects.filter(pk=events_type)[0]
+            events_list = events_list.order_by('start_dt')
+    except ImportError:
+        events_list = []
+        events_type = None
  
     text = DTemplate(apply_template_media(template))
     context = RequestContext(request, 
@@ -462,10 +469,14 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             site_url = get_setting('site', 'global', 'siteurl')
             html_url = unicode("%s%s"%(site_url, template.get_html_url()))
             html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
-            html_url += "&events=%s" % form.cleaned_data.get('events')
-            html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
-            html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
-            html_url += "&event_end_dt=%s" % form.cleaned_data.get('event_end_dt', '')
+            try:
+                from tendenci.apps.events.models import Event, Type
+                html_url += "&events=%s" % form.cleaned_data.get('events')
+                html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
+                html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
+                html_url += "&event_end_dt=%s" % form.cleaned_data.get('event_end_dt', '')
+            except ImportError:
+                pass
             html_url += "&articles=%s" % form.cleaned_data.get('articles')
             html_url += "&articles_days=%s" % form.cleaned_data.get('articles_days')
             html_url += "&news=%s" % form.cleaned_data.get('news')

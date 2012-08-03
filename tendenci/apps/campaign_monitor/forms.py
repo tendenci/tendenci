@@ -4,7 +4,6 @@ from django.conf import settings
 from django.forms.extras.widgets import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.campaign_monitor.models import Template, Campaign, ListMap
-from tendenci.apps.events.models import Type
 from createsend import CreateSend
 from createsend import Campaign as CSC
 
@@ -15,10 +14,15 @@ DAYS_CHOICES = ((1,'1'), (3,'3'), (5,'5'), (7,'7'),
                 )
 INCLUDE_CHOICES = ((1, 'Include'),(0, 'Skip'),)
 
+
 types_list = [('','All')]
-types = Type.objects.all()
-for type in types:
-    types_list.append((int(type.pk),type.name))
+try:
+    from tendenci.apps.events.models import Type
+    types = Type.objects.all()
+    for type in types:
+        types_list.append((int(type.pk),type.name))
+except ImportError:
+    pass
 TYPE_CHOICES = tuple(types_list)
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
