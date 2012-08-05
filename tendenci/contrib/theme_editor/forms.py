@@ -72,7 +72,7 @@ class UploadForm(forms.Form):
     
     def clean_upload(self):
         data = self.cleaned_data['upload']
-        if not data.name.endswith(FILE_EXTENTIONS):
+        if not data.name.lower().endswith(FILE_EXTENTIONS):
             raise forms.ValidationError("This is not a valid file type to upload.")
         return data
         

@@ -13,6 +13,7 @@ from django.utils.importlib import import_module
 
 from tendenci.core.theme.utils import get_theme_root
 from tendenci.contrib.theme_editor.models import ThemeFileVersion
+from tendenci.libs.boto_s3.utils import save_file_to_s3
 
 
 template_directory = "/templates"
@@ -164,3 +165,14 @@ def handle_uploaded_file(f, file_dir):
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
+    
+    # copy to s3
+    if settings.USE_S3_STORAGE:
+        if os.path.splitext(f.name)[1] == '.html':
+            public = False
+        else:
+            public = True
+        save_file_to_s3(file_path, public=public)
+    
+    
+    
