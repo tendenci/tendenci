@@ -53,6 +53,16 @@ def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
     filecopy = os.path.join(TO_ROOT, "templates", path_to_file, filename)
     shutil.copy(full_filename, filecopy)
     
+    # copy to s3
+    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+        if os.path.splitext(filename)[1] == '.html':
+            public = False
+        else:
+            public = True
+        save_file_to_s3(filecopy, public=public)
+    
+    
+    
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not

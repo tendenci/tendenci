@@ -14,7 +14,10 @@ def get_theme():
 def get_theme_root(theme=None):
     if theme is None: # default theme
         theme = get_theme()
-    theme_root = (os.path.join(settings.THEMES_DIR, theme)).replace('\\', '/')
+    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+        theme_root = (os.path.join(settings.ORIGINAL_THEMES_DIR, theme)).replace('\\', '/')
+    else:
+        theme_root = (os.path.join(settings.THEMES_DIR, theme)).replace('\\', '/')
     return theme_root
     
 def get_theme_template(template_name, theme=None):

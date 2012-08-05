@@ -186,7 +186,7 @@ def original_templates(request, app=None, template_name="theme_editor/original_t
     elif not current_dir_split[0]:
         prev_dir = ''
 
-    root = os.path.join(settings.PROJECT_ROOT, "templates")
+    root = os.path.join(settings.TENDENCI_ROOT, "templates")
     if app:
         root = app_templates[app]
 
