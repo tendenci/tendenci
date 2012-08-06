@@ -370,17 +370,15 @@ def redirect_to_s3(request, path, file_type='themes'):
     """
     if path:
         if file_type == 'static':
-            if path.find('websymbols') <> -1:
-                full_path = '%s/%s' % (settings.STATIC_ROOT, path)
-                with open(full_path) as f:
-                    content = f.read()
-                    if os.path.splitext(full_path)[1] == '.css':
-                        content_type = 'text/css'
-                    else:
-                        content_type = mimetypes.guess_type(full_path)[0] 
-                    return HttpResponse(content, mimetype=content_type)
-            else:
-                url = '%s%s' % (settings.STATIC_URL, path)
+            # static files such as tinymce and webfonts need to be served internally.
+            full_path = '%s/%s' % (settings.STATIC_ROOT, path)
+            with open(full_path) as f:
+                content = f.read()
+                if os.path.splitext(full_path)[1] == '.css':
+                    content_type = 'text/css'
+                else:
+                    content_type = mimetypes.guess_type(full_path)[0] 
+                return HttpResponse(content, mimetype=content_type)
         else:
             url = '%s/%s' % (settings.THEMES_DIR, path)
         return HttpResponseRedirect(url)
