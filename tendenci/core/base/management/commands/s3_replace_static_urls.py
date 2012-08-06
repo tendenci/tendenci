@@ -36,7 +36,8 @@ class Command(BaseCommand):
                 # walk through the directory
                 for dirpath, dirnames, filenames in os.walk(static_root):
                     for filename in filenames:
-                        if filename.find('jquery') == -1:  # skip the jquery
+                        # skip the jquery and websymbols.css
+                        if filename.find('jquery') == -1 and filename <> 'websymbols.css':
                             if os.path.splitext(filename)[1] in ['.js', '.css', '.less']:
                                 file_path = (os.path.join(dirpath, filename)
                                              ).replace('\\', '/')
