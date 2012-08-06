@@ -54,6 +54,8 @@ class Loader(BaseLoader):
         
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             for template_path in theme_templates:
+                template_path = template_path.replace(settings.ORIGINAL_THEMES_DIR,
+                                                      settings.THEMES_DIR)
                 fullpath = (os.path.join(template_path, template_name)).replace('\\', '/')
                 if s3_file_exists(fullpath):
                     yield (os.path.join(template_path, template_name)).replace('\\', '/')
