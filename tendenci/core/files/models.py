@@ -4,6 +4,8 @@ import uuid
 import Image
 import re
 from slate import PDF
+import urllib
+import cStringIO
 
 from django.db import models
 from django.conf import settings
@@ -108,10 +110,17 @@ class File(TendenciBaseModel):
 
         # return image path
         return icons_dir + '/' + icons[self.type()]
+    
+    def get_file_from_remote_storage(self):
+        file = urllib.urlopen(self.file.url)
+        return cStringIO.StringIO(file.read())
 
     def image_dimensions(self):
         try:
-            im = Image.open(self.file.path)
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                im = Image.open(self.get_file_from_remote_storage())
+            else:
+                im = Image.open(self.file.path)
             return im.size
         except Exception:
             return (0, 0)
