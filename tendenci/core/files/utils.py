@@ -54,7 +54,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     if settings.USE_S3_STORAGE:
         file_path = os.path.join(settings.MEDIA_URL, unicode(file))
-        response = urllib2.urlopen('http:%s' % file_path)  # can raise 404
+        response = urllib2.urlopen(file_path)  # can raise 404
         image = Image.open(StringIO(response.read()))
     else:
         if hasattr(file, 'path') and exists(file.path):
