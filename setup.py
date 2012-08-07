@@ -133,7 +133,7 @@ setup(
     ],
     setup_requires=[
         "Reportlab==2.5",
-    ]
+    ],
     install_requires=[
         "Django==1.4.1",
         "Reportlab==2.5",
