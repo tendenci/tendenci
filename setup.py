@@ -128,8 +128,12 @@ setup(
     classifiers=CLASSIFIERS,
     include_package_data=True,
     dependency_links=[
-        "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14"
+        "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14",
+        "http://g.pypi.python.org/",
     ],
+    setup_requires=[
+        "Reportlab==2.5",
+    ]
     install_requires=[
         "Django==1.4.1",
         "Reportlab==2.5",
