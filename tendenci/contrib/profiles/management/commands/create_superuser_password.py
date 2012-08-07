@@ -2,9 +2,6 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist 
-from django.contrib.auth.models import User
-
-from tendenci.contrib.profiles.models import Profile
 
 
 class Command(BaseCommand):
@@ -27,6 +24,9 @@ class Command(BaseCommand):
         password = options.get('password', None)
 
         if username and email and password:
+            from django.contrib.auth.models import User
+            from tendenci.contrib.profiles.models import Profile
+
             user = User.objects.create_superuser(username, email, password)
             Profile.objects.create_profile(user)
         else:
