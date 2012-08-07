@@ -57,9 +57,12 @@ class Command(BaseCommand):
         """
         Get all members from the memberships_membership table
         """
-        from tendenci.apps.memberships.models import Membership
-
-        return Membership.objects.active()
+        try:
+            from tendenci.apps.memberships.models import Membership
+    
+            return Membership.objects.active()
+        except ImportError:
+            pass
 
     def get_visits(self):
         """
