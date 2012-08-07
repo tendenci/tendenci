@@ -4,7 +4,7 @@ from haystack import site
 from django.db.models import signals
 
 from tendenci.apps.recurring_payments.models import RecurringPayment
-from tendenci.apps.search.indexes import CustomSearchIndex
+from tendenci.contrib.search.indexes import CustomSearchIndex
 
 class RecurringPaymentIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

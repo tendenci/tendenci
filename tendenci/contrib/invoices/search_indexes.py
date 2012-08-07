@@ -4,7 +4,7 @@ from haystack import site
 from django.db.models import signals
 
 from tendenci.contrib.invoices.models import Invoice
-from tendenci.apps.search.indexes import CustomSearchIndex
+from tendenci.contrib.search.indexes import CustomSearchIndex
 
 class InvoiceIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)

@@ -3,7 +3,7 @@ from haystack import indexes
 from django.db.models import signals
 
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.apps.search.indexes import CustomSearchIndex
+from tendenci.contrib.search.indexes import CustomSearchIndex
 
 
 class TendenciBaseSearchIndex(CustomSearchIndex):
