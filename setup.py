@@ -158,7 +158,7 @@ setup(
         "xlrd==0.7.3",
         "xlwt>=0.7.2",
         "pyparseuri>=0.1",
-        "whoosh>=1.1.1",
+#         "whoosh>=1.1.1",
         "pysolr==2.0.15",
         "BeautifulSoup==3.2.1",
         "oauth2>=1.5.167",
