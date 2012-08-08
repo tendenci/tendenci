@@ -104,7 +104,7 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
                     print 'Not modified %s' % s3_file_relative_path
                     continue
                 
-                elif dst_modified_dt < src_modified_dt:
+                elif dst_modified_dt > src_modified_dt:
                     print "Not updated. %s is current." % s3_file_relative_path
                     continue 
             
