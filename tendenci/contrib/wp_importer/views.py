@@ -12,6 +12,7 @@ from django.db import models
 from tendenci.contrib.wp_importer.forms import BlogImportForm
 from tendenci.contrib.wp_importer.models import BlogImport
 from tendenci.contrib.wp_importer.tasks import WPImportTask
+from tendenci.core.base.http import MissingApp
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.translation import ugettext as _
@@ -24,6 +25,8 @@ from tendenci.core.event_logs.models import EventLog
 
 @login_required
 def index(request, template_name="wp_importer/index.html"):
+    if "tendenci.apps.articles" not in settings.INSTALLED_APPS:
+        raise MissingApp('Oops, you must install Articles so that we can import your posts from WordPress!')
     if request.method == 'POST':
         form = BlogImportForm(request.POST, request.FILES)
         try:
