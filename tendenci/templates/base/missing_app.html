@@ -1,0 +1,14 @@
+{% extends "default.html" %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} Missing Required App{% endblock%}
+
+{% block body %}
+
+{% if exception_value %}
+    {{ exception_value }}
+{% else %}
+    Oops, it looks like you're missing a required app.
+{% endif %}
+
+{% endblock %}

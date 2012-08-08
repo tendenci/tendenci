@@ -1,4 +1,6 @@
-from django.http import HttpResponseForbidden
+import sys
+
+from django.http import HttpResponseForbidden, HttpResponseServerError
 from django.template import loader
 
 
@@ -19,4 +21,21 @@ def render_to_403(*args, **kwargs):
     response = HttpResponseForbidden(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
         
     return response
+
+class MissingApp(Exception):
+    pass
         
+def render_to_missing_app(*args, **kwargs):
+    if not isinstance(args,list):
+        args = []
+        args.append('base/missing_app.html')
+        
+        
+    httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
+    
+    value = sys.exc_info()[1]
+    args.append({'exception_value': value})
+    
+    response = HttpResponseServerError(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
+        
+    return response

@@ -2,7 +2,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 
-from tendenci.core.base.http import Http403, render_to_403
+from tendenci.core.base.http import Http403, render_to_403, MissingApp, render_to_missing_app
 
 
 class Http403Middleware(object):
@@ -12,3 +12,7 @@ class Http403Middleware(object):
             if request.user.is_anonymous():
                 return redirect_to_login(request.path)
             return render_to_403(context_instance=RequestContext(request))
+
+class MissingAppMiddleware(object):
+    def process_exception(self, request, exception):
+            return render_to_missing_app(context_instance=RequestContext(request))
