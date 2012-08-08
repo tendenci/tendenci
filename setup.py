@@ -177,7 +177,7 @@ setup(
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
-        "Geraldo==0.4.14",
+#         "Geraldo==0.4.14",
         "django-tastypie",
 #         'django-storages==1.1.5',
 #         'django-s3-folder-storage',
