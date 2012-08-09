@@ -36,5 +36,5 @@ class Command(BaseCommand):
             xml = url_object.read()
 
             # write the main list xml file
-            with open(os.path.join(CACHE_PATH, 'event_%s.xml' % event_id), 'w'+) as f:
+            with open(os.path.join(CACHE_PATH, 'event_%s.xml' % event_id), 'w+') as f:
                 f.write(xml)
