@@ -160,7 +160,7 @@ span.select-photos a#stop-upload{
 
 span.select-photos a#choose-photos {
 	xbackground-color: #FFFFCC;
-	background-image:url(images/arrow-right_16x16.gif);
+	background-image:url('/static/swfupload/arrow-right_16x16.gif');
 	background-repeat: no-repeat;
 	background-position: left;
 	padding-left: 20px;
@@ -200,7 +200,7 @@ span.select-photos a#stop-upload{
 }
 
 span.select-photos a#choose-photos {
-	background-image:url(/static/swfupload/arrow-right_16x16.gif);
+	background-image:url('/static/swfupload/arrow-right_16x16.gif');
 	background-repeat: no-repeat;
 	background-position: left;
 	padding-left: 20px;

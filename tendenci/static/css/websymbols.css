@@ -2,11 +2,11 @@
 
 @font-face{ 
     font-family: 'WebSymbolsRegular';
-    src: url('/static/fonts/websymbols-regular-webfont.eot');
-    src: url('/static/fonts/websymbols-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('/static/fonts/websymbols-regular-webfont.woff') format('woff'),
-         url('/static/fonts/websymbols-regular-webfont.ttf') format('truetype'),
-         url('/static/fonts/websymbols-regular-webfont.svg#WebSymbolsRegular') format('svg');
+    src: url('../fonts/websymbols-regular-webfont.eot');
+    src: url('../fonts/websymbols-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/websymbols-regular-webfont.woff') format('woff'),
+         url('../fonts/websymbols-regular-webfont.ttf') format('truetype'),
+         url('../fonts/websymbols-regular-webfont.svg#WebSymbolsRegular') format('svg');
     }
 
 #admin-bar a.glyph, #admin-bar span.glyph,

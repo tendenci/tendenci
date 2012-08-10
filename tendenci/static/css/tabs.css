@@ -45,7 +45,7 @@
 	
 	padding-bottom: 8px;
 	margin-top: 0;
-	background-image: url(/static/images/backgrounds/tabs_roll.jpg);
+	background-image: url('../images/backgrounds/tabs_roll.jpg');
 	background-repeat: no-repeat;
 	height: 21px;
 	
@@ -55,7 +55,7 @@
 	background: #FFF;
 	border: none;
 	border-bottom: none;
-	background-image: url(/static/images/backgrounds/tabs.jpg);
+	background-image: url('../images/backgrounds/tabs.jpg');
 	background-repeat: no-repeat;
     height: 21px;
 	
@@ -63,7 +63,7 @@
 
 #showh #primary a:hover {
 	border-color: #666;
-    background-image: url(/static/images/backgrounds/tabs_hover.jpg);
+    background-image: url('../images/backgrounds/tabs_hover.jpg');
 	background-repeat: no-repeat;
 }
 
