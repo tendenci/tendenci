@@ -1,7 +1,7 @@
 from django.conf import settings
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.contrib.user_groups.models import GroupMembership, Group
-from tendenci.apps.memberships.models import Membership, App
+from tendenci.addons.memberships.models import Membership, App
 from tendenci.core.perms.utils import get_query_filters
 
 def profile_edit_admin_notify(request, old_user, old_profile, profile, **kwargs):

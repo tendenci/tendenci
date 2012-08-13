@@ -58,7 +58,7 @@ class Command(BaseCommand):
         Get all members from the memberships_membership table
         """
         try:
-            from tendenci.apps.memberships.models import Membership
+            from tendenci.addons.memberships.models import Membership
     
             return Membership.objects.active()
         except ImportError:

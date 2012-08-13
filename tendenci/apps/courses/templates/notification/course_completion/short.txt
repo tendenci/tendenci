@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with attempt.course.title as objtitle and SITE_GLOBAL_SITEDISPLAYNAME as sitename %}Course Completion ({{ objtitle }}) on {{ sitename }}{% endblocktrans %}

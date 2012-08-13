@@ -37,7 +37,7 @@ def gen_xml(data):
     if data["events"]:
         offset = encode_events(xml, offset)
     try:
-        from tendenci.apps.case_studies import CaseStudy
+        from tendenci.addons.case_studies import CaseStudy
         if data["case_studies"]:
             offset = encode_casestudies(xml, offset)
     except ImportError:
@@ -65,32 +65,32 @@ def encode_categories(xml):
     # I will be not be associating the categories with any parents.
     ct_page = ContentType.objects.get_for_model(Page)
     try:
-        from tendenci.apps.articles.models import Article
+        from tendenci.addons.articles.models import Article
         ct_article = ContentType.objects.get_for_model(Article)
     except ImportError:
         ct_article = None
     try:
-        from tendenci.apps.news.models import News
+        from tendenci.addons.news.models import News
         ct_news = ContentType.objects.get_for_model(News)
     except ImportError:
         ct_news = None
     try:
-        from tendenci.apps.jobs.models import Job
+        from tendenci.addons.jobs.models import Job
         ct_job = ContentType.objects.get_for_model(Job)
     except ImportError:
         ct_job = None
     try:
-        from tendenci.apps.events.models import Event
+        from tendenci.addons.events.models import Event
         ct_event = ContentType.objects.get_for_model(Event)
     except ImportError:
         ct_event = None
     try:
-        from tendenci.apps.resumes.models import Resume
+        from tendenci.addons.resumes.models import Resume
         ct_resume = ContentType.objects.get_for_model(Resume)
     except ImportError:
         ct_resume = None
     try:
-        from tendenci.apps.case_studies.models import CaseStudy
+        from tendenci.addons.case_studies.models import CaseStudy
         ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
     except ImportError:
         ct_casestudy = None
@@ -122,32 +122,32 @@ def encode_categories(xml):
 def encode_tags(xml):
     ct_page = ContentType.objects.get_for_model(Page)
     try:
-        from tendenci.apps.articles.models import Article
+        from tendenci.addons.articles.models import Article
         ct_article = ContentType.objects.get_for_model(Article)
     except ImportError:
         ct_article = None
     try:
-        from tendenci.apps.news.models import News
+        from tendenci.addons.news.models import News
         ct_news = ContentType.objects.get_for_model(News)
     except ImportError:
         ct_news = None
     try:
-        from tendenci.apps.jobs.models import Job
+        from tendenci.addons.jobs.models import Job
         ct_job = ContentType.objects.get_for_model(Job)
     except ImportError:
         ct_job = None
     try:
-        from tendenci.apps.events.models import Event
+        from tendenci.addons.events.models import Event
         ct_event = ContentType.objects.get_for_model(Event)
     except ImportError:
         ct_event = None
     try:
-        from tendenci.apps.resumes.models import Resume
+        from tendenci.addons.resumes.models import Resume
         ct_resume = ContentType.objects.get_for_model(Resume)
     except ImportError:
         ct_resume = None
     try:
-        from tendenci.apps.case_studies.models import CaseStudy
+        from tendenci.addons.case_studies.models import CaseStudy
         ct_casestudy = ContentType.objects.get_for_model(CaseStudy)
     except ImportError:
         ct_casestudy = None
@@ -219,7 +219,7 @@ def encode_pages(xml, offset=0):
         
 def encode_articles(xml, offset=0):
     try:
-        from tendenci.apps.articles.models import Article
+        from tendenci.addons.articles.models import Article
         articles = Article.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Article)
         for article in articles:
@@ -231,7 +231,7 @@ def encode_articles(xml, offset=0):
         
 def encode_news(xml, offset=0):
     try:
-        from tendenci.apps.news.models import News
+        from tendenci.addons.news.models import News
         newss = News.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(News)
         for news in newss:
@@ -243,8 +243,8 @@ def encode_news(xml, offset=0):
         
 def encode_jobs(xml, offset=0):
     try:
-        from tendenci.apps.jobs.models import Job
-        from tendenci.apps.jobs.models import Job
+        from tendenci.addons.jobs.models import Job
+        from tendenci.addons.jobs.models import Job
         jobs = Job.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Job)
         for job in jobs:
@@ -262,7 +262,7 @@ def encode_jobs(xml, offset=0):
 
 def encode_events(xml, offset=0):
     try:
-        from tendenci.apps.events.models import Event
+        from tendenci.addons.events.models import Event
         events = Event.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Event)
         for event in events:
@@ -276,7 +276,7 @@ def encode_events(xml, offset=0):
         
 def encode_resumes(xml, offset=0):
     try:
-        from tendenci.apps.resumes.models import Resume
+        from tendenci.addons.resumes.models import Resume
         resumes = Resume.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(Resume)
         for resume in resumes:
@@ -299,7 +299,7 @@ def encode_resumes(xml, offset=0):
         
 def encode_casestudies(xml, offset=0):
     try:
-        from tendenci.apps.case_studies.models import CaseStudy
+        from tendenci.addons.case_studies.models import CaseStudy
         studies = CaseStudy.objects.filter(status=True)
         ct = ContentType.objects.get_for_model(CaseStudy)
         for study in studies:

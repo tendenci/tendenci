@@ -20,7 +20,7 @@ def newsletter_articles_list(request, articles_days, simplified):
     articles = []
     art_content = ''
     try:
-        from tendenci.apps.articles.models import Article
+        from tendenci.addons.articles.models import Article
         end_dt = datetime.datetime.now()
         start_dt = get_start_dt(articles_days, end_dt)
         
@@ -43,7 +43,7 @@ def newsletter_news_list(request, news_days, simplified):
     news = []
     news_content = ''
     try:
-        from tendenci.apps.news.models import News
+        from tendenci.addons.news.models import News
         end_dt = datetime.datetime.now()
         start_dt = get_start_dt(news_days, end_dt)
         
@@ -92,7 +92,7 @@ def newsletter_jobs_list(request, jobs_days, simplified):
     jobs = []
     job_content = ''
     try:
-        from tendenci.apps.jobs.models import Job
+        from tendenci.addons.jobs.models import Job
         end_dt = datetime.datetime.now()
         start_dt = get_start_dt(jobs_days, end_dt)
         

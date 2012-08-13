@@ -1,9 +1,0 @@
-        <h3><a href="{{ project.get_absolute_url }}">{{ project.title }}</a></h3>
-        <div>{{ project.location }} - {{ project.city }}, {{ project.state }}</div>
-        <div><strong>{{ project.construction_type }} Construction {{ project.construction_activity }}</strong></div>
-        <div>Contract Amount: {{ project.contract_amount }}</div>
-        <div>Owner: {{ project.owner_name }}</div>
-        <div>Architect: {{ project.architect }}</div>
-        <div>General Contractor: {{ project.general_contractor }}</div>
-        <div>Scope: {{ project.scope_of_work|striptags|truncatewords:20 }}</div>
-        <div>Description: {{ project.project_description|striptags|truncatewords:20 }}</div>

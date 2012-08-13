@@ -1,0 +1,35 @@
+from django.conf import settings
+
+from tendenci.core.registry import site
+from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
+from tendenci.addons.corporate_memberships.models import CorporateMembership
+
+
+class CorporateMembershipRegistry(PeopleRegistry):
+    version = '1.0'
+    author = 'Schipul - The Web Marketing Company'
+    author_email = 'programmers@schipul.com'
+    description = 'Corporate membership management application.'
+    icon = '%simages/icons/corporate-membership-color-64x64.png' % settings.STATIC_URL
+    
+    event_logs = {
+        'corporate_membership':{
+            'base':('680000','3300FF'),
+            'add':('681000','3300FF'),
+            'renew':('681001','471DEF'),
+            'edit':('682000','1F85FF'),
+            'join_approval':('682001','4D29DF'),
+            'renewal_approval':('682002','5233CF'),
+            'join_disapproval':('682003','563BBF'),
+            'renewal_disapproval':('682004','7A6DAF'),
+            'delete':('683000','B0A8CF'),
+            'import':('689005','47A0BF'),
+        }
+    }
+
+    url = {
+        'search': lazy_reverse('corp_memb.search'),
+        'list': lazy_reverse('corp_memb.list')
+    }
+
+site.register(CorporateMembership, CorporateMembershipRegistry)

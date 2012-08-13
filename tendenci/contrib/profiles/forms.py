@@ -12,7 +12,7 @@ from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.contrib.user_groups.models import Group, GroupMembership
-from tendenci.apps.memberships.models import App, Membership
+from tendenci.addons.memberships.models import App, Membership
 from tendenci.core.event_logs.models import EventLog
 from tendenci.contrib.profiles.models import Profile
 from tendenci.contrib.profiles.utils import (get_groups, get_memberships, 

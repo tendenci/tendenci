@@ -1,4 +1,0 @@
-
-{{ object.feedback }}
-{{ object.owner }}
-training:{{ object.training }}

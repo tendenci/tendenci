@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
             # special case models
             if export.app_label == 'events' and export.model_name == 'event':
-                from tendenci.apps.events.tasks import EventsExportTask
+                from tendenci.addons.events.tasks import EventsExportTask
                 result = EventsExportTask()
                 response = result.run()
             elif export.app_label == 'forms_builder.forms' and export.model_name == 'form':

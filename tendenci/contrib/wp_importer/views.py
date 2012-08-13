@@ -25,7 +25,7 @@ from tendenci.core.event_logs.models import EventLog
 
 @login_required
 def index(request, template_name="wp_importer/index.html"):
-    if "tendenci.apps.articles" not in settings.INSTALLED_APPS:
+    if "tendenci.addons.articles" not in settings.INSTALLED_APPS:
         raise MissingApp('Oops, you must install Articles so that we can import your posts from WordPress!')
     if request.method == 'POST':
         form = BlogImportForm(request.POST, request.FILES)

@@ -62,7 +62,7 @@ class Registry(object):
 
     from tendenci.core.registry import site
     from tendenci.core.registry.base import CoreRegistry, lazy_reverse
-    from tendenci.apps.models import ExmpleModel
+    from tendenci.addons.models import ExmpleModel
 
     class ExampleRegistry(CoreRegistry):
         version = '1.0'

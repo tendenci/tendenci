@@ -14,7 +14,7 @@ class PluginApp(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        self.title = self.package.replace('tendenci.apps.','').replace('_',' ').title()
+        self.title = self.package.replace('tendenci.addons.','').replace('_',' ').title()
         return super(PluginApp, self).save(*args, **kwargs)
 
 ###

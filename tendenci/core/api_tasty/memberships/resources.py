@@ -5,7 +5,7 @@ from tendenci.core.api_tasty.validation import TendenciValidation
 from tendenci.core.api_tasty.users.resources import UserResource
 from tendenci.core.api_tasty.payments.resources import PaymentMethodResource
 from tendenci.core.api_tasty.memberships.forms import MembershipForm
-from tendenci.apps.memberships.models import Membership, MembershipType, App
+from tendenci.addons.memberships.models import Membership, MembershipType, App
 
 
 class MembershipTypeResource(TendenciResource):

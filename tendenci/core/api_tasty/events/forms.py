@@ -1,5 +1,5 @@
 from django import forms
-from tendenci.apps.events.models import Event
+from tendenci.addons.events.models import Event
 from tendenci.core.api_tasty.forms import TendenciForm
 
 class EventForm(TendenciForm):

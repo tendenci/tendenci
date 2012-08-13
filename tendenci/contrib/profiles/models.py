@@ -138,7 +138,7 @@ class Profile(TendenciBaseModel):
         super(Profile, self).save(*args, **kwargs)
 
         try:
-            from tendenci.apps.campaign_monitor.utils import update_subscription
+            from tendenci.addons.campaign_monitor.utils import update_subscription
             if hasattr(self, 'old_email') and getattr(self, 'old_email') != self.user.email:
                 update_subscription(self, self.old_email)
                 del self.old_email

@@ -20,7 +20,7 @@ class Command(BaseCommand):
         contribs = []
         
         try:
-            from tendenci.apps.directories.models import Directory
+            from tendenci.addons.directories.models import Directory
             for directory in Directory.objects.all():
                 contribs.append(directory.creator)
                 contribs.append(directory.owner)
@@ -28,7 +28,7 @@ class Command(BaseCommand):
             pass
         
         try:
-            from tendenci.apps.articles.models import Article
+            from tendenci.addons.articles.models import Article
             for article in Article.objects.all():
                 contribs.append(article.creator)
                 contribs.append(article.owner)
@@ -36,7 +36,7 @@ class Command(BaseCommand):
             pass
         
         try:
-            from tendenci.apps.events.models import Event
+            from tendenci.addons.events.models import Event
             for event in Event.objects.all():
                 contribs.append(event.creator)
                 contribs.append(event.owner)
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             pass
 
         try:
-            from tendenci.apps.photos.models import Photo
+            from tendenci.addons.photos.models import Photo
             for photo in Photo.objects.all():
                 contribs.append(photo.creator)
                 contribs.append(photo.owner)
@@ -60,7 +60,7 @@ class Command(BaseCommand):
             pass
 
         try:
-            from tendenci.apps.news.models import News
+            from tendenci.addons.news.models import News
             for news in News.objects.all():
                 contribs.append(news.creator)
                 contribs.append(news.owner)

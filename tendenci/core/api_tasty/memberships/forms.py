@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from tendenci.apps.memberships.models import Membership
+from tendenci.addons.memberships.models import Membership
 from tendenci.core.api_tasty.forms import TendenciForm
 
 class MembershipForm(TendenciForm):

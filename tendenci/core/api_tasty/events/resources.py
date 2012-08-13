@@ -3,7 +3,7 @@ from tastypie.resources import ModelResource
 from tendenci.core.api_tasty.resources import TendenciResource
 from tendenci.core.api_tasty.validation import TendenciValidation
 from tendenci.core.api_tasty.entities.resources import EntityResource
-from tendenci.apps.events.models import Event, Place, Type
+from tendenci.addons.events.models import Event, Place, Type
 
 class PlaceResource(ModelResource):
     class Meta:

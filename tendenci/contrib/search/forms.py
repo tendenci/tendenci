@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.registry import site as registry_site
 try:
-    from tendenci.apps.corporate_memberships.models import CorporateMembership as CorpMemb
+    from tendenci.addons.corporate_memberships.models import CorporateMembership as CorpMemb
 except:
     CorpMemb = None
 
