@@ -15,7 +15,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 
 from djcelery.models import TaskMeta
 from geraldo.generators import PDFGenerator
-from tendenci.contrib.notifications.utils import send_welcome_email
+from tendenci.apps.notifications.utils import send_welcome_email
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
@@ -90,7 +90,7 @@ def membership_edit(request, id, form_class=MembershipForm, template_name="membe
     """
     Membership edit.
     """
-    from tendenci.contrib.user_groups.models import GroupMembership
+    from tendenci.apps.user_groups.models import GroupMembership
     membership = get_object_or_404(Membership, pk=id)
 
     if not has_perm(request.user, 'memberships.change_membership', membership):

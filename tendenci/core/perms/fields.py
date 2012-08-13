@@ -8,7 +8,7 @@ from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.contrib.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group
 
 
 user_perm_options = {

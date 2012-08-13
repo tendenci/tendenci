@@ -2,7 +2,7 @@
 from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from tendenci.addons.directories.models import DirectoryPricing
-from tendenci.contrib.invoices.models import Invoice
+from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
 from tendenci.core.site_settings.utils import get_setting
 

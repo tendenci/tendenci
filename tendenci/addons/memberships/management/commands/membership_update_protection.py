@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from tendenci.core.site_settings.utils import get_setting
         from tendenci.addons.memberships.models import Membership
-        from tendenci.contrib.user_groups.models import GroupMembership
+        from tendenci.apps.user_groups.models import GroupMembership
         protection = get_setting('module', 'memberships', 'memberprotection')
 
         if protection == 'public':

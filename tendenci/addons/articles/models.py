@@ -14,7 +14,7 @@ from tendenci.addons.articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.articles.module_meta import ArticleMeta
-from tendenci.contrib.entities.models import Entity
+from tendenci.apps.entities.models import Entity
 
 
 class Article(TendenciBaseModel):

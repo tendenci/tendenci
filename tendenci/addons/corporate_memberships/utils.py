@@ -15,7 +15,7 @@ from django.template.defaultfilters import slugify
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import AppField, Membership
-from tendenci.contrib.invoices.models import Invoice
+from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
 
 

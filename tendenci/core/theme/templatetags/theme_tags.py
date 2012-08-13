@@ -6,7 +6,7 @@ from django.template.loader import get_template
 from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantIncludeNode, BlockNode
 from django.contrib.auth.models import AnonymousUser, User
 
-from tendenci.contrib.boxes.models import Box
+from tendenci.apps.boxes.models import Box
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.forms import build_settings_form

@@ -54,7 +54,7 @@ from tendenci.addons.memberships.models import Membership
 from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.files.models import File
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile
 from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.core.site_settings.utils import get_setting
 

@@ -13,7 +13,7 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
 from tendenci.addons.help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from tendenci.addons.help_files.forms import RequestForm, HelpFileForm
-from tendenci.contrib.notifications import models as notification
+from tendenci.apps.notifications import models as notification
 
 
 def index(request, template_name="help_files/index.html"):

@@ -8,8 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Sum
 from dateutil.relativedelta import relativedelta
-from tendenci.contrib.invoices.models import Invoice
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.profiles.models import Profile
 from recurring_payments.managers import RecurringPaymentManager
 from recurring_payments.authnet.cim import (CIMCustomerProfile,
                                             CIMCustomerPaymentProfile,

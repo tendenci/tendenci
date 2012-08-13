@@ -3,7 +3,7 @@ from tendenci.addons.photos.models import Image, Pool
 from tendenci.addons.photos.forms import PhotoAdminForm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import get_notice_recipients, update_perms_and_save
-from tendenci.contrib.notifications.context_processors import notification
+from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('title', 'caption', 'update_dt', 'create_dt', 'tags',)

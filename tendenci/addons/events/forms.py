@@ -28,11 +28,11 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.emails.models import Email
 from form_utils.forms import BetterModelForm
-from tendenci.contrib.discounts.models import Discount
+from tendenci.apps.discounts.models import Discount
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import Membership
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile
 
 from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
 from widgets import UseCustomRegWidget

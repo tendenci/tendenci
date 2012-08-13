@@ -24,7 +24,7 @@ from tendenci.addons.resumes.models import Resume
 from tendenci.addons.resumes.forms import ResumeForm
 
 try:
-    from tendenci.contrib.notifications import models as notification
+    from tendenci.apps.notifications import models as notification
 except:
     notification = None
 

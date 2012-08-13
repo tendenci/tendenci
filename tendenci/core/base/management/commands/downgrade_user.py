@@ -27,7 +27,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from tendenci.contrib.user_groups.models import GroupMembership
+        from tendenci.apps.user_groups.models import GroupMembership
 
         verbosity = options['verbosity']
         username = options['username']

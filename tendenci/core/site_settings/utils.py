@@ -159,7 +159,7 @@ def get_form_list(user):
     Generate a list of 2-tuples of form id and form title
     This will be used as a special select
     """
-    from tendenci.contrib.forms_builder.forms.models import Form
+    from tendenci.apps.forms_builder.forms.models import Form
     from tendenci.core.perms.utils import get_query_filters
     filters = get_query_filters(user, 'forms.view_form')
     forms = Form.objects.filter(filters)
@@ -177,7 +177,7 @@ def get_box_list(user):
     Generate a list of 2-tuples of form id and form title
     This will be used as a special select
     """
-    from tendenci.contrib.boxes.models import Box
+    from tendenci.apps.boxes.models import Box
     from tendenci.core.perms.utils import get_query_filters
     filters = get_query_filters(user, 'boxes.view_box')
     boxes = Box.objects.filter(filters)

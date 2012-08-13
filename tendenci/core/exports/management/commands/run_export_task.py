@@ -25,11 +25,11 @@ class Command(BaseCommand):
                 result = EventsExportTask()
                 response = result.run()
             elif export.app_label == 'forms_builder.forms' and export.model_name == 'form':
-                from tendenci.contrib.forms_builder.forms.tasks import FormsExportTask
+                from tendenci.apps.forms_builder.forms.tasks import FormsExportTask
                 result = FormsExportTask()
                 response = result.run()
             elif export.app_label == 'navs' and export.model_name == 'nav':
-                from tendenci.contrib.navs.tasks import NavsExportTask
+                from tendenci.apps.navs.tasks import NavsExportTask
                 result = NavsExportTask()
                 response = result.run()
             else:

@@ -10,7 +10,7 @@ from django.utils.html import escape
 from django.core.urlresolvers import reverse
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
-from tendenci.contrib.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save 
 from tendenci.addons.memberships.models import  Membership, MembershipType, Notice, App, AppField, AppEntry

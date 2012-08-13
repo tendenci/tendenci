@@ -13,8 +13,8 @@
 # from django.conf import settings
 # from django.utils.translation import ugettext_noop as _
 
-# if "tendenci.contrib.notifications" in settings.INSTALLED_APPS:
-#     from tendenci.contrib.notifications import models as notification
+# if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
+#     from tendenci.apps.notifications import models as notification
 
 #     def create_notice_types(app, created_models, verbosity, **kwargs):
 #         notification.create_notice_type("corp_memb_added", _("Corporate Membership Added"), 

@@ -3,7 +3,7 @@ from datetime import datetime
 from django.conf import settings
 
 from tendenci.core.event_logs.models import EventLog
-from tendenci.contrib.notifications.utils import send_notifications
+from tendenci.apps.notifications.utils import send_notifications
 
 # update the object
 def payment_processing_object_updates(request, payment, **kwargs):

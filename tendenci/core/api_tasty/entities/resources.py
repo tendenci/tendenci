@@ -1,5 +1,5 @@
 from tastypie import fields
-from tendenci.contrib.entities.models import Entity
+from tendenci.apps.entities.models import Entity
 from tendenci.core.api_tasty.resources import TendenciResource
 
 class EntityResource(TendenciResource):

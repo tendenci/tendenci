@@ -57,9 +57,9 @@ from tendenci.addons.events.utils import (email_registrants,
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
-from tendenci.contrib.discounts.models import Discount
+from tendenci.apps.discounts.models import Discount
 
-from tendenci.contrib.notifications import models as notification
+from tendenci.apps.notifications import models as notification
 
 def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
     """

@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from tendenci.core.payments.models import Payment
 from tendenci.core.payments.authorizenet.utils import prepare_authorizenet_sim_form
-from tendenci.contrib.invoices.models import Invoice
+from tendenci.apps.invoices.models import Invoice
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import tcurrency
 from tendenci.core.event_logs.models import EventLog

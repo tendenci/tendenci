@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
 from tendenci.core.perms.managers import ObjectPermissionManager
-from tendenci.contrib.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group
 
 
 class ObjectPermission(models.Model):

@@ -22,7 +22,7 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingForm
 from tendenci.addons.directories.utils import directory_set_inv_payment
-from tendenci.contrib.notifications import models as notification
+from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
 
 

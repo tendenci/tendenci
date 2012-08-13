@@ -17,7 +17,7 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.news.models import News
 from tendenci.addons.news.forms import NewsForm
-from tendenci.contrib.notifications import models as notification
+from tendenci.apps.notifications import models as notification
 
 
 def detail(request, slug=None, template_name="news/view.html"):

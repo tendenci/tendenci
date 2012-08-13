@@ -21,7 +21,7 @@ from django.core.files.storage import FileSystemStorage
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.addons.corporate_memberships.models import (CorporateMembership,
     AuthorizedDomain)
-from tendenci.contrib.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.addons.memberships.models import (Membership, MembershipType, Notice, App,
     AppEntry, AppField, AppFieldEntry)

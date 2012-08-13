@@ -11,7 +11,7 @@ from tendenci.addons.events.utils import count_event_spots_taken
 from tendenci.addons.events.models import Type as EventType
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.contrib.search.indexes import CustomSearchIndex
+from tendenci.apps.search.indexes import CustomSearchIndex
 
 class EventIndex(TendenciBaseSearchIndex):
     title = indexes.CharField(model_attr='title')

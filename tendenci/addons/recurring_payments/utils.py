@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from dateutil.relativedelta import relativedelta
 from tendenci.core.emails.models import Email
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile
 from recurring_payments.models import (RecurringPayment, 
                                        PaymentProfile, 
                                        RecurringPaymentInvoice,

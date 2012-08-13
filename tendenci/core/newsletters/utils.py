@@ -67,7 +67,7 @@ def newsletter_pages_list(request, pages_days, simplified):
     pages = []
     page_content = ''
     try:
-        from tendenci.contrib.pages.models import Page
+        from tendenci.apps.pages.models import Page
         end_dt = datetime.datetime.now()
         start_dt = get_start_dt(pages_days, end_dt)
         

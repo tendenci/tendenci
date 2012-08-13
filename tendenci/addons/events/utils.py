@@ -16,11 +16,11 @@ from tendenci.addons.events.models import (Event, Place, Speaker, Organizer,
     CustomRegForm, Addon, AddonOption)
 from tendenci.addons.events.forms import FormForCustomRegForm
 from tendenci.core.perms.utils import get_query_filters
-from tendenci.contrib.discounts.models import Discount, DiscountUse
-from tendenci.contrib.discounts.utils import assign_discount
+from tendenci.apps.discounts.models import Discount, DiscountUse
+from tendenci.apps.discounts.utils import assign_discount
 
 try:
-    from tendenci.contrib.notifications import models as notification
+    from tendenci.apps.notifications import models as notification
 except:
     notification = None
     

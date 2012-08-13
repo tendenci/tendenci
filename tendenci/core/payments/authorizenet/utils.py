@@ -9,7 +9,7 @@ from tendenci.core.payments.utils import payment_processing_object_updates
 from tendenci.core.payments.utils import log_payment, send_payment_notice
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
-from tendenci.contrib.notifications.utils import send_notifications
+from tendenci.apps.notifications.utils import send_notifications
 
 def get_fingerprint(x_fp_sequence, x_fp_timestamp, x_amount):
     msg = '^'.join([settings.MERCHANT_LOGIN,

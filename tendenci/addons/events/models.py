@@ -16,15 +16,15 @@ from django.db.models import Q
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from tendenci.contrib.entities.models import Entity
+from tendenci.apps.entities.models import Entity
 from tendenci.addons.events.managers import EventManager, RegistrantManager, EventTypeManager
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.events.module_meta import EventMeta
-from tendenci.contrib.user_groups.models import Group
+from tendenci.apps.user_groups.models import Group
 
-from tendenci.contrib.invoices.models import Invoice
+from tendenci.apps.invoices.models import Invoice
 from tendenci.core.files.models import File
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.payments.models import PaymentMethod as GlobalPaymentMethod
@@ -412,8 +412,8 @@ class Registration(models.Model):
         """
         Make the accounting entries for the event sale
         """
-        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
         
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
@@ -440,7 +440,7 @@ class Registration(models.Model):
         """
         from datetime import datetime
         try:
-            from tendenci.contrib.notifications import models as notification
+            from tendenci.apps.notifications import models as notification
         except:
             notification = None
         from tendenci.core.perms.utils import get_notice_recipients

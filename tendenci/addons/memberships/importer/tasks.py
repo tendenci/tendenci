@@ -4,7 +4,7 @@ from dateutil.parser import parse as dt_parse
 from django.contrib.auth.models import User
 from django.conf import settings
 from celery.task import Task
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile
 from tendenci.addons.corporate_memberships.models import CorporateMembership
 from tendenci.addons.memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
 from tendenci.addons.memberships.utils import spawn_username

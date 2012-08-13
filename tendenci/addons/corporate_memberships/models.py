@@ -18,15 +18,15 @@ from tendenci.core.base.utils import day_validate
 #from completion import AutocompleteProvider, site
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.contrib.invoices.models import Invoice
+from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.memberships.models import MembershipType, App, Membership
-from tendenci.contrib.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from tendenci.addons.corporate_memberships.managers import CorporateMembershipManager
 #from tendenci.core.site_settings.utils import get_setting
-from tendenci.contrib.user_groups.models import GroupMembership
+from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile
 
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.corporate_memberships.settings import use_search_index
@@ -339,8 +339,8 @@ class CorporateMembership(TendenciBaseModel):
         """
         Make the accounting entries for the corporate membership sale
         """
-        from tendenci.contrib.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.contrib.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
         
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
@@ -366,7 +366,7 @@ class CorporateMembership(TendenciBaseModel):
         """
         from datetime import datetime
         try:
-            from tendenci.contrib.notifications import models as notification
+            from tendenci.apps.notifications import models as notification
         except:
             notification = None
         from tendenci.core.perms.utils import get_notice_recipients

@@ -162,7 +162,7 @@ def send_email_notification(notice_name, recipients, extra_context):
     recipients - a list of emails
     """
     try:
-        from tendenci.contrib.notifications import models as notification
+        from tendenci.apps.notifications import models as notification
     except:
         notification = None
     if notification and recipients:

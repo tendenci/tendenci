@@ -19,7 +19,7 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.articles.models import Article
 from tendenci.addons.articles.forms import ArticleForm
-from tendenci.contrib.notifications import models as notification
+from tendenci.apps.notifications import models as notification
 
 
 def detail(request, slug=None, template_name="articles/view.html"):

@@ -10,8 +10,8 @@ class Migration(DataMigration):
         from django.conf import settings
         from django.utils.translation import ugettext_noop as _
         
-        if "tendenci.contrib.notifications" in settings.INSTALLED_APPS:
-            from tendenci.contrib.notifications import models as notification
+        if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
+            from tendenci.apps.notifications import models as notification
         
             notification.create_notice_type("directory_approved_user_notice", _("Directory Approved User Notice"), _("A directory has been approved - user notice."))
         else:

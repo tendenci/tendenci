@@ -7,7 +7,7 @@ from forms import PayflowLinkPaymentForm
 from tendenci.core.payments.models import Payment
 from tendenci.core.payments.utils import payment_processing_object_updates
 from tendenci.core.event_logs.models import EventLog
-from tendenci.contrib.notifications.utils import send_notifications
+from tendenci.apps.notifications.utils import send_notifications
 from tendenci.core.payments.utils import log_payment, send_payment_notice
 
 #from tendenci.core.site_settings.utils import get_setting

@@ -11,7 +11,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.imports.forms import UserImportForm
 from tendenci.core.imports.utils import extract_from_excel, render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
 from tendenci.core.event_logs.models import EventLog
-from tendenci.contrib.user_groups.models import Group, GroupMembership
+from tendenci.apps.user_groups.models import Group, GroupMembership
 
 
 IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')

@@ -12,7 +12,7 @@ from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
 from tendenci.core.base.utils import url_exists
-from tendenci.contrib.profiles.models import Profile
+from tendenci.apps.profiles.models import Profile
 
 register = Library()
 

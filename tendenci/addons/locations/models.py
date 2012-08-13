@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from tendenci.core.perms.models import TendenciBaseModel 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.locations.managers import LocationManager
-from tendenci.contrib.entities.models import Entity
+from tendenci.apps.entities.models import Entity
 from tendenci.addons.locations.utils import get_coordinates
 from tendenci.core.files.models import File
 

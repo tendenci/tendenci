@@ -1,5 +1,5 @@
 from tendenci.core.api_tasty.resources import TendenciResource
-from tendenci.contrib.discounts.models import Discount
+from tendenci.apps.discounts.models import Discount
 
 class DiscountResource(TendenciResource):
     class Meta(TendenciResource.Meta):

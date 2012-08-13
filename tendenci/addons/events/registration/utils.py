@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.contrib.auth.models import User, AnonymousUser
 
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.contrib.discounts.models import Discount, DiscountUse
+from tendenci.apps.discounts.models import Discount, DiscountUse
 
 from tendenci.addons.events.utils import get_event_spots_taken
 from tendenci.addons.events.models import Event, RegConfPricing, Registration, Registrant
@@ -12,7 +12,7 @@ from tendenci.addons.events.registration.constants import REG_CLOSED, REG_FULL, 
 from tendenci.addons.events.forms import FormForCustomRegForm
 
 try:
-    from tendenci.contrib.notifications import models as notification
+    from tendenci.apps.notifications import models as notification
 except:
     notification = None
 

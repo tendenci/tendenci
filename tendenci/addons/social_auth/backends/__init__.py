@@ -135,7 +135,7 @@ class SocialAuthBackend(ModelBackend):
                     is_new = True
                     default_user_groups =[g.strip() for g in (get_setting('module', 'users', 'defaultusergroup')).split(',')]
                     if default_user_groups:
-                        from tendenci.contrib.user_groups.models import Group, GroupMembership
+                        from tendenci.apps.user_groups.models import Group, GroupMembership
                         from django.db.models import Q
                         for group_name in default_user_groups:
                             groups = Group.objects.filter(Q(name=group_name) | Q(label=group_name)).filter(allow_self_add=1, status=1, status_detail='active')

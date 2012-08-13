@@ -29,7 +29,7 @@ from tendenci.addons.jobs.forms import JobForm, JobPricingForm
 from tendenci.addons.jobs.utils import job_set_inv_payment, get_job_unique_slug
 
 try:
-    from tendenci.contrib.notifications import models as notification
+    from tendenci.apps.notifications import models as notification
 except:
     notification = None
 from tendenci.core.base.utils import send_email_notification

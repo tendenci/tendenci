@@ -25,7 +25,7 @@ class Command(BaseCommand):
         from tendenci.addons.memberships.models import Notice, Membership, NoticeLog, NoticeLogRecord
         from tendenci.core.base.utils import fieldify
         from tendenci.core.emails.models import Email
-        from tendenci.contrib.profiles.models import Profile
+        from tendenci.apps.profiles.models import Profile
         from tendenci.core.site_settings.utils import get_setting
         
         site_display_name = get_setting('site', 'global', 'sitedisplayname')

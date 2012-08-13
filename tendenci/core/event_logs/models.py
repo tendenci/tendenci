@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 
 from tendenci.core.event_logs.managers import EventLogManager
-from tendenci.contrib.entities.models import Entity
+from tendenci.apps.entities.models import Entity
 from tendenci.core.robots.models import Robot
 from tendenci.core.event_logs.colors import get_color
 

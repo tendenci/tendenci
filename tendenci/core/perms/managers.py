@@ -114,7 +114,7 @@ class ObjectPermissionManager(models.Manager):
         # treat the tuples differently. They are passed in as
         # ((group,perm,),(group,perm,) ..... (group,perm.))
         if group_with_perms:
-            from tendenci.contrib.user_groups.models import Group
+            from tendenci.apps.user_groups.models import Group
             for group, perm in group_or_groups:
                 if isinstance(group, unicode):
                     if group.isdigit():
