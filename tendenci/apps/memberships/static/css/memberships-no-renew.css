@@ -1,0 +1,25 @@
+.content {
+    overflow: visible;
+}
+
+.membership-wrap {
+    background-color: white;
+    border: 1px solid #DDD;
+    margin: 15px 0;
+    -moz-box-shadow: 0 0 4px #DDD;
+    -webkit-box-shadow: 0 0 4px #DDD;
+    box-shadow: 0 0 4px #DDD;
+}
+
+#container p {
+    margin: 0;
+}
+
+.membership-period {
+    margin-top: 10px;
+}
+
+.renew-period {
+    color: #777;
+    margin-top: 5px;
+}

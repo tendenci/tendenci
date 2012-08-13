@@ -13,33 +13,10 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships-search.css">
 {% endblock %}
 
 {% block body %}
-
-<style type="text/css">
-    table {
-        margin-top: 10px;
-    }
-    table.some-details td:first-child {
-        width: 350px;
-    }
-    table.some-details td {
-        padding: 3px 0;
-    }
-    span.company-label:after, span.position-label:after {
-        content: ": ";
-    }
-
-    .type-and-period {
-        margin: 10px 0;
-    }
-
-    .type-and-period div {
-        margin-bottom: 3px;
-    }
-
-</style>
 
 <div class="t">
     {% membership_nav request.user %}

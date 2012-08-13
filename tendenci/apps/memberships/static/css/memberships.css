@@ -609,3 +609,39 @@ form.connect-with li {
     border: 2px solid #C00;
     margin-top: 10px;
 }
+
+.entry-edit {
+    float: right;
+}
+
+.entry-link { float: right; margin-left: 6px; }
+
+.errorlist{
+	color: red;
+}
+
+.notice-log-view {
+    background-color: white;
+    margin-bottom: 20px;
+    padding: 10px;
+    line-height: 20px;
+    }
+#log-records-wrap{
+	border-top: 1px dashed #ccc;
+	margin-top: 2em;
+	padding-top: 1em;
+}
+
+.notice-log-wrap {
+    background-color: white;
+    border: 1px solid #CCCCCC;
+    margin-bottom: 20px;
+    padding: 10px;
+    }
+.notice-log{
+	margin-left: 2em;
+	line-height: 20px;
+}
+.notice-log-form{
+	margin-bottom: 1em;
+}
