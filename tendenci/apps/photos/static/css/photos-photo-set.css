@@ -1,0 +1,135 @@
+h1.set-name {
+margin: 0;
+}
+div.back-to-photo-sets {
+font-size: 12px;
+margin-bottom: 20px;
+}
+
+table.wrap {
+width: 100%;
+vertical-align: top;
+}
+
+table.wrap td {
+vertical-align: top;
+}
+
+td.set-info {
+width: 200px;
+padding: 0 20px 0 0;
+}
+
+td.set-info .cover-photo {
+margin-bottom: 3px;
+}
+
+td.set-info .quick-info {
+font-size: 12px;
+}
+
+td.set-info .set-description {
+font-size: 12px;
+line-height: 16px;
+margin-top: 10px;
+}
+
+td.set-info .actions {
+margin-top: 10px;
+}
+
+td.set-info .actions a {
+font-size: 12px;
+display: block;
+border-bottom: 1px solid #DDD;
+padding: 4px;
+}
+
+td.set-info .actions a:active,
+td.set-info .actions a:hover {
+background-color: #EEE;
+}
+
+.perm-public {
+color: green;
+}
+.perm-users, .perm-members, .perm-groups {
+color: darkblue;
+}
+.perm-private {
+color: red;
+}
+.status-active {
+color: green;
+}
+
+.status-pending {
+color: orange;
+}
+
+.status-inactive {
+color: red;
+}
+
+.photo-set {
+    position: relative;
+}
+
+.info {
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.info .actions {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.info .visibility {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+}
+
+.info .actions a {
+    text-decoration: underline;
+}
+
+.extra-info {
+    font-size: 12px;
+    height: 35px;
+}
+
+.perm-public {
+    font-weight: bold;
+    color: green;
+}
+.perm-users, .perm-members, .perm-groups {
+    font-weight: bold;
+    color: darkblue;
+}
+.perm-private {
+    font-weight: bold;
+    color: red;
+}
+.status-active {
+    font-weight: bold;
+    color: green;
+}
+
+.status-pending {
+    font-weight: bold;
+    color: orange;
+}
+
+.status-inactive {
+    font-weight: bold;
+    color: red;
+}
+
+td.image a {
+    text-decoration: none;
+    display: block;
+}
