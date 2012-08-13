@@ -31,3 +31,16 @@ div.forms div.form-field div.id_state .field input {
 div.forms div.form-field div.id_zip_code .field input {
   width: 18%;
 }
+
+.make-payment-view{
+	/*font-size: 12px;*/
+}
+.make-payment-view .label{
+	float: left;
+	text-align: right;
+	width: 10em;
+	padding-right: 1em;
+}
+.clear-left{
+	clear: left;
+}
