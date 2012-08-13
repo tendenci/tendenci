@@ -10,9 +10,8 @@ from tendenci.core.base.widgets import SplitDateTimeWidget
 
 
 # introspection rules for south migration for the slugfield
-add_introspection_rules([],['^tendenci\.apps\.base\.fields\.SlugField'])
-add_introspection_rules([],['^tendenci\.apps\.timezones\.fields\.TimeZoneField'])
-add_introspection_rules([],['^tendenci\.apps\.tinymce\.models\.HTMLField'])
+add_introspection_rules([], ['^tendenci\.core\.base\.fields\.SlugField'])
+
 
 class SlugField(CharField):
     """
