@@ -11,9 +11,6 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/staff.css">
-<style type="text/css">
-.t .staff-search-wrap {width: 100%}
-</style>
 <link rel="alternate" type="application/rss+xml" title="Latest Staff" href="{% url staff.feed %}" />
 {% endblock %}
 
