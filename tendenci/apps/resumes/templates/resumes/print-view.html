@@ -9,19 +9,7 @@
 {% block extra_head %}
 {{ block.super }}
 <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css" />
-<style type="text/css">
-
-body {
-	background-color: #EEE;
-}
-
-@media print {
-	#admin-bar {
-		display: none;
-	}
-}
-
-</style>
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/resumes-print.css" />
 {% endblock %}
 
 {% block body %}
