@@ -1,0 +1,6 @@
+.guide-nav { float:left; width: 20%; padding-right: 20px; }
+.guide-nav li {list-style: none; margin-bottom: 4px; }
+.guide-nav li a { padding: 4px; display: block; }
+.guide-nav li a.active { border: 1px solid #333; }
+.guide-content { float:left; width: 75%; }
+.guide-content h3 { padding-top: 20px; clear: both; display: block; }
