@@ -1,0 +1,20 @@
+form.search-form input[type="text"] {width: 60%; margin-bottom: 10px;}
+.quotes-wrap { margin-bottom: 20px; }
+.quotes-wrap ul { list-style: none; margin: 0; padding: 0; }
+.quotes-wrap ul li { padding: 10px 0; border-bottom: 1px dashed #444; }
+.quotes-wrap .quote li {padding: 0; border: none;}
+  .quote-text a { color: #444; text-decoration: none; }
+.quote-text a:hover { text-decoration: underline; }
+#add-quote { display: block; float: right; text-align: right; padding: 6px 8px; background: #ebebeb; text-decoration: none; margin-bottom: 20px; }
+#add-quote:hover { background: #444; color: #fff; }
+
+.lower-container .related-quotes h3, .lower-container .tags h3 { padding: 0; margin: 0; }
+.related-quotes {margin-bottom: 10px;}
+.related-quotes ul, .lower-container .tags ul { list-style: none; margin: 0; padding: 0; }
+.lower-container .tags { margin-bottom: 20px; }
+.related-quotes ul li { display: block; padding: 10px 0; border-bottom: 1px dashed #444; }
+.related-quotes ul li a {  }
+.quote-main blockquote { margin: 0; padding: 26px 0 26px 18px; font-size: 24px; line-height: 28px; margin-bottom: 20px; background: url(/themes/schipul/media/images/quote-bg.jpg) no-repeat scroll 0 0 transparent; }
+.quote-main blockquote p { margin: 0 0 16px 0; }
+.quote-text a { color: #444; text-decoration: none; }
+.quote-text a:hover { text-decoration: underline; }

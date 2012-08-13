@@ -19,18 +19,7 @@ Quotes from {{ quote.author}} - {{ quote.quote }},
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-.lower-container .related-quotes h3, .lower-container .tags h3 { padding: 0; margin: 0; }
-.related-quotes {margin-bottom: 10px;}
-.related-quotes ul, .lower-container .tags ul { list-style: none; margin: 0; padding: 0; }
-.lower-container .tags { margin-bottom: 20px; }
-.related-quotes ul li { display: block; padding: 10px 0; border-bottom: 1px dashed #444; }
-.related-quotes ul li a {  }
-.quote-main blockquote { margin: 0; padding: 26px 0 26px 18px; font-size: 24px; line-height: 28px; margin-bottom: 20px; background: url(/themes/schipul/media/images/quote-bg.jpg) no-repeat scroll 0 0 transparent; }
-.quote-main blockquote p { margin: 0 0 16px 0; }
-.quote-text a { color: #444; text-decoration: none; }
-.quote-text a:hover { text-decoration: underline; }
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/quotes.css">
 {% endblock extra_head %}
 
 {% block body %}

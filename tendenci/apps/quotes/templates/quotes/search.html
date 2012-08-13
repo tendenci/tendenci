@@ -9,17 +9,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-form.search-form input[type="text"] {width: 60%; margin-bottom: 10px;}
-.quotes-wrap { margin-bottom: 20px; }
-.quotes-wrap ul { list-style: none; margin: 0; padding: 0; }
-.quotes-wrap ul li { padding: 10px 0; border-bottom: 1px dashed #444; }
-.quotes-wrap .quote li {padding: 0; border: none;}
-  .quote-text a { color: #444; text-decoration: none; }
-.quote-text a:hover { text-decoration: underline; }
-#add-quote { display: block; float: right; text-align: right; padding: 6px 8px; background: #ebebeb; text-decoration: none; margin-bottom: 20px; }
-#add-quote:hover { background: #444; color: #fff; }
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/quotes.css">
 {% endblock %}
 
 {% block body %}
