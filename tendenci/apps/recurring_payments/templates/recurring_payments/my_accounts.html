@@ -9,35 +9,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-	.clear-left{
-		clear: left;
-	}
-	.item-left, .item-right{
-		float: left;
-	}
-	.item-right{
-		padding-left: 1em;
-	}
-	.account-header{ 
-		font-size: 1.2em;
-		margin: 1em 0 0.2em;
-		}
-	#accounts-body{
-		font-size: 12px;
-		
-	}
-	#accounts-body div{
-		line-height: 1.5em;
-	}
-	.active{
-		color: #0066CC;
-	}
-	.disabled, .deleted{
-		color: red;
-	}
-	
-</style>
+<link type="text/css" href="{{ STATIC_URL }}css/recurring_payments.css" rel="Stylesheet" />
 
 {% endblock %}
 

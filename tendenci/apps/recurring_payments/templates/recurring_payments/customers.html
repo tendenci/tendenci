@@ -11,35 +11,7 @@
 {{ block.super }}
 
 <link type="text/css" href="{{ STATIC_URL }}tablesorter/sortthemes.css" rel="Stylesheet" />	
-<style>
-	.rp-search-box{
-		float: right;
-	}
-	.rp-search-box input[type=text]{
-		width: 20em;
-	}
-	#rp-totals{
-		width: 70%;
-		margin: 1em auto;
-		border: 1px solid #ccc;
-		font-size: small;
-	
-	}
-	#rp-totals td, #rp-totals th{
-		padding: 6px;
-		vertical-align: top;
-	}
-	#rp-totals th{
-		border-bottom: 1px dotted #ccc;
-	}
-	.not-active{
-		color: #ff0000 !important;
-	}
-	.tablesorter tr th, .tablesorter tr td{
-		font-size: 12px !important;
-	}
-</style>
-
+<link type="text/css" href="{{ STATIC_URL }}css/recurring_payments.css" rel="Stylesheet" />
 {% endblock %}
 
 {% block body %}
