@@ -2,12 +2,6 @@
 {% load perm_tags %}
 
 {% has_perm user forms.change_form form as can_edit %}
-
-<style>
-.id_captcha input[type="text"]{
-    width: 160px !important;
-}
-</style>
     <h4>{{ form.title }}</h4>
     <p>{{ form.intro|safe }}</p>
 
