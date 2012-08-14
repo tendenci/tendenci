@@ -819,8 +819,9 @@ class Reg8nEditForm(BetterModelForm):
         if reg_form_id:
             if self.instance.use_custom_reg_form and self.instance.bind_reg_form_to_conf_only:
                 reg_form = CustomRegForm.objects.get(id=reg_form_id)
-                if reg_form.is_template:
-                    reg_form = reg_form.clone()
+                # commenting out the clone. they can clone from admin interface if needed
+#                if reg_form.is_template:
+#                    reg_form = reg_form.clone()
                 self.instance.reg_form = reg_form
             else:
                 self.instance.reg_form = None 
