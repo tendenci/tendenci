@@ -242,3 +242,11 @@
 .edit-group-perms .selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
 .edit-group-perms .selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
 .edit-group-perms .selector-chosen .selector-filter { display: none; }
+
+.t .group-view .thead{
+	border-bottom: 1px dotted #ccc;
+}
+.t .group-view .gm-table{
+	border: 1px solid #ccc;
+	margin-top: 1em;
+}
