@@ -294,3 +294,12 @@ div.forms fieldset.permissions legend {
 div.forms div.form-field div.field input.custom-price {
 	width: 50px;
 }
+
+.id_captcha input[type="text"]{
+	width: 160px !important;
+}
+.t .form-wrap {
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}

@@ -7,16 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-.id_captcha input[type="text"]{
-	width: 160px !important;
-}
-.t .form-wrap {
-    padding: 10px;
-    margin-bottom: 10px;
-    position: relative;
-}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 
 {% endblock extra_head %}
 
