@@ -19,14 +19,17 @@ class Command(BaseCommand):
             # get expired memberships out of grace period
             # we can't move the expiration date, but we can
             # move todays day back.
-            memberships = Membership.objects.active(
-                membership_type=membership_type,
-                expire_dt__lt=datetime.now() - relativedelta(days=grace_period)
-            )
+            memberships = Membership.objects.filter(
+                membership_type=membership_type, 
+                expire_dt__lt=datetime.now() - relativedelta(days=grace_period), 
+                status=1, 
+                status_detail='active')
 
             for membership in memberships:
                 # update profile
                 membership.user.profile.refresh_member_number()
+                membership.status_detail = 'expired'
+                membership.save()
 
                 # remove from group
                 GroupMembership.objects.filter(
