@@ -398,6 +398,10 @@ div.admin-item {
     border-bottom: 1px solid #CCC;
 }
 
+.list-avatars li{
+	list-style: none;
+}
+
 /* membership tab
 ------------------------------- */
 .membership-wrap {
