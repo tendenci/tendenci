@@ -111,7 +111,7 @@ class FormForCustomRegForm(forms.ModelForm):
                             default = True
                     else:
                         default = False
-                field_args["initial"] = field.default
+            field_args["initial"] = field.default
             #if "queryset" in arg_names:
             #    field_args["queryset"] = field.queryset()
             if field_widget is not None:
