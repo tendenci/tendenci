@@ -133,22 +133,34 @@ class EventLogManager(Manager):
         # Application is the name of the app that the event is coming from
         #
         # We get the app name via inspecting. Due to our update_perms_and_save util
-        # we must filter out perms as an actual source. This is ok since there are 
+        # we must filter out perms as an actual source. This is ok since there are
         # no views within perms. - JMO 2012-05-14
         if 'application' in kwargs:
             event_log.application = kwargs['application']
 
         if not event_log.application:
             event_log.application = inspect.getmodule(stack[1][0]).__name__
-            if event_log.application.split('.')[0] == "perms":
+            if "perms" in event_log.application.split('.'):
                 event_log.application = inspect.getmodule(stack[2][0]).__name__
-                if event_log.application.split('.')[0] == "perms":
+                if "perms" in event_log.application.split('.'):
                     event_log.application = inspect.getmodule(stack[3][0]).__name__
 
-        if event_log.application.split('.')[0] == "plugins":
-            event_log.application = event_log.application.split('.')[1]
-        else:
-            event_log.application = event_log.application.split('.')[0]
+        event_log.application = event_log.application.split('.')
+        remove_list = ['tendenci',
+                        'models',
+                        'views',
+                        'addons',
+                        'core',
+                        'apps',
+                        'contrib']
+
+        for item in remove_list:
+            if item in event_log.application:
+                event_log.application.remove(item)
+
+        # Join on the chance that we are left with more than one item
+        # in the list that we created
+        event_log.application = ".".join(event_log.application)
 
         # Action is the name of the view that is being called
         #
