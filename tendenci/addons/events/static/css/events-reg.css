@@ -64,3 +64,11 @@
 .item-label{
 	white-space: nowrap;
 }
+
+.event-info, .form-wrap{display: none;}
+
+#noscript{padding:3em; font-size: 1.3em;
+			color: #c09853;
+			background-color: #fcf8e3;
+			border: 1px solid #fbeed5;
+			margin: 2em 0;}

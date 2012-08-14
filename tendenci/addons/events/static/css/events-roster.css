@@ -1,0 +1,120 @@
+#container {
+	width: 100%;
+	margin: 0;
+}
+#body {
+	border: none; /* remove styles.css property */
+	padding: 20px 10px;
+}
+#main-content {
+	width: 100%;
+}
+h1{
+	margin-bottom: 0;
+}
+h3 {
+	margin-bottom: 3px;
+}
+#event-time {
+	font-size: 1.2em;
+}
+.hr {
+	height: 1px;
+	margin: 10px auto;
+}
+#registrant-table {
+	width: 98%;
+	border-collapse: collapse;
+	border: 1px solid #DDD;
+	margin-bottom: 10px;
+}
+th {
+	text-align: left;
+	background-color: #EEE;
+	margin-bottom: 10px;
+	padding: 10px 0;
+}
+#registrant-table td.counter {
+	text-align: center;
+}
+
+.row-spacer {
+	height: 10px;
+}
+
+table tr.even {
+	background-color: #F7F7F7;
+}
+
+td.attended-checkbox {
+	text-align: left;		
+}
+td.attended-checkbox div {
+	text-align: left;
+	border: 1px solid silver;
+	width: 25px;
+	height: 17px;
+}
+
+table#registrant-table a {
+	color: inherit;
+}
+
+table#registrant-table a:active,
+table#registrant-table a:hover {
+	text-decoration: underline;
+}
+
+.back-button {
+	font-size: 1.4em;
+	margin-bottom: 10px;
+	background-color: #F7F7F7;
+}
+
+#body, body {
+	margin: 0;
+	padding: 0;
+}
+
+.back-button a {
+	display: block;
+	padding: 10px;
+}
+
+.bottom-row {
+	border-top: 1px solid silver;
+}
+
+.event-info {
+	margin: 10px;
+}
+.registrant-contact-info{
+	border-top: 1px dotted #ccc !important;
+}
+.member{
+	background-image: url({{ STATIC_URL }}images/icons/member.gif); 
+	/*background-image: url({{ STATIC_URL }}images/icons/member_16x16.png);*/
+	background-repeat: no-repeat;
+	padding-left: 16px;
+}
+#registrant-table td {
+    color: #000000;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    text-decoration: none;
+    text-align: left;
+}
+#registrant-table td a {
+    text-decoration: none;
+}
+.attended-checkbox input[type="checkbox"]{
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+.attended-checkedin-text{
+	color: green !important;
+}
+#checked-in-total{
+	text-align: center;
+}

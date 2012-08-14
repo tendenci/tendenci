@@ -1,0 +1,23 @@
+.total {
+	position: absolute;
+	top: 40px; right: 40px;
+}
+.total .int {
+	color: #AAA;
+	font-weight: bold;
+	font-size: 5em;
+	line-height: 1em;
+}
+
+.total .label {
+	font-size: 1em;
+	line-height: .2em;
+}
+
+.canceled, .canceled td, .canceled div {
+	text-decoration: line-through;
+}
+
+.canceled .attended-checkbox div {
+	background-color: silver;
+}
