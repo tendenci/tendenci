@@ -320,3 +320,23 @@ p.payment-history-header {
 div.payment-details {
 	display: none;
 }
+
+.invoice-adjust .field-wrapper .field-label{
+	float: left;
+	text-align: right;
+	width: 15em;
+	padding-right: 1em;
+}
+.invoice-adjust #adjust-sumit-button{
+	margin: 1em 0 0 15em;
+}
+
+.entry1 {
+	background-color: #ccc;
+}
+.entry2 {
+	background-color: #fff;
+}
+#total-by-account{
+	margin-top: 1em;
+}
