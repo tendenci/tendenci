@@ -36,6 +36,14 @@ class CustomRegFieldAdmin(admin.TabularInline):
     form = CustomRegFieldAdminForm
     extra = 0
     ordering = ("position",)
+    
+def clone_forms(modeladmin, request, queryset):
+    for form in queryset:
+        cloned = form.clone()
+        cloned.name = 'Clone of %s' % cloned.name
+        cloned.save()
+        
+clone_forms.short_description = 'Clone selected forms'
 
 class CustomRegFormAdmin(admin.ModelAdmin):
     inlines = (CustomRegFieldAdmin,)
@@ -47,6 +55,7 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     #readonly_fields = ['event']
     
     form = CustomRegFormAdminForm
+    actions = [clone_forms]
     
     class Media:
         js = (
