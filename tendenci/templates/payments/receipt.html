@@ -4,12 +4,7 @@
 {% block title %}Payment Receipt {{ block.super }}{% endblock %}
 
 {% block extra_head %}
-<style>
- 	h3{
- 		margin-top: 1em;
- 		margin-bottom: 0.5em;
- 	}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/payments-receipt.css">
 {{ block.super }}
 {% endblock %}
 
