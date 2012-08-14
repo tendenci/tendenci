@@ -636,6 +636,8 @@ class Registrant(models.Model):
     
     checked_in = models.BooleanField(_('Is Checked In?'), default=False)
     checked_in_dt = models.DateTimeField(null=True)
+    
+    reminder = models.BooleanField(_('Receive event reminders'), default=False)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
