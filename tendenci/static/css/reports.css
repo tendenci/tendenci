@@ -62,3 +62,8 @@ tr.odd {
 .corp-mems-stats {
     padding-left:20px;
 }
+
+.corp-mems-wrap table.report {
+  border-collapse: collapse;
+  width: 100%;
+}
