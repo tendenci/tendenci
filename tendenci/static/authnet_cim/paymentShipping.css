@@ -16,3 +16,7 @@
 .AuthorizeNetShadowTL { top: -16px; left: -16px; background-image: url('shadow1-topLeft.png'); background-repeat: no-repeat; }
 
 .AuthorizeNetPopupSimpleTheme .AuthorizeNetPopupOuter { border:1px solid #585858; background-color:#ffffff; }
+
+.rp-dname{
+	padding: 5px 0;
+}
