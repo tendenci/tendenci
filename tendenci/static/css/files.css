@@ -165,3 +165,8 @@
 	font-size: .9em;
 	margin-bottom: 20px;
 }
+
+#id_start_dt,
+#id_end_dt {
+	width: 150px;
+}
