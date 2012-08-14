@@ -3,7 +3,7 @@ from tendenci.addons.photos.feeds import LatestAlbums, LatestAlbumPhotos
 
 
 
-urlpatterns = patterns('tendenci.apps',
+urlpatterns = patterns('tendenci.addons',
 
     ## photos ##
 
