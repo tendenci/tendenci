@@ -10,13 +10,13 @@ from dateutil.relativedelta import relativedelta
 from tendenci.core.emails.models import Email
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.profiles.models import Profile
-from recurring_payments.models import (RecurringPayment, 
+from tendenci.addons.recurring_payments.models import (RecurringPayment, 
                                        PaymentProfile, 
                                        RecurringPaymentInvoice,
                                        PaymentTransaction)
-from recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
-from recurring_payments.authnet.utils import get_token
-from recurring_payments.authnet.utils import payment_update_from_response
+from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile, CIMHostedProfilePage
+from tendenci.addons.recurring_payments.authnet.utils import get_token
+from tendenci.addons.recurring_payments.authnet.utils import payment_update_from_response
 from tendenci.core.payments.models import Payment
 
 UNSUCCESSFUL_TRANS_CODE = ['E00027']
@@ -40,11 +40,12 @@ class RecurringPaymentEmailNotices(object):
         self.admin_emails = self.get_admin_emails() 
 
     def get_admin_emails(self):
-        admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')   
         payment_admins = get_setting('module', 'payments', 'paymentrecipients')
         if payment_admins:
             payment_admins = payment_admins.split(',')
-            admin_emails += payment_admins
+            admin_emails = payment_admins
+        else:
+            admin_emails = (get_setting('site', 'global', 'admincontactemail')).split(',')
             
         if admin_emails:
             admin_emails = ','.join(admin_emails)
