@@ -317,3 +317,6 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
     height: 1px; width: 1px; 
     margin: -1px; padding: 0; border: 0; 
 }
+
+#right_files_list ul { margin-left: 12px; }
+#right_files_list a.folder { font-weight: bold; }
