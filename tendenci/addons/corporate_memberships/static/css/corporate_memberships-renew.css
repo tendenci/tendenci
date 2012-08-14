@@ -9,9 +9,11 @@ div.id_payment_method ul{
 }
 #main-forms{
 	width: 70%;
+	text-align: left;
 }
 #summary-form-wrap{
 	width:300px;
+	text-align: left;
 	margin:1em 8em 1em 1em;
 	float:right;
 }
