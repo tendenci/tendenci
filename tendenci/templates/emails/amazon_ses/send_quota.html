@@ -7,18 +7,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-.amazon-ses table tr th, .amazon-ses table tr td {
-	text-align: center;
-}
-.amazon-ses .notices{
-	border: 1px solid #FFAF9F;
-	background-color: #eee;
-	padding: 3px;
-	margin-top: 2em !important;
-}
-</style>
-
+<link rel="stylesheet" href="{{ STATIC_URL }}css/amazon_ses.css">
 {% endblock %}
 
 {% block body %}

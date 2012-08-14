@@ -1,0 +1,19 @@
+.amazon-ses-index h1{
+	margin-bottom: 1em;
+}
+.amazon-ses-index ul{
+	list-style: square outside none;
+}
+.amazon-ses-index ul li{
+	padding: 2px 0;
+}
+
+.amazon-ses table tr th, .amazon-ses table tr td {
+	text-align: center;
+}
+.amazon-ses .notices{
+	border: 1px solid #FFAF9F;
+	background-color: #eee;
+	padding: 3px;
+	margin-top: 2em !important;
+}

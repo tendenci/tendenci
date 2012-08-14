@@ -8,17 +8,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-.amazon-ses-index h1{
-	margin-bottom: 1em;
-}
-.amazon-ses-index ul{
-	list-style: square outside none;
-}
-.amazon-ses-index ul li{
-	padding: 2px 0;
-}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/amazon_ses.css">
 
 {% endblock %}
 
