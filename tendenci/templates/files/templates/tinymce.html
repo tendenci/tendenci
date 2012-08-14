@@ -23,9 +23,6 @@
 	<script src="{{ STATIC_URL }}swfupload/swfupload.cookies.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}tinymce/plugins/stormeimage/js/swfupload.handlers.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}swfupload/swfupload.swfobject.js" type="text/javascript"></script>
-    <style type="text/css">
-    	#imageedit_panel { height: auto; }
-    </style>
 </head>
 <body id="stormeimage" style="display: none">
     <form onsubmit="ImageDialog.insert();return false;" action="#"> 
@@ -68,15 +65,6 @@
 			</div>
 
 			<div id="imageedit_panel" class="panel">
-
-				<style type="text/css">
-					div.options {
-						border: 1px solid silver;
-						padding: 10px;
-						background-color: #F0F5FF;
-					}
-				</style>
-
                 <div class="photo-wrapper">
                     <input type="hidden" name="image-id" value="" />
 					<input type="hidden" name="orig_width" value="" />

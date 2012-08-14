@@ -11,3 +11,9 @@
 input {width: 280px;}
 #constrain, #onmousemovecheck {width:auto;}
 #id, #dir, #lang, #usemap, #longdesc {width:200px;}
+#imageedit_panel { height: auto; }
+div.options {
+	border: 1px solid silver;
+	padding: 10px;
+	background-color: #F0F5FF;
+}
