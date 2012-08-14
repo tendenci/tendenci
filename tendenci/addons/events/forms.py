@@ -56,6 +56,20 @@ class CustomRegFormAdminForm(forms.ModelForm):
                   'notes',
                   'status',
                   #'used',
+                  'first_name', 
+                  'last_name', 
+                  'mail_name',
+                  'address', 
+                  'city', 
+                  'state', 
+                  'zip',
+                  'country', 
+                  'phone', 
+                  'email', 
+                  'position_title',
+                  'company_name', 
+                  'meal_option', 
+                  'comments',
                  )
         
 class CustomRegFormForField(forms.ModelForm):

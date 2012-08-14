@@ -1079,6 +1079,22 @@ class CustomRegForm(models.Model):
     owner_username = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='active')
     
+    # registrant fields to be selected
+    first_name = models.BooleanField(_('First Name'), default=False)
+    last_name = models.BooleanField(_('Last Name'), default=False)
+    mail_name = models.BooleanField(_('Mail Name'), default=False)
+    address = models.BooleanField(_('Address'), default=False)
+    city = models.BooleanField(_('City'), default=False)
+    state = models.BooleanField(_('State'), default=False)
+    zip = models.BooleanField(_('Zip'), default=False)
+    country = models.BooleanField(_('Country'), default=False)
+    phone = models.BooleanField(_('Phone'), default=False)
+    email = models.BooleanField(_('Email'), default=False)
+    position_title = models.BooleanField(_('Position Title'), default=False)
+    company_name = models.BooleanField(_('Company'), default=False)
+    meal_option = models.BooleanField(_('Meal Option'), default=False)
+    comments = models.BooleanField(_('Comments'), default=False)
+    
     class Meta:
         verbose_name = _("Custom Registration Form")
         verbose_name_plural = _("Custom Registration Forms")

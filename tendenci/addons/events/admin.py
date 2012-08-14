@@ -35,7 +35,9 @@ class CustomRegFieldAdmin(admin.TabularInline):
     model = CustomRegField    
     form = CustomRegFieldAdminForm
     extra = 0
+    verbose_name = 'custom field'
     ordering = ("position",)
+    template = "events/admin/tabular.html"
     
 def clone_forms(modeladmin, request, queryset):
     for form in queryset:
@@ -51,6 +53,18 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     search_fields = ("name", "notes", "status",)
     fieldsets = (
         (None, {"fields": ("name", "notes", 'status')}),
+        ('Add fields to your form', {'fields': (('first_name', 'last_name', 'email'),
+                                                 ('company_name', 'phone', 'position_title'),
+                                                 ('address', 'city', 'state'),
+                                                 ('zip', 'country', 'meal_option'), 
+                                                 ('comments')),
+                                     'classes': ('mapped-fields',),
+                                     'description': 'The fields you selected will be automatically added to ' + \
+                                     'your form. These fields are mapped to the user fields in ' + \
+                                     'the registration. To delete a mapped field, uncheck its corresponding ' + \
+                                     'check box here. Please do not add another custom field ' + \
+                                     'if you can find a field here. To add a custom field, click Add a ' + \
+                                     'Custom Field in the Fields section below.'})
     )
     #readonly_fields = ['event']
     
