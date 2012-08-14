@@ -30,6 +30,7 @@ def prepare_payflowlink_form(request, payment):
               'city': payment.city,
               'state': payment.state,
               'country': payment.country,
+              'zip': payment.zip,
               'fax':payment.fax,
               'phone':payment.phone,
               'nametoship': '%s %s' % (payment.ship_to_first_name, payment.ship_to_last_name),
