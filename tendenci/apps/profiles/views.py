@@ -86,7 +86,10 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
-    memberships = user_this.memberships.active_strict()
+    memberships = user_this.memberships.filter(
+                                    status=1,
+                                    status_detail__in=['active', 'expired']
+                                    )
 
     log_defaults = {
         'event_id': 125000,

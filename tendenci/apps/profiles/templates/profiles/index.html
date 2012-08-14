@@ -17,6 +17,11 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
 <link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+<style>
+	.inner-mitm{
+		padding: 0 1em;
+	}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -102,14 +107,22 @@
         			<td>
         				<a href="{% url membership.details membership.pk %}">
         				{{ membership.member_number }} {{ membership.membership_type }}
-        				<a/>
+        				</a>
         			</td>
         			<td>
 		        		{{ membership.subscribe_dt|date:"M j, Y" }} - {% firstof membership.get_expire_dt|date:"M j, Y" "Forever" %}
-		        		</a>
-
+	        		
+		        		{% if not membership.is_active %}
+		        		
+		        		<span class="status-expired inner-mitm">Expired</span>
+		        		{% endif %}
+		        		
 		        		{% if membership.can_renew and membership.ma %}
-		        		<span><a href="{{ membership.ma.get_absolute_url }}?username={{ user_this }}">Renew Now</a></span>
+		        		<span class="inner-mitm"><a href="{{ membership.ma.get_absolute_url }}?username={{ user_this }}">Renew Now</a></span>
+		        		{% else %}
+		        		{% if user.is_superuser and membership.ma and not membership.is_active %}
+		        			<span class="inner-mitm"><a href="{{ membership.ma.get_absolute_url }}?username={{ user_this }}">Admin: Renew</a></span>
+		        		{% endif %}
 		        		{% endif %}
 	        		</td>
 	        		<td>
