@@ -846,3 +846,15 @@ table.pricing-list .price-disabled label {
 .addon-detail td{
     padding: 5px;
 }
+
+.colors ul {
+	list-style-type: none;
+	padding-left: 0; /* remove default */
+	margin: 0 auto; /* remove default */
+}
+.colors li {
+	float: left;
+}
+
+.message-item{
+	margin-bottom: 2em;

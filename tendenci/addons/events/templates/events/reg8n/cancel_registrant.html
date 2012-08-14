@@ -10,31 +10,10 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events-cancel-reg.css">
 {% endblock %}
 
 {% block body %}
-
-<style type="text/css">
-    .event-info {
-        padding: 10px;
-        background-color: #F5F5F5;
-        -webkit-border-radius: 5px;
-        -moz-border-radius: 5px;
-        border-radius: 5px;
-        text-align: left;   
-        margin-bottom: 10px;
-        width: 61%;
-    }
-
-    .event-title {
-        font-size: 1.3em;   
-        margin-bottom: 10px;
-    }
-
-    .event-cancel-amount {
-        font-weight: bold;
-    }
-</style>
 
 <div class="t">
     <h1>{% trans "Cancel Event Registration" %}</h1>

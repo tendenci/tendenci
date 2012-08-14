@@ -1,0 +1,13 @@
+.table-pricing-choice, .regpre-form-wrap input[type=submit]{
+	margin-left: 2em;
+}
+#individual-pricings{
+	display: none;
+	margin-bottom: 5px;
+}
+#individual-pricings ul li{
+	list-style: square !important;
+}
+div.forms .is-table-choice, div.forms .is-table-choice ul {
+	margin-bottom: 2px !important;
+}

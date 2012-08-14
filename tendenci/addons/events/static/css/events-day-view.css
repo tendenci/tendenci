@@ -1,0 +1,63 @@
+.event-wrap {
+	background-color: #EEE;
+	border: 1px solid silver;
+	margin-bottom: 10px;
+}
+.event-wrap h3 {
+}
+.event-wrap div.description {
+}
+.event-wrap div.time-stamp {
+	float: left;
+	width: 80px;
+	text-align: center;
+	font-size: 1.1em;
+	font-weight: bold;
+	margin: 15px 0 0 0
+
+}
+.event-wrap .event-info {
+	background-color: white;
+	padding: 10px;
+	margin-left: 90px;
+	
+}
+.day-view .no-events {
+	font-size: 1.4em;
+	background-color: #FFC;
+	padding: 10px;
+	margin-top: 10px;
+}
+
+.day-view .event-info .attend-wrap {
+	border-top: 1px solid #DDD;
+}
+.day-view .event-info .attend-wrap .attend {
+	border: 1px solid silver;
+	float: right;
+	margin-top: 10px;
+	padding: 5px;
+	background-color: #F7F7F7;
+}
+.day-view .event-info .attend-wrap .attend a {
+	text-decoration: none;
+}
+.day-view .event-info .options {
+	float: right;
+}
+
+.day-view .event-info .registered .attend {
+	background-color: orange;
+	border: 1px solid orange;
+}
+.day-view .event-info .registered .attend a {
+	color: white;
+}
+
+.day-view .event-info .closed .attend {
+	background-color: darkred;
+	border: 1px solid darkred;
+}
+.day-view .event-info .closed .attend a {
+	color: white;
+}

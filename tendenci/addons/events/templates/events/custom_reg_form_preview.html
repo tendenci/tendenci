@@ -6,25 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
-<style>
-.id_captcha input[type="text"]{
-	width: 160px !important;
-}
-.t .form-wrap {
-    padding: 10px;
-    margin-bottom: 10px;
-    position: relative;
-}
-.preview-reminder{
-	background-color: #FEFBF3; 
-	color: #666;
-	margin: 1em 0;
-	padding: 1em;
-	width: 90%;
-	border: 1px solid #ee5;
-}
-</style>
-
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events-custom_form_preview.css">
 {% endblock extra_head %}
 
 {% block body %}
