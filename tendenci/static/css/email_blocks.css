@@ -123,3 +123,22 @@ div.forms div.form-field div.id_end_dt .field input {
 	width: 30%;
 }
 
+.field-wrapper{
+	margin: 5px 0;
+}
+.field-wrapper .field-label{
+	float: left;
+	width: 9em;
+	text-align: right;
+	padding-right: 1em;
+}
+.submitbutton{
+	margin-left: 10em;
+}
+
+.clear-left{
+	clear: left;
+}
+.errorlist{
+	color: red;
+}
