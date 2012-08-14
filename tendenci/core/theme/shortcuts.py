@@ -4,6 +4,7 @@ from django.template.loader import get_template, Template
 from django.http import HttpResponse
 from django.conf import settings
 
+from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_template
 from tendenci.core.theme.template_loaders import get_default_template
 
@@ -25,7 +26,7 @@ def render_to_theme(template_name, dictionary={}, context_instance={}):
     context_instance.update(dictionary)
 
     toggle = context_instance["TOGGLE_TEMPLATE"]
-    theme = context_instance['THEME']
+    theme = context_instance.get('THEME', get_setting('module', 'theme_editor', 'theme'))
     theme_template = get_theme_template(template_name, theme=theme)
     context_instance["THEME_TEMPLATE"] = template_name
     context_instance["CUSTOM_TEMPLATE"] = False
