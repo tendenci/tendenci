@@ -1031,7 +1031,7 @@ def register(request, event_id=0,
         
     # Setting up the formset        
     registrant = RegistrantFormSet(post_data or None, **params)
-    addon_formset = RegAddonFormSet(request.POST,
+    addon_formset = RegAddonFormSet(request.POST or None,
                         prefix='addon',
                         event=event,
                         extra_params=addon_extra_params)
