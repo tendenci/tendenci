@@ -45,9 +45,20 @@
             if(pricings=='checked'){
                 $('#pricing-options').show();
                 $('.id_payment_methods').show();
+                $('.id_recurring_payment').show();
             }else{
                 $('#pricing-options').hide();
                 $('.id_payment_methods').hide();
+                $('.id_recurring_payment').hide();
+            }
+        });
+
+        $('#id_recurring_payment').change(function(){
+            recurring_payment = $(this).attr('checked');
+            if(recurring_payment=='checked') {
+                $('.recurring-payment').closest('div.form-field').show();
+            }else{
+                $('.recurring-payment').closest('div.form-field').hide();
             }
         });
     });
