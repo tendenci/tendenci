@@ -1,0 +1,15 @@
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<form class="search-form" action="{% url culintro.search %}" method="get">
+    <div class="fieldWrapper">
+        {{ form.q }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.location }}
+        {{ form.categories }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.open_call }} Is this an Open Call?
+    </div>
+    <input type="submit" value="Search" />
+</form>
+{% endif %}
