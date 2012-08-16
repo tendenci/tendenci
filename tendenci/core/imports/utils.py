@@ -335,7 +335,6 @@ def do_user_import(request, user, user_object_dict, setting_dict):
                creator_username=request.user.username,
                owner=request.user,
                owner_username=request.user.username,
-               email=user.email
             )
 
         for field in profile_field_names:
