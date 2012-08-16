@@ -74,7 +74,7 @@ class Form(TendenciBaseModel):
         
     # payments
     custom_payment = models.BooleanField(_("Form Accepts Payment"), default=False, help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
-    payment_methods = models.ManyToManyField("payments.PaymentMethod")
+    payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
