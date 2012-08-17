@@ -61,15 +61,22 @@
             $('.id_recurring_payment').hide();
         }
 
-        $('#id_recurring_payment').change(function(){
-            recurring_payment = $(this).attr('checked');
-            if(recurring_payment=='checked') {
+        var recurring_payment = $('#id_recurring_payment');
+        recurring_payment.change(function(){
+            rp = $(this).attr('checked');
+            if (rp == 'checked'){
                 $('.recurring-payment').closest('div.form-field').show();
             }else{
                 $('.recurring-payment').closest('div.form-field').hide();
             }
         });
 
+        /* Presenting recurring payment display */
+        if (recurring_payment.attr('checked')){
+            $('.recurring-payment').closest('div.form-field').show();
+        } else {
+            $('.recurring-payment').closest('div.form-field').hide();
+        }
 
     });
 

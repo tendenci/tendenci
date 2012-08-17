@@ -23,42 +23,43 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, Pricing
-from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body, 
+from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     generate_submitter_email_body, generate_email_subject,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 
+
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
-    if not has_perm(request.user,'forms.add_form'):
+
+    if not has_perm(request.user, 'forms.add_form'):
         raise Http403
-        
+
     PricingFormSet = inlineformset_factory(Form, Pricing, form=PricingForm, extra=2, can_delete=False)
-    
+
     formset = PricingFormSet()
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
         if form.is_valid():
             form_instance = form.save(commit=False)
+            # save form and associated pricings
+            form_instance = update_perms_and_save(request, form, form_instance)
             formset = PricingFormSet(request.POST, instance=form_instance)
             if formset.is_valid():
-                # save form and associated pricings
-                form_instance = update_perms_and_save(request, form, form_instance)
-                
                 # update_perms_and_save does not appear to consider ManyToManyFields
                 for method in form.cleaned_data['payment_methods']:
                     form_instance.payment_methods.add(method)
-                
+
                 formset.save()
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % form_instance)
                 return HttpResponseRedirect(reverse('form_field_update', args=[form_instance.pk]))
     else:
         form = form_class(user=request.user)
-        
+
     return render_to_response(template_name, {
-        'form':form,
-        'formset':formset,
+        'form': form,
+        'formset': formset,
     }, context_instance=RequestContext(request))
 
 
