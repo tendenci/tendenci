@@ -7,9 +7,9 @@ class Command(BaseCommand):
     each membership accordingly.
     """
     def handle(self, *args, **kwargs):
-        from tendenci.core.site_settings.utils import get_setting
-        from tendenci.addons.memberships.models import Membership
-        from tendenci.apps.user_groups.models import GroupMembership
+        from site_settings.utils import get_setting
+        from memberships.models import Membership
+        from user_groups.models import GroupMembership
         protection = get_setting('module', 'memberships', 'memberprotection')
 
         if protection == 'public':
@@ -32,22 +32,15 @@ class Command(BaseCommand):
             )
             for membership in Membership.objects.all():
 
-                exists = GroupMembership.objects.filter(
-                    group=membership.membership_type.group,
-                    member=membership.user,
-                ).exists()
-
-                if not exists:
-                    GroupMembership.objects.create(**{
-                        'group': membership.membership_type.group,
-                        'member': membership.user,
-                        'creator_id': membership.creator.pk,
-                        'creator_username': membership.creator.username,
-                        'owner_id': membership.creator.pk,
-                        'owner_username': membership.owner.username,
-                        'status': True,
-                        'status_detail': 'active',
-                    })
+                # add or remove from group -----
+                if membership.is_active():  # should be in group; make sure they're in
+                    membership.membership_type.group.add_user(membership.user)
+                else:  # should not be in group; make sure they're out
+                    GroupMembership.objects.filter(
+                        member=membership.user,
+                        group=membership.membership_type.group
+                    ).delete()
+                # -----
 
                 print membership
 
