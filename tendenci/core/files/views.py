@@ -451,6 +451,8 @@ def redirect_to_s3(request, path, file_type='themes'):
         if file_type == 'static':
             # static files such as tinymce and webfonts need to be served internally.
             full_path = '%s/%s' % (settings.STATIC_ROOT, path)
+            if not os.path.isfile(full_path):
+                raise Http404
             with open(full_path) as f:
                 content = f.read()
                 if os.path.splitext(full_path)[1] == '.css':
