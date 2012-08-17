@@ -259,9 +259,13 @@ class MembershipManager(Manager):
 
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')
+        
+        order = kwargs.get('order_by', 'pk')
+        if 'order_by' in kwargs:
+            kwargs.pop('order_by')
 
         query_sets = []
-        for membership_type in MembershipType.objects.all():
+        for membership_type in MembershipType.objects.all().order_by(order):
             grace_period = membership_type.expiration_grace_period
             grace_now = datetime.now() - relativedelta(days=grace_period)
             query_sets.append(

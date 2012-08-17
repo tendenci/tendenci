@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from tendenci.core.base.http import Http403
 from S_P_LOW.models import S_S_CAP
-from tendenci.core.perms.utils import get_notice_recipients, has_perm
+from tendenci.core.perms.utils import get_notice_recipients, has_perm, get_query_filters
 from tendenci.core.event_logs.models import EventLog
 
 try:
@@ -26,8 +26,8 @@ def detail(request, pk=None, template_name="S_P_LOW/detail.html"):
 
 def search(request, template_name="S_P_LOW/search.html"):
     query = request.GET.get('q', None)
-    S_P_LOW = S_S_CAP.objects.search(query, user=request.user)
-    S_P_LOW = S_P_LOW.order_by('-create_dt')
+    filters = get_query_filters(request.user, 'S_P_LOW.view_S_S_LOW')
+    S_P_LOW = S_S_CAP.objects.filter(filters).distinct()
 
     EventLog.objects.log()
     

@@ -25,7 +25,7 @@
                 <li><a href="{% url file.add %}">{% trans "Add a File" %}</a></li>
                 {% endif %}
                 <li class="divider"></li>
-                {% if admin %}
+                {% if user.profile.is_staff %}
                 <li><a href="{% url file.report_most_viewed %}">{% trans "Most Viewed" %}</a></li>
                 {% endif %}
             </ul>

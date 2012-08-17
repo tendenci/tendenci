@@ -16,6 +16,10 @@
 	display: inline;
 }
 
+.t .files-found {
+    padding-bottom:  10px;
+}
+
 .t .files-wrap {
 	margin-bottom: 20px;
 }
@@ -36,7 +40,8 @@
 	margin-bottom: 10px;
 }
 .t .files-wrap .file-wrap .submitted {
-	background-color: #EEE;
+	background-color: #F6F6F6;
+	padding: 10px;
 }
 .t .files-wrap-search .file-wrap {
 	border: 1px solid #CCC;
@@ -71,8 +76,8 @@
 	text-align: right;
 	position: absolute;
 	top: 0; right: 0;
-	background-color: #EEE;
-	padding: 5px;
+	background-color: #F6F6F6;
+	padding: 10px 3px 10px 10px;
 	white-space: nowrap;
 }
 

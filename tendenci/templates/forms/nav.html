@@ -45,7 +45,7 @@
             {% if can_add_form %}
                 <li><a href="{% url admin:forms_form_add %}">{% trans "Add Form" %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_staff %}
                 <li><a href="{% url form_export %}">{% trans "Export Forms" %}</a></li>
             {% endif %}
         </ul>

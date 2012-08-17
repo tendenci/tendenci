@@ -18,6 +18,7 @@ from tendenci.core.files.models import File
 from tendenci.apps.pages.managers import PageManager
 from tendenci.apps.pages.module_meta import PageMeta
 
+
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
@@ -29,20 +30,17 @@ class Page(TendenciBaseModel):
     syndicate = models.BooleanField(_('Include in RSS feed'))
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
-    entity = models.ForeignKey(Entity,null=True)
-    # html-meta tags
+    entity = models.ForeignKey(Entity, null=True)
     meta = models.OneToOneField(MetaTags, null=True)
-    categories = generic.GenericRelation(CategoryItem,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
     
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
     objects = PageManager()
-    
+
     class Meta:
-        permissions = (("view_page","Can view page"),)
+        permissions = (("view_page", "Can view page"),)
 
     def get_meta(self, name):
         """
@@ -51,20 +49,20 @@ class Page(TendenciBaseModel):
         meta information niche to this model.
         """
         return PageMeta().get_meta(self, name)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("page", [self.slug])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+
         super(Page, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
-    
+
     @property
     def category_set(self):
         items = {}

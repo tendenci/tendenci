@@ -1,7 +1,7 @@
 # django
 from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
@@ -17,8 +17,7 @@ from django.views.decorators.csrf import csrf_protect
 from tendenci.core.base.decorators import ssl_required
 
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
-    get_notice_recipients, get_query_filters)
+from tendenci.core.perms.utils import (has_perm, update_perms_and_save, get_notice_recipients, get_query_filters)
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
@@ -32,8 +31,9 @@ from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.user_groups.forms import GroupMembershipEditForm
 
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.profiles.forms import (ProfileForm, UserPermissionForm,
-    UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
+from tendenci.apps.profiles.forms import (ProfileForm, ExportForm, UserPermissionForm, 
+UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
+from tendenci.apps.profiles.tasks import ExportProfilesTask
 
 try:
     notification = get_app('notifications')
@@ -733,3 +733,64 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
                             'form': form,
                             'user_this': user,
                             }, context_instance=RequestContext(request))
+
+@login_required
+def export(request, template_name="profiles/export.html"):
+    """Create a csv file for all the users
+    """
+
+    if not request.user.profile.is_staff:
+        raise Http404
+
+    if request.method == 'POST':
+        form = ExportForm(request.POST, user=request.user)
+        if form.is_valid():
+            if not settings.CELERY_IS_ACTIVE:
+                task = ExportProfilesTask()
+                response = task.run()
+                return response
+            else:
+                task = ExportProfilesTask.delay()
+                task_id = task.task_id
+                return redirect('profile.export_status', task_id)
+    else:
+        form = ExportForm(user=request.user)
+        
+    return render_to_response(template_name, {
+        'form':form,
+        'user_this':None,
+    }, context_instance=RequestContext(request))
+
+def export_status(request, task_id, template_name="profiles/export_status.html"):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    return render_to_response(template_name, {
+        'task':task,
+        'task_id':task_id,
+        'user_this':None,
+    }, context_instance=RequestContext(request))
+    
+def export_check(request, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    if task and task.status == "SUCCESS":
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("DNE")
+
+def export_download(request, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    if task and task.status == "SUCCESS":
+        return task.result
+    else:
+        return Http404

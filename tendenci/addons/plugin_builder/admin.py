@@ -6,6 +6,7 @@ from tendenci.addons.plugin_builder.utils import build_plugin
 class PluginFieldInline(admin.TabularInline):
     model = PluginField
     form = PluginFieldForm
+    extra = 0
 
 class PluginAdmin(admin.ModelAdmin):
     form = PluginForm

@@ -41,6 +41,27 @@ class File(TendenciBaseModel):
 
         super(File, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        # Related objects
+        # Import related objects here to prevent circular references
+        from pages.models import Page
+        from events.models import Event
+        from stories.models import Story
+        pages = Page.objects.filter(header_image=self.pk)
+        events = Event.objects.filter(image=self.pk)
+        stories = Story.objects.filter(image=self.pk)
+        # Set foreign key of related objects to None
+        for page in pages:
+            page.header_image = None
+            page.save()
+        for event in events:
+            event.image = None
+            event.save()
+        for story in stories:
+            story.image = None
+            story.save()
+        super(File, self).delete(*args, **kwargs)
+
     def basename(self):
         return os.path.basename(unicode(self.file.name))
 

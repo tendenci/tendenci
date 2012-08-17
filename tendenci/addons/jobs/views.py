@@ -17,8 +17,8 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.utils import (get_notice_recipients, update_perms_and_save, has_perm, get_query_filters,
-    has_view_perm)
+from tendenci.core.perms.utils import (get_notice_recipients, update_perms_and_save,
+    has_perm, get_query_filters, has_view_perm)
 from tendenci.core.categories.forms import CategoryForm, CategoryForm2
 from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -53,7 +53,8 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
     my_jobs = request.GET.get('my_jobs', False)
-    
+    my_pending_jobs = request.GET.get('my_pending_jobs', False)
+
     if get_setting('site', 'global', 'searchindex') and query:
         jobs = Job.objects.search(query, user=request.user)
     else:
@@ -61,13 +62,21 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
-    
-    jobs = jobs.order_by('status_detail','list_type','-post_dt')
-    
+
+    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+
     # filter for "my jobs"
     if my_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_jobs.html"
         jobs = jobs.filter(creator_username=request.user.username)
+
+    # filter for "my pending jobs"
+    if my_pending_jobs and not request.user.is_anonymous():
+        template_name = "jobs/my_pending_jobs.html"
+        jobs = jobs.filter(
+            creator_username=request.user.username,
+            status_detail__contains='pending'
+            )
 
     EventLog.objects.log()
 
@@ -93,22 +102,28 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
         raise Http403
 
 @login_required
-def add(request, form_class=JobForm, template_name="jobs/add.html"):
-    require_payment = get_setting('module', 'jobs', 'jobsrequirespayment')
-    
+def add(request, form_class=JobForm, template_name="jobs/add.html",
+        object_type=Job, success_redirect='job'):
+    require_payment = get_setting('module', 'jobs',
+                                    'jobsrequirespayment')
+
     can_add_active = has_perm(request.user, 'jobs.add_job')
-    
-    content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
-    
+
+    content_type = get_object_or_404(
+        ContentType,
+        app_label=object_type._meta.app_label,
+        model=object_type._meta.module_name
+    )
+
     if request.user.profile.is_superuser:
         category_form_class = CategoryForm
     else:
         category_form_class = CategoryForm2
-    
+
     if request.method == "POST":
         form = form_class(request.POST, user=request.user)
         categoryform = category_form_class(
-                        content_type, 
+                        content_type,
                         request.POST,
                         prefix='category')
 
@@ -139,55 +154,62 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                 job.post_dt = now
 
             # set the expiration date
-            job.expiration_dt = job.activation_dt + timedelta(days=job.requested_duration)
-            
+            job.expiration_dt = job.activation_dt + timedelta(
+                                        days=job.requested_duration)
+
             # semi-anon job posts don't get a slug field on the form
             # see __init__ method in JobForm
             if not job.slug:
                 #job.slug = get_job_unique_slug(slugify(job.title))
-                job.slug = '%s-%s' % (slugify(job.title), Job.objects.count())
+                job.slug = '%s-%s' % (slugify(job.title),
+                                        Job.objects.count())
 
             job = update_perms_and_save(request, form, job)
 
             # create invoice
             job_set_inv_payment(request.user, job, pricing)
-            
+
             #setup categories
-            category = Category.objects.get_for_object(job,'category')
-            sub_category = Category.objects.get_for_object(job,'sub_category')
-            
+            category = Category.objects.get_for_object(job, 'category')
+            sub_category = Category.objects.get_for_object(
+                                                job, 'sub_category')
+
             ## update the category of the job
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
-                Category.objects.update(job,category,'category')
-            else: # remove
+            if category != '0':
+                Category.objects.update(job, category, 'category')
+            else:  # remove
                 category_removed = True
-                Category.objects.remove(job,'category')
-                Category.objects.remove(job,'sub_category')
-            
+                Category.objects.remove(job, 'category')
+                Category.objects.remove(job, 'sub_category')
+         
             if not category_removed:
                 # update the sub category of the job
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
-                    Category.objects.update(job, sub_category,'sub_category')
-                else: # remove
-                    Category.objects.remove(job,'sub_category') 
-            
+                if sub_category != '0':
+                    Category.objects.update(job, sub_category,
+                                                'sub_category')
+                else:  # remove
+                    Category.objects.remove(job,'sub_category')
+
             #save relationships
             job.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % job)
+            messages.add_message(request, messages.SUCCESS,
+                                    'Successfully added %s' % job)
 
             # send notification to administrators
-            recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
+            recipients = get_notice_recipients(
+                            'module', 'jobs', 'jobrecipients')
             if recipients:
                 if notification:
                     extra_context = {
                         'object': job,
                         'request': request,
                     }
-                    notification.send_emails(recipients, 'job_added', extra_context)
+                    notification.send_emails(recipients, 'job_added',
+                                                extra_context)
 
             # send user to the payment page if payment is required
             if require_payment:
@@ -200,7 +222,8 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
 
             # send user to thank you or view page
             if request.user.profile.is_superuser:
-                return HttpResponseRedirect(reverse('job', args=[job.slug]))
+                return HttpResponseRedirect(
+                        reverse(success_redirect, args=[job.slug]))
             else:
                 return HttpResponseRedirect(reverse('job.thank_you'))
     else:
@@ -220,28 +243,28 @@ def add(request, form_class=JobForm, template_name="jobs/add.html"):
                         content_type,
                         initial=initial_category_form_data,
                         prefix='category')
-        
+
         # adjust the fields depending on user type
         if not require_payment:
             del form.fields['payment_method']
             del form.fields['list_type']
-    
-    return render_to_response(template_name, 
+
+    return render_to_response(template_name,
             {'form': form, 'categoryform':categoryform},
             context_instance=RequestContext(request))
 
 
 @login_required
-def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
+def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job'):
     job = get_object_or_404(Job, pk=id)
-    
+
     if not has_perm(request.user, 'jobs.change_job', job):
         raise Http403
-        
+
     form = form_class(request.POST or None,
                         instance=job,
                         user=request.user)
-    
+
     #setup categories
     content_type = get_object_or_404(ContentType, app_label='jobs',model='job')
     category = Category.objects.get_for_object(job,'category')
@@ -262,7 +285,7 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
                         request.POST or None,
                         initial= initial_category_form_data,
                         prefix='category')
-    
+
     # delete admin only fields for non-admin on edit - GJQ 8/25/2010
     if not request.user.profile.is_superuser:
         del form.fields['pricing']
@@ -276,46 +299,51 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
         if form.fields.has_key('entity'):
             del form.fields['entity']
     del form.fields['payment_method']
-    
+
     if request.method == "POST":
         if form.is_valid() and categoryform.is_valid():
             job = form.save(commit=False)
 
             job = update_perms_and_save(request, form, job)
-            
+
             ## update the category of the job
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
-                Category.objects.update(job ,category,'category')
-            else: # remove
+            if category != '0':
+                Category.objects.update(job, category, 'category')
+            else:  # remove
                 category_removed = True
-                Category.objects.remove(job ,'category')
-                Category.objects.remove(job ,'sub_category')
-            
+                Category.objects.remove(job, 'category')
+                Category.objects.remove(job, 'sub_category')
+
             if not category_removed:
                 # update the sub category of the job
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
-                    Category.objects.update(job, sub_category,'sub_category')
-                else: # remove
-                    Category.objects.remove(job,'sub_category')
-                    
+                if sub_category != '0':
+                    Category.objects.update(job, sub_category, 'sub_category')
+                else:  # remove
+                    Category.objects.remove(job, 'sub_category')
+     
             #save relationships
             job.save()
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % job)
+            messages.add_message(request, messages.SUCCESS,
+                            'Successfully updated %s' % job)
 
-            return HttpResponseRedirect(reverse('job', args=[job.slug]))
+            return HttpResponseRedirect(
+                reverse(success_redirect, args=[job.slug]))
 
-    return render_to_response(template_name,
-                {'job': job, 'form': form, 'categoryform':categoryform},
-                context_instance=RequestContext(request))
+    return render_to_response(template_name, {
+        'job': job,
+        'form': form,
+        'categoryform': categoryform
+        }, context_instance=RequestContext(request))
     
 
 
 @login_required
-def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.html"):
+def edit_meta(request, id, form_class=MetaForm,
+                    template_name="jobs/edit-meta.html"):
 
     # check permission
     job = get_object_or_404(Job, pk=id)
@@ -336,7 +364,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="jobs/edit-meta.ht
             job.meta = form.save()  # save meta
             job.save()  # save relationship
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % job)
+            messages.add_message(request, messages.SUCCESS,
+                            'Successfully updated meta for %s' % job)
 
             return HttpResponseRedirect(reverse('job', args=[job.slug]))
     else:
@@ -355,14 +384,16 @@ def delete(request, id, template_name="jobs/delete.html"):
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job)
 
             # send notification to administrators
-            recipients = get_notice_recipients('module', 'jobs', 'jobrecipients')
+            recipients = get_notice_recipients(
+                            'module', 'jobs', 'jobrecipients')
             if recipients:
                 if notification:
                     extra_context = {
                         'object': job,
                         'request': request,
                     }
-                    notification.send_emails(recipients, 'job_deleted', extra_context)
+                    notification.send_emails(recipients,
+                        'job_deleted', extra_context)
 
             job.delete()
 
@@ -375,7 +406,8 @@ def delete(request, id, template_name="jobs/delete.html"):
 
 
 @login_required
-def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-add.html"):
+def pricing_add(request, form_class=JobPricingForm,
+                    template_name="jobs/pricing-add.html"):
     if has_perm(request.user, 'jobs.add_jobpricing'):
         if request.method == "POST":
             form = form_class(request.POST)
@@ -386,7 +418,8 @@ def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-
 
                 EventLog.objects.log(instance=job_pricing)
 
-                return HttpResponseRedirect(reverse('job_pricing.view', args=[job_pricing.id]))
+                return HttpResponseRedirect(
+                    reverse('job_pricing.view', args=[job_pricing.id]))
         else:
             form = form_class()
 
@@ -397,7 +430,8 @@ def pricing_add(request, form_class=JobPricingForm, template_name="jobs/pricing-
 
 
 @login_required
-def pricing_edit(request, id, form_class=JobPricingForm, template_name="jobs/pricing-edit.html"):
+def pricing_edit(request, id, form_class=JobPricingForm,
+                    template_name="jobs/pricing-edit.html"):
     job_pricing = get_object_or_404(JobPricing, pk=id)
     if not has_perm(request.user, 'jobs.change_jobpricing', job_pricing):
         Http403
@@ -442,7 +476,8 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
 
     if request.method == "POST":
         EventLog.objects.log(instance=job_pricing)
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % job_pricing)
+        messages.add_message(request, messages.SUCCESS,
+            'Successfully deleted %s' % job_pricing)
 
         job_pricing.delete()
 
@@ -459,11 +494,12 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
     return render_to_response(template_name, {'job_pricings': job_pricings},
         context_instance=RequestContext(request))
 
+
 @login_required
 def pending(request, template_name="jobs/pending.html"):
     can_view_jobs = has_perm(request.user, 'jobs.view_job')
     can_change_jobs = has_perm(request.user, 'jobs.change_job')
-    
+
     if not all([can_view_jobs, can_change_jobs]):
         raise Http403
 
@@ -472,14 +508,15 @@ def pending(request, template_name="jobs/pending.html"):
     return render_to_response(template_name, {'jobs': jobs},
             context_instance=RequestContext(request))
 
+
 @login_required
 def approve(request, id, template_name="jobs/approve.html"):
     can_view_jobs = has_perm(request.user, 'jobs.view_job')
     can_change_jobs = has_perm(request.user, 'jobs.change_job')
-    
+
     if not all([can_view_jobs, can_change_jobs]):
         raise Http403
-    
+
     job = get_object_or_404(Job, pk=id)
 
     if request.method == "POST":
@@ -497,7 +534,7 @@ def approve(request, id, template_name="jobs/approve.html"):
             job.owner_username = request.user.username
 
         job.save()
-        
+
         # send email notification to user
         recipients = [job.creator.email]
         if recipients:
@@ -506,11 +543,13 @@ def approve(request, id, template_name="jobs/approve.html"):
                 'request': request,
             }
             #try:
-            send_email_notification('job_approved_user_notice', recipients, extra_context)
+            send_email_notification(
+                'job_approved_user_notice', recipients, extra_context)
             #except:
             #    pass
 
-        messages.add_message(request, messages.SUCCESS, 'Successfully approved %s' % job)
+        messages.add_message(request, messages.SUCCESS,
+                                'Successfully approved %s' % job)
 
         return HttpResponseRedirect(reverse('job', args=[job.slug]))
 
@@ -524,10 +563,10 @@ def thank_you(request, template_name="jobs/thank-you.html"):
 @login_required
 def export(request, template_name="jobs/export.html"):
     """Export Jobs"""
-    
+ 
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         file_name = "jobs.csv"
@@ -585,6 +624,6 @@ def export(request, template_name="jobs/export.html"):
         export_id = run_export_task('jobs', 'job', fields)
         EventLog.objects.log()
         return redirect('export.status', export_id)
-        
+ 
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
