@@ -117,6 +117,9 @@ def group_choices(user):
     filters = get_query_filters(user, 'groups.view_group', perms_field=False)
     groups = Group.objects.filter(filters).exclude(type="membership").distinct()
 
+    if not user.profile.is_superuser:
+        groups = groups.exclude(allow_self_add=False)
+
     choices = [(group.pk, "%s (%s)" % (group.label, group.name)) for group in groups]
 
     return choices
