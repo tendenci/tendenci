@@ -49,7 +49,7 @@ class LocationForm(TendenciBaseForm):
                                  'address2',
                                  'city',
                                  'state',
-                                 'zip_code',
+                                 'zipcode',
                                  'country',
                                  'phone',
                                  'fax',
