@@ -57,6 +57,12 @@ def save_files(sender, **kwargs):
             # example: file.status = instance.status
             setattr(file, attr, getattr(instance, attr))
 
+        # Update the owner and owner_username since we are
+        # updating the update_dt automatically.
+        if hasattr(instance, 'owner'):
+            file.owner = instance.owner
+        if hasattr(instance, 'owner_username'):
+            file.owner_username = instance.owner_username
         file.save()
 
 
