@@ -33,7 +33,7 @@
             {% endif %}
             {% endif %}
             
-            {% if admin or user == job.creator or user == job.owner %}
+            {% if user.profile.is_staff or user == job.creator or user == job.owner %}
                 {% meta_creator_owner job %}
             {% endif %}
         {% endif %}

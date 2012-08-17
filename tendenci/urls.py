@@ -101,7 +101,7 @@ urlpatterns += patterns('',
     url(r'^', include('tendenci.addons.locations.urls')),
 )
 
-handler500 = 'apps.base.views.custom_error'
+handler500 = 'core.base.views.custom_error'
 
 
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:

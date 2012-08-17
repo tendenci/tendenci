@@ -289,6 +289,10 @@ def groupmembership_bulk_add(request, group_slug,
                         template_name="user_groups/member_add.html"):
     group = get_object_or_404(Group, slug=group_slug)
     
+    user_count = User.objects.all().count()
+    if user_count > 1000:
+        return HttpResponseRedirect(reverse('group.adduser_redirect'))
+    
     if request.method == 'POST':
         form = form_class(group, request.POST)
         if form.is_valid():
@@ -839,3 +843,9 @@ def subscribers_import_status(request, group_slug, task_id, template_name='user_
             'group':group,
             'task':task,
         }, context_instance=RequestContext(request))
+        
+@login_required
+def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_add_redirect.html'):
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {}, context_instance=RequestContext(request))
