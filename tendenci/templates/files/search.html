@@ -20,9 +20,10 @@
     <h1>{% firstof MODULE_FILES_LABEL_PLURAL 'Files' %}</h1>
 
     {% file_search %}
-    <span><em>{{ files|length }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</em></span>
-    {% autopaginate files 10 %}
+    <div class="files-found">{{ files|length }} {% firstof MODULE_FILES_LABEL_PLURAL trans 'Files' %} {% trans "Found" %}</div>
     
+    {% autopaginate files 10 %}
+
     <div class="files-wrap">
     {% for file in files %}
         {% search_result file %}
