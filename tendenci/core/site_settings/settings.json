@@ -721,7 +721,7 @@
         "input_type": "select", 
         "client_editable": true, 
         "name": "robotstxt", 
-        "value": "true", 
+        "value": "base/robots_private.txt", 
         "label": "Search Engine Visibility (robots.txt)", 
         "input_value": "[('base/robots_private.txt','Private'),('base/robots_public.txt','Public'),('robots.txt','Custom')]", 
         "parent_id": 0, 
