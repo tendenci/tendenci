@@ -340,7 +340,7 @@ class ListEventsNode(ListNode):
                 items = items.order_by("start_dt")
             elif order == "current_and_upcoming":
                 now = datetime.now().replace(second=0)
-                items = items.filter(start_dt__lt = now, end_dt__gt = now)
+                items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
                 items = items.order_by("start_dt")
             else:
                 items = items.order_by(order)
