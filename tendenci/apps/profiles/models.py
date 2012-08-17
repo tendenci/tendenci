@@ -185,10 +185,10 @@ class Profile(TendenciBaseModel):
         return [membership.group for membership in memberships]
 
     def refresh_member_number(self):
-        memberships = self.user.memberships.active_strict()
+        memberships = self.user.memberships.active_strict(order_by='-pk')
 
         if memberships:
-            self.member_number = self.member_number or memberships[0].member_number
+            self.member_number = memberships[0].member_number
         else:
             self.member_number = u''
 
