@@ -1,6 +1,6 @@
 import os
 from django.template import loader, TemplateDoesNotExist
-from django.template.loader import get_template, Template
+from django.template.loader import get_template, select_template, Template
 from django.http import HttpResponse
 from django.conf import settings
 
