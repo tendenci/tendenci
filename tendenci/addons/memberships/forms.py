@@ -879,6 +879,10 @@ class AppEntryForm(forms.ModelForm):
             self.form_fields = app.fields.non_admin_visible()
             # exclude membership types you are in contract with [not within renewal period]
             exclude_types = Membership.types_in_contract(self.user)
+            # exclude membership types that are marked as admin only for non-superusers
+            admin_only = MembershipType.objects.filter(admin_only=True)
+            for type in admin_only:
+                exclude_types.append(type)
             exclude_types = [t.pk for t in exclude_types]  # only pks
 
         CLASS_AND_WIDGET = {
