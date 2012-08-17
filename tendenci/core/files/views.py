@@ -166,6 +166,83 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
         context_instance=RequestContext(request))
 
 @login_required
+def bulk_add(request, template_name="files/bulk-add.html"):
+
+    if not has_perm(request.user, 'files.add_file'):
+        raise Http403
+
+    FileFormSet = modelformset_factory(
+        File,
+        form=FileForm,
+        can_delete=True,
+        fields = (
+            'name',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+        ),
+        extra=0
+    )
+    if request.method == "POST":
+        # Setup formset html for json response
+        file_list = []
+        file_formset = FileFormSet(request.POST)
+        print 'total form count', file_formset.total_form_count()
+        if file_formset.is_valid():
+            file_formset.save()
+        else:
+            # Handle formset errors
+            return render_to_response(template_name, {
+                'file_formset': file_formset,
+            }, context_instance=RequestContext(request))
+
+        formset_edit = True
+
+        # Handle existing files.  Instance returned by file_formset.save() is not enough
+        for num in range(file_formset.total_form_count()):
+            key = 'form-' + str(num) + '-id'
+            if request.POST.get(key):
+                file_list.append(request.POST.get(key))
+        # Handle new file uploads
+        for file in request.FILES.getlist('files'):
+            newFile = File(file=file)
+            # set up the user information
+            newFile.creator = request.user
+            newFile.creator_username = request.user.username
+            newFile.owner = request.user
+            newFile.owner_username = request.user.username
+            newFile.save()
+            file_list.append(newFile.id)
+            formset_edit = False
+        # Redirect if form_set is edited i.e. not a file select or drag event
+        if formset_edit:
+            return HttpResponseRedirect(reverse('file.search'))
+        
+        # Handle json response
+        file_qs = File.objects.filter(id__in=file_list)
+        file_formset = FileFormSet(queryset=file_qs)
+        html = render_to_response('files/file-formset.html', {
+                   'file_formset': file_formset,
+               }, context_instance=RequestContext(request)).content
+        
+        data = {'form_set': html}
+        response = JSONResponse(data, {}, "application/json")
+        response['Content-Disposition'] = 'inline; filename=files.json'
+        return response
+    else:
+        file_formset = FileFormSet({
+            'form-TOTAL_FORMS': u'0',
+            'form-INITIAL_FORMS': u'0',
+            'form-MAX_NUM_FORMS': u'',
+        })
+            
+    return render_to_response(template_name, {
+            'file_formset': file_formset,
+        }, context_instance=RequestContext(request))
+
+@login_required
 def add(request, form_class=FileForm, template_name="files/add.html"):
 
     # check permission
