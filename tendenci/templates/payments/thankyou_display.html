@@ -31,7 +31,7 @@
 	<p>&nbsp;</p>
 	{% if not payment.is_approved %}
         <p>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url payments.view.pay_online invoice.id invoice.guid %}">{% trans "Try Making Payment Again" %}</a>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url payment.pay_online payment.invoice.id payment.invoice.guid %}">{% trans "Try Making Payment Again" %}</a>
         </p>
     {% else %}
         <p>
