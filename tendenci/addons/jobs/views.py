@@ -53,6 +53,7 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
     my_jobs = request.GET.get('my_jobs', False)
+    my_pending_jobs = request.GET.get('my_pending_jobs', False)
     
     if get_setting('site', 'global', 'searchindex') and query:
         jobs = Job.objects.search(query, user=request.user)
@@ -68,6 +69,14 @@ def search(request, template_name="jobs/search.html"):
     if my_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_jobs.html"
         jobs = jobs.filter(creator_username=request.user.username)
+        
+    # filter for "my pending jobs"
+    if my_pending_jobs and not request.user.is_anonymous():
+        template_name = "jobs/my_pending_jobs.html"
+        jobs = jobs.filter(
+            creator_username=request.user.username,
+            status_detail__contains='pending'
+            )
 
     EventLog.objects.log()
 
