@@ -238,14 +238,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$", 
+        "default_value": "^(?=.*(\\d|[!@#\\$%\\^&\\*_\\-\\+])).{8,}$", 
         "description": "Optional Regular Expression validation for passwords.", 
         "data_type": "string", 
         "update_dt": "2012-05-09 09:49:04", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "password_requirements_regex", 
-        "value": "^(?=.*(\d|[!@#\$%\^&\*_\-\+])).{8,}$", 
+        "value": "^(?=.*(\\d|[!@#\\$%\\^&\\*_\\-\\+])).{8,}$",  
         "label": "Password Regex", 
         "input_value": "", 
         "parent_id": 0, 
