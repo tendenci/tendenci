@@ -153,3 +153,31 @@ class PageForm(TendenciBaseForm):
         if self.cleaned_data.get('remove_photo'):
             page.header_image = None
         return page
+        
+class ChangeVersionForm(forms.Form):
+    version = forms.ModelChoiceField(queryset=Page.objects.all())
+
+    def __init__(self, page=None, *args, **kwargs):
+        super(ChangeVersionForm, self).__init__(*args, **kwargs)
+		
+		# Initialize version
+        self.page = page
+        if self.page:
+            pages = Page.objects.filter(guid=self.page.guid)
+            self.fields['version'].choices = [(p.pk, p.version) for p in pages]
+            self.fields['version'].initial = self.page.pk
+                
+
+    def save(self, *args, **kwargs):
+        if self.page and self.cleaned_data.get('version'):
+            print 'cleaned_data = ', self.cleaned_data.get('version')
+            # Set other versions to archive
+            pages = Page.objects.filter(guid=self.page.guid, status_detail='active').exclude(status=False)
+            for p in pages:
+                p.status_detail = 'archive'
+                p.save()
+            version = self.cleaned_data.get('version')
+            version.status = True
+            version.status_detail = 'active'
+            version.save()
+        return self.page
