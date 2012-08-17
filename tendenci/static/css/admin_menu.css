@@ -3,7 +3,7 @@ html {
     /*padding-bottom: 26px !important; */
 }
 
-#admin-bar {
+#admin-bar, #user-bar {
 	width:100%;
 	position:fixed;
 	top:0;
@@ -15,16 +15,16 @@ html {
 	opacity: .95;
 }
 
-#admin-bar .admin-logo img {
+#admin-bar .admin-logo img, #user-bar .admin-logo img {
 	margin:0;
 	padding:0;
 }
 
-#admin-bar ul li a.admin-logo {
+#admin-bar ul li a.admin-logo, #user-bar, ul li a.admin-logo {
 	background:#01437D;
 }
 
-#admin-bar ul {
+#admin-bar ul, #user-bar ul {
 	margin:0;
 	padding:0;
 	list-style:none;
@@ -36,7 +36,7 @@ html {
 	background:#01437D;
 }
 
-#admin-bar li {
+#admin-bar li, #user-bar li {
 	background:none;
 	list-style:none;
 	float:left;
@@ -44,7 +44,7 @@ html {
 	padding:0;
 }
 
-#admin-bar a {
+#admin-bar a, #user-bar a {
 	display:block;
 	padding:8px 8px 6px;
 	font-size:12px;
@@ -56,20 +56,20 @@ html {
 	color:#fff;
 }
 
-#admin-bar h4 a {
+#admin-bar h4 a, #user-bar h4 a {
 	background:none;
 	border:0;
 	font-size:14px;
 }
 
-#admin-bar li.app,#admin-bar h4 {
+#admin-bar li.app,#admin-bar h4, #user-bar li.app, #user-bar h4 {
 	font-size:12px;
 	line-height:14px;
 	margin:0;
 	border-bottom:1px solid #01437D;
 }
 
-#admin-bar li li a {
+#admin-bar li li a, #user-bar li li a {
 	background:#01437D;
 	border-bottom:1px dashed #0B254B;
 	border-right:none;
@@ -77,111 +77,111 @@ html {
 	text-decoration: none;
 }
 
-#admin-bar li li a.setting {
+#admin-bar li li a.setting, #user-bar li li a.setting {
     border-bottom:1px dashed #01437D;
     height: 16px;
     width: 16px;
 }
 
-#admin-bar li li.app {
+#admin-bar li li.app, #user-bar li li.app {
 	clear:left;
 }
 
-#admin-bar li li.app a {
+#admin-bar li li.app a, #user-bar li li.app a {
 	background:#01437D;
 	border-bottom:none;
 	border-right:none;
 	font-weight:bold;
 }
 
-#admin-bar li li a:hover {
+#admin-bar li li a:hover, #user-bar li li a:hover {
 	background:#15ACB7;
 }
 
-#admin-bar .app-list ul {
+#admin-bar .app-list ul, #user-bar .app-list ul {
 	border-bottom:1px dashed #01437D;
 	height:24px;
 	background:none;
 	max-width: 250px;
 }
 
-#admin-bar .app-list ul li,#admin-bar .app-list ul li a {
+#admin-bar .app-list ul li,#admin-bar .app-list ul li a, #user-bar .app-list ul li, #user-bar .app-list ul li a {
 	border:none;
 }
 
-#admin-bar .app-list ul li {
+#admin-bar .app-list ul li, #user-bar .app-list ul li {
 	float:right;
 }
 
-#admin-bar .app-list ul li.app {
+#admin-bar .app-list ul li.app, #user-bar .app-list ul li.app {
 	float:left;
 	min-width: 150px;
 	max-width: 200px;
 }
 
-#admin-bar h4 {
+#admin-bar h4, #user-bar h4 {
 	padding:0 0 4px;
 	font-size:14px;
 	font-weight:bold;
 	font-family:Verdana, Geneva, sans-serif;
 }
 
-#admin-bar li a.admin-logo {
+#admin-bar li a.admin-logo, #user-bar li a.admin-logo {
 	padding:2px 8px 0;
 }
 
-#admin-bar .sub {
+#admin-bar .sub, #user-bar .sub {
 	background:#01437D;
 	position:absolute;
 	left:-999em;
 	display:none;
 }
 
-#admin-bar li:hover .sub {
+#admin-bar li:hover .sub, #user-bar li:hover .sub {
 	left:auto;
 	display:block;
 }
 
-#admin-bar li .sub .column {
+#admin-bar li .sub .column, #user-bar li .sub .column {
 	float:left;
 	padding:10px;
 }
 
-#admin-bar li .sub .column .column.app-list {
+#admin-bar li .sub .column .column.app-list, #user-bar li .sub .column .column.app-list {
 	padding:0 5px 0 0;
 }
 
-#admin-bar li ul {
+#admin-bar li ul, #user-bar li ul {
 	min-width:180px;
 }
 
-#admin-bar li li {
+#admin-bar li li, #user-bar li li {
 	float:none;
 	background:#01437D;
 }
 
-#admin-bar li.right {
+#admin-bar li.right, #user-bar li.right {
 	float:right;
 }
 
-#admin-bar li.right.search ul {
+#admin-bar li.right.search ul, #user-bar li.right.search ul {
 	width:auto;
 }
 
-#admin-bar input#admin-search-bar {
+#admin-bar input#admin-search-bar, #user-bar input#admin-search-bar {
 	margin:0 4px 0 0;
 	line-height:14px;
 	font-size:12px;
 }
 
-#admin-bar li #admin-search-box {
+#admin-bar li #admin-search-box, #user-bar li #admin-search-box {
 	margin:3px 0 0;
 	padding:0 4px 0 0;
 	border-right:1px solid #01437D;
 	font-size:12px;
 }
 
-#admin-bar #admin-search-box input#admin-search-submit {
+#admin-bar #admin-search-box input#admin-search-submit, #user-bar #admin-search-box input#admin-search-submit {
 	border: none;
 	color:#eee;
 	background-color:#01437D;
