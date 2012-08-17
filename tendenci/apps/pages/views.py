@@ -15,7 +15,7 @@ from tendenci.core.base.utils import check_template
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
-from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm,  has_view_perm, admin_required, get_query_filters
+from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm,  has_view_perm, get_query_filters
 from tendenci.core.perms.decorators import admin_required
 from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category
@@ -25,7 +25,7 @@ from tendenci.core.files.models import file_directory
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.pages.models import Page, HeaderImage
-from tendenci.apps.pages.forms import PageForm
+from tendenci.apps.pages.forms import PageForm, ChangeVersionForm
 
 try:
     from tendenci.apps.notifications import models as notification
