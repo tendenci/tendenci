@@ -309,6 +309,25 @@ class FormEntry(models.Model):
     def get_email_address(self):
         return self.get_type_of("emailfield")
     
+     # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed on invoice.
+        If not supplied, the default description will be generated.
+        This will pass the First Name and Last Name from the "Billing Information" screen, the value in the "Site Display Name"
+        setting in Site Settings, and the name of the form that was submitted.
+        """
+        description = '%s Invoice %d, form: "%s", Form Entry Id (%d), billed to: %s %s.' % (
+            get_setting('site', 'global', 'sitedisplayname'),
+            inv.id,
+            self.form.title,
+            inv.object_id,
+            inv.bill_to_first_name,
+            inv.bill_to_last_name,
+        )
+        
+        return description
+    
 class FieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a user-built form.
