@@ -44,7 +44,7 @@
             {% if can_add_page %}
                 <li><a href="{% url page.add %}">{% trans "Add Page" %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_superuser %}
                 <li><a href="{% url page.export %}">{% trans "Export Pages" %}</a></li>
             {% endif %}
         </ul>
@@ -70,7 +70,7 @@
         {% endif %}
         </div>
     </li>
-    {% if admin %}
+    {% if user.profile.is_superuser %}
     <li><a href="{% url files %}">{% trans 'Files' %}</a></li>
     {% endif %}
 </ul>
