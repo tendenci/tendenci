@@ -35,7 +35,7 @@
                 <li><a href="{% url settings.index "module" "invoices" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url invoice.search %}">{% trans "Search Invoices" %}</a></li>
-            {% if admin %}
+            {% if user.profile.is_superuser %}
                 <li><a href="{% url invoice.export %}">{% trans "Export Invoices" %}</a></li>
             {% endif %}
         </ul>

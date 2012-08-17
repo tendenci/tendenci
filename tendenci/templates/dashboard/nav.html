@@ -30,7 +30,7 @@
             {% if can_add_user %}
                 <li><a href="{% url profile.add %}">{% trans "Add User" %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_superuser %}
             <li class="divider"></li>
             <li><a href="{% url import.user_upload_add %}">{% trans "Import" %}</a></li>
 

@@ -44,7 +44,7 @@
             {% if can_add_story %}
                 <li><a href="{% url story.add %}">{% trans "Add Story" %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_superuser %}
                 <li><a href="{% url story.export %}">{% trans "Export Stories" %}</a></li>
             {% endif %}
         </ul>

@@ -785,7 +785,7 @@ def create_registrant_from_form(*args, **kwargs):
 def gen_pricing_dict(price, qualifies, failure_type, admin=False):
     """
     Generates a pricing dict based on the current date.
-    Disregards time if admin is set to True.
+    Disregards time if user.profile.is_superuser is set to True.
     """
     now = datetime.now()
     if admin:

@@ -26,7 +26,7 @@
         {% endif %}
 
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == story.creator or user == story.owner %}
             <div class="categories">
                 <strong>{% trans "Owned by you" %}</strong>{% if not story.status_detail == "active" %} - {% trans "status" %}: {{ story.obj_status }}{% endif %}
@@ -34,7 +34,7 @@
             {% endif %}
             {% endif %}
 
-            {% if admin or user == story.creator or user == story.owner %}
+            {% if user.profile.is_superuser or user == story.creator or user == story.owner %}
                 {% meta_creator_owner story %}
             {% endif %}
         {% endif %}
@@ -45,7 +45,7 @@
     </div>
 </div>
 
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
     <div class="perm-status">
     <ul>

@@ -50,7 +50,7 @@ class EventManager(TendenciBaseManager):
         
         # permission filters
         if user:
-            if not admin:
+            if not user.profile.is_superuser:
                 if not user.is_anonymous():
                     # (status+status_detail+(anon OR user)) OR (who_can_view__exact)
                     anon_query = Q(allow_anonymous_view=True)

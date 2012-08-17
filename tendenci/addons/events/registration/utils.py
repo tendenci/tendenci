@@ -66,7 +66,7 @@ def get_available_pricings(event, user):
     )
     
     if user.profile.is_superuser:
-        # return all if admin is user
+        # return all if user.profile.is_superuser is user
         return pricings
     
     if not user.is_authenticated():

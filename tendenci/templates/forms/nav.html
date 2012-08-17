@@ -75,7 +75,7 @@
         {% endif %}
         </div>
     </li>
-    {% if admin %}
+    {% if user.profile.is_superuser %}
     <li><a href="{% url pages %}">{% firstof MODULE_PAGES_LABEL trans 'Pages' %}</a></li>
     {% endif %}
 </ul>

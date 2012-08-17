@@ -1,6 +1,6 @@
 {% load base_filters %}
 {% load i18n %}
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="admin-inline">
     <div class="admin-links clear-block"><a href="#" data-controls-modal="upload-logo-modal" data-backdrop="true">{% trans "Upload Logo" %}</a></div>
 </div>

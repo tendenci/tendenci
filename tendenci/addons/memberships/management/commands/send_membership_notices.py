@@ -93,7 +93,7 @@ class Command(BaseCommand):
             admin_emails = get_setting('module', 'memberships', 'membershiprecipients').strip()
             if admin_emails:
                 admin_emails = admin_emails.split(',')
-            if not admin_emails:
+            if not user.profile.is_superuser_emails:
                 admin_emails = (get_setting('site', 'global', 'admincontactemail').strip()).split(',')
                 
             if admin_emails:

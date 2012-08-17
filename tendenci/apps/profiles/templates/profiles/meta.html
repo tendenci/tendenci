@@ -4,7 +4,7 @@
 
 <div class="meta {% if not user.is_authenticated %}anon{% endif %}">
     <div class="meta-left">
-        {% if admin or user.pk == profile.creator_id or user.pk == profile.owner_id %}
+        {% if user.profile.is_superuser or user.pk == profile.creator_id or user.pk == profile.owner_id %}
             {% meta_creator_owner profile %}
         {% endif %}
         
@@ -13,7 +13,7 @@
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

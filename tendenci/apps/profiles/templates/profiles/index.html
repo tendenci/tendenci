@@ -151,7 +151,7 @@
 			{% for gm in group_memberships %}
 				<tr>
 					<td>
-						{% if admin %}
+						{% if user.profile.is_superuser %}
 							<a href="{% url group.edituser gm.group.slug user_this.pk %}">
 								{% firstof gm.role 'Member' %}
 							</a>
@@ -195,7 +195,7 @@
 
 	{% else %}
 
-		{% if admin %}
+		{% if user.profile.is_superuser %}
 		<div class="contribution info no-contribs">
 			{{ request.user.first_name }}, this person has not made any contributions yet.
 		</div>

@@ -5,7 +5,7 @@
 <div class="meta">
     <div class="meta-left">
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == location.creator or user == location.owner %}
             <div class="categories">
                 <strong>Owned by you</strong>{% if not location.status_detail == "active" %} - status: {{ location.obj_status }}{% endif %}
@@ -13,7 +13,7 @@
             {% endif %}
             {% endif %}
 
-            {% if admin or user == location.creator or user == location.owner %}
+            {% if user.profile.is_superuser or user == location.creator or user == location.owner %}
                 {% meta_creator_owner location %}
             {% endif %}
         {% endif %}
@@ -22,7 +22,7 @@
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

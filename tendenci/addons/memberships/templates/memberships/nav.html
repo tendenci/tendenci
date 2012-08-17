@@ -40,7 +40,7 @@
             <li><a href="{% url membership.search %}">{% trans "Search" %}</a></li> 
             <li><a href="{% url membership.application_entries_search %}?status=pending">{% trans "Pending" %}</a></li>
 
-            {% if admin %}
+            {% if user.profile.is_superuser %}
             <li><a href="{% url membership.application_entries_search %}">{% trans "Entries" %}</a></li>
             {% endif %}
 
@@ -48,7 +48,7 @@
             <li><a href="{% url settings.index "module" "memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
 
-            {% if admin %}
+            {% if user.profile.is_superuser %}
             <li class="divider"></li>
             <li><a href="{% url admin:memberships_app_changelist %}">{% trans "Applications" %}</a></li>
             <li><a href="{% url admin:memberships_membershiptype_changelist %}">{% trans "Types" %}</a></li>

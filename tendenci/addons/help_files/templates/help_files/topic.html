@@ -25,7 +25,7 @@
         <ul>
         {% for help_file in help_files %}
             {% has_perm user help_files.change_helpfile help_file as can_edit %}
-            <li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a>{% if admin %} {{ help_file.obj_perms }}{% endif %}</li>
+            <li><a href="{{ help_file.get_absolute_url }}" alt="{{ help_file }}">{{ help_file }}</a>{% if user.profile.is_superuser %} {{ help_file.obj_perms }}{% endif %}</li>
         {% endfor %}
         </ul>
     {% endif %}

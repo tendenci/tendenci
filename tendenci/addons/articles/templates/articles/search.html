@@ -28,7 +28,7 @@
     {% for article in articles %}
         {% search_result article %}
     {% empty %}
-        {% if admin %}
+        {% if user.profile.is_superuser %}
         <p><a href="{% url article.add %}">{% trans "Add a new" %} {% firstof MODULE_ARTICLES_LABEL 'Article' %}</a></p>
         {% endif %}
     {% endfor %}

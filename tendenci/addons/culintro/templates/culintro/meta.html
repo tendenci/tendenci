@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == culintro_job.creator or user == culintro_job.owner %}
             <div class="categories">
                 <strong>Owned by you</strong>{% if not culintro_job.status_detail == "active" %} - status: {{ culintro_job.obj_status }}{% endif %}
@@ -33,7 +33,7 @@
             {% endif %}
             {% endif %}
             
-            {% if admin or user == job.creator or user == job.owner %}
+            {% if user.profile.is_superuser or user == job.creator or user == job.owner %}
                 {% meta_creator_owner job %}
             {% endif %}
         {% endif %}
@@ -45,7 +45,7 @@
     </div>
     
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

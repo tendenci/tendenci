@@ -53,7 +53,7 @@ Bulletpoints Theme - homepage.html
                                 <span class="readmore"><a href="{{ story.full_story_link }}">{% trans "Read More" %}</a></span>
                             </div>
                         </div>
-                    {% if admin %}
+                    {% if user.profile.is_superuser %}
                         <div class="admin-inline">
                           <div class="admin-links clear-block"><a href="{% url story.edit story.pk %}?next={{ request.path }}" title="Edit Story" class="edit-story">Edit {{ story.title|title }} Story</a></div>
                         </div>

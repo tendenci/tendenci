@@ -24,7 +24,7 @@
         {% endwith %}
         
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == help_file.creator or user == help_file.owner %}
             <div class="categories">
                 <strong>Owned by you</strong>{% if not help_file.status_detail == "active" %} - status: {{ help_file.obj_status }}{% endif %}
@@ -32,7 +32,7 @@
             {% endif %}
             {% endif %}
 
-            {% if admin or user == help_file.creator or user == help_file.owner %}
+            {% if user.profile.is_superuser or user == help_file.creator or user == help_file.owner %}
                 {% meta_creator_owner help_file %}
             {% endif %}
         {% endif %}
@@ -42,7 +42,7 @@
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

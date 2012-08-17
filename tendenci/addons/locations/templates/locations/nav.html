@@ -46,7 +46,7 @@
                 <li class="divider"></li>
                 <li><a href="{% url locations_import_upload_file %}">{% trans "Import" %} {% firstof MODULE_LOCATIONS_LABEL 'Locations' %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_superuser %}
                 <li><a href="{% url locations_export %}">{% trans "Export" %} {% firstof MODULE_LOCATIONS_LABEL 'Locations' %}</a></li>
             {% endif %}
         </ul>

@@ -44,7 +44,7 @@
             {% if user.is_authenticated %}
                 <li><a href="{% url resume.add %}">{% trans "Add Resume" %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_superuser %}
             <li><a href="{% url resume.pending %}">{% trans "Pending Resumes" %}</a></li>
             <li><a href="{% url resume.export %}">{% trans "Export Resumes" %}</a></li>
             {% endif %}

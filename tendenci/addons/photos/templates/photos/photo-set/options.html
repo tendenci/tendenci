@@ -21,6 +21,6 @@
 <a href="{% url photos_batch_edit opt_object.pk %}">{% trans "Edit Photos" %}</a>
 {% endif %}
 
-{% if admin %}
+{% if user.profile.is_superuser %}
 <a href="{% url photoset_zip opt_object.pk %}">{% trans "Download Zip" %}</a>
 {% endif %}

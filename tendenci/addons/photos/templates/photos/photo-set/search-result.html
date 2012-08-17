@@ -28,7 +28,7 @@
 
 
         <div class="extra-info">
-        {% if admin %}
+        {% if user.profile.is_superuser %}
         <div class="visibility">
             {{ photo_set.obj_perms }} &middot; {{ photo_set.obj_status }}
         </div>

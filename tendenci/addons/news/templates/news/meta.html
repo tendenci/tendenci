@@ -58,7 +58,7 @@
         </div>
         {% endif %}
         
-        {% if admin or user == news.creator or user == news.owner %}
+        {% if user.profile.is_superuser or user == news.creator or user == news.owner %}
             {% meta_creator_owner news %}
         {% endif %}
     </div>
@@ -67,7 +67,7 @@
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

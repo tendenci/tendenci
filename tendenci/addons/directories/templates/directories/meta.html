@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == directory.creator or user == directory.owner %}
             <div class="categories">
                 <strong>Owned by you</strong>{% if not directory.status_detail == "active" %} - status: {{ directory.obj_status }}{% endif %}
@@ -33,7 +33,7 @@
             {% endif %}
             {% endif %}
 
-            {% if admin or user == directory.creator or user == directory.owner %}
+            {% if user.profile.is_superuser or user == directory.creator or user == directory.owner %}
                 {% meta_creator_owner directory %}
             {% endif %}
         {% endif %}
@@ -43,7 +43,7 @@
         <a class="share-link" >{% trans "Share" %}</a>
     </div>
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

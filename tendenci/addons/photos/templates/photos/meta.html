@@ -10,7 +10,7 @@
 <div class="meta">
     <div class="meta-left">
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == image.creator or user == image.owner %}
             <div class="categories">
                 <strong>Owned by you</strong>{% if not image.status_detail == "active" %} - status: {{ image.obj_status }}{% endif %}
@@ -18,7 +18,7 @@
             {% endif %}
             {% endif %}
 
-            {% if admin or user == image.creator or user == image.owner %}
+            {% if user.profile.is_superuser or user == image.creator or user == image.owner %}
                 {% meta_creator_owner image %}
             {% endif %}
         {% endif %}
@@ -28,7 +28,7 @@
     </div>
 </div>
 
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">

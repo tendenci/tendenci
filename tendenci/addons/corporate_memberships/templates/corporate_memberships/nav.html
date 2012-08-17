@@ -46,13 +46,13 @@
             {% if can_edit_setting %}
             <li><a href="{% url settings.index "module" "corporate_memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
-            {% if admin %}
+            {% if user.profile.is_superuser %}
             <li><a href="{% url corp_memb.index %}">{% trans 'Index Page' %}</a></li>
             {% endif %}
             <li>{% corp_memb_render_add_links %}</li>
 
             <li><a href="{% url corp_memb.search %}">{% trans "Search All" %}</a></li> 
-            {% if admin %}
+            {% if user.profile.is_superuser %}
             <li><a href="{% url corp_memb.search %}?q=is_pending:true">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
             <li><a href="{% url admin:corporate_memberships_corpapp_changelist %}">{% trans "Corp. Membership Applications" %}</a></li>

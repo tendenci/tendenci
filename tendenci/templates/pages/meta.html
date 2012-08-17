@@ -41,7 +41,7 @@
                     {% endif %}
         
         {% if user.is_authenticated %}
-            {% if admin or user.id == page.creator_id or user.id == page.owner_id %}
+            {% if user.profile.is_superuser or user.id == page.creator_id or user.id == page.owner_id %}
                 {% meta_creator_owner page %}
             {% endif %}
         {% endif %}

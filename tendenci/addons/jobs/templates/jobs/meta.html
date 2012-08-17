@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if user.is_authenticated %}
-            {% if not admin %}
+            {% if not user.profile.is_superuser %}
             {% if user == job.creator or user == job.owner %}
             <div class="categories">
                 <strong>Owned by you</strong>{% if not job.status_detail == "active" %} - status: {{ job.obj_status }}{% endif %}
@@ -45,7 +45,7 @@
     </div>
     
 </div>
-{% if admin %}
+{% if user.profile.is_superuser %}
 <div class="editor-bar">
 
     <div class="perm-status">
