@@ -255,7 +255,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
 
 
 @login_required
-def edit(request, id, form_class=JobForm, template_name="jobs/edit.html"):
+def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job'):
     job = get_object_or_404(Job, pk=id)
 
     if not has_perm(request.user, 'jobs.change_job', job):
