@@ -7,10 +7,11 @@ from django.template.loader_tags import ExtendsNode, IncludeNode, ConstantInclud
 
 register = Library()
 
+
 class SearchResultNode(IncludeNode):
     def __init__(self, result):
         self.result = Variable(result)
-    
+
     def render(self, context):
         """
         This does not take into account preview themes.
@@ -23,7 +24,11 @@ class SearchResultNode(IncludeNode):
             else:
                 result_object = result
 
+            if not result_object:
+                return u''
+            
             var_name = result_object._meta.verbose_name.replace(' ', '_').lower()
+            
             # class_name is static - it won't be changed by the user
             class_name = result_object.__class__.__name__.lower()
             if class_name == 'corporatemembership':
@@ -31,7 +36,7 @@ class SearchResultNode(IncludeNode):
                 #template_name = "corporate_memberships/search-result.html"
             if class_name == 'membership':
                 var_name = 'membership'
-                
+
             if var_name == 'user':
                 # special case for users and profiles
                 var_name = 'profile'
@@ -54,7 +59,7 @@ class SearchResultNode(IncludeNode):
             except TemplateDoesNotExist:
                 #load the default search result template
                 t = get_template("search/search-result.html")
-                
+
             context.update({
                 "result": result,
                 var_name: result_object,
