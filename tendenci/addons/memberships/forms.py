@@ -728,7 +728,7 @@ class EntryEditForm(TendenciBaseForm):
             self.fields['first_name'].initial = profile.user.first_name
             self.fields['last_name'].initial = profile.user.last_name
             self.fields['initials'].initial = profile.initials
-            self.fields['sex'].initial = profile.sex
+            #self.fields['sex'].initial = profile.sex
             self.fields['member_number'].initial = profile.member_number
             self.fields['language'].initial = profile.language
             self.fields['company'].initial = profile.company
@@ -753,8 +753,8 @@ class EntryEditForm(TendenciBaseForm):
             self.fields['email2'].initial = profile.email2
             self.fields['url'].initial = profile.url
             self.fields['url2'].initial = profile.url2
-            self.fields['dob'].initial = profile.dob
-            self.fields['ssn'].initial = profile.ssn
+            #self.fields['dob'].initial = profile.dob
+            #self.fields['ssn'].initial = profile.ssn
             self.fields['spouse'].initial = profile.spouse
             self.fields['department'].initial = profile.department
             self.fields['education'].initial = profile.education
@@ -800,7 +800,7 @@ class EntryEditForm(TendenciBaseForm):
             profile.user.first_name = data['first_name']
             profile.user.last_name = data['last_name']
             profile.initials = data['initials']
-            profile.sex = data['sex']
+            #profile.sex = data['sex']
             profile.member_number = data['member_number']
             profile.language = data['language']
             profile.company = data['company']
@@ -825,8 +825,8 @@ class EntryEditForm(TendenciBaseForm):
             profile.email2 = data['email2']
             profile.url = data['url']
             profile.url2 = data['url2']
-            profile.dob = data['dob']
-            profile.ssn = data['ssn']
+            #profile.dob = data['dob']
+            #profile.ssn = data['ssn']
             profile.spouse = data['spouse']
             profile.department = data['department']
             profile.education = data['education']
