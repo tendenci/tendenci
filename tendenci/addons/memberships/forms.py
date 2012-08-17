@@ -557,7 +557,6 @@ class EntryEditForm(TendenciBaseForm):
     last_name = forms.CharField(required=False)
     initials = forms.CharField(required=False)
     member_number = forms.CharField(required=False)
-    sex = forms.ChoiceField(required=False, choices=SEX_CHOICES)
     language = forms.ChoiceField(choices=settings.LANGUAGES, initial=settings.LANGUAGE_CODE)
     company = forms.CharField(required=False)
     position_title = forms.CharField(required=False)
@@ -581,8 +580,6 @@ class EntryEditForm(TendenciBaseForm):
     email2 = forms.EmailField(required=False)
     url = forms.CharField(required=False)
     url2 = forms.CharField(required=False)
-    dob = forms.DateTimeField(required=False, label='Date of Birth')
-    ssn = forms.CharField(required=False, label='Social Security Number')
     spouse = forms.CharField(required=False)
     department = forms.CharField(required=False)
     education = forms.CharField(required=False)
@@ -607,7 +604,7 @@ class EntryEditForm(TendenciBaseForm):
             'status',
             'status_detail',
         )
-        
+
         fieldsets = [
             ('Membership Details', {
                 'fields': [
@@ -621,7 +618,6 @@ class EntryEditForm(TendenciBaseForm):
                     'first_name',
                     'last_name',
                     'initials',
-                    'sex',
                     'member_number',
                     'language',
                     'company',
@@ -646,8 +642,6 @@ class EntryEditForm(TendenciBaseForm):
                     'email2',
                     'url',
                     'url2',
-                    'dob',
-                    'ssn',
                     'spouse',
                     'department',
                     'education',
@@ -728,7 +722,6 @@ class EntryEditForm(TendenciBaseForm):
             self.fields['first_name'].initial = profile.user.first_name
             self.fields['last_name'].initial = profile.user.last_name
             self.fields['initials'].initial = profile.initials
-            #self.fields['sex'].initial = profile.sex
             self.fields['member_number'].initial = profile.member_number
             self.fields['language'].initial = profile.language
             self.fields['company'].initial = profile.company
@@ -753,8 +746,6 @@ class EntryEditForm(TendenciBaseForm):
             self.fields['email2'].initial = profile.email2
             self.fields['url'].initial = profile.url
             self.fields['url2'].initial = profile.url2
-            #self.fields['dob'].initial = profile.dob
-            #self.fields['ssn'].initial = profile.ssn
             self.fields['spouse'].initial = profile.spouse
             self.fields['department'].initial = profile.department
             self.fields['education'].initial = profile.education
