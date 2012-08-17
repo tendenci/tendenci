@@ -411,7 +411,7 @@ class Membership(TendenciBaseModel):
 
         memberships = cls.objects.filter(user=user)
         for membership in memberships:
-            if not membership.can_renew():
+            if not membership.can_renew() and membership.status_detail == 'active':
                 in_contract.append(membership.membership_type)
 
         return in_contract
