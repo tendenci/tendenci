@@ -156,7 +156,7 @@ def get_vevents(request, d):
     e_str = ""
     # load only upcoming events by default
     filters = get_query_filters(request.user, 'events.view_event')
-    events = Event.objects.filter(filters).filter(start_dt__lte=datetime.now())
+    events = Event.objects.filter(filters).filter(start_dt__gte=datetime.now())
     events = events.order_by('start_dt')
 
     for event in events:
