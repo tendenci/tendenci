@@ -1,5 +1,6 @@
 #import time
 #import hashlib
+import urllib
 from django.conf import settings
 #from django.http import Http404
 from django.core.urlresolvers import reverse
@@ -9,13 +10,13 @@ from tendenci.core.payments.utils import payment_processing_object_updates
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.core.payments.utils import log_payment, send_payment_notice
-
+from django.utils.encoding import smart_str
 #from tendenci.core.site_settings.utils import get_setting
 
 
 def prepare_payflowlink_form(request, payment):
     amount = "%.2f" % payment.amount
-    
+    #payment.description = urllib.quote(smart_str(payment.description))
     params = {
               'login':settings.PAYPAL_MERCHANT_LOGIN,
               'partner': settings.PAYFLOWLINK_PARTNER,
@@ -39,7 +40,7 @@ def prepare_payflowlink_form(request, payment):
               'statetoship': payment.ship_to_state,
               'ziptoship': payment.ship_to_zip,
               'countrytoship': payment.ship_to_country,
-              'comment1': payment.description,
+              'comment1': smart_str(payment.description),
               'comment2': '%s %s' % (payment.first_name, payment.last_name), 
         
         }
