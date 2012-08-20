@@ -37,6 +37,7 @@ from tendenci.core.meta.forms import MetaForm
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
+from tendenci.core.ics.utils import run_precreate_ics
 
 from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
@@ -48,7 +49,7 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
-    RegistrationPreForm)
+    RegistrationPreForm, EventICSForm)
 from tendenci.addons.events.utils import (email_registrants, 
     add_registration, registration_has_started, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
@@ -190,6 +191,8 @@ def search(request, redirect=False, template_name="events/search.html"):
     )
 
 def icalendar(request):
+    import os
+    from tendenci.settings import MEDIA_ROOT
     from tendenci.addons.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
@@ -200,17 +203,30 @@ def icalendar(request):
         d['domain_name'] = match.group(3)
     else:
         d['domain_name'] = ""
+        
+    if request.user.is_authenticated():
+        file_name = 'ics-%s.ics' % (request.user.pk)
+        
+    absolute_directory = os.path.join(MEDIA_ROOT, 'files/ics')
+    if not os.path.exists(absolute_directory):
+        os.makedirs(absolute_directory)
 
-    ics_str = "BEGIN:VCALENDAR\n"
-    ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
-    ics_str += "VERSION:2.0\n"
-    ics_str += "METHOD:PUBLISH\n"
+    file_path = os.path.join(absolute_directory, file_name)
+    # Check if ics file exists
+    if os.path.isfile(file_path):
+		ics = open(file_path, 'r+')
+		ics_str = ics.read()
+		ics.close()
+    else:
+        ics_str = "BEGIN:VCALENDAR\n"
+        ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
+        ics_str += "VERSION:2.0\n"
+        ics_str += "METHOD:PUBLISH\n"
 
-    # function get_vevents in events.utils
-    ics_str += get_vevents(request, d)
+        # function get_vevents in events.utils
+        ics_str += get_vevents(request.user, d)
 
-    ics_str += "END:VCALENDAR\n"
-
+        ics_str += "END:VCALENDAR\n"   
     response = HttpResponse(ics_str)
     response['Content-Type'] = 'text/calendar'
     if d['domain_name']:
@@ -241,7 +257,7 @@ def icalendar_single(request, id):
     ics_str += "METHOD:PUBLISH\n"
 
     # function get_vevents in events.utils
-    ics_str += get_ievent(request, d, id)
+    ics_str += get_ievent(request.user, d, id)
 
     ics_str += "END:VCALENDAR\n"
 
@@ -2951,4 +2967,23 @@ def export(request, template_name="events/export.html"):
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
+    
+@login_required
+def create_ics(request, template_name="events/ics.html"):
+    """Create ICS"""
+
+    if not request.user.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        form = EventICSForm(request.POST)
+        if form.is_valid():
+            ics_id = run_precreate_ics('events', 'event', form.cleaned_data['user'])
+            return redirect('ics.status', ics_id)
+    else:
+        form = EventICSForm()
+    
+    return render_to_response(template_name, {
+        'form': form,
     }, context_instance=RequestContext(request))

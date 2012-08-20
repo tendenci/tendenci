@@ -1,9 +1,13 @@
 import os
 from django.db.models import Avg, Max, Min, Count
 from django.db.models.fields.related import ManyToManyField, ForeignKey
+from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from celery.task import Task
 from celery.registry import tasks
+from tendenci.core.ics.models import ICS
+from tendenci.core.ics.utils import create_ics
 from tendenci.core.exports.utils import full_model_to_dict, render_csv
 from tendenci.addons.events.models import Event
 
@@ -189,3 +193,17 @@ class EventsExportTask(Task):
         for i in range(0, max_pricings):
             fields = fields + ["pricing %s %s" % (i, f) for f in pricing_fields]
         return render_csv(file_name, fields, data_row_list)
+
+class EventsICSTask(Task):
+    """ICS precreation task for Celery
+    This creates ics file for a specific user.
+    """
+
+    def run(self, **kwargs):
+        if kwargs.get('ics'):
+            ics = kwargs.get('ics')
+            ics_str = create_ics(ics.user)
+            response = HttpResponse(ics_str)
+            response['Content-Type'] = 'text/calendar'
+            response['Content-Disposition'] = 'attachment; filename=ics-%s.ics' % (ics.user.pk)
+            return response

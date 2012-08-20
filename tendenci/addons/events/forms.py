@@ -1428,3 +1428,6 @@ class AddonOptionForm(forms.ModelForm):
     class Meta:
         model = AddonOption
         fields = ('title',)
+
+class EventICSForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all())

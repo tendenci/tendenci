@@ -146,7 +146,7 @@ def get_ievent(request, d, event_id):
     return e_str
 
 
-def get_vevents(request, d):
+def get_vevents(user, d):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
     from tendenci.addons.events.models import Event
@@ -155,7 +155,7 @@ def get_vevents(request, d):
     
     e_str = ""
     # load only upcoming events by default
-    filters = get_query_filters(request.user, 'events.view_event')
+    filters = get_query_filters(user, 'events.view_event')
     events = Event.objects.filter(filters).filter(start_dt__gte=datetime.now())
     events = events.order_by('start_dt')
 
@@ -221,7 +221,8 @@ def build_ical_text(event, d):
     ical_text += 'Start Date / Time: %s %s\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
     
     # location
-    ical_text += 'Location: %s\n' % (event.place.name)
+    if event.place:
+        ical_text += 'Location: %s\n' % (event.place.name)
     
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
@@ -237,8 +238,8 @@ def build_ical_text(event, d):
         
     # maps
     show_map_link = False
-    if (event.place.address and event.place.city and event.place.state) \
-                or (event.place.address and event.place.zip):
+    if (event.place and event.place.address and event.place.city and event.place.state) \
+                or (event.place and event.place.address and event.place.zip):
         show_map_link = True
     if show_map_link:
         ical_text += "Google\n"
@@ -298,8 +299,8 @@ def build_ical_html(event, d):
     
     # maps
     show_map_link = False
-    if (event.place.address and event.place.city and event.place.state) \
-                or (event.place.address and event.place.zip):
+    if (event.place and event.place.address and event.place.city and event.place.state) \
+                or (event.place and event.place.address and event.place.zip):
         show_map_link = True
     if show_map_link:
         # location
