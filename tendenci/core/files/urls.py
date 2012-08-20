@@ -18,6 +18,7 @@ urlpatterns = patterns('tendenci.core.files.views',
 
     url(r'^search/$', 'search_redirect', name="file.search"),
     url(r'^add/$', 'add', name="file.add"),
+    url(r'^bulk-add/$', 'bulk_add', name="file.bulk_add"),
     url(r'^edit/(?P<id>\d+)/$', 'edit', name="file.edit"),
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="file.delete"),
 

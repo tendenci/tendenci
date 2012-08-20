@@ -8,8 +8,10 @@ from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.http import (HttpResponseRedirect, HttpResponse, Http404,
     HttpResponseServerError)
+from django.utils import simplejson
 from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
+from django.forms.models import modelformset_factory
 from django.conf import settings
 
 from tendenci.core.base.http import Http403
@@ -461,6 +463,8 @@ def redirect_to_s3(request, path, file_type='themes'):
         return HttpResponseRedirect(url)
     raise Http404
     
-    
-    
-
+class JSONResponse(HttpResponse):
+    """JSON response class."""
+    def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
+        content = simplejson.dumps(obj,**json_opts)
+        super(JSONResponse,self).__init__(content,mimetype,*args,**kwargs)
