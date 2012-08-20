@@ -32,7 +32,7 @@ try:
 except:
     notification = None
 
-def index(request, slug=None, template_name="pages/view.html"):
+def index(request, slug=None, id=None, template_name="pages/view.html"):
     """
     Return active page or deleted page
     """
@@ -76,8 +76,7 @@ def search(request, template_name="pages/search.html"):
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
-        pages = Page.objects.search(query, user=request.user).filter(
-            status=True, status_detail='active')
+        pages = Page.objects.search(query, user=request.user).filter(status=True, status_detail='active')
     else:
         filters = get_query_filters(request.user, 'pages.view_page')
         pages = Page.objects.active().filter(filters).distinct()

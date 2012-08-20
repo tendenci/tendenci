@@ -65,7 +65,7 @@ class PageForm(TendenciBaseForm):
         'storme_model':Page._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active','Active'), ('inactive','Inactive'), ('pending','Pending'), ('archive','Archive')))
 
     template = forms.ChoiceField(choices=template_choices)
     
@@ -111,6 +111,25 @@ class PageForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })]
 
+    def clean(self):
+        cleaned_data = super(PageForm, self).clean()
+        slug = cleaned_data.get('slug')
+
+        # Check if duplicate slug from different page (i.e. different guids)
+        # Case 1: Page is edited
+        if self.instance:
+            guid = self.instance.guid
+            if Page.objects.filter(slug=slug).exclude(guid=guid).exists():
+                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                del cleaned_data['slug']
+        # Case 2: Add new Page
+        else:
+            if Page.objects.filter(slug=slug).exists():
+                self._errors['slug'] = self.error_class(['Duplicate value for slug.'])
+                del cleaned_data['slug']
+
+        return cleaned_data    
+    
     def clean_header_image(self):
         header_image = self.cleaned_data['header_image']
         if header_image:
@@ -150,8 +169,55 @@ class PageForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         page = super(PageForm, self).save(*args, **kwargs)
+        
+        # By default all pages other than the newly creted version is set to archive
+        set_others_to_archive = True
+        # Only the superuser has the power to override this feature
+        if self.user.profile.is_superuser:
+            # The superuser sets the page to deleted
+            if not self.cleaned_data.get('status'):
+                set_others_to_archive = False
+            # The superuser did not set the newly created version to active
+            elif not self.cleaned_data.get('status_detail') == 'active':
+                set_others_to_archive = False
+        print 'set_others_to_archive', set_others_to_archive
+
+        if set_others_to_archive:
+            # Set status of other versions to archive
+            pages = Page.objects.filter(guid=page.guid, status_detail='active').exclude(status=False)
+            for p in pages:
+                p.status_detail = 'archive'
+                p.save()
+
         if self.cleaned_data.get('remove_photo'):
             page.header_image = None
+
+        if page.pk:
+            # Clone page foreign key
+            if page.header_image:
+                header_image_clone = page.header_image
+                header_image_clone.pk = None
+                header_image_clone.save()
+                page.header_image = header_image_clone
+            if page.entity:
+                entity_clone = page.entity
+                entity_clone.pk = None
+                entity_clone.save()
+                page.entity = entity_clone
+            if page.meta:
+                meta_clone = page.meta
+                meta_clone.pk = None
+                meta_clone.save()
+                page.meta = meta_clone
+            
+            # Set current page to active if other pages are set to archive
+            if set_others_to_archive:
+                page.status = True
+                page.status_detail = 'active'
+            # Clone page
+            page.pk = None
+            page.save()
+
         return page
         
 class ChangeVersionForm(forms.Form):

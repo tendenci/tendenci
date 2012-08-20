@@ -1,0 +1,32 @@
+{% extends "pages/base.html" %}
+{% load page_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_PAGES_LABEL 'Page' %} Change version{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+
+    {% page_nav request.user page %}
+
+    <h1>{% firstof MODULE_PAGES_LABEL 'Page' %} {% trans "Change version" %}</h1>
+
+    <div class="page-wrap">
+        <form action="{% url page.change_version page.pk %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+    	<div class="forms">
+			{{ form|styled_form }}
+        	<input type="submit" value="{% trans 'Save Page Changes' %}" />
+		</div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

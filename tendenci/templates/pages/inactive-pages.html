@@ -1,0 +1,39 @@
+{% extends "pages/base.html" %}
+{% load pagination_tags %}
+{% load page_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_PAGES_LABEL 'Pages' %} Inactive{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/pages.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="t">
+
+    {% page_nav request.user %}
+
+    <h1>{% firstof MODULE_PAGES_LABEL 'Pages' %} {% trans "Archive" %}</h1>
+    
+    {% autopaginate pages 10 %}
+    <div class="pages-wrap">
+    {% for page in pages %} 
+        <div class="wrap-search-item">
+            <div class="search-item page-search-item">
+                <h2><a href="{% url page.inactive page.pk %}">{% firstof page.title 'Untitled'%}</a></h2>
+                <div class="item-content">{{ page.content|striptags|truncatewords:20|safe }}</div>
+            </div>	
+        </div>
+        {% include "pages/meta.html" %}
+    {% empty %}
+    {% endfor %}
+    </div>
+    
+    {% paginate %}
+</div>
+{% endblock %}

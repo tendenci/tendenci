@@ -22,7 +22,7 @@ from tendenci.apps.pages.module_meta import PageMeta
 class Page(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
-    slug = SlugField(_('URL Path'), unique=True)
+    slug = SlugField(_('URL Path'))
     header_image = models.ForeignKey('HeaderImage', null=True)
     content = tinymce_models.HTMLField()
     view_contact_form = models.BooleanField()
@@ -55,7 +55,7 @@ class Page(TendenciBaseModel):
         return ("page", [self.slug])
 
     def save(self, *args, **kwargs):
-        if not self.id:
+        if not self.guid:
             self.guid = str(uuid.uuid1())
 
         super(Page, self).save(*args, **kwargs)
@@ -72,6 +72,14 @@ class Page(TendenciBaseModel):
             elif cat.parent:
                 items["sub_category"] = cat.parent
         return items
+        
+    @property
+    def version(self):
+        if self.status and self.status_detail:
+            return self.status_detail + '-' + str(self.pk) + ' ' + str(self.create_dt)
+        elif not self.status:
+            return 'deleted-' + str(self.pk) + ' ' + str(self.create_dt)
+        return ''
 
 class HeaderImage(File):
     pass
