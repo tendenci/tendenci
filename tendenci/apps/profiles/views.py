@@ -11,8 +11,11 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib import messages
+from django.conf import settings
 # for password change
 from django.views.decorators.csrf import csrf_protect
+
+from djcelery.models import TaskMeta
 
 from tendenci.core.base.decorators import ssl_required
 

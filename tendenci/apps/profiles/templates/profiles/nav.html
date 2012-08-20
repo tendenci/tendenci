@@ -47,6 +47,7 @@
                 <li><a href="{% url profile.admins %}">{% trans "Admin List" %}</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url import.user_upload_add %}">{% trans "Import" %}</a></li>
+                <li><a href="{% url profile.export %}">{% trans "Export" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}
