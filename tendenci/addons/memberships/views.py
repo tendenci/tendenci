@@ -1030,24 +1030,62 @@ def membership_join_report_pdf(request):
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
 
-    mems = Membership.objects.active()
+    mems = Membership.objects.filter(expire_dt__gt=datetime.now())
+    
+    # sort order of all fields for the upcoming response
+    is_ascending_username = True
+    is_ascending_full_name = True
+    is_ascending_email = True
+    is_ascending_app = True
+    is_ascending_type = True
+    is_ascending_subscription = True
+    is_ascending_expiration = True
+    is_ascending_invoice = True
 
     # get sort order
     sort = request.GET.get('sort', 'subscribe_dt')
     if sort == 'username':
         mems = mems.order_by('user__username')
+        is_ascending_username = False
+    elif sort == '-username':
+        mems = mems.order_by('-user__username')
+        is_ascending_username = True
     elif sort == 'full_name':
         mems = mems.order_by('user__first_name', 'user__last_name')
+        is_ascending_full_name = False
+    elif sort == '-full_name':
+        mems = mems.order_by('-user__first_name', '-user__last_name')
+        is_ascending_full_name = True
     elif sort == 'email':
         mems = mems.order_by('user__email')
+        is_ascending_email = False
+    elif sort == '-email':
+        mems = mems.order_by('-user__email')
+        is_ascending_email = True
     elif sort == 'app':
         mems = mems.order_by('ma')
+        is_ascending_app = False
+    elif sort == '-app':
+        mems = mems.order_by('-ma')
+        is_ascending_app = True
     elif sort == 'type':
         mems = mems.order_by('membership_type')
+        is_ascending_type = False
+    elif sort == '-type':
+        mems = mems.order_by('-membership_type')
+        is_ascending_type = True
     elif sort == 'subscription':
         mems = mems.order_by('subscribe_dt')
+        is_ascending_subscription = False
+    elif sort == '-subscription':
+        mems = mems.order_by('-subscribe_dt')
+        is_ascending_subscription = True
     elif sort == 'expiration':
         mems = mems.order_by('expire_dt')
+        is_ascending_expiration = False
+    elif sort == '-expiration':
+        mems = mems.order_by('-expire_dt')
+        is_ascending_expiration = True
     elif sort == 'invoice':
         # since we need to sort by a related field with the proper
         # conditions we'll need to bring the sorting to the python level
@@ -1058,12 +1096,32 @@ def report_active_members(request, template_name='reports/membership_list.html')
                     mem.valid_invoice = mem.get_entry().invoice.pk
 
         mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
+        is_ascending_invoice = False
+    elif sort == '-invoice':
+        # since we need to sort by a related field with the proper
+        # conditions we'll need to bring the sorting to the python level
+        for mem in mems:
+            mem.valid_invoice = None
+            if mem.get_entry():
+                if mem.get_entry().invoice:
+                    mem.valid_invoice = mem.get_entry().invoice.pk
+
+        mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=False)
+        is_ascending_invoice = True
 
     EventLog.objects.log()
 
     return render_to_response(template_name, {
             'mems': mems,
             'active': True,
+            'is_ascending_username': is_ascending_username,
+            'is_ascending_full_name': is_ascending_full_name,
+            'is_ascending_email': is_ascending_email,
+            'is_ascending_app': is_ascending_app,
+            'is_ascending_type': is_ascending_type,
+            'is_ascending_subscription': is_ascending_subscription,
+            'is_ascending_expiration': is_ascending_expiration,
+            'is_ascending_invoice': is_ascending_invoice,
             }, context_instance=RequestContext(request))
 
 
@@ -1072,22 +1130,60 @@ def report_expired_members(request, template_name='reports/membership_list.html'
 
     mems = Membership.objects.expired()
 
+    # sort order of all fields for the upcoming response
+    is_ascending_username = True
+    is_ascending_full_name = True
+    is_ascending_email = True
+    is_ascending_app = True
+    is_ascending_type = True
+    is_ascending_subscription = True
+    is_ascending_expiration = True
+    is_ascending_invoice = True
+
     # get sort order
-    sort = request.GET.get('sort', 'expire_dt')
+    sort = request.GET.get('sort', 'subscribe_dt')
     if sort == 'username':
         mems = mems.order_by('user__username')
+        is_ascending_username = False
+    elif sort == '-username':
+        mems = mems.order_by('-user__username')
+        is_ascending_username = True
     elif sort == 'full_name':
         mems = mems.order_by('user__first_name', 'user__last_name')
+        is_ascending_full_name = False
+    elif sort == '-full_name':
+        mems = mems.order_by('-user__first_name', '-user__last_name')
+        is_ascending_full_name = True
     elif sort == 'email':
         mems = mems.order_by('user__email')
-    elif sort == 'app':
+        is_ascending_email = False
+    elif sort == '-email':
+        mems = mems.order_by('-user__email')
+        is_ascending_email = True
+    elif sort == 'application':
         mems = mems.order_by('ma')
+        is_ascending_app = False
+    elif sort == '-application':
+        mems = mems.order_by('-ma')
+        is_ascending_app = True
     elif sort == 'type':
         mems = mems.order_by('membership_type')
+        is_ascending_type = False
+    elif sort == '-type':
+        mems = mems.order_by('-membership_type')
+        is_ascending_type = True
     elif sort == 'subscription':
         mems = mems.order_by('subscribe_dt')
+        is_ascending_subscription = False
+    elif sort == '-subscription':
+        mems = mems.order_by('-subscribe_dt')
+        is_ascending_subscription = True
     elif sort == 'expiration':
         mems = mems.order_by('expire_dt')
+        is_ascending_expiration = False
+    elif sort == '-expiration':
+        mems = mems.order_by('-expire_dt')
+        is_ascending_expiration = True
     elif sort == 'invoice':
         # since we need to sort by a related field with the proper
         # conditions we'll need to bring the sorting to the python level
@@ -1098,14 +1194,33 @@ def report_expired_members(request, template_name='reports/membership_list.html'
                     mem.valid_invoice = mem.get_entry().invoice.pk
 
         mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=True)
+        is_ascending_invoice = False
+    elif sort == '-invoice':
+        # since we need to sort by a related field with the proper
+        # conditions we'll need to bring the sorting to the python level
+        for mem in mems:
+            mem.valid_invoice = None
+            if mem.get_entry():
+                if mem.get_entry().invoice:
+                    mem.valid_invoice = mem.get_entry().invoice.pk
+
+        mems = sorted(mems, key=lambda mem: mem.valid_invoice, reverse=False)
+        is_ascending_invoice = True
 
     EventLog.objects.log()
 
     return render_to_response(template_name, {
             'mems': mems,
             'active': False,
+            'is_ascending_username': is_ascending_username,
+            'is_ascending_full_name': is_ascending_full_name,
+            'is_ascending_email': is_ascending_email,
+            'is_ascending_app': is_ascending_app,
+            'is_ascending_type': is_ascending_type,
+            'is_ascending_subscription': is_ascending_subscription,
+            'is_ascending_expiration': is_ascending_expiration,
+            'is_ascending_invoice': is_ascending_invoice,
             }, context_instance=RequestContext(request))
-
 
 @staff_member_required
 def report_members_summary(request, template_name='reports/membership_summary.html'):

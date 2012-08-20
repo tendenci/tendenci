@@ -17,24 +17,120 @@
         <tr>
             {% if active %}
             <th>#</a></th>
-            <th><a href="{% url reports-active-members %}?sort=username" >{% trans "Username" %}</th>
-            <th><a href="{% url reports-active-members %}?sort=full_name" >{% trans "Fullname" %}</a></th>
-            <th><a href="{% url reports-active-members %}?sort=email" >{% trans "Email" %}</a></th>
-            <th><a href="{% url reports-active-members %}?sort=application" >{% trans "Application" %}</a></th>
-            <th><a href="{% url reports-active-members %}?sort=type" >{% trans "Type" %}</a></th>
-            <th><a href="{% url reports-active-members %}?sort=subscription" >{% trans "Subscription" %}</a></th>
-            <th><a href="{% url reports-active-members %}?sort=expiration" >{% trans "Expiration" %}</a></th>
-            <th><a href="{% url reports-active-members %}?sort=invoice" >{% trans "Invoice" %}</a></th>
+            <th>
+				{% if is_ascending_username %}
+				<a href="{% url reports-active-members %}?sort=username" >{% trans "Username" %}
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-username" >{% trans "Username" %}
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_full_name %}
+				<a href="{% url reports-active-members %}?sort=full_name" >{% trans "Fullname" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-full_name" >{% trans "Fullname" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_email %}
+				<a href="{% url reports-active-members %}?sort=email" >{% trans "Email" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-email" >{% trans "Email" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_app %}
+				<a href="{% url reports-active-members %}?sort=application" >{% trans "Application" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-application" >{% trans "Application" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_type %}
+				<a href="{% url reports-active-members %}?sort=type" >{% trans "Type" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-type" >{% trans "Type" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_subscription %}
+				<a href="{% url reports-active-members %}?sort=subscription" >{% trans "Subscription" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-subscription" >{% trans "Subscription" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_expiration %}
+				<a href="{% url reports-active-members %}?sort=expiration" >{% trans "Expiration" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-expiration" >{% trans "Expiration" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_invoice %}
+				<a href="{% url reports-active-members %}?sort=invoice" >{% trans "Invoice" %}</a>
+				{% else %}
+				<a href="{% url reports-active-members %}?sort=-invoice" >{% trans "Invoice" %}</a>
+				{% endif %}
+			</th>
             {% else %}
             <th>#</th>
-            <th><a href="{% url reports-expired-members %}?sort=username" >{% trans "Username" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=full_name" >{% trans "Fullname" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=email" >{% trans "Email" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=application" >{% trans "Application" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=type" >{% trans "Type" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=subscription" >{% trans "Subscription" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=expiration" >{% trans "Expiration" %}</a></th>
-            <th><a href="{% url reports-expired-members %}?sort=invoice" >{% trans "Invoice" %}</a></th>
+            <th>
+				{% if is_ascending_username %}
+				<a href="{% url reports-expired-members %}?sort=username" >{% trans "Username" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-username" >{% trans "Username" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_full_name %}
+				<a href="{% url reports-expired-members %}?sort=full_name" >{% trans "Fullname" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-full_name" >{% trans "Fullname" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_email %}
+				<a href="{% url reports-expired-members %}?sort=email" >{% trans "Email" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-email" >{% trans "Email" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_app %}
+				<a href="{% url reports-expired-members %}?sort=application" >{% trans "Application" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-application" >{% trans "Application" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_type %}
+				<a href="{% url reports-expired-members %}?sort=type" >{% trans "Type" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-type" >{% trans "Type" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_subscription %}
+				<a href="{% url reports-expired-members %}?sort=subscription" >{% trans "Subscription" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-subscription" >{% trans "Subscription" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_expiration %}
+				<a href="{% url reports-expired-members %}?sort=expiration" >{% trans "Expiration" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-expiration" >{% trans "Expiration" %}</a>
+				{% endif %}
+			</th>
+            <th>
+				{% if is_ascending_invoice %}
+				<a href="{% url reports-expired-members %}?sort=invoice" >{% trans "Invoice" %}</a>
+				{% else %}
+				<a href="{% url reports-expired-members %}?sort=-invoice" >{% trans "Invoice" %}</a>
+				{% endif %}
+			</th>
             {% endif %}
         </tr>
         {% for mem in mems %}

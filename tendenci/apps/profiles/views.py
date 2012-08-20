@@ -557,39 +557,96 @@ def user_activity_report(request, template_name='reports/user_activity.html'):
     users30days = _user_events(now-timedelta(days=10))
     users60days = _user_events(now-timedelta(days=60))
     users90days = _user_events(now-timedelta(days=90))
+    # sort order of all fields for the upcoming response
+    is_reverse = False
+    is_ascending_username = True
+    is_ascending_last_name = True
+    is_ascending_first_name = True
+    is_ascending_email = True
+    is_ascending_events = True
     
     # get sort order
     sort = request.GET.get('sort', 'events')
+    # Hande case if sort exists is one of the url parameters but blank
+    if not sort:
+        sort = 'events'
+    
     if sort == 'username':
         users30days = users30days.order_by('username')
         users60days = users60days.order_by('username')
         users90days = users90days.order_by('username')
+        is_ascending_username = False
+    elif sort == '-username':
+        users30days = users30days.order_by('-username')
+        users60days = users60days.order_by('-username')
+        users90days = users90days.order_by('-username')
+        is_ascending_username = True
     elif sort == 'last_name':
         users30days = users30days.order_by('last_name')
         users60days = users60days.order_by('last_name')
         users90days = users90days.order_by('last_name')
+        is_ascending_last_name = False
+    elif sort == '-last_name':
+        users30days = users30days.order_by('-last_name')
+        users60days = users60days.order_by('-last_name')
+        users90days = users90days.order_by('-last_name')
+        is_ascending_last_name = True
     elif sort == 'first_name':
         users30days = users30days.order_by('first_name')
         users60days = users60days.order_by('first_name')
         users90days = users90days.order_by('first_name')
+        is_ascending_first_name = False
+    elif sort == '-first_name':
+        users30days = users30days.order_by('-first_name')
+        users60days = users60days.order_by('-first_name')
+        users90days = users90days.order_by('-first_name')
+        is_ascending_first_name = True
     elif sort == 'email':
         users30days = users30days.order_by('email')
         users60days = users60days.order_by('email')
         users90days = users90days.order_by('email')
+        is_ascending_email = False
+    elif sort == '-email':
+        users30days = users30days.order_by('-email')
+        users60days = users60days.order_by('-email')
+        users90days = users90days.order_by('-email')
+        is_ascending_email = True
     elif sort == 'events':
         users30days = users30days.order_by('-event_count')
         users60days = users60days.order_by('-event_count')
         users90days = users90days.order_by('-event_count')
+        is_ascending_events = False
+    elif sort == '-events':
+        users30days = users30days.order_by('event_count')
+        users60days = users60days.order_by('event_count')
+        users90days = users90days.order_by('event_count')
+        is_ascending_events = True
         
     # top 10 only
     users30days = users30days[:10]
     users60days = users60days[:10]
     users90days = users90days[:10]
     
+    # Check for number sorting
+    reverse = request.GET.get('reverse', 'False')
+    if reverse == 'True':
+        users30days = users30days[::-1]
+        users60days = users60days[::-1]
+        users90days = users90days[::-1]
+        is_reverse = True
+    else:
+        is_reverse = False
+    
     return render_to_response(template_name, {
         'users30days': users30days,
         'users60days': users60days,
         'users90days': users90days,
+        'is_reverse': is_reverse,
+        'is_ascending_username': is_ascending_username,
+        'is_ascending_last_name': is_ascending_last_name,
+        'is_ascending_first_name': is_ascending_first_name,
+        'is_ascending_email': is_ascending_email,
+        'is_ascending_events': is_ascending_events,
         }, context_instance=RequestContext(request))
 
 
@@ -599,27 +656,63 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
         raise Http403
 
     profiles = Profile.actives.filter(user__is_superuser=True).select_related()
+    # sort order of all fields for the upcoming response
+    is_ascending_id = True
+    is_ascending_username = True
+    is_ascending_last_name = True
+    is_ascending_first_name = True
+    is_ascending_email = True
+    is_ascending_phone = True
     
     # get sort order
     sort = request.GET.get('sort', 'id')
     if sort == 'id':
         profiles = profiles.order_by('user__pk')
+        is_ascending_id = False
+    elif sort == '-id':
+        profiles = profiles.order_by('-user__pk')
+        is_ascending_id = True
     elif sort == 'username':
         profiles = profiles.order_by('user__username')
+        is_ascending_username = False
+    elif sort == '-username':
+        profiles = profiles.order_by('-user__username')
+        is_ascending_username = True
     elif sort == 'last_name':
         profiles = profiles.order_by('user__last_name')
+        is_ascending_last_name = False
+    elif sort == '-last_name':
+        profiles = profiles.order_by('-user__last_name')
+        is_ascending_last_name = True
     elif sort == 'first_name':
         profiles = profiles.order_by('user__first_name')
+        is_ascending_first_name = False
+    elif sort == '-first_name':
+        profiles = profiles.order_by('-user__first_name')
+        is_ascending_first_name = True
     elif sort == 'email':
         profiles = profiles.order_by('user__email')
+        is_ascending_email = False
+    elif sort == '-email':
+        profiles = profiles.order_by('-user__email')
+        is_ascending_email = True
     elif sort == 'phone':
         profiles = profiles.order_by('phone')
+        is_ascending_phone = False
+    elif sort == '-phone':
+        profiles = profiles.order_by('-phone')
+        is_ascending_phone = True
     
     return render_to_response(template_name, {
-        'profiles': profiles
+        'profiles': profiles,
+        'is_ascending_id': is_ascending_id,
+        'is_ascending_username': is_ascending_username,
+        'is_ascending_last_name': is_ascending_last_name,
+        'is_ascending_first_name': is_ascending_first_name,
+        'is_ascending_email': is_ascending_email,
+        'is_ascending_phone': is_ascending_phone,
         }, context_instance=RequestContext(request))
-
-
+    
 @staff_member_required
 def user_access_report(request):
     now = datetime.now()
@@ -638,7 +731,7 @@ def user_access_report(request):
                   'total_logins': total_logins,
                   'day_logins': day_logins,},  
                 context_instance=RequestContext(request))
-    
+
 @login_required
 def admin_list(request, template_name='profiles/admin_list.html'):
     # only admins can edit this list
