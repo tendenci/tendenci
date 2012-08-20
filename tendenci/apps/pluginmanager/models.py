@@ -25,20 +25,20 @@ post_delete = models.signals.post_delete
 
 
 def _update_apps(instance=None, created=False):
-    db2json()
-    from django.conf import settings
     from django.db.models.loading import cache as app_cache
-    from tendenci.apps.pluginmanager import plugin_apps
-    settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS, settings.PROJECT_ROOT)
+    from django.conf import settings
+    from tendenci.apps.pluginmanager.settings import plugin_apps
+
+    call_command('build_addons_list')
     app_cache.loaded = False  # clear cache
+
+    settings.INSTALLED_APPS = plugin_apps(settings.DEFAULT_INSTALLED_APPS, settings.PROJECT_ROOT)
 
     call_command('syncdb', interactive=False, migrate_all=False)
     call_command('migrate', interacte=False)
-    call_command('touch_settings')
-    # update the site settings (in database) if any
     if instance:
-        print instance
         call_command('update_settings', smart_str(instance.package))
+    call_command('touch_settings')
 
 
 def post_save_pluginapp(sender, instance=None, created=False, **kwargs):

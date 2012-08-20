@@ -6,6 +6,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         from django.conf import settings
-        settings_path = getattr(settings, "SETTINGS_PATH", None)
-        if settings_path:
-            os.system('touch ' + settings_path)
+        wsgi = getattr(settings, "WSGI_PATH", None)
+        if wsgi:
+            os.system('touch ' + wsgi)
