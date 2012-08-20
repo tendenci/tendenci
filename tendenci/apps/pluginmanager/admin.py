@@ -1,14 +1,15 @@
 from django.contrib import admin
-from django.core.urlresolvers import reverse
 
 from tendenci.apps.pluginmanager.models import PluginApp
 from tendenci.apps.pluginmanager.forms import PluginAppForm
+
 
 class PluginAppAdmin(admin.ModelAdmin):
     list_display = ['view_app', 'description', 'is_enabled']
     list_filter = ['is_enabled']
     list_editable = ['is_enabled']
     search_fields = ['title', 'description']
+    actions = None
     form = PluginAppForm
 
     def view_app(self, obj):

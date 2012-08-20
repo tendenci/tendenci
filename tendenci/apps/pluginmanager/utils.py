@@ -84,22 +84,45 @@ def _make_writeable(filename):
         new_permissions = stat.S_IMODE(st.st_mode) | stat.S_IWUSR
         os.chmod(filename, new_permissions)
 
+
 def plugin_options():
     """
     Returns a string of the available themes in THEMES_DIR
     """
-    options = []
-    plugins = sorted(plugin_choices())
-    for plugin in plugins:
-        plugin_package = '.'.join(['tendenci', 'apps', plugin])
-        if plugin_package not in settings.INSTALLED_APPS:
-            options.append((plugin_package, plugin.title().replace('_',' ')))
-    return options
+    tendenci_options = []
+    tendenci_addons = sorted(tendenci_choices())
+    for addon in tendenci_addons:
+        addon_package = '.'.join(['tendenci', 'addons', addon])
+        if addon_package not in settings.INSTALLED_APPS:
+            tendenci_options.append((addon_package, addon.title().replace('_', ' ')))
 
-def plugin_choices():
+    custom_options = []
+    custom_addons = sorted(custom_choices())
+    for addon in custom_addons:
+        print addon
+        addon_package = '.'.join(['addons', addon])
+        if addon_package not in settings.INSTALLED_APPS:
+            custom_options.append((addon_package, addon.title().replace('_', ' ')))
+
+    if custom_options:
+        return (('Custom', custom_options), ('Tendenci', tendenci_options))
+    else:
+        return tendenci_options
+
+
+def tendenci_choices():
     """
-    Returns a list of available themes in PLUGINS_PATH
+    Returns a list of available addons in tendenci app
     """
-    for plugin in os.listdir(settings.APPS_PATH):
-        if os.path.isdir(os.path.join(settings.APPS_PATH, plugin)):
-            yield plugin
+    for addon in os.listdir(settings.ADDONS_PATH):
+        if os.path.isdir(os.path.join(settings.ADDONS_PATH, addon)):
+            yield addon
+
+
+def custom_choices():
+    """
+    Returns a list of available addons in the tendenci-site wrapper app
+    """
+    for addon in os.listdir(settings.SITE_ADDONS_PATH):
+        if os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon)):
+            yield addon
