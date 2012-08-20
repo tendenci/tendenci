@@ -65,10 +65,12 @@ def parse_subs_from_csv(group, file_path):
             # check for duplicates
             dup = get_subscriber(sub_email, group)
             if not dup: # create the subscriber
-                sub.save()
+                sub.save() # first save to acquire primary key
                 for datum in sub_data:
                     datum.subscription = sub
                     datum.save()
+                # Needs 2nd save because there is no email field in first save
+                sub.save()
             else: # update the subscription's fields
                 sub = dup
                 for datum in sub_data:

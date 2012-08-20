@@ -228,7 +228,7 @@ if cm_api_key and cm_client_id:
         from django.core.validators import email_re
 
         (name, email) = get_name_email(instance)
-        if email_re.match(email):
+        if email and email_re.match(email):
             add_list = False
             add_subscriber = True
             list_map = None
@@ -296,7 +296,7 @@ if cm_api_key and cm_client_id:
         from django.core.validators import email_re
 
         (name, email) = get_name_email(instance)        
-        if email_re.match(email):
+        if email and email_re.match(email):
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
