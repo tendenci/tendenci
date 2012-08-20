@@ -142,6 +142,10 @@ div.location-wrap-search .content {
     margin-bottom: 2px;
 }
 
+div#import-wrap {
+    margin-top:  30px;
+    margin-bottom: 20px;
+}
 #import-wrap h1 {
     margin-bottom: 0;
 }
@@ -178,3 +182,12 @@ div.location-wrap-search .content {
     width: 200px;
 }
 
+div.download-csv a {
+    font-size: 1.5em;
+}
+
+div.download-csv img {
+    float: left;
+    margin-right: 10px;
+    border:  0;
+}

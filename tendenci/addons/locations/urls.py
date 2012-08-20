@@ -16,11 +16,13 @@ urlpatterns = patterns('tendenci.addons.locations.views',
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="location.edit"),
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='locations.feed'),
     url(r'^%s/delete/(?P<id>\d+)/$' % urlpath, 'delete', name="location.delete"),
-    # import
-    url(r'^%s/import/$' % urlpath, 'locations_import_upload', name='locations_import_upload_file'),
-    url(r'^%s/import/preview/(?P<id>\d+)/$' % urlpath, 'locations_import_preview', name='locations_import_preview'),
-    url(r'^%s/import/confirm/(?P<id>\d+)/$' % urlpath, 'locations_import_confirm', name='locations_import_confirm'),
-    url(r'^%s/import/status/(?P<task_id>[-\w]+)/$' % urlpath, 'locations_import_status', name='locations_import_status'),
-    # export
+    url(r'^locations/import/$', 'locations_import_upload', name='locations_import_upload_file'),
+    url(r'^locations/import/preview/(?P<id>\d+)/$', 'locations_import_preview', name='locations_import_preview'),
+    url(r'^locations/import/confirm/(?P<id>\d+)/$', 'locations_import_confirm', name='locations_import_confirm'),
+    url(r'^locations/import/status/(?P<task_id>[-\w]+)/$', 'locations_import_status', name='locations_import_status'),
+    url(r'^locations/upload/formats/xls/$', 'download_location_upload_template', {'file_ext': '.xls'}, name="locations.download_location_upload_template_xls"),
+    url(r'^locations/upload/formats/csv/$', 'download_location_upload_template', {'file_ext': '.csv'},
+            name="locations.download_location_upload_template_csv"),
     url(r'^%s/export/$' % urlpath, 'export', name='locations_export'),
+
 )

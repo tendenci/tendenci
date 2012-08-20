@@ -24,6 +24,7 @@ from tendenci.addons.locations.utils import get_coordinates
 from tendenci.addons.locations.importer.forms import UploadForm, ImportMapForm
 from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs_from_csv
 from tendenci.addons.locations.importer.tasks import ImportLocationsTask
+from tendenci.core.imports.utils import render_excel
 from tendenci.core.files.models import File
 from djcelery.models import TaskMeta
 
@@ -301,10 +302,10 @@ def locations_import_status(request, task_id, template_name='locations/import-co
 @login_required
 def export(request, template_name="locations/export.html"):
     """Export Locations"""
-    
+
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
         # initilize initial values
         file_name = "locations.csv"
@@ -328,10 +329,40 @@ def export(request, template_name="locations/export.html"):
             'hq',
             'entity',
         ]
-        
+
         export_id = run_export_task('locations', 'location', fields)
         EventLog.objects.log()
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
+
+@admin_required
+@login_required
+def download_location_upload_template(request, file_ext='.xls'):
+    if file_ext == '.csv':
+        filename = "import-locations.csv"
+    else:
+        filename = "import-locations.xls"
+
+    import_field_list = [
+        'Location Name',
+        'Description',
+        'Contact',
+        'Address',
+        'Address 2',
+        'City',
+        'State',
+        'Zipcode',
+        'Country',
+        'Phone',
+        'Fax',
+        'Email',
+        'Website',
+        'Latitude',
+        'Longitude',
+        'Headquarters',
+    ]
+    data_row_list = []
+
+    return render_excel(filename, import_field_list, data_row_list, file_ext)

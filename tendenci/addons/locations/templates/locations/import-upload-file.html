@@ -7,13 +7,30 @@
 
 {% block extra_head %}
 {{ block.super }}
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/locations.css">
+    <link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/locations.css">
 {% endblock %}
 
 {% block body %}
+
+<div class="imports">
+<h1>{% trans "Import Locations" %}</h1>
+<p>{% trans "Download the template (.xls or .csv). Populate the template with your information. Upload your updated spread sheet. Review and adjust settings.  Preview import." %}
+</p>
+
+<h2>{% trans "Download: " %}<span style="font-size:12px;font-weight:normal;text-transform:none;">{% trans "(**skip if you already have your spread sheet ready)" %}</span></h2>
+<div class="download-csv">
+<img src="/site_media/static/images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+<div class="item-right">
+	<p><a href="{% url locations.download_location_upload_template_xls %}">{% trans ".xls Template" %}</a> <span>(recommended)</span></p>
+	<p>-- OR --</p>
+	<p><a href="{% url locations.download_location_upload_template_csv %}">{% trans ".csv Template" %}</a></p>
+	
+</div>
+<div class="clear-both"></div>
+</div>
+
 <div id="import-wrap">
     
-    <h1>{% trans "Locations Import Upload File" %}</h1>
     <p class="timestamp">{% trans "Step 1/4" %} &middot; {{ now }}</p>
 
     <form method='post' action='{% url locations_import_upload_file %}' enctype="multipart/form-data">{% csrf_token %}
