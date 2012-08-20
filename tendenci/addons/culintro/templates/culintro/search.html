@@ -16,9 +16,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jobs.css">
 <link rel="alternate" type="application/rss+xml" title="{% trans 'Latest' %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %}" href="{% url job.feed %}" />
 <link rel="stylesheet" href="{{ STATIC_URL }}chosen/chosen.css">
-<style type="text/css">
-    {% include "culintro/media/css/culintro.css" %}
-</style>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/culintro.css">
 {% endblock %}
 
 {% block body %}
