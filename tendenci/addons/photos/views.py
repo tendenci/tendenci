@@ -356,8 +356,8 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                     'instance': photo_set,
                 }
                 EventLog.objects.log(**log_defaults) 
-
-                request.user.message_set.create(message=_("Successfully added photo set!") + '')
+                
+                messages.add_message(request, messages.INFO, 'Successfully added photo set!')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
         form = form_class(user=request.user)
