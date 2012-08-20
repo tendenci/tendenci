@@ -65,6 +65,6 @@ def db2json():
     path = settings.PROJECT_ROOT
     plugins = list(PluginApp.objects.all().values('id', 'title', 'package', 'is_enabled', 'is_installed'))
     data = simplejson.dumps(plugins, indent=1)
-    f = open(os.path.join(path, 'plugins_list.json'), 'w')
+    f = open(os.path.join(path, 'addons_list.json'), 'w')
     f.write(data)
     f.close()

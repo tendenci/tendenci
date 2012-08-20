@@ -6,7 +6,7 @@ def get_apps(local_root):
     """ Get apps from json files"""
     apps = []
 
-    json_data_path = os.path.join(local_root, 'plugins_list.json')
+    json_data_path = os.path.join(local_root, 'addons_list.json')
 
     if not os.path.exists(json_data_path):
         return apps
