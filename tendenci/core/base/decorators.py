@@ -1,6 +1,9 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-
+from django.utils.http import urlquote
+from django.shortcuts import redirect
+from tendenci.core.base.http import Http403
 
 def ssl_required(view_func):
     """Decorator to force url to be accessed over SSL (https).
@@ -12,4 +15,12 @@ def ssl_required(view_func):
                 ssl_url = request_url.replace('http://', 'https://')
                 return HttpResponseRedirect(ssl_url)
         return view_func(request, *args, **kwargs)
+    return decorator
+
+def password_required(view):
+    """Decorator to force a password promt"""
+    def decorator(request, *args, **kwargs):
+        if request.session.get('password_promt', False):
+            return view(request, *args, **kwargs)
+        return redirect(("%s?next=%s") % (reverse("password_again"),urlquote(request.get_full_path())))
     return decorator

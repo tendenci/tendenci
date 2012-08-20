@@ -1,4 +1,5 @@
 from re import compile
+from django import forms
 
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
@@ -31,4 +32,17 @@ class SlugField(CharField):
         self.run_validators(value)
         
         return value
+
+class PasswordForm(forms.Form):
+    password = forms.CharField(label=_(u'Password'),
+        widget=forms.PasswordInput())
+    
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(PasswordForm, self).__init__(*args, **kwargs)
         
+    def clean(self):
+        password = self.cleaned_data['password']
+        if not self.user.check_password(password):
+            raise forms.ValidationError(_("Incorrect Password"))
+        return self.cleaned_data

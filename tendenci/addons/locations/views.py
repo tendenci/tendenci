@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import password_required
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import (has_perm, has_view_perm,
@@ -17,6 +18,8 @@ from tendenci.core.perms.utils import (has_perm, has_view_perm,
 from tendenci.core.perms.decorators import admin_required
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
+from tendenci.core.files.models import File
+from djcelery.models import TaskMeta
 
 from tendenci.addons.locations.models import Location, LocationImport
 from tendenci.addons.locations.forms import LocationForm
@@ -167,6 +170,7 @@ def delete(request, id, template_name="locations/delete.html"):
 
 @login_required
 @admin_required
+@password_required
 def locations_import_upload(request, template_name='locations/import-upload-file.html'):
     """
     This is the upload view for the location imports.
@@ -189,6 +193,8 @@ def locations_import_upload(request, template_name='locations/import-upload-file
                 locport.delete()
                 return redirect('locations_import_upload_file')
             EventLog.objects.log()
+            # reset the password_promt session
+            request.session['password_promt'] = False
             return redirect('locations_import_preview', locport.id)
     else:
         form = UploadForm()

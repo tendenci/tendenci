@@ -21,6 +21,7 @@ from tendenci.core.imports.utils import render_excel
 
 from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import has_perm
+from tendenci.core.base.decorators import password_required
 from tendenci.core.event_logs.models import EventLog
 
 from tendenci.addons.corporate_memberships.models import (CorpApp, CorpField, CorporateMembership,
@@ -844,6 +845,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     
     
 @staff_member_required
+@password_required
 def corp_import(request, step=None):
     """
     Corporate membership import.
@@ -1214,6 +1216,7 @@ def corp_import_invalid_records_download(request):
     return render_excel(filename, title_fields, item_list, '.csv')
 
 @login_required
+@password_required
 def corp_export(request):
     if not request.user.profile.is_superuser:raise Http403   # admin only page
     
@@ -1222,6 +1225,8 @@ def corp_export(request):
     
     if request.method == 'POST':
         if form.is_valid():
+            # reset the password_promt session
+            request.session['password_promt'] = False
             corp_app = form.cleaned_data['corp_app']
             
             filename = "corporate_memberships_%d_export.csv" % corp_app.id

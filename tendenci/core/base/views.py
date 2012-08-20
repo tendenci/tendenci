@@ -6,6 +6,7 @@ import Image as Pil
 # django
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.template import RequestContext
 from django.shortcuts import redirect
@@ -13,6 +14,7 @@ from django.conf import settings
 
 # local
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
+from tendenci.core.base.forms import PasswordForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
 
@@ -233,3 +235,20 @@ def robots_txt(request):
         template_name = robots_setting
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request), mimetype="text/plain")
+
+@login_required
+def password_again(request, template_name="base/password.html"):
+    next = request.GET.get('next')
+
+    if request.method == "POST":
+        form = PasswordForm(request.POST, user=request.user)
+        if form.is_valid():
+            request.session['password_promt'] = True
+            return redirect(next)
+    else:
+        form = PasswordForm(user=request.user)
+
+    return render_to_response(template_name, {
+        'next': next,
+        'form': form,
+    }, context_instance=RequestContext(request))

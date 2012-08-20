@@ -20,9 +20,9 @@ from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
-from tendenci.core.perms.utils import update_perms_and_save, get_query_filters
-from tendenci.core.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.addons.corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from reports import ReportNewMems
 from tendenci.core.files.models import File
@@ -689,6 +689,7 @@ def notice_email_content(request, id, template_name="memberships/notices/email_c
 
 
 @login_required
+@password_required
 def membership_import_upload(request, template_name='memberships/import-upload-file.html'):
     """
     This is the upload view for the membership imports.
@@ -702,6 +703,8 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
+            # reset the password_promt session
+            request.session['password_promt'] = False
             cleaned_data = form.cleaned_data
             app = cleaned_data['app']
             interactive = cleaned_data['interactive']
@@ -891,7 +894,8 @@ def membership_join_report(request):
                 },
                 context_instance=RequestContext(request))
 
-
+@staff_member_required
+@password_required
 def membership_export(request):
     from django.template.defaultfilters import slugify
 
@@ -900,6 +904,8 @@ def membership_export(request):
 
     if request.method == 'POST':
         if form.is_valid():
+            # reset the password_promt session
+            request.session['password_promt'] = False
             app = form.cleaned_data['app']
 
             file_name = "%s.csv" % slugify(app.name)

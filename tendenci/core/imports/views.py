@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from tendenci.core.base.http import Http403
+from tendenci.core.base.decorators import password_required
 from tendenci.core.imports.forms import UserImportForm
 from tendenci.core.imports.utils import extract_from_excel, render_excel, handle_uploaded_file, get_user_import_settings, user_import_process
 from tendenci.core.event_logs.models import EventLog
@@ -18,12 +19,15 @@ IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')
 
 
 @login_required
+@password_required
 def user_upload_add(request, form_class=UserImportForm, template_name="imports/users.html"):
     if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     if request.method == 'POST':
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
+            # reset the password_promt session
+            request.session['password_promt'] = False
             # save the uploaded file
             file_dir = IMPORT_DIR
             
