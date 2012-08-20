@@ -9,6 +9,7 @@ from django.conf import settings
 from django.shortcuts import Http404
 from django.core.cache import cache as django_cache
 from tendenci.core.base.utils import image_rescale
+from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
@@ -53,9 +54,8 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         quality = 90
 
     if settings.USE_S3_STORAGE:
-        file_path = os.path.join(settings.MEDIA_URL, unicode(file))
-        response = urllib2.urlopen(file_path)  # can raise 404
-        image = Image.open(StringIO(response.read()))
+        content = read_media_file_from_s3(file)
+        image = Image.open(StringIO(content))
     else:
         if hasattr(file, 'path') and exists(file.path):
             image = Image.open(file.path)  # get image
