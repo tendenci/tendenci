@@ -19,7 +19,7 @@ from tendenci.apps.pages.managers import PageManager
 from tendenci.apps.pages.module_meta import PageMeta
 
 
-class Page(TendenciBaseModel):
+class BasePage(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=500, blank=True)
     slug = SlugField(_('URL Path'))
@@ -32,11 +32,43 @@ class Page(TendenciBaseModel):
     tags = TagField(blank=True)
     entity = models.ForeignKey(Entity, null=True)
     meta = models.OneToOneField(MetaTags, null=True)
-    categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
-    
+    categories = generic.GenericRelation(CategoryItem,
+        object_id_field="object_id", content_type_field="content_type")
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        if not self.guid:
+            self.guid = str(uuid.uuid1())
+        super(BasePage, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.title
+
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
+
+    @property
+    def version(self):
+        if self.status and self.status_detail:
+            return self.status_detail + '-' + str(self.pk) + ' ' + str(self.create_dt)
+        elif not self.status:
+            return 'deleted-' + str(self.pk) + ' ' + str(self.create_dt)
+        return ''
+
+
+class Page(BasePage):
     perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+                                      object_id_field="object_id",
+                                      content_type_field="content_type")
     objects = PageManager()
 
     class Meta:
@@ -54,32 +86,6 @@ class Page(TendenciBaseModel):
     def get_absolute_url(self):
         return ("page", [self.slug])
 
-    def save(self, *args, **kwargs):
-        if not self.guid:
-            self.guid = str(uuid.uuid1())
-
-        super(Page, self).save(*args, **kwargs)
-
-    def __unicode__(self):
-        return self.title
-
-    @property
-    def category_set(self):
-        items = {}
-        for cat in self.categories.select_related('category__name', 'parent__name'):
-            if cat.category:
-                items["category"] = cat.category
-            elif cat.parent:
-                items["sub_category"] = cat.parent
-        return items
-        
-    @property
-    def version(self):
-        if self.status and self.status_detail:
-            return self.status_detail + '-' + str(self.pk) + ' ' + str(self.create_dt)
-        elif not self.status:
-            return 'deleted-' + str(self.pk) + ' ' + str(self.create_dt)
-        return ''
 
 class HeaderImage(File):
     pass
