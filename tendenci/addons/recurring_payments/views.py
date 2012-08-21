@@ -13,14 +13,14 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.http import HttpResponse, Http404
 
-from recurring_payments.models import (RecurringPayment, 
+from tendenci.addons.recurring_payments.models import (RecurringPayment, 
                                        PaymentProfile, 
                                        PaymentTransaction,
                                        RecurringPaymentInvoice)
-from recurring_payments.authnet.utils import get_test_mode
-from recurring_payments.utils import (RecurringPaymentEmailNotices, 
+from tendenci.addons.recurring_payments.authnet.utils import get_test_mode
+from tendenci.addons.recurring_payments.utils import (RecurringPaymentEmailNotices, 
                                       run_a_recurring_payment)
-from recurring_payments.authnet.cim import CIMCustomerProfile
+from tendenci.addons.recurring_payments.authnet.cim import CIMCustomerProfile
 
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog

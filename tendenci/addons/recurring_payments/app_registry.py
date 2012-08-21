@@ -1,6 +1,6 @@
 from tendenci.core.registry import site
 from tendenci.core.registry.base import LogRegistry, lazy_reverse
-from recurring_payments.models import RecurringPayment
+from tendenci.addons.recurring_payments.models import RecurringPayment
 
 class RecurringPaymentRegistry(LogRegistry):
     # recurring payments - green

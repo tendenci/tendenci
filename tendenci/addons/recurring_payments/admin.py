@@ -4,8 +4,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.admin import widgets
 from django.db import models
 
-from recurring_payments.models import RecurringPayment, PaymentProfile
-from recurring_payments.forms import RecurringPaymentForm
+from tendenci.addons.recurring_payments.models import RecurringPayment, PaymentProfile
+from tendenci.addons.recurring_payments.forms import RecurringPaymentForm
 
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.base.utils import tcurrency

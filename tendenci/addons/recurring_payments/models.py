@@ -10,12 +10,12 @@ from django.db.models import Sum
 from dateutil.relativedelta import relativedelta
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
-from recurring_payments.managers import RecurringPaymentManager
-from recurring_payments.authnet.cim import (CIMCustomerProfile,
+from tendenci.addons.recurring_payments.managers import RecurringPaymentManager
+from tendenci.addons.recurring_payments.authnet.cim import (CIMCustomerProfile,
                                             CIMCustomerPaymentProfile,
                                             CIMCustomerProfileTransaction)
-from recurring_payments.authnet.utils import payment_update_from_response
-from recurring_payments.authnet.utils import direct_response_dict
+from tendenci.addons.recurring_payments.authnet.utils import payment_update_from_response
+from tendenci.addons.recurring_payments.authnet.utils import direct_response_dict
 from tendenci.core.payments.models import Payment
 
 BILLING_PERIOD_CHOICES = (

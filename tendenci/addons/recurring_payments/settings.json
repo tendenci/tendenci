@@ -1,6 +1,6 @@
 [
 	{
-        "default_value": "true", 
+        "default_value": "false", 
         "description": "Module is enabled or not.", 
         "data_type": "boolean", 
         "update_dt": "2011-11-18 15:15:15", 
