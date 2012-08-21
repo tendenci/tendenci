@@ -11,6 +11,7 @@ class FileForm(TendenciBaseForm):
         fields = (
             'file',
             'name',
+            'tags',
             'allow_anonymous_view',
             'user_perms',
             'member_perms',
@@ -20,8 +21,9 @@ class FileForm(TendenciBaseForm):
 
         fieldsets = [('', {
                       'fields': [
-                        'file', 
-                        'name'
+                        'file',
+                        'name',
+                        'tags',
                       ],
                       'legend': ''
                       }),
@@ -37,7 +39,7 @@ class FileForm(TendenciBaseForm):
 
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
 

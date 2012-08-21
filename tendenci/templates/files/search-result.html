@@ -1,5 +1,8 @@
 {% load file_tags %}
+{% load tagging_tags %}
 {% load i18n %}
+
+{% tags_for_object file as tags %}
 
 <div class="file-wrap">
     <div class="options">
@@ -19,6 +22,14 @@
     </div>
 
     <div class="meta">
+        {% if tags %}
+        <div class="tags">
+            <strong>Tags: </strong>
+        {% for tag in tags %}
+            <a href="{% url files %}?q=tag:{{ tag }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        </div>
+        {% endif %}
         <div class="submitted"><a href="{% url event_log.search %}?source=files&object_id={{ file.pk }}">{% trans "Updated" %} {{ file.update_dt|date:"D d M Y P" }} {% trans "by" %} {{ file.owner }}</a></div>
     </div>
 
