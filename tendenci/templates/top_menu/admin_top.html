@@ -213,15 +213,18 @@
         {% if CUSTOM_TEMPLATE %}
             <li><a href="#">{% trans "Using Custom Template" %}</a>
                 <div class="sub">
-            	<div class="column">
+                <div class="column">
                     <ul>
                         <li><a href="{% url setting.permalink 'module' 'theme_editor' 'theme' %}">{% trans "Theme" %}: {{ THEME }}</a></li>
                         <li><a href="{% url theme_editor.editor %}?file=templates/{{ THEME_TEMPLATE }}&theme_edit={{ THEME }}">{% trans 'Template' %}: {{ THEME_TEMPLATE }}</a></li>
-                        <li><a href="/?toggle_template={% if TOGGLE_TEMPLATE == 'TRUE' %}FALSE{% else %}TRUE{% endif %}">{% trans 'Toggle Template' %}</a></li>
+                        <li><a href="?toggle_template">{% trans 'Toggle Template' %}</a></li>
                     </ul>
                 </div>
                 </div>
             </li>
+        {% endif %}
+        {% if TOGGLE_TEMPLATE %}
+            <li><a href="?">{% trans "Toggle Off" %}</a></li>
         {% endif %}
         
     	<li class="right"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
