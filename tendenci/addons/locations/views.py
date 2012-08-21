@@ -54,7 +54,7 @@ def search(request, template_name="locations/search.html"):
         if not request.user.is_anonymous():
             locations = locations.select_related()
 
-    locations = locations.order_by('-create_dt')
+    locations = locations.order_by('location_name')
 
     EventLog.objects.log()
 
