@@ -2,6 +2,7 @@ from django import forms
 from tendenci.apps.pluginmanager.models import PluginApp
 from tendenci.apps.pluginmanager.utils import plugin_options
 
+
 class PluginAppForm(forms.ModelForm):
     package = forms.ChoiceField(widget=forms.Select(), label="App Name")
 
@@ -15,7 +16,10 @@ class PluginAppForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PluginAppForm, self).__init__(*args, **kwargs)
-        self.fields['package'].choices = plugin_options()
+        if self.instance:
+            self.fields['package'].choices = ((self.instance.package, self.instance.title),)
+        else:
+            self.fields['package'].choices = plugin_options()
 
     def clean_package(self):
         package = self.cleaned_data['package']

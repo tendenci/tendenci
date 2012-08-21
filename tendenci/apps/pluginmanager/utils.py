@@ -85,6 +85,54 @@ def _make_writeable(filename):
         os.chmod(filename, new_permissions)
 
 
+def update_addons(installed_apps):
+    # Try used only for the first install when PluginApp
+    # table does not exist yet.
+    try:
+        from tendenci.apps.pluginmanager.models import PluginApp
+        add_new_addons(installed_apps)
+
+        # Append only enabled addons to the INSTALLED_APPS
+        addons = PluginApp.objects.filter(is_enabled=True)
+        installed_addons = tuple([i.package for i in addons])
+        installed_apps += installed_addons
+    except:
+        pass
+
+    return installed_apps
+
+
+def add_new_addons(installed_apps):
+    """
+    Adds new addons to the database
+    """
+    from tendenci.apps.pluginmanager.models import PluginApp
+    new_addons = []
+    tendenci_addons = sorted(tendenci_choices())
+    for addon in tendenci_addons:
+        addon_package = '.'.join(['tendenci', 'addons', addon])
+        if addon_package not in installed_apps:
+            try:
+                PluginApp.objects.get(package=addon_package)
+            except:
+                new_addons.append({'package': addon_package, 'title': addon.title().replace('_', ' '), 'description': ''})
+
+    custom_addons = sorted(custom_choices())
+    for addon in custom_addons:
+        print addon
+        addon_package = '.'.join(['addons', addon])
+        try:
+            PluginApp.objects.get(package=addon_package)
+        except:
+            new_addons.append({'package': addon_package, 'title': addon.title().replace('_', ' '), 'description': ''})
+
+    # Add new addons to the database
+    for addon in new_addons:
+        PluginApp.objects.create(package=addon['package'], title=addon['title'], description=addon['description'], is_enabled=False)
+
+    return new_addons
+
+
 def plugin_options():
     """
     Returns a string of the available themes in THEMES_DIR
