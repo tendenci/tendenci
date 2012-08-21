@@ -85,7 +85,9 @@ class IsAdminNode(Node):
         self.var_name = context_var
 
     def resolve(self, var, context):
-        return Variable(var).resolve(context)
+        if 'request' in context or 'user' in context:
+            return Variable(var).resolve(context)
+        return None
 
     def render(self, context):
         user = self.resolve(self.user, context)
