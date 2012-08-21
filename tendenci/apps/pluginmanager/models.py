@@ -34,17 +34,18 @@ def _update_apps(instance=None, created=False):
     from django.core.management import call_command
     from django.db.models.loading import cache as app_cache
     from django.utils.encoding import smart_str
-    try:
-        from tendenci.apps.pluginmanager.utils import update_addons
-        from django.conf import settings
-        app_cache.loaded = False  # clear cache
-        settings.INSTALLED_APPS = update_addons(settings.DEFAULT_INSTALLED_APPS)
-        call_command('syncdb', interactive=False)
-        call_command('migrate', app=smart_str(instance.package))
-        call_command('update_settings', smart_str(instance.package))
-        call_command('touch_settings')
-    except:
-        pass
+    if instance and not created:
+        try:
+            from tendenci.apps.pluginmanager.utils import update_addons
+            from django.conf import settings
+            app_cache.loaded = False  # clear cache
+            settings.INSTALLED_APPS = update_addons(settings.DEFAULT_INSTALLED_APPS)
+            call_command('syncdb', interactive=False)
+            call_command('migrate', app=smart_str(instance.package))
+            call_command('update_settings', smart_str(instance.package))
+            call_command('touch_settings')
+        except:
+            pass
 
 
 def post_save_pluginapp(sender, instance=None, created=False, **kwargs):
