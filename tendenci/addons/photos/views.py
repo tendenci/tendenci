@@ -492,7 +492,6 @@ def photos_batch_add(request, photoset_id=0):
     import uuid
     from tendenci.core.perms.object_perms import ObjectPermission
 
-
     # photoset permission required to add photos
     if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
@@ -523,7 +522,6 @@ def photos_batch_add(request, photoset_id=0):
                 'status_detail': 'active',
             })
             photo_form = PhotoUploadForm(request.POST, request.FILES, user=request.user)
-
             if photo_form.is_valid():
                 # save photo
                 photo = photo_form.save(commit=False)
@@ -574,7 +572,6 @@ def photos_batch_add(request, photoset_id=0):
     else:
         if not photoset_id:
             HttpResponseRedirect(reverse('photoset_latest'))
-
         photo_set = get_object_or_404(PhotoSet, id=photoset_id)
 
         # show the upload UI

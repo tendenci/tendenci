@@ -9,12 +9,14 @@ from django.core.urlresolvers import reverse
 
 class SWFUploadMiddleware(object):
     def process_request(self, request):
+        swf_cookie_name = settings.SWFUPLOAD_COOKIE_NAME
         if request.method == 'POST':
             if request.POST.has_key("photoset_id"):
                 photoset_id = int(request.POST["photoset_id"])
-                if (request.path == reverse('photos.views.photos_batch_add', args=[photoset_id])) and \
-                        request.POST.has_key(settings.SESSION_COOKIE_NAME):
-                    request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[settings.SESSION_COOKIE_NAME]
+                if (request.path == reverse('photos_batch_add', args=[photoset_id])) and \
+                        request.POST.has_key(swf_cookie_name):
+                    
+                    request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
                 if request.POST.has_key('csrftoken'):           
                     request.COOKIES["csrftoken"] = request.POST['csrftoken']
 
