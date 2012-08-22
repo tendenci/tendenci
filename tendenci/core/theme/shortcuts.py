@@ -4,7 +4,7 @@ from django.template.loader import find_template, find_template_loader, \
     get_template_from_string, select_template, make_origin
 from django.http import HttpResponse
 from django.conf import settings
-from tendenci.core.theme.utils import get_theme_template
+from tendenci.core.theme.utils import get_theme_template, get_theme_root
 
 non_theme_source_loaders = None
 
@@ -78,11 +78,6 @@ def render_to_theme(template_name, dictionary={}, context_instance=Context):
     This shorcut prepends the template_name given with the selected theme's
     directory
     """
-    import os
-    from tendenci.core.site_settings.utils import get_setting
-
-    theme_name = get_setting('module', 'theme_editor', 'theme')
-    theme_root = os.path.join(settings.THEMES_DIR, theme_name)
 
     context_instance.update(dictionary)
     toggle = 'TOGGLE_TEMPLATE' in context_instance
@@ -103,8 +98,9 @@ def render_to_theme(template_name, dictionary={}, context_instance=Context):
         else:
             try:
                 t, origin = get_template(theme_template)
-                if origin and re.search("^%s.+" % theme_root, origin.name):
+                if origin and re.search("^%s.+" % get_theme_root(), origin.name):
                     context_instance["CUSTOM_TEMPLATE"] = True
+
                 if 'homepage.html' in template_name:
                     context_instance["CUSTOM_TEMPLATE"] = False
 
