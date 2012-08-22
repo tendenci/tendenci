@@ -114,7 +114,7 @@ class ListNode(Node):
         if 'exclude' in self.kwargs:
             try:
                 exclude = Variable(self.kwargs['exclude'])
-                exclude = unicode(tags.resolve(context))
+                exclude = unicode(exclude.resolve(context))
             except:
                 exclude = self.kwargs['exclude']
 
