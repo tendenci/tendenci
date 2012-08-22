@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 from django.conf import settings
 
-from tendenci.addons.jobs.views import add, edit, print_view
-from tendenci.addons.culintro.forms import CulintroJobForm
-from tendenci.addons.culintro.models import CulintroJob
+from jobs.views import add, edit, print_view
+from culintro.forms import CulintroJobForm
+from culintro.models import CulintroJob
 
 urlpatterns = patterns('culintro.views',
     url(r'^culintro/$', 'search', name="culintro.search"),

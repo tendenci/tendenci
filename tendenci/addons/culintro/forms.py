@@ -4,14 +4,14 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
-from tendenci.addons.locations.models import Location
-from tendenci.core.categories.models import Category, CategoryItem
-from tendenci.addons.jobs.models import JobPricing
-from tendenci.addons.jobs.utils import get_payment_method_choices, pricing_choices
-from tendenci.addons.culintro.models import CulintroJob
-from tendenci.core.perms.forms import TendenciBaseForm
+from locations.models import Location
+from categories.models import Category, CategoryItem
+from jobs.models import JobPricing
+from jobs.utils import get_payment_method_choices, pricing_choices
+from culintro.models import CulintroJob
+from perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField
+from base.fields import SplitDateTimeField
 
 STATUS_DETAIL_CHOICES = (
     ('active', 'Active'),

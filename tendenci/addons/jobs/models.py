@@ -6,7 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.categories.models import CategoryItem
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
@@ -20,7 +19,7 @@ from tendenci.addons.jobs.module_meta import JobMeta
 from tendenci.apps.invoices.models import Invoice
 
 
-class Job(TendenciBaseModel):
+class BaseJob(TendenciBaseModel):
     guid = models.CharField(max_length=40)
     title = models.CharField(max_length=250)
     slug = SlugField(_('URL Path'), unique=True)
@@ -28,14 +27,14 @@ class Job(TendenciBaseModel):
     list_type = models.CharField(max_length=50)  # premium or regular
 
     code = models.CharField(max_length=50, blank=True)  # internal job-code
-    location = models.CharField(max_length=500)  # cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
+    location = models.CharField(max_length=500, null=True, blank=True)  # cannot be foreign, needs to be open 'Texas' 'All 50 States' 'US and International'
     skills = models.TextField(blank=True)
     experience = models.TextField(blank=True)
     education = models.TextField(blank=True)
     level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
     period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
     is_agency = models.BooleanField()  # defines if the job posting is by a third party agency
-    percent_travel = models.IntegerField()  # how much travel is required for the position
+    percent_travel = models.IntegerField(null=True, blank=True)  # how much travel is required for the position
 
     contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
     position_reports_to = models.CharField(max_length=200, blank=True)  # manager, CEO, VP, etc
@@ -45,7 +44,7 @@ class Job(TendenciBaseModel):
 
     # date related fields
     requested_duration = models.IntegerField()  # 30, 60, 90 days - should be relational table
-    pricing = models.ForeignKey('JobPricing', null=True) # selected pricing based on requested_duration
+    pricing = models.ForeignKey('JobPricing', null=True)  # selected pricing based on requested_duration
     activation_dt = models.DateTimeField(null=True, blank=True)  # date job listing was activated
     post_dt = models.DateTimeField(null=True, blank=True)  # date job was posted (same as create date?)
     expiration_dt = models.DateTimeField(null=True, blank=True)  # date job expires based on activation date and duration
@@ -90,27 +89,13 @@ class Job(TendenciBaseModel):
     objects = JobManager()
 
     class Meta:
-        permissions = (("view_job", "Can view job"),)
-        verbose_name = "Job"
-        verbose_name_plural = "Jobs"
-
-    def get_meta(self, name):
-        """
-        This method is standard across all models that are
-        related to the Meta model.  Used to generate dynamic
-        meta information niche to this model.
-        """
-        return JobMeta().get_meta(self, name)
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("job", [self.slug])
+        abstract = True
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
 
-        super(Job, self).save(*args, **kwargs)
+        super(BaseJob, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
@@ -131,8 +116,8 @@ class Job(TendenciBaseModel):
         """
         Make the accounting entries for the job sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from accountings.models import Acct, AcctEntry, AcctTran
+        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
@@ -180,6 +165,26 @@ class Job(TendenciBaseModel):
         return items
 
 
+class Job(BaseJob):
+
+    class Meta:
+        permissions = (("view_job", "Can view job"),)
+        verbose_name = "Job"
+        verbose_name_plural = "Jobs"
+
+    def get_meta(self, name):
+        """
+        This method is standard across all models that are
+        related to the Meta model.  Used to generate dynamic
+        meta information niche to this model.
+        """
+        return JobMeta().get_meta(self, name)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ("job", [self.slug])
+
+
 class JobPricing(models.Model):
     title = models.CharField(max_length=40, blank=True, null=True)
     guid = models.CharField(max_length=40)
@@ -196,20 +201,20 @@ class JobPricing(models.Model):
     owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True)
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
-    
+
     class Meta:
         permissions = (("view_jobpricing", "Can view job pricing"),)
-        
+
     def __unicode__(self):
         if self.title:
             return self.title
         return "Untitled: %s Days" % self.duration
-        
+
     def get_title(self):
         if self.title:
             return self.title
         return "Untitled"
-    
+
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -227,5 +232,5 @@ class JobPricing(models.Model):
             self.regular_price = 0
         if not self.premium_price:
             self.premium_price = 0
-        
+
         super(JobPricing, self).save(*args, **kwargs)

@@ -1,7 +1,7 @@
 from django.template import Node, Library, TemplateSyntaxError, Variable
 
-from tendenci.addons.culintro.models import CulintroJob
-from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
+from culintro.models import CulintroJob
+from base.template_tags import ListNode, parse_tag_kwargs
 
 register = Library()
 

@@ -1,6 +1,6 @@
-from tendenci.core.registry import site
-from tendenci.core.registry.base import PluginRegistry, lazy_reverse
-from tendenci.addons.culintro.models import CulintroJob
+from registry import site
+from registry.base import PluginRegistry, lazy_reverse
+from culintro.models import CulintroJob
 
 
 class CulintroJobRegistry(PluginRegistry):

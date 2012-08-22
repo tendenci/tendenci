@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from tendenci.core.event_logs.models import EventLog
-from tendenci.core.perms.utils import update_perms_and_save
-from tendenci.addons.culintro.models import CulintroJob
-from tendenci.addons.culintro.forms import CulintroJobForm
+from event_logs.models import EventLog
+from perms.utils import update_perms_and_save
+from culintro.models import CulintroJob
+from culintro.forms import CulintroJobForm
 
 class CulintroJobAdmin(admin.ModelAdmin):
     list_display = [u'title', 'view_on_site', 'edit_link', 'tags']

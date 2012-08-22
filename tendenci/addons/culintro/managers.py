@@ -1,4 +1,4 @@
-from tendenci.core.perms.managers import TendenciBaseManager
+from perms.managers import TendenciBaseManager
 
 class CulintroJobManager(TendenciBaseManager):
     """
