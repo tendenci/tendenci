@@ -7,22 +7,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Removing unique constraint on 'Page', fields ['meta']
-        db.delete_unique('pages_page', ['meta_id'])
 
         # Changing field 'Page.meta'
         db.alter_column('pages_page', 'meta_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['meta.Meta'], null=True))
 
-
     def backwards(self, orm):
-        
+
         # Changing field 'Page.meta'
         db.alter_column('pages_page', 'meta_id', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['meta.Meta'], unique=True, null=True))
-
-        # Adding unique constraint on 'Page', fields ['meta']
-        db.create_unique('pages_page', ['meta_id'])
-
 
     models = {
         'auth.group': {
