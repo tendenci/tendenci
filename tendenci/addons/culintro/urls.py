@@ -5,7 +5,7 @@ from jobs.views import add, edit, print_view
 from culintro.forms import CulintroJobForm
 from culintro.models import CulintroJob
 
-urlpatterns = patterns('culintro.views',
+urlpatterns = patterns('tendenci.addons.culintro.views',
     url(r'^culintro/$', 'search', name="culintro.search"),
     url(r'^culintro/print-view/(?P<slug>[\w\-\/]+)/$', print_view, name="culintro.print_view"),
     url(r'^culintro/add/$', add, kwargs={'form_class':CulintroJobForm,
