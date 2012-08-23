@@ -191,7 +191,6 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         # Setup formset html for json response
         file_list = []
         file_formset = FileFormSet(request.POST)
-        print 'total form count', file_formset.total_form_count()
         if file_formset.is_valid():
             file_formset.save()
         else:
