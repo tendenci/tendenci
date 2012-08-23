@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
+from django.conf import settings
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
@@ -24,6 +25,7 @@ from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingFor
 from tendenci.addons.directories.utils import directory_set_inv_payment
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
+from tendenci.addons.directories.utils import resize_s3_image
 
 
 def details(request, slug=None, template_name="directories/view.html"):
@@ -114,12 +116,13 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             pricing = form.cleaned_data['pricing']
 
             # resize the image that has been uploaded
-            try:
-                logo = Image.open(directory.logo.path)
-                logo.thumbnail((200,200),Image.ANTIALIAS)
-                logo.save(directory.logo.path)
-            except:
-                pass
+            if not  settings.USE_S3_STORAGE:
+                try:
+                    logo = Image.open(directory.logo.path)
+                    logo.thumbnail((200,200),Image.ANTIALIAS)
+                    logo.save(directory.logo.path)
+                except:
+                    pass
             
             if directory.payment_method: 
                 directory.payment_method = directory.payment_method.lower()
@@ -143,6 +146,9 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
             
+            if settings.USE_S3_STORAGE:
+                resize_s3_image(directory.logo.name)
+                        
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
 
@@ -195,12 +201,15 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             directory = update_perms_and_save(request, form, directory)
 
             # resize the image that has been uploaded
-            try:
-                logo = Image.open(directory.logo.path)
-                logo.thumbnail((200,200),Image.ANTIALIAS)
-                logo.save(directory.logo.path)
-            except:
-                pass
+            if settings.USE_S3_STORAGE:
+                resize_s3_image(directory.logo.name)
+            else:
+                try:
+                    logo = Image.open(directory.logo.path)
+                    logo.thumbnail((200,200),Image.ANTIALIAS)
+                    logo.save(directory.logo.path)
+                except:
+                    pass
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % directory)
                                                                          

@@ -1,10 +1,29 @@
 # settings - directoriespaymenttypes, directoriesrequirespayment
 from datetime import datetime
+from cStringIO import StringIO
+from PIL import Image
 from django.contrib.contenttypes.models import ContentType
 from tendenci.addons.directories.models import DirectoryPricing
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.libs.storage import get_default_storage
+
+
+def resize_s3_image(image_path):
+    """
+    Resize an image on s3. 
+    The image_path is the relative path to the media storage.
+    """
+    storage = get_default_storage()
+    f = storage.open(image_path)
+    content = f.read()
+    f.close()
+    img = Image.open(StringIO(content))
+    img.thumbnail((200,200),Image.ANTIALIAS)
+    f = storage.open(image_path, 'w')
+    img.save(f)
+    f.close()
 
 def get_duration_choices(user):
     currency_symbol = get_setting('site', 'global', 'currencysymbol')
