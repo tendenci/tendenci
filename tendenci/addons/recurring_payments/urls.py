@@ -4,7 +4,7 @@ from django.conf.urls.defaults import patterns, url, include
 urlpatterns = patterns('tendenci.addons.recurring_payments.views',
     url(r'^$', 'my_accounts',
          name="recurring_payment.my_accounts"),
-    (r'^authnet/', include('recurring_payments.authnet.urls')),
+    (r'^authnet/', include('tendenci.addons.recurring_payments.authnet.urls')),
     url(r'^(?P<recurring_payment_id>\d+)/$', 'view_account',
          name="recurring_payment.view_account"),
     url(r'^disable/(?P<rp_id>\d+)/$', 'disable_account',
