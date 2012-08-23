@@ -195,13 +195,13 @@ class CoreRegistry(Registry):
 
 class AppRegistry(Registry):
     """
-    Registry for plugin applications
+    Registry for addon applications
     """
     def __init__(self, model):
         super(AppRegistry, self).__init__(model)
 
         # application type
-        self.fields['app_type'] = 'plugin'
+        self.fields['app_type'] = 'addon'
 
 
 class PeopleRegistry(Registry):
@@ -214,14 +214,15 @@ class PeopleRegistry(Registry):
         # application type
         self.fields['app_type'] = 'people'
 
+
 class LogRegistry(Registry):
     """
     Registry for event log associated applications that are not
     classified as core, plugin or people.
     """
-    
+
     def __init__(self, model):
         super(LogRegistry, self).__init__(model)
-        
+
         # application type
         self.fields['app_type'] = 'log'

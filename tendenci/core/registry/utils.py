@@ -16,13 +16,13 @@ class RegisteredApps(object):
     apps = site.get_registered_apps()
 
     core_apps = registered_apps.core
-    plugin_apps = registered_apps.plugin
+    addon_apps = registered_apps.addon
     people_apps = registered_apps.people
     """
     def __init__(self, apps, build_from_cache=False):
         self.all_apps = []
         self.core = []
-        self.plugins = []
+        self.addons = []
         self.people = []
 
         # append core and plugin apps to
@@ -52,22 +52,22 @@ class RegisteredApps(object):
                         ])
                     })
 
-                if registry.fields['app_type'] == 'plugin':
-                    self.plugins.append(registry.fields)
+                if registry.fields['app_type'] == 'addon':
+                    self.addons.append(registry.fields)
 
                 if registry.fields['app_type'] == 'people':
                     self.people.append(registry.fields)
 
                 if registry.fields['app_type'] == 'core':
                     self.core.append(registry.fields)
-        
+
                 # append all apps for main iterable
                 self.all_apps.append(registry.fields)
         else:
             #since we can only cache the list of apps and not the RegisteredApps instance
             #we have to rebuild this object based on the list of apps from the cache.
             for app in apps:
-                
+
                 setting_tuple = (
                     'module',
                     app['model']._meta.app_label,
@@ -90,8 +90,8 @@ class RegisteredApps(object):
                         ])
                     })
 
-                if app['app_type'] == 'plugin':
-                    self.plugins.append(app)
+                if app['app_type'] == 'addon':
+                    self.addons.append(app)
 
                 if app['app_type'] == 'people':
                     self.people.append(app)
@@ -107,7 +107,7 @@ class RegisteredApps(object):
         key = lambda x: unicode(x)
         self.all_apps = sorted(self.all_apps, key=key)
         self.core = sorted(self.core, key=key)
-        self.plugins = sorted(self.plugins, key=key)
+        self.addons = sorted(self.addons, key=key)
         self.people = sorted(self.people, key=key)
 
     def __iter__(self):
@@ -115,4 +115,3 @@ class RegisteredApps(object):
 
     def __len__(self):
         return len(self.all_apps)
-        

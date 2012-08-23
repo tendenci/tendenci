@@ -8,7 +8,7 @@
     	<li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
         	<div class="sub">
             	<div class="column">
-            	<h4><a href="{% url dashboard %}">{% trans "Core" %}</a></h4>
+            	<h4><a href="{% url dashboard %}">{% trans "Apps" %}</a></h4>
                 	<div class="column app-list">  
                         {% for app in registered_apps.core %}
                             {% if app.enabled %}
@@ -32,10 +32,11 @@
                         {% endfor %}
                     </div>
                 </div>
-                {% if registered_apps.plugins %}
+                {% if registered_apps.addons %}
                 <div class="column app-list">
-                    <h4><a href="{% url admin:pluginmanager_pluginapp_changelist %}">{% trans "Apps" %}</a></h4>
-                    {% for app in registered_apps.plugins %}
+                    <h4><a href="{% url dashboard %}">{% trans "Addons" %}</a></h4>
+                    {% for app in registered_apps.addons %}
+                        {% if app.enabled %}
                         <ul>
                             <li class="app">
                                  <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">
@@ -52,6 +53,7 @@
                             <li><a href="{{ app.url.add }}" class="glyph plus" title="Add {{ app|title }}">&#43;</a></li>
                             {% endif %}
                         </ul>
+                        {% endif %}
                     {% endfor %}
                 </div>
                 {% endif %}
