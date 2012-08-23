@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import patterns, include
-from tendenci.apps.pluginmanager.settings import get_apps
+from tendenci.apps.pluginmanager.utils import get_addons
+
 
 def get_url_patterns():
     from django.conf import settings
     items = []
-    apps = get_apps(settings.PROJECT_ROOT)
-    for plugin in apps:
-        if plugin['is_installed'] and plugin['is_enabled']:
-            items.append((r'', include('%s.urls' % plugin['package'],)))
+    addons = get_addons(settings.DEFAULT_INSTALLED_APPS)
+    for addon in addons:
+        items.append((r'', include('%s.urls' % addon,)))
     return patterns('', *items)
     pass
