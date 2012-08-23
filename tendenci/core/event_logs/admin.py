@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from tendenci.core.event_logs.models import EventLog, EventLogColor, EventLogBaseColor
 
 class EventLogAdmin(admin.ModelAdmin):
@@ -21,6 +22,6 @@ class EventLogColorAdmin(admin.ModelAdmin):
 class EventLogBaseColorAdmin(EventLogColorAdmin):
     list_display = ['source', 'event_id', 'color']
 
-#admin.site.register(EventLog, EventLogAdmin)
-#admin.site.register(EventLogColor, EventLogColorAdmin)
-#admin.site.register(EventLogBaseColor, EventLogBaseColorAdmin)
+#admin_registry.site.register(EventLog, EventLogAdmin)
+#admin_registry.site.register(EventLogColor, EventLogColorAdmin)
+#admin_registry.site.register(EventLogBaseColor, EventLogBaseColorAdmin)

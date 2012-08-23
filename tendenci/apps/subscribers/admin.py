@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from tendenci.apps.subscribers.models import GroupSubscription, SubscriberData
 
 class DataAdmin(admin.TabularInline):
@@ -8,4 +9,4 @@ class DataAdmin(admin.TabularInline):
 class GroupSubAdmin(admin.ModelAdmin):
     inlines = (DataAdmin,)
     
-admin.site.register(GroupSubscription, GroupSubAdmin)
+#admin_registry.site.register(GroupSubscription, GroupSubAdmin)

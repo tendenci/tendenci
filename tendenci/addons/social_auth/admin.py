@@ -1,5 +1,6 @@
 """Admin settings"""
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 
 from tendenci.addons.social_auth.models import UserSocialAuth, Nonce, Association
 
@@ -26,6 +27,6 @@ class AssociationOption(admin.ModelAdmin):
     search_fields = ('server_url',)
 
 
-admin.site.register(UserSocialAuth, UserSocialAuthOption)
-admin.site.register(Nonce, NonceOption)
-admin.site.register(Association, AssociationOption)
+admin_registry.site.register(UserSocialAuth, UserSocialAuthOption)
+admin_registry.site.register(Nonce, NonceOption)
+admin_registry.site.register(Association, AssociationOption)

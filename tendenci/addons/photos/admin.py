@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from tendenci.addons.photos.models import Image, Pool
 from tendenci.addons.photos.forms import PhotoAdminForm
 from tendenci.core.event_logs.models import EventLog
@@ -84,4 +85,4 @@ class PhotoAdmin(admin.ModelAdmin):
 
         return instance
 
-admin.site.register(Image, PhotoAdmin)
+admin_registry.site.register(Image, PhotoAdmin)

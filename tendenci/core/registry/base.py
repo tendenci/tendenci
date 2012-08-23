@@ -1,8 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
-from django.contrib.admin import site as admin_site
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.core.registry import admin_registry
 from tendenci.core.registry.exceptions import *
 
 lazy_reverse = lazy(reverse, str)
@@ -170,7 +170,7 @@ class Registry(object):
         """
         Tests for django admin site registration
         """
-        for model in admin_site._registry.keys():
+        for model in admin_registry.site._registry.keys():
             if self.model is model:
                 return True
         return False

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
@@ -22,9 +23,9 @@ class EventAdmin(admin.ModelAdmin):
         'status_detail',
     )
 
-#admin.site.register(Event, EventAdmin)
-#admin.site.register(Type)
-#admin.site.register(Registrant)
+#admin_registry.site.register(Event, EventAdmin)
+#admin_registry.site.register(Type)
+#admin_registry.site.register(Registrant)
 
 class CustomRegFieldAdminForm(CustomRegFormForField):
     class Meta:
@@ -183,4 +184,4 @@ class CustomRegFormAdmin(admin.ModelAdmin):
         EventLog.objects.log(**log_defaults)
         
         
-admin.site.register(CustomRegForm, CustomRegFormAdmin)
+admin_registry.site.register(CustomRegForm, CustomRegFormAdmin)

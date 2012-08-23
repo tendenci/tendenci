@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -131,4 +132,4 @@ class CulintroJobAdmin(admin.ModelAdmin):
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
 
-admin.site.register(CulintroJob, CulintroJobAdmin)
+admin_registry.site.register(CulintroJob, CulintroJobAdmin)

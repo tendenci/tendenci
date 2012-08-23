@@ -10,6 +10,7 @@ from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.forms import build_settings_form
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.registry import site
 
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
@@ -110,3 +111,10 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
         form = build_settings_form(request.user, settings)()
         
     return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
+
+
+def addon_list(request, template_name="site_settings/addon_list.html"):
+
+    addon_list = site.get_registered_apps().addons
+
+    return render_to_response(template_name, {'addon_list': addon_list}, context_instance=RequestContext(request))
