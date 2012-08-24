@@ -114,15 +114,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         if form.is_valid():           
             directory = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
-
-            # resize the image that has been uploaded
-            if not  settings.USE_S3_STORAGE:
-                try:
-                    logo = Image.open(directory.logo.path)
-                    logo.thumbnail((200,200),Image.ANTIALIAS)
-                    logo.save(directory.logo.path)
-                except:
-                    pass
             
             if directory.payment_method: 
                 directory.payment_method = directory.payment_method.lower()
@@ -146,8 +137,17 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
             
-            if settings.USE_S3_STORAGE:
-                resize_s3_image(directory.logo.name)
+            # resize the image that has been uploaded
+            if directory.logo:
+                if settings.USE_S3_STORAGE:
+                    resize_s3_image(directory.logo.name)
+                else:
+                    try:
+                        logo = Image.open(directory.logo.path)
+                        logo.thumbnail((200,200),Image.ANTIALIAS)
+                        logo.save(directory.logo.path)
+                    except:
+                        pass                
                         
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
@@ -201,15 +201,16 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
             directory = update_perms_and_save(request, form, directory)
 
             # resize the image that has been uploaded
-            if settings.USE_S3_STORAGE:
-                resize_s3_image(directory.logo.name)
-            else:
-                try:
-                    logo = Image.open(directory.logo.path)
-                    logo.thumbnail((200,200),Image.ANTIALIAS)
-                    logo.save(directory.logo.path)
-                except:
-                    pass
+            if directory.logo:
+                if settings.USE_S3_STORAGE:
+                    resize_s3_image(directory.logo.name)
+                else:
+                    try:
+                        logo = Image.open(directory.logo.path)
+                        logo.thumbnail((200,200),Image.ANTIALIAS)
+                        logo.save(directory.logo.path)
+                    except:
+                        pass
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % directory)
                                                                          
