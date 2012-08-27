@@ -13,7 +13,12 @@ from tendenci.apps.entities.models import Entity
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 
-from tendenci.libs.abstracts.models import Person
+from tendenci.libs.abstracts.models import Person, Identity, Address
+
+
+# class Profile(Identity, Address):
+#     pass
+
 
 class Profile(Person):
     # relations
