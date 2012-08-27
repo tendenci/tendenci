@@ -114,3 +114,30 @@ class Person(TendenciBaseModel):
 
     class Meta:
         abstract = True
+
+
+class Address(models.Model):
+    """
+    The same set of fields that comes with a typical address
+    """
+    address = models.CharField(max_length=150, blank=True)
+    city = models.CharField(max_length=50, blank=True)
+    state = models.CharField(max_length=50, blank=True)
+    zipcode = models.CharField(max_length=50, blank=True)
+    county = models.CharField(max_length=50, blank=True)
+    country = models.CharField(max_length=50, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Identity(models.Model):
+    """
+    First name, last name, and email address
+    """
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+    email = models.EmailField(blank=True)
+
+    class Meta:
+        abstract = True
