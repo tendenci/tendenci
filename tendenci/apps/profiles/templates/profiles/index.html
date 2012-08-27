@@ -197,7 +197,7 @@
 
 		{% if user.profile.is_superuser %}
 		<div class="contribution info no-contribs">
-			{{ request.user.first_name }}, this person has not made any contributions yet.
+			{% firstof request.user.first_name request.user.username %}, this person has not made any contributions yet.
 		</div>
 		{% endif %}
 
