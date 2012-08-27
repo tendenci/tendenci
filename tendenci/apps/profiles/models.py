@@ -13,28 +13,19 @@ from tendenci.apps.entities.models import Entity
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
 
+from tendenci.libs.abstracts.models import Person
 
-class Profile(TendenciBaseModel):
+class Profile(Person):
     # relations
-    user = models.OneToOneField(User, related_name="profile", verbose_name=_('user'))
     guid = models.CharField(max_length=40)
     entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
-    member_number = models.CharField(_('member number'), max_length=50, blank=True)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
     # profile meta data
-    time_zone = TimeZoneField(_('timezone'))
-    language = models.CharField(_('language'), max_length=10, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
-    salutation = models.CharField(_('salutation'), max_length=15, blank=True, choices=(
-                                                                                      ('Mr.', 'Mr.'),
-                                                                                      ('Mrs.', 'Mrs.'),
-                                                                                      ('Ms.', 'Ms.'),
-                                                                                      ('Miss', 'Miss'),
-                                                                                      ('Dr.', 'Dr.'),
-                                                                                      ('Prof.', 'Prof.'),
-                                                                                      ('Hon.', 'Hon.'),
-                                                                                      ))
+    salutation = models.CharField(_('salutation'), max_length=15, 
+        blank=True, choices=(('Mr.', 'Mr.'),('Mrs.', 'Mrs.'),
+            ('Ms.', 'Ms.'),('Miss', 'Miss'),('Dr.', 'Dr.'),('Prof.', 'Prof.'),('Hon.', 'Hon.'),))
     initials = models.CharField(_('initials'), max_length=50, blank=True)
     display_name = models.CharField(_('display name'), max_length=120, blank=True)
     mailing_name = models.CharField(_('mailing name'), max_length=120, blank=True)
@@ -43,22 +34,13 @@ class Profile(TendenciBaseModel):
     position_assignment = models.CharField(_('position assignment'), max_length=50, blank=True)
     sex = models.CharField(_('sex'), max_length=50, blank=True, choices=(('male', u'Male'),('female', u'Female')))
     address_type = models.CharField(_('address type'), max_length=50, blank=True)
-    address = models.CharField(_('address'), max_length=150, blank=True)
-    address2 = models.CharField(_('address2'), max_length=100, default='', blank=True)
-    city = models.CharField(_('city'), max_length=50, blank=True)
-    state = models.CharField(_('state'), max_length=50, blank=True)
-    zipcode = models.CharField(_('zipcode'), max_length=50, blank=True)
-    country = models.CharField(_('country'), max_length=50, blank=True)
-    county = models.CharField(_('county'), max_length=50, blank=True)
-    phone = models.CharField(_('phone'), max_length=50, blank=True)
     phone2 = models.CharField(_('phone2'), max_length=50, blank=True)
     fax = models.CharField(_('fax'), max_length=50, blank=True)
     work_phone = models.CharField(_('work phone'), max_length=50, blank=True)
     home_phone = models.CharField(_('home phone'), max_length=50, blank=True)
     mobile_phone = models.CharField(_('mobile phone'), max_length=50, blank=True)
-    #email = models.CharField(_('email'), max_length=200,  blank=True)
+    # email in auth_user
     email2 = models.CharField(_('email2'), max_length=200,  blank=True)
-    url = models.CharField(_('url'), max_length=100, blank=True)
     url2 = models.CharField(_('url2'), max_length=100, blank=True)
     dob = models.DateTimeField(_('date of birth'), null=True, blank=True)
     ssn = models.CharField(_('social security number'), max_length=50, blank=True)
@@ -79,9 +61,6 @@ class Profile(TendenciBaseModel):
     first_responder = models.BooleanField(_('first responder'), default=False)
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
-
-    perms = generic.GenericRelation(ObjectPermission,
-        object_id_field="object_id", content_type_field="content_type")
 
     objects = ProfileManager()
     actives = ProfileActiveManager()
