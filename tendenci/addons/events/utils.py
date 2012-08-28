@@ -2,6 +2,7 @@
 # anonymous registration impementation of events in the registration module.
 
 import re
+import os.path
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
@@ -9,11 +10,12 @@ from django.db import connection
 from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
+from django.utils import simplejson
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
-    CustomRegForm, Addon, AddonOption)
+    CustomRegForm, Addon, AddonOption, CustomRegField)
 from tendenci.addons.events.forms import FormForCustomRegForm
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.discounts.models import Discount, DiscountUse
@@ -62,6 +64,36 @@ def get_ACRF_queryset(event=None):
     cursor.execute(sql)
     rows = cursor.fetchall()
     ids_list = [row[0] for row in rows]
+    
+    if not ids_list:
+        # no forms available, create one
+        initial = {"status": "active", 
+                   "name": "Default Custom Registration Form", 
+                   "notes": "This is a default custom registration form.", 
+                   "creator_id": 1, 
+                   "owner_id": 1, 
+                   "creator_username": "default", 
+                   "owner_username": "default"}
+
+        form = CustomRegForm.objects.create(**initial)
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 
+                                 'fixtures/customregfield.json')
+        with open(fixture_path) as f:
+            data = simplejson.loads(f.read())
+            map_to_fields = []
+            for regfield in data:
+                regfield['fields']['form'] = form
+                CustomRegField.objects.create(**regfield['fields'])
+                if regfield['fields'].has_key('map_to_field'):
+                    map_to_fields.append(regfield['fields']['map_to_field'])
+                
+            for field in map_to_fields:
+                if field and hasattr(form, str(field)):
+                    setattr(form, field, True)
+                    
+            form.save()
+            
+        ids_list = [form.id]
     
     queryset = CustomRegForm.objects.filter(id__in=ids_list)
 
