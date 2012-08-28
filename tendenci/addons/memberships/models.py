@@ -1453,14 +1453,16 @@ class AppEntry(TendenciBaseModel):
         # threshold price.
 
         (use_threshold, threshold_price) = self.get_corp_memb_threshold_price()
+        membership_price = self.get_memb_price()
+                
         if use_threshold:
             invoice.subtotal = threshold_price
             invoice.total = threshold_price
             invoice.balance = threshold_price
         else:
-            invoice.subtotal = self.membership_type.price
-            invoice.total = self.membership_type.price
-            invoice.balance = self.membership_type.price
+            invoice.subtotal = membership_price
+            invoice.total = membership_price
+            invoice.balance = membership_price
 
         invoice.due_date = datetime.now()  # TODO: change model field to null=True
         invoice.ship_date = datetime.now()  # TODO: change model field to null=True
@@ -1472,12 +1474,18 @@ class AppEntry(TendenciBaseModel):
 
         return invoice
 
+    def get_memb_price(self):
+        membership_price = self.membership_type.price
+        if self.membership_type.admin_fee:
+            membership_price = self.membership_type.price + self.membership_type.admin_fee
+        return membership_price
+
     def get_corp_memb_threshold_price(self):
         """
         get the threshold price for this individual.
         return tuple (use_threshold, threshold_price)
         """
-        from tendenci.addons.corporate_memberships.models import CorporateMembership
+        from corporate_memberships.models import CorporateMembership
         try:
             corp_memb = CorporateMembership.objects.get(id=self.corporate_membership_id)
         except CorporateMembership.DoesNotExist:
@@ -1487,7 +1495,9 @@ class AppEntry(TendenciBaseModel):
             allow_threshold = corp_memb.corporate_membership_type.apply_threshold
             threshold_limit = corp_memb.corporate_membership_type.individual_threshold
             threshold_price = corp_memb.corporate_membership_type.individual_threshold_price
-
+            if self.membership_type.admin_fee:
+                threshold_price = corp_memb.corporate_membership_type.individual_threshold_price + self.membership_type.admin_fee
+                
             if allow_threshold and threshold_limit and threshold_limit > 0:
                 # check how many memberships have joined under this corporate
                 field_entries = AppFieldEntry.objects.filter(
@@ -1499,7 +1509,7 @@ class AppEntry(TendenciBaseModel):
                     return True, threshold_price
 
         return False, None
-
+        
     def execute_field_functions(self):
         app = self.app
         fields = app.fields.exclude(field_function=None)

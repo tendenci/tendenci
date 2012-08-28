@@ -927,10 +927,18 @@ class AppEntryForm(forms.ModelForm):
                         membership_type = self.corporate_membership.corporate_membership_type.membership_type 
                         choices = [membership_type.name]
                         choices_with_price = ['%s $%s' % (membership_type.name, membership_type.price)]
+                        if membership_type.admin_fee:
+                            choices_with_price = ['%s $%s ($%s admin fee)' % (membership_type.name, membership_type.price, membership_type.admin_fee)]
                         field_args["choices"] = zip(choices, choices_with_price)
                     else:
                         choices = [type.name for type in app.membership_types.exclude(pk__in=exclude_types)]
-                        choices_with_price = ['%s $%s' % (type.name, type.price) for type in app.membership_types.exclude(pk__in=exclude_types)]
+                        choices_with_price = []
+                        for type in app.membership_types.exclude(pk__in=exclude_types):
+                            if type.admin_fee:
+                                type_label = '%s $%s ($%s admin fee)' % (type.name, type.price, type.admin_fee)
+                            else:
+                                type_label = '%s $%s' % (type.name, type.price)
+                            choices_with_price.append(type_label)
                         field_args["choices"] = zip(choices, choices_with_price)
 
                         if not self.user.profile.is_superuser:
