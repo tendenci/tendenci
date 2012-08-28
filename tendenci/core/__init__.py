@@ -12,6 +12,7 @@ def create_initial_superuser(sender, **kwargs):
         u.is_active = False
         u.is_staff = False
         u.is_superuser = False
+        u.set_unusable_password()
         u.save()
 
 signals.post_syncdb.disconnect(
