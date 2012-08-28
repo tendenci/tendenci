@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save
-from tendenci.addons.culintro.models import CulintroJob
+from tendenci.addons.culintro.models import CulintroJob, Location
 from tendenci.addons.culintro.forms import CulintroJobForm
 
 class CulintroJobAdmin(admin.ModelAdmin):
@@ -132,4 +132,8 @@ class CulintroJobAdmin(admin.ModelAdmin):
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
 
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ['city']
+
 admin_registry.site.register(CulintroJob, CulintroJobAdmin)
+admin.site.register(Location, LocationAdmin)

@@ -56,7 +56,6 @@
                 {% endif %}
                 {% if can_edit_job %}
                     <li><a href="{% url culintro.edit nav_object.pk %}">{% trans "Edit" %} {% firstof MODULE_JOBS_LABEL 'Job' %}</a></li>
-                    <li><a href="{% url job.edit.meta nav_object.pk %}">{% trans "Edit Meta" %}</a></li>
                     <li><a href="{% url category.update nav_object.opt_app_label job.opt_module_name nav_object.pk %}">{% trans "Edit Categories" %}</a></li>
                 {% endif %}
                 {% if can_delete_job %}

@@ -24,8 +24,6 @@ def detail(request, slug=None, template_name="culintro/view.html"):
     job = get_object_or_404(CulintroJob.objects.select_related(), slug=slug)
 
     can_view = has_view_perm(request.user, 'culintro_jobs.view_job', job)
-    
-    print job.categories.all().values()
 
     if can_view:
         EventLog.objects.log(instance=job)

@@ -4,11 +4,10 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 
-from tendenci.addons.locations.models import Location
 from tendenci.core.categories.models import Category, CategoryItem
 from tendenci.addons.jobs.models import JobPricing
 from tendenci.addons.jobs.utils import get_payment_method_choices, pricing_choices
-from tendenci.addons.culintro.models import CulintroJob
+from tendenci.addons.culintro.models import CulintroJob, Location
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
@@ -106,7 +105,12 @@ class CulintroJobForm(TendenciBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(CulintroJobForm, self).__init__(*args, **kwargs)
-
+        
+        if not self.user.profile.is_superuser:
+            del self.fields['expiration_dt']
+            del self.fields['activation_dt']
+            del self.fields['post_dt']
+        
         if self.user:
             if 'payment_method' in self.fields:
                 self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))

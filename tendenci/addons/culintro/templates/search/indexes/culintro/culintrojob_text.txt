@@ -5,12 +5,7 @@ by {{ object.creator }}
 by {{ object.object.creator.get_profile.display_name }}
 {{ object.description|striptags }}
 
-{{ object.code }}
-{{ object.level }}
-{{ object.period }}
-{{ object.contact_company }}
 {{ object.contact_name }}
-{{ object.contact_city }}
 
 location:{{ object.location_2 }}
 
