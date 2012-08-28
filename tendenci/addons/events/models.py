@@ -553,7 +553,9 @@ class Registration(models.Model):
         invoice.bill_to_city = primary_registrant.city
         invoice.bill_to_state = primary_registrant.state
         invoice.bill_to_zip_code = primary_registrant.zip
-        invoice.bill_to_country =  primary_registrant.country       
+        invoice.bill_to_country =  primary_registrant.country
+        invoice.creator_id = self.creator_id
+        invoice.owner_id = self.owner_id
 
         # update invoice with details
         invoice.title = "Registration %s for Event: %s" % (self.pk, self.event.title)
