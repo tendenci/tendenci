@@ -40,7 +40,7 @@ def prepare_payflowlink_form(request, payment):
               'statetoship': payment.ship_to_state,
               'ziptoship': payment.ship_to_zip,
               'countrytoship': payment.ship_to_country,
-              'comment1': smart_str(payment.description),
+              'comment1': smart_str(payment.description).replace('#', ''),
               'comment2': '%s %s' % (payment.first_name, payment.last_name), 
         
         }
