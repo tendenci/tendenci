@@ -1,8 +1,8 @@
 {% load theme_tags %}
 {% load event_tags %}
-{% list_events as featured_events limit=3 %}
+{% list_events as featured_events limit=TEMPLATE_EVENTS_LIST_DAYBOX_TITLE %}
 <section id="events-list">
-<h3>Upcoming Events</h3>
+<h3>{% firstof TEMPLATE_EVENTS_LIST_DAYBOX_TITLE "Upcoming Events" %}</h3>
     <ul>
     {% if featured_events %}
     {% for event in featured_events %}

@@ -3,8 +3,8 @@
 {% load i18n %}
 
 <section id="events-list">
-    <h3>{% firstof MODULE_JOBS_LABEL "Jobs" %}</h3>
-    {% list_jobs as jobs_list limit=3 %}
+    <h3>{% firstof TEMPLATE_JOBS_LIST_TITLE_LOCATION_TITLE "Jobs" %}</h3>
+    {% list_jobs as jobs_list limit=TEMPLATE_JOBS_LIST_TITLE_LOCATION_LIMIT %}
         {% for job in jobs_list %}
         <h4><a href="{{ job.get_absolute_url }}">{{ job.title }}</a></h4>
         <p>{{ job.location }} {{ job.description|safe|truncatewords:"10" }}</p>

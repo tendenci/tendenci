@@ -1,8 +1,8 @@
 {% load theme_tags %}
 {% load news_tags %}
-{% list_news as featured_news limit=8 %}
+{% list_news as featured_news limit=TEMPLATE_NEWS_FEATURED_OTHERS_LIMIT %}
 <section id="news-featured">
-    <h3>News</h3>
+    <h3>{% firstof TEMPLATE_NEWS_FEATURED_OTHERS_TITLE "News" %}</h3>
     
     {% if featured_news %}
     {% for news_item in featured_news|slice:":1" %}

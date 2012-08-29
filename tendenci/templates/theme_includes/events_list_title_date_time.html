@@ -3,8 +3,8 @@
 {% load i18n %}
 
 <section id="events-list">
-    <h3>{% trans "Upcoming Event" %}</h3>
-    {% list_events as events_list limit=5 %}
+    <h3>{% firstof TEMPLATE_EVENTS_LIST_TITLE_DATE_TIME_TITLE "Upcoming Events" %}</h3>
+    {% list_events as events_list limit=TEMPLATE_EVENTS_LIST_TITLE_DATE_TIME_LIMIT %}
     {% for event in events_list %}
         <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
         <p>{{ event.start_dt }}</p>
