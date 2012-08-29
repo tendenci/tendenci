@@ -120,7 +120,7 @@ class RegistrationConfiguration(models.Model):
     # TODO: do not use fixtures, use RAWSQL to prepopulate
     # TODO: set widget here instead of within form class
     payment_method = models.ManyToManyField(GlobalPaymentMethod)
-    payment_required = models.BooleanField(help_text='A payment required before registration is accepted.')
+    payment_required = models.BooleanField(help_text='A payment required before registration is accepted.', default=True)
 
     limit = models.IntegerField(_('Registration Limit'), default=0)
     enabled = models.BooleanField(_('Enable Registration'), default=False)
