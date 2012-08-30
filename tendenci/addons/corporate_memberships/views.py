@@ -1234,8 +1234,8 @@ def corp_export(request):
             corp_fields = CorpField.objects.filter(corp_app=corp_app).exclude(field_type__in=('section_break', 
                                                                'page_break')).order_by('order')
             label_list = [corp_field.label for corp_field in corp_fields]
-            extra_field_labels = ['Dues reps', 'Join Date', 'Expiration Date', 'Status', 'Status Detail']
-            extra_field_names = ['dues_reps', 'join_dt', 'expiration_dt', 'status', 'status_detail']
+            extra_field_labels = ['Dues reps', 'Join Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
+            extra_field_names = ['dues_reps', 'join_dt', 'expiration_dt', 'status', 'status_detail', 'invoice_id', 'total', 'balance']
             
             label_list.extend(extra_field_labels)
             label_list.append('\n')
@@ -1284,6 +1284,18 @@ def corp_export(request):
                                                                         is_dues_rep=True)
                         if dues_reps:
                             value = '; '.join(['%s (%s)' % (dues_rep.user.get_full_name(), dues_rep.user.username) for dues_rep in dues_reps])
+                    elif field == 'invoice_id':
+                        if corp_memb.invoice:
+                            invoice_id = corp_memb.invoice.id
+                            value = invoice_id
+                    elif field == 'total':
+                        if corp_memb.invoice:
+                            total = corp_memb.invoice.total
+                            value = "$%s" % total
+                    elif field == 'balance':
+                        if corp_memb.invoice:
+                            balance = corp_memb.invoice.balance
+                            value = "$%s" % balance
                     else:
                         value = getattr(corp_memb, field)
                         if field == 'expiration_dt' and (not corp_memb.expiration_dt):
@@ -1292,7 +1304,7 @@ def corp_export(request):
                     if (value_type is bool) or (value_type is long) or (value_type is int):
                         value = str(value)
                     data_row.append(value)
-                    
+                                        
                 data_row.append('\n')
                 data_row_list.append(data_row)
             EventLog.objects.log()
