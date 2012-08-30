@@ -9,42 +9,43 @@ from django.utils import simplejson as json
 
 class VersionManager(Manager):
     def save_version(self, old_instance, new_instance, **kwargs):
-        version = self.model()
+        if old_instance and new_instance:
+            version = self.model()
 
-        changes = []
-        for field in old_instance._meta.fields:
-            field = unicode(field.name)
-            if "create_dt" in field or "update_dt" in field:
-                continue
+            changes = []
+            for field in old_instance._meta.fields:
+                field = unicode(field.name)
+                if "create_dt" in field or "update_dt" in field:
+                    continue
 
-            if hasattr(old_instance, field):
-                old = getattr(old_instance, field)
-                new = getattr(new_instance, field)
-                if old != new:
-                    if hasattr(old, '_meta'):
-                        old = serializers.serialize('json', [old], ensure_ascii=False)
-                    if hasattr(new, '_meta'):
-                        new = serializers.serialize('json', [old], ensure_ascii=False)
-                    changes.append({
-                        "field": field,
-                        "old": old,
-                        "new": new,
-                    })
+                if hasattr(old_instance, field):
+                    old = getattr(old_instance, field)
+                    new = getattr(new_instance, field)
+                    if old != new:
+                        if hasattr(old, '_meta'):
+                            old = serializers.serialize('json', [old], ensure_ascii=False)
+                        if hasattr(new, '_meta'):
+                            new = serializers.serialize('json', [old], ensure_ascii=False)
+                        changes.append({
+                            "field": field,
+                            "old": old,
+                            "new": new,
+                        })
 
-        if changes:
-            version.content_type = ContentType.objects.get_for_model(old_instance)
-            version.object_id = old_instance.pk
-            version.object_repr = unicode(old_instance)[:50]
-            version.user = old_instance.owner
-            version.create_dt = old_instance.update_dt
-            version.hash = str(uuid.uuid1())
+            if changes:
+                version.content_type = ContentType.objects.get_for_model(old_instance)
+                version.object_id = old_instance.pk
+                version.object_repr = unicode(old_instance)[:50]
+                version.user = old_instance.owner
+                version.create_dt = old_instance.update_dt
+                version.hash = str(uuid.uuid1())
 
-            version.object_changes = json.dumps(changes, cls=DjangoJSONEncoder)
+                version.object_changes = json.dumps(changes, cls=DjangoJSONEncoder)
 
-            object_json = serializers.serialize('json', [old_instance], ensure_ascii=False)
-            object_value = object_json[1:-1]
-            version.object_value = object_value
-            version.save()
+                object_json = serializers.serialize('json', [old_instance], ensure_ascii=False)
+                object_value = object_json[1:-1]
+                version.object_value = object_value
+                version.save()
 
-            return version
+                return version
         return None
