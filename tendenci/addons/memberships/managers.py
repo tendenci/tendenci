@@ -1,9 +1,10 @@
 import operator
-from haystack.query import SearchQuerySet
 
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
+
+from haystack.query import SearchQuerySet
 
 from tendenci.core.perms.managers import TendenciBaseManager
 from tendenci.core.site_settings.utils import get_setting
@@ -259,7 +260,7 @@ class MembershipManager(Manager):
 
         kwargs['status'] = kwargs.get('status', True)
         kwargs['status_detail'] = kwargs.get('status_detail', 'active')
-        
+
         order = kwargs.get('order_by', 'pk')
         if 'order_by' in kwargs:
             kwargs.pop('order_by')
@@ -298,7 +299,6 @@ class MembershipManager(Manager):
         """
         from datetime import datetime
         kwargs['status'] = kwargs.get('status', True)
-        kwargs['status_detail'] = kwargs.get('status_detail', 'active')
         return self.filter(expire_dt__lte=datetime.now(), **kwargs)
 
     def corp_roster_search(self, query=None, *args, **kwargs):

@@ -14,8 +14,21 @@ from tendenci.addons.memberships.importer.utils import parse_mems_from_csv, clea
 class ImportMembershipsTask(Task):
 
     def run(self, memport, fields, **kwargs):
+        """
+        Require username or email address
+        We use this to find the user record
+        and membership record
+        """
         from django.template.defaultfilters import slugify
         from tendenci.addons.memberships.utils import get_user
+
+        payment_methods = {
+            'cc': 1,
+            'credit': 1,
+            'credit card': 1,
+            'check': 2,
+            'cash': 3
+        }
 
         app = memport.app
         file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
@@ -29,31 +42,40 @@ class ImportMembershipsTask(Task):
         )
 
         for m in mems:
+
+            # membership type required
+            if not m['membershiptype']:
+                continue  # on to the next one
+
+            # username or email required
+            if not any([m['username'], m['email']]):
+                continue  # on to the next one
+
             if m['status__action'] != 'skip':
-                # membership type exists; we have tested; can add more tests here
                 membership_type = MembershipType.objects.get(name=m['membershiptype'])
 
                 # initialize dates
                 expire_dt = m['expiredt']
                 subscribe_dt = m['subscribedt']
 
-                payment_methods = {
-                    'cc': 1,
-                    'credit': 1,
-                    'credit card': 1,
-                    'check': 2,
-                    'cash': 3
-                }
-
                 # get payment method id; assumes default payment methods
                 payment_method = slugify(m.get('paymentmethod', '')).replace('-', '')
                 payment_method_id = payment_methods.get(payment_method)
 
-                user = get_user(username=m['username'])
+                # returns None if a user was not found
+                # returns the first user made if multiple are returned
+                user = None
 
-                if not user:  # then email
-                    m['username'] = spawn_username(m['email'])
-                    user = User.objects.create_user(m['username'], m['email'])
+                if m['username']:
+                    user = get_user(username=m['username'])
+
+                if not user:
+                    try:  # we make you a username via your email
+                        m['username'] = spawn_username(m['email'])
+                        user = User.objects.create_user(m['username'], m['email'])
+                    except:
+                        # username already exists
+                        continue  # on to the next one
 
                 # get or create profile
                 try:
@@ -63,6 +85,7 @@ class ImportMembershipsTask(Task):
                 except Profile.DoesNotExist:
                     profile = Profile.objects.create_profile(user)
 
+                # update user and profile object with imported information
                 if memport.override:
                     user.first_name = m.get('firstname', '') or user.first_name
                     user.last_name = m.get('lastname', '') or user.last_name
@@ -79,7 +102,6 @@ class ImportMembershipsTask(Task):
                     profile.work_phone = m.get('workphone', '') or profile.work_phone
                     profile.home_phone = m.get('homephone', '') or profile.home_phone
                     profile.mobile_phone = m.get('mobilephone', '') or profile.mobile_phone
-                    #profile.email = user.email
                     profile.email2 = m.get('email2', '') or profile.email2
                     profile.url = m.get('website', '') or profile.url
                     profile.dob = dt_parse(m.get('dob', ''))
@@ -99,7 +121,6 @@ class ImportMembershipsTask(Task):
                     profile.work_phone = profile.work_phone or m.get('workphone', '')
                     profile.home_phone = profile.home_phone or m.get('homephone', '')
                     profile.mobile_phone = profile.mobile_phone or m.get('mobilephone', '')
-                    #profile.email = user.email or m.get('email', '')
                     profile.email2 = profile.email2 or m.get('email2', '')
                     profile.url = profile.url or m.get('website', '')
                     profile.dob = profile.dob or dt_parse(m.get('dob', ''))
@@ -107,17 +128,29 @@ class ImportMembershipsTask(Task):
                 user.save()
                 profile.save()
 
-                # get or create membership
-                # relation does not hold unique constraints
-                # so we assume the first hit is the correct membership
-                # if it exists.
-                memberships = Membership.objects.active(
-                    user=user,
-                    membership_type=membership_type,
-                )  # oldest on top
+                if expire_dt > datetime.now():
+                    # if expiration date after today
+                    # then look for active memberships
+                    memberships = Membership.objects.active(
+                        user=user,
+                        membership_type=membership_type,
+                    ).order_by('-pk')  # newest on top
+                else:
+                    # if expiration date before today
+                    # then look for inactive memberships
+                    memberships = Membership.objects.expired(
+                        user=user,
+                        membership_type=membership_type,
+                    ).order_by('-pk')  # newest on top
 
                 if memberships:
                     membership = memberships[0]
+
+                    if memport.override:
+                        membership.member_number = m.get('membernumber') or membership.member_number
+                        membership.subscribe_dt = subscribe_dt or membership.subscribe_dt
+                        membership.expire_dt = expire_dt or membership.expire_dt
+
                 else:
                     membership = Membership()
                     membership.ma = app
@@ -134,6 +167,7 @@ class ImportMembershipsTask(Task):
                     membership.expire_dt = expire_dt
 
                 membership.save()  # update_dt changes
+                profile.refresh_member_number()
 
                 # bind corporate membership with membership if it exists
                 corp_memb_name = m.get('corpmembershipname')
@@ -195,7 +229,10 @@ class ImportMembershipsTask(Task):
                     entry_item = d['item'] or AppFieldEntry()
                     field_name = slugify(k).replace('-', '')
                     field_name = clean_field_name(field_name).replace('_', '').strip()
-                    imported_value = m.get(field_name, u'').strip()
+                    imported_value = m.get(field_name, u'')
+
+                    if isinstance(imported_value, basestring):
+                        imported_value = imported_value.strip()
 
                     if not entry_item.pk:
                         entry_item.entry = entry
@@ -214,7 +251,13 @@ class ImportMembershipsTask(Task):
 
                 # update membership number
                 if not membership.member_number:
-                    membership.member_number = AppEntry.objects.count() + 1000
+                    # all of this to get the largest membership number
+                    newest_membership = Membership.objects.order_by('-pk')
+                    if newest_membership:
+                        membership.member_number = newest_membership[0].pk + 1000
+                    else:
+                        membership.member_number = 1000
+
                     membership.save()
 
                 # add user to group

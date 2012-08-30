@@ -68,11 +68,18 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
     key = membership_import.key  # for determining duplicates
     override = membership_import.override  # override changed fields
 
-    csv_dicts = csv_to_dict(file_path, machine_name=True)
-    membership_dicts = []
+    if override:
+        update_override = 'override'
+    else:
+        update_override = 'update'
 
-    updated = 0
-    skipped = 0
+    csv_dicts = csv_to_dict(file_path, machine_name=True)
+
+    # membership lists
+    total = []
+    added = []
+    updated = []
+    skipped = []
 
     for csv_dict in csv_dicts:  # field mapping
 
@@ -82,6 +89,12 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
             if csv_field:  # skip blank option
                 # membership['username'] = 'charliesheen'
                 m[clean_field_name(app_field)] = csv_dict.get(csv_field, '')
+
+        # remove empty keys
+        m = dict( [(k,v) for k,v in m.items() if len(v)>0])
+
+        if not m:  # empty row in imported file
+            continue  # on to the next one
 
         user_keys = ['username', 'firstname', 'lastname', 'email']
         for user_key in user_keys:
@@ -95,33 +108,36 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         m['status__action'] = 'add'
 
         # set up user kwargs from mapping
-        user_kwargs = {}
+        keys = {}
         for i in key.split(','):
-            user_kwargs[i] = m[i.replace('_', '')]
+            keys[i] = m[i.replace('_', '')]
+
         if 'username' in kwargs:
             kwargs['username'] = kwargs['username'][:30]
 
-        # try to match a user to the user kwargs
+        # remove empty keys
+        keys = dict( [(k,v) for k,v in keys.items() if len(v)>0])
+
         user = None
-        if not is_blank(user_kwargs):
-            if key == 'member_number':
-                membership = Membership.objects.first(**user_kwargs)
-                user = membership.user
-            else:
-                user = get_user(**user_kwargs)
+        if 'member_number' in keys:
+            membership = Membership.objects.first(**keys)
+            user = membership.user
+        elif keys:  # first name, last name, email
+            user = get_user(**keys)
+
         if not user and m['username']:
             user = get_user(username=m['username'][:30])
 
         # if a user is found, determine if override or update
         if user:
             if override:
-                m['status__action'] = 'override'
+                m['status__action'] = update_override
                 m['username'] = m['username'] or user.username
                 m['firstname'] = m['firstname'] or user.first_name
                 m['lastname'] = m['lastname'] or user.last_name
                 m['email'] = m['email'] or user.email
             else:
-                m['__update'] = 'update'
+                m['status__action'] = update_override
                 m['username'] = user.username or m['username']
                 m['firstname'] = user.first_name or m['firstname']
                 m['lastname'] = user.last_name or m['lastname']
@@ -139,14 +155,12 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
             m['status__action'] = 'skip'
             m['status__reason'] = 'invalid membership type'
             membership_type = None
-            skipped = skipped + 1
 
         # if it's not skipped yet
         if m['status__action'] != 'skip':
             # check if there is a corresponding user or an email
             if not user and not m['email']:  # email required to create user
                 m['status__action'] = 'skip'
-                skipped = skipped + 1
 
         # if it's still not skipped
         if m['status__action'] != 'skip':
@@ -158,11 +172,9 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
                 if is_duplicate(csv_dict, csv_dicts, key):
                     m['status__action'] = 'skip'
                     m['status__reason'] = 'duplicate'
-                    skipped = skipped + 1
                 # consider as update if already exists and is not yet skipped
                 if membership_exists and m['status__action'] != 'skip':
-                    m['status__action'] = 'update'
-                    updated = updated + 1
+                    m['status__action'] = update_override
 
         if m['joindate']:
             dt = dt_parse(m['joindate'])
@@ -186,14 +198,22 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
                 )
 
         m['subscribedt'] = m['joindt'] or datetime.now()
-        membership_dicts.append(m)
 
-    total = len(membership_dicts)
+        # make lists of memberships
+        total.append(m)
+        if m['status__action'] == 'skip':
+            skipped.append(m)
+        elif m['status__action'] == 'add':
+            added.append(m)
+        elif m['status__action'] == update_override:
+            updated.append(m)
+
     stats = {
-        'all': total,
-        'skipped': skipped,
-        'added': total - (updated + skipped),
-        'updated': updated,
+        'all': len(total),
+        'skipped': len(skipped),
+        'added': len(added),
+        'updated': len(updated),
     }
 
-    return membership_dicts, stats
+    # return "total" list of memberships & stats
+    return total, stats

@@ -35,7 +35,7 @@ class UploadForm(forms.Form):
 
     interactive = forms.CharField(
         widget=forms.RadioSelect(choices=INTERACTIVE_CHOICES),
-        initial=0
+        initial=1
     )
     override = forms.CharField(
         widget=forms.RadioSelect(choices=OVERRIDE_CHOICES),

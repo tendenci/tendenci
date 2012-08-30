@@ -1203,7 +1203,12 @@ class AppEntry(TendenciBaseModel):
         if memberships:
             member_number = memberships[0].member_number
         else:
-            member_number = self.app.entries.count() + 1000
+            # all of this to get the largest membership number
+            newest_membership = Membership.objects.order_by('-pk')
+            if newest_membership:
+                member_number = newest_membership[0].pk + 1000
+            else:
+                member_number = 1000
 
         membership = Membership.objects.create(**{
             'member_number': member_number,

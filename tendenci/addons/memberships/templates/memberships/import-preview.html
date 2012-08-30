@@ -10,21 +10,21 @@
 {{ block.super }}
     <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
     <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships-import-preview.css">
-
 {% endblock %}
 
 {% block body %}
 
 <div id="import-wrap" class="preview">
     
-	<h1>{% trans "Membership Import Preview" %}</h1>
+    <h1>{% trans "Membership Import Preview" %}</h1>
     
-	<p class="timestamp">{% trans "Step 3/4" %} &middot; {{ datetime.now }}</p>
+    <p class="timestamp">{% trans "Step 3/4" %} &middot; {{ datetime.now }}</p>
     
-	<p class="msg">
+    <p class="msg">
         <em>{{ stats.all }}</em> membership{{ stats.all|pluralize }};
         <em>{{ stats.added }}</em> will be added,
-        <em>{{ stats.updated }}</em> will be updated,
+        <em>{{ stats.updated }}</em> will be 
+        {% if memport.override %}overridden,{% else %}updated,{% endif %}
         and <em>{{ stats.skipped }}</em> will be skipped.</p>
         <em><a title="Looks good!" href="{% url membership_import_confirm memport.id %}" id="import-confirm">Import Now &rarr;</a></em>
     </p>
@@ -47,7 +47,12 @@
                     <td>{{ forloop.counter }}</td>
                     <td><div>
                             {% if membership.fullname %}
-                                {{ membership.fullname }}
+                                {% if membership.username %}
+                                <a href="{% url profile membership.username %}">
+                                    {{ membership.fullname }}</a>
+                                {% else %}
+                                    {{ membership.fullname }}
+                                {% endif %}
                             {% else %}
                                 {% trans "No Name" %}
                             {% endif %}
@@ -77,13 +82,13 @@
 
 {% block extra_body %}
 <script type="text/javascript">
-	$(document).ready(function(){
-		// import submit
+    $(document).ready(function(){
+        // import submit
         // this is used to resubmit the mapping form on confirmation
-		$('#import-confirm').click(function(){
-			$('#mapping-form').submit();
-			return false;	// cancel
-		});
-	});
+        $('#import-confirm').click(function(){
+            $('#mapping-form').submit();
+            return false;   // cancel
+        });
+    });
 </script>
 {% endblock %}

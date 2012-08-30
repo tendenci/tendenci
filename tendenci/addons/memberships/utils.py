@@ -16,7 +16,7 @@ from tendenci.addons.memberships.models import App, AppField, AppEntry, Membersh
 
 def get_default_membership_fields(use_for_corp=False):
     json_file_path = os.path.join(settings.TENDENCI_ROOT,
-        'apps/memberships/fixtures/default_membership_application_fields.json')
+        'addons/memberships/fixtures/default_membership_application_fields.json')
     json_file = open(json_file_path, 'r')
     data = ''.join(json_file.read())
     json_file.close()
@@ -40,7 +40,7 @@ def get_default_membership_fields(use_for_corp=False):
 
 def get_default_membership_corp_fields():
     json_file_path = os.path.join(settings.TENDENCI_ROOT,
-        'apps/memberships/fixtures/default_membership_application_fields_for_corp.json')
+        'addons/memberships/fixtures/default_membership_application_fields_for_corp.json')
     json_file = open(json_file_path, 'r')
     data = ''.join(json_file.read())
     json_file.close()
