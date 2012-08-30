@@ -2,8 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+from django.contrib.contenttypes.models import ContentType
 
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.versions.models import Version
 
 
 # Abstract base class for authority fields
@@ -33,6 +35,12 @@ class TendenciBaseModel(models.Model):
     def opt_module_name(self):
         return self._meta.module_name
 
+    def content_type(self):
+        return ContentType.objects.get_for_model(self)
+
+    def content_type_id(self):
+        return ContentType.objects.get_for_model(self).pk
+
     @property
     def obj_perms(self):
         from tendenci.core.perms.fields import has_groups_perms
@@ -61,7 +69,7 @@ class TendenciBaseModel(models.Model):
             else:
                 value = t % (obj.status_detail, obj.status_detail.capitalize())
         else:
-            value = t % ('inactive','Inactive')
+            value = t % ('inactive', 'Inactive')
 
         return mark_safe(value)
 
@@ -74,6 +82,13 @@ class TendenciBaseModel(models.Model):
             if log:
                 application = self.__module__
                 EventLog.objects.log(instance=self, application=application)
+
+            # Save a version of this content.
+            try:
+                Version.objects.save_version(self.__class__.objects.get(pk=self.pk), self)
+            except Exception as e:
+                print "version error: ", e
+
         if "log" in kwargs:
             kwargs.pop('log')
         super(TendenciBaseModel, self).save(*args, **kwargs)

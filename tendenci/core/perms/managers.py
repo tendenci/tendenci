@@ -514,7 +514,7 @@ class TendenciBaseManager(models.Manager):
         return user
 
     def _permissions_sqs(self, sqs, user, status, status_detail, **kwargs):
-        if user.profile.is_superuser:
+        if user.is_authenticated() and user.profile.is_superuser:
             sqs = sqs.all()
         else:
             if user.is_anonymous():

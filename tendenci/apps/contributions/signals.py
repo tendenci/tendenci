@@ -3,6 +3,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from tendenci.apps.contributions.models import Contribution
 
+
 def save_contribution(sender, **kwargs):
     instance = kwargs['instance']
 
@@ -28,15 +29,15 @@ def save_contribution(sender, **kwargs):
         contrib.object_id = instance.id
         contrib.creator = instance.owner
 
-    title_attrs = (
-        'title',
-        'headline',
-        'name',
-    )
-    for attr in title_attrs:
-        if hasattr(instance, attr):
-            contrib.title = getattr(instance, attr, '')
-            break
+        title_attrs = (
+            'title',
+            'headline',
+            'name',
+        )
+        for attr in title_attrs:
+            if hasattr(instance, attr):
+                contrib.title = getattr(instance, attr, '')
+                break
 
-    contrib.owner = instance.owner
-    contrib.save()
+        contrib.owner = instance.owner
+        contrib.save()

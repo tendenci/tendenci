@@ -367,10 +367,11 @@ def swfupload(request):
             file.owner = request.user
             file.creator = request.user
             file.is_public = True
+            file.status = True
             file.allow_anonymous_view = True
             file.save()
         except Exception, e:
-            print e           
+            print e
 
         d = {
             "id" : file.id,
@@ -416,18 +417,20 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
             file_type = form.cleaned_data['file_type']
 
     event_logs = EventLog.objects.values('object_id').filter(
-        event_id__in=(185000,186000), create_dt__range=(start_dt, end_dt))
+        event_id__in=(185000, 186000), create_dt__range=(start_dt, end_dt))
+    event_logs = event_logs | EventLog.objects.values('object_id').filter(
+        application='files', action='details', create_dt__range=(start_dt, end_dt))
 
     if file_type != 'all':
         event_logs = event_logs.filter(event_data__icontains=file_type)
 
-    event_logs =event_logs.annotate(count=Count('object_id'))
+    event_logs = event_logs.annotate(count=Count('object_id')).order_by('-count')
 
     EventLog.objects.log()
 
     return render_to_response(template_name, {
         'form': form,
-        'event_logs':event_logs
+        'event_logs': event_logs
         }, context_instance=RequestContext(request))
 
 def display_less(request, path):

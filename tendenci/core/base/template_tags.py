@@ -124,24 +124,33 @@ class ListNode(Node):
         # get the list of items
         self.perms = getattr(self, 'perms', unicode())
 
-        filters = get_query_filters(user, self.perms)
-        items = self.model.objects.filter(filters).distinct()
+        # Only use the search index if there is a query passed
+        if query:
+            for tag in tags:
+                tag = tag.strip()
+                query = '%s "tag:%s"' % (query, tag)
 
-        if tags:  # tags is a comma delimited list
-            # this is fast; but has one hole
-            # it finds words inside of other words
-            # e.g. "prev" is within "prevent"
-            tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
-            tag_queries += [Q(tags__istartswith=t.strip()+",") for t in tags]
-            tag_queries += [Q(tags__iendswith=", "+t.strip()) for t in tags]
-            tag_queries += [Q(tags__iendswith=","+t.strip()) for t in tags]
-            tag_queries += [Q(tags__icontains=", "+t.strip()+",") for t in tags]
-            tag_queries += [Q(tags__icontains=","+t.strip()+",") for t in tags]
-            tag_query = reduce(or_, tag_queries)
-            items = items.filter(tag_query)
+            items = self.model.objects.search(user=user, query=query)
+
+        else:
+            filters = get_query_filters(user, self.perms)
+            items = self.model.objects.filter(filters).distinct()
+
+            if tags:  # tags is a comma delimited list
+                # this is fast; but has one hole
+                # it finds words inside of other words
+                # e.g. "prev" is within "prevent"
+                tag_queries = [Q(tags__iexact=t.strip()) for t in tags]
+                tag_queries += [Q(tags__istartswith=t.strip() + ",") for t in tags]
+                tag_queries += [Q(tags__iendswith=", " + t.strip()) for t in tags]
+                tag_queries += [Q(tags__iendswith="," + t.strip()) for t in tags]
+                tag_queries += [Q(tags__icontains=", " + t.strip() + ",") for t in tags]
+                tag_queries += [Q(tags__icontains="," + t.strip() + ",") for t in tags]
+                tag_query = reduce(or_, tag_queries)
+                items = items.filter(tag_query)
 
         objects = []
-        
+
         if items:
             #exclude certain primary keys
             if exclude:
@@ -149,7 +158,10 @@ class ListNode(Node):
                 for ex in exclude:
                     if ex.isdigit():
                         excludes.append(int(ex))
-                items = items.exclude(pk__in=excludes)
+                if query:
+                    items = items.exclude(primary_key__in=excludes)
+                else:
+                    items = items.exclude(pk__in=excludes)
 
             # if order is not specified it sorts by relevance
             if order:
@@ -160,16 +172,19 @@ class ListNode(Node):
             else:
                 objects = [item for item in items[:limit]]
 
+            if query:
+                objects = [item.object for item in objects]
+
         context[self.context_var] = objects
-        
+
         if 'template' in self.kwargs:
             try:
                 template = Variable(self.kwargs['template'])
                 template = unicode(template.resolve(context))
             except:
                 template = self.kwargs['template']
-                
+
             t = loader.get_template(template)
             return t.render(Context(context, autoescape=context.autoescape))
-            
+
         return ""
