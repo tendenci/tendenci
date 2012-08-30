@@ -2,10 +2,11 @@ import os
 import csv
 from datetime import datetime, date, timedelta
 
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
 from django.conf import settings
 from django.utils import simplejson
 from django.contrib.auth.models import User
+from django.template import loader
 from django.template.defaultfilters import slugify
 from django.db.models import Q
 
@@ -507,3 +508,17 @@ def make_csv(**kwargs):
 
 class NoMembershipTypes(Exception):
     pass
+
+class ExceededMaxTypes(Exception):
+    pass
+
+def render_to_max_types(*args, **kwargs):
+    if not isinstance(args,list):
+        args = []
+        args.append('memberships/max_types.html')
+
+    httpresponse_kwargs = {'mimetype': kwargs.pop('mimetype', None)}
+
+    response = HttpResponseServerError(loader.render_to_string(*args, **kwargs), **httpresponse_kwargs)
+    
+    return response

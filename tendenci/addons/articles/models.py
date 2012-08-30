@@ -74,6 +74,10 @@ class Article(TendenciBaseModel):
     def get_absolute_url(self):
         return ("article", [self.slug])
 
+    @models.permalink
+    def get_version_url(self, hash):
+        return ("article.version", [hash])
+
     def __unicode__(self):
         return self.headline
 

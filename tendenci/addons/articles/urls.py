@@ -17,5 +17,6 @@ urlpatterns = patterns('tendenci.addons.articles.views',
     url(r'^%s/feed/$' % urlpath, LatestEntriesFeed(), name='article.feed'),
     url(r'^%s/export/$' % urlpath, 'export', name='article.export'),
     url(r'^%s/reports/rank/$' % urlpath, 'articles_report', name='reports-articles'),
+    url(r'^%s/versions/(?P<hash>[\w\-]+)/$' % urlpath, 'detail', name="article.version"),
     url(r'^%s/(?P<slug>[\w\-\/]+)/$' % urlpath, 'detail', name="article"),
 )

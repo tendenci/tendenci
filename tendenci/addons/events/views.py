@@ -190,12 +190,15 @@ def search(request, redirect=False, template_name="events/search.html"):
         context_instance=RequestContext(request)
     )
 
+
 def icalendar(request):
     import os
     from tendenci.settings import MEDIA_ROOT
     from tendenci.addons.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
     d = {}
+    file_name = ''
+    ics_str = ''
 
     d['site_url'] = get_setting('site', 'global', 'siteurl')
     match = p.search(d['site_url'])
@@ -203,21 +206,22 @@ def icalendar(request):
         d['domain_name'] = match.group(3)
     else:
         d['domain_name'] = ""
-        
+
     if request.user.is_authenticated():
         file_name = 'ics-%s.ics' % (request.user.pk)
-        
+
     absolute_directory = os.path.join(MEDIA_ROOT, 'files/ics')
     if not os.path.exists(absolute_directory):
         os.makedirs(absolute_directory)
 
-    file_path = os.path.join(absolute_directory, file_name)
-    # Check if ics file exists
-    if os.path.isfile(file_path):
-		ics = open(file_path, 'r+')
-		ics_str = ics.read()
-		ics.close()
-    else:
+    if file_name:
+        file_path = os.path.join(absolute_directory, file_name)
+        # Check if ics file exists
+        if os.path.isfile(file_path):
+            ics = open(file_path, 'r+')
+            ics_str = ics.read()
+            ics.close()
+    if not ics_str:
         ics_str = "BEGIN:VCALENDAR\n"
         ics_str += "PRODID:-//Schipul Technologies//Schipul Codebase 5.0 MIMEDIR//EN\n"
         ics_str += "VERSION:2.0\n"
@@ -226,7 +230,7 @@ def icalendar(request):
         # function get_vevents in events.utils
         ics_str += get_vevents(request.user, d)
 
-        ics_str += "END:VCALENDAR\n"   
+        ics_str += "END:VCALENDAR\n"
     response = HttpResponse(ics_str)
     response['Content-Type'] = 'text/calendar'
     if d['domain_name']:
@@ -235,6 +239,7 @@ def icalendar(request):
         file_name = "event.ics"
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
+
 
 def icalendar_single(request, id):
     from tendenci.addons.events.utils import get_vevents

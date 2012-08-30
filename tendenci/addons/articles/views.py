@@ -12,6 +12,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.versions.models import Version
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -22,11 +23,17 @@ from tendenci.addons.articles.forms import ArticleForm
 from tendenci.apps.notifications import models as notification
 
 
-def detail(request, slug=None, template_name="articles/view.html"):
-    if not slug:
+def detail(request, slug=None, hash=None, template_name="articles/view.html"):
+    if not slug and not hash:
         return HttpResponseRedirect(reverse('articles'))
 
-    article = get_object_or_404(Article, slug=slug)
+    if hash:
+        version = get_object_or_404(Version, hash=hash)
+        current_article = get_object_or_404(Article, pk=version.object_id)
+        article = version.get_version_object()
+        messages.add_message(request, messages.WARNING, 'You are viewing a previous version of this article. View the <a href="%s%s">Current Version</a>.' % (get_setting('site', 'global', 'siteurl'), current_article.get_absolute_url()))
+    else:
+        article = get_object_or_404(Article, slug=slug)
 
     # non-admin can not view the non-active content
     # status=0 has been taken care of in the has_perm function
@@ -35,7 +42,7 @@ def detail(request, slug=None, template_name="articles/view.html"):
 
     if has_view_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
-        return render_to_response(template_name, {'article': article}, 
+        return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
     else:
         raise Http403
