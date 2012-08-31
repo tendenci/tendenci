@@ -26,10 +26,13 @@
         </p>
         <p>
         {% if membership.expire_dt %}
+        <p>
             {% blocktrans with membership.expire_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}
+        </p>
+        <p>
+            {% blocktrans with membership.membership_type.expiration_grace_period as grace_period %}Expiration Grace Period: {{ grace_period }} days{% endblocktrans %}
+        </p>
         {% else %}
-            {% trans "Never expires" %}
-        {% endif %}
         </p>
         {% if request.user == membership.user or admin %}
             {% if membership.can_renew and membership.ma %}
