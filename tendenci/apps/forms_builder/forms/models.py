@@ -28,7 +28,7 @@ FIELD_CHOICES = (
     ("EmailField", _("Email")),
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
-    ("DateField/django.forms.extras.DateInput", _("Date - Text Input")),
+    ("DateField/django.forms.DateInput", _("Date - Text Input")),
     ("DateTimeField", _("Date/time")),
     ("CharField/forms_builder.forms.widgets.Description", _("Description")),
     ("CharField/forms_builder.forms.widgets.Header", _("Section Heading")),
