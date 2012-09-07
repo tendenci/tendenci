@@ -1,5 +1,4 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.core.urlresolvers import reverse
 
 from django.contrib.admin import widgets
@@ -187,4 +186,4 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         }
         EventLog.objects.log(**log_defaults) 
     
-admin_registry.site.register(RecurringPayment, RecurringPaymentAdmin)
+admin.site.register(RecurringPayment, RecurringPaymentAdmin)

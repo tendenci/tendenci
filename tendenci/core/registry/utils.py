@@ -1,8 +1,5 @@
-import os
-
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
-from django.conf import settings
 
 from tendenci.core.site_settings.utils import check_setting, get_setting
 
@@ -118,50 +115,3 @@ class RegisteredApps(object):
 
     def __len__(self):
         return len(self.all_apps)
-
-
-def update_addons(installed_apps):
-    # Append only enabled addons to the INSTALLED_APPS
-    addons = get_addons(installed_apps)
-    installed_addons = tuple([i for i in addons])
-    installed_apps += installed_addons
-
-    return installed_apps
-
-
-def get_addons(installed_apps):
-    """
-    Grabs a list of apps that aren't in INSTALLED_APPS
-    """
-    new_addons = []
-    tendenci_addons = sorted(tendenci_choices())
-    for addon in tendenci_addons:
-        addon_package = '.'.join(['tendenci', 'addons', addon])
-        if addon_package not in installed_apps:
-            new_addons.append(addon_package)
-
-    custom_addons = sorted(custom_choices())
-    for addon in custom_addons:
-        print addon
-        addon_package = '.'.join(['addons', addon])
-        new_addons.append(addon_package)
-
-    return new_addons
-
-
-def tendenci_choices():
-    """
-    Returns a list of available addons in tendenci app
-    """
-    for addon in os.listdir(settings.ADDONS_PATH):
-        if os.path.isdir(os.path.join(settings.ADDONS_PATH, addon)):
-            yield addon
-
-
-def custom_choices():
-    """
-    Returns a list of available addons in the tendenci-site wrapper app
-    """
-    for addon in os.listdir(settings.SITE_ADDONS_PATH):
-        if os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon)):
-            yield addon

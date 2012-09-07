@@ -1,5 +1,4 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 
 from tendenci.apps.pluginmanager.models import PluginApp
 from tendenci.apps.pluginmanager.forms import PluginAppForm
@@ -31,4 +30,4 @@ class PluginAppAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
-# admin_registry.site.register(PluginApp, PluginAppAdmin)
+admin.site.register(PluginApp, PluginAppAdmin)

@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -385,12 +384,12 @@ class AppEntryAdmin(admin.ModelAdmin):
 
 
 # these get auto-created when the application gets filled out
-# admin_registry.site.register(Membership, MembershipAdmin)
+# admin.site.register(Membership, MembershipAdmin)
 
-admin_registry.site.register(MembershipType, MembershipTypeAdmin)
-admin_registry.site.register(Notice, NoticeAdmin)
-admin_registry.site.register(App, AppAdmin)
-# admin_registry.site.register(AppEntry, AppEntryAdmin)
+admin.site.register(MembershipType, MembershipTypeAdmin)
+admin.site.register(Notice, NoticeAdmin)
+admin.site.register(App, AppAdmin)
+# admin.site.register(AppEntry, AppEntryAdmin)
 
 
 

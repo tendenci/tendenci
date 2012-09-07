@@ -1,5 +1,4 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
@@ -53,8 +52,8 @@ class NoticeEmailAdmin(admin.ModelAdmin):
         super(NoticeEmailAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )
 
-# admin_registry.site.register(NoticeType, NoticeTypeAdmin)
-# admin_registry.site.register(NoticeSetting, NoticeSettingAdmin)
-# admin_registry.site.register(Notice, NoticeAdmin)
-# admin_registry.site.register(ObservedItem)
-admin_registry.site.register(NoticeEmail, NoticeEmailAdmin)
+# admin.site.register(NoticeType, NoticeTypeAdmin)
+# admin.site.register(NoticeSetting, NoticeSettingAdmin)
+# admin.site.register(Notice, NoticeAdmin)
+# admin.site.register(ObservedItem)
+admin.site.register(NoticeEmail, NoticeEmailAdmin)

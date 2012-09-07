@@ -1,5 +1,4 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from tendenci.core.payments.models import Payment, PaymentMethod
 
 class PaymentAdmin(admin.ModelAdmin):
@@ -9,5 +8,5 @@ class PaymentMethodAdmin(admin.ModelAdmin):
     actions = None
     list_display = ['human_name', 'machine_name', 'is_online', 'admin_only']
 
-admin_registry.site.register(Payment, PaymentAdmin)
-admin_registry.site.register(PaymentMethod, PaymentMethodAdmin)
+admin.site.register(Payment, PaymentAdmin)
+admin.site.register(PaymentMethod, PaymentMethodAdmin)

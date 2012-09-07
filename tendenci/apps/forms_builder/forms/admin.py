@@ -8,7 +8,6 @@ from django.conf import settings
 from django.utils.encoding import iri_to_uri
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -166,4 +165,4 @@ class FormAdmin(TendenciBaseModelAdmin):
         f.close()
         return response
 
-admin_registry.site.register(Form, FormAdmin)
+admin.site.register(Form, FormAdmin)

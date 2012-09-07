@@ -1,9 +1,8 @@
 {% extends "site_settings/base.html" %}
 
 {% load site_setting_tags %}
-{% load i18n %}
 
-{% block title %}{{ scope_category|title }} {% trans 'Settings' %}{% endblock %}
+{% block title %}Settings{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -12,7 +11,6 @@
 
 {% block body %}
 {% settings_nav request.user scope_category %}
-<h1>{{ scope_category|title }} {% trans 'Settings' %}</h1>
 <form class="settings-form" method="post" enctype="multipart/form-data">{% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="Update Settings" name="submit" />
