@@ -1,0 +1,72 @@
+{% extends "resumes/base-print.html" %}
+{% load resume_tags %}
+{% load i18n %}
+
+{% block title %}{{ resumes.get_title }}{% endblock %}
+{% block meta_description %}{{ resumes.get_description }}{% endblock %}
+{% block meta_keywords %}{{ resumes.get_keywords }}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="{{ resume.get_canonical_url }}" />{% endblock %}
+{% block extra_head %}
+{{ block.super }}
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css" />
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/resumes-print.css" />
+{% endblock %}
+
+{% block body %}
+<div class="t-print">
+
+     <div class="resume-wrap">
+        <h2>{{ resume.title }}</h2>
+		<h2>{% trans "Resume Information" %}</h2>
+
+		{% if resume.description %}
+		<div class="section-block">
+			<div class="label">{% trans "Description" %}</div>
+			<div class="value">{{ resume.description|safe }}</div>
+		</div>
+		{% endif %}
+
+		{% if resume.location %}
+		<div class="section-block">
+			<div class="label">{% trans "Location" %}</div>
+			<div class="value">{{ resume.location }}</div>
+			<div class="clear"></div>
+		</div>
+		{% endif %}
+
+		{% if resume.experience %}
+		<div class="section-block">
+			<div class="label">{% trans "Experience" %}</div>
+			<div class="value">{{ resume.experience }}</div>
+		</div>
+		{% endif %}
+
+		{% if resume.skills %}
+		<div class="section-block">
+			<div class="label">{% trans "Skills" %}</div>
+			<div class="value">{{ resume.skills }}</div>
+		</div>
+		{% endif %}
+
+		{% if resume.education %}
+		<div class="section-block">
+			<div class="label">{% trans "Education" %}</div>
+			<div class="value">{{ resume.education }}</div>
+			<div class="clear"></div>
+		</div>
+		{% endif %}
+
+		{% if resume.contact_name %}
+		<h2>{% trans "Contact Information" %}</h2>
+		<div class="contact-wrap">
+			<div>{{ resume.contact_name }}</div>
+			<div>{{ resume.contact_phone }}</div>
+			<div>{{ resume.contact_phone2 }}</div>
+			<div>{{ resume.contact_fax }}</div>
+			<div><a href="">{{ resume.contact_email|urlize }}</a></div>
+		</div>
+		{% endif %}
+    </div>
+
+</div>
+{% endblock %}

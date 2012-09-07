@@ -1,0 +1,31 @@
+{% extends "resumes/base.html" %}
+{% load resume_tags %}
+{% load i18n %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/resumes.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+    {% resume_nav request.user %}
+    <h1>{% trans "Pending Resumes" %}</h1>
+    
+    <div class="resume-wrap">
+    <ul class="pending-resumes">
+    {% for resume in resumes %}
+        <li>
+            <a href="{{ resume.get_absolute_url }}" title="{{ resume.title }}">{{ resume.title|truncatewords:"10" }}</a>
+            &nbsp;&ndash;&nbsp;
+            {{ resume.create_dt|date }}&nbsp;{{ resume.create_dt|time }}
+            &nbsp;&ndash;&nbsp;
+            <a href="{% url resume.approve resume.pk %}">{% trans "Approve" %}</a>
+        </li>
+    {% empty %}
+        <li>{% trans "There are no pending resumes." %}</li>
+    {% endfor %}
+    </div>
+    </ul>
+</div>
+{% endblock %}
