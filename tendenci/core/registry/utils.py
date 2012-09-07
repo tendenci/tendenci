@@ -137,7 +137,6 @@ def get_addons(installed_apps):
 
     custom_addons = sorted(custom_choices())
     for addon in custom_addons:
-        print addon
         addon_package = '.'.join(['addons', addon])
         new_addons.append(addon_package)
 
