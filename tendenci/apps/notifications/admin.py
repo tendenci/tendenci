@@ -1,11 +1,10 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.core.urlresolvers import reverse
-from django.conf import settings
 
 from tendenci.apps.notifications.models import (NoticeType, NoticeSetting, Notice,
     ObservedItem, NoticeEmail)
-    
+
+
 class NoticeTypeAdmin(admin.ModelAdmin):
     list_display = ('label', 'display', 'description', 'default')
 
@@ -19,11 +18,14 @@ class NoticeTypeAdmin(admin.ModelAdmin):
         super(NoticeTypeAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )
 
+
 class NoticeSettingAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'notice_type', 'medium', 'send')
 
+
 class NoticeAdmin(admin.ModelAdmin):
     list_display = ('message', 'user', 'notice_type', 'added', 'unseen', 'archived')
+
 
 class NoticeEmailAdmin(admin.ModelAdmin):
     list_display = ('preview_email', 'date_sent')
@@ -53,8 +55,8 @@ class NoticeEmailAdmin(admin.ModelAdmin):
         super(NoticeEmailAdmin, self).__init__(*args, **kwargs)
         self.list_display_links = (None, )
 
-# admin_registry.site.register(NoticeType, NoticeTypeAdmin)
-# admin_registry.site.register(NoticeSetting, NoticeSettingAdmin)
-# admin_registry.site.register(Notice, NoticeAdmin)
-# admin_registry.site.register(ObservedItem)
-admin_registry.site.register(NoticeEmail, NoticeEmailAdmin)
+# admin.site.register(NoticeType, NoticeTypeAdmin)
+# admin.site.register(NoticeSetting, NoticeSettingAdmin)
+# admin.site.register(Notice, NoticeAdmin)
+# admin.site.register(ObservedItem)
+admin.site.register(NoticeEmail, NoticeEmailAdmin)

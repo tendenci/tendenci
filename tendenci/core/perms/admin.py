@@ -1,7 +1,6 @@
 import inspect
 
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.utils.encoding import iri_to_uri
 from django.conf import settings
 

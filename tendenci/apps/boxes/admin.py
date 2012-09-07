@@ -1,18 +1,18 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.conf import settings
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.apps.boxes.models import Box 
+from tendenci.apps.boxes.models import Box
 from tendenci.apps.boxes.forms import BoxForm
+
 
 class BoxAdmin(TendenciBaseModelAdmin):
     list_display = ('edit_link', 'pk', 'title', 'tags', 'content', 'admin_perms', 'admin_status')
-    search_fields = ('title','content','tags',)
+    search_fields = ('title', 'content', 'tags',)
     fieldsets = (
         (None, {'fields': ('title', 'content', 'tags')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
@@ -39,4 +39,4 @@ class BoxAdmin(TendenciBaseModelAdmin):
     admin_perms.allow_tags = True
     admin_perms.short_description = 'permission'
 
-admin_registry.site.register(Box, BoxAdmin)
+admin.site.register(Box, BoxAdmin)

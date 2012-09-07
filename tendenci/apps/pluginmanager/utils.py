@@ -99,15 +99,8 @@ def get_addons(installed_apps):
     Grabs a list of apps that aren't in INSTALLED_APPS
     """
     new_addons = []
-    tendenci_addons = sorted(tendenci_choices())
-    for addon in tendenci_addons:
-        addon_package = '.'.join(['tendenci', 'addons', addon])
-        if addon_package not in installed_apps:
-            new_addons.append(addon_package)
-
     custom_addons = sorted(custom_choices())
     for addon in custom_addons:
-        print addon
         addon_package = '.'.join(['addons', addon])
         new_addons.append(addon_package)
 
@@ -118,34 +111,14 @@ def plugin_options():
     """
     Returns a string of the available themes in THEMES_DIR
     """
-    tendenci_options = []
-    tendenci_addons = sorted(tendenci_choices())
-    for addon in tendenci_addons:
-        addon_package = '.'.join(['tendenci', 'addons', addon])
-        if addon_package not in settings.INSTALLED_APPS:
-            tendenci_options.append((addon_package, addon.title().replace('_', ' ')))
-
     custom_options = []
     custom_addons = sorted(custom_choices())
     for addon in custom_addons:
-        print addon
         addon_package = '.'.join(['addons', addon])
         if addon_package not in settings.INSTALLED_APPS:
             custom_options.append((addon_package, addon.title().replace('_', ' ')))
 
-    if custom_options:
-        return (('Custom', custom_options), ('Tendenci', tendenci_options))
-    else:
-        return tendenci_options
-
-
-def tendenci_choices():
-    """
-    Returns a list of available addons in tendenci app
-    """
-    for addon in os.listdir(settings.ADDONS_PATH):
-        if os.path.isdir(os.path.join(settings.ADDONS_PATH, addon)):
-            yield addon
+    return custom_options
 
 
 def custom_choices():

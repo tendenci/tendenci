@@ -1,5 +1,3 @@
-import re
-import os
 from django.shortcuts import render_to_response
 from django.http import Http404, HttpResponseRedirect
 from django.template import RequestContext
@@ -9,18 +7,16 @@ from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.forms import build_settings_form
 from tendenci.core.perms.utils import has_perm
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.registry import site
 
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
-    if not has_perm(request.user,'site_settings.change_setting'):
+    if not has_perm(request.user, 'site_settings.change_setting'):
         raise Http403
-    
+
     settings = Setting.objects.filter(scope=scope, scope_category=scope_category).order_by('label')
     if not settings:
         raise Http404
-    
+
     if request.method == 'POST':
         form = build_settings_form(request.user, settings)(request.POST, request.FILES)
         if form.is_valid():
@@ -112,9 +108,3 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
         
     return render_to_response(template_name, {'form': form }, context_instance=RequestContext(request))
 
-
-def addon_list(request, template_name="site_settings/addon_list.html"):
-
-    addon_list = site.get_registered_apps().addons
-
-    return render_to_response(template_name, {'addon_list': addon_list}, context_instance=RequestContext(request))

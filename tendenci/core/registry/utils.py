@@ -134,11 +134,6 @@ def get_addons(installed_apps):
     Grabs a list of apps that aren't in INSTALLED_APPS
     """
     new_addons = []
-    tendenci_addons = sorted(tendenci_choices())
-    for addon in tendenci_addons:
-        addon_package = '.'.join(['tendenci', 'addons', addon])
-        if addon_package not in installed_apps:
-            new_addons.append(addon_package)
 
     custom_addons = sorted(custom_choices())
     for addon in custom_addons:
@@ -147,15 +142,6 @@ def get_addons(installed_apps):
         new_addons.append(addon_package)
 
     return new_addons
-
-
-def tendenci_choices():
-    """
-    Returns a list of available addons in tendenci app
-    """
-    for addon in os.listdir(settings.ADDONS_PATH):
-        if os.path.isdir(os.path.join(settings.ADDONS_PATH, addon)):
-            yield addon
 
 
 def custom_choices():

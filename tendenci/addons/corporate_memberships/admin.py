@@ -1,5 +1,4 @@
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 from django.conf import settings
 
 from tendenci.addons.corporate_memberships.models import CorporateMembershipType, CorporateMembership
@@ -8,6 +7,7 @@ from tendenci.addons.corporate_memberships.forms import CorporateMembershipTypeF
 from tendenci.addons.corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields, edit_corpapp_update_memb_app
 
 from tendenci.core.event_logs.models import EventLog
+
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'renewal_price', 'membership_type',  
@@ -192,5 +192,5 @@ class CorpAppAdmin(admin.ModelAdmin):
         super(CorpAppAdmin, self).log_addition(request, object)
 
 
-admin_registry.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
-admin_registry.site.register(CorpApp, CorpAppAdmin)
+admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
+admin.site.register(CorpApp, CorpAppAdmin)

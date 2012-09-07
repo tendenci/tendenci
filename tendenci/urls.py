@@ -3,7 +3,6 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
-from tendenci.core.registry import admin_registry
 
 from tendenci.core.theme.utils import get_theme_root, get_theme, theme_choices
 from tendenci.core.registry import autodiscover as reg_autodiscover
@@ -17,7 +16,7 @@ reg_autodiscover()
 # Admin Patterns
 urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    (r'^admin/', include(admin_registry.site.urls)),
+    (r'^admin/', include(admin.site.urls)),
 )
 
 # Tendenci Patterns

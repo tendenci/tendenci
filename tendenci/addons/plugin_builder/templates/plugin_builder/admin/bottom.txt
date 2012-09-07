@@ -12,10 +12,10 @@
             'status_detail'
         )}),
     )
-    
+
     class Media:
         js = (
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
-admin_registry.site.register(S_S_CAP, S_S_CAPAdmin)
+admin.site.register(S_S_CAP, S_S_CAPAdmin)
