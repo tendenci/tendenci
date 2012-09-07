@@ -246,21 +246,21 @@ class AppAdmin(admin.ModelAdmin):
         self.inline_instances = [] # clear inline instances
         return super(AppAdmin, self).add_view(request, form_url, extra_context)
 
-    def change_view(self, request, object_id, extra_context={}):
-
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         self.inlines = [AppFieldAdmin]
         self.inline_instances = []
         for inline_class in self.inlines:
             inline_instance = inline_class(self.model, self.admin_site)
             self.inline_instances.append(inline_instance)
+        if not extra_context:
+            extra_context = {}
+        extra_context.update({
+             'excluded_fields':['field_type', 'no_duplicates', 'admin_only'],
+             'excluded_lines':[2, 3],
+         })
+        extra_context.update(extra_context)
 
-        # extra_context.update({
-        #     'excluded_fields':['field_type', 'no_duplicates', 'admin_only'],
-        #     'excluded_lines':[2, 3],
-        # })
-        # extra_context.update(extra_context)
-
-        return super(AppAdmin, self).change_view(request, object_id, **extra_context)
+        return super(AppAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
     
     def response_change(self, request, obj, *args, **kwargs):
         if request.POST.has_key('_popup'):
