@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from django.conf import settings
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
@@ -38,4 +39,4 @@ class BoxAdmin(TendenciBaseModelAdmin):
     admin_perms.allow_tags = True
     admin_perms.short_description = 'permission'
 
-admin.site.register(Box, BoxAdmin)
+admin_registry.site.register(Box, BoxAdmin)

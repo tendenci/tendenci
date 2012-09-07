@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from tendenci.addons.plugin_builder.models import Plugin, PluginField
 from tendenci.addons.plugin_builder.forms import PluginForm, PluginFieldForm
 from tendenci.addons.plugin_builder.utils import build_plugin
@@ -23,4 +24,4 @@ class PluginAdmin(admin.ModelAdmin):
         self.message_user(request, "Successfully built the following plugins:%s" % message_bit[1:])
     build_plugins.short_description = "Build/Rebuild selected plugins."
 
-admin.site.register(Plugin, PluginAdmin)
+admin_registry.site.register(Plugin, PluginAdmin)

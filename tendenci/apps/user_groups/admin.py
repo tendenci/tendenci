@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 
 # Add your admin site registrations here, eg.
 from tendenci.core.perms.object_perms import ObjectPermission
@@ -45,5 +46,5 @@ class GroupMembershipAdmin(admin.ModelAdmin):
         (None, {'fields': ('group', 'member')}),
     )    
 
-admin.site.register(Group, GroupAdmin)
-#admin.site.register(GroupMembership, GroupMembershipAdmin)
+admin_registry.site.register(Group, GroupAdmin)
+#admin_registry.site.register(GroupMembership, GroupMembershipAdmin)

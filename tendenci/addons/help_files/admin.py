@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from django.conf import settings
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
@@ -34,6 +35,6 @@ class HelpFileAdmin(TendenciBaseModelAdmin):
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 
-admin.site.register(Topic)
-admin.site.register(HelpFile, HelpFileAdmin)
-admin.site.register(Request)
+admin_registry.site.register(Topic)
+admin_registry.site.register(HelpFile, HelpFileAdmin)
+admin_registry.site.register(Request)

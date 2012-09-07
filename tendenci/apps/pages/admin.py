@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from django.core.urlresolvers import reverse
 from django.conf import settings
 
@@ -125,4 +126,4 @@ class PageAdmin(admin.ModelAdmin):
 
         return instance
 
-# admin.site.register(Page, PageAdmin)
+# admin_registry.site.register(Page, PageAdmin)

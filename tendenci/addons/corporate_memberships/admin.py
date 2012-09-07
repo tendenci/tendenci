@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from django.conf import settings
 
 from tendenci.addons.corporate_memberships.models import CorporateMembershipType, CorporateMembership
@@ -191,5 +192,5 @@ class CorpAppAdmin(admin.ModelAdmin):
         super(CorpAppAdmin, self).log_addition(request, object)
 
 
-admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
-admin.site.register(CorpApp, CorpAppAdmin)
+admin_registry.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
+admin_registry.site.register(CorpApp, CorpAppAdmin)

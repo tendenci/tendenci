@@ -1,4 +1,5 @@
 from django.contrib import admin
+from tendenci.core.registry import admin_registry
 from tendenci.core.site_settings.models import Setting
 
 class SettingAdmin(admin.ModelAdmin):
@@ -21,4 +22,4 @@ class SettingAdminDev(admin.ModelAdmin):
     search_fields = ['name','label']
     list_filter = ['scope_category']
     
-# admin.site.register(Setting, SettingAdminDev)
+# admin_registry.site.register(Setting, SettingAdminDev)
