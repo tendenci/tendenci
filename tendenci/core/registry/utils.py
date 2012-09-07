@@ -3,6 +3,7 @@ import os
 from django.core.urlresolvers import reverse
 from django.utils.functional import lazy
 from django.conf import settings
+from django.conf.urls.defaults import patterns, include
 
 from tendenci.core.site_settings.utils import check_setting, get_setting
 
@@ -150,3 +151,12 @@ def custom_choices():
     for addon in os.listdir(settings.SITE_ADDONS_PATH):
         if os.path.isdir(os.path.join(settings.SITE_ADDONS_PATH, addon)):
             yield addon
+
+
+def get_url_patterns():
+    items = []
+    addons = get_addons(settings.INSTALLED_APPS)
+    for addon in addons:
+        items.append((r'', include('%s.urls' % addon,)))
+    return patterns('', *items)
+    pass

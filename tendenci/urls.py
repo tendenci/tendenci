@@ -149,7 +149,7 @@ except ImportError:
     pass
 
 #PLUGINS:
-from tendenci.apps.pluginmanager import get_url_patterns
+from tendenci.core.registry.utils import get_url_patterns
 urlpatterns += get_url_patterns()
 
 # tack on the pages pattern at the very end so let custom and software patterns
