@@ -91,10 +91,7 @@ urlpatterns += patterns('',
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
-    
-    # other t4 to t5 legacy redirects
-    url(r'^en/', include('tendenci.addons.legacy.urls')),
- 
+
     url(r'^', include('tendenci.apps.contacts.urls')),
     url(r'^', include('tendenci.addons.articles.urls')),
     url(r'^', include('tendenci.addons.jobs.urls')),

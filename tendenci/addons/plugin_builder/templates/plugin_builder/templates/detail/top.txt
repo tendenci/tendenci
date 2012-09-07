@@ -1,4 +1,0 @@
-{% extends "S_P_LOW/base.html" %}
-
-{% block body %}
-<div class="S_S_LOW-wrap">
