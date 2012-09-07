@@ -15,7 +15,8 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save 
 from tendenci.addons.memberships.models import  Membership, MembershipType, Notice, App, AppField, AppEntry
 from tendenci.addons.memberships.forms import AppForm, NoticeForm, AppFieldForm, AppEntryForm
-from tendenci.addons.memberships.utils import get_default_membership_fields, edit_app_update_corp_fields, ExceededMaxTypes
+from tendenci.addons.memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
+from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
 

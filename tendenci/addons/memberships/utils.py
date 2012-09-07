@@ -509,8 +509,6 @@ def make_csv(**kwargs):
 class NoMembershipTypes(Exception):
     pass
 
-class ExceededMaxTypes(Exception):
-    pass
 
 def render_to_max_types(*args, **kwargs):
     if not isinstance(args,list):
