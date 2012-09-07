@@ -91,7 +91,7 @@ class CorpAppAdmin(admin.ModelAdmin):
         return super(CorpAppAdmin, self).add_view(request, form_url,
                                               extra_context) 
     
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='',  extra_context=None):
         self.inlines = [FieldInline]
         self.inline_instances = []
         for inline_class in self.inlines:
@@ -112,8 +112,8 @@ class CorpAppAdmin(admin.ModelAdmin):
                              "excluded_fields":excluded_fields,
                              'fields_to_check': fields_to_check}
             
-        return  super(CorpAppAdmin, self).change_view(request, object_id,
-                                              extra_context)
+        return  super(CorpAppAdmin, self).change_view(request, object_id, form_url=form_url,
+                                              extra_context=extra_context)
         
 
     def get_fieldsets(self, request, obj=None):

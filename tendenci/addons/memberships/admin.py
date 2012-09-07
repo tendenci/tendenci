@@ -60,10 +60,10 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     
     def add_view(self, request):
         num_types = MembershipType.objects.all().count()
-     	max_types = settings.MAX_MEMBERSHIP_TYPES
-     	if num_types >= max_types:
-     	    raise ExceededMaxTypes
-     	return super(MembershipTypeAdmin, self).add_view(request)
+        max_types = settings.MAX_MEMBERSHIP_TYPES
+        if num_types >= max_types:
+            raise ExceededMaxTypes
+        return super(MembershipTypeAdmin, self).add_view(request)
     
     class Media:
         js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
