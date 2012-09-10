@@ -236,6 +236,12 @@ def robots_txt(request):
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request), mimetype="text/plain")
 
+
+def exception_test(request):
+    raise Exception('Successfully raised the exception test. Boom.')
+    return Http404
+
+
 @login_required
 def password_again(request, template_name="base/password.html"):
     next = request.GET.get('next')
