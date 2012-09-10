@@ -134,7 +134,10 @@ class ListNode(Node):
 
         else:
             filters = get_query_filters(user, self.perms)
-            items = self.model.objects.filter(filters).distinct()
+            items = self.model.objects.filter(filters)
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    items = items.distinct()
 
             if tags:  # tags is a comma delimited list
                 # this is fast; but has one hole
@@ -151,29 +154,28 @@ class ListNode(Node):
 
         objects = []
 
-        if items:
-            #exclude certain primary keys
-            if exclude:
-                excludes = []
-                for ex in exclude:
-                    if ex.isdigit():
-                        excludes.append(int(ex))
-                if query:
-                    items = items.exclude(primary_key__in=excludes)
-                else:
-                    items = items.exclude(pk__in=excludes)
-
-            # if order is not specified it sorts by relevance
-            if order:
-                items = items.order_by(order)
-
-            if randomize:
-                objects = [item for item in random.sample(items, len(items))][:limit]
-            else:
-                objects = [item for item in items[:limit]]
-
+        # exclude certain primary keys
+        if exclude:
+            excludes = []
+            for ex in exclude:
+                if ex.isdigit():
+                    excludes.append(int(ex))
             if query:
-                objects = [item.object for item in objects]
+                items = items.exclude(primary_key__in=excludes)
+            else:
+                items = items.exclude(pk__in=excludes)
+
+        # if order is not specified it sorts by relevance
+        if order:
+            items = items.order_by(order)
+
+        if randomize:
+            objects = [item for item in random.sample(items, len(items))][:limit]
+        else:
+            objects = [item for item in items[:limit]]
+
+        if query:
+            objects = [item.object for item in objects]
 
         context[self.context_var] = objects
 
