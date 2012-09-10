@@ -72,7 +72,7 @@ def get_indiv_membs_choices(corp):
     indiv_memberships = Membership.objects.filter(
                             corporate_membership_id=corp.id,
                             status_detail__in=['active', 'expired'],
-                            status=1)
+                            status=True)
 
     for membership in indiv_memberships:
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (reverse('profile', args=[membership.user.username]), 

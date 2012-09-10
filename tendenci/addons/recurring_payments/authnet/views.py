@@ -89,7 +89,7 @@ def update_payment_info(request, recurring_payment_id,
     
     payment_profiles = PaymentProfile.objects.filter(
                                         customer_profile_id=rp.customer_profile_id, 
-                                        status=1, status_detail='active')
+                                        status=True, status_detail='active')
     if payment_profiles:
         payment_profile = payment_profiles[0]
     else:

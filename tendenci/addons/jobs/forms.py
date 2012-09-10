@@ -72,7 +72,7 @@ class JobForm(TendenciBaseForm):
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
     
     pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
-                    queryset=JobPricing.objects.filter(status=1).order_by('duration'))
+                    queryset=JobPricing.objects.filter(status=True).order_by('duration'))
 
     class Meta:
         model = Job

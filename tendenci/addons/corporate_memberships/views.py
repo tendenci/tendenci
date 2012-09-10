@@ -829,7 +829,7 @@ def roster_search(request, template_name='corporate_memberships/roster_search.ht
     if request.user.profile.is_superuser or corp_memb.is_rep(request.user):
         pass
     else:
-        memberships = memberships.filter(status=1, status_detail='active')
+        memberships = memberships.filter(status=True, status_detail='active')
         
     # a list of corporate memberships for the drop down
     #corp_members = CorporateMembership.objects.search(None, user=request.user).order_by('name_exact')

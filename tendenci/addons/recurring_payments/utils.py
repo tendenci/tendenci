@@ -238,7 +238,7 @@ def run_a_recurring_payment(rp, verbosity=0):
         if rp_invoices:
             payment_profiles = PaymentProfile.objects.filter(
                         customer_profile_id=rp.customer_profile_id,
-                        status=1,
+                        status=True,
                         status_detail='active'
                         ).order_by('-update_dt')
             
@@ -685,7 +685,7 @@ def api_get_rp_token(data):
     
     # also pass the payment_profile_id
     payment_profiles = PaymentProfile.objects.filter(customer_profile_id=rp.customer_profile_id, 
-                                                    status=1, 
+                                                    status=True, 
                                                     status_detail='active')
     if payment_profiles:
         payment_profile_id = (payment_profiles[0]).payment_profile_id

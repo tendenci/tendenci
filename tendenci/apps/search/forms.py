@@ -138,11 +138,11 @@ class SearchForm(forms.Form):
                             sqs = sqs.filter(query)
                         else:
                         # if anonymous
-                            sqs = sqs.filter(status=1).filter(status_detail='active')
+                            sqs = sqs.filter(status=True).filter(status_detail='active')
                             sqs = sqs.filter(allow_anonymous_view=True)
                 else:
                     # if anonymous
-                    sqs = sqs.filter(status=1).filter(status_detail='active')
+                    sqs = sqs.filter(status=True).filter(status_detail='active')
                     sqs = sqs.filter(allow_anonymous_view=True)
             else:
                 if user:
@@ -163,11 +163,11 @@ class SearchForm(forms.Form):
                             sqs = sqs.filter(query)
                         else:
                             # if anonymous
-                            sqs = sqs.filter(status=1).filter(status_detail='active')
+                            sqs = sqs.filter(status=True).filter(status_detail='active')
                             sqs = sqs.filter(allow_anonymous_view=True)               
                 else:
                     # if anonymous
-                    sqs = sqs.filter(status=1).filter(status_detail='active')
+                    sqs = sqs.filter(status=True).filter(status_detail='active')
                     sqs = sqs.filter(allow_anonymous_view=True)
 
             sqs = sqs.order_by('-create_dt')

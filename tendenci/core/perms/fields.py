@@ -28,7 +28,7 @@ member_perm_options = {
 
 def group_choices():
     # groups = Group.objects.filter(status=1, status_detail='active', use_for_membership=0).order_by('name')
-    groups = Group.objects.filter(status=1, status_detail='active').order_by('name')
+    groups = Group.objects.filter(status=True, status_detail='active').order_by('name')
     choices = []
     if groups:
         for g in groups:
@@ -79,7 +79,7 @@ def groups_with_perms(instance):
     group_perms = []
     content_type = ContentType.objects.get_for_model(instance)
     filters = {
-        'group__in': Group.objects.filter(status=1, status_detail='active'),
+        'group__in': Group.objects.filter(status=True, status_detail='active'),
         'content_type': content_type,
         'object_id': instance.pk
     }
@@ -100,7 +100,7 @@ def has_groups_perms(instance):
     """
     content_type = ContentType.objects.get_for_model(instance)
     filters = {
-        'group__in': Group.objects.filter(status=1, status_detail='active'),
+        'group__in': Group.objects.filter(status=True, status_detail='active'),
         'content_type': content_type,
         'object_id': instance.pk
     }

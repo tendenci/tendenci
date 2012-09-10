@@ -254,7 +254,7 @@ class Command(BaseCommand):
         
         exception_str = ""
         
-        notices = Notice.objects.filter(status=1, status_detail='active').exclude(notice_time='attimeof')
+        notices = Notice.objects.filter(status=True, status_detail='active').exclude(notice_time='attimeof')
         
         if notices:
             if verbosity > 1:

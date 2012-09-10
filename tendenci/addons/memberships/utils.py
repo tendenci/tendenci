@@ -75,12 +75,13 @@ def edit_app_update_corp_fields(app):
 def get_corporate_membership_choices():
     cm_list = [(0, 'SELECT ONE')]
     from django.db import connection
-    # use the raw sql because we cannot import CorporateMembership in the memberships app
+    # use the raw sql because we cannot import CorporateMembership
+    # in the memberships app
     cursor = connection.cursor()
     cursor.execute(
         """SELECT id, name
         FROM corporate_memberships_corporatemembership
-        WHERE status=1 AND status_detail='active'
+        WHERE status=True AND status_detail='active'
         ORDER BY name"""
     )
 
@@ -315,7 +316,7 @@ def get_notice_token_help_text(notice=None):
     if notice and notice.membership_type:
         membership_types = [notice.membership_type]
     else:
-        membership_types = MembershipType.objects.filter(status=1, status_detail='active')
+        membership_types = MembershipType.objects.filter(status=True, status_detail='active')
 
     # get a list of apps from membership types
     apps_list = []

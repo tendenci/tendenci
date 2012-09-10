@@ -93,7 +93,7 @@ class EventsExportTask(Task):
             'status',
         ]
         
-        events = Event.objects.filter(status=1)
+        events = Event.objects.filter(status=True)
         max_speakers = events.annotate(num_speakers=Count('speaker')).aggregate(Max('num_speakers'))['num_speakers__max']
         max_organizers = events.annotate(num_organizers=Count('organizer')).aggregate(Max('num_organizers'))['num_organizers__max']
         max_pricings = events.annotate(num_pricings=Count('registration_configuration__regconfpricing')).aggregate(Max('num_pricings'))['num_pricings__max']

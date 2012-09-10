@@ -92,7 +92,7 @@ def index(request, username='', template_name="profiles/index.html"):
     group_memberships = user_this.group_member.all()
 
     memberships = user_this.memberships.filter(
-                                    status=1,
+                                    status=True,
                                     status_detail__in=['active', 'expired']
                                     )
 

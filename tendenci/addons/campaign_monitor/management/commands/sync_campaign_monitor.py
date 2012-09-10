@@ -57,7 +57,7 @@ class Command(BaseCommand):
         list_names = [list.Name for list in lists]
         list_ids_d = dict(zip(list_names, list_ids))
         
-        groups = Group.objects.filter(status=1, status_detail='active')
+        groups = Group.objects.filter(status=True, status_detail='active')
         listmaps = ListMap.objects.all()
         syncd_groups = [listmap.group for listmap in listmaps]
         cm_list = List()

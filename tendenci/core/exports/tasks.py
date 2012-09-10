@@ -31,7 +31,7 @@ class TendenciExportTask(Task):
                 'status_detail',
             )
             
-        items = model.objects.filter(status=1)
+        items = model.objects.filter(status=True)
         data_row_list = []
         for item in items:
             # get the available fields from the model's meta

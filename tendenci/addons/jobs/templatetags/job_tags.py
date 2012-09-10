@@ -51,13 +51,13 @@ def job_pricing_options(context, user, job_pricing):
 @register.inclusion_tag("jobs/pricing-table.html", takes_context=True)
 def job_pricing_table(context):
     from tendenci.addons.jobs.models import JobPricing
-    job_pricings = JobPricing.objects.filter(status=1).order_by('duration')
+    job_pricings = JobPricing.objects.filter(status=True).order_by('duration')
     show_premium_price = False
     show_member_price = False
-    premium_jp = JobPricing.objects.filter(status=1).filter(premium_price__gt=0)
+    premium_jp = JobPricing.objects.filter(status=True).filter(premium_price__gt=0)
     if premium_jp:
         show_premium_price = True
-    member_jp = JobPricing.objects.filter(status=1).filter(show_member_pricing=True).filter(Q(premium_price_member__gt=0) | Q(regular_price_member__gt=0))
+    member_jp = JobPricing.objects.filter(status=True).filter(show_member_pricing=True).filter(Q(premium_price_member__gt=0) | Q(regular_price_member__gt=0))
     if member_jp:
         show_member_price = True
     context.update({

@@ -76,7 +76,7 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
         else:
             pp = PaymentProfile.objects.filter(
                                     customer_profile_id=self.customer_profile_id,
-                                    status=1, status_detail='active')
+                                    status=True, status_detail='active')
         link = reverse('recurring_payment.authnet.update_payment_info', args=[self.id])
         if pp:
             pp = pp[0]

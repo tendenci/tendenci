@@ -44,7 +44,7 @@ class NavsExportTask(Task):
             'url',
         ]
         
-        navs = Nav.objects.filter(status=1)
+        navs = Nav.objects.filter(status=True)
         max_nav_items = navs.annotate(num_navitems=Count('navitem')).aggregate(Max('num_navitems'))['num_navitems__max']
         file_name = 'navs.csv'
         data_row_list = []

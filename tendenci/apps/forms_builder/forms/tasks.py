@@ -58,7 +58,7 @@ class FormsExportTask(Task):
             'price',
         ]
         
-        forms = Form.objects.filter(status=1)
+        forms = Form.objects.filter(status=True)
         max_fields = forms.annotate(num_fields=Count('fields')).aggregate(Max('num_fields'))['num_fields__max']
         max_pricings = forms.annotate(num_pricings=Count('pricing')).aggregate(Max('num_pricings'))['num_pricings__max']
         file_name = 'forms.csv'

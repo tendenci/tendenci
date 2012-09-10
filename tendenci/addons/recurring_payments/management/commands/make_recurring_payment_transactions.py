@@ -29,7 +29,7 @@ class Command(BaseCommand):
         from recurring_payments.models import RecurringPayment 
         from recurring_payments.utils import run_a_recurring_payment
      
-        recurring_payments = RecurringPayment.objects.filter(status_detail='active', status=1)    
+        recurring_payments = RecurringPayment.objects.filter(status_detail='active', status=True)    
         
         for rp in recurring_payments:
             run_a_recurring_payment(rp, verbosity)

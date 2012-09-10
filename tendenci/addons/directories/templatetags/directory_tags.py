@@ -45,9 +45,9 @@ def directory_pricing_options(context, user, directory_pricing):
 @register.inclusion_tag("directories/pricing-table.html", takes_context=True)
 def directory_pricing_table(context):
     from tendenci.addons.directories.models import DirectoryPricing
-    directory_pricings =DirectoryPricing.objects.filter(status=1).order_by('duration')
+    directory_pricings =DirectoryPricing.objects.filter(status=True).order_by('duration')
     show_premium_price = False
-    premium_jp = DirectoryPricing.objects.filter(status=1).filter(premium_price__gt=0)
+    premium_jp = DirectoryPricing.objects.filter(status=True).filter(premium_price__gt=0)
     if premium_jp:
         show_premium_price = True
     context.update({

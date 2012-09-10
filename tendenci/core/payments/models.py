@@ -80,7 +80,7 @@ class Payment(models.Model):
         return self.response_code=='1' and self.response_reason_code=='1'
     
     def mark_as_paid(self):
-        self.status=1
+        self.status=True
         self.status_detail = 'approved'
         
     @property    

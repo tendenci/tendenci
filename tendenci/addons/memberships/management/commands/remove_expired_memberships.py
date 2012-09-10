@@ -22,7 +22,7 @@ class Command(BaseCommand):
             memberships = Membership.objects.filter(
                 membership_type=membership_type,
                 expire_dt__lt=datetime.now() - relativedelta(days=grace_period),
-                status=1,
+                status=True,
                 status_detail='active')
 
             for membership in memberships:

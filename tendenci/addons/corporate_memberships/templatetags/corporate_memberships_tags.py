@@ -43,7 +43,7 @@ def corp_memb_search(context):
 @register.inclusion_tag("corporate_memberships/add_links.html", takes_context=True)
 def corp_memb_render_add_links(context):
     from tendenci.addons.corporate_memberships.models import CorpApp
-    corp_apps = CorpApp.objects.filter(status=1, status_detail='active')
+    corp_apps = CorpApp.objects.filter(status=True, status_detail='active')
     app_count = corp_apps.count()
     context.update({
         "corp_apps": corp_apps,

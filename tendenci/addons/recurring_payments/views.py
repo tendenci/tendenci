@@ -85,7 +85,7 @@ def view_account(request, recurring_payment_id,
         rp.populate_payment_profile()
         payment_profiles = PaymentProfile.objects.filter(
                             customer_profile_id=rp.customer_profile_id, 
-                            status=1, status_detail='active')
+                            status=True, status_detail='active')
         if payment_profiles:
             payment_profile = payment_profiles[0]
         else:
@@ -162,7 +162,7 @@ def run_now(request):
     
     payment_profiles = PaymentProfile.objects.filter(
                         customer_profile_id=rp.customer_profile_id,
-                        status=1,
+                        status=True,
                         status_detail='active'
                         ).order_by('-update_dt')
     if not payment_profiles:
@@ -258,7 +258,7 @@ def transaction_receipt(request, rp_id, payment_transaction_id, rp_guid=None,
     
     payment_transaction = get_object_or_404(PaymentTransaction, 
                                             pk=payment_transaction_id,
-                                            status=1)
+                                            status=True)
     payment_profile = PaymentProfile.objects.filter(
                     payment_profile_id=payment_transaction.payment_profile_id)[0]
     invoice = payment_transaction.payment.invoice

@@ -62,7 +62,7 @@ class Group(TendenciBaseModel):
     def active_members(self):
         return GroupMembership.objects.filter(
                                             group=self,
-                                            status=1, 
+                                            status=True, 
                                             status_detail='active')
 
     def is_member(self, user):

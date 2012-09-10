@@ -97,7 +97,7 @@ def user3_sqs(sqs, **kwargs):
     groups = [g.pk for g in user.group_set.all()]
     status_detail = kwargs.get('status_detail', 'active')
 
-    status_q = Q(status=1, status_detail=status_detail)
+    status_q = Q(status=True, status_detail=status_detail)
     creator_q = Q(creator_username=user.username)
     owner_q = Q(owner_username=user.username)
     user_perm_q = Q(users_can_view__in=[user.pk])
@@ -110,12 +110,12 @@ def user3_sqs(sqs, **kwargs):
 
 def anon3_sqs(sqs, **kwargs):
     status_detail = kwargs.get('status_detail', 'active')
-    sqs = sqs.filter(status=1).filter(status_detail=status_detail)
+    sqs = sqs.filter(status=True).filter(status_detail=status_detail)
     # sqs = sqs.filter(allow_anonymous_view=True)
     return sqs
 
 def anon2_sqs(sqs):
-    sqs = sqs.filter(status=1).filter(status_detail='published')
+    sqs = sqs.filter(status=True).filter(status_detail='published')
     sqs = sqs.filter(allow_anonymous_view=True)
     return sqs
 
@@ -128,7 +128,7 @@ def user2_sqs(sqs, **kwargs):
 
     anon_q = Q(allow_anonymous_view=True)
     user_q = Q(allow_user_view=True)
-    status_q = Q(status=1, status_detail='published')
+    status_q = Q(status=True, status_detail='published')
     perm_q = Q(users_can_view__in=user.username)
 
     q = reduce(operator.or_, [anon_q, user_q])
@@ -138,7 +138,7 @@ def user2_sqs(sqs, **kwargs):
     return sqs.filter(q)
 
 def anon_sqs(sqs):
-    sqs = sqs.filter(status=1).filter(status_detail='active')
+    sqs = sqs.filter(status=True).filter(status_detail='active')
     sqs = sqs.filter(allow_anonymous_view=True)
 
     member_perms = get_setting('module', 'memberships', 'memberprotection')
@@ -157,7 +157,7 @@ def member_sqs(sqs, **kwargs):
     anon_q = Q(allow_anonymous_view=True)
     user_q = Q(allow_user_view=True)
     member_q = Q(allow_member_view=True)
-    status_q = Q(status=1, status_detail='active')
+    status_q = Q(status=True, status_detail='active')
     perm_q = Q(users_can_view__in=user.username)
     
     q = reduce(operator.or_, [anon_q, user_q, member_q])
@@ -178,7 +178,7 @@ def user_sqs(sqs, **kwargs):
 
     anon_q = Q(allow_anonymous_view=True)
     user_q = Q(allow_user_view=True)
-    status_q = Q(status=1, status_detail='active')
+    status_q = Q(status=True, status_detail='active')
     perm_q = Q(users_can_view__in=user.username)
 
     q = reduce(operator.or_, [anon_q, user_q])
@@ -318,7 +318,7 @@ class MembershipManager(Manager):
         Get newest membership record
         Return membership object
         """
-        memberships = self.filter(status=1, status_detail='active').order_by('-pk')
+        memberships = self.filter(status=True, status_detail='active').order_by('-pk')
         if memberships:
             return memberships[0]
 

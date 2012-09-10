@@ -40,7 +40,7 @@ class DirectoryForm(TendenciBaseForm):
     expiration_dt = SplitDateTimeField(initial=datetime.now())
     
     pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
-                    queryset=DirectoryPricing.objects.filter(status=1).order_by('duration'))
+                    queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
     
     class Meta:
         model = Directory

@@ -15,7 +15,7 @@ def get_redirect_patterns():
         Gets the redirect patterns out of the database
         and assigns them to the django patterns object. 
     """
-    redirects = Redirect.objects.filter(status=1).order_by('uses_regex')
+    redirects = Redirect.objects.filter(status=True).order_by('uses_regex')
     url_patterns = []
     url_list = []
     for redirect in redirects:
