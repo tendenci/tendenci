@@ -140,10 +140,8 @@ def details(request, id=None, template_name="events/view.html"):
         'addons': event.addon_set.filter(status=True),
     }, context_instance=RequestContext(request))
 
-
 def month_redirect(request):
     return HttpResponseRedirect(reverse('event.month'))
-
 
 def search(request, redirect=False, template_name="events/search.html"):
     """
@@ -189,7 +187,6 @@ def search(request, redirect=False, template_name="events/search.html"):
         {'events': events,'types': types, 'now': datetime.now(), 'event_type': event_type, 'start_dt': start_dt},
         context_instance=RequestContext(request)
     )
-
 
 def icalendar(request):
     import os
@@ -239,7 +236,6 @@ def icalendar(request):
         file_name = "event.ics"
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
-
 
 def icalendar_single(request, id):
     from tendenci.addons.events.utils import get_vevents

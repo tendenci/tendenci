@@ -7,39 +7,57 @@
 {% block title %}{{ block.super }}Invoice Search{% endblock %}
 
 {% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
 {% endblock %}
 
 {% block body %}
-<div class="t">
-<div class="t-invoice">
-<div class="t-search">
- {% invoice_nav  %}
-<h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
-{% invoice_search %}
-{% autopaginate invoices 10 %}
-<div class="invoices-wrap">
-	{% if query %}
-	<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
-	{% endif %}
-    {% for invoice in invoices %}
-    {% with invoice|get_object as invoice %}
-    	<div class="invoice-row">
-	    	<div class="invoice-row-inner">
-				{% invoices_search_results_line request invoice %}
-			</div>
-		</div>
-	{% endwith %}	
-	{% empty %}
-		<div>{% trans "0 Results Found" %}</div>
-	{% endfor %}
-</div>
+    <div class="t">
+        <div class="t-invoice">
+            <div class="t-search">
+                {% invoice_nav  %}
+                <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {% trans "Invoice Search" %}</h1>
+                {% invoice_search %}
+                {% autopaginate invoices 25 %}
+                <div class="invoices-wrap">
+
+                    <table width="100%">
+                        <tr>
+                            <td>{% trans "ID" %}</td>
+                            <td>{% trans "Type" %}</td>
+                            <td>{% trans "Title" %}</td>
+                            <td>{% trans "Name" %}</td>
+                            <td>{% trans "Date" %}</td>
+                            <td>{% trans "Amount" %}</td>
+                            <td>{% trans "Balance" %}</td>
+                        </tr>
+                        {% for invoice in invoices %}
+                            {% with invoice|get_object as invoice %}
+
+                                {% if invoice.get_object %}
+                                    {# display object info #}
+                                    <tr>
+                                        <td><a href="{{ invoice.get_object.get_absolute_url }}">{{invoice.get_object.id}}</a></td>
+                                        <td>{{invoice.object_type }}</td>
+                                        <td>{{invoice.split_title}}</td>
+                                        <td>{{invoice.get_object.creator_username}}</td>
+                                        <td>{{invoice.get_object.create_dt|date:'j-M Y'}}</td>
+                                        <td><div {% if invoice.total > 100 and invoice.balance > 0%}class="body-big-unpaid"{% endif %}>{{invoice.total|format_currency}}</div></td>
+                                        <td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
+                                    </tr>
+                                {% endif %}
+                            {% endwith %}
+
+                        {% empty %}
+                            <div>{% trans "0 Results Found" %}</div>
+                        {% endfor %}
+                    </table>
+                </div> {# invoice-wrap #}
 
 
- {% paginate %}
- </div>
-</div>
-</div>
+                {% paginate %}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

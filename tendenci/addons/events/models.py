@@ -48,7 +48,6 @@ class TypeColorSet(models.Model):
     def __unicode__(self):
         return '%s #%s' % (self.pk, self.bg_color)
 
-
 class Type(models.Model):
 
     """
@@ -81,7 +80,6 @@ class Type(models.Model):
         self.slug = slugify(self.name)
         super(Type, self).save(*args, **kwargs)
 
-
 class Place(models.Model):
     """
     Event Place (location)
@@ -108,8 +106,6 @@ class Place(models.Model):
 
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
-
-
 
 class RegistrationConfiguration(models.Model):
     """
@@ -184,8 +180,6 @@ class RegistrationConfiguration(models.Model):
             pricings = pricings.filter(q_obj)
             
         return pricings
-       
-
 
 class RegConfPricing(models.Model):
     """
@@ -338,8 +332,7 @@ class RegConfPricing(models.Model):
             target_str += 'a team of %d' % self.quantity
             
         return target_str
-        
-    
+
 class Registration(models.Model):
 
     guid = models.TextField(max_length=40, editable=False)
@@ -768,14 +761,12 @@ class Registrant(models.Model):
 
             self.name = ('%s %s' % (self.first_name, self.last_name)).strip()
 
-
 class Payment(models.Model):
     """
     Event registration payment
     Extends the registration model
     """
     registration = models.OneToOneField('Registration')
-
 
 class PaymentMethod(models.Model):
     """
@@ -789,7 +780,6 @@ class PaymentMethod(models.Model):
     def __unicode__(self):
         return self.label
 
-
 class Sponsor(models.Model):
     """
     Event sponsor
@@ -797,7 +787,6 @@ class Sponsor(models.Model):
     Sponsor can contribute to multiple events
     """
     event = models.ManyToManyField('Event')
-
 
 class Discount(models.Model):
     """
@@ -808,7 +797,6 @@ class Discount(models.Model):
     event = models.ForeignKey('Event')
     name = models.CharField(max_length=50)
     code = models.CharField(max_length=50)
-
 
 class Organizer(models.Model):
     """
@@ -823,7 +811,6 @@ class Organizer(models.Model):
 
     def __unicode__(self):
         return self.name
-
 
 class Speaker(models.Model):
     """
@@ -856,7 +843,6 @@ class Speaker(models.Model):
             self.cached_photo = photo
 
         return photo
-
 
 class Event(TendenciBaseModel):
     """
@@ -1065,9 +1051,6 @@ class Event(TendenciBaseModel):
             return  (spots_taken, 0)
 
         return (spots_taken, limit-spots_taken)
-        
-        
-
     
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
@@ -1129,7 +1112,6 @@ class CustomRegForm(models.Model):
             field.clone(form=cloned_obj)
             
         return cloned_obj
-    
 
 class CustomRegField(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="fields")
@@ -1164,8 +1146,7 @@ class CustomRegField(models.Model):
             cloned_field.form = form
             cloned_field.save()
         return cloned_field
-        
-                
+
 class CustomRegFormEntry(models.Model):
     form = models.ForeignKey("CustomRegForm", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
@@ -1243,7 +1224,6 @@ class CustomRegFormEntry(models.Model):
         for field_entry in field_entries:
             list_on_roster.append({'label': field_entry.field.label, 'value': field_entry.value})
         return list_on_roster
-        
 
 class CustomRegFieldEntry(models.Model):
     entry = models.ForeignKey("CustomRegFormEntry", related_name="field_entries")
@@ -1254,7 +1234,6 @@ class EventPhoto(File):
     @property
     def content_type(self):
         return 'events'
-
 
 class Addon(models.Model):
     event = models.ForeignKey(Event)
@@ -1301,7 +1280,6 @@ class AddonOption(models.Model):
     def __unicode__(self):
         return self.title
 
-            
 class RegAddon(models.Model):
     """Event registration addon.
     An event registration can avail multiple addons.

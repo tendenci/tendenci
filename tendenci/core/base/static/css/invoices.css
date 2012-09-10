@@ -87,9 +87,10 @@
 .invoice-row-inner{
 	border: 1.5px solid #333;
 }
-.body-copy-yellow{
-	background-color: yellow;
-}
+
+
+.body-big-unpaid{color: red;}
+.body-copy-yellow{background-color: yellow;}
 .t form.search-form input[type="text"] {
 	margin-bottom:10px;
 	padding:5px;

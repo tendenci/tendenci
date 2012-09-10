@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -14,6 +16,8 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm
 
+
+from django.contrib.contenttypes.models import ContentType
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
@@ -54,28 +58,55 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
                                               'form':form,
                                               'merchant_login': merchant_login}, 
         context_instance=RequestContext(request))
-    
-    
-def search(request, template_name="invoices/search.html"):
-    query = request.GET.get('q', None)
-    bill_to_email = request.GET.get('bill_to_email', None)
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        invoices = Invoice.objects.search(query)
-    else:
-        invoices = Invoice.objects.all()
-        if bill_to_email:
-            invoices = invoices.filter(bill_to_email=bill_to_email)
+@login_required
+def search(request, template_name="invoices/search.html"):
+    from django.db.models import Q
+
+    def is_number(num):
+        try:
+            float(num)
+            return True
+        except ValueError:
+            return False
+
+    #query
+    query = request.GET.get('q', None)
+    invoices = Invoice.objects.all()
+    if query:
+        if is_number(query):
+            invoices = invoices.filter( Q(pk=query) | Q(total=query)
+                                      | Q(balance=query)  | Q(title__icontains=query) )
+        else:
+            invoices = invoices.filter( Q(title__icontains=query) )
+    #permissions
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
-        invoices = invoices.order_by('-create_dt')
+        invoices = invoices.order_by('object_type', '-create_dt')
+
+
+        for i in invoices: #[0:2]:
+            print i.title, i.object_id, i.object_type
+
+            ct = ContentType.objects.get_for_model(Invoice)
+            print ct, ct.__module__, ct.pk, i.pk
+
+#            invoice_ids = invoices_objects.value_list('object_id', flat=True).filter(content_type = ct)
+#            events = Invoice.objects.filter(pk__in=event_ids)
+
+#            if i.object_type == 'registration':
+#                print 'hello'
+#            else: print 'not'
+        print dir(ct)
+
+
+
     else:
         if request.user.is_authenticated():
-            from django.db.models import Q
             invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
         else:
             raise Http403
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
+    return render_to_response(template_name, {'invoices': invoices, 'query': query},
         context_instance=RequestContext(request))
     
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):

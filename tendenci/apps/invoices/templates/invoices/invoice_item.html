@@ -7,7 +7,7 @@
 	{{ search_line_display|safe }}
 {% else %}
        <table width="100%">
-          {% invoices_search_line_header request invoice '#000000' %}  
+          {% invoices_search_line_header request invoice '#000000' %}#}
             
           {# display object info #} 
          
@@ -25,9 +25,10 @@
 	          	<td>{{obj.creator.first_name}}</td>
 	          	<td>{{obj.creator.last_name}}</td>
 	          	<td>{{obj.create_dt|date:'long'}}</td>
-	          	<td>{{invoice.total|format_currency}}</td>
+                <td><div {% if invoice.total > 100 %}class="body-big-unpaid"{% endif %}>{{invoice.total|format_currency}}</div></td>
 	          	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
-	          </tr> 
+
+              </tr>
            {% endif %}   
                 
         </table>

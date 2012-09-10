@@ -19,7 +19,46 @@ class Invoice(models.Model):
     _object = generic.GenericForeignKey('object_type', 'object_id')
 
     title = models.CharField(max_length=150, blank=True, null=True)
+    #user
+    creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(User, related_name="invoice_owner", null=True)
+    owner_username = models.CharField(max_length=50, null=True)
+    #dates
+    create_dt = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField()
+    update_dt = models.DateTimeField(auto_now=True)
     tender_date = models.DateTimeField(null=True)
+    arrival_date_time = models.DateTimeField(blank=True, null=True)
+    #payment status
+    status_detail = models.CharField(max_length=50, default='estimate')
+    status = models.BooleanField(default=True)
+    estimate = models.BooleanField(default=1)
+    payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
+    total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    #other
+    variance = models.DecimalField(max_digits=10, decimal_places=4, default=0)
+    variance_notes = models.TextField(max_length=1000, blank=True, null=True)
+    receipt = models.BooleanField(default=0)
+    gift = models.BooleanField(default=0)
+    greeting = models.CharField(max_length=500, blank=True, null=True)
+    instructions = models.CharField(max_length=500, blank=True, null=True)
+    po = models.CharField(max_length=50, blank=True)
+    terms = models.CharField(max_length=50, blank=True)
+    disclaimer = models.CharField(max_length=150, blank=True, null=True)
+    admin_notes = models.TextField(blank=True, null=True)
+    fob = models.CharField(max_length=50, blank=True, null=True)
+    project = models.CharField(max_length=50, blank=True, null=True)
+    other = models.CharField(max_length=120, blank=True, null=True)
+    message = models.CharField(max_length=150, blank=True, null=True)
+    subtotal = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    tax_exempt =models.BooleanField(default=1)
+    tax_exemptid = models.CharField(max_length=50, blank=True, null=True)
+    tax_rate = models.FloatField(blank=True, default=0)
+    taxable = models.BooleanField(default=0)
+    tax = models.DecimalField(max_digits=6, decimal_places=4, default=0)
+    #bill/ ship
     bill_to = models.CharField(max_length=120, blank=True)
     bill_to_first_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
@@ -45,46 +84,12 @@ class Invoice(models.Model):
     ship_to_fax = models.CharField(max_length=50, blank=True, null=True)
     ship_to_email = models.CharField(max_length=100, blank=True, null=True)
     ship_to_address_type = models.CharField(max_length=50, blank=True, null=True)
-    receipt = models.BooleanField(default=0)
-    gift = models.BooleanField(default=0)
-    arrival_date_time = models.DateTimeField(blank=True, null=True)   
-    greeting = models.CharField(max_length=500, blank=True, null=True)   
-    instructions = models.CharField(max_length=500, blank=True, null=True)   
-    po = models.CharField(max_length=50, blank=True)
-    terms = models.CharField(max_length=50, blank=True)
-    due_date = models.DateTimeField()
     ship_date = models.DateTimeField()
     ship_via = models.CharField(max_length=50, blank=True)
-    fob = models.CharField(max_length=50, blank=True, null=True)
-    project = models.CharField(max_length=50, blank=True, null=True)   
-    other = models.CharField(max_length=120, blank=True, null=True)
-    message = models.CharField(max_length=150, blank=True, null=True)
-    subtotal = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
     shipping = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     shipping_surcharge =models.DecimalField(max_digits=6, decimal_places=2, default=0)
     box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    tax_exempt =models.BooleanField(default=1)
-    tax_exemptid = models.CharField(max_length=50, blank=True, null=True)  
-    tax_rate = models.FloatField(blank=True, default=0)
-    taxable = models.BooleanField(default=0)
-    tax = models.DecimalField(max_digits=6, decimal_places=4, default=0)
-    variance = models.DecimalField(max_digits=10, decimal_places=4, default=0)
-    total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
-    payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    estimate = models.BooleanField(default=1)
-    disclaimer = models.CharField(max_length=150, blank=True, null=True)
-    variance_notes = models.TextField(max_length=1000, blank=True, null=True)
-    admin_notes = models.TextField(blank=True, null=True)
-    create_dt = models.DateTimeField(auto_now_add=True)
-    update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
-    creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="invoice_owner", null=True)
-    owner_username = models.CharField(max_length=50, null=True)
-    status_detail = models.CharField(max_length=50, default='estimate')
-    status = models.BooleanField(default=True)
-    
+
     objects = InvoiceManager()
     
     class Meta:
@@ -92,7 +97,15 @@ class Invoice(models.Model):
     
     def __unicode__(self):
         return u'%s' % (self.title)
-    
+
+    def split_title(self):
+        split_title = ': '.join(self.title.split(': ')[1:])
+        return u'%s' % split_title
+
+#    def past_due(self):
+#        if self.object_type == 'registration':
+#            event_date =
+
     @models.permalink
     def get_absolute_url(self):
         return ('invoice.view', [self.id])

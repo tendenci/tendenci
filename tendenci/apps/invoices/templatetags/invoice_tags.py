@@ -3,7 +3,6 @@ from django.conf import settings
 
 register = Library()
 
-
 @register.inclusion_tag("invoices/nav.html", takes_context=True)
 def invoice_nav(context, invoice=None):
     context.update({
@@ -14,7 +13,7 @@ def invoice_nav(context, invoice=None):
 @register.inclusion_tag("invoices/invoice_item.html")
 def invoices_search_results_line(request, invoice):
     obj = invoice.get_object()
-    
+
     search_line_display = None
     if invoice.object_type:
         from django.template.loader import render_to_string
@@ -23,27 +22,23 @@ def invoices_search_results_line(request, invoice):
         
         app_label = invoice.object_type.app_label
         template_name = "%s/invoice_search_result_line.html" % (app_label)
-        
+
         try:
             search_line_display = render_to_string(template_name, {'obj':obj,
                                                               'invoice':invoice},
                                                             context_instance=RequestContext(request))
         except TemplateDoesNotExist:
             pass
-        
-    
+
     return {'request':request, 'invoice':invoice, 'obj':obj, 'search_line_display':search_line_display}
- 
- 
+
 @register.inclusion_tag("invoices/search_line_header.html")
 def invoices_search_line_header(request, invoice, obj_color):
     return {'request':request, 'invoice':invoice, 'obj_color':obj_color}
-       
-    
+
 @register.inclusion_tag("invoices/search-form.html", takes_context=True)
 def invoice_search(context):
     return context
-
 
 # display object on invoice view
 @register.inclusion_tag("invoices/object_display.html")
@@ -74,7 +69,6 @@ def invoice_object_display(request, invoice):
         'object_display': object_display
     }
     return context
-
 
 # display invoice total on invoice view
 @register.inclusion_tag("invoices/total_display.html")
@@ -112,7 +106,6 @@ def invoice_total_display(request, invoice):
         'merchant_login': merchant_login
     } 
     return context
-
 
 # display payment history on invoice view
 @register.inclusion_tag("invoices/payment_history.html")
