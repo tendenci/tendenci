@@ -117,7 +117,5 @@ class StoryForm(TendenciBaseForm):
             story.image = None
         return story
 
-class UploadStoryImageForm(forms.Form):
-    file  = forms.FileField(label=_("File Path"))
 
 

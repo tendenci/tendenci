@@ -17,7 +17,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.stories.models import Story
-from tendenci.apps.stories.forms import StoryForm, UploadStoryImageForm
+from tendenci.apps.stories.forms import StoryForm
 
 
 def details(request, id=None, template_name="stories/view.html"):
@@ -203,31 +203,6 @@ def delete(request, id, template_name="stories/delete.html"):
     else:
         raise Http403
  
-@login_required   
-def upload(request, id, form_class=UploadStoryImageForm, 
-                template_name="stories/upload.html"):
-    story = get_object_or_404(Story, pk=id)
-    # permission check
-    if not story.allow_edit_by(request.user): raise Http403
-    
-    if request.method == 'POST':
-        form = form_class(request.POST, request.FILES)
-        if form.is_valid():
-            data = form.cleaned_data['file']
-            imagename = data.name
-            imagepath = os.path.join(settings.MEDIA_ROOT, 'stories/'+str(story.id))
-            if not os.path.isdir(imagepath):
-                os.makedirs(imagepath)
-            fd = open(imagepath + '/' + imagename, 'wb+')
-            for chunk in data.chunks():
-                fd.write(chunk)
-            fd.close()
-            #filelog(mode='wb+', filename=imagename, path=imagepath)
-            return HttpResponseRedirect(reverse('story', args=[story.pk]))
-    else:
-        form = form_class(user=request.user)
-    return render_to_response(template_name, {'form':form, 'story': story}, 
-            context_instance=RequestContext(request))
     
 @login_required
 def export(request, template_name="stories/export.html"):
