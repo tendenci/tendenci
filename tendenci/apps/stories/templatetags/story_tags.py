@@ -143,8 +143,8 @@ class ListStoriesNode(ListNode):
 
         objects = []
 
-        # Removed seconds so we can cache the query better
-        now = datetime.now().replace(second=0)
+        # Removed seconds and microseconds so we can cache the query better
+        now = datetime.now().replace(second=0, microsecond=0)
 
         # Custom filter for stories
         date_query = reduce(or_, [Q(end_dt__gte = now), Q(expires=False)])

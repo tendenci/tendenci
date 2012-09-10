@@ -334,12 +334,12 @@ class ListEventsNode(ListNode):
         # if order is not specified it sorts by relevance
         if order:
             if order == "next_upcoming":
-                # Removed seconds so we can cache the query better
-                now = datetime.now().replace(second=0)
+                # Removed seconds and microseconds so we can cache the query better
+                now = datetime.now().replace(second=0, microsecond=0)
                 items = items.filter(start_dt__gt = now)
                 items = items.order_by("start_dt")
             elif order == "current_and_upcoming":
-                now = datetime.now().replace(second=0)
+                now = datetime.now().replace(second=0, microsecond=0)
                 items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
                 items = items.order_by("start_dt")
             else:
