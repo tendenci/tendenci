@@ -1490,7 +1490,7 @@ class AppEntry(TendenciBaseModel):
         get the threshold price for this individual.
         return tuple (use_threshold, threshold_price)
         """
-        from corporate_memberships.models import CorporateMembership
+        from tendenci.addons.corporate_memberships.models import CorporateMembership
         try:
             corp_memb = CorporateMembership.objects.get(id=self.corporate_membership_id)
         except CorporateMembership.DoesNotExist:
