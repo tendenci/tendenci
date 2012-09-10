@@ -255,12 +255,14 @@ class AppAdmin(admin.ModelAdmin):
         if not extra_context:
             extra_context = {}
         extra_context.update({
-             'excluded_fields':['field_type', 'no_duplicates', 'admin_only'],
-             'excluded_lines':[2, 3],
+             'excluded_fields': ['field_type', 'no_duplicates', 'admin_only'],
+             'excluded_lines': [2, 3],
          })
         extra_context.update(extra_context)
 
-        return super(AppAdmin, self).change_view(request, object_id, form_url=form_url, extra_context=extra_context)
+        return super(AppAdmin, self).change_view(request, object_id,
+                                                 form_url=form_url,
+                                                 extra_context=extra_context)
     
     def response_change(self, request, obj, *args, **kwargs):
         if request.POST.has_key('_popup'):
