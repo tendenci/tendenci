@@ -70,7 +70,7 @@ class OldGroupManager(Manager):
                 if is_a_superuser:
                     # this is no-op. the .all().exclude(type='membership').models(Group) wouldn't work
                     #sqs = sqs.all()
-                    sqs = sqs.filter(status=1)
+                    sqs = sqs.filter(status=True)
                 else:
                     if not user.is_anonymous():
                         # (status+status_detail+anon OR who_can_view__exact)
