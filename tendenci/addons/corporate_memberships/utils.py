@@ -12,6 +12,7 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
+from django.core.files.storage import default_storage
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import AppField, Membership
@@ -306,7 +307,7 @@ def corp_memb_update_perms(corp_memb, **kwargs):
 def csv_to_dict(file_path):
     data_list = []
 
-    data = csv.reader(open(file_path))
+    data = csv.reader(default_storage.open(file_path, 'rU'))
     fields = data.next()
 
     fields = [smart_str(field) for field in fields]
@@ -321,7 +322,7 @@ def validate_import_file(file_path):
     Run import file against required fields
     'name' and 'corporate_membership_type' are required fields
     """
-    data = csv.reader(open(file_path))
+    data = csv.reader(default_storage.open(file_path, mode='rU'))
     fields = data.next()
     fields = [smart_str(field) for field in fields]
 

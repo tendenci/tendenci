@@ -6,6 +6,7 @@ from haystack.query import SearchQuerySet
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Manager
 from django.conf import settings
+from django.core.files.storage import default_storage
 
 from tendenci.core.perms.managers import TendenciBaseManager
 
@@ -28,19 +29,21 @@ def save_to_disk(f, instance):
     # make directory with pk
     if isinstance(instance.pk, long):
         relative_directory = os.path.join(
-            relative_directory, 
+            relative_directory,
             unicode(instance.pk),
         )
 
-    absolute_directory = os.path.join(settings.MEDIA_ROOT, relative_directory)
+    default_storage.save(os.path.join(relative_directory, file_name), f)
 
-    if not os.path.exists(absolute_directory):
-        os.makedirs(absolute_directory)
-
-    destination = open(os.path.join(absolute_directory, file_name), 'wb+')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
+#    absolute_directory = os.path.join(settings.MEDIA_ROOT, relative_directory)
+#
+#    if not os.path.exists(absolute_directory):
+#        os.makedirs(absolute_directory)
+#
+#    destination = open(os.path.join(absolute_directory, file_name), 'wb+')
+#    for chunk in f.chunks():
+#        destination.write(chunk)
+#    destination.close()
 
     # relative path
     return os.path.join(relative_directory, file_name)

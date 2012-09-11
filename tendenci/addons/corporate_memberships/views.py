@@ -870,7 +870,8 @@ def corp_import(request, step=None):
 
                 # check import requirements
                 saved_files = File.objects.save_files_for_instance(request, CorporateMembership)
-                file_path = os.path.join(settings.MEDIA_ROOT, str(saved_files[0].file))
+                #file_path = os.path.join(settings.MEDIA_ROOT, str(saved_files[0].file))
+                file_path = str(saved_files[0].file)
                 is_valid_import, missing_required_fields = validate_import_file(file_path)
                 
                 if is_valid_import:
