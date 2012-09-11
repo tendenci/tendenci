@@ -36,6 +36,10 @@ class Migration(SchemaMigration):
             ('query_string', self.gf('django.db.models.fields.TextField')(null=True)),
             ('robot', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['robots.Robot'], null=True)),
             ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('uuid', self.gf('django.db.models.fields.CharField')(max_length=40)),
+            ('application', self.gf('django.db.models.fields.CharField')(max_length=50, db_index=True)),
+            ('action', self.gf('django.db.models.fields.CharField')(max_length=50, db_index=True)),
+            ('model_name', self.gf('django.db.models.fields.CharField')(max_length=75)),
         ))
         db.send_create_signal('event_logs', ['EventLog'])
 
@@ -86,7 +90,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 11, 12, 43, 59, 34729)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -94,7 +98,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 11, 12, 43, 59, 34623)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -139,6 +143,8 @@ class Migration(SchemaMigration):
         },
         'event_logs.eventlog': {
             'Meta': {'object_name': 'EventLog'},
+            'action': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'}),
+            'application': ('django.db.models.fields.CharField', [], {'max_length': '50', 'db_index': 'True'}),
             'category': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -154,6 +160,7 @@ class Migration(SchemaMigration):
             'http_referrer': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True'}),
             'http_user_agent': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'model_name': ('django.db.models.fields.CharField', [], {'max_length': '75'}),
             'object_id': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'query_string': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'request_method': ('django.db.models.fields.CharField', [], {'max_length': '10', 'null': 'True'}),
@@ -164,7 +171,8 @@ class Migration(SchemaMigration):
             'url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'}),
             'user_ip_address': ('django.db.models.fields.IPAddressField', [], {'max_length': '15', 'null': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'})
+            'username': ('django.db.models.fields.CharField', [], {'max_length': '50', 'null': 'True'}),
+            'uuid': ('django.db.models.fields.CharField', [], {'max_length': '40'})
         },
         'event_logs.eventlogbasecolor': {
             'Meta': {'object_name': 'EventLogBaseColor'},
