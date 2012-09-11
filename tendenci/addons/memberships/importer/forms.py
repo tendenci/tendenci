@@ -50,10 +50,10 @@ class ImportMapForm(forms.Form):
     def __init__(self, *args, **kwargs):
         memport = kwargs.pop('memport')
         super(ImportMapForm, self).__init__(*args, **kwargs)
-
+        
         app = memport.app
-        file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
-
+        file_path = str(memport.get_file().file.name)
+        
         csv = csv_to_dict(file_path)
 
         # choices list

@@ -523,7 +523,7 @@ class MembershipImport(models.Model):
         return file
 
     def __unicode__(self):
-        return self.get_file().file.path
+        return self.get_file().file.name
 
 NOTICE_TYPES = (
     ('join', 'Join Date'),

@@ -720,8 +720,8 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             )
 
             csv = File.objects.save_files_for_instance(request, memport)[0]
-
-            file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            file_path = str(csv.file.name)
+            #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
 
             import_valid, import_errs = is_import_valid(file_path)
 
@@ -760,8 +760,8 @@ def membership_import_preview(request, id):
         if form.is_valid():
             #show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
-
-            file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
+            file_path = memport.get_file().file.name
+            #file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             memberships, stats = parse_mems_from_csv(
                 file_path,
                 cleaned_data,

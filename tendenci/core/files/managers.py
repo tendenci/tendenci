@@ -122,7 +122,6 @@ class FileManager(TendenciBaseManager):
 
         # loop; save file; save file record in db
         # ----------------------------------------
-
         files_saved = []
         for file in files:
 
@@ -130,9 +129,8 @@ class FileManager(TendenciBaseManager):
 
             # update file record; or create new file record
             # ----------------------------------------------
-
             instance_pk = None
-            if isinstance(instance.pk, long):
+            if isinstance(instance.pk, long) or isinstance(instance.pk, int):
                 instance_pk = instance.pk
 
             try:
@@ -141,16 +139,18 @@ class FileManager(TendenciBaseManager):
                 file.owner = request.user
                 file.owner_username = request.user.username
                 file.update_dt = datetime.now()
+                file.content_type = ContentType.objects.get_for_model(instance)
+                file.object_id = instance_pk
             except:
                 file = self.model(**{
-                    'file':file_path,
-                    'name':file.name,
-                    'content_type':ContentType.objects.get_for_model(instance),
-                    'object_id':instance_pk,
-                    'creator':request.user,
-                    'creator_username':request.user.username,
-                    'owner':request.user,
-                    'owner_username':request.user.username,
+                    'file': file_path,
+                    'name': file.name,
+                    'content_type': ContentType.objects.get_for_model(instance),
+                    'object_id': instance_pk,
+                    'creator': request.user,
+                    'creator_username': request.user.username,
+                    'owner': request.user,
+                    'owner_username': request.user.username,
                 })
 
             file.save() # auto generate GUID if missing

@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.template import loader
 from django.template.defaultfilters import slugify
 from django.db.models import Q
+from django.core.files.storage import default_storage
 
 from tendenci.core.perms.utils import has_perm
 from tendenci.addons.memberships.models import App, AppField, AppEntry, Membership, MembershipType
@@ -92,7 +93,7 @@ def get_corporate_membership_choices():
 
 
 def has_null_byte(file_path):
-    f = open(file_path, 'r')
+    f = default_storage.open(file_path, 'r')
     data = f.read()
     f.close()
     return ('\0' in data)
@@ -108,7 +109,7 @@ def csv_to_dict(file_path, **kwargs):
     if has_null_byte(file_path):
         return []
 
-    csv_file = csv.reader(open(file_path, 'rU'))
+    csv_file = csv.reader(default_storage.open(file_path, 'rU'))
     colnames = csv_file.next()  # row 1;
 
     if machine_name:
@@ -158,7 +159,7 @@ def is_import_valid(file_path):
         return False, errs
 
     # get header column
-    f = open(file_path, 'r')
+    f = default_storage.open(file_path, 'r')
     row = f.readline()
     f.close()
 
