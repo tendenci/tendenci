@@ -282,32 +282,6 @@ def print_view(request, id, template_name="events/print-view.html"):
     else:
         raise Http403
 
-def handle_uploaded_file(f, instance):
-    import os
-    from django.conf import settings
-
-    file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
-
-    relative_directory = os.path.join(
-        'files',
-        instance._meta.app_label,
-        instance._meta.module_name,
-        unicode(instance.pk),
-    )
-
-    absolute_directory = os.path.join(settings.MEDIA_ROOT, relative_directory)
-
-    if not os.path.exists(absolute_directory):
-        os.makedirs(absolute_directory)
-
-    destination = open(os.path.join(absolute_directory, file_name), 'wb+')
-    for chunk in f.chunks():
-        destination.write(chunk)
-    destination.close()
-
-    # relative path
-    return os.path.join(relative_directory, file_name)
-
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
