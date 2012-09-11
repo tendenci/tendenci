@@ -88,7 +88,6 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             raise Http404
 
         # gets resized image from cache or rebuilds
-        image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())

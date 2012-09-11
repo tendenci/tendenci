@@ -24,9 +24,9 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
     size = validate_image_size(size)  # make sure it's not too big
     binary = None
 
-    # if cache:
-    #     key = generate_image_cache_key(file, size, pre_key, crop, unique_key)
-    #     binary = django_cache.get(key)  # check if key exists
+    if cache:
+        key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality)
+        binary = django_cache.get(key)  # check if key exists
 
     if not binary:
         kwargs = {
@@ -79,7 +79,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     output.close()
 
     if cache:
-        key = generate_image_cache_key(file, size, pre_key, crop, unique_key)
+        key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality)
         django_cache.add(key, binary, 60 * 60 * 24 * 30)  # cache for 30 days #issue/134
 
     return binary
@@ -154,12 +154,13 @@ def constrain_size(image_size, new_size):
     return int(w), int(h)
 
 
-def generate_image_cache_key(file, size, pre_key, crop, unique_key):
+def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality):
     """
     Generates image cache key. You can use this for adding,
     retrieving or removing a cache record.
     """
     str_size = 'x'.join([str(i) for i in size])
+    str_quality = str(quality)
 
     if crop:
         str_crop = "cropped"
@@ -168,9 +169,9 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key):
 
     # e.g. file_image.1294851570.200x300 file_image.<file-system-modified-time>.<width>x<height>
     if unique_key:
-        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop))
+        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop, str_quality))
     else:
-        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop))
+        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop, str_quality))
     # Remove spaces so key is valid for memcached
     key = key.replace(" ", "_")
 
