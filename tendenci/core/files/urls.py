@@ -12,9 +12,9 @@ urlpatterns = patterns('tendenci.core.files.views',
     url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>(download)?)/?(?P<constrain>(constrain)?)/?$', 'details', name="file"),
 
     # crop and quality
-    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/?$', 'details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<quality>\d+)/?$', 'details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/(?P<quality>\d+)/?$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<quality>\d+)/$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/(?P<quality>\d+)/$', 'details', name="file"),
 
     url(r'^search/$', 'search_redirect', name="file.search"),
     url(r'^add/$', 'add', name="file.add"),
