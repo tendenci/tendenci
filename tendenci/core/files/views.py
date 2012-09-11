@@ -4,7 +4,7 @@ import urllib2
 import mimetypes
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.http import (HttpResponseRedirect, HttpResponse, Http404,
     HttpResponseServerError)
@@ -13,7 +13,11 @@ from django.core.urlresolvers import reverse
 from django.middleware.csrf import get_token as csrf_get_token
 from django.forms.models import modelformset_factory
 from django.conf import settings
+from django.core.cache import cache
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.decorators import admin_required
@@ -24,11 +28,17 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File
-from tendenci.core.files.utils import get_image, aspect_ratio
+from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
 from tendenci.core.files.forms import FileForm, MostViewedForm
 
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
+
+    cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality)
+    cached_image = cache.get(cache_key)
+    if cached_image:
+        return redirect(cached_image)
+
     try:
         file = File.objects.get(pk=id)
     except:
@@ -91,11 +101,39 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
+
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
+        if file.is_public_file():
+            file_name = "%s%s" % (file.get_name(), ".jpg")
+            file_path = 'cached%s%s' % (request.path, file_name)
+            default_storage.save(file_path, ContentFile(response.content))
+            full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+            cache.set(cache_key, full_file_path)
+            cache_group_key = "files_cache_set.%s" % file.pk
+            cache_group_list = cache.get(cache_group_key)
+
+            if cache_group_list is None:
+                cache.set(cache_group_key, [cache_key])
+            else:
+                cache_group_list += [cache_key]
+                cache.set(cache_group_key, cache_group_list)
+
         return response
+
+    if file.is_public_file():
+        cache.set(cache_key, file.get_file_public_url())
+        set_s3_file_permission(file.file, public=True)
+        cache_group_key = "files_cache_set.%s" % file.pk
+        cache_group_list = cache.get(cache_group_key)
+
+        if cache_group_list is None:
+            cache.set(cache_group_key, [cache_key])
+        else:
+            cache_group_list += cache_key
+            cache.set(cache_group_key, cache_group_list)
 
     # set mimetype
     if file.mime_type():
@@ -106,6 +144,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     # return response
     response['Content-Disposition'] = '%s filename=%s' % (attachment, file.basename())
     return response
+
 
 def search(request, template_name="files/search.html"):
     """

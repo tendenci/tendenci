@@ -159,7 +159,12 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality):
     Generates image cache key. You can use this for adding,
     retrieving or removing a cache record.
     """
-    str_size = 'x'.join([str(i) for i in size])
+    str_size = ''
+    if size:
+        if 'x' in size:
+            str_size = str(size)
+        else:
+            str_size = 'x'.join([str(i) for i in size])
     str_quality = str(quality)
 
     if crop:

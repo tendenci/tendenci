@@ -38,12 +38,12 @@ def save_file_to_s3(file_path, dirpath=None, public=False):
                                settings.AWS_SECRET_ACCESS_KEY)
         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
         k = Key(bucket)
-            
+
         filename = os.path.split(file_path)[1]
-        
+
         if not dirpath:
             dirpath = settings.ORIGINAL_THEMES_DIR
-            
+
         key = '%s%s' % (settings.AWS_LOCATION,
                             file_path.replace(os.path.dirname(dirpath), ''))
         k.key = key
@@ -51,14 +51,31 @@ def save_file_to_s3(file_path, dirpath=None, public=False):
             content_type = 'text/css'
         else:
             content_type = mimetypes.guess_type(filename)[0] or k.DefaultContentType
-        k.set_metadata('Content-Type', content_type) 
+        k.set_metadata('Content-Type', content_type)
         k.set_contents_from_filename(file_path, replace=True)
-        #print key
-        
+
         if public:
             k.set_acl('public-read')
-        
-        
+
+
+def set_s3_file_permission(file_path, public=False):
+    """
+    Save the file to S3.
+    """
+    if settings.USE_S3_STORAGE:
+        conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
+                               settings.AWS_SECRET_ACCESS_KEY)
+        bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+        k = Key(bucket)
+
+        k.key = '%s%s' % (settings.MEDIA_ROOT, file_path)
+
+        if public:
+            k.set_acl('public-read')
+        else:
+            k.set_acl('private')
+
+
 def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=False):
     """
     Retrieve the files inside the prefix (ex: themes) from S3,

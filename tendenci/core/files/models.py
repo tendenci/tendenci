@@ -10,9 +10,15 @@ import cStringIO
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
+
 from tagging.fields import TagField
+
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
+
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.files.managers import FileManager
+from tendenci.core.site_settings.utils import get_setting
 
 
 def file_directory(instance, filename):
@@ -41,6 +47,16 @@ class File(TendenciBaseModel):
             self.guid = unicode(uuid.uuid1())
 
         super(File, self).save(*args, **kwargs)
+
+        if self.is_public_file():
+            set_s3_file_permission(self.file, public=True)
+        else:
+            set_s3_file_permission(self.file, public=False)
+            cache_set = cache.get("files_cache_set.%s" % self.pk)
+            if cache_set is not None:
+                # TODO remove cached images
+                cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
+                cache.delete("files_cache_set.%s" % self.pk)
 
     def delete(self, *args, **kwargs):
         # Related objects
@@ -178,3 +194,18 @@ class File(TendenciBaseModel):
 
     def __unicode__(self):
         return self.get_name()
+
+    def is_public_file(self):
+        return all([self.is_public,
+            self.allow_anonymous_view,
+            self.status,
+            self.status_detail.lower() == "active"]
+            )
+
+    def get_file_public_url(self):
+        if self.is_public_file():
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                return self.file.url
+            else:
+                return "%s%s%s" % (get_setting("site", "global", "siteurl"), settings.MEDIA_URL, self.file)
+        return None
