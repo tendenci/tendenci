@@ -184,7 +184,8 @@ def locations_import_upload(request, template_name='locations/import-upload-file
             
             locport = LocationImport.objects.create(creator=request.user)
             csv = File.objects.save_files_for_instance(request, locport)[0]
-            file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            file_path = str(csv.file.name)
             import_valid, import_errs = is_import_valid(file_path)
 
             if not import_valid:
@@ -220,7 +221,8 @@ def locations_import_preview(request, id, template_name='locations/import-map-fi
         if form.is_valid():
             # Show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
-            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            #file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            file_path = locport.get_file().file.name
             locations, stats = parse_locs_from_csv(file_path, cleaned_data)
             
             # return the form to use it for the confirm view

@@ -22,7 +22,8 @@ class ImportMapForm(forms.Form):
         locport = kwargs.pop('locport')
         super(ImportMapForm, self).__init__(*args, **kwargs)
         
-        file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+        #file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+        file_path = str(locport.get_file().file.name)
         csv = csv_to_dict(file_path)
 
         # choices list

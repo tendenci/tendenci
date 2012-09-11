@@ -1,6 +1,7 @@
 import os
 
 from django.template.defaultfilters import slugify
+from django.core.files.storage import default_storage
 
 from tendenci.addons.locations.models import Location
 from tendenci.addons.locations.utils import csv_to_dict, has_null_byte
@@ -27,7 +28,7 @@ def is_import_valid(file_path):
         return False, errs
 
     # get header column
-    f = open(file_path, 'r')
+    f = default_storage.open(file_path, 'r')
     row = f.readline()
     f.close()
 

@@ -2,6 +2,9 @@ import os
 import csv
 
 from django.template.defaultfilters import slugify
+from django.core.files.storage import default_storage
+
+from tendenci.core.base.utils import normalize_newline
 
 def geocode_api(**kwargs):
     import simplejson, urllib
@@ -84,7 +87,8 @@ def csv_to_dict(file_path, **kwargs):
     if has_null_byte(file_path):
         return []
 
-    csv_file = csv.reader(open(file_path, 'rU'))
+    normalize_newline(file_path)
+    csv_file = csv.reader(default_storage.open(file_path, 'rU'))
     colnames = csv_file.next()  # row 1;
 
     if machine_name:
@@ -115,7 +119,7 @@ def csv_to_dict(file_path, **kwargs):
     return lst  # list of dictionaries
 
 def has_null_byte(file_path):
-    f = open(file_path, 'r')
+    f = default_storage.open(file_path, 'r')
     data = f.read()
     f.close()
     return ('\0' in data)
