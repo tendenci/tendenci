@@ -10,6 +10,7 @@ from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
+from django.core.files.storage import default_storage
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.payments.models import PaymentMethod
@@ -22,7 +23,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 
-fs = FileSystemStorage(location=UPLOAD_ROOT)
+#fs = FileSystemStorage(location=UPLOAD_ROOT)
 
 class FormForForm(forms.ModelForm):
 
@@ -142,7 +143,7 @@ class FormForForm(forms.ModelForm):
             field_key = "field_%s" % field.id
             value = self.cleaned_data[field_key]
             if value and self.fields[field_key].widget.needs_multipart_form:
-                value = fs.save(join("forms", str(uuid4()), value.name), value)
+                value = default_storage.save(join("forms", str(uuid4()), value.name), value)
             # if the value is a list convert is to a comma delimited string
             if isinstance(value,list):
                 value = ','.join(value)

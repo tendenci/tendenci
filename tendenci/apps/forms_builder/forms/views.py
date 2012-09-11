@@ -10,6 +10,7 @@ from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
+from django.core.files.storage import default_storage
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
@@ -304,9 +305,18 @@ def entries_export(request, id):
             values.append(entry.entry_time)
             for field in entry.fields.all():
                 if has_files and field.field.field_type == 'FileField':
-                    file_path = join(settings.MEDIA_ROOT,field.value)
                     archive_name = join('files',field.value)
-                    zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
+                    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                        file_path = field.value
+                        try:
+                            # TODO: for large files, we may need to copy down
+                            # the files before adding them to the zip file.
+                            zip.writestr(archive_name, default_storage.open(file_path).read())
+                        except IOError:
+                            pass
+                    else:
+                        file_path = join(settings.MEDIA_ROOT,field.value)
+                        zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
 
                 if field.field.field_type == 'BooleanField':
                     values.append(yesno(smart_str(field.value)))
