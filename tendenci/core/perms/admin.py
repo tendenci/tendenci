@@ -67,8 +67,9 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
             EventLog.objects.log(**log_defaults)
         return instance
 
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(TendenciBaseModelAdmin, self).change_view(request, object_id, extra_context)
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        result = super(TendenciBaseModelAdmin, self).change_view(
+            request, object_id, form_url=form_url, extra_context=extra_context)
         if not request.POST.has_key('_addanother') and not request.POST.has_key('_continue') and request.GET.has_key('next'):
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
         return result
