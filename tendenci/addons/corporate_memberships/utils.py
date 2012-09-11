@@ -18,6 +18,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import AppField, Membership
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.payments.models import Payment
+from tendenci.core.base.utils import normalize_newline
 
 
 # get the corpapp default fields list from json
@@ -306,7 +307,7 @@ def corp_memb_update_perms(corp_memb, **kwargs):
   
 def csv_to_dict(file_path):
     data_list = []
-
+    
     data = csv.reader(default_storage.open(file_path, 'rU'))
     fields = data.next()
 
@@ -322,6 +323,7 @@ def validate_import_file(file_path):
     Run import file against required fields
     'name' and 'corporate_membership_type' are required fields
     """
+    normalize_newline(file_path)
     data = csv.reader(default_storage.open(file_path, mode='rU'))
     fields = data.next()
     fields = [smart_str(field) for field in fields]
