@@ -316,7 +316,10 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             site_url = get_setting('site', 'global', 'siteurl')
             html_url = str("%s%s"%(site_url, template.get_html_url()))
             if template.zip_file:
-                zip_url = str("%s%s"%(site_url, template.get_zip_url()))
+                if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                    zip_url = template.get_zip_url()
+                else:
+                    zip_url = "%s%s"%(site_url, template.get_zip_url())
             else:
                 zip_url = ""
             
