@@ -372,7 +372,10 @@ def template_update(request, template_id):
     site_url = get_setting('site', 'global', 'siteurl')
     html_url = str("%s%s"%(site_url, template.get_html_url()))
     if template.zip_file:
-        zip_url = str("%s%s"%(site_url, template.get_zip_url()))
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            zip_url = template.get_zip_url()
+        else:
+            zip_url = "%s%s"%(site_url, template.get_zip_url())
     else:
         zip_url = ""
     
@@ -493,7 +496,10 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
             html_url += "&pages_days=%s" % form.cleaned_data.get('pages_days')
             
             if template.zip_file:
-                zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+                if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                    zip_url = unicode(template.get_zip_url())
+                else:
+                    zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
             else:
                 zip_url = unicode()
 
