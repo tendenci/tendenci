@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 from django.utils import simplejson
 from django.db.models import Q
+from django.core.files.storage import default_storage
 
 from tendenci.core.imports.utils import render_excel
 
@@ -1186,7 +1187,7 @@ def corp_import_invalid_records_download(request):
     if not file_path or not invalid_corp_membs:
         raise Http403
     
-    data = csv.reader(open(file_path))
+    data = csv.reader(default_storage.open(file_path, 'rU'))
     title_fields = data.next()
     title_fields = [smart_str(field) for field in title_fields]
     
