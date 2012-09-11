@@ -345,7 +345,7 @@ class RssParserNode(Node):
             # pickled when we try to cache the content.
             if 'bozo_exception' in url_content:
                 url_content['bozo_exception'] = ''
-            cache.set(cache_key, url_content, cache_timeout)
+            cache.set(cache_key, url_content, int(cache_timeout))
 
         context[self.context_var] = url_content
 
