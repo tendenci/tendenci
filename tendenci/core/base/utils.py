@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.conf import settings
 from django.template.defaultfilters import slugify
+from django.core.files.storage import default_storage
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_root
@@ -519,4 +520,17 @@ def is_blank(item):
     return not bool(''.join(l).strip())
 
     raise Exception
+
+
+def normalize_newline(file_path):
+    """
+    Normalize the new lines for a file ```file_path```
+
+    ```file_path``` is a relative path.
+    """
+    data = default_storage.open(file_path).read()
+    data = data.replace('\r\n', '\n').replace('\r', '\n')
+    f = default_storage.open(file_path, 'w')
+    f.write(data)
+    f.close()
 

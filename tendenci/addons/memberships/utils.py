@@ -12,7 +12,12 @@ from django.db.models import Q
 from django.core.files.storage import default_storage
 
 from tendenci.core.perms.utils import has_perm
-from tendenci.addons.memberships.models import App, AppField, AppEntry, Membership, MembershipType
+from tendenci.addons.memberships.models import (App, 
+                                                AppField, 
+                                                AppEntry, 
+                                                Membership,
+                                                MembershipType)
+from tendenci.core.base.utils import normalize_newline
 
 
 def get_default_membership_fields(use_for_corp=False):
@@ -108,7 +113,8 @@ def csv_to_dict(file_path, **kwargs):
     # null byte; assume xls; not csv
     if has_null_byte(file_path):
         return []
-
+    
+    normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
     colnames = csv_file.next()  # row 1;
 
