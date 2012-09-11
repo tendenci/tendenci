@@ -29,8 +29,10 @@ from tendenci.core.files.forms import FileForm, MostViewedForm
 
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
-
-    file = get_object_or_404(File, pk=id)
+    try:
+        file = File.objects.get(pk=id)
+    except:
+        raise Http404
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
