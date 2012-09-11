@@ -51,6 +51,23 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('notifications', ['NoticeQueueBatch'])
 
+        # Adding model 'NoticeEmail'
+        db.create_table('notifications_noticeemail', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('guid', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('sender', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
+            ('emails', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
+            ('bcc', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
+            ('notice_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.NoticeType'])),
+            ('reply_to', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
+            ('from_display', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
+            ('title', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('content', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('content_type', self.gf('django.db.models.fields.CharField')(max_length=10)),
+            ('date_sent', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+        ))
+        db.send_create_signal('notifications', ['NoticeEmail'])
+
         # Adding model 'ObservedItem'
         db.create_table('notifications_observeditem', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -81,6 +98,9 @@ class Migration(SchemaMigration):
         # Deleting model 'NoticeQueueBatch'
         db.delete_table('notifications_noticequeuebatch')
 
+        # Deleting model 'NoticeEmail'
+        db.delete_table('notifications_noticeemail')
+
         # Deleting model 'ObservedItem'
         db.delete_table('notifications_observeditem')
 
@@ -101,7 +121,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 11, 12, 30, 52, 980565)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -109,7 +129,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 11, 12, 30, 52, 980457)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -132,6 +152,21 @@ class Migration(SchemaMigration):
             'on_site': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'unseen': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+        },
+        'notifications.noticeemail': {
+            'Meta': {'object_name': 'NoticeEmail'},
+            'bcc': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'content': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'content_type': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'date_sent': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'emails': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'from_display': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'guid': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'notice_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.NoticeType']"}),
+            'reply_to': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
+            'sender': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'title': ('django.db.models.fields.TextField', [], {'blank': 'True'})
         },
         'notifications.noticequeuebatch': {
             'Meta': {'object_name': 'NoticeQueueBatch'},
