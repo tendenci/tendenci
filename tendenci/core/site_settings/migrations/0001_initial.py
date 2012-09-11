@@ -26,6 +26,7 @@ class Migration(SchemaMigration):
             ('scope', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('scope_category', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('parent_id', self.gf('django.db.models.fields.IntegerField')(default=0, blank=True)),
+            ('is_secure', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('site_settings', ['Setting'])
 
@@ -46,6 +47,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'input_type': ('django.db.models.fields.CharField', [], {'max_length': '25'}),
             'input_value': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'is_secure': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'parent_id': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'}),
