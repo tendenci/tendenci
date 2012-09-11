@@ -85,7 +85,10 @@ def sync_templates():
 def extract_files(template):
     if template.zip_file:
         zip_file = zipfile.ZipFile(template.zip_file.file)
-        zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
+        if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            zip_file.extractall('%scampaign_monitor/%s' % (settings.MEDIA_URL, template.template_id))
+        else:
+            zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
     
 def apply_template_media(template):
     """
