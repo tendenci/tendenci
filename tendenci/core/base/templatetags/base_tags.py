@@ -338,7 +338,7 @@ class RssParserNode(Node):
         cache_key = md5(self.url).hexdigest()
         url_content = cache.get(cache_key)
 
-        if not url_content:
+        if url_content is None:
             url_content = feedparser.parse(self.url)
             # We are going to try to pop out the errors in the
             # feed because they raise an exception that can't be
