@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
+from tendenci.core.base.template_tags import parse_tag_kwargs
 from tendenci.core.base.utils import url_exists
 from tendenci.apps.profiles.models import Profile
 
@@ -315,31 +316,50 @@ def image_preview(parser, token):
         
     return ImagePreviewNode(instance, size, context=context)
 
+
 class RssParserNode(Node):
-    def __init__(self, var_name, url=None, url_var_name=None):
+    def __init__(self, context_var, url, *args, **kwargs):
         self.url = url
-        self.url_var_name = url_var_name
-        self.var_name = var_name
+        self.context_var = context_var
+        self.kwargs = kwargs
 
     def render(self, context):
         import feedparser
-        if self.url:
-            context[self.var_name] = feedparser.parse(self.url)
-        else:
+
+        cache_timeout = 300
+
+        if 'cache' in self.kwargs:
             try:
-                context[self.var_name] = feedparser.parse(context[self.url_var_name])
-            except KeyError:
-                raise TemplateSyntaxError, "the variable \"%s\" can't be found in the context" % self.url_var_name
+                cache_timeout = Variable(self.kwargs['cache'])
+                cache_timeout = cache_timeout.resolve(context)
+            except:
+                cache_timeout = self.kwargs['cache']
+
+        cache_key = md5(self.url).hexdigest()
+        url_content = cache.get(cache_key)
+
+        if not url_content:
+            url_content = feedparser.parse(self.url)
+            cache.set(cache_key, url_content, cache_timeout)
+
+        context[self.context_var] = url_content
+
         return ''
+
 
 @register.tag(name="get_rss")
 def get_rss(parser, token):
     """
     Take an RSS feed so you can iterate through the entries.
-    
+
     Usage::
 
-        {% get_rss [rss_feed_url] as [variable] %}
+        {% get_rss [rss_feed_url] as [variable] cache=600 %}
+
+    Options include:
+
+        ``cache``
+           The length of time to cache the feed in seconds. **Default: 300**
 
     Example::
 
@@ -354,23 +374,28 @@ def get_rss(parser, token):
             </p>
         {% endfor %}
     """
-    import re
-    # This version uses a regular expression to parse tag contents.
-    try:
-        # Splitting by None == splitting by spaces.
-        tag_name, arg = token.contents.split(None, 1)
-    except ValueError:
-        raise TemplateSyntaxError, "%r tag requires arguments" % token.contents.split()[0]
-    
-    m = re.search(r'(.*?) as (\w+)', arg)
-    if not m:
-        raise TemplateSyntaxError, "%r tag had invalid arguments" % tag_name
-    url, var_name = m.groups()
-    
-    if url[0] == url[-1] and url[0] in ('"', "'"):
-        return RssParserNode(var_name, url=url[1:-1])
+    args, kwargs = [], {}
+    bits = token.split_contents()
+    url_string = bits[1]
+    context_var = bits[3]
+
+    if len(bits) < 4:
+        message = "'%s' tag requires more than 3" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[2] != "as":
+        message = "'%s' third argument must be 'as" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    kwargs = parse_tag_kwargs(bits)
+
+    if url_string[0] == url_string[-1] and url_string[0] in ('"', "'"):
+        url = url_string[1:-1]
     else:
-        return RssParserNode(var_name, url_var_name=url)
+        url = url_string
+
+    return RssParserNode(context_var, url, *args, **kwargs)
+
 
 class Md5Hash(Node):
     
