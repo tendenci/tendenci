@@ -15,6 +15,9 @@ from tendenci.core.base.template_tags import parse_tag_kwargs
 from tendenci.core.base.utils import url_exists
 from tendenci.apps.profiles.models import Profile
 
+from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
+from tendenci.core.files.utils import generate_image_cache_key
+
 register = Library()
 
 
@@ -512,6 +515,12 @@ class ImageURL(Node):
         file = self.file.resolve(context)
 
         if file and file.pk:
+
+            cache_key = generate_image_cache_key(file=str(file.id), size=self.size, pre_key=FILE_IMAGE_PRE_KEY, crop=self.crop, unique_key=str(file.id), quality=self.quality)
+            cached_image_url = cache.get(cache_key)
+            if cached_image_url:
+                return cached_image_url
+
             args = [file.pk, self.size]
             if self.crop:
                 args.append("crop")
