@@ -45,9 +45,9 @@ class File(TendenciBaseModel):
     def delete(self, *args, **kwargs):
         # Related objects
         # Import related objects here to prevent circular references
-        from pages.models import Page
-        from events.models import Event
-        from stories.models import Story
+        from tendenci.apps.pages.models import Page
+        from tendenci.addons.events.models import Event
+        from tendenci.apps.stories.models import Story
         pages = Page.objects.filter(header_image=self.pk)
         events = Event.objects.filter(image=self.pk)
         stories = Story.objects.filter(image=self.pk)
