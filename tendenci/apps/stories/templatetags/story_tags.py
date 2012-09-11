@@ -126,7 +126,10 @@ class ListStoriesNode(ListNode):
                 order = self.kwargs['order']
 
         filters = get_query_filters(user, self.perms)
-        items = self.model.objects.filter(filters).distinct()
+        items = self.model.objects.filter(filters)
+        if user.is_authenticated():
+            if not user.profile.is_superuser:
+                items = items.distinct()
 
         if tags:  # tags is a comma delimited list
             # this is fast; but has one hole
@@ -155,13 +158,13 @@ class ListStoriesNode(ListNode):
             items = items.order_by(order)
 
         # if order is not specified it sorts by relevance
-        if items:
-            if randomize:
-                objects = [item for item in random.sample(items, len(items))][:limit]
-            else:
-                objects = [item for item in items[:limit]]
+        if randomize:
+            objects = [item for item in random.sample(items, len(items))][:limit]
+        else:
+            objects = [item for item in items[:limit]]
 
-            context[self.context_var] = objects
+        context[self.context_var] = objects
+
         return ""
 
 @register.tag

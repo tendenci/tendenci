@@ -312,7 +312,11 @@ class ListEventsNode(ListNode):
                 event_type = self.kwargs['type']
 
         filters = get_query_filters(user, 'events.view_event')
-        items = Event.objects.filter(filters).distinct()
+        items = Event.objects.filter(filters)
+        if user.is_authenticated():
+            if not user.profile.is_superuser:
+                items = items.distinct()
+
         if event_type:
             items = items.filter(type__name__iexact=event_type)
 
@@ -345,11 +349,10 @@ class ListEventsNode(ListNode):
             else:
                 items = items.order_by(order)
 
-        if items:
-            if randomize:
-                objects = [item for item in random.sample(items, items.count())][:limit]
-            else:
-                objects = [item for item in items[:limit]]
+        if randomize:
+            objects = [item for item in random.sample(items, items.count())][:limit]
+        else:
+            objects = [item for item in items[:limit]]
 
         context[self.context_var] = objects
         return ""
