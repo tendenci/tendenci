@@ -42,7 +42,10 @@ def navigation(context, nav_id):
             user = context['user']
     try:
         filters = get_query_filters(user, 'navs.view_nav')
-        navs = Nav.objects.filter(filters).filter(id=nav_id).distinct()
+        navs = Nav.objects.filter(filters).filter(id=nav_id)
+        if user.is_authenticated():
+            if not user.profile.is_superuser:
+                navs = navs.distinct()
         nav = navs[0]
     except:
         return None
@@ -93,7 +96,11 @@ def nav(context, nav_id):
             user = context['user']
     try:
         filters = get_query_filters(user, 'navs.view_nav')
-        navs = Nav.objects.filter(filters).filter(id=nav_id).distinct()
+        navs = Nav.objects.filter(filters).filter(id=nav_id)
+        if user.is_authenticated():
+            if not user.profile.is_superuser:
+                navs = navs.distinct()
+
         nav_object = navs[0]
         nav = get_nav(nav_object.pk)
         if not nav:

@@ -16,14 +16,17 @@ class GetBoxNode(Node):
 
     def render(self, context):
         user = AnonymousUser()
-        
+
         if 'user' in context:
             if isinstance(context['user'], User):
                 user = context['user']
 
         try:
             filters = get_query_filters(user, 'boxes.view_box')
-            box = Box.objects.filter(filters).filter(pk=self.pk).distinct()
+            box = Box.objects.filter(filters).filter(pk=self.pk)
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    box = box.distinct()
             context['box'] = box[0]
             template = get_template('boxes/edit-link.html')
             output = '<div id="box-%s" class="boxes">%s %s</div>' % (
@@ -34,6 +37,7 @@ class GetBoxNode(Node):
             return output
         except:
             return unicode()
+
 
 @register.tag
 def box(parser, token):
