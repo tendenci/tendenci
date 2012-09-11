@@ -340,6 +340,11 @@ class RssParserNode(Node):
 
         if not url_content:
             url_content = feedparser.parse(self.url)
+            # We are going to try to pop out the errors in the
+            # feed because they raise an exception that can't be
+            # pickled when we try to cache the content.
+            if 'bozo_exception' in url_content:
+                url_content['bozo_exception'] = ''
             cache.set(cache_key, url_content, cache_timeout)
 
         context[self.context_var] = url_content
