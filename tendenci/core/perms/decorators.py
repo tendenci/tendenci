@@ -64,7 +64,7 @@ def admin_required(view_method):
     def decorator(request, *args, **kwargs):
         admin = request.user.profile.is_superuser
 
-        if not user.profile.is_superuser:
+        if not request.user.profile.is_superuser:
             raise Http403
 
         return view_method(request, *args, **kwargs)
