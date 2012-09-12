@@ -15,7 +15,7 @@ class Migration(DataMigration):
         
             notification.create_notice_type("directory_approved_user_notice", _("Directory Approved User Notice"), _("A directory has been approved - user notice."))
         else:
-            print "Skipping creation of NoticeTypes as notification app not found"
+            print "Directories: Skipping creation of NoticeTypes as notification app not found"
 
 
     def backwards(self, orm):

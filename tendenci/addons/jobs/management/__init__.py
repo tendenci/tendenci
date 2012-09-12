@@ -10,7 +10,6 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
         notification.create_notice_type("job_deleted", _("Job Deleted"), _("A job has been deleted"))
         notification.create_notice_type("job_approved_user_notice", _("Job Approved User Notice"), _("A job has been approved - user notice."))
 
-
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
-    print "Skipping creation of NoticeTypes as notification app not found"
+    print "Jobs: Skipping creation of NoticeTypes as notification app not found"

@@ -7,7 +7,7 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
 
     def create_notice_types(app, created_models, verbosity, **kwargs):
         notification.create_notice_type("make_payment_added", _("Make Payment Added"), _("A payment has been made."))
-       
+
     post_syncdb.connect(create_notice_types, sender=notification)
 else:
-    print "Skipping creation of NoticeTypes as notification app not found"
+    print "Make Payments: Skipping creation of NoticeTypes as notification app not found"
