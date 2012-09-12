@@ -506,9 +506,9 @@ def photo_image_url(parser, token):
 
 class ImageURL(Node):
     def __init__(self, file, *args, **kwargs):
-        self.size = kwargs.get("size", "100x100")
+        self.size = kwargs.get("size", None)
         self.crop = kwargs.get("crop", False)
-        self.quality = kwargs.get("quality", 90)
+        self.quality = kwargs.get("quality", None)
         self.file = Variable(file)
 
     def render(self, context):
@@ -521,7 +521,9 @@ class ImageURL(Node):
             if cached_image_url:
                 return cached_image_url
 
-            args = [file.pk, self.size]
+            args = [file.pk]
+            if self.size:
+                args.append(self.size)
             if self.crop:
                 args.append("crop")
             if self.quality:
