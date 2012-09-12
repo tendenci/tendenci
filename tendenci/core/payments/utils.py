@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.notifications.utils import send_notifications
@@ -60,15 +62,10 @@ def log_silent_post(request, payment):
                    request.META.get('REQUEST_METHOD', ''))
             
     log_file_name = "silentpost_%d.log" % payment.id
-    log_path = os.path.join(settings.MEDIA_ROOT, 'silentposts/')
-    if not os.path.isdir(log_path):
-        os.mkdir(log_path)
-    log_path = os.path.join(log_path, log_file_name)
-    
-    fd = open(log_path, 'w')
-    fd.write(output)
-    fd.close()
-    
+    log_path = os.path.join('silentposts', log_file_name)
+    default_storage.save(log_path, ContentFile(output))
+
+
 def log_payment(request, payment):
     if payment.response_code == '1':
         event_id = 282101
