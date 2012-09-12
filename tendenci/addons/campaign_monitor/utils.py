@@ -1,5 +1,6 @@
 from createsend import Client
 from django.conf import settings
+from django.core.files.storage import default_storage
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.campaign_monitor.models import Campaign, Template
 from createsend import CreateSend, Client, Subscriber
@@ -86,9 +87,9 @@ def extract_files(template):
     if template.zip_file:
         zip_file = zipfile.ZipFile(template.zip_file.file)
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            zip_file.extractall('%scampaign_monitor/%s' % (settings.MEDIA_URL, template.template_id))
-        else:
-            zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
+            zip_file = default_storage.open(unicode(template.zip_file.file), 'rb')
+            zip_file = zipfile.ZipFile(zip_file, 'r')
+        zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
     
 def apply_template_media(template):
     """
