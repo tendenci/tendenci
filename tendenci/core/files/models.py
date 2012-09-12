@@ -23,8 +23,14 @@ from tendenci.core.site_settings.utils import get_setting
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', str(instance.content_type))
-    return 'files/%s/%s' % (content_type, filename)
+    uuid_hex = uuid.uuid1().get_hex()[:8]
+
+    if instance.content_type:
+        content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(instance.content_type))
+    else:
+        return 'files/files/%s/%s' % (uuid_hex, filename)
+
+    return 'files/%s/%s/%s' % (content_type, uuid_hex, filename)
 
 
 class File(TendenciBaseModel):
