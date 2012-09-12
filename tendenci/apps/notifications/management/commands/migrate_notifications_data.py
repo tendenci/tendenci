@@ -14,6 +14,8 @@ class Command(BaseCommand):
         try:
             for i in models.NoticeType.objects.raw('SELECT * FROM notification_noticetype'):
                 i.save()
+                next_id = int(i.pk) + 1
+            models.NoticeType.objects.raw("SELECT setval('notifications_noticetype_id_seq', %d)" % next_id)
         except:
             pass
 
@@ -21,6 +23,8 @@ class Command(BaseCommand):
         try:
             for i in models.NoticeSetting.objects.raw('SELECT * FROM notification_noticesetting'):
                 i.save()
+                next_id = int(i.pk) + 1
+            models.NoticeSetting.objects.raw("SELECT setval('notifications_noticesetting_id_seq', %d)" % next_id)
         except:
             pass
 
@@ -28,6 +32,8 @@ class Command(BaseCommand):
         try:
             for i in models.Notice.objects.raw('SELECT * FROM notification_notice'):
                 i.save()
+                next_id = int(i.pk) + 1
+            models.Notice.objects.raw("SELECT setval('notifications_notice_id_seq', %d)" % next_id)
         except:
             pass
 
@@ -35,6 +41,8 @@ class Command(BaseCommand):
         try:
             for i in models.NoticeQueueBatch.objects.raw('SELECT * FROM notification_noticequeuebatch'):
                 i.save()
+                next_id = int(i.pk) + 1
+            models.NoticeQueueBatch.objects.raw("SELECT setval('notifications_noticequeuebatch_id_seq', %d)" % next_id)
         except:
             pass
 
@@ -42,6 +50,8 @@ class Command(BaseCommand):
         try:
             for i in models.NoticeEmail.objects.raw('SELECT * FROM notification_noticeemail'):
                 i.save()
+                next_id = int(i.pk) + 1
+            models.NoticeEmail.objects.raw("SELECT setval('notifications_noticeemail_id_seq', %d)" % next_id)
         except:
             pass
 
@@ -49,5 +59,7 @@ class Command(BaseCommand):
         try:
             for i in models.ObservedItem.objects.raw('SELECT * FROM notification_observeditem'):
                 i.save()
+                next_id = int(i.pk) + 1
+            models.ObservedItem.objects.raw("SELECT setval('notifications_observeditem_id_seq', %d)" % next_id)
         except:
             pass
