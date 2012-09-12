@@ -22,7 +22,7 @@ IMPORT_FOLDER_NAME = 'imports'
 
 
 @login_required
-#@password_required
+@password_required
 def user_upload_add(request, form_class=UserImportForm,
                     template_name="imports/users.html"):
     if not request.user.profile.is_superuser:
