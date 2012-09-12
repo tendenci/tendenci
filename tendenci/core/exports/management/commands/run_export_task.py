@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 result = NavsExportTask()
                 response = result.run()
             elif export.app_label == 'pages' and export.model_name == 'page':
-                from pages.tasks import PagesExportTask
+                from tendenci.apps.pages.tasks import PagesExportTask
                 result = PagesExportTask()
                 response = result.run()
             else:
