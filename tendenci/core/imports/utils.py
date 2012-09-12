@@ -8,7 +8,6 @@ from django.db.models.fields import AutoField, FieldDoesNotExist
 from django.utils.encoding import smart_str
 from django.core.validators import email_re
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 
 import xlrd
 from xlwt import Workbook, XFStyle
@@ -22,14 +21,16 @@ ROWS_TO_PROCESS = 10
 
 # field.__class__.__name__
 # DateTimeField
-user_fields = [field for field in User._meta.fields if field.editable and (not field.__class__ == AutoField)]
+user_fields = [field for field in User._meta.fields if field.editable
+               and (not field.__class__ == AutoField)]
 user_field_names = [smart_str(field.name) for field in user_fields]
 user_field_types = [field.__class__.__name__ for field in user_fields]
 field_type_dict = dict(zip(user_field_names, user_field_types))
 user_fields = None
 user_field_types = None
 
-profile_fields = [field for field in Profile._meta.fields if field.editable and (not field.__class__ == AutoField)]
+profile_fields = [field for field in Profile._meta.fields if field.editable 
+                  and (not field.__class__ == AutoField)]
 profile_field_names = [smart_str(field.name) for field in profile_fields]
 profile_field_types = [field.__class__.__name__ for field in profile_fields]
 field_type_dict.update(dict(zip(profile_field_names, profile_field_types)))
@@ -38,7 +39,6 @@ profile_field_types = None
 
 
 def handle_uploaded_file(f, file_path):
-#    default_storage.save(file_path, ContentFile(f.read()))
     destination = default_storage.open(file_path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
@@ -56,7 +56,9 @@ def get_user_import_settings(request, id):
     d['override'] = request.session[id].get('override', u'')
     d['key'] = request.session[id].get('key', u'')
     d['group'] = request.session[id].get('group', u'')
-    d['clear_group_membership'] = request.session[id].get('clear_group_membership', u'')
+    d['clear_group_membership'] = request.session[id].get(
+                                'clear_group_membership', u''
+                                )
 
     d['interactive'] = d.get('interactive') or False
     d['override'] = d.get('override') or False
@@ -78,11 +80,17 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
             for i in range(0, len(row_item_list)):
                 if row_item_list[i]:
                     if isinstance(row_item_list[i], datetime.datetime):
-                        row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')
+                        row_item_list[i] = row_item_list[i].strftime(
+                                    '%Y-%m-%d %H:%M:%S'
+                                    )
                     elif isinstance(row_item_list[i], datetime.date):
-                        row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d')
+                        row_item_list[i] = row_item_list[i].strftime(
+                                '%Y-%m-%d'
+                                )
                     elif isinstance(row_item_list[i], datetime.time):
-                        row_item_list[i] = row_item_list[i].strftime('%H:%M:%S')
+                        row_item_list[i] = row_item_list[i].strftime(
+                            '%H:%M:%S'
+                            )
             str_out += ','.join(row_item_list)
 
         content_type = "application/text"
@@ -102,17 +110,23 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                 if cell_value:
                     cell_value_is_date = False
                     if isinstance(cell_value, datetime.datetime):
-                        cell_value = xlrd.xldate.xldate_from_datetime_tuple((cell_value.year, cell_value.month, \
-                                                        cell_value.day, cell_value.hour, cell_value.minute, \
-                                                        cell_value.second), 0)
+                        cell_value = xlrd.xldate.xldate_from_datetime_tuple((
+                            cell_value.year, cell_value.month, 
+                            cell_value.day, cell_value.hour,
+                            cell_value.minute,
+                            cell_value.second), 0)
                         cell_value_is_date = True
                     elif isinstance(cell_value, datetime.date):
-                        cell_value = xlrd.xldate.xldate_from_date_tuple((cell_value.year, cell_value.month, \
-                                                        cell_value.day), 0)
+                        cell_value = xlrd.xldate.xldate_from_date_tuple((
+                            cell_value.year,
+                            cell_value.month,
+                            cell_value.day), 0)
                         cell_value_is_date = True
                     elif isinstance(cell_value, datetime.time):
-                        cell_value = xlrd.xldate.xldate_from_time_tuple((cell_value.hour, cell_value.minute, \
-                                                        cell_value.second))
+                        cell_value = xlrd.xldate.xldate_from_time_tuple((
+                                cell_value.hour,
+                                cell_value.minute,
+                                cell_value.second))
                         cell_value_is_date = True
                     elif isinstance(cell_value, models.Model):
                         cell_value = str(cell_value)
@@ -137,8 +151,9 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
 
 def user_import_process(request, setting_dict, preview=True, id=''):
     """
-    This function processes each row and store the data in the user_object_dict.
-    Then it updates the database if preview=False.
+    This function processes each row and store the data
+    in the user_object_dict. Then it updates the database
+    if preview=False.
     """
     key_list = setting_dict['key'].split(',')
     # key(s)- user field(s) or profile fields(s)? that is import to identify
@@ -174,7 +189,9 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
         data_dict = data_dict_list[r]
 
-        missing_keys = [key for key in data_dict.keys() if key in key_list and data_dict[key] == '']
+        missing_keys = [key for key in data_dict.keys() \
+                        if key in key_list \
+                        and data_dict[key] == '']
 
         for key in data_dict.keys():
             user_object_dict[key] = data_dict[key]
@@ -188,7 +205,8 @@ def user_import_process(request, setting_dict, preview=True, id=''):
         user_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
 
         if missing_keys:
-            user_object_dict['ERROR'] = 'Missing key: %s.' % (', '.join(missing_keys))
+            user_object_dict['ERROR'] = 'Missing key: %s.' % (
+                            ', '.join(missing_keys))
             user_object_dict['IS_VALID'] = False
             setting_dict['count_invalid'] += 1
             if not preview:
@@ -217,7 +235,9 @@ def user_import_process(request, setting_dict, preview=True, id=''):
                 setting_dict['count_insert'] += 1
 
             if not preview:
-                user = do_user_import(request, user, user_object_dict, setting_dict)
+                user = do_user_import(request, user,
+                                      user_object_dict,
+                                      setting_dict)
                 user_import_dict['user'] = user
                 user_import_dict['ROW_NUM'] = user_object_dict['ROW_NUM']
                 user_obj_list.append(user_import_dict)
@@ -228,8 +248,10 @@ def user_import_process(request, setting_dict, preview=True, id=''):
     if not preview:
         if finish < data_dict_list_len:
             # not finished yet, store some data in the session
-            count_insert = request.session[id].get('count_insert',  0) + setting_dict['count_insert']
-            count_update = request.session[id].get('count_update',  0) + setting_dict['count_update']
+            count_insert = request.session[id].get('count_insert',  0) + \
+            setting_dict['count_insert']
+            count_update = request.session[id].get('count_update',  0) + \
+            setting_dict['count_update']
 
             setting_dict['is_completed'] = False
 
@@ -245,8 +267,10 @@ def user_import_process(request, setting_dict, preview=True, id=''):
             request.session[id] = d
         else:
             setting_dict['is_completed'] = True
-            setting_dict['count_insert'] += request.session[id].get('count_insert',  0)
-            setting_dict['count_update'] += request.session[id].get('count_update',  0)
+            setting_dict['count_insert'] += request.session[id].get(
+                                        'count_insert', 0)
+            setting_dict['count_update'] += request.session[id].get(
+                                            'count_update', 0)
             d = request.session[id]
             d.update({'is_completed': True})
             request.session[id] = d
@@ -259,7 +283,9 @@ def get_user_by_key(identity_user_dict, identity_profile_dict):
 
     if identity_user_dict and identity_profile_dict:
         users = User.objects.filter(**identity_user_dict)
-        profiles = Profile.objects.filter(user__in=users).filter(**identity_profile_dict)
+        profiles = Profile.objects.filter(user__in=users).filter(
+                        **identity_profile_dict
+                        )
         if profiles:
             user = profiles[0].user
     elif identity_user_dict:
@@ -285,7 +311,8 @@ def do_user_import(request, user, user_object_dict, setting_dict):
 
     # insert/update user
     for field in user_field_names:
-        if field == 'password' or field == 'username' or (not insert and field in setting_dict['key']):
+        if field == 'password' or field == 'username' or \
+            (not insert and field in setting_dict['key']):
             continue
         if field in user_object_dict:
             if override:
@@ -356,7 +383,8 @@ def do_user_import(request, user, user_object_dict, setting_dict):
         # add to group
         if setting_dict['group']:
             try:
-                gm = GroupMembership.objects.get(group=setting_dict['group'], member=user)
+                gm = GroupMembership.objects.get(group=setting_dict['group'],
+                                                 member=user)
             except GroupMembership.DoesNotExist:
                 gm = GroupMembership()
                 gm.member = user
@@ -441,7 +469,8 @@ def get_header_list_from_content(file_content, file_name):
 
         if file_ext == '.csv':
             line_return_index = file_content.find('\n')
-            header_list = ((file_content[:line_return_index]).strip('\r')).split(',')
+            header_list = ((file_content[:line_return_index]
+                            ).strip('\r')).split(',')
         else:
             book = xlrd.open_workbook(file_contents=file_content)
             nsheets = book.nsheets
@@ -459,7 +488,9 @@ def extract_from_excel(file_path):
 
     file_ext = (file_path[-4:]).lower()
     if file_ext != '.csv' and file_ext != '.xls':
-        raise NameError("%s is not a valid file type (should be either .csv or .xls)." % file_path)
+        raise NameError(
+    "%s is not a valid file type (should be either .csv or .xls)." % file_path
+        )
 
     fields = []
     data_list = []
@@ -467,7 +498,7 @@ def extract_from_excel(file_path):
     if file_ext == '.csv':
         import csv
         import dateutil.parser as dparser
-        
+
         normalize_newline(file_path)
         data = csv.reader(default_storage.open(file_path, 'rU'))
 
@@ -479,7 +510,8 @@ def extract_from_excel(file_path):
         for row in data:
             item = dict(zip(fields, row))
             for key in item.keys():
-                if key in field_type_dict and field_type_dict[key] == 'DateTimeField':
+                if key in field_type_dict and \
+                field_type_dict[key] == 'DateTimeField':
                     item[key] = dparser.parser(item[key])
             item['ROW_NUM'] = r + 1
             data_list.append(item)
@@ -505,10 +537,15 @@ def extract_from_excel(file_path):
                     cell = sh.cell(r, c)
                     cell_value = cell.value
                     if cell.ctype == xlrd.XL_CELL_DATE:
-                        date_tuple = xlrd.xldate_as_tuple(cell_value, book.datemode)
-                        cell_value = datetime.date(date_tuple[0], date_tuple[1], date_tuple[2])
-                    elif cell.ctype in (2, 3) and int(cell_value) == cell_value:
-                        # so for zipcode 77079, we don't end up with 77079.0
+                        date_tuple = xlrd.xldate_as_tuple(
+                                        cell_value, book.datemode)
+                        cell_value = datetime.date(date_tuple[0],
+                                                   date_tuple[1],
+                                                    date_tuple[2])
+                    elif cell.ctype in (2, 3) \
+                        and int(cell_value) == cell_value:
+                        # so for zipcode 77079,
+                        # we don't end up with 77079.0
                         cell_value = int(cell_value)
                     row.append(cell_value)
 
