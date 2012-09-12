@@ -31,13 +31,14 @@
 
 <script text="text/javascript">
 $(document).ready(function(){
-
-    var the_loop = function(){
+    var i = 0;
+    var completed = false;
+    
+    var poll_and_process = function(){
 	    var myurl = "{% url import.user_upload_subprocess id %}";
 	    var retval;
-	    var i = 0;
 	    var doc_h;
-	    var completed = false;
+	    //var dfd = $$.Deferred();
 
 		$.ajax({
 			type: "GET",
@@ -57,18 +58,24 @@ $(document).ready(function(){
 			    	completed = true;
 			    	$('.loading-icon').remove();
 			    }
+			    $(document).trigger('subprocess/continue');
 			},
 			error: function(errmsg){
 				$('.loading-icon').remove();
 				$(".results").append(errmsg);
 				completed = true;
+				$(document).trigger('subprocess/continue');
 			}
 		});
 		i++;
-		t = setTimeout(the_loop, 1000);
 	}
 
-	the_loop();
+	poll_and_process();
+	$(document).on('subprocess/continue', function(e){
+	    if (!completed){
+	        poll_and_process();
+	    }
+	})
     
 }); 
 
