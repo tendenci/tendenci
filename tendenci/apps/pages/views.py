@@ -53,9 +53,6 @@ def index(request, slug=None, id=None, template_name="pages/view.html"):
                 slug=slug, status_detail='active'
             ).order_by('-pk')
 
-            for page in pages:
-                print page.pk, page
-
             page = pages[0]
 
     if not has_view_perm(request.user, 'pages.view_page', page):
