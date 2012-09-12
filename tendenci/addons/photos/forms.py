@@ -39,6 +39,7 @@ class PhotoUploadForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
 
+
 class PhotoEditForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(

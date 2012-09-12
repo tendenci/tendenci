@@ -399,7 +399,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
 
                 request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
                 EventLog.objects.log(**{
-                    'event_id' : 991200,
+                    'event_id': 991200,
                     'event_data': '%s (%d) edited by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
                     'description': '%s edited' % photo_set._meta.object_name,
                     'user': request.user,
@@ -416,17 +416,18 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
         "photoset_form": form,
     }, context_instance=RequestContext(request))
 
+
 @login_required
 def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
 
     # if no permission; permission exception
-    if not has_perm(request.user,'photos.delete_photoset',photo_set):
+    if not has_perm(request.user, 'photos.delete_photoset', photo_set):
         raise Http403
-    
+
     if request.method == "POST":
         EventLog.objects.log(**{
-            'event_id' : 991300,
+            'event_id': 991300,
             'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
             'description': '%s deleted' % photo_set._meta.object_name,
             'user': request.user,
@@ -439,17 +440,18 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         Image.objects.filter(photoset=photo_set).delete()
 
         messages.add_message(request, messages.INFO, 'Photo Set %s deleted' % photo_set)
-        
+
         if "delete" in request.META.get('HTTP_REFERER', None):
             #if the referer is the get page redirect to the photo set search
             return redirect('photoset_latest')
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', None))
-    
+
     return render_to_response(template_name, {
         'photo_set': photo_set,
     }, context_instance=RequestContext(request))
-    
+
+
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
 
@@ -465,8 +467,9 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {"photo_sets": photo_sets}, 
+    return render_to_response(template_name, {"photo_sets": photo_sets},
         context_instance=RequestContext(request))
+
 
 @login_required
 def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
@@ -493,7 +496,7 @@ def photos_batch_add(request, photoset_id=0):
     from tendenci.core.perms.object_perms import ObjectPermission
 
     # photoset permission required to add photos
-    if not has_perm(request.user,'photos.add_photoset'):
+    if not has_perm(request.user, 'photos.add_photoset'):
         raise Http403
 
     if request.method == 'POST':
@@ -521,7 +524,9 @@ def photos_batch_add(request, photoset_id=0):
                 'status': True,
                 'status_detail': 'active',
             })
+
             photo_form = PhotoUploadForm(request.POST, request.FILES, user=request.user)
+
             if photo_form.is_valid():
                 # save photo
                 photo = photo_form.save(commit=False)
@@ -534,13 +539,13 @@ def photos_batch_add(request, photoset_id=0):
                 photo = update_perms_and_save(request, photo_form, photo)
 
                 EventLog.objects.log(**{
-                    'event_id' : 990100,
+                    'event_id': 990100,
                     'event_data': '%s (%d) added by %s' % (photo._meta.object_name, photo.pk, request.user),
                     'description': '%s added' % photo._meta.object_name,
                     'user': request.user,
                     'request': request,
                     'instance': photo,
-                }) 
+                })
 
                 # add to photo set if photo set is specified
                 if photoset_id:
@@ -556,13 +561,13 @@ def photos_batch_add(request, photoset_id=0):
                 photo.save()
 
                 # photo group perms = album group perms
-                group_perms = photo_set.perms.filter(group__isnull=False).values_list('group','codename')
-                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms ])
+                group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
+                group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
                 ObjectPermission.objects.assign_group(group_perms, photo)
 
                 # serialize queryset
                 data = serializers.serialize("json", Image.objects.filter(id=photo.id))
-    
+
                 # returning a response of "ok" (flash likes this)
                 # response is for flash, not humans
                 return HttpResponse(data, mimetype="text/plain")

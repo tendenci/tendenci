@@ -4,16 +4,8 @@ Original found here:
 http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/362879
 
 """
-
-try:
-    import Image
-    import ImageEnhance
-except ImportError:
-    try:
-        from PIL import Image
-        from PIL import ImageEnhance
-    except ImportError:
-        raise ImportError("The Python Imaging Library was not found.")
+import Image
+import ImageEnhance
 
 def reduce_opacity(im, opacity):
     """Returns an image with reduced opacity."""

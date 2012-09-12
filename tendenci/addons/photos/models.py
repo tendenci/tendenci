@@ -1,26 +1,22 @@
 import uuid
 import os
-import random
-import shutil
-import zipfile
 
 from datetime import datetime
 from inspect import isclass
+from cStringIO import StringIO
 
 from django.db import models
 from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
-from django.template.defaultfilters import slugify
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
 
-from haystack.query import SearchQuerySet
 from tagging.fields import TagField
 
 from tendenci.core.perms.models import TendenciBaseModel
@@ -30,21 +26,10 @@ from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
 
-# Required PIL classes may or may not be available from the root namespace
-# depending on the installation method used.
-try:
-    import Image as PILImage
-    import ImageFile
-    import ImageFilter
-    import ImageEnhance
-except ImportError:
-    try:
-        from PIL import Image as PILImage
-        from PIL import ImageFile
-        from PIL import ImageFilter
-        from PIL import ImageEnhance
-    except ImportError:
-        raise ImportError('Photos was unable to import the Python Imaging Library. Please confirm it`s installed and available on your current Python path.')
+import Image as PILImage
+import ImageFile
+import ImageFilter
+import ImageEnhance
 
 from tendenci.addons.photos.utils import EXIF
 from tendenci.addons.photos.utils.reflection import add_reflection
@@ -54,27 +39,17 @@ from tendenci.addons.photos.utils.watermark import apply_watermark
 IMAGE_FIELD_MAX_LENGTH = getattr(settings, 'PHOTOS_IMAGE_FIELD_MAX_LENGTH', 100)
 
 # Path to sample image
-SAMPLE_IMAGE_PATH = getattr(settings, 'SAMPLE_IMAGE_PATH', os.path.join(os.path.dirname(__file__), 'res', 'sample.jpg')) # os.path.join(settings.PROJECT_PATH, 'photos', 'res', 'sample.jpg'
+SAMPLE_IMAGE_PATH = getattr(settings, 'SAMPLE_IMAGE_PATH', os.path.join(os.path.dirname(__file__), 'res', 'sample.jpg'))  # os.path.join(settings.PROJECT_PATH, 'photos', 'res', 'sample.jpg'
 
 # Modify image file buffer size.
 ImageFile.MAXBLOCK = getattr(settings, 'PHOTOS_MAXBLOCK', 256 * 2 ** 10)
 
-# Photos image path relative to media root
-PHOTOS_DIR = getattr(settings, 'PHOTOS_DIR', 'photologue') #will retain photologue reference here
+PHOTOS_DIR = settings.MEDIA_URL
 
-# Look for user function to define file paths
-PHOTOS_PATH = getattr(settings, 'PHOTOS_PATH', None)
-if PHOTOS_PATH is not None:
-    if callable(PHOTOS_PATH):
-        get_storage_path = PHOTOS_PATH
-    else:
-        parts = PHOTOS_PATH.split('.')
-        module_name = '.'.join(parts[:-1])
-        module = __import__(module_name)
-        get_storage_path = getattr(module, parts[-1])
-else:
-    def get_storage_path(instance, filename):
-        return os.path.join(PHOTOS_DIR, 'photos', filename)
+
+def get_storage_path(instance, filename):
+    # AWS S3 max key length: 260 characters
+    return os.path.join('photos', uuid.uuid1().get_hex()[:8], filename)
 
 # Quality options for JPEG images
 JPEG_QUALITY_CHOICES = (
@@ -118,9 +93,9 @@ for n in dir(ImageFilter):
             filter_names.append(klass.__name__)
 IMAGE_FILTERS_HELP_TEXT = _('Chain multiple filters using the following pattern "FILTER_ONE->FILTER_TWO->FILTER_THREE". Image filters will be applied in order. The following filters are available: %s.' % (', '.join(filter_names)))
 
+
 class ImageModel(models.Model):
-    image = models.ImageField(_('image'), max_length=IMAGE_FIELD_MAX_LENGTH, 
-                              upload_to=get_storage_path)
+    image = models.ImageField(_('image'), max_length=IMAGE_FIELD_MAX_LENGTH, upload_to=get_storage_path)
     date_taken = models.DateTimeField(_('date taken'), null=True, blank=True, editable=False)
     view_count = models.PositiveIntegerField(default=0, editable=False)
     crop_from = models.CharField(_('crop from'), blank=True, max_length=10, default='center', choices=CROP_ANCHOR_CHOICES)
@@ -129,13 +104,18 @@ class ImageModel(models.Model):
     class Meta:
         abstract = True
 
-    @property
     def EXIF(self):
         try:
-            return EXIF.process_file(open(self.image.path, 'rb'))
+            content = default_storage.open(unicode(self.image)).read()
+            im = PILImage.open(StringIO(content))
+        except IOError:
+            return
+
+        try:
+            return EXIF.process_file(im)
         except:
             try:
-                return EXIF.process_file(open(self.image.path, 'rb'), details=False)
+                return EXIF.process_file(im, details=False)
             except:
                 return {}
 
@@ -154,13 +134,16 @@ class ImageModel(models.Model):
     admin_thumbnail.allow_tags = True
 
     def cache_path(self):
-        return os.path.join(os.path.dirname(self.image.path), "cache")
+        # example 'photos/cache/3949a2d9' or 'photos/cache'
+        l = unicode(self.image).split('/')
+        l.insert(1, 'cache')
+        return os.path.dirname('/'.join(l))
 
     def cache_url(self):
-        return '/'.join([os.path.dirname(self.image.url), "cache"])
+        return os.path.join(settings.MEDIA_URL, self.cache_path())
 
     def image_filename(self):
-        return os.path.basename(force_unicode(self.image.path))
+        return os.path.basename(force_unicode(self.image))
 
     def _get_filename_for_size(self, size):
         size = getattr(size, 'name', size)
@@ -186,8 +169,14 @@ class ImageModel(models.Model):
 
     def _get_SIZE_filename(self, size):
         photosize = PhotoSizeCache().sizes.get(size)
+
+        # cache_path = os.path.join(settings.MEDIA_URL, 'photos', 'cache')
+        # return os.path.join(cache_path, self._get_filename_for_size(photosize.name))
+
+
+
         return smart_str(os.path.join(self.cache_path(),
-                            self._get_filename_for_size(photosize.name)))
+            self._get_filename_for_size(photosize.name)))
 
     def increment_count(self):
         self.view_count += 1
@@ -207,8 +196,9 @@ class ImageModel(models.Model):
     def size_exists(self, photosize):
         func = getattr(self, "get_%s_filename" % photosize.name, None)
         if func is not None:
-            if os.path.isfile(func()):
-                return True
+            return default_storage.exists(func())
+            # if os.path.isfile(func()):
+            #     return True
         return False
 
     def resize_image(self, im, photosize):
@@ -252,46 +242,45 @@ class ImageModel(models.Model):
         return im
 
     def create_size(self, photosize):
+        from django.core.files.storage import default_storage
+
         if self.size_exists(photosize):
             return
-        if not os.path.isdir(self.cache_path()):
-            os.makedirs(self.cache_path())
+
         try:
-            im = PILImage.open(self.image.path)
-        except IOError:
+            content = default_storage.open(unicode(self.image)).read()
+            im = PILImage.open(StringIO(content))
+        except IOError as e:
+            print e
             return
-        # Save the original format
+
         im_format = im.format
+
         # Apply effect if found
-        if self.effect is not None:
+        if hasattr(self, 'effect') and self.effect is not None:
             im = self.effect.pre_process(im)
-        elif photosize.effect is not None:
+        elif hasattr(photosize, 'effect'):
             im = photosize.effect.pre_process(im)
+
         # Resize/crop image
         if im.size != photosize.size and photosize.size != (0, 0):
             im = self.resize_image(im, photosize)
+
         # Apply watermark if found
-        if photosize.watermark is not None:
+        if hasattr(photosize, 'watermark') and photosize.watermark is not None:
             im = photosize.watermark.post_process(im)
-        # Apply effect if found
-        if self.effect is not None:
-            im = self.effect.post_process(im)
-        elif photosize.effect is not None:
-            im = photosize.effect.post_process(im)
+
         # Save file
         im_filename = getattr(self, "get_%s_filename" % photosize.name)()
+
         try:
-            if im_format != 'JPEG':
-                try:
-                    im.save(im_filename)
-                    return
-                except KeyError:
-                    pass
-            im.save(im_filename, 'JPEG', quality=int(photosize.quality), optimize=True)
-        except IOError, e:
-            if os.path.isfile(im_filename):
-                os.unlink(im_filename)
-            raise e
+            import StringIO as StringIO2
+            buffer = StringIO2.StringIO()
+            im.save(buffer, im_format, quality=int(photosize.quality), optimize=True)
+            default_storage.save(im_filename, ContentFile(buffer.getvalue()))
+        except IOError as e:
+            print e
+            pass
 
     def remove_size(self, photosize, remove_dirs=True):
         if not self.size_exists(photosize):
@@ -458,7 +447,7 @@ class PhotoEffect(BaseEffect):
 
 
 class Watermark(BaseEffect):
-    image = models.ImageField(_('image'), upload_to=PHOTOS_DIR+"/watermarks")
+    image = models.ImageField(_('image'), upload_to=PHOTOS_DIR + "/watermarks")
     style = models.CharField(_('style'), max_length=5, choices=WATERMARK_STYLE_CHOICES, default='scale')
     opacity = models.FloatField(_('opacity'), default=1, help_text=_("The opacity of the overlay."))
 
@@ -467,7 +456,12 @@ class Watermark(BaseEffect):
         verbose_name_plural = _('watermarks')
 
     def post_process(self, im):
-        mark = PILImage.open(self.image.path)
+        try:
+            content = default_storage.open(unicode(self.image)).read()
+            mark = PILImage.open(StringIO(content))
+        except IOError as e:
+            raise e
+
         return apply_watermark(im, mark, self.style, self.opacity)
 
 
@@ -527,6 +521,7 @@ class PhotoSizeCache(object):
 
     def __init__(self):
         self.__dict__ = self.__state
+
         if not len(self.sizes):
             sizes = PhotoSize.objects.all()
             for size in sizes:
@@ -563,8 +558,7 @@ class PhotoSet(TendenciBaseModel):
     objects = PhotoSetManager()
         
     def save(self):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        self.guid = self.guid or unicode(uuid.uuid1())
             
         super(PhotoSet, self).save()
 
@@ -712,43 +706,52 @@ class Image(ImageModel, TendenciBaseModel):
 
     def get_next(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set, id__lt=self.id)
-        else: images = Image.objects.filter(id__lt=self.id)
+        if set:
+            images = Image.objects.filter(photoset=set, id__lt=self.id)
+        else:
+            images = Image.objects.filter(id__lt=self.id)
         images = images.values_list("id", flat=True)
         images = images.order_by('-id')
-        try: return Image.objects.get(id=max(images))
-        except ValueError: return None
+        try:
+            return Image.objects.get(id=max(images))
+        except ValueError:
+            return None
 
     def get_prev(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set, id__gt=self.id)
-        else: images = Image.objects.filter(id__gt=self.id)
+        if set:
+            images = Image.objects.filter(photoset=set, id__gt=self.id)
+        else:
+            images = Image.objects.filter(id__gt=self.id)
         images = images.values_list("id", flat=True)
         images = images.order_by('-id')
-        try: return Image.objects.get(id=min(images))
-        except ValueError: return None
+        try:
+            return Image.objects.get(id=min(images))
+        except ValueError:
+            return None
 
     def get_first(self, set=None):
         # decide which set to pull from
-        if set: images = Image.objects.filter(photoset=set)
-        else: return None
+        if set:
+            images = Image.objects.filter(photoset=set)
+        else:
+            return None
         images = images.values_list("id", flat=True)
         images = images.order_by('-id')
-        try: return Image.objects.get(id=max(images))
-        except ValueError: return None
+        try:
+            return Image.objects.get(id=max(images))
+        except ValueError:
+            return None
 
     def get_license(self):
-        if self.license:
-            return self.license
-        return self.default_license()
-        
+        return self.license or self.default_license()
+
     def default_license(self):
         return License.objects.get(id=1)
 
     def file_exists(self):
-        import os
-        return os.path.exists(self.image.path)
-        
+        return default_storage.exists(unicode(self.image))
+
     def default_thumbnail(self):
         return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
 

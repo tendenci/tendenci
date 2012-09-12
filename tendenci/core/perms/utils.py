@@ -59,12 +59,15 @@ def update_perms_and_save(request, form, instance, **kwargs):
             instance.owner = request.user
         if hasattr(instance, 'owner_username'):
             instance.owner_username = request.user.username
-    
+
     # save the instance because we need the primary key
     if instance.pk:
         ObjectPermission.objects.remove_all(instance)
     else:
-        instance.save()
+        try:
+            instance.save()
+        except Exception as e:
+            print 'boom!', e
 
     # assign permissions for selected groups
     if 'group_perms' in form.cleaned_data:

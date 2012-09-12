@@ -1,8 +1,4 @@
-#### utils.py
-
-import os
 import Image
-import urllib2
 from os.path import exists
 from cStringIO import StringIO
 from django.conf import settings
