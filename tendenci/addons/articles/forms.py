@@ -52,7 +52,7 @@ class ArticleForm(TendenciBaseForm):
                                  'summary',
                                  'body',
                                  'tags',
-                                 'source', 
+                                 'source',
                                  'website',
                                  'release_dt',
                                  'timezone',
@@ -79,7 +79,7 @@ class ArticleForm(TendenciBaseForm):
                      ('Administrator Only', {
                       'fields': ['syndicate',
                                  'status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
 
@@ -90,6 +90,8 @@ class ArticleForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
+        if self.user and not self.user.profile.is_superuser:
+            if 'status' in self.fields:
+                self.fields.pop('status')
+            if 'status_detail' in self.fields:
+                self.fields.pop('status_detail')

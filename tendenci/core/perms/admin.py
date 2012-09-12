@@ -2,6 +2,7 @@ import inspect
 
 from django.contrib import admin
 from django.utils.encoding import iri_to_uri
+from django.core.urlresolvers import reverse
 from django.conf import settings
 
 from tendenci.core.event_logs.models import EventLog
@@ -12,6 +13,9 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
     """
     Base ModelAdmin class to help with event logs
     """
+
+    class Media:
+        js = ('%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,)
 
     def __init__(self, *args, **kwargs):
         super(TendenciBaseModelAdmin, self).__init__(*args, **kwargs)
@@ -29,8 +33,6 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
 
         if 'edit_link' not in self.list_display:
             self.list_display.insert(0, 'edit_link')
-        if 'action_checkbox' not in self.list_display:
-            self.list_display.insert(0, 'action_checkbox')
 
         self.list_display_links = ('edit_link', )
 
@@ -48,6 +50,28 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
         return link
     view_on_site.allow_tags = True
     view_on_site.short_description = 'view'
+
+    def owner_link(self, obj):
+        link = ''
+        if obj.owner_username:
+            link = '<a href="%s" title="%s">%s</a>' % (
+                reverse('profile', args=[obj.owner_username]),
+                obj.owner_username,
+                obj.owner_username,
+            )
+        return link
+    owner_link.allow_tags = True
+    owner_link.short_description = 'owner'
+
+    def admin_status(self, obj):
+        return obj.obj_status
+    admin_status.allow_tags = True
+    admin_status.short_description = 'status'
+
+    def admin_perms(self, obj):
+        return obj.obj_perms
+    admin_perms.allow_tags = True
+    admin_perms.short_description = 'permission'
 
     def save_model(self, request, object, form, change):
         """
