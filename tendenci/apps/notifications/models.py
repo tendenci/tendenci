@@ -306,7 +306,12 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     if extra_context is None:
         extra_context = {}
 
-    notice_type = NoticeType.objects.get(label=label)
+    try:
+        notice_type = NoticeType.objects.get(label=label)
+    except:
+        # Stop here because we need a notice_type
+        return None
+
     headers = {}
     protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
     current_site = Site.objects.get_current()
