@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core.files.storage import default_storage
+
 from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.imports.forms import UserImportForm
@@ -14,8 +16,7 @@ from tendenci.core.imports.utils import extract_from_excel, render_excel, handle
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.user_groups.models import Group, GroupMembership
 
-
-IMPORT_DIR = os.path.join(settings.MEDIA_ROOT, 'imports')
+IMPORT_FOLDER_NAME = 'imports'
 
 
 @login_required
@@ -28,15 +29,22 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
         if form.is_valid():
             # reset the password_promt session
             request.session['password_promt'] = False
-            # save the uploaded file
-            file_dir = IMPORT_DIR
             
-            if not os.path.isdir(file_dir):
-                os.makedirs(file_dir)
+            # save the uploaded file
             f = request.FILES['file']
             file_name = f.name.replace('&', '')
-            file_path = os.path.join(file_dir, file_name)
+            file_path = os.path.join(IMPORT_FOLDER_NAME, file_name)
             handle_uploaded_file(f, file_path)
+            
+#            
+#            file_dir = IMPORT_DIR
+            
+#            if not os.path.isdir(file_dir):
+#                os.makedirs(file_dir)
+#            f = request.FILES['file']
+#            file_name = f.name.replace('&', '')
+#            file_path = os.path.join(file_dir, file_name)
+#            handle_uploaded_file(f, file_path)
             
             interactive = form.cleaned_data['interactive']
             override = form.cleaned_data['override']
@@ -61,7 +69,7 @@ def user_upload_add(request, form_class=UserImportForm, template_name="imports/u
                                    'data_dict_list': data_dict_list}
             
             EventLog.objects.log()
-            return HttpResponseRedirect(reverse('imports.views.user_upload_preview', args=[id]))
+            return HttpResponseRedirect(reverse('import.user_upload_preview', args=[id]))
     else:
         form = form_class()
     return render_to_response(template_name, {'form':form}, 
@@ -74,10 +82,10 @@ def user_upload_preview(request, id, template_name="imports/users_preview.html")
     id = str(id)
         
     import_dict = get_user_import_settings(request, id)
-    import_dict['file_dir'] = IMPORT_DIR
+    import_dict['folder_name'] = IMPORT_FOLDER_NAME
     
-    if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
-        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+    if not default_storage.exists(os.path.join(import_dict['folder_name'], import_dict['file_name'])):
+        return HttpResponseRedirect(reverse('iimport.user_upload_add'))
 
     users_list, invalid_list = user_import_process(request, import_dict, preview=True, id=id)
     import_dict['users_list'] = users_list
@@ -100,13 +108,13 @@ def user_upload_process(request, id, template_name="imports/users_process.html")
     id = str(id)
     import_dict = get_user_import_settings(request, id)
     if not import_dict:
-        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+        return HttpResponseRedirect(reverse('import.user_upload_add'))
     
-    import_dict['file_dir'] = IMPORT_DIR
+    import_dict['folder_name'] = IMPORT_FOLDER_NAME
     import_dict['id'] = id
     
-    if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
-        return HttpResponseRedirect(reverse('imports.views.user_upload_add'))
+    if not default_storage.exists(os.path.join(import_dict['folder_name'], import_dict['file_name'])):
+        return HttpResponseRedirect(reverse('import.user_upload_add'))
     
     #reset group - delete all members in the group
     if import_dict['clear_group_membership'] and import_dict['group']:
@@ -136,9 +144,9 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
     if not import_dict:
         return HttpResponse('')
     
-    import_dict['file_dir'] = IMPORT_DIR
+    import_dict['folder_name'] = IMPORT_FOLDER_NAME
     
-    if not os.path.isfile(os.path.join(import_dict['file_dir'], import_dict['file_name'])):
+    if not default_storage.exists(os.path.join(import_dict['folder_name'], import_dict['file_name'])):
         return HttpResponse('')
 
     
@@ -159,10 +167,10 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
     
     # store the recap - so we can retrieve it later
     recap_file_name = '%s_recap.txt' % id
-    recap_path = os.path.join(import_dict['file_dir'], recap_file_name)
+    recap_path = os.path.join(import_dict['folder_name'], recap_file_name)
     
-    if os.path.isfile(recap_path):
-        fd = open(recap_path, 'r')
+    if default_storage.exists(recap_path):
+        fd = default_storage.open(recap_path, 'r')
         content = fd.read()
         fd.close()
         recap_dict = cPickle.loads(content)
@@ -186,7 +194,7 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
                        'file_name':import_dict['file_name']}
     
     
-    fd = open(recap_path, 'w')
+    fd = default_storage.open(recap_path, 'w')
     cPickle.dump(recap_dict, fd)
     fd.close()
     # clear the recap_dict
@@ -213,7 +221,7 @@ def user_upload_subprocess(request, id, template_name="imports/users_subprocess.
         del request.session[id]
         
         # remove the imported file
-        os.remove(os.path.join(import_dict['file_dir'], import_dict['file_name']))
+        default_storage.delete(os.path.join(import_dict['folder_name'], import_dict['file_name']))
     
     import_dict['id'] = id
     return render_to_response(template_name, import_dict, 
@@ -224,15 +232,15 @@ def user_upload_recap(request, id):
     if not request.user.profile.is_superuser:raise Http403   # admin only page
     
     recap_file_name = '%s_recap.txt' % str(id)
-    recap_path = os.path.join(IMPORT_DIR, recap_file_name)
+    recap_path = os.path.join(IMPORT_FOLDER_NAME, recap_file_name)
     
-    if os.path.isfile(recap_path):
+    if default_storage.exists(recap_path):
         import StringIO
         from django.template.defaultfilters import slugify
         from xlwt import Workbook, XFStyle
         
         # restore the recap_dict
-        fd = open(recap_path, 'r')
+        fd = default_storage.open(recap_path, 'r')
         content = fd.read()
         fd.close()
         

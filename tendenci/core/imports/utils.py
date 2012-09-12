@@ -7,11 +7,14 @@ from django.http import HttpResponse
 from django.db.models.fields import AutoField, FieldDoesNotExist
 from django.utils.encoding import smart_str
 from django.core.validators import email_re
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 import xlrd
 from xlwt import Workbook, XFStyle
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.profiles.models import Profile
+from tendenci.core.base.utils import normalize_newline
 
 
 # number rows to process per request
@@ -35,7 +38,8 @@ profile_field_types = None
 
 
 def handle_uploaded_file(f, file_path):
-    destination = open(file_path, 'wb+')
+#    default_storage.save(file_path, ContentFile(f.read()))
+    destination = default_storage.open(file_path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
@@ -450,7 +454,7 @@ def get_header_list_from_content(file_content, file_name):
 
 
 def extract_from_excel(file_path):
-    if not os.path.isfile(file_path):
+    if not default_storage.exists(file_path):
         raise NameError("%s is not a valid file." % file_path)
 
     file_ext = (file_path[-4:]).lower()
@@ -463,8 +467,9 @@ def extract_from_excel(file_path):
     if file_ext == '.csv':
         import csv
         import dateutil.parser as dparser
-
-        data = csv.reader(open(file_path))
+        
+        normalize_newline(file_path)
+        data = csv.reader(default_storage.open(file_path, 'rU'))
 
         # read the column header
         fields = data.next()
