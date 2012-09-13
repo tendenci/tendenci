@@ -13,7 +13,7 @@ class TendenciBaseSearchIndex(CustomSearchIndex):
     allow_anonymous_view = indexes.BooleanField(model_attr='allow_anonymous_view')
     allow_user_view = indexes.BooleanField(model_attr='allow_user_view')
     allow_member_view = indexes.BooleanField(model_attr='allow_member_view')
-    allow_anonymous_edit = indexes.BooleanField(model_attr='allow_anonymous_edit')
+    # allow_anonymous_edit = indexes.BooleanField(model_attr='allow_anonymous_edit')
     allow_user_edit = indexes.BooleanField(model_attr='allow_user_edit')
     allow_member_edit = indexes.BooleanField(model_attr='allow_member_edit')
     creator = indexes.CharField(model_attr='creator')
