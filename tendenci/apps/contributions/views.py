@@ -24,7 +24,7 @@ def index(request, id=None, template_name="contributions/view.html"):
 def search(request, template_name="contributions/search.html"):
     query = request.GET.get('q', None)
     if request.user.profile.is_superuser:
-        contributions = Contribution.objects.search(query, user=request.user)
+        contributions = Contribution.objects.all()
     else:
         contributions = Contribution.objects.filter(Q(creator=request.user)|Q(owner=request.user))
     contributions = contributions.order_by('-create_dt')
