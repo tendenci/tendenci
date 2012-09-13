@@ -20,9 +20,9 @@
     {% photo_nav request.user %}
     <h1>{{ SITE_GLOBAL_SITEPRIMARYKEYWORDS }} {{ MODULE_PHOTOS_LABEL }}</h1>
     
-	{% photo_search %}
-	<span><em>{{ photos|length }} {% firstof MODULE_PHOTOS_LABEL trans 'Photos' %} {% trans "Found" %}</em></span>
     {% autopaginate photos 10 %}
+	{% photo_search %}
+	<span><em>{{  paginator.count  }} {% firstof MODULE_PHOTOS_LABEL trans 'Photos' %} {% trans "Found" %}</em></span>
     
     <div class="photos-wrap">
     {% for photo in photos %}
