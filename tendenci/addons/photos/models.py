@@ -259,7 +259,7 @@ class ImageModel(models.Model):
         # Apply effect if found
         if hasattr(self, 'effect') and self.effect is not None:
             im = self.effect.pre_process(im)
-        elif hasattr(photosize, 'effect'):
+        elif hasattr(photosize, 'effect') and photosize.effect is not None:
             im = photosize.effect.pre_process(im)
 
         # Resize/crop image
