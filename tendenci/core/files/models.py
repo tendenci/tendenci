@@ -188,7 +188,7 @@ class File(TendenciBaseModel):
 
             try:
                 doc = PDF(self.file.file)
-            except PDF.PDFSyntaxError:
+            except:
                 return unicode()
 
             return doc.text()
