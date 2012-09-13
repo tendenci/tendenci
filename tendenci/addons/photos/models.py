@@ -10,8 +10,9 @@ from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
-from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from django.core.exceptions import SuspiciousOperation
 from django.conf import settings
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
@@ -170,11 +171,6 @@ class ImageModel(models.Model):
     def _get_SIZE_filename(self, size):
         photosize = PhotoSizeCache().sizes.get(size)
 
-        # cache_path = os.path.join(settings.MEDIA_URL, 'photos', 'cache')
-        # return os.path.join(cache_path, self._get_filename_for_size(photosize.name))
-
-
-
         return smart_str(os.path.join(self.cache_path(),
             self._get_filename_for_size(photosize.name)))
 
@@ -195,10 +191,13 @@ class ImageModel(models.Model):
 
     def size_exists(self, photosize):
         func = getattr(self, "get_%s_filename" % photosize.name, None)
-        if func is not None:
-            return default_storage.exists(func())
-            # if os.path.isfile(func()):
-            #     return True
+
+        if func:
+            try:
+                return default_storage.exists(func())
+            except SuspiciousOperation:
+                pass
+
         return False
 
     def resize_image(self, im, photosize):
