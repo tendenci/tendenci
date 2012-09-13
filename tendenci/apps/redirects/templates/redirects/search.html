@@ -18,9 +18,9 @@
     {% redirect_nav request.user %}
     <h1>{% firstof MODULE_REDIRECTS_LABEL_PLURAL "Redirects" %}</h1>
      
-    {% redirect_search %}
-    <span><em>{{ redirects|length }} {% firstof MODULE_REDIRECTS_LABEL_PLURAL "Redirects" %} {% trans "Found" %}</em></span>
     {% autopaginate redirects 10 %}
+    {% redirect_search %}
+    <span><em>{{ paginator.count }} {% firstof MODULE_REDIRECTS_LABEL_PLURAL "Redirects" %} {% trans "Found" %}</em></span>
     
     <div class="redirects-wrap">
     {% for redirect in redirects %}
