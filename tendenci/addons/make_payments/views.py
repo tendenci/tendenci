@@ -70,7 +70,7 @@ def add(request, form_class=MakePaymentForm, template_name="make_payments/add.ht
             
             # redirect to online payment or confirmation page
             if mp.payment_method == 'cc' or mp.payment_method == 'credit card':
-                return HttpResponseRedirect(reverse('payments.views.pay_online', args=[invoice.id, invoice.guid]))
+                return HttpResponseRedirect(reverse('payment.pay_online', args=[invoice.id, invoice.guid]))
             else:
                 return HttpResponseRedirect(reverse('make_payment.add_confirm', args=[mp.id]))
     else:
