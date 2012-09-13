@@ -17,9 +17,10 @@
     <div class="breadcrumbs"><p><a href="{% url help_files %}">{% trans 'All' %} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %}</a> > <strong>{{ request.GET.q|striptags }}</strong> {% firstof MODULE_HELP_FILES_LABEL 'Help Files' %}</p></div>
     <h1>{% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans "Search" %}</h1>
      
-    {% help_file_search %}
-    <span><em>{{ help_files|length }} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans "Found" %}</em></span>
     {% autopaginate help_files 10 %}
+    {% help_file_search %}
+    <span><em>{{ paginator.count }} {% firstof MODULE_HELP_FILES_LABEL_PLURAL 'Help Files' %} {% trans "Found" %}</em></span>
+    
     
     <div class="help-files-wrap">
     {% for help_file in help_files %}
