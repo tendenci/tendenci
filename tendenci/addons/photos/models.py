@@ -668,16 +668,16 @@ class Image(ImageModel, TendenciBaseModel):
         This method is standard across all models that are
         related to the Meta model.  Used to generate dynamic
         methods coupled to this instance.
-        """    
+        """
         return PhotoMeta().get_meta(self, name)
-    
+
     class Meta:
-        permissions = (("view_image","Can view image"),)
+        permissions = (("view_image", "Can view image"),)
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-        super(Image, self).save(*args, **kwargs)       
+        super(Image, self).save(*args, **kwargs)
         # clear the cache
 #        caching.instance_cache_clear(self, self.pk)
 #        caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
@@ -686,6 +686,15 @@ class Image(ImageModel, TendenciBaseModel):
 #        caching.instance_cache_add(self, self.pk)
 
     def delete(self, *args, **kwargs):
+        """
+        Delete image-file and all resized versions
+        """
+        cache_path = self.cache_path()
+
+        # delete cached [resized] versions
+        filename_list = default_storage.listdir(cache_path)[1]
+        for filename in filename_list:
+            default_storage.delete(os.path.join(cache_path, filename))
 
         # delete actual image; do not save() self.instance
         self.image.delete(save=False)
