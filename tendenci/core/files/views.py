@@ -323,20 +323,18 @@ def delete(request, id, template_name="files/delete.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
-    if not has_perm(request.user,'files.delete_file'): 
+    if not has_perm(request.user, 'files.delete_file'):
         raise Http403
 
     if request.method == "POST":
-
         file.delete()
 
         if 'ajax' in request.POST:
             return HttpResponse('Ok')
         else:
             return HttpResponseRedirect(reverse('file.search'))
-        
 
-    return render_to_response(template_name, {'file': file}, 
+    return render_to_response(template_name, {'file': file},
         context_instance=RequestContext(request))
 
 

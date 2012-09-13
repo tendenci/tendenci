@@ -27,10 +27,9 @@ def file_directory(instance, filename):
 
     if instance.content_type:
         content_type = re.sub(r'[^a-zA-Z0-9._]+', '-', unicode(instance.content_type))
-    else:
-        return 'files/files/%s/%s' % (uuid_hex, filename)
+        return 'files/%s/%s/%s' % (content_type, uuid_hex, filename)
 
-    return 'files/%s/%s/%s' % (content_type, uuid_hex, filename)
+    return 'files/files/%s/%s' % (uuid_hex, filename)
 
 
 class File(TendenciBaseModel):
@@ -83,6 +82,11 @@ class File(TendenciBaseModel):
         for story in stories:
             story.image = None
             story.save()
+
+        # delete actual file; do not save() self.instance
+        self.file.delete(save=False)
+
+        # delete database record
         super(File, self).delete(*args, **kwargs)
 
     def basename(self):
