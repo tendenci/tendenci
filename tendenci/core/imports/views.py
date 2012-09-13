@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.core.urlresolvers import reverse
 from django.core.files.storage import default_storage
+from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
@@ -38,6 +39,10 @@ def user_upload_add(request, form_class=UserImportForm,
             f = request.FILES['file']
             file_name = f.name.replace('&', '')
             file_path = os.path.join(IMPORT_FOLDER_NAME, file_name)
+            if os.path.isdir(settings.MEDIA_ROOT):
+                file_dir = os.path.join(settings.MEDIA_ROOT, IMPORT_FOLDER_NAME)
+                if not os.path.isdir(file_dir):
+                    os.makedirs(file_dir)
             handle_uploaded_file(f, file_path)
 
             interactive = form.cleaned_data['interactive']
