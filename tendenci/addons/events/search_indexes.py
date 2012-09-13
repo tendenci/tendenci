@@ -68,7 +68,7 @@ class EventIndex(TendenciBaseSearchIndex):
                 and obj.status_detail == 'active'
 
 
-class EventTypeIndex(TendenciBaseSearchIndex):
+class EventTypeIndex(CustomSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     name = indexes.CharField(model_attr='name')
     slug = indexes.CharField(model_attr='slug')
