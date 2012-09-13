@@ -488,16 +488,20 @@ def change_avatar(request, id, extra_context={}, next_override=None):
             new_file = avatar.avatar.storage.save(path, request.FILES['avatar'])
             avatar.save()
             updated = True
-            request.user.message_set.create(
-                message=_("Successfully uploaded a new avatar."))
+
+            messages.add_message(
+                request, messages.SUCCESS, _("Successfully uploaded a new avatar."))
+
         if 'choice' in request.POST and primary_avatar_form.is_valid():
             avatar = Avatar.objects.get(id=
                 primary_avatar_form.cleaned_data['choice'])
             avatar.primary = True
             avatar.save()
             updated = True
-            request.user.message_set.create(
-                message=_("Successfully updated your avatar."))
+
+            messages.add_message(
+                request, messages.SUCCESS, _("Successfully updated your avatar."))
+
         if updated and notification:
             notification.send([request.user], "avatar_updated", {"user": user_edit, "avatar": avatar})
             #if friends:

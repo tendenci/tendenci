@@ -255,9 +255,6 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     photo_sets = PhotoSet.objects.all()
     
     if request.method == "POST":
-        #if photo.member != request.user: # no permission
-        #    request.user.message_set.create(message="You can't edit photos that aren't yours")
-        #    return HttpResponseRedirect(reverse('photo', args=(photo.id, set_id)))
         if request.POST["action"] == "update":
             form = form_class(request.POST, instance=photo, user=request.user)
             if form.is_valid():
@@ -276,7 +273,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 }
                 EventLog.objects.log(**log_defaults)
 
-                request.user.message_set.create(message=_("Successfully updated photo '%s'") % photo.title)
+                messages.add_message(request, messages.INFO, _("Successfully updated photo '%s'") % photo.title)
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
             form = form_class(instance=photo, user=request.user)
@@ -302,7 +299,7 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        request.user.message_set.create(message=_("Successfully deleted photo '%s'") % photo.title)
+        messages.add_message(request, messages.INFO, _("Successfully deleted photo '%s'") % photo.title)
         log_defaults = {
             'event_id' : 990300,
             'event_data': '%s (%d) deleted by %s' % (photo._meta.object_name, photo.pk, request.user),
@@ -397,7 +394,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                     ObjectPermission.objects.remove_all(photo)
                     ObjectPermission.objects.assign_group(group_perms, photo)
 
-                request.user.message_set.create(message=_("Successfully updated photo set! ") + '')
+                messages.add_message(request, messages.INFO, _("Successfully updated photo set! "))
                 EventLog.objects.log(**{
                     'event_id': 991200,
                     'event_data': '%s (%d) edited by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),

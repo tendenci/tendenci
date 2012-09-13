@@ -538,7 +538,7 @@ class PhotoSet(TendenciBaseModel):
         (1, _('Private')),
         (2, _('Public')),
     )
-    guid = models.CharField(max_length=40) 
+    guid = models.CharField(max_length=40)
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
@@ -552,13 +552,16 @@ class PhotoSet(TendenciBaseModel):
     class Meta:
         verbose_name = _('Photo Album')
         verbose_name_plural = _('photo sets')
-        permissions = (("view_photoset","Can view photoset"),)
-        
+        permissions = (("view_photoset", "Can view photoset"),)
+
     objects = PhotoSetManager()
-        
+
+    def __unicode__(self):
+        return self.name
+
     def save(self):
         self.guid = self.guid or unicode(uuid.uuid1())
-            
+
         super(PhotoSet, self).save()
 
     def get_default_cover_photo_small(self):
@@ -603,9 +606,6 @@ class PhotoSet(TendenciBaseModel):
     def get_absolute_url(self):
         return ("photoset_details", [self.pk])
 
-    def __unicode__(self):
-        return self.name
-
     def get_images(self, user=None, status=True, status_detail='active'):
         """
         Returns the images of this photosets and filters according
@@ -616,9 +616,24 @@ class PhotoSet(TendenciBaseModel):
         user = user or AnonymousUser()
 
         filters = get_query_filters(user, 'photos.view_image')
-        photos = Image.objects.filter(filters).filter(photoset=self.pk).distinct()
+        photos = Image.objects.filter(filters).filter(photoset=self.pk)
 
         return photos
+
+    def delete_all_images(self):
+        images = Image.objects.filter(photoset=self.pk)
+
+        # method deletes actual image
+        for image in images:
+            image.delete()
+
+    def delete(self, *args, **kwargs):
+        """
+        Deleting a photo-set deletes all the images
+        associated with the photo-set.
+        """
+        self.delete_all_images()
+        super(PhotoSet, self).delete(*args, **kwargs)
 
 
 class Image(ImageModel, TendenciBaseModel):
@@ -669,12 +684,13 @@ class Image(ImageModel, TendenciBaseModel):
 
 #        # re-add instance to the cache
 #        caching.instance_cache_add(self, self.pk)
-   
+
     def delete(self, *args, **kwargs):
-        super(Image, self).delete(*args, **kwargs)   
-        # delete the cache
-#        caching.instance_cache_del(self, self.pk)
-#        caching.cache_delete(PHOTOS_KEYWORDS_CACHE)
+
+        # delete actual image; do not save() self.instance
+        self.image.delete(save=False)
+
+        super(Image, self).delete(*args, **kwargs)
 
     @models.permalink
     def get_absolute_url(self):
