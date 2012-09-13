@@ -145,7 +145,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     response['Content-Disposition'] = '%s filename=%s' % (attachment, file.basename())
     return response
 
-
+@login_required
 def search(request, template_name="files/search.html"):
     """
     This page lists out all files from newest to oldest.
@@ -169,8 +169,10 @@ def search(request, template_name="files/search.html"):
     return render_to_response(template_name, {'files':files}, 
         context_instance=RequestContext(request))
 
+
 def search_redirect(request):
     return HttpResponseRedirect(reverse('files'))
+
 
 def print_view(request, id, template_name="files/print-view.html"):
     file = get_object_or_404(File, pk=id)
@@ -181,7 +183,8 @@ def print_view(request, id, template_name="files/print-view.html"):
 
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
-    
+
+
 @login_required
 def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
     file = get_object_or_404(File, pk=id)
@@ -206,6 +209,7 @@ def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
 
     return render_to_response(template_name, {'file': file, 'form':form}, 
         context_instance=RequestContext(request))
+
 
 @login_required
 def bulk_add(request, template_name="files/bulk-add.html"):
@@ -283,6 +287,7 @@ def bulk_add(request, template_name="files/bulk-add.html"):
             'file_formset': file_formset,
         }, context_instance=RequestContext(request))
 
+
 @login_required
 def add(request, form_class=FileForm, template_name="files/add.html"):
 
@@ -311,7 +316,8 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
        
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
-    
+
+
 @login_required
 def delete(request, id, template_name="files/delete.html"):
     file = get_object_or_404(File, pk=id)
@@ -421,11 +427,13 @@ def swfupload(request):
 
         return HttpResponse(json.dumps([d]), mimetype="text/plain")
 
+
 @login_required
 def tinymce_upload_template(request, id, template_name="files/templates/tinymce_upload.html"):
     file = get_object_or_404(File, pk=id)
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
+
 
 @login_required
 @admin_required
@@ -506,7 +514,8 @@ def redirect_to_s3(request, path, file_type='themes'):
             url = '%s/%s' % (settings.THEMES_DIR, path)
         return HttpResponseRedirect(url)
     raise Http404
-    
+
+
 class JSONResponse(HttpResponse):
     """JSON response class."""
     def __init__(self,obj='',json_opts={},mimetype="application/json",*args,**kwargs):
