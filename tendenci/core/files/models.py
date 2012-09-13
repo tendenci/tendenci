@@ -176,8 +176,9 @@ class File(TendenciBaseModel):
         if the file cannot be read this will return an empty string.
         """
 
-        if not os.path.exists(self.file.path):
-            return unicode()
+        if not settings.USE_S3_STORAGE:
+            if not os.path.exists(self.file.path):
+                return unicode()
 
         if self.type() == 'pdf':
 
