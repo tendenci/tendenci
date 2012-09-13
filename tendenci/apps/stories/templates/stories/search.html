@@ -20,9 +20,9 @@
     {% stories_nav request.user %}
     <h1>{% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %}</h1>
      
-    {% stories_search %}
-    <span><em>{{ stories|length }} {% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %} {% trans "Found" %}</em></span>
     {% autopaginate stories 10 %}
+    {% stories_search %}
+    <span><em>{{ paginator.count }} {% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %} {% trans "Found" %}</em></span>
     
     <div class="stories-wrap">
     {% for story in stories %}  
