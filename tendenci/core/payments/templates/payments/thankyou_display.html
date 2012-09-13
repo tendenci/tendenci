@@ -12,7 +12,7 @@
         <b>
         {% trans "DO NOT press the back button in your browser." %}
         </b>
-        <a href="{{ SITE_GLOBAL_SITEURL }}{% url payents.view.pay_online invoice.id invoice.guid %}">{% trans "Try Making Payment Again" %}</a> 
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url payment.pay_online payment.invoice.id payment.invoice.guid %}">{% trans "Try Making Payment Again" %}</a> 
     {% else %}
         <b>
         {% trans "DO NOT press the back button in your browser, or your credit card will be charged twice." %}
