@@ -118,7 +118,7 @@ if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             {'file_type': 'themes'},
                 name='redirect_to_s3'),
 )
-                            
+
 # serve static files
 if settings.DEBUG:
     urlpatterns += patterns('',
@@ -134,6 +134,13 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': settings.THEMES_DIR, 'show_indexes': True}),
     )
+
+# Favicon url to prevent 404 from some browsers.
+urlpatterns += patterns('',
+    (r'^(?P<path>favicon\.ico)$',
+        'django.views.static.serve',
+        {'document_root': join(settings.STATIC_ROOT, 'images'), 'show_indexes': True}),
+)
 
 # template tag testing environment
 if settings.DEBUG:
