@@ -252,12 +252,14 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             template.save()
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
-            html_url = "%s%s"%(site_url, template.get_html_url())
+            
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                     zip_url = template.get_zip_url()
+                    html_url = template.html_file.url
                 else:
-                    zip_url = "%s%s"%(site_url, template.get_zip_url())
+                    zip_url = "%s%s" % (site_url, template.get_zip_url())
+                    html_url = "%s%s" % (site_url, template.get_html_url())
             else:
                 zip_url = ""
 
@@ -287,7 +289,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             template.save()
             
             #extract and serve files in zip
-            extract_files(template)
+            #extract_files(template)
             
             messages.add_message(request, messages.SUCCESS, 'Successfully created Template : %s' % t_id)
             
@@ -316,12 +318,14 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
-            html_url = str("%s%s"%(site_url, template.get_html_url()))
+            
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                     zip_url = template.get_zip_url()
+                    html_url = template.html_file.url
                 else:
                     zip_url = "%s%s"%(site_url, template.get_zip_url())
+                    html_url = str("%s%s"%(site_url, template.get_html_url()))
             else:
                 zip_url = ""
             
@@ -346,7 +350,7 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             template.save()
             
             #extract and serve files in zip
-            extract_files(template)
+            #extract_files(template)
                     
             messages.add_message(request, messages.SUCCESS, 'Successfully updated Template : %s' % template.template_id)
             
@@ -372,12 +376,14 @@ def template_update(request, template_id):
     
     #set up urls
     site_url = get_setting('site', 'global', 'siteurl')
-    html_url = str("%s%s"%(site_url, template.get_html_url()))
+    
     if template.zip_file:
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
             zip_url = template.get_zip_url()
+            html_url = template.html_file.url
         else:
-            zip_url = "%s%s"%(site_url, template.get_zip_url())
+            zip_url = "%s%s" % (site_url, template.get_zip_url())
+            html_url = str("%s%s" % (site_url, template.get_html_url()))
     else:
         zip_url = ""
     
