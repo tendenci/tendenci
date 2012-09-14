@@ -8,5 +8,6 @@ urlpatterns = patterns('tendenci.apps.invoices.views',
         {'template_name': 'invoices/print_view.html'}, name="invoice.print_view"),
     url(r'^adjust/(?P<id>\d+)/$',             'adjust', name="invoice.adjust"),
     url(r'^detail/(?P<id>\d+)/$',             'detail', name="invoice.detail"),
+    url(r'^mark_as_paid/(?P<id>\d+)/$', 'mark_as_paid', name="invoice.mark_as_paid"),
     url(r'^search/$',                         'search', name="invoice.search"),
 )

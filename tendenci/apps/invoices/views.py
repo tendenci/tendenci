@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.template import RequestContext
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
@@ -58,6 +59,18 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
                                               'form':form,
                                               'merchant_login': merchant_login}, 
         context_instance=RequestContext(request))
+
+def mark_as_paid(request, id):
+    
+    invoice = get_object_or_404(Invoice, pk=id)
+    
+    if not (request.user.profile.is_superuser): raise Http403    
+    
+    balance = invoice.balance
+    invoice.make_payment(request.user, balance)
+    
+    messages.add_message(request, messages.SUCCESS, 'Successfully marked invoice %s as paid.' % invoice.id)
+    return redirect(invoice)
 
 @login_required
 def search(request, template_name="invoices/search.html"):
