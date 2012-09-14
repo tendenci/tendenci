@@ -1108,6 +1108,7 @@ def copy_event(event, user):
         owner_username = user.username,
         status = event.status,
         status_detail = event.status_detail,
+        tags = event.tags,
     )
         
     #copy place
