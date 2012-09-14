@@ -17,4 +17,5 @@ urlpatterns = patterns('tendenci.addons.campaign_monitor.views',
     url(r'^campaigns/generate/$', 'campaign_generate', name="campaign_monitor.campaign_generate"),
     url(r'^campaigns/delete/(?P<campaign_id>[\w\-\/]+)/$', 'campaign_delete', name="campaign_monitor.campaign_delete"),
     url(r'^campaigns/(?P<campaign_id>[\w\-\/]+)/$', 'campaign_view', name="campaign_monitor.campaign_view"),
+    url(r'^campaigns/status/(?P<task_id>[-\w]+)/$', "campaign_generate_status", name='campaign_generate_status'),
 )
