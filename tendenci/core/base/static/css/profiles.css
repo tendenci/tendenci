@@ -69,6 +69,13 @@
     margin-top: 5px;
 }
 
+.admin_notes.info h2 {
+    position: absolute;
+    top: -38px;
+    background-color: white;
+    padding-right: 10px;
+}
+
 .membership.info h2 {
     position: absolute;
     top: -38px;
@@ -398,10 +405,6 @@ div.admin-item {
     border-bottom: 1px solid #CCC;
 }
 
-.list-avatars li{
-	list-style: none;
-}
-
 /* membership tab
 ------------------------------- */
 .membership-wrap {
@@ -423,7 +426,3 @@ div.admin-item {
 .edit-profile-perms .selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
 .edit-profile-perms .selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
 .edit-profile-perms .selector-chosen .selector-filter { display: none; }
-
-.inner-mitm{
-	padding: 0 1em;
-}

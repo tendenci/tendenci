@@ -83,10 +83,23 @@
 				<td>Address</td>
 				<td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
 			</tr>
-	    </table>
-
+		</table>
+		
     </div>
-
+    
+    {% if request.user.profile.is_superuser %}
+    <div class="admin_notes info">
+        <h2> Admin Notes </h2>
+        <p> 
+            {% if profile.admin_notes %} 
+                {{ profile.admin_notes }} 
+            {% else %}
+                No admin notes.
+            {% endif %}
+        </p>
+	</div>
+    {% endif %} 
+    
     <div class="membership info">
 
 		<h2>Memberships 
