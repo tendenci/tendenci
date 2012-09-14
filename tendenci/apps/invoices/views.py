@@ -74,6 +74,29 @@ def mark_as_paid(request, id):
 
 @login_required
 def search(request, template_name="invoices/search.html"):
+    query = request.GET.get('q', None)
+    bill_to_email = request.GET.get('bill_to_email', None)
+
+    if get_setting('site', 'global', 'searchindex') and query:
+        invoices = Invoice.objects.search(query)
+    else:
+        invoices = Invoice.objects.all()
+        if bill_to_email:
+            invoices = invoices.filter(bill_to_email=bill_to_email)
+    if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
+        invoices = invoices.order_by('-create_dt')
+    else:
+        if request.user.is_authenticated():
+            from django.db.models import Q
+            invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
+        else:
+            raise Http403
+    EventLog.objects.log()
+    return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def search_report(request, template_name="invoices/search.html"):
     from django.db.models import Q
 
     def is_number(num):
