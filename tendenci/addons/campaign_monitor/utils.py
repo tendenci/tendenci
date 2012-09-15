@@ -1,15 +1,19 @@
-from createsend import Client
-from django.conf import settings
-from django.core.files.storage import default_storage
-from tendenci.core.site_settings.utils import get_setting
-from tendenci.addons.campaign_monitor.models import Campaign, Template
-from createsend import CreateSend, Client, Subscriber
-from createsend.createsend import BadRequest
-import os, re
-import urllib2
+import os
+import re
 import random
 import string
 import zipfile
+import shutil
+
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+from createsend import CreateSend, Client, Subscriber
+from createsend.createsend import BadRequest
+
+from tendenci.addons.campaign_monitor.models import Campaign, Template
+
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 api_password = getattr(settings, 'CAMPAIGNMONITOR_API_PASSWORD', None)
@@ -83,14 +87,32 @@ def sync_templates():
         template.cm_screenshot_url = t.ScreenshotURL
         template.save()
 
+
 def extract_files(template):
     if template.zip_file:
         zip_file = zipfile.ZipFile(template.zip_file.file)
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            zip_file = default_storage.open(unicode(template.zip_file.file), 'rb')
-            zip_file = zipfile.ZipFile(zip_file, 'r')
-        zip_file.extractall(os.path.join(settings.MEDIA_ROOT, 'campaign_monitor', template.template_id))
-    
+            # create a tmp directory to extract the zip file
+            tmp_dir = 'tmp_%d' % template.id
+            path = './%s/campaign_monitor/%s' % (tmp_dir, template.template_id)
+            zip_file.extractall(path)
+            # upload extracted files to s3
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    file_path = os.path.join(root, name)
+                    dst_file_path = file_path.replace('./%s/' % tmp_dir, '')
+                    default_storage.save(dst_file_path,
+                                ContentFile(open(file_path).read()))
+
+            # remove the tmp directory
+            shutil.rmtree(tmp_dir)
+        else:
+            path = os.path.join(settings.MEDIA_ROOT,
+                                'campaign_monitor',
+                                template.template_id)
+            zip_file.extractall(path)
+
+
 def apply_template_media(template):
     """
     Prepends files in content to the media path

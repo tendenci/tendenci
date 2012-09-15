@@ -289,7 +289,7 @@ def template_add(request, form_class=TemplateForm, template_name='campaign_monit
             template.save()
             
             #extract and serve files in zip
-            #extract_files(template)
+            extract_files(template)
             
             messages.add_message(request, messages.SUCCESS, 'Successfully created Template : %s' % t_id)
             
@@ -350,7 +350,7 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             template.save()
             
             #extract and serve files in zip
-            #extract_files(template)
+            extract_files(template)
                     
             messages.add_message(request, messages.SUCCESS, 'Successfully updated Template : %s' % template.template_id)
             
