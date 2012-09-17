@@ -22,7 +22,7 @@
     		{% if field.field.field_type == 'FileField' %}
     		<p>
     			<strong>{{ field.field.label }}</strong><br />
-    			<a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+    			<a href="{{ field|media_url }}">{{ field.value|basename }}</a>
     		</p>   		
     		{% else %}
     		<p>
