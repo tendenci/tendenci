@@ -527,20 +527,20 @@ def files(request, id):
     field = get_object_or_404(FieldEntry, pk=id)
     form = field.field.form
 
+    base_name = os.path.basename(field.value)
+    mime_type = mimetypes.guess_type(base_name)[0]
+
     if not has_view_perm(request.user, 'forms.view_form', form):
         raise Http403
+
+    if not mime_type:
+        raise Http404
 
     if not default_storage.exists(field.value):
         raise Http404
 
     data = default_storage.open(field.value).read()
     f = ContentFile(data)
-
-    base_name = os.path.basename(field.value)
-    mime_type = mimetypes.guess_type(base_name)[0]
-
-    if not mime_type:
-        raise Http404
 
     response = HttpResponse(f.read(), mimetype=mime_type)
     response['Content-Disposition'] = 'filename=%s' % base_name
