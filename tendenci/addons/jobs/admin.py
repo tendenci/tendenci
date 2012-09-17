@@ -28,8 +28,7 @@ class JobAdmin(TendenciBaseModelAdmin):
             'member_perms',
             'group_perms',
             )}),
-        ('Publishing Status', {'fields': (
-            'syndicate',
+        ('Status', {'fields': (
             'status',
             'status_detail',
             )}),
