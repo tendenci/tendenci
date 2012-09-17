@@ -9,7 +9,6 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 
 class NewsForm(TendenciBaseForm):
-
     body = forms.CharField(required=False,
         widget=TinyMCE(attrs={'style':'width:100%;'}, 
         mce_attrs={'storme_app_label':News._meta.app_label, 
@@ -91,9 +90,12 @@ class NewsForm(TendenciBaseForm):
         else:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
-        if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')
-        
+        #        if not self.user.profile.is_superuser:
+        if self.user and not self.user.profile.is_superuser:
+            if 'status' in self.fields:
+                self.fields.pop('status')
+            if 'status_detail' in self.fields:
+                self.fields.pop('status_detail')
+
         
         

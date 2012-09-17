@@ -1,15 +1,23 @@
 from django.conf.urls.defaults import patterns, url
 from tendenci.addons.news.feeds import LatestEntriesFeed
+from tendenci.core.site_settings.utils import get_setting
+
+urlpath = get_setting('module', 'articles', 'url')
+if not urlpath:
+    urlpath = "news"
 
 urlpatterns = patterns('tendenci.addons.news.views',
-    url(r'^$', 'search', name="news"),
-    url(r'^search/$', 'search_redirect', name="news.search"),
-    url(r'^print-view/(?P<slug>[\w\-\/]+)/$', 'print_view', name="news.print_view"),
-    url(r'^add/$', 'add', name="news.add"),
-    url(r'^edit/(?P<id>\d+)/$', 'edit', name="news.edit"),
-    url(r'^edit/meta/(?P<id>\d+)/$', 'edit_meta', name="news.edit.meta"),
-    url(r'^delete/(?P<id>\d+)/$', 'delete', name="news.delete"),
-    url(r'^feed/$', LatestEntriesFeed(), name='news.feed'),
-    url(r'^export/$', 'export', name='news.export'),
-    url(r'^(?P<slug>[\w\-\/]+)/$', 'detail', name="news.detail"),
+    url(r'^%s/$'        % urlpath, 'search', name="news"),
+    url(r'^%s/search/$' % urlpath, 'search_redirect', name="news.search"),
+    url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$'
+    % urlpath, 'print_view', name="news.print_view"),
+    url(r'^%s/add/$'    % urlpath, 'add', name="news.add"),
+    url(r'^%s/edit/(?P<id>\d+)/$'
+    % urlpath, 'edit', name="news.edit"),
+    url(r'^%s/edit/meta/(?P<id>\d+)/$'
+    % urlpath, 'edit_meta', name="news.edit.meta"),
+    url(r'^%s/delete/(?P<id>\d+)/$'
+    % urlpath, 'delete', name="news.delete"),
+    url(r'^%s/feed/$'   % urlpath, LatestEntriesFeed(), name='news.feed'),
+    url(r'^%s/export/$' % urlpath, 'export', name='news.export'),
 )
