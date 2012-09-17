@@ -14,6 +14,8 @@ urlpatterns = patterns("tendenci.apps.forms_builder.forms.views",
     url(r"^entry/(?P<id>\d+)$", "entry_detail", name="form_entry_detail"),
     url(r"^entries/(?P<id>\d+)$", "entries", name="form_entries"),
     url(r"^payment/(?P<invoice_id>\d+)/(?P<invoice_guid>[\d\w-]+)?/$", "form_entry_payment", name="form_entry_payment"),
+
+    url(r"^files/(?P<id>\d+)$", "files", name="form_files"),
     url(r"^(?P<slug>.*)/sent/$", "form_sent", name="form_sent"),
     url(r"^(?P<slug>.*)/$", "form_detail", name="form_detail"),
 )

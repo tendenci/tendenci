@@ -7,6 +7,7 @@ from tendenci.apps.forms_builder.forms.models import Form
 
 register = Library()
 
+
 @register.inclusion_tag("forms/options.html", takes_context=True)
 def forms_options(context, user, form):
     context.update({
@@ -15,17 +16,20 @@ def forms_options(context, user, form):
     })
     return context
 
+
 @register.inclusion_tag("forms/nav.html", takes_context=True)
 def forms_nav(context, user, form=None):
     context.update({
-        "nav_object" : form,
+        "nav_object": form,
         "user": user
     })
     return context
 
+
 @register.inclusion_tag("forms/search-form.html", takes_context=True)
 def forms_search(context):
     return context
+
 
 @register.inclusion_tag("forms/entry_options.html", takes_context=True)
 def forms_entry_options(context, user, entry):
@@ -34,10 +38,11 @@ def forms_entry_options(context, user, entry):
         "user": user
     })
     return context
-    
+
+
 class GetFormNode(Node):
-    
-    def __init__(self,  **kwargs):
+
+    def __init__(self, **kwargs):
         self.kwargs = kwargs
 
     def render(self, context):
@@ -49,15 +54,15 @@ class GetFormNode(Node):
                 pk = Variable(self.kwargs['pk'])
                 pk = pk.resolve(context)
             except:
-                pk = self.kwargs['pk'] # context string
+                pk = self.kwargs['pk']  # context string
 
         if 'template_name' in self.kwargs:
             try:
                 template_name = Variable(self.kwargs['template_name'])
                 template_name = pk.resolve(context)
             except:
-                template_name = self.kwargs['template_name'] # context string
-        
+                template_name = self.kwargs['template_name']  # context string
+
             template_name = template_name.replace('"', '')
 
         try:
@@ -77,17 +82,18 @@ class GetFormNode(Node):
                 return output
             except:
                 return ""
-        
+
+
 @register.tag
 def embed_form(parser, token):
     """
     Example:
         {% embed_form 123 [template] %}
     """
-    
+
     kwargs = {}
     bits = token.split_contents()
-      
+
     try:
         kwargs["pk"] = bits[1]
     except:
@@ -97,4 +103,16 @@ def embed_form(parser, token):
         kwargs["template_name"] = bits[2]
     except:
         pass
-    return GetFormNode(**kwargs) 
+    return GetFormNode(**kwargs)
+
+
+@register.filter
+def media_url(field):
+    """
+    example: field|media_url
+    """
+    # from django.conf import settings
+    from django.core.urlresolvers import reverse
+
+    # internal url; we handle privacy
+    return reverse('form_files', args=[field.pk])

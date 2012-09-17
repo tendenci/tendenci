@@ -454,6 +454,7 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
 
+
 def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
     """
     Show billing form, update the invoice then proceed to external payment.
@@ -462,9 +463,9 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
 
     if not invoice.allow_view_by(request.user, invoice_guid):
         raise Http403
-        
+
     entry = FormEntry.objects.get(id=invoice.object_id)
-        
+
     if request.method == "POST":
         form = form_class(request.POST)
         if form.is_valid():
@@ -477,21 +478,22 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
     else:
         if request.user.is_authenticated():
             form = form_class(initial={
-                        'first_name':request.user.first_name,
-                        'last_name':request.user.last_name,
-                        'email':request.user.email})
+                        'first_name': request.user.first_name,
+                        'last_name': request.user.last_name,
+                        'email': request.user.email})
         else:
             form = form_class()
-    
+
     return render_to_response(template, {
-            'payment_form':form,
-            'form':entry.form,
+            'payment_form': form,
+            'form': entry.form,
         }, context_instance=RequestContext(request))
-        
+
+
 @login_required
 def export(request, template_name="forms/export.html"):
     """Export forms"""
-    
+
     if not request.user.is_superuser:
         raise Http403
 
@@ -499,6 +501,47 @@ def export(request, template_name="forms/export.html"):
         export_id = run_export_task('forms_builder.forms', 'form', [])
         EventLog.objects.log()
         return redirect('export.status', export_id)
-        
+
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
+
+
+@login_required
+def files(request, id):
+    """
+    Returns file.  Allows us to handle privacy.
+
+    If default storage is remote:
+        We can get data from remote location, convert to file
+        object and return a file response.
+    """
+
+    import os
+    import mimetypes
+    from django.http import Http404
+    from django.core.files.base import ContentFile
+    from django.core.files.storage import default_storage
+    from tendenci.core.perms.utils import has_view_perm
+    from tendenci.apps.forms_builder.forms.models import FieldEntry
+
+    field = get_object_or_404(FieldEntry, pk=id)
+    form = field.field.form
+
+    if not has_view_perm(request.user, 'forms.view_form', form):
+        raise Http403
+
+    if not default_storage.exists(field.value):
+        raise Http404
+
+    data = default_storage.open(field.value).read()
+    f = ContentFile(data)
+
+    base_name = os.path.basename(field.value)
+    mime_type = mimetypes.guess_type(base_name)[0]
+
+    if not mime_type:
+        raise Http404
+
+    response = HttpResponse(f.read(), mimetype=mime_type)
+    response['Content-Disposition'] = 'filename=%s' % base_name
+    return response
