@@ -8,17 +8,18 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 
+
 class ArticleForm(TendenciBaseForm):
     body = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Article._meta.app_label, 
-        'storme_model':Article._meta.module_name.lower()}))
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': Article._meta.app_label,
+        'storme_model': Article._meta.module_name.lower()}))
 
     release_dt = SplitDateTimeField(label=_('Release Date/Time'),
         initial=datetime.now())
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
 
     class Meta:
         model = Article

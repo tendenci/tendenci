@@ -6,29 +6,30 @@ from django.utils.text import truncate_words
 
 from tendenci.core.categories.models import Category
 
+
 class ArticleMeta():
     """
     SEO specific tags carefully constructed follow.  These must *NOT* be perfect
     but rather should be strong. - ES
-    
+
     create a search engine friendly html TITLE tag for the page
     - we want similar phrases but NOT the exact same between TITLE and META tags
     - It MUST produce the exact same result if the spider returns but must also differ
     by site for sites that feed from the same central data
-    """ 
+    """
     def get_title(self):
         object = self.object
 
-        ### Assign variables -----------------------  
-        primary_keywords = get_setting('site','global','siteprimarykeywords')
-        geo_location = get_setting('site','global','sitegeographiclocation')
-        site_name = get_setting('site','global','sitedisplayname')
+        ### Assign variables -----------------------
+        primary_keywords = get_setting('site', 'global', 'siteprimarykeywords')
+        geo_location = get_setting('site', 'global', 'sitegeographiclocation')
+        site_name = get_setting('site', 'global', 'sitedisplayname')
         category_set = object.category_set
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
 
         creator_name = '%s %s' % (
-            object.creator.first_name, 
+            object.creator.first_name,
             object.creator.last_name
         )
         creator_name = creator_name.strip()
@@ -73,15 +74,15 @@ class ArticleMeta():
     def get_description(self):
         object = self.object
 
-        ### Assign variables -----------------------  
-        primary_keywords = get_setting('site','global','siteprimarykeywords')
+        ### Assign variables -----------------------
+        primary_keywords = get_setting('site', 'global', 'siteprimarykeywords')
         category_set = object.category_set
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
-        site_name = get_setting('site','global','sitedisplayname')
-        geo_location = get_setting('site','global','sitegeographiclocation')
+        site_name = get_setting('site', 'global', 'sitedisplayname')
+        geo_location = get_setting('site', 'global', 'sitegeographiclocation')
         creator_name = '%s %s' % (
-            object.creator.first_name, 
+            object.creator.first_name,
             object.creator.last_name
         )
         creator_name = creator_name.strip()
@@ -91,10 +92,10 @@ class ArticleMeta():
         else:
             content = object.body
 
-        content = strip_tags(content) #strips HTML tags
+        content = strip_tags(content)  # strips HTML tags
         content = unescape_entities(content)
-        content = content.replace("\n","").replace("\r","")
-        content = truncate_words(content, 50) # ~ about 250 chars
+        content = content.replace("\n", "").replace("\r", "")
+        content = truncate_words(content, 50)  # ~ about 250 chars
 
         ### Build string -----------------------
         value = object.headline
@@ -124,15 +125,15 @@ class ArticleMeta():
     def get_keywords(self):
         object = self.object
 
-        ### Assign variables -----------------------  
+        ### Assign variables -----------------------
         dynamic_keywords = generate_meta_keywords(object.body)
-        primary_keywords = get_setting('site','global','siteprimarykeywords')
-        secondary_keywords = get_setting('site','global','sitesecondarykeywords')
-        geo_location = get_setting('site','global','sitegeographiclocation')
-        site_name = get_setting('site','global','sitedisplayname')
+        primary_keywords = get_setting('site', 'global', 'siteprimarykeywords')
+        secondary_keywords = get_setting('site', 'global', 'sitesecondarykeywords')
+        geo_location = get_setting('site', 'global', 'sitegeographiclocation')
+        site_name = get_setting('site', 'global', 'sitedisplayname')
 
         creator_name = '%s %s' % (
-            object.creator.first_name, 
+            object.creator.first_name,
             object.creator.last_name
         )
 
@@ -156,7 +157,7 @@ class ArticleMeta():
             for item in list:
                 if not item.strip():
                     list.remove(item)
- 
+
             value = '%s %s, %s' % (value, ', '.join(list), dynamic_keywords)
 
         else:
@@ -181,18 +182,23 @@ class ArticleMeta():
         self.name = name
 
         if name == 'title':
-            if object.meta and object.meta.title: return object.meta.title
-            else: return self.get_title()
+            if object.meta and object.meta.title:
+                return object.meta.title
+            else:
+                return self.get_title()
         elif name == 'description':
-            if object.meta and object.meta.description: return object.meta.description
-            else: return self.get_description()
-        elif name =='keywords':
-            if object.meta and object.meta.keywords: return object.meta.keywords
-            else: return self.get_keywords()
-        elif name =='canonical_url':
-            if object.meta and object.meta.canonical_url: return object.meta.canonical_url
-            else: return self.get_canonical_url()
+            if object.meta and object.meta.description:
+                return object.meta.description
+            else:
+                return self.get_description()
+        elif name == 'keywords':
+            if object.meta and object.meta.keywords:
+                return object.meta.keywords
+            else:
+                return self.get_keywords()
+        elif name == 'canonical_url':
+            if object.meta and object.meta.canonical_url:
+                return object.meta.canonical_url
+            else:
+                return self.get_canonical_url()
         return ''
-    
-    
-    

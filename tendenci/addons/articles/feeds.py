@@ -7,10 +7,11 @@ from tendenci.core.sitemaps import TendenciSitemap
 
 from tendenci.addons.articles.models import Article
 
+
 class LatestEntriesFeed(SubFeed):
-    title =  '%s Latest Articles' % get_setting('site','global','sitedisplayname')
-    link =  "/articles/"
-    description =  "Latest Articles by %s" % get_setting('site','global','sitedisplayname')
+    title = '%s Latest Articles' % get_setting('site', 'global', 'sitedisplayname')
+    link = "/articles/"
+    description = "Latest Articles by %s" % get_setting('site', 'global', 'sitedisplayname')
 
     def items(self):
         items = Article.objects.filter(**PUBLIC_FILTER).filter(syndicate=True, release_dt__lte=datetime.now()).order_by('-release_dt')[:20]
@@ -27,6 +28,7 @@ class LatestEntriesFeed(SubFeed):
 
     def item_link(self, item):
         return item.get_absolute_url()
+
 
 class ArticleSitemap(TendenciSitemap):
     """ Sitemap information for articles """

@@ -89,7 +89,7 @@ def search_redirect(request):
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
 
-    if has_perm(request.user,'articles.view_article', article):
+    if has_perm(request.user, 'articles.view_article', article):
         EventLog.objects.log(instance=article)
         return render_to_response(template_name, {'article': article},
             context_instance=RequestContext(request))
