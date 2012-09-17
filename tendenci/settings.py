@@ -85,7 +85,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'pagination.middleware.PaginationMiddleware',
     'tendenci.apps.profiles.middleware.ProfileMiddleware',
-    'tendenci.core.perms.middleware.ImpersonationMiddleware',
     'tendenci.core.base.middleware.Http403Middleware',
     'tendenci.apps.redirects.middleware.RedirectMiddleware',
     'tendenci.core.mobile.middleware.MobileMiddleware',

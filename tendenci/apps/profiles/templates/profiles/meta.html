@@ -52,9 +52,6 @@
                     <a href="{% url profile.edit_perms profile.user_id %}" class="permissions" title="Edit Permissions">{% trans "Permissions" %}</a>
                 </li>
                 <li>
-                    <a href="{{ request.path }}?_impersonate={{ profile.user.username }}" class="permissions" title="Impersonate">{% trans "Impersonate" %}</a>
-                </li>
-                <li>
                     <a href="{% url profile.delete profile.user_id %}" class="delete" title="Delete User">{% trans "Delete" %}</a>
                 </li>
             </ul>

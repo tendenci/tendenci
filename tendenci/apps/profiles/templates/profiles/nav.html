@@ -67,7 +67,6 @@
                     <li class="divider"></li>
                     <li><a href="{% url profile.edit_perms user_this.id %}">{% trans "Edit Permissions" %}</a></li>
                     <li><a href="{% url auth_password_change user_this.id %}">{% trans "Change Password" %}</a></li>
-                    <li><a href="{{ request.path }}?_impersonate={{ user_this.username }}">{% trans "Impersonate User" %}</a></li>
                 {% endif %}
                 {% if can_delete_profile %}
                     <li class="divider"></li>
