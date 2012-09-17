@@ -110,7 +110,7 @@ class ListNode(Node):
                 order = order.resolve(context)
             except:
                 order = self.kwargs['order']
-                
+
         if 'exclude' in self.kwargs:
             try:
                 exclude = Variable(self.kwargs['exclude'])
@@ -136,8 +136,7 @@ class ListNode(Node):
             filters = get_query_filters(user, self.perms)
             items = self.model.objects.filter(filters)
             if user.is_authenticated():
-                if not user.profile.is_superuser:
-                    items = items.distinct()
+                items = items.distinct()
 
             if tags:  # tags is a comma delimited list
                 # this is fast; but has one hole
