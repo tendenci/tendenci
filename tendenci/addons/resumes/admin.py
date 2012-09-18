@@ -1,4 +1,39 @@
 from django.contrib import admin
-from tendenci.addons.resumes.models import Resume
 
-# admin.site.register(Resume)
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.resumes.models import Resume
+from tendenci.addons.resumes.forms import ResumeForm
+
+class ResumeAdmin(TendenciBaseModelAdmin):
+    list_display = ['title', 'activation_dt', 'owner_link', 'admin_perms', 'admin_status']
+    list_filter = ['status_detail', 'owner_username']
+    prepopulated_fields = {'slug': ['title']}
+    search_fields = ['title', 'description']
+    fieldsets = (
+        ('Resume Information', {
+            'fields': ('title',
+                       'slug',
+                       'description',
+                       'skills',
+                       'location',
+                       'contact_email',
+                       'contact_website',
+                       'tags',
+                       'activation_dt',
+                )
+        }),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            )}),
+        ('Status', {'fields': (
+            'status',
+            'status_detail',
+            )}),
+        )
+    form = ResumeForm
+    ordering = ['-update_dt']
+
+admin.site.register(Resume, ResumeAdmin)
