@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 from PIL import Image
-import os
-import mimetypes
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -11,10 +9,10 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.conf import settings
-from django.core.files.storage import default_storage
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
+from tendenci.core.base.views import file_display
 from tendenci.core.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
 from tendenci.core.event_logs.models import EventLog
@@ -271,21 +269,8 @@ def logo_display(request, id):
                         directory):
         raise Http403
 
-    base_name = os.path.basename(directory.logo.name)
-    mime_type = mimetypes.guess_type(base_name)[0]
+    return file_display(request, directory.logo.name)
 
-    if not mime_type:
-        raise Http404
-
-    if not default_storage.exists(directory.logo.name):
-        raise Http404
-
-    data = default_storage.open(directory.logo.name).read()
-
-    response = HttpResponse(data, mimetype=mime_type)
-    response['Content-Disposition'] = 'filename=%s' % base_name
-
-    return response
 
 @login_required
 def delete(request, id, template_name="directories/delete.html"):
