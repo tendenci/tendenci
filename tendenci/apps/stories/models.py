@@ -98,7 +98,7 @@ class Story(TendenciBaseModel):
                         owner=self.owner,
                         owner_username=self.owner_username
                     )
-
+            photo_upload.file.seek(0)
             image.file.save(photo_upload.name, photo_upload)  # save file row
             image.save()  # save image row
 

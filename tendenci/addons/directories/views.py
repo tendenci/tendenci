@@ -132,8 +132,9 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 directory.activation_dt = datetime.now()
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
-                
 
+            if directory.logo:
+                directory.logo.file.seek(0)
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
             
@@ -151,7 +152,6 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                         
             # create invoice
             directory_set_inv_payment(request.user, directory, pricing)
-
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % directory)
             
@@ -196,7 +196,9 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
     if request.method == "POST":
         if form.is_valid():
             directory = form.save(commit=False)
-
+            
+            if directory.logo:
+                directory.logo.file.seek(0)
             # update all permissions and save the model
             directory = update_perms_and_save(request, form, directory)
 
