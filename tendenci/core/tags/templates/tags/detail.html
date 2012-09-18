@@ -13,17 +13,17 @@
 
     <div class="tags-wrap">
         {% for item in tagged_items %}
-
             {% ifchanged item.content_type.name %}
             {% if not forloop.first %}</ul>{% endif %}
-            <h3>{{ item.content_type.name }}</h3>
+            <h3>{{ item.content_type.name|title }}</h3>
             <ul>
             {% endifchanged %}
 
+            {% if item.object %}
                 <li><a href="{{ item.object.get_absolute_url }}">{{ item.object }}</a></li>
-
+            {% endif %}
         {% endfor %}
-            </ul>
+        </ul>
     </div>
 </div>
 {% endblock %}

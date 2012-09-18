@@ -16,10 +16,12 @@
         <h3>All Tags</h3>
         <table>
         {% for tag in tags %}
+            {% if tag.num > 0 %}
             <tr>
                 <td width="120px"><a href="{% url tag.detail tag.pk %}">{{ tag.name }}</a></td>
                 <td>{{ tag.num }}</td>
             </tr>
+            {% endif %}
         {% endfor %}
         </table>
         </div>
