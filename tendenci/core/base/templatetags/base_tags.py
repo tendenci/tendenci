@@ -6,6 +6,7 @@ from tagging.templatetags.tagging_tags import TagsForObjectNode
 from tagging.models import Tag
 from BeautifulSoup import BeautifulStoneSoup
 
+from django.utils.safestring import mark_safe
 from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -639,3 +640,13 @@ def meta_creator_owner(obj):
 def stock_image_url(context, size):
     context.update({'size': size})
     return context
+
+
+@register.simple_tag
+def all_tags_list():
+    """
+    Creates a text list of tags for use in 
+    """
+    tags = Tag.objects.all()
+    tag_list = ",".join(['"%s"' % t.name for t in tags])
+    return mark_safe(tag_list)
