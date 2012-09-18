@@ -107,23 +107,28 @@ class Directory(TendenciBaseModel):
 
     def __unicode__(self):
         return self.headline
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
 
         super(Directory, self).save(*args, **kwargs)
         if self.logo:
-            if self.is_public:
+            if self.is_public():
                 set_s3_file_permission(self.logo.name, public=True)
             else:
                 set_s3_file_permission(self.logo.name, public=False)
+
+    def is_public(self):
+        return all([self.allow_anonymous_view,
+                self.status,
+                self.status_detail in ['active']])
 
     def get_logo_url(self):
         if not self.logo:
             return ''
 
-        if self.is_public:
+        if self.is_public():
             return self.logo.url
 
         return reverse('directory.logo', args=[self.id])

@@ -35,12 +35,6 @@ class TendenciBaseModel(models.Model):
     def opt_module_name(self):
         return self._meta.module_name
 
-    @property
-    def is_public(self):
-        return all([self.allow_anonymous_view,
-                self.status,
-                self.status_detail in ['active']])
-
     def content_type(self):
         return ContentType.objects.get_for_model(self)
 
