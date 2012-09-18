@@ -151,6 +151,7 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
                 header.owner = request.user
                 header.owner_username = request.user.username
                 filename = "%s-%s" % (page.slug, f.name)
+                f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
             
@@ -275,6 +276,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
                 header.owner = request.user
                 header.owner_username = request.user.username
                 filename = "%s-%s" % (page.slug, f.name)
+                f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
             
