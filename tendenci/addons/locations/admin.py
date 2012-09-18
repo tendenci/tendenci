@@ -10,7 +10,7 @@ class LocationAdmin(TendenciBaseModelAdmin):
     prepopulated_fields = { }#'slug': ['title']}
     search_fields = ['title', 'description']
     fieldsets = (
-        ('Job Information', {
+        ('Location Information', {
             'fields': ('location_name',
 #                       'slug',
                        'description',
