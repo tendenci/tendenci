@@ -12,7 +12,7 @@
     <div class="info" style="margin: 10px 0px 10px 0px;">
         <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline "Untitled" %}</a></h2>
         {% if directory.logo %} 
-            <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
+            <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
         {% endif %}
         <div style="margin: 10px 0px 10px 0px;">
             {% if directory.summary %}

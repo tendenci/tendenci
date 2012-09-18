@@ -28,7 +28,7 @@
     <div class="directory-wrap">
         <h2>{{ directory.headline }}</h2>
 		{% if directory.logo %} 
-			<img src="{{ MEDIA_URL }}{{ directory.logo }}" />
+			<img src="{{ directory.get_logo_url }}" />
 		{% endif %}
         <div class="content">{{ directory.body|safe }}</div>
 		{% if directory.first_name and directory.last_name %}		

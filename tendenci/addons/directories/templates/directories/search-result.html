@@ -4,7 +4,7 @@
     <div class="search-item directory-search-item">
         <h2><a href="{{ directory.get_absolute_url }}">{% firstof directory.headline trans "Untitled" %}</a></h2>
         {% if directory.logo %} 
-            <div class="directory-image"><img src="{{ MEDIA_URL }}{{ directory.logo }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
+            <div class="directory-image"><img src="{{ directory.get_logo_url }}" alt="{% firstof directory.headline 'Untitled' %}" /></div>
         {% endif %}
         {% if directory.summary %}
             <div class="content">{{ directory.summary|striptags|truncatewords:20|safe }}</div>

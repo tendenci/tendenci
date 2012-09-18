@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
+from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
@@ -20,11 +21,12 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.directories.module_meta import DirectoryMeta
 from tendenci.addons.directories.managers import DirectoryManager
 from tendenci.addons.directories.choices import ADMIN_DURATION_CHOICES
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
-    return 'directories/%s' % (filename)
+    return 'directories/%d/%s' % (instance.id, filename)
 
 class Directory(TendenciBaseModel):
  
@@ -109,8 +111,22 @@ class Directory(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+
         super(Directory, self).save(*args, **kwargs)
+        if self.logo:
+            if self.is_public:
+                set_s3_file_permission(self.logo.name, public=True)
+            else:
+                set_s3_file_permission(self.logo.name, public=False)
+
+    def get_logo_url(self):
+        if not self.logo:
+            return ''
+
+        if self.is_public:
+            return self.logo.url
+
+        return reverse('directory.logo', args=[self.id])
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
