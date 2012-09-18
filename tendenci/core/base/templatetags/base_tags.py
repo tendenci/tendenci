@@ -645,7 +645,7 @@ def stock_image_url(context, size):
 @register.simple_tag
 def all_tags_list():
     """
-    Creates a text list of tags for use in 
+    Creates a text list of tags for use in a dropdown
     """
     tags = Tag.objects.all()
     tag_list = ",".join(['"%s"' % t.name for t in tags])

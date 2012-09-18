@@ -197,6 +197,7 @@ INSTALLED_APPS = (
     'tendenci.apps.dashboard',
     'tendenci.apps.profiles',
     'tendenci.core.meta',
+    'tendenci.core.tags',
     'tendenci.addons.articles',
     'tendenci.addons.jobs',
     'tendenci.addons.news',

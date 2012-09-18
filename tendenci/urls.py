@@ -33,6 +33,7 @@ urlpatterns += patterns('',
 
     (r'^notifications/', include('tendenci.apps.notifications.urls')),
     (r'^base/', include('tendenci.core.base.urls')),
+    (r'^tags/', include('tendenci.core.tags.urls')),
     (r'^avatar/', include('avatar.urls')),
     (r'^dashboard/', include('tendenci.apps.dashboard.urls')),
     (r'^categories/', include('tendenci.core.categories.urls')),
