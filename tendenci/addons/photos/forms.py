@@ -29,6 +29,26 @@ class PhotoAdminForm(TendenciBaseForm):
             'status_detail',
             'license',
         )
+        fieldsets = [('Photo Set Information', {
+            'fields': ['title',
+                       'description',
+                       'tags',
+                       ],
+            'legend': ''
+        }),
+            ('Permissions', {
+                'fields': ['allow_anonymous_view',
+                           'user_perms',
+                           'member_perms',
+                           'group_perms',
+                           ],
+                'classes': ['permissions'],
+                }),
+            ('Administrator Only', {
+                'fields': ['status',
+                           'status_detail'],
+                'classes': ['admin-only'],
+                })]
 
 class PhotoUploadForm(TendenciBaseForm):
     
@@ -115,7 +135,6 @@ class PhotoSetAddForm(TendenciBaseForm):
             'status',
             'status_detail',
         )
-
 
         fieldsets = [('Photo Set Information', {
                       'fields': ['name',

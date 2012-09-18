@@ -1,15 +1,18 @@
 from django.contrib import admin
-from tendenci.addons.photos.models import Image, Pool
-from tendenci.addons.photos.forms import PhotoAdminForm
+
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.addons.photos.models import PhotoSet, Image, Pool
+from tendenci.addons.photos.forms import PhotoSet, PhotoAdminForm
+
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import get_notice_recipients, update_perms_and_save
 from tendenci.apps.notifications.context_processors import notification
 
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('title', 'caption', 'update_dt', 'create_dt', 'tags',)
+    list_display = ('update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
-        (None, {'fields': ('image', 'title', 'caption', 'tags', 'license')}),
+        (None, {'fields': ('title', 'tags',)}),
         ('Administrative', 
             {'fields': 
                 (
@@ -20,8 +23,7 @@ class PhotoAdmin(admin.ModelAdmin):
                     'status',
                     'status_detail',
                 )
-            })
-        ,
+            }),
     )
     form = PhotoAdminForm
 
@@ -84,4 +86,4 @@ class PhotoAdmin(admin.ModelAdmin):
 
         return instance
 
-admin.site.register(Image, PhotoAdmin)
+admin.site.register(PhotoSet, PhotoAdmin) #Image,
