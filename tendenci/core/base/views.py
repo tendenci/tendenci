@@ -2,6 +2,8 @@
 import datetime
 import re
 import Image as Pil
+import os
+import mimetypes
 
 # django
 from django.http import HttpResponse, HttpResponseNotFound, Http404
@@ -11,6 +13,7 @@ from django.core.cache import cache
 from django.template import RequestContext
 from django.shortcuts import redirect
 from django.conf import settings
+from django.core.files.storage import default_storage
 
 # local
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
@@ -240,6 +243,24 @@ def robots_txt(request):
 def exception_test(request):
     raise Exception('Successfully raised the exception test. Boom.')
     return Http404
+
+
+def file_display(request, file_path):
+    base_name = os.path.basename(file_path)
+    mime_type = mimetypes.guess_type(base_name)[0]
+
+    if not mime_type:
+        raise Http404
+
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    data = default_storage.open(file_path).read()
+
+    response = HttpResponse(data, mimetype=mime_type)
+    response['Content-Disposition'] = 'filename=%s' % base_name
+
+    return response
 
 
 @login_required
