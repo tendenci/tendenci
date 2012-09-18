@@ -46,7 +46,6 @@
             {% endif %}
             {% if user.profile.is_superuser %}
                 <li><a href="{% url page.export %}">{% trans "Export Pages" %}</a></li>
-                <li><a href="{% url page.inactive_pages %}">{% trans "Inactive Pages" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

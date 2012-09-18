@@ -3,55 +3,67 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
-from django.core.files import File
-from django.conf import settings
+
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import check_template
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
+from tendenci.core.versions.models import Version
 from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm,  has_view_perm, get_query_filters
-from tendenci.core.perms.decorators import admin_required
 from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
-from tendenci.core.files.models import file_directory
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.pages.models import Page, HeaderImage
-from tendenci.apps.pages.forms import PageForm, ChangeVersionForm
+from tendenci.apps.pages.forms import PageForm
 
-try:
-    from tendenci.apps.notifications import models as notification
-except:
-    notification = None
 
-def index(request, slug=None, id=None, template_name="pages/view.html"):
+def index(request, slug=None, id=None, hash=None, template_name="pages/view.html"):
     """
-    Return active page or deleted page
+    Return page object, either as an archive, active, or version.
     """
 
-    if not slug and not id:
+    if not slug and not id and not hash:
         return HttpResponseRedirect(reverse('page.search'))
 
-    if id:
+    if hash:
+        version = get_object_or_404(Version, hash=hash)
+        current_page = get_object_or_404(Page, pk=version.object_id)
+        page = version.get_version_object()
+        messages.add_message(request, messages.WARNING, 'You are viewing a previous version of this article. View the <a href="%s">Current Version</a>.' % current_page.get_absolute_url())
+    elif id:
         page = get_object_or_404(Page, pk=id)
-    if slug:
+        if page.status_detail != 'active':
+            if not request.user.is_authenticated():
+                pages = Page.objects.filter(
+                    slug=page.slug, status_detail='active'
+                ).order_by('-pk')
+                if not pages:
+                    pages = Page.objects.filter(slug=slug).order_by('-pk')
+                if not pages:
+                    raise Http404
+                return HttpResponseRedirect(reverse('page', args=[page.slug]))
 
+    else:
         try:
-            page = get_object_or_404(
-                Page, slug=slug, status_detail='active'
-            )
+            page = get_object_or_404(Page, slug=slug)
         except Page.MultipleObjectsReturned:
             pages = Page.objects.filter(
                 slug=slug, status_detail='active'
             ).order_by('-pk')
+            if not pages:
+                pages = Page.objects.filter(slug=slug).order_by('-pk')
+            if not pages:
+                raise Http404
 
             page = pages[0]
 
@@ -66,19 +78,18 @@ def index(request, slug=None, id=None, template_name="pages/view.html"):
     return render_to_response(template_name, {'page': page},
         context_instance=RequestContext(request))
 
+
 def search(request, template_name="pages/search.html"):
     """
     Search pages.
     """
     query = request.GET.get('q', None)
 
-    if get_setting('site', 'global', 'searchindex') and query:
-        pages = Page.objects.search(query, user=request.user).filter(status=True, status_detail='active')
-    else:
-        filters = get_query_filters(request.user, 'pages.view_page')
-        pages = Page.objects.active().filter(filters).distinct()
-        if request.user.is_authenticated():
-            pages = pages.select_related()
+    filters = get_query_filters(request.user, 'pages.view_page')
+    pages = Page.objects.filter(filters).distinct()
+    if query:
+        pages = pages.filter(Q(title__icontains=query) | Q(content__icontains=query) | Q(slug__icontains=query))
+    pages = pages.exclude(status_detail='archive')
 
     pages = pages.order_by('-create_dt')
 
@@ -86,6 +97,7 @@ def search(request, template_name="pages/search.html"):
 
     return render_to_response(template_name, {'pages': pages},
         context_instance=RequestContext(request))
+
 
 def print_view(request, slug, template_name="pages/print-view.html"):
     page = get_object_or_404(Page, slug=slug, status_detail='active')
@@ -196,57 +208,6 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
             'categoryform':categoryform,
         },
         context_instance=RequestContext(request))
-
-@login_required
-def change_version(request, id, form_class=ChangeVersionForm, template_name="pages/change-version.html"):
-
-    page = get_object_or_404(Page, pk=id)
-
-    if not has_perm(request.user, 'pages.change_page', page):
-        raise Http403
-
-    EventLog.objects.log(instance=page)
-
-    if request.method == "POST":
-        form = form_class(data=request.POST, page=page)
-        if form.is_valid():
-            page = form.save()
-            return HttpResponseRedirect(reverse('page', args=[page.slug]))
-    else:
-        form = form_class(page=page)
-
-    return render_to_response(template_name,
-        {'page': page, 'form': form},
-        context_instance=RequestContext(request))
-
-
-@admin_required
-@login_required
-def inactive_pages(request, template_name="pages/inactive-pages.html"):
-    """
-    Return inactive pages
-    """
-
-    EventLog.objects.log()
-
-    # Get list of pages without active version
-    # This includes deleted, archive, and pending status.
-    active_pages = Page.objects.active()
-    active_guid = []
-    for page in active_pages:
-        active_guid.append(page.guid)
-    inactive_pages = Page.objects.exclude(guid__in=active_guid).order_by('-create_dt')
-
-    # Only include the latest version
-    inactive_guid = []
-    pages = []
-    for page in inactive_pages:
-        if not page.guid in inactive_guid:
-            inactive_guid.append(page.guid)
-            pages.append(page)
-
-    return render_to_response(template_name,
-        {'pages': pages}, context_instance=RequestContext(request))
 
 
 @login_required
