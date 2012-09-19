@@ -67,10 +67,11 @@ def set_s3_file_permission(file, public=False):
         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
         k = Key(bucket)
 
+        file_path = unicode(file)
+
         k.key = '%s%s' % (settings.MEDIA_ROOT, file)
 
-        if default_storage.exists(unicode(file.file)):
-
+        if default_storage.exists(file_path):
             if public:
                 k.set_acl('public-read')
             else:
