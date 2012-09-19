@@ -143,11 +143,7 @@ def constrain_size(image_size, new_size):
     if oh and ow:
         ow = float(ow)
 
-        if h == '0':
-            # in case we don't get a height
-            oh = float(.6 * ow)
-
-        if w == max_size:
+        if w == max_size or h == '0':
             h = (oh / ow) * w
         else:  # height is max size
             w = h / (oh / ow)
