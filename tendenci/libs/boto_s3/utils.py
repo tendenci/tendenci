@@ -6,6 +6,7 @@ from boto.s3.key import Key
 from timezones.utils import adjust_datetime_to_timezone
 from django.conf import settings
 import dateutil.parser as dparser
+from django.core.files.storage import default_storage
 from storages.backends.s3boto import S3BotoStorage, S3BotoStorageFile
 
 
@@ -68,10 +69,12 @@ def set_s3_file_permission(file_path, public=False):
 
         k.key = '%s%s' % (settings.MEDIA_ROOT, file_path)
 
-        if public:
-            k.set_acl('public-read')
-        else:
-            k.set_acl('private')
+        if default_storage.exists(file_path):
+
+            if public:
+                k.set_acl('public-read')
+            else:
+                k.set_acl('private')
 
 
 def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=False):
