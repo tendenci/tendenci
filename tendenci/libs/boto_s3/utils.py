@@ -57,7 +57,7 @@ def save_file_to_s3(file_path, dirpath=None, public=False):
             k.set_acl('public-read')
 
 
-def set_s3_file_permission(file_path, public=False):
+def set_s3_file_permission(file, public=False):
     """
     Save the file to S3.
     """
@@ -67,9 +67,9 @@ def set_s3_file_permission(file_path, public=False):
         bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
         k = Key(bucket)
 
-        k.key = '%s%s' % (settings.MEDIA_ROOT, file_path)
+        k.key = '%s%s' % (settings.MEDIA_ROOT, file)
 
-        if default_storage.exists(file_path):
+        if default_storage.exists(unicode(file.file)):
 
             if public:
                 k.set_acl('public-read')
