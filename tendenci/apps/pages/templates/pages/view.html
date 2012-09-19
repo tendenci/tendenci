@@ -13,7 +13,7 @@
 <div class="t">
     <div class="page-wrap">
         {% if page.header_image %}<div class="page-header">
-            <img src="{{ page.header_image.get_absolute_url }}" />
+            <img src="{{ page.get_header_image_url }}" />
         </div>{% endif %}
 
 		{% if page.title %}

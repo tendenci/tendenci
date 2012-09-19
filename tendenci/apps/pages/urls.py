@@ -13,4 +13,5 @@ urlpatterns = patterns('tendenci.apps.pages.views',
     url(r'^edit/meta/(?P<id>\d+)/$', 'edit_meta', name="page.edit.meta"),
     url(r'^delete/(?P<id>\d+)/$', 'delete', name="page.delete"),
     url(r'^feed/$', LatestEntriesFeed(), name='page.feed'),
+    url(r'^header_image/(?P<id>\d+)/$', 'display_header_image', name="page.header_image"),
 )

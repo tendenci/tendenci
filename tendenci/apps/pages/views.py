@@ -1,9 +1,8 @@
-import os
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.urlresolvers import reverse
 
 from django.contrib import messages
@@ -12,6 +11,7 @@ from django.db.models import Q
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import check_template
+from tendenci.core.base.views import file_display
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
@@ -374,6 +374,15 @@ def delete(request, id, template_name="pages/delete.html"):
     return render_to_response(template_name, {'page': page},
         context_instance=RequestContext(request))
 
+def display_header_image(request, id):
+    page = get_object_or_404(Page, pk=id)
+
+    if not has_view_perm(request.user,
+                        '[pages.view_page',
+                        page):
+        raise Http403
+
+    return file_display(request, page.header_image.file.name)
 
 @login_required
 def export(request, template_name="pages/export.html"):

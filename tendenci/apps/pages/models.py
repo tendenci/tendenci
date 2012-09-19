@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.core.urlresolvers import reverse
 
 from tagging.fields import TagField
 from tinymce import models as tinymce_models
@@ -16,6 +17,7 @@ from tendenci.core.files.models import File
 
 from tendenci.apps.pages.managers import PageManager
 from tendenci.apps.pages.module_meta import PageMeta
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 
 class BasePage(TendenciBaseModel):
@@ -41,8 +43,30 @@ class BasePage(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(BasePage, self).save(*args, **kwargs)
 
+        if self.logo:
+            if self.is_public():
+                set_s3_file_permission(self.header_image.file.name,
+                                       public=True)
+            else:
+                set_s3_file_permission(self.header_image.file.name,
+                                       public=False)
+
     def __unicode__(self):
         return self.title
+
+    def get_header_image_url(self):
+        if not self.header_image:
+            return ''
+
+        if self.is_public():
+            return self.header_image.file.url
+
+        return reverse('page.header_image', args=[self.id])
+
+    def is_public(self):
+        return all([self.allow_anonymous_view,
+                self.status,
+                self.status_detail in ['active']])
 
     @property
     def category_set(self):
