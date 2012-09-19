@@ -122,19 +122,20 @@ if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
 
 # serve static files
 if settings.DEBUG:
-    urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$',
-            'django.views.static.serve',
-            {'document_root': join(settings.TENDENCI_ROOT, 'static')}),
+    if not (hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE):
+        urlpatterns += patterns('',
+            (r'^static/(?P<path>.*)$',
+                'django.views.static.serve',
+                {'document_root': join(settings.TENDENCI_ROOT, 'static')}),
 
-        (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
-            'tendenci.core.base.views.plugin_static_serve'),
-    )
-    urlpatterns += patterns('',
-        (r'^themes/(?P<path>.*)$',
-            'django.views.static.serve',
-            {'document_root': settings.THEMES_DIR, 'show_indexes': True}),
-    )
+            (r'^plugin-media/(?P<plugin>[^/]+)/(?P<path>.*)$',
+                'tendenci.core.base.views.plugin_static_serve'),
+        )
+        urlpatterns += patterns('',
+            (r'^themes/(?P<path>.*)$',
+                'django.views.static.serve',
+                {'document_root': settings.THEMES_DIR, 'show_indexes': True}),
+        )
 
 # Favicon url to prevent 404 from some browsers.
 urlpatterns += patterns('',
