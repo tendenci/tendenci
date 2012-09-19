@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.storage import default_storage
 from django.forms.models import modelformset_factory
 from django.middleware.csrf import get_token as csrf_get_token
 
@@ -190,13 +191,18 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
 
     return response
 
+@login_required
 def photo_original(request, id):
     """
     Returns a reponse with the original image.
     """
     photo = get_object_or_404(Image, id=id)
-    
-    image_data = open(photo.image.file.name, "rb").read()
+
+    # check permissions
+    if not has_perm(request.user, 'photologue.view_photo', photo):
+        raise Http403
+
+    image_data = default_storage.open(unicode(photo.image.file), 'rb').read()
     try:
         ext = photo.image.file.name.split('.')[-1]
     except IndexError:
