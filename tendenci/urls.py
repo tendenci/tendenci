@@ -56,7 +56,6 @@ urlpatterns += patterns('',
     (r'^rss/', include('tendenci.core.rss.urls')),
     (r'^imports/', include('tendenci.core.imports.urls')),
     #(r'^donations/', include('donations.urls')),
-    (r'^news/', include('tendenci.addons.news.urls')),
     (r'^settings/', include('tendenci.core.site_settings.urls')),
     (r'^files/', include('tendenci.core.files.urls')),
     (r'^accounts/', include('tendenci.apps.accounts.urls')),
@@ -99,6 +98,7 @@ urlpatterns += patterns('',
     url(r'^', include('tendenci.addons.directories.urls')),
     url(r'^', include('tendenci.addons.help_files.urls')),
     url(r'^', include('tendenci.addons.locations.urls')),
+    url(r'^', include('tendenci.addons.news.urls')),
 )
 
 handler500 = 'tendenci.core.base.views.custom_error'
