@@ -86,5 +86,5 @@ def init_signals():
         if app['model']._meta.module_name in ('file', 'invoice',):
             continue  # go to next app
 
-        signals.post_save.connect(save_files, sender=app['model'], weak=False)
+        #signals.post_save.connect(save_files, sender=app['model'], weak=False)
         signals.post_delete.connect(delete_files, sender=app['model'], weak=False)

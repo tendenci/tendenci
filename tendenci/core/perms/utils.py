@@ -80,9 +80,72 @@ def update_perms_and_save(request, form, instance, **kwargs):
     # save again for indexing purposes
     # TODO: find a better solution, saving twice kinda sux
     instance.save(**kwargs)
+    
+    # assign the permission to the medial files
+    assign_files_perms(instance)
 
     return instance
 
+
+def assign_files_perms(instance, **kwargs):
+    from tendenci.core.files.models import File
+    # get content type and instance
+    content_type = ContentType.objects.get_for_model(instance.__class__)
+
+    orphaned_files = list(File.objects.filter(content_type=content_type, object_id=0))
+    coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
+    files = orphaned_files + coupled_files
+
+    file_ct = ContentType.objects.get_for_model(File)
+
+    perm_attrs = []
+    if 'tendencibasemodel' in [s._meta.module_name for s in instance.__class__.__bases__ if hasattr(s, '_meta')]:
+        # if model (aka sender) inherits from TendenciBaseModel
+        perm_attrs = [
+            'allow_anonymous_view',
+            'allow_user_view',
+            'allow_member_view',
+            'allow_user_edit',
+            'allow_member_edit',
+            'status',
+            'status_detail',
+        ]
+
+    for file in files:  # loop through media files and update
+        print file.id, file.name
+
+        if not file.object_id:  # pick up orphans
+            file.object_id = instance.pk
+
+        # remove all group permissions on file
+        ObjectPermission.objects.filter(
+            content_type=file_ct, object_id=file.pk, group__isnull=False).delete()
+
+        # get all instance permissions [for copying]
+        instance_perms = ObjectPermission.objects.filter(
+            content_type=content_type, object_id=instance.pk, group__isnull=False
+        )
+
+        # copy instance group permissions to file
+        for file_perm in instance_perms:
+            file_perm.pk = None
+            file_perm.content_type = file_ct
+            file_perm.object_id = file.pk
+            file_perm.codename = '%s_%s' % (file_perm.codename.split('_')[0], 'file')
+            file_perm.save()
+
+        # copy permission attributes
+        for attr in perm_attrs:
+            # example: file.status = instance.status
+            setattr(file, attr, getattr(instance, attr))
+
+        # Update the owner and owner_username since we are
+        # updating the update_dt automatically.
+        if hasattr(instance, 'owner'):
+            file.owner = instance.owner
+        if hasattr(instance, 'owner_username'):
+            file.owner_username = instance.owner_username
+        file.save()
 
 def has_perm(user, perm, obj=None):
     """
