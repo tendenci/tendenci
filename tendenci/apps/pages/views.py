@@ -137,15 +137,14 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
         metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
-            page = form.save(commit=False)
-            # update all permissions and save the model
-            page = update_perms_and_save(request, form, page)
-            
+            page = form.save()
+
             # handle header image
             f = form.cleaned_data['header_image']
             if f:
                 header = HeaderImage()
-                header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
+                header.content_type = ContentType.objects.get_for_model(Page)
+                header.object_id = page.id
                 header.creator = request.user
                 header.creator_username = request.user.username
                 header.owner = request.user
@@ -176,9 +175,11 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
                     Category.objects.update(page, sub_category,'sub_category')
                 else: # remove
                     Category.objects.remove(page,'sub_category')
-                    
+             
+            # update all permissions and save the model
+            page = update_perms_and_save(request, form, page)       
             #save relationships
-            page.save()
+            #page.save()
 
             EventLog.objects.log(instance=page)
 
@@ -261,16 +262,14 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
         metaform = meta_form_class(request.POST, prefix='meta')
         categoryform = category_form_class(content_type, request.POST, prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
-            page = form.save(commit=False)
-            
-            # add all permissions and save the model
-            page = update_perms_and_save(request, form, page)
-            
+            page = form.save()
+
             # handle header image
             f = form.cleaned_data['header_image']
             if f:
                 header = HeaderImage()
-                header.content_type = ContentType.objects.get(app_label="pages", model="headerimage")
+                header.content_type = ContentType.objects.get_for_model(Page)
+                header.object_id = page.id
                 header.creator = request.user
                 header.creator_username = request.user.username
                 header.owner = request.user
@@ -306,8 +305,8 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
                 else: # remove
                     Category.objects.remove(page,'sub_category')  
             
-            #save relationships
-            page.save()
+            # add all permissions and save the model
+            page = update_perms_and_save(request, form, page)
 
             EventLog.objects.log()
 
