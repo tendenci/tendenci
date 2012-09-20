@@ -135,6 +135,11 @@
             {% trans "Registration Details" %}
         </a>
     </li>
+    <li>
+        <a href="{{ SITE_GLOBAL_SITEURL }}{% url event.cancel_registrant event.pk reg8n.registrant.hash %}">
+            {% trans "Cancel Registration" %}
+        </a>
+    </li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}{{ event.get_absolute_url }}">{% trans "Event Details" %}</a></li>
     {% if for_admin %}
         <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.roster event.pk %}">{% trans "Event Roster" %}</a></li>
