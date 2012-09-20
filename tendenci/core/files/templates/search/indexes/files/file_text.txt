@@ -1,12 +1,24 @@
 {% load tagging_tags %}
+{% load category_tags %}
+
+pk:{{ object.pk }}
+{% firstof object.file "Untitled" %}
+by {{ object.creator }}
+by {{ object.object.creator.get_profile.display_name }}
+{{ object.description }}
+{{ object.update_dt }}
+{{ object.read }}
+
+{% get_category_for_object object as category %}
+{% if category %}
+category:{{ category }}
+{% endif %}
+{% get_sub_category_for_object object as sub_category %}
+{% if sub_category %}
+sub_category:{{ sub_category }}
+{% endif %}
 
 {% tags_for_object object as tags %}
 {% for tag in tags %}
     tag:{{ tag }}
 {% endfor %}
-
-{{ object.name }}
-
-{{ object.description }}
-
-{{ object.pk }}

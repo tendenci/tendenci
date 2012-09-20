@@ -1,6 +1,18 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url files %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input class="btn" type="submit" value="Search Files" />
+	<div class="fieldWrapper">
+        <label for="id_q">Search</label>
+        {{ form.q }}
+    </div>
+	<div class="fieldWrapper">
+        <label for="id_q">Category</label>
+        {{ form.category }}
+    </div>
+    <div class="fieldWrapper">
+        <label for="id_q">Sub Category</label>
+        {{ form.sub_category }}
+    </div>
+    
+	<input class="btn" type="submit" value="Search Files" />
 </form>
 {% endif %}

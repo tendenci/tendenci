@@ -5,6 +5,7 @@ from django.utils.html import strip_tags, strip_entities
 
 from tendenci.core.files.models import File
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex
+from tendenci.core.categories.models import Category
 
 
 class FileIndex(TendenciBaseSearchIndex):
@@ -14,6 +15,10 @@ class FileIndex(TendenciBaseSearchIndex):
 
     type = indexes.CharField()
     clicks = indexes.IntegerField()
+
+    # categories
+    category = indexes.CharField()
+    sub_category = indexes.CharField()
 
     def prepare_description(self, obj):
         description = obj.description
@@ -38,5 +43,17 @@ class FileIndex(TendenciBaseSearchIndex):
             return EventLog.objects.filter(content_type=content_type, object_id=obj.pk).count()
 
         return int()  # return 0; data type integer
+
+    def prepare_category(self, obj):
+        category = Category.objects.get_for_object(obj, 'category')
+        if category:
+            return category.name
+        return ''
+
+    def prepare_sub_category(self, obj):
+        category = Category.objects.get_for_object(obj, 'sub_category')
+        if category:
+            return category.name
+        return ''
 
 site.register(File, FileIndex)

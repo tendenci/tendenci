@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
+from django.contrib.contenttypes import generic
 
 from tagging.fields import TagField
 
@@ -20,6 +21,7 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.files.managers import FileManager
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.categories.models import CategoryItem
 
 
 def file_directory(instance, filename):
@@ -44,11 +46,22 @@ class File(TendenciBaseModel):
     group = models.ForeignKey(Group, null=True,
         default=None, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
+    categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
 
     objects = FileManager()
 
     class Meta:
         permissions = (("view_file", "Can view file"),)
+
+    @property
+    def category_set(self):
+        items = {}
+        for cat in self.categories.select_related('category__name', 'parent__name'):
+            if cat.category:
+                items["category"] = cat.category
+            elif cat.parent:
+                items["sub_category"] = cat.parent
+        return items
 
     def save(self, *args, **kwargs):
         if not self.id:

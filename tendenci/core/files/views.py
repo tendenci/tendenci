@@ -16,6 +16,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.contrib.contenttypes.models import ContentType
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.base.http import Http403
@@ -24,25 +25,19 @@ from tendenci.core.perms.decorators import admin_required
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import (update_perms_and_save, has_perm, has_view_perm,
     get_query_filters)
+from tendenci.core.categories.forms import CategoryForm
+from tendenci.core.categories.models import Category
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
-from tendenci.core.files.forms import FileForm, MostViewedForm
+from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm
 
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
 
-    cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality)
-    cached_image = cache.get(cache_key)
-    if cached_image:
-        return redirect(cached_image)
-
-    try:
-        file = File.objects.get(pk=id)
-    except:
-        raise Http404
+    file = get_object_or_404(File, pk=id)
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
@@ -100,40 +95,13 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             raise Http404
 
         # gets resized image from cache or rebuilds
+        image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
-
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
-        if file.is_public_file():
-            file_name = "%s%s" % (file.get_name(), ".jpg")
-            file_path = 'cached%s%s' % (request.path, file_name)
-            default_storage.save(file_path, ContentFile(response.content))
-            full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
-            cache.set(cache_key, full_file_path)
-            cache_group_key = "files_cache_set.%s" % file.pk
-            cache_group_list = cache.get(cache_group_key)
-
-            if cache_group_list is None:
-                cache.set(cache_group_key, [cache_key])
-            else:
-                cache_group_list += [cache_key]
-                cache.set(cache_group_key, cache_group_list)
-
         return response
-
-    if file.is_public_file():
-        cache.set(cache_key, file.get_file_public_url())
-        set_s3_file_permission(file.file, public=True)
-        cache_group_key = "files_cache_set.%s" % file.pk
-        cache_group_list = cache.get(cache_group_key)
-
-        if cache_group_list is None:
-            cache.set(cache_group_key, [cache_key])
-        else:
-            cache_group_list += cache_key
-            cache.set(cache_group_key, cache_group_list)
 
     # set mimetype
     if file.mime_type():
@@ -142,7 +110,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.basename())
+    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
     return response
 
 @login_required
@@ -152,11 +120,24 @@ def search(request, template_name="files/search.html"):
     If a search index is available, this page will also
     have the option to search through files.
     """
+    query = u''
+    category = u''
+    sub_category = u''
+    
     has_index = get_setting('site', 'global', 'searchindex')
-    query = request.GET.get('q', None)
+    form = FileSearchForm(request.GET)
+    
+    if form.is_valid():
+        query = form.cleaned_data['q']
+        category = form.cleaned_data['category']
+        sub_category = form.cleaned_data['sub_category']
 
-    if has_index and query:
+    if has_index and (query or category or sub_category):
         files = File.objects.search(query, user=request.user)
+        if category:
+            files = files.filter(category=category)
+        if sub_category:
+            files = files.filter(sub_category=sub_category)
     else:
         filters = get_query_filters(request.user, 'files.view_file', perms_field=False)
         files = File.objects.filter(filters).distinct()
@@ -166,7 +147,11 @@ def search(request, template_name="files/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'files':files}, 
+    return render_to_response(template_name, 
+            {
+                'files':files,
+                'form':form,
+            }, 
         context_instance=RequestContext(request))
 
 
@@ -186,28 +171,73 @@ def print_view(request, id, template_name="files/print-view.html"):
 
 
 @login_required
-def edit(request, id, form_class=FileForm, template_name="files/edit.html"):
+def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, template_name="files/edit.html"):
     file = get_object_or_404(File, pk=id)
 
     # check permission
     if not has_perm(request.user,'files.change_file',file):  
         raise Http403
 
+    content_type = get_object_or_404(ContentType, app_label='files',model='file')
+    
+    #setup categories
+    category = Category.objects.get_for_object(file,'category')
+    sub_category = Category.objects.get_for_object(file,'sub_category')
+        
+    initial_category_form_data = {
+        'app_label': 'files',
+        'model': 'file',
+        'pk': file.pk,
+        'category': getattr(category,'name','0'),
+        'sub_category': getattr(sub_category,'name','0')
+    }
+
     if request.method == "POST":
 
         form = form_class(request.POST, request.FILES, instance=file, user=request.user)
-
-        if form.is_valid():
+        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
+        
+        if form.is_valid() and categoryform.is_valid():
             file = form.save(commit=False)
 
             # update all permissions and save the model
             file = update_perms_and_save(request, form, file)
+            
+            #setup categories
+            category = Category.objects.get_for_object(file,'category')
+            sub_category = Category.objects.get_for_object(file,'sub_category')
+            
+            ## update the category of the file
+            category_removed = False
+            category = categoryform.cleaned_data['category']
+            if category != '0': 
+                Category.objects.update(file ,category,'category')
+            else: # remove
+                category_removed = True
+                Category.objects.remove(file ,'category')
+                Category.objects.remove(file ,'sub_category')
+            
+            if not category_removed:
+                # update the sub category of the article
+                sub_category = categoryform.cleaned_data['sub_category']
+                if sub_category != '0': 
+                    Category.objects.update(file, sub_category,'sub_category')
+                else: # remove
+                    Category.objects.remove(file,'sub_category')  
+            
+            file.save()
 
             return HttpResponseRedirect(reverse('file.search'))
     else:
         form = form_class(instance=file, user=request.user)
+        categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
 
-    return render_to_response(template_name, {'file': file, 'form':form}, 
+    return render_to_response(template_name, 
+            {
+                'file': file, 
+                'form':form,
+                'categoryform':categoryform,
+                }, 
         context_instance=RequestContext(request))
 
 
@@ -289,22 +319,50 @@ def bulk_add(request, template_name="files/bulk-add.html"):
 
 
 @login_required
-def add(request, form_class=FileForm, template_name="files/add.html"):
+def add(request, form_class=FileForm, category_form_class=CategoryForm, template_name="files/add.html"):
 
     # check permission
     if not has_perm(request.user,'files.add_file'):  
         raise Http403
+        
+    content_type = get_object_or_404(ContentType, app_label='files',model='file')
 
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, user=request.user)
-        if form.is_valid():
+        categoryform = category_form_class(content_type, request.POST, prefix='category')
+        if form.is_valid() and categoryform.is_valid():
             file = form.save(commit=False)
             
             # set up the user information
             file.creator = request.user
             file.creator_username = request.user.username
             file.owner = request.user
-            file.owner_username = request.user.username        
+            file.owner_username = request.user.username
+            file.save()
+            
+            #setup categories
+            category = Category.objects.get_for_object(file,'category')
+            sub_category = Category.objects.get_for_object(file,'sub_category')
+            
+            ## update the category of the file
+            category_removed = False
+            category = categoryform.cleaned_data['category']
+            if category != '0': 
+                Category.objects.update(file ,category,'category')
+            else: # remove
+                category_removed = True
+                Category.objects.remove(file ,'category')
+                Category.objects.remove(file ,'sub_category')
+            
+            if not category_removed:
+                # update the sub category of the article
+                sub_category = categoryform.cleaned_data['sub_category']
+                if sub_category != '0': 
+                    Category.objects.update(file, sub_category,'sub_category')
+                else: # remove
+                    Category.objects.remove(file,'sub_category')  
+            
+            #Save relationships
             file.save()
 
             # assign creator permissions
@@ -312,9 +370,18 @@ def add(request, form_class=FileForm, template_name="files/add.html"):
             
             return HttpResponseRedirect(reverse('file.search'))
     else:
+        initial_category_form_data = {
+            'app_label': 'files',
+            'model': 'file',
+            'pk': 0, #not used for this view but is required for the form
+        }
         form = form_class(user=request.user)
-       
-    return render_to_response(template_name, {'form':form}, 
+        categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
+    return render_to_response(template_name, 
+            {
+                'form':form,
+                'categoryform':categoryform,
+            }, 
         context_instance=RequestContext(request))
 
 
