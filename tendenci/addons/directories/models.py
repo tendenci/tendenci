@@ -15,7 +15,6 @@ from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
-from tendenci.apps.entities.models import Entity
 from tendenci.apps.invoices.models import Invoice
 
 from tendenci.addons.directories.module_meta import DirectoryMeta
@@ -73,8 +72,6 @@ class Directory(TendenciBaseModel):
     enclosure_url = models.CharField(_('Enclosure URL'), max_length=500, blank=True)
     enclosure_type = models.CharField(_('Enclosure Type'), max_length=120, blank=True)
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
-
-    entity = models.ForeignKey(Entity, null=True, blank=True)
     
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)

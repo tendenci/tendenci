@@ -6,7 +6,6 @@ from django.template.defaultfilters import slugify
 
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.apps.entities.models import Entity
 from tendenci.core.files.models import File
 from tendenci.apps.user_groups.managers import GroupManager
 
@@ -16,7 +15,6 @@ class Group(TendenciBaseModel):
     slug = SlugField(_('URL Path'), unique=True) 
     guid = models.CharField(max_length=40)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
-    entity = models.ForeignKey(Entity, null=True, blank=True)
     type = models.CharField(max_length=75, blank=True, choices=(
                                                              ('distribution','Distribution'),
                                                              ('security','Security'),), default='distribution')

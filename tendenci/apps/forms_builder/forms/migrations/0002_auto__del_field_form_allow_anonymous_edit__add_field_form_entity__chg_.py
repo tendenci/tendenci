@@ -6,116 +6,34 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
-    depends_on = (
-        ('payments', '0001_initial'),
-    )
-
     def forwards(self, orm):
         
-        # Adding model 'Form'
-        db.create_table('forms_form', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('allow_user_view', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_member_view', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_user_edit', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_member_edit', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('update_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='forms_form_creator', to=orm['auth.User'])),
-            ('creator_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(related_name='forms_form_owner', to=orm['auth.User'])),
-            ('owner_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('status', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=100, db_index=True)),
-            ('intro', self.gf('django.db.models.fields.TextField')(max_length=2000, blank=True)),
-            ('response', self.gf('django.db.models.fields.TextField')(max_length=2000, blank=True)),
-            ('email_text', self.gf('django.db.models.fields.TextField')(default='', max_length=2000, blank=True)),
-            ('subject_template', self.gf('django.db.models.fields.CharField')(default='[title] - [first name]  [last name] - [phone]', max_length=200, null=True, blank=True)),
-            ('send_email', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('email_from', self.gf('django.db.models.fields.EmailField')(max_length=75, blank=True)),
-            ('email_copies', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('completion_url', self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True)),
-            ('custom_payment', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('forms', ['Form'])
+        # Deleting field 'Form.allow_anonymous_edit'
+        db.delete_column('forms_form', 'allow_anonymous_edit')
 
-        # Adding M2M table for field payment_methods on 'Form'
-        db.create_table('forms_form_payment_methods', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('form', models.ForeignKey(orm['forms.form'], null=False)),
-            ('paymentmethod', models.ForeignKey(orm['payments.paymentmethod'], null=False))
-        ))
-        db.create_unique('forms_form_payment_methods', ['form_id', 'paymentmethod_id'])
+        # Adding field 'Form.entity'
+        db.add_column('forms_form', 'entity', self.gf('django.db.models.fields.related.ForeignKey')(default=None, related_name='forms_form_entity', null=True, blank=True, to=orm['entities.Entity']), keep_default=False)
 
-        # Adding model 'Field'
-        db.create_table('forms_field', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fields', to=orm['forms.Form'])),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=2000)),
-            ('field_type', self.gf('django.db.models.fields.CharField')(max_length=64)),
-            ('field_function', self.gf('django.db.models.fields.CharField')(max_length=64, null=True, blank=True)),
-            ('function_params', self.gf('django.db.models.fields.CharField')(max_length=100, null=True, blank=True)),
-            ('required', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('visible', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('choices', self.gf('django.db.models.fields.CharField')(max_length=1000, blank=True)),
-            ('position', self.gf('django.db.models.fields.PositiveIntegerField')(default=0)),
-            ('default', self.gf('django.db.models.fields.CharField')(max_length=1000, blank=True)),
-        ))
-        db.send_create_signal('forms', ['Field'])
+        # Changing field 'Form.creator'
+        db.alter_column('forms_form', 'creator_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
 
-        # Adding model 'FormEntry'
-        db.create_table('forms_formentry', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='entries', to=orm['forms.Form'])),
-            ('entry_time', self.gf('django.db.models.fields.DateTimeField')()),
-            ('entry_path', self.gf('django.db.models.fields.CharField')(default='', max_length=200, blank=True)),
-            ('payment_method', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['payments.PaymentMethod'], null=True)),
-            ('pricing', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['forms.Pricing'], null=True)),
-        ))
-        db.send_create_signal('forms', ['FormEntry'])
-
-        # Adding model 'FieldEntry'
-        db.create_table('forms_fieldentry', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('entry', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fields', to=orm['forms.FormEntry'])),
-            ('field', self.gf('django.db.models.fields.related.ForeignKey')(related_name='field', to=orm['forms.Field'])),
-            ('value', self.gf('django.db.models.fields.CharField')(max_length=2000)),
-        ))
-        db.send_create_signal('forms', ['FieldEntry'])
-
-        # Adding model 'Pricing'
-        db.create_table('forms_pricing', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('form', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['forms.Form'])),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('price', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=10, decimal_places=2, blank=True)),
-        ))
-        db.send_create_signal('forms', ['Pricing'])
+        # Changing field 'Form.owner'
+        db.alter_column('forms_form', 'owner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
 
 
     def backwards(self, orm):
         
-        # Deleting model 'Form'
-        db.delete_table('forms_form')
+        # Adding field 'Form.allow_anonymous_edit'
+        db.add_column('forms_form', 'allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
-        # Removing M2M table for field payment_methods on 'Form'
-        db.delete_table('forms_form_payment_methods')
+        # Deleting field 'Form.entity'
+        db.delete_column('forms_form', 'entity_id')
 
-        # Deleting model 'Field'
-        db.delete_table('forms_field')
+        # Changing field 'Form.creator'
+        db.alter_column('forms_form', 'creator_id', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['auth.User']))
 
-        # Deleting model 'FormEntry'
-        db.delete_table('forms_formentry')
-
-        # Deleting model 'FieldEntry'
-        db.delete_table('forms_fieldentry')
-
-        # Deleting model 'Pricing'
-        db.delete_table('forms_pricing')
+        # Changing field 'Form.owner'
+        db.alter_column('forms_form', 'owner_id', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['auth.User']))
 
 
     models = {
@@ -134,7 +52,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 19, 15, 25, 28, 462309)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 19, 15, 53, 42, 713453)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -142,7 +60,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 19, 15, 25, 28, 462222)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 19, 15, 53, 42, 713362)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -208,7 +126,6 @@ class Migration(SchemaMigration):
         },
         'forms.form': {
             'Meta': {'object_name': 'Form'},
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -216,15 +133,16 @@ class Migration(SchemaMigration):
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'completion_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'forms_form_creator'", 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'forms_form_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'custom_payment': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'email_copies': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'email_from': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'email_text': ('django.db.models.fields.TextField', [], {'default': "''", 'max_length': '2000', 'blank': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'forms_form_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'intro': ('django.db.models.fields.TextField', [], {'max_length': '2000', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'forms_form_owner'", 'to': "orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'forms_form_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'payment_methods': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['payments.PaymentMethod']", 'symmetrical': 'False', 'blank': 'True'}),
             'response': ('django.db.models.fields.TextField', [], {'max_length': '2000', 'blank': 'True'}),
@@ -272,7 +190,6 @@ class Migration(SchemaMigration):
         },
         'user_groups.group': {
             'Meta': {'object_name': 'Group'},
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -284,18 +201,18 @@ class Migration(SchemaMigration):
             'auto_respond_priority': ('django.db.models.fields.FloatField', [], {'default': '0', 'blank': 'True'}),
             'auto_respond_template': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_groups_group_creator'", 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'email_recipient': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True', 'blank': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'members': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'through': "orm['user_groups.GroupMembership']", 'symmetrical': 'False'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_groups_group_owner'", 'to': "orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

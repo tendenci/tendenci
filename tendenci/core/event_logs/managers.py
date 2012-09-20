@@ -255,3 +255,6 @@ class EventLogManager(Manager):
         event_log.save()
 
         return event_log
+
+    def delete(self, *args, **kwargs):
+        pass

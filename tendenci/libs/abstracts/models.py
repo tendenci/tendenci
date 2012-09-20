@@ -15,7 +15,6 @@ class TendenciBaseModel(models.Model):
     allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
     allow_user_view = models.BooleanField(_("Signed in user can view"))
     allow_member_view = models.BooleanField()
-    # allow_anonymous_edit = models.BooleanField()
     allow_user_edit = models.BooleanField(_("Signed in user can change"))
     allow_member_edit = models.BooleanField()
 

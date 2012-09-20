@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 
 from tendenci.core.event_logs.models import EventLog
+from tendenci.apps.entities.models import Entity
 from tendenci.core.versions.models import Version
 
 
@@ -14,15 +15,17 @@ class TendenciBaseModel(models.Model):
     allow_anonymous_view = models.BooleanField(_("Public can view"), default=True)
     allow_user_view = models.BooleanField(_("Signed in user can view"))
     allow_member_view = models.BooleanField()
-    allow_anonymous_edit = models.BooleanField()
     allow_user_edit = models.BooleanField(_("Signed in user can change"))
     allow_member_edit = models.BooleanField()
-
+    entity = models.ForeignKey(Entity, blank=True, null=True, default=None,
+        on_delete=models.SET_NULL, related_name="%(app_label)s_%(class)s_entity")
     create_dt = models.DateTimeField(_("Created On"), auto_now_add=True)
     update_dt = models.DateTimeField(_("Last Updated"), auto_now=True)
-    creator = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_creator", editable=False)
+    creator = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_creator", editable=False)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="%(app_label)s_%(class)s_owner")
+    owner = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL,
+        related_name="%(app_label)s_%(class)s_owner")
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')

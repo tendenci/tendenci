@@ -12,7 +12,6 @@ from tendenci.core.categories.models import CategoryItem
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.apps.entities.models import Entity
 from tendenci.core.files.models import File
 
 from tendenci.apps.pages.managers import PageManager
@@ -30,7 +29,6 @@ class BasePage(TendenciBaseModel):
     syndicate = models.BooleanField(_('Include in RSS feed'))
     template = models.CharField(_('Template'), max_length=50, blank=True)
     tags = TagField(blank=True)
-    entity = models.ForeignKey(Entity, null=True)
     meta = models.OneToOneField(MetaTags, null=True)
     categories = generic.GenericRelation(CategoryItem,
         object_id_field="object_id", content_type_field="content_type")

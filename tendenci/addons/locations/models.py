@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from tendenci.core.perms.models import TendenciBaseModel 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.locations.managers import LocationManager
-from tendenci.apps.entities.models import Entity
 from tendenci.addons.locations.utils import get_coordinates
 from tendenci.core.files.models import File
 
@@ -33,7 +32,6 @@ class Location(TendenciBaseModel):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     hq = models.BooleanField(_('Headquarters'))
-    entity = models.ForeignKey(Entity,null=True, blank=True)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
-from tendenci.apps.entities.models import Entity
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.base.fields import SlugField
@@ -31,7 +30,6 @@ class HelpFile(TendenciBaseModel):
 
     slug = SlugField(_('URL Path'), unique=True)
     topics = models.ManyToManyField(Topic)
-    entity = models.ForeignKey(Entity, null=True, blank=True)
     question = models.CharField(max_length=500)
     answer = tinymce_models.HTMLField()
     level = models.CharField(choices=LEVEL_CHOICES, max_length=100, default='basic')

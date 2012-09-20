@@ -9,8 +9,7 @@ from tendenci.core.event_logs.colors import get_color
 
 
 class EventLog(models.Model):
-    guid = models.CharField(max_length=40)
-    content_type = models.ForeignKey(ContentType, null=True)
+    content_type = models.ForeignKey(ContentType, null=True, on_delete=models.SET_NULL)
     object_id = models.IntegerField(null=True)
     source = models.CharField(max_length=50, null=True)
     entity = models.ForeignKey(Entity, null=True)
@@ -20,7 +19,7 @@ class EventLog(models.Model):
     event_data = models.TextField()
     category = models.CharField(max_length=50, null=True)
     session_id = models.CharField(max_length=40, null=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     username = models.CharField(max_length=50, null=True)
     email = models.EmailField(null=True)
     user_ip_address = models.IPAddressField(null=True)
@@ -32,18 +31,18 @@ class EventLog(models.Model):
     http_user_agent = models.TextField(null=True)
     request_method = models.CharField(max_length=10, null=True)
     query_string = models.TextField(null=True)
-    robot = models.ForeignKey(Robot, null=True)
+    robot = models.ForeignKey(Robot, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
-    
+
     uuid = models.CharField(max_length=40)
     application = models.CharField(max_length=50, db_index=True)
     action = models.CharField(max_length=50, db_index=True)
     model_name = models.CharField(max_length=75)
-    
+
     objects = EventLogManager()
 
     class Meta:
-        permissions = (("view_eventlog","Can view eventlog"),)
+        permissions = (("view_eventlog", "Can view eventlog"),)
 
     def color(self):
         return get_color(str(self.event_id))
@@ -54,6 +53,13 @@ class EventLog(models.Model):
 
     def __unicode__(self):
         return str(self.event_id)
+
+    def delete(self, *args, **kwargs):
+        """
+        Event logs are never deleted.
+        Per Ed Schipul 9/19/2012
+        """
+        pass
 
 
 class CachedColorModel(models.Model):

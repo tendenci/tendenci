@@ -16,7 +16,6 @@ from django.db.models import Q
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
-from tendenci.apps.entities.models import Entity
 from tendenci.addons.events.managers import EventManager, RegistrantManager, EventTypeManager
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.models import TendenciBaseModel
@@ -849,7 +848,6 @@ class Event(TendenciBaseModel):
     Calendar Event
     """
     guid = models.CharField(max_length=40, editable=False)
-    entity = models.ForeignKey(Entity, blank=True, null=True)
 
     type = models.ForeignKey(Type, blank=True, null=True)
 

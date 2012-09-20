@@ -14,7 +14,6 @@ from tendenci.addons.articles.managers import ArticleManager
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.articles.module_meta import ArticleMeta
-from tendenci.apps.entities.models import Entity
 
 
 class Article(TendenciBaseModel):
@@ -43,7 +42,6 @@ class Article(TendenciBaseModel):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0)
 
     not_official_content = models.BooleanField(_('Official Content'), blank=True)
-    entity = models.ForeignKey(Entity, null=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)

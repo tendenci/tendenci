@@ -12,7 +12,6 @@ from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.jobs.managers import JobManager
-from tendenci.apps.entities.models import Entity
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.jobs.module_meta import JobMeta
@@ -69,7 +68,6 @@ class BaseJob(TendenciBaseModel):
     contact_website = models.CharField(max_length=300, blank=True)
 
     meta = models.OneToOneField(MetaTags, null=True)
-    entity = models.ForeignKey(Entity, null=True, blank=True)
     tags = TagField(blank=True)
 
     invoice = models.ForeignKey(Invoice, blank=True, null=True)

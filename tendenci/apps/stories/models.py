@@ -13,7 +13,6 @@ from tagging.fields import TagField
 from tendenci.core.files.models import File, file_directory
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.stories.managers import StoryManager
-from tendenci.apps.entities.models import Entity
 
 
 class Story(TendenciBaseModel):
@@ -41,7 +40,6 @@ class Story(TendenciBaseModel):
     end_dt = models.DateTimeField(_('End Date/Time'), null=True, blank=True)
     expires = models.BooleanField(_('Expires'), default=True)
     ncsortorder = models.IntegerField(null=True, blank=True)
-    entity = models.ForeignKey(Entity, null=True)
     image = models.ForeignKey('StoryPhoto',
         help_text=_('Photo that represents this story.'), null=True, default=None)
     tags = TagField(blank=True, default='')

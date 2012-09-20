@@ -14,7 +14,6 @@ from tendenci.addons.news.managers import NewsManager
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.news.module_meta import NewsMeta
-from tendenci.apps.entities.models import Entity
 
 class News(TendenciBaseModel):
     guid = models.CharField(max_length=40)
@@ -41,7 +40,6 @@ class News(TendenciBaseModel):
     enclosure_length = models.IntegerField(_('Enclosure Length'), default=0) # for podcast feeds
 
     use_auto_timestamp = models.BooleanField(_('Auto Timestamp'))
-    entity = models.ForeignKey(Entity,null=True)
         
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)

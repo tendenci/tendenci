@@ -172,7 +172,6 @@ INSTALLED_APPS = (
 
     # applications
     'pagination',
-    'photologue',
     'tagging',
     'avatar',
     'tinymce',
@@ -181,6 +180,7 @@ INSTALLED_APPS = (
     'south',
     'tastypie',
 
+    'tendenci.apps.entities',
     'tendenci.core.base',
     'tendenci.apps.notifications',
     'tendenci.apps.registration',
@@ -190,7 +190,6 @@ INSTALLED_APPS = (
     'tendenci.apps.forms_builder.forms',
     'tendenci.apps.pluginmanager',
     'tendenci.apps.accounts',
-    'tendenci.apps.entities',
     'tendenci.core.files',
     'tendenci.apps.user_groups',
     'tendenci.core.perms',

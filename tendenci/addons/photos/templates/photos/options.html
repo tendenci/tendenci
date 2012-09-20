@@ -2,10 +2,10 @@
 {% load perm_tags %}
 {% load i18n %}
 
-{% has_perm user photologue.view_photo as can_view %}
-{% has_perm user photologue.add_photo as can_add %}
-{% has_perm user photologue.change_photo as can_change %}
-{% has_perm user photologue.delete_photo as can_delete %}
+{% has_perm user photos.view_image as can_view %}
+{% has_perm user photos.add_image as can_add %}
+{% has_perm user photos.change_image as can_change %}
+{% has_perm user photos.delete_image as can_delete %}
 
 <ul>
     <li class="photo-view"><a href="{% url photo_medium_640 opt_object.pk %}">View all sizes</a></li>

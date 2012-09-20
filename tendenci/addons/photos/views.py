@@ -53,7 +53,7 @@ def search(request, template_name="photos/search.html"):
 def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
     photo = get_object_or_404(Image, id=id)
-    if not has_view_perm(request.user, 'photologue.view_photo', photo):
+    if not has_view_perm(request.user, 'photos.view_image', photo):
         raise Http403
     
     # security-check on size name
@@ -62,7 +62,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     # get sizes
     if size_name == 'original':
         sizes = (photo.image.width, photo.image.height)
-    else:  # use photologue size table
+    else:  # use photos size table
         if not photo.file_exists(): raise Http404
         sizes = getattr(photo, 'get_%s_size' % size_name)()
 
@@ -96,7 +96,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     """ photo details """
 
     photo = get_object_or_404(Image, id=id)
-    if not has_perm(request.user, 'photologue.view_photo', photo):
+    if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
 
     EventLog.objects.log(**{
@@ -171,7 +171,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
     size = [int(s) for s in size.split('x')]
 
     # check permissions
-    if not has_perm(request.user,'photologue.view_photo',photo):
+    if not has_perm(request.user,'photos.view_image',photo):
         raise Http403
 
     attachment = ''
@@ -199,7 +199,7 @@ def photo_original(request, id):
     photo = get_object_or_404(Image, id=id)
 
     # check permissions
-    if not has_perm(request.user, 'photologue.view_photo', photo):
+    if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
 
     image_data = default_storage.open(unicode(photo.image.file), 'rb').read()
@@ -254,7 +254,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
     set_id = int(set_id)
     
     # permissions
-    if not has_perm(request.user,'photologue.change_photo',photo):
+    if not has_perm(request.user,'photos.change_image',photo):
         raise Http403
     
     # get available photo sets
@@ -301,7 +301,7 @@ def delete(request, id, set_id=0):
     photo = get_object_or_404(Image, id=id)
 
     # permissions
-    if not has_perm(request.user,'photologue.delete_photo',photo):
+    if not has_perm(request.user,'photos.delete_image',photo):
         raise Http403
 
     if request.method == "POST":
