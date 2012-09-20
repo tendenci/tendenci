@@ -1265,6 +1265,14 @@ class AppEntry(TendenciBaseModel):
                     except:
                         pass
 
+        #Update invoice
+        if self.invoice:
+            self.invoice.bill_to_first_name = self.user.first_name
+            self.invoice.bill_to_last_name = self.user.last_name
+            self.invoice.owner = self.user
+            self.invoice.owner_username = self.user.username
+            self.invoice.save()
+
         self.is_approved = True
         self.decision_dt = membership.create_dt
         self.membership = membership
