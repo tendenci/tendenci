@@ -2,6 +2,7 @@ import uuid
 
 from datetime import timedelta
 from django.db import models
+from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
@@ -68,6 +69,7 @@ class BaseJob(TendenciBaseModel):
     contact_website = models.CharField(max_length=300, blank=True)
 
     meta = models.OneToOneField(MetaTags, null=True)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     invoice = models.ForeignKey(Invoice, blank=True, null=True)

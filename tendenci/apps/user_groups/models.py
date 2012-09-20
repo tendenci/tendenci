@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
@@ -29,6 +30,8 @@ class Group(TendenciBaseModel):
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
+
+    group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.SET_NULL)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
     # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
     
@@ -144,7 +147,7 @@ class GroupMembership(models.Model):
 
 
 class ImportFile(File):
-    group = models.ForeignKey(Group)
-    
+    pass
+
     def __unicode__(self):
         return "%s" % self.group.name

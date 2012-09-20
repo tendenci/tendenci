@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.contrib.auth.models import Group
 from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -848,31 +849,24 @@ class Event(TendenciBaseModel):
     Calendar Event
     """
     guid = models.CharField(max_length=40, editable=False)
-
     type = models.ForeignKey(Type, blank=True, null=True)
-
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
-
     all_day = models.BooleanField()
     start_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30))
     end_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30, hours=2))
     timezone = TimeZoneField(_('Time Zone'))
-
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
-
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
-    
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
-    
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
-    image = models.ForeignKey('EventPhoto', 
+    image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
-        
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
-    
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 

@@ -6,6 +6,7 @@ from inspect import isclass
 from cStringIO import StringIO
 
 from django.db import models
+from django.contrib.auth.models import Group
 from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes import generic
@@ -543,6 +544,7 @@ class PhotoSet(TendenciBaseModel):
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
     author = models.ForeignKey(User)
 

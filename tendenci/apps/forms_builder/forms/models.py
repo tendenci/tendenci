@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.contrib.auth.models import Group
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -77,6 +78,7 @@ class Form(TendenciBaseModel):
     custom_payment = models.BooleanField(_("Form Accepts Payment"), default=False, help_text=_("If checked, please add pricing options below. Leave the price blank if users can enter their own amount."))
     payment_methods = models.ManyToManyField("payments.PaymentMethod", blank=True)
 
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")

@@ -6,100 +6,22 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
-    depends_on = (
-        ('files', '0001_initial'),
-    )
-
     def forwards(self, orm):
         
-        # Adding model 'Group'
-        db.create_table('user_groups_group', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('allow_anonymous_view', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('allow_user_view', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_member_view', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_anonymous_edit', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_user_edit', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('allow_member_edit', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('update_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_groups_group_creator', to=orm['auth.User'])),
-            ('creator_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('owner', self.gf('django.db.models.fields.related.ForeignKey')(related_name='user_groups_group_owner', to=orm['auth.User'])),
-            ('owner_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('status', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('slug', self.gf('tendenci.core.base.fields.SlugField')(unique=True, max_length=100, db_index=True)),
-            ('guid', self.gf('django.db.models.fields.CharField')(max_length=40)),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['entities.Entity'], null=True, blank=True)),
-            ('type', self.gf('django.db.models.fields.CharField')(default='distribution', max_length=75, blank=True)),
-            ('email_recipient', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('show_as_option', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('allow_self_add', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('allow_self_remove', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('auto_respond', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('auto_respond_template', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('auto_respond_priority', self.gf('django.db.models.fields.FloatField')(default=0, blank=True)),
-            ('notes', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal('user_groups', ['Group'])
+        # Deleting field 'ImportFile.group'
+        db.delete_column('user_groups_importfile', 'group_id')
 
-        # Adding M2M table for field permissions on 'Group'
-        db.create_table('user_groups_group_permissions', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('group', models.ForeignKey(orm['user_groups.group'], null=False)),
-            ('permission', models.ForeignKey(orm['auth.permission'], null=False))
-        ))
-        db.create_unique('user_groups_group_permissions', ['group_id', 'permission_id'])
-
-        # Adding model 'GroupMembership'
-        db.create_table('user_groups_groupmembership', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['user_groups.Group'])),
-            ('member', self.gf('django.db.models.fields.related.ForeignKey')(related_name='group_member', to=orm['auth.User'])),
-            ('role', self.gf('django.db.models.fields.CharField')(default='', max_length=255, blank=True)),
-            ('sort_order', self.gf('django.db.models.fields.IntegerField')(default=0, blank=True)),
-            ('creator_id', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('creator_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('owner_id', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('owner_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('status', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('status_detail', self.gf('django.db.models.fields.CharField')(default='active', max_length=50)),
-            ('create_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('update_dt', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-        ))
-        db.send_create_signal('user_groups', ['GroupMembership'])
-
-        # Adding unique constraint on 'GroupMembership', fields ['group', 'member']
-        db.create_unique('user_groups_groupmembership', ['group_id', 'member_id'])
-
-        # Adding model 'ImportFile'
-        db.create_table('user_groups_importfile', (
-            ('file_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['files.File'], unique=True, primary_key=True)),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['user_groups.Group'])),
-        ))
-        db.send_create_signal('user_groups', ['ImportFile'])
+        # Adding field 'Group.group'
+        db.add_column('user_groups_group', 'group', self.gf('django.db.models.fields.related.OneToOneField')(default=None, to=orm['auth.Group'], unique=True, null=True), keep_default=False)
 
 
     def backwards(self, orm):
         
-        # Removing unique constraint on 'GroupMembership', fields ['group', 'member']
-        db.delete_unique('user_groups_groupmembership', ['group_id', 'member_id'])
+        # Adding field 'ImportFile.group'
+        db.add_column('user_groups_importfile', 'group', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['user_groups.Group']), keep_default=False)
 
-        # Deleting model 'Group'
-        db.delete_table('user_groups_group')
-
-        # Removing M2M table for field permissions on 'Group'
-        db.delete_table('user_groups_group_permissions')
-
-        # Deleting model 'GroupMembership'
-        db.delete_table('user_groups_groupmembership')
-
-        # Deleting model 'ImportFile'
-        db.delete_table('user_groups_importfile')
+        # Deleting field 'Group.group'
+        db.delete_column('user_groups_group', 'group_id')
 
 
     models = {
@@ -118,7 +40,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 19, 15, 19, 50, 385924)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 20, 12, 21, 17, 545057)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -126,7 +48,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 19, 15, 19, 50, 385830)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 9, 20, 12, 21, 17, 544966)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -171,7 +93,6 @@ class Migration(SchemaMigration):
         },
         'files.file': {
             'Meta': {'object_name': 'File'},
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -179,16 +100,18 @@ class Migration(SchemaMigration):
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']", 'null': 'True', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'files_file_creator'", 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'files_file_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'files_file_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'file': ('django.db.models.fields.files.FileField', [], {'max_length': '260'}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['auth.Group']", 'null': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'object_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'files_file_owner'", 'to': "orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'files_file_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
@@ -197,7 +120,6 @@ class Migration(SchemaMigration):
         },
         'user_groups.group': {
             'Meta': {'object_name': 'Group'},
-            'allow_anonymous_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -209,18 +131,19 @@ class Migration(SchemaMigration):
             'auto_respond_priority': ('django.db.models.fields.FloatField', [], {'default': '0', 'blank': 'True'}),
             'auto_respond_template': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_groups_group_creator'", 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'email_recipient': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True', 'blank': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
+            'group': ('django.db.models.fields.related.OneToOneField', [], {'default': 'None', 'to': "orm['auth.Group']", 'unique': 'True', 'null': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'members': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.User']", 'through': "orm['user_groups.GroupMembership']", 'symmetrical': 'False'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'user_groups_group_owner'", 'to': "orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'group_permissions'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'show_as_option': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -248,8 +171,7 @@ class Migration(SchemaMigration):
         },
         'user_groups.importfile': {
             'Meta': {'object_name': 'ImportFile', '_ormbases': ['files.File']},
-            'file_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['files.File']", 'unique': 'True', 'primary_key': 'True'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']"})
+            'file_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['files.File']", 'unique': 'True', 'primary_key': 'True'})
         }
     }
 

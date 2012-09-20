@@ -9,6 +9,7 @@ import cStringIO
 
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 
@@ -40,6 +41,8 @@ class File(TendenciBaseModel):
     content_type = models.ForeignKey(ContentType, blank=True, null=True)
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
+    group = models.ForeignKey(Group, null=True,
+        default=None, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
 
     objects = FileManager()

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
@@ -39,6 +40,7 @@ class HelpFile(TendenciBaseModel):
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     view_totals = models.PositiveIntegerField(default=0)
 
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
                                           content_type_field="content_type")
