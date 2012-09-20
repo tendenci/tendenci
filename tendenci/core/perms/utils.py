@@ -91,7 +91,6 @@ def assign_files_perms(instance, **kwargs):
     from tendenci.core.files.models import File
     # get content type and instance
     content_type = ContentType.objects.get_for_model(instance.__class__)
-
     orphaned_files = list(File.objects.filter(content_type=content_type, object_id=0))
     coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
     files = orphaned_files + coupled_files
@@ -99,21 +98,22 @@ def assign_files_perms(instance, **kwargs):
     file_ct = ContentType.objects.get_for_model(File)
 
     perm_attrs = []
-    if 'tendencibasemodel' in [s._meta.module_name for s in instance.__class__.__bases__ if hasattr(s, '_meta')]:
-        # if model (aka sender) inherits from TendenciBaseModel
-        perm_attrs = [
-            'allow_anonymous_view',
-            'allow_user_view',
-            'allow_member_view',
-            'allow_user_edit',
-            'allow_member_edit',
-            'status',
-            'status_detail',
-        ]
+
+    tmp_perm_attrs = [
+        'allow_anonymous_view',
+        'allow_user_view',
+        'allow_member_view',
+        'allow_user_edit',
+        'allow_member_edit',
+        'status',
+        'status_detail',
+    ]
+
+    for attr in tmp_perm_attrs:
+        if hasattr(instance, attr):
+            perm_attrs.append(attr)
 
     for file in files:  # loop through media files and update
-        print file.id, file.name
-
         if not file.object_id:  # pick up orphans
             file.object_id = instance.pk
 
