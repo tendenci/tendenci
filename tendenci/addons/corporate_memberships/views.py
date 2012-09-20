@@ -85,6 +85,7 @@ def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
 def add(request, slug=None, hash=None, template="corporate_memberships/add.html"):
     """
         add a corporate membership
+        request.user will be set as a representative of the corporate membership.
         admin - active
         user - if paid, active, otherwise, pending 
     """ 
@@ -162,6 +163,13 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
             # update corp_memb with inv
             corporate_membership.invoice = inv
             corporate_membership.save(log=False)
+            
+            if request.user.is_authenticated():
+                # set the user as representative of the corp. membership
+                rep = CorporateMembershipRep.objects.create(
+                    corporate_membership = corporate_membership,
+                    user = request.user,
+                    is_dues_rep = True)
             
             # assign object permissions
             if not creator:
