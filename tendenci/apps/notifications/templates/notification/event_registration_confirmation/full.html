@@ -139,6 +139,7 @@
     {% if for_admin %}
         <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.registrant.roster event.pk %}">{% trans "Event Roster" %}</a></li>
     {% endif %}
+    <li><a href="{{ SITE_GLOBAL_SITEURL }}{% url event.ics_single event.pk %}">{% trans "Add this event to your calendar." %}</a></li>
     <li><a href="{{ SITE_GLOBAL_SITEURL }}">{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {{ SITE_GLOBAL_SITEURL }}</a></li>
 </ol>
 
