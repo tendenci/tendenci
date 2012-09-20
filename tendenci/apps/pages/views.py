@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
 from django.contrib import messages
@@ -16,10 +16,13 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.versions.models import Version
-from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm,  has_view_perm, get_query_filters
+from tendenci.core.perms.utils import (update_perms_and_save,
+                                       get_notice_recipients,
+                                       has_perm,
+                                       has_view_perm,
+                                       get_query_filters)
 from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category
-from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
@@ -27,7 +30,8 @@ from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
 
 
-def index(request, slug=None, id=None, hash=None, template_name="pages/view.html"):
+def index(request, slug=None, id=None, hash=None, 
+          template_name="pages/view.html"):
     """
     Return page object, either as an archive, active, or version.
     """
@@ -39,7 +43,9 @@ def index(request, slug=None, id=None, hash=None, template_name="pages/view.html
         version = get_object_or_404(Version, hash=hash)
         current_page = get_object_or_404(Page, pk=version.object_id)
         page = version.get_version_object()
-        messages.add_message(request, messages.WARNING, 'You are viewing a previous version of this article. View the <a href="%s">Current Version</a>.' % current_page.get_absolute_url())
+        messages.add_message(request, messages.WARNING,
+         'You are viewing a previous version of this article. View the ' + \
+         '<a href="%s">Current Version</a>.' % current_page.get_absolute_url())
     elif id:
         page = get_object_or_404(Page, pk=id)
         if page.status_detail != 'active':
@@ -88,7 +94,9 @@ def search(request, template_name="pages/search.html"):
     filters = get_query_filters(request.user, 'pages.view_page')
     pages = Page.objects.filter(filters).distinct()
     if query:
-        pages = pages.filter(Q(title__icontains=query) | Q(content__icontains=query) | Q(slug__icontains=query))
+        pages = pages.filter(Q(title__icontains=query) \
+                             | Q(content__icontains=query)\
+                              | Q(slug__icontains=query))
     pages = pages.exclude(status_detail='archive')
 
     pages = pages.order_by('-create_dt')
@@ -111,31 +119,40 @@ def print_view(request, slug, template_name="pages/print-view.html"):
         context_instance=RequestContext(request))
 
 @login_required
-def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="pages/edit.html"):
-        
+def edit(request, id, form_class=PageForm,
+         meta_form_class=MetaForm,
+         category_form_class=CategoryForm, template_name="pages/edit.html"):
     page = get_object_or_404(Page, pk=id)
-        
-    if not has_perm(request.user,'pages.change_page',page):
+
+    if not has_perm(request.user, 'pages.change_page', page):
         raise Http403
-    
-    content_type = get_object_or_404(ContentType, app_label='pages',model='page')
-    
+
+    content_type = get_object_or_404(ContentType, app_label='pages',
+                                     model='page')
+
     #setup categories
-    category = Category.objects.get_for_object(page,'category')
-    sub_category = Category.objects.get_for_object(page,'sub_category')
-        
+    category = Category.objects.get_for_object(page, 'category')
+    sub_category = Category.objects.get_for_object(page, 'sub_category')
+
     initial_category_form_data = {
         'app_label': 'pages',
         'model': 'page',
         'pk': page.pk,
-        'category': getattr(category,'name','0'),
-        'sub_category': getattr(sub_category,'name','0')
+        'category': getattr(category, 'name', '0'),
+        'sub_category': getattr(sub_category, 'name', '0')
     }
 
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES, instance=page, user=request.user)
-        metaform = meta_form_class(request.POST, instance=page.meta, prefix='meta')
-        categoryform = category_form_class(content_type, request.POST, initial= initial_category_form_data, prefix='category')
+        form = form_class(request.POST, request.FILES,
+                          instance=page,
+                          user=request.user)
+        metaform = meta_form_class(request.POST,
+                                   instance=page.meta,
+                                   prefix='meta')
+        categoryform = category_form_class(content_type,
+                                           request.POST,
+                                           initial=initial_category_form_data,
+                                           prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             page = form.save()
 
@@ -153,61 +170,65 @@ def edit(request, id, form_class=PageForm, meta_form_class=MetaForm, category_fo
                 f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
-            
+
             #save meta
             meta = metaform.save()
             page.meta = meta
-            
+
             ## update the category of the article
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
-                Category.objects.update(page ,category,'category')
-            else: # remove
+            if category != '0':
+                Category.objects.update(page, category, 'category')
+            else:  # remove
                 category_removed = True
-                Category.objects.remove(page ,'category')
-                Category.objects.remove(page ,'sub_category')
-            
+                Category.objects.remove(page, 'category')
+                Category.objects.remove(page, 'sub_category')
+
             if not category_removed:
                 # update the sub category of the article
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
-                    Category.objects.update(page, sub_category,'sub_category')
-                else: # remove
-                    Category.objects.remove(page,'sub_category')
-             
-            # update all permissions and save the model
-            page = update_perms_and_save(request, form, page)       
-            #save relationships
-            #page.save()
+                if sub_category != '0':
+                    Category.objects.update(page, sub_category, 'sub_category')
+                else:  # remove
+                    Category.objects.remove(page, 'sub_category')
+
+            # update all permissions
+            page = update_perms_and_save(request, form, page)
 
             EventLog.objects.log(instance=page)
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % page)
+            messages.add_message(request, messages.SUCCESS,
+                                 'Successfully updated %s' % page)
 
             if not request.user.profile.is_superuser:
                 # send notification to administrators
-                recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
+                recipients = get_notice_recipients('module', 'pages',
+                                                   'pagerecipients')
                 if recipients:
                     if notification:
                         extra_context = {
                             'object': page,
                             'request': request,
                         }
-                        notification.send_emails(recipients,'page_edited', extra_context)
-                                                          
-            return HttpResponseRedirect(reverse('page', args=[page.slug]))             
+                        notification.send_emails(recipients,
+                                                 'page_edited',
+                                                 extra_context)
+
+            return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
         form = form_class(instance=page, user=request.user)
         metaform = meta_form_class(instance=page.meta, prefix='meta')
-        categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
+        categoryform = category_form_class(content_type,
+                                           initial=initial_category_form_data,
+                                           prefix='category')
 
     return render_to_response(template_name,
         {
-            'page': page, 
-            'form':form, 
-            'metaform':metaform,
-            'categoryform':categoryform,
+            'page': page,
+            'form': form,
+            'metaform': metaform,
+            'categoryform': categoryform,
         },
         context_instance=RequestContext(request))
 
@@ -239,7 +260,8 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
             page.meta = form.save()  # save meta
             page.save()  # save relationship
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully updated meta for %s' % page)
+            messages.add_message(request, messages.SUCCESS,
+                                 'Successfully updated meta for %s' % page)
 
             return HttpResponseRedirect(reverse('page', args=[page.slug]))
     else:
@@ -250,17 +272,23 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
 
 
 @login_required
-def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_class=CategoryForm, template_name="pages/add.html"):
-    
-    if not has_perm(request.user,'pages.add_page'):
+def add(request, form_class=PageForm, meta_form_class=MetaForm,
+        category_form_class=CategoryForm,
+        template_name="pages/add.html"):
+
+    if not has_perm(request.user, 'pages.add_page'):
         raise Http403
-    
-    content_type = get_object_or_404(ContentType, app_label='pages',model='page')
-    
+
+    content_type = get_object_or_404(ContentType,
+                                     app_label='pages',
+                                     model='page')
+
     if request.method == "POST":
         form = form_class(request.POST, request.FILES, user=request.user)
         metaform = meta_form_class(request.POST, prefix='meta')
-        categoryform = category_form_class(content_type, request.POST, prefix='category')
+        categoryform = category_form_class(content_type,
+                                           request.POST,
+                                           prefix='category')
         if form.is_valid() and metaform.is_valid() and categoryform.is_valid():
             page = form.save()
 
@@ -278,67 +306,74 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm, category_form_cl
                 f.file.seek(0)
                 header.file.save(filename, f)
                 page.header_image = header
-            
+
             #save meta
             meta = metaform.save()
             page.meta = meta
-            
+
             #setup categories
-            category = Category.objects.get_for_object(page,'category')
-            sub_category = Category.objects.get_for_object(page,'sub_category')
-            
+            category = Category.objects.get_for_object(page, 'category')
+            sub_category = Category.objects.get_for_object(page,
+                                                           'sub_category')
+
             ## update the category of the article
             category_removed = False
             category = categoryform.cleaned_data['category']
-            if category != '0': 
-                Category.objects.update(page ,category,'category')
-            else: # remove
+            if category != '0':
+                Category.objects.update(page, category, 'category')
+            else:  # remove
                 category_removed = True
-                Category.objects.remove(page ,'category')
-                Category.objects.remove(page ,'sub_category')
-            
+                Category.objects.remove(page, 'category')
+                Category.objects.remove(page, 'sub_category')
+
             if not category_removed:
                 # update the sub category of the article
                 sub_category = categoryform.cleaned_data['sub_category']
-                if sub_category != '0': 
-                    Category.objects.update(page, sub_category,'sub_category')
-                else: # remove
-                    Category.objects.remove(page,'sub_category')  
-            
-            # add all permissions and save the model
+                if sub_category != '0':
+
+                    Category.objects.update(page, sub_category, 'sub_category')
+                else:  # remove
+                    Category.objects.remove(page, 'sub_category')
+
+            # add all permissions
             page = update_perms_and_save(request, form, page)
 
             EventLog.objects.log()
 
-            messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % page)
-            
+            messages.add_message(request, messages.SUCCESS,
+                                 'Successfully added %s' % page)
+
             if not request.user.profile.is_superuser:
                 # send notification to administrators
-                recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
+                recipients = get_notice_recipients('module',
+                                                   'pages',
+                                                    'pagerecipients')
                 if recipients:
                     if notification:
                         extra_context = {
                             'object': page,
                             'request': request,
                         }
-                        notification.send_emails(recipients,'page_added', extra_context)
-            if page.status and page.status_detail == 'active':    
+                        notification.send_emails(recipients, 'page_added', extra_context)
+            if page.status and page.status_detail == 'active':
                 return HttpResponseRedirect(reverse('page', args=[page.slug]))
             return HttpResponseRedirect(reverse('page.search'))
     else:
         initial_category_form_data = {
             'app_label': 'pages',
             'model': 'page',
-            'pk': 0, #not used for this view but is required for the form
+            'pk': 0,
         }
         form = form_class(user=request.user)
         metaform = meta_form_class(prefix='meta')
-        categoryform = category_form_class(content_type, initial=initial_category_form_data, prefix='category')
-    return render_to_response(template_name, 
+        categoryform = category_form_class(content_type,
+                                           initial=initial_category_form_data,
+                                           prefix='category')
+    return render_to_response(template_name,
             {
-                'form':form,
-                'metaform':metaform,
-                'categoryform':categoryform,
+                'form': form,
+                'metaform': metaform,
+                'categoryform': categoryform,
             },
             context_instance=RequestContext(request))
 
@@ -352,7 +387,8 @@ def delete(request, id, template_name="pages/delete.html"):
 
     if request.method == "POST":
         EventLog.objects.log(instance=page)
-        messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % page)
+        messages.add_message(request, messages.SUCCESS,
+                             'Successfully deleted %s' % page)
 
         # send notification to administrators
         recipients = get_notice_recipients('module', 'pages', 'pagerecipients')
@@ -373,6 +409,7 @@ def delete(request, id, template_name="pages/delete.html"):
     return render_to_response(template_name, {'page': page},
         context_instance=RequestContext(request))
 
+
 def display_header_image(request, id):
     page = get_object_or_404(Page, pk=id)
 
@@ -382,6 +419,7 @@ def display_header_image(request, id):
         raise Http403
 
     return file_display(request, page.header_image.file.name)
+
 
 @login_required
 def export(request, template_name="pages/export.html"):
