@@ -128,7 +128,8 @@ setup(
     classifiers=CLASSIFIERS,
     include_package_data=True,
     dependency_links=[
-        "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14",
+#         "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14",
+        "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
     setup_requires=[
@@ -158,7 +159,6 @@ setup(
         "xlrd==0.7.3",
         "xlwt>=0.7.2",
         "pyparseuri>=0.1",
-#         "whoosh>=1.1.1",
         "pysolr==2.0.15",
         "BeautifulSoup==3.2.1",
         "oauth2>=1.5.167",
@@ -181,7 +181,5 @@ setup(
         "django-tastypie",
         "johnny-cache==1.4",
         "django-debug-toolbar"
-#         'django-storages==1.1.5',
-#         'django-s3-folder-storage',
     ],
 )
