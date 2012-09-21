@@ -7,7 +7,7 @@
         "input_type": "text", 
         "client_editable": true, 
         "name": "allnoticerecipients", 
-        "value": "ezuniga@schipul.com", 
+        "value": "email@example.com", 
         "label": "ALL admin notice recipients", 
         "input_value": "", 
         "parent_id": 0, 
@@ -102,14 +102,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "bleblanc@tendenci.com", 
+        "default_value": "email@example.com", 
         "description": "E-mail address of the person that appears in the signature of the contact form submission email.", 
         "data_type": "string", 
         "update_dt": "2011-01-06 15:46:41", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "sitecontactemail", 
-        "value": "ezuniga@schipul.com", 
+        "value": "email@example.com", 
         "label": "Contact Email", 
         "input_value": " ", 
         "parent_id": 0, 
@@ -119,7 +119,7 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "Jennifer Brooks", 
+        "default_value": "Administrator", 
         "description": "Name of your site owner or primary site administrator.", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
@@ -136,14 +136,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "jbrooks@tendenci.com", 
+        "default_value": "email@example.com", 
         "description": "E-Mail address of your site owner or primary site administrator.", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "admincontactemail", 
-        "value": "noemail@tendenci.com", 
+        "value": "email@example.com", 
         "label": "Administrator Email", 
         "input_value": " ", 
         "parent_id": 0, 
@@ -170,14 +170,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "support@tendenci.com", 
+        "default_value": "email@example.com", 
         "description": "E-Mail address of your webmaster.", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "sitewebmasteremail", 
-        "value": "noemail@tendenci.com", 
+        "value": "noemail@example.com", 
         "label": "Webmaster Email", 
         "input_value": " ", 
         "parent_id": 0, 
@@ -425,14 +425,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "DO-NOT-REPLY-TENDENCI@tendenci.com", 
+        "default_value": "noreply@example.com", 
         "description": "Enter the address that will be shown as the sender when the system sends out emails.", 
         "data_type": "string", 
         "update_dt": "2011-02-24 14:22:04", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "siteemailnoreplyaddress", 
-        "value": "DO-NOT-REPLY-TENDENCI@tendenci.com", 
+        "value": "noreply@example.com", 
         "label": "No-Reply Address", 
         "input_value": " ", 
         "parent_id": 0, 
@@ -476,7 +476,7 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "http://www.tendenci.com/policy/", 
+        "default_value": "http://www.example.com/policy/", 
         "description": "Link or text containing your site policies.", 
         "data_type": "string", 
         "update_dt": "2010-10-22 09:29:46", 
