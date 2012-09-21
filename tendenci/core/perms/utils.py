@@ -89,11 +89,14 @@ def update_perms_and_save(request, form, instance, **kwargs):
 
 def assign_files_perms(instance, **kwargs):
     from tendenci.core.files.models import File
+    files = kwargs.pop('files', None)
     # get content type and instance
     content_type = ContentType.objects.get_for_model(instance.__class__)
-    orphaned_files = list(File.objects.filter(content_type=content_type, object_id=0))
-    coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
-    files = orphaned_files + coupled_files
+
+    if not files:
+        orphaned_files = list(File.objects.filter(content_type=content_type, object_id=0))
+        coupled_files = list(File.objects.filter(content_type=content_type, object_id=instance.pk))
+        files = orphaned_files + coupled_files
 
     file_ct = ContentType.objects.get_for_model(File)
 

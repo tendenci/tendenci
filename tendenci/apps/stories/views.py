@@ -18,6 +18,7 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.stories.forms import StoryForm
+from tendenci.core.perms.utils import assign_files_perms
 
 
 def details(request, id=None, template_name="stories/view.html"):
@@ -93,17 +94,19 @@ def search_redirect(request):
 
 @login_required   
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
-    
     if has_perm(request.user,'stories.add_story'):    
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, user=request.user)
             if form.is_valid():           
                 story = form.save(commit=False)
+                
                 story = update_perms_and_save(request, form, story)
-
+                
                 # save photo
                 photo = form.cleaned_data['photo_upload']
-                if photo: story.save(photo=photo)
+                if photo:
+                    story.save(photo=photo)
+                    assign_files_perms(story, files=[story.image])
 
                 log_defaults = {
                     'event_id' : 1060100,
@@ -114,9 +117,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                     'instance': story,
                 }
                 EventLog.objects.log(**log_defaults)
-                
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % story) 
-                
+
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
             else:
                 from pprint import pprint
@@ -143,13 +146,14 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
             form = form_class(request.POST, request.FILES,
                               instance=story, user=request.user)
             if form.is_valid():
-
                 story = form.save(commit=False)
-                story = update_perms_and_save(request, form, story)
 
                 # save photo
                 photo = form.cleaned_data['photo_upload']
-                if photo: story.save(photo=photo)
+                if photo:
+                    story.save(photo=photo)
+
+                story = update_perms_and_save(request, form, story)
 
                 log_defaults = {
                     'event_id' : 1060200,

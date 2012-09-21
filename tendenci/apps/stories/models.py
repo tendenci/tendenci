@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth.models import Group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
@@ -93,10 +94,12 @@ class Story(TendenciBaseModel):
 
         if photo_upload and self.pk:
             image = StoryPhoto(
-                        creator=self.creator,
-                        creator_username=self.creator_username,
-                        owner=self.owner,
-                        owner_username=self.owner_username
+                content_type=ContentType.objects.get_for_model(self.__class__),
+                object_id=self.pk,
+                creator=self.creator,
+                creator_username=self.creator_username,
+                owner=self.owner,
+                owner_username=self.owner_username
                     )
             photo_upload.file.seek(0)
             image.file.save(photo_upload.name, photo_upload)  # save file row
@@ -120,7 +123,5 @@ class Story(TendenciBaseModel):
 
 
 class StoryPhoto(File):
+    pass
 
-    @property
-    def content_type(self):
-        return 'stories'
