@@ -6,4 +6,4 @@ Tendenci allows membership management organizations to communicate, manage and c
 
 ## Installation
 	
-For information on how to install Tendenci, follow the instructions in `INSTALL.md`.
+For information on how to install Tendenci, please see the related Django project at [https://github.com/tendenci/tendenci-site](https://github.com/tendenci/tendenci-site/blob/master/INSTALL.md).
