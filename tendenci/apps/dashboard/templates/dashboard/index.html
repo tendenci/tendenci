@@ -206,6 +206,7 @@
     	<li><a href="{% url settings %}">{% trans "Enable/Disable modules" %}</a></li>
     	<!-- <li><a href="javascript:;">Update SEM</a></li> -->
         <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
+       <li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Theme Editor" %} </a></li>
         <li><a href="/admin/">{% trans "Admin Panel" %}</a></li>
         {% if MODULE_RECURRING_PAYMENTS_ENABLED %}
         <li><a href="{% url recurring_payment.customers %}">{% trans "Recurring Payments" %}</a></li>
@@ -213,19 +214,7 @@
     </ul>
     </div>
     	
-	<div class="theme-management">
-    <h3>{% trans "Update Theme" %}</h3>
-	<ul>
-	   {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
-	    <li><a href="/settings/module/theme_editor/">Change Themes</a></li>
-	    <li><a href="/settings/module/theme/">Theme Settings</a></li>
-	    {% endif %}
-		<li><a href="{% url theme_editor.editor %}?file=/media/css/styles.{% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}less{% else %}css{% endif %}">{% trans "Update Styles" %}</a></li>
-		<li><a href="{% url theme_editor.editor %}?file=/templates/homepage.html">{% trans "Update Template" %} </a></li>
-		<li><a href="{% url theme_editor.editor %}?file=/templates/nav.html">{% trans "Update Navigation" %}</a></li>
-    	<li><a href="{% url theme_editor.editor %}?file=/templates/footer.html">{% trans "Update Footer" %}</a></li>
-    </ul>
-    </div>
+	
     {% endif %}
 </div>
 
