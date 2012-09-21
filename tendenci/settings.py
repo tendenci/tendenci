@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     'tendenci.core.api_tasty',
     'tendenci.apps.invoices',
     'tendenci.core.payments',
+    'tendenci.addons.recurring_payments',
     'tendenci.apps.forms_builder.forms',
     'tendenci.apps.pluginmanager',
     'tendenci.apps.accounts',
