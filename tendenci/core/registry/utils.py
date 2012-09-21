@@ -139,7 +139,11 @@ def get_addons(installed_apps):
     custom_addons = sorted(custom_choices())
     for addon in custom_addons:
         addon_package = '.'.join(['addons', addon])
-        new_addons.append(addon_package)
+        try:
+            __import__(addon_package)
+            new_addons.append(addon_package)
+        except:
+            pass
 
     return new_addons
 
