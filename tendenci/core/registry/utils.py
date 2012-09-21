@@ -161,6 +161,11 @@ def get_url_patterns():
     items = []
     addons = get_addons(settings.INSTALLED_APPS)
     for addon in addons:
-        items.append((r'', include('%s.urls' % addon,)))
+        try:
+            __import__('.'.join([addon, 'urls']))
+            items.append((r'', include('%s.urls' % addon,)))
+        except:
+            pass
+
     return patterns('', *items)
     pass
