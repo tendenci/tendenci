@@ -114,6 +114,9 @@ class File(TendenciBaseModel):
     def get_name(self):
         return self.name or os.path.splitext(self.basename())[0]
 
+    def get_name_ext(self):
+        return "%s%s" % (self.get_name(), self.ext())
+
     def type(self):
         ext = self.ext().lower()
 
