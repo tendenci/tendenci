@@ -43,7 +43,7 @@ class BasePage(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(BasePage, self).save(*args, **kwargs)
 
-        if self.logo:
+        if self.header_image:
             if self.is_public():
                 set_s3_file_permission(self.header_image.file.name,
                                        public=True)
