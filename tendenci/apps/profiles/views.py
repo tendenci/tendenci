@@ -528,13 +528,15 @@ def password_change(request, id, template_name='registration/password_change_for
                     post_change_redirect=None, password_change_form=ValidatingPasswordChangeForm):
     user_edit = get_object_or_404(User, pk=id)
     if post_change_redirect is None:
-        post_change_redirect = reverse('profiles.views.password_change_done', kwargs={'id':id})
+        post_change_redirect = reverse('profile', kwargs={'username': user_edit.username})
     if request.method == "POST":
         form = password_change_form(user=user_edit, data=request.POST)
         if request.user.profile.is_superuser:
             del form.fields['old_password']
         if form.is_valid():
             form.save()
+            messages.add_message(
+                request, messages.SUCCESS, _("Successfully updated your password."))
             return HttpResponseRedirect(post_change_redirect)
     else:
         form = password_change_form(user=user_edit)
