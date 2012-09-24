@@ -3,7 +3,7 @@ import urllib2
 from xml.etree import ElementTree as ET
 
 from django.conf import settings
-from utils import to_camel_case
+from tendenci.addons.recurring_payments.authnet.utils import to_camel_case
 
 BILL_TO_FIELDS = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip',
                   'country', 'phoneNumber', 'faxNumber')

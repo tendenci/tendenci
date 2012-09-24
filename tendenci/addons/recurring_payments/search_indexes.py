@@ -1,8 +1,6 @@
+from django.db.models import signals
 from haystack import indexes
 from haystack import site
-
-from django.db.models import signals
-
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.apps.search.indexes import CustomSearchIndex
 

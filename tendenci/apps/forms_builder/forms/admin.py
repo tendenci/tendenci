@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.perms.utils import update_perms_and_save
 
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.settings import UPLOAD_ROOT
@@ -28,8 +29,13 @@ fs = FileSystemStorage(location=UPLOAD_ROOT)
 class PricingAdminForm(PricingForm):
     class Meta:
         model = Pricing
+        exclude = ('billing_period',
+                   'billing_frequency',
+                   'num_days',
+                   'due_sore',
+                  )
 
-class PricingAdmin(admin.TabularInline):
+class PricingAdmin(admin.StackedInline):
     model = Pricing
     form = PricingAdminForm
     extra = 0
@@ -38,9 +44,9 @@ class FieldAdminForm(FormForField):
     class Meta:
         model = Field
 
-    
+
 class FieldAdmin(admin.TabularInline):
-    model = Field    
+    model = Field
     form = FieldAdminForm
     extra = 0
     ordering = ("position",)
@@ -48,13 +54,14 @@ class FieldAdmin(admin.TabularInline):
 class FormAdmin(TendenciBaseModelAdmin):
 
     inlines = (PricingAdmin, FieldAdmin,)
-    list_display = ("title", "id", "intro", "email_from", "email_copies", 
+    list_display = ("title", "id", "intro", "email_from", "email_copies",
         "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
 #    list_filter = ("status",)
-    search_fields = ("title", "intro", "response", "email_from", 
+    search_fields = ("title", "intro", "response", "email_from",
         "email_copies")
 #    radio_fields = {"status": admin.HORIZONTAL}
+    prepopulated_fields = {'slug': ['title']}
     fieldsets = (
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
@@ -68,11 +75,11 @@ class FormAdmin(TendenciBaseModelAdmin):
             'status',
             'status_detail'
         )}),
-        (_("Payment"), {"fields": ("custom_payment", "payment_methods")}),
+        (_("Payment"), {"fields": ("custom_payment", 'recurring_payment', "payment_methods")}),
     )
-    
+
     form = FormAdminForm
-    
+
     class Media:
         js = (
             '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
@@ -89,28 +96,28 @@ class FormAdmin(TendenciBaseModelAdmin):
         Add the export view to urls.
         """
         urls = super(FormAdmin, self).get_urls()
-        extra_urls = patterns("", 
-            url("^export/(?P<form_id>\d+)/$", 
-                self.admin_site.admin_view(self.export_view), 
+        extra_urls = patterns("",
+            url("^export/(?P<form_id>\d+)/$",
+                self.admin_site.admin_view(self.export_view),
                 name="forms_form_export"),
-            url("^file/(?P<field_entry_id>\d+)/$", 
-                self.admin_site.admin_view(self.file_view), 
+            url("^file/(?P<field_entry_id>\d+)/$",
+                self.admin_site.admin_view(self.file_view),
                 name="forms_form_file"),
         )
         return extra_urls + urls
 
     def export_view(self, request, form_id):
         """
-        Output a CSV file to the browser containing the entries for the form. 
+        Output a CSV file to the browser containing the entries for the form.
         """
         form = get_object_or_404(Form, id=form_id)
         response = HttpResponse(mimetype="text/csv")
         csvname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
         response["Content-Disposition"] = "attachment; filename=%s" % csvname
         csv = writer(response)
-        # Write out the column names and store the index of each field 
-        # against its ID for building each entry row. Also store the IDs of 
-        # fields with a type of FileField for converting their field values 
+        # Write out the column names and store the index of each field
+        # against its ID for building each entry row. Also store the IDs of
+        # fields with a type of FileField for converting their field values
         # into download URLs.
         columns = []
         field_indexes = {}
@@ -126,7 +133,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         columns.append(unicode("Price"))
         columns.append(unicode("Payment Method"))
         csv.writerow(columns)
-        # Loop through each field value order by entry, building up each  
+        # Loop through each field value order by entry, building up each
         # entry as a row.
         entries = FormEntry.objects.filter(form=form).order_by('pk')
         for entry in entries:
@@ -164,5 +171,12 @@ class FormAdmin(TendenciBaseModelAdmin):
         response.write(f.read())
         f.close()
         return response
+
+    def save_formset(self, request, form, formset, change):
+        print 'form.instance', form.instance
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.object_id = instance.form.pk
+            instance.save()
 
 admin.site.register(Form, FormAdmin)

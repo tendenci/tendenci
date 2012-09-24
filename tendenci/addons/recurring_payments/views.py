@@ -327,11 +327,3 @@ def disable_account(request, rp_id,
     return render_to_response(template_name, {
                     'rp': rp}, 
         context_instance=RequestContext(request))
-    
-    
-    
-    
-    
-    
-    
-    

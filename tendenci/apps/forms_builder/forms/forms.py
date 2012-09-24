@@ -19,7 +19,8 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 
-
+from tendenci.addons.recurring_payments.fields import BillingCycleField
+from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 
@@ -29,7 +30,7 @@ class FormForForm(forms.ModelForm):
 
     class Meta:
         model = FormEntry
-        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing")
+        exclude = ("form", "entry_time", "entry_path", "payment_method", "pricing", "creator")
     
     def __init__(self, form, user, *args, **kwargs):
         """
@@ -68,13 +69,13 @@ class FormForForm(forms.ModelForm):
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
-
+            
             self.fields[field_key] = field_class(**field_args)
 
             self.fields[field_key].widget.attrs['title'] = field.label
 
         # include pricing options if any
-        if self.form.custom_payment and self.form.pricing_set.all():
+        if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
 
             currency_symbol = get_setting('site', 'global', 'currencysymbol')
 
@@ -88,9 +89,16 @@ class FormForForm(forms.ModelForm):
                             (pricing.pk, self.data.get('custom_price_%s' %pricing.pk, unicode()), pricing.label)))
                     )
                 else:
-                    pricing_options.append(
-                        (pricing.pk, '%s%s %s' % (currency_symbol, pricing.price, pricing.label))
-                    )
+                    if self.form.recurring_payment:
+                        pricing_options.append(
+                            (pricing.pk, '%s%s per %s %s - %s' % (currency_symbol, pricing.price,
+                                                                  pricing.billing_frequency, pricing.billing_period,
+                                                                  pricing.label))
+                        )
+                    else:
+                        pricing_options.append(
+                            (pricing.pk, '%s%s %s' % (currency_symbol, pricing.price, pricing.label))
+                        )
 
             self.fields['pricing_option'] = forms.ChoiceField(
                 label=_('Pricing'),
@@ -155,7 +163,7 @@ class FormForForm(forms.ModelForm):
                 field_entry.save()
 
         # save selected pricing and payment method if any
-        if self.form.custom_payment and self.form.pricing_set.all():
+        if (self.form.custom_payment or self.form.recurring_payment) and self.form.pricing_set.all():
             entry.payment_method = self.cleaned_data['payment_option']
             entry.pricing = self.cleaned_data['pricing_option']
             entry.save()
@@ -206,6 +214,7 @@ class FormAdminForm(TendenciBaseForm):
                   'status',
                   'status_detail',
                   'custom_payment',
+                  'recurring_payment',
                   'payment_methods',
                  )
 
@@ -270,6 +279,7 @@ class FormForm(TendenciBaseForm):
                   'email_from',
                   'email_copies',
                   'custom_payment',
+                  'recurring_payment',
                   'payment_methods',
                   'user_perms',
                   'member_perms',
@@ -306,7 +316,7 @@ class FormForm(TendenciBaseForm):
                         'classes': ['admin-only'],
                     }),
                     ('Payments', {
-                        'fields':['custom_payment', 'payment_methods'],
+                        'fields':['custom_payment','recurring_payment','payment_methods'],
                         'legend':''
                     }),]
                 
@@ -378,9 +388,74 @@ class FormForField(forms.ModelForm):
             
         return cleaned_data
 
+        
 class PricingForm(forms.ModelForm):
+    billing_dt_select = BillingCycleField(label='When to bill',
+                                          widget=BillingDateSelectWidget,
+                                          help_text='It is used to determine the payment due date for each billing cycle')
+    billing_cycle = BillingCycleField(label='How often to bill',
+                                      widget=BillingCycleWidget)
+
     class Meta:
         model = Pricing
+        fields = ('label',
+                  'price',
+                  'taxable',
+                  'tax_rate',
+                  'billing_cycle',
+                  'billing_dt_select',
+                  'has_trial_period',
+                  'trial_period_days',
+                 )
+        fieldsets = [('Form Information', {
+                        'fields': [ 'label',
+                                    'price',
+                                    'taxable',
+                                    'tax_rate',
+                                    'billing_cycle',
+                                    'billing_dt_select',
+                                    ],
+                        'legend': ''
+                        }),
+                    ('Trial Period', {
+                        'fields': [ 'has_trial_period',
+                                    'trial_period_days',],
+                        'legend': '',
+                        }),]
+
+    def __init__(self, *args, **kwargs):
+        super(PricingForm, self).__init__(*args, **kwargs)
+        # Setup initial values for billing_cycle and billing_dt_select
+        # in order to have empty values for extra forms.
+        if self.instance.pk:
+            self.fields['billing_dt_select'].initial = [self.instance.num_days, 
+                                                        self.instance.due_sore]
+            self.fields['billing_cycle'].initial = [self.instance.billing_frequency, 
+                                                    self.instance.billing_period]
+        else:
+            self.fields['billing_dt_select'].initial = [0, u'start']
+            self.fields['billing_cycle'].initial = [1, u'month']
+        
+        # Add class for recurring payment fields
+        self.fields['taxable'].widget.attrs['class'] = 'recurring-payment'
+        self.fields['tax_rate'].widget.attrs['class'] = 'recurring-payment'
+        self.fields['billing_cycle'].widget.attrs['class'] = 'recurring-payment'
+        self.fields['billing_dt_select'].widget.attrs['class'] = 'recurring-payment'
+        self.fields['has_trial_period'].widget.attrs['class'] = 'recurring-payment'
+        self.fields['trial_period_days'].widget.attrs['class'] = 'recurring-payment'
+    
+    def save(self, **kwargs):
+        pricing = super(PricingForm, self).save(**kwargs)
+        if self.cleaned_data.get('billing_dt_select'):
+            dt_select = self.cleaned_data.get('billing_dt_select').split(',')
+            pricing.num_days = dt_select[0]
+            pricing.due_sore = dt_select[1]
+        if self.cleaned_data.get('billing_cycle'):
+            cycle = self.cleaned_data.get('billing_cycle').split(',')
+            pricing.billing_frequency = cycle[0]
+            pricing.billing_period = cycle[1]
+        #pricing.save()    
+        return pricing
         
 class BillingForm(forms.Form):
     first_name = forms.CharField(required=False)

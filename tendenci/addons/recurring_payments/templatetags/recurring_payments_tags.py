@@ -1,6 +1,6 @@
 from django.template import Library, TemplateSyntaxError, Variable
 
-from recurring_payments.models import RecurringPayment
+from tendenci.addons.recurring_payments.models import RecurringPayment
 
 register = Library()
 

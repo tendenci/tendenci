@@ -185,5 +185,5 @@ class RecurringPaymentAdmin(NoAddAnotherModelAdmin):
             'instance': object,
         }
         EventLog.objects.log(**log_defaults) 
-
+    
 admin.site.register(RecurringPayment, RecurringPaymentAdmin)

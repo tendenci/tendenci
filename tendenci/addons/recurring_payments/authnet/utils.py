@@ -122,6 +122,7 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_
                                 site_url, 
                                 reverse('recurring_payment.authnet.iframe_communicator'))
     
+    token = ""
     if not rp.customer_profile_id:
         # customer_profile is not available yet for this customer, create one now
         cp = CIMCustomerProfile()
@@ -134,8 +135,9 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_
             rp.save()
         else:
             gateway_error = True
-            
-    token = ""
+            # return since we can't continue without a profile id
+            return token, gateway_error
+
     hosted_profile_page = CIMHostedProfilePage(rp.customer_profile_id)
     
     d = {'hosted_profile_settings': 
@@ -150,9 +152,3 @@ def get_token(rp, CIMCustomerProfile, CIMHostedProfilePage, iframe_communicator_
         token = response_d['token']
     
     return token, gateway_error
-
-    
-    
-    
-    
-

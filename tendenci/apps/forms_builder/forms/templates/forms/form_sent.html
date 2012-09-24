@@ -1,13 +1,14 @@
-<html>
+{% extends "forms/base.html" %}
 
-<head>
+{% block extra_head %}
 	<title>{{ form.title }}</title>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms_detail-sent.css">
-</head>
+{{ block.super }}
+{% endblock %}
 
-<body>
-	
-	<h1>{{ form.title }}</h1>
-	<p>{{ form.response }}</p>
-	
-</body>
+{% block body %}
+<div class="t">
+    <h2>{{ form.title }}</h2>
+    {{ form.response|safe|urlize|linebreaks }}	
+</div>
+{% endblock %}

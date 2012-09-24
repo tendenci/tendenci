@@ -26,8 +26,8 @@ class Command(BaseCommand):
         except:
             pass
             
-        from recurring_payments.models import RecurringPayment 
-        from recurring_payments.utils import run_a_recurring_payment
+        from tendenci.addons.recurring_payments.models import RecurringPayment 
+        from tendenci.addons.recurring_payments.utils import run_a_recurring_payment
      
         recurring_payments = RecurringPayment.objects.filter(status_detail='active', status=True)    
         

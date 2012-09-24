@@ -41,7 +41,7 @@
 	    
 	    {% if is_active %}
 	    <div id="btn-pm-wrap">
-	    <button id="btn-pm">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
+	    <button id="btn-pm" class="btn primary">{% if payment_profile %}Update Payment Info{% else %}Add Payment Method{% endif %}</button>
 	    {% if payment_profile %}
 	    <div class="last-updated">Last updated by {{ payment_profile.owner }} on {{ payment_profile.update_dt|date:'N j Y' }}</div>
 	    {% endif %}
@@ -213,7 +213,7 @@
 
 	<div id="divAuthorizeNetPopup" style="display:none;" class="AuthorizeNetPopupSimpleTheme">
 	  <div class="AuthorizeNetPopupOuter">
-	    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/rp/authnet/empty/" frameborder="0" 
+	    <iframe name="iframeAuthorizeNet" id="iframeAuthorizeNet" src="/recurring_payments/authnet/empty/" frameborder="0" 
 	    scrolling="no"></iframe>
 	  </div>
 	  <div class="AuthorizeNetShadow AuthorizeNetShadowT"></div>
@@ -327,26 +327,29 @@ $(document).ready(function(){
 			 {% else %}
 			   AuthorizeNetPopup.openAddPaymentPopup();
 		     {% endif %}
-		   }
+		   },
+           error: function(t){
+              alert("An error occured. Please try again.");
+           }
 		 });
      }); 
-       
-      {% if is_active %}  
-     AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
-		if(action_result=="successfulSave"){
-			$.ajax({
-				   type: "POST",
-				   url: "{% url recurring_payment.authnet.update_payment_profile_local%}",
-				   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
-				   success: function(msg){
-				     //alert( msg );
-				     {% if not payment_profile %}
-				     	window.location.reload(true);
-				     {% endif %}
-				   }
-				 });
-		}
-	};   
+
+    {% if is_active %}  
+        AuthorizeNetPopup.options.onPopupClosed = function(action_result) {
+        if(action_result=="successfulSave"){
+            $.ajax({
+                   type: "POST",
+                   url: "{% url recurring_payment.authnet.update_payment_profile_local %}",
+                   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
+                   success: function(msg){
+                     //alert( msg );
+                     {% if not payment_profile %}
+                        window.location.reload(true);
+                     {% endif %}
+                   }
+                 });
+        }
+        };   
     {% endif %}
 	
 }); 

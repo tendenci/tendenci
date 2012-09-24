@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.site_settings.utils import get_setting
 
-def generate_admin_email_body(entry):
+def generate_admin_email_body(entry, form_for_form):
     """
         Generates the email body so that is readable
     """
@@ -29,7 +29,7 @@ def generate_admin_email_body(entry):
 
     return output
 
-def generate_submitter_email_body(entry):
+def generate_submitter_email_body(entry, form_for_form):
     """
         Generates the email body so that is readable
     """
@@ -39,6 +39,7 @@ def generate_submitter_email_body(entry):
     context['form'] = entry.form
     context['entry'] = entry
     context['fields'] = entry.fields.all().order_by('field__position')
+    context['custom_price'] = form_for_form.cleaned_data.get('custom_price')
     output = template.render(context)
 
     return output

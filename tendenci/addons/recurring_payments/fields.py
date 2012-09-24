@@ -1,9 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-from widgets import BillingCycleWidget
-
-from tendenci.core.site_settings.utils import get_setting
+from tendenci.addons.recurring_payments.widgets import BillingCycleWidget
 
     
 class BillingCycleField(forms.MultiValueField):
@@ -20,9 +18,3 @@ class BillingCycleField(forms.MultiValueField):
         if data_list:
             return ','.join(data_list)
         return None
-        
-class PriceInput(forms.TextInput):
-    def render(self, name, value, attrs=None):
-        currency_symbol = get_setting('site', 'global', 'currencysymbol')
-        if currency_symbol == '': currency_symbol = "$"
-        return mark_safe('$ %s' % super(PriceInput, self).render(name, value, attrs))
