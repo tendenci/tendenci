@@ -894,6 +894,14 @@ class Event(TendenciBaseModel):
     def get_absolute_url(self):
         return ("event", [self.pk])
 
+    @models.permalink
+    def get_registration_url(self):
+        """ This is used to include a sign up url in the event.
+        Sample usage in template:
+        <a href="{{ event.get_registration_url }}">Sign up now!</a>
+        """
+        return ("registration_event_register", [self.pk])
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())

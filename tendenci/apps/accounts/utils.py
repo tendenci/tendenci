@@ -9,7 +9,11 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
     from django.template.loader import render_to_string
     from django.conf import settings
     from tendenci.core.site_settings.utils import get_setting
-    
+
+    event = kwargs.pop('event', None)
+    event_url = None
+    if event: event_url = event.get_absolute_url()
+
     site_url = get_setting('site', 'global', 'siteurl')
     subject = render_to_string('registration/activation_email_subject.txt',
                                        { 'site_url': site_url })
@@ -19,6 +23,7 @@ def send_registration_activation_email(user, registration_profile, **kwargs):
     message = render_to_string('registration/activation_email.txt',
                                { 'activation_key': registration_profile.activation_key,
                                  'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS,
+                                 'event_url': event_url,
                                  'site_url': site_url })
     
     from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')

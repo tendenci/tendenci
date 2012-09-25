@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
 
 from tendenci.apps.registration.forms import RegistrationForm
@@ -41,6 +42,7 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
 def register(request, success_url=None,
              form_class=RegistrationForm, profile_callback=None,
              template_name='registration/registration_form.html',
+             event_id=None,
              extra_context=None):
     """
     Allow a new user to register an account.
@@ -115,7 +117,13 @@ def register(request, success_url=None,
     if request.method == 'POST':
         form = form_class(data=request.POST, files=request.FILES)
         if form.is_valid():
-            new_user = form.save(profile_callback=profile_callback)
+            # This is for including a link in the reg email back to the event viewed
+            event = None
+            if event_id: # the user signed up via an event
+                from tendenci.addons.events.models import Event
+                event = get_object_or_404(Event, pk=event_id)
+
+            new_user = form.save(profile_callback=profile_callback, event=event)
             # success_url needs to be dynamically generated here; setting a
             # a default value using reverse() will cause circular-import
             # problems with the default URLConf for this application, which

@@ -53,7 +53,7 @@ class RegistrationCustomForm(RegistrationForm):
 
         return password1
 
-    def save(self, profile_callback=None):
+    def save(self, profile_callback=None, event=None):
         # 
         #new_user = RegistrationProfile.objects.create_inactive_user(username=self.cleaned_data['username'],
         #                                                            password=self.cleaned_data['password1'],
@@ -68,7 +68,7 @@ class RegistrationCustomForm(RegistrationForm):
         new_user.save()
         # create registration profile
         registration_profile = RegistrationProfile.objects.create_profile(new_user)
-        send_registration_activation_email(new_user, registration_profile)
+        send_registration_activation_email(new_user, registration_profile, event=event)
         
         new_profile = Profile(user=new_user, 
                               company=self.cleaned_data['company'],
