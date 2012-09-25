@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('tendenci.addons.campaign_monitor.views',
+    url(r'^$', 'template_index'),
     url(r'^templates/$', 'template_index', name="campaign_monitor.template_index"),
     url(r'^templates/add/$', 'template_add', name="campaign_monitor.template_add"),
     url(r'^templates/sync/$', 'template_sync', name="campaign_monitor.template_sync"),

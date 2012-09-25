@@ -177,8 +177,12 @@ if cm_api_key and cm_client_id:
                 # add an entry to the listmap
                 listmap_insert(instance, list_id)
                 
+                # custom fields setup
+                cm_list = List(list_id)
+                setup_custom_fields(cm_list)
+                
             
-        else:   # update
+        else: # update
             try:
                 # find the entry in the listmap
                 list_map = ListMap.objects.get(group=instance)
@@ -194,13 +198,15 @@ if cm_api_key and cm_client_id:
                 if list_id:  
                     listmap_insert(instance, list_id)
                     
-            
-            # if the list title doesn't match with the group name, update the list title
+
             if list_id and list_id in list_ids:
                 list = list_d[list_id]
+                cm_list = List(list_id)
+                # setup custom fields
+                setup_custom_fields(cm_list)
+                # if the list title doesn't match with the group name, update the list title
                 if instance.name != list.Name:
-                    list = List(list_id)
-                    list.update(instance.name, "", False, "")
+                    cm_list.update(instance.name, "", False, "")
                         
 
     def delete_cm_list(sender, instance=None, **kwargs):
@@ -254,6 +260,7 @@ if cm_api_key and cm_client_id:
                 list = List(list_id)
                 
                 if list:
+                    # subscriber setup
                     subscriber_obj = Subscriber(list_id)
                     
                     try:
@@ -262,7 +269,7 @@ if cm_api_key and cm_client_id:
                         # check if this user has already subscribed, if not, subscribe it
                         try:
                             subscriber = subscriber_obj.get(list_id, email)
-                            if str(subscriber.State).lower == 'active':
+                            if str(subscriber.State).lower() == 'active':
                                 subscriber = subscriber_obj.update(email, name, custom_data, True)
                                 add_subscriber = False
                         except BadRequest as br:
@@ -278,6 +285,8 @@ if cm_api_key and cm_client_id:
                 if add_list:
                     # this list might be deleted on campaign monitor, add it back
                     list_id = list.create(cm_client_id, instance.group.name, "", False, "")
+                    # custom fields setup
+                    setup_custom_fields(list)
                     subscriber_obj = Subscriber(list_id)
                     if not list_map:
                         list_map = ListMap()
@@ -334,7 +343,17 @@ if cm_api_key and cm_client_id:
             list_id = None
             
         return list_id
-            
+
+    def setup_custom_fields(cm_list):
+        # create the custom fields
+        profile_fields = ['city', 'state', 'zipcode', 'country', 'sex',
+                            'member_number']
+        cm_fields = cm_list.custom_fields()
+        custom_fields = [cf.Key for cf in cm_fields]
+        for field in profile_fields:
+            if (u'[%s]' % field) not in custom_fields:
+                cm_list.create_custom_field(field, "Text")
+
     def get_name_email(instance):
         email = ""
         name = ""

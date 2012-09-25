@@ -10,41 +10,33 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         from tendenci.apps.user_groups.models import Group
+        from tendenci.apps.profiles.models import Profile
         from tendenci.apps.subscribers.models import GroupSubscription as GS, SubscriberData as SD
         from tendenci.apps.subscribers.utils import get_subscriber_name_email
-        from tendenci.addons.campaign_monitor.models import ListMap, Campaign, Template
+        from tendenci.addons.campaign_monitor.models import (ListMap, Campaign, Template, setup_custom_fields)
         from tendenci.addons.campaign_monitor.utils import sync_campaigns, sync_templates
-        from createsend import CreateSend, Client, List, Subscriber, \
-            BadRequest, Unauthorized
+        from createsend import (CreateSend, Client, List, Subscriber,
+            BadRequest, Unauthorized)
         
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']
             
-        def subscribe_to_list(subscriber_obj, list_id, name, email, profile = None):
-            custom_data = []
-            if profile:
-                fields = ['city', 'state', 'zipcode', 'country', 'sex', 'member_number']
-                for field in fields:
-                    data = {}
-                    data['Key'] = field
-                    data['Value'] = getattr(profile, field)
-                    if not data['Value']:
-                        data['Clear'] = True
-                    custom_data.append(data)
-
+        def subscribe_to_list(subscriber_obj, list_id, name, email, custom_data):
+            # check if this user has already subscribed, if not, subscribe it
             try:
                 subscriber = subscriber_obj.get(list_id, email)
-                if str(subscriber.State).lower == 'active':
+                if str(subscriber.State).lower() == 'active':
+                    print name, email, ' - UPDATED'
                     subscriber = subscriber_obj.update(email, name, custom_data, True)
-                print "%s (%s) Updated" % (name, email)
-            except:
+            except BadRequest as br:
+                print br
                 try:
                     email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
                     if verbosity >=2:
-                            print "%s (%s) Added" % (name, email)
-                except:
-                    print name, email, ' - NOT ADDED'
+                        print "%s (%s)" % (name, email)
+                except BadRequest as br:
+                    print name, email, ' - NOT ADDED: %s' % br
         
         
         api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
@@ -91,6 +83,9 @@ class Command(BaseCommand):
             a_list = List(list_id)
             try:
                 list_stats = a_list.stats()
+                # set up custom fields
+                print "Setting up custom fields..."
+                setup_custom_fields(a_list)
                 #num_unsubscribed = list_stats.TotalUnsubscribes
                 #if num_unsubscribed > 0:
                 #    # a list of all unsubscribed
@@ -110,13 +105,26 @@ class Command(BaseCommand):
             # sync subscribers in this group
             print "Subscribing users to the C.M. list '%s'..." % group.name
             members = group.members.all()
-            subscriber_obj = Subscriber(list_id)
             for i, member in enumerate(members, 1):
+                # Append custom fields from the profile
+                try:
+                    profile = member.profile
+                except Profile.DoesNotExist:
+                    profile = None
+                custom_data = []
+                if profile:
+                    fields = ['city', 'state', 'zipcode', 'country', 'sex', 'member_number']
+                    for field in fields:
+                        data = {}
+                        data['Key'] = field
+                        data['Value'] = getattr(profile, field)
+                        if not data['Value']:
+                            data['Clear'] = True
+                        custom_data.append(data)
                 email = member.email
                 name = member.get_full_name()
-                profile = member.profile
-
-                subscribe_to_list(subscriber_obj, list_id, name, email, profile)
+                subscriber_obj = Subscriber(list_id, email)
+                subscribe_to_list(subscriber_obj, list_id, name, email, custom_data)
 
             # sync subscribers in this group's subscription
             gss = GS.objects.filter(group=group)
@@ -129,7 +137,8 @@ class Command(BaseCommand):
                     (name, email) = get_subscriber_name_email(gs_data)
                 
                 if email:
-                    subscribe_to_list(subscriber_obj, list_id, name, email)
+                    subscriber_obj = Subscriber(list_id, email)
+                    subscribe_to_list(subscriber_obj, list_id, name, email, [])
                     
         print 'Done'
         
