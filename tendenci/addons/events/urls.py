@@ -10,6 +10,7 @@ urlpatterns = patterns('tendenci.addons.events',
     url(r'^add/$', 'views.add', name="event.add"),
     url(r'^export/$', 'views.export', name="event.export"),
     url(r'^create_ics/$', 'views.create_ics', name="event.create_ics"),
+    url(r'^myevents/$', 'views.myevents', name="event.myevents"),
 
     url(r'^add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.add', name="event.add"),
 

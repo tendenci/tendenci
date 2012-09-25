@@ -2962,3 +2962,26 @@ def create_ics(request, template_name="events/ics.html"):
     return render_to_response(template_name, {
         'form': form,
     }, context_instance=RequestContext(request))
+
+@login_required
+def myevents(request, template_name='events/myevents.html'):
+    """ Logged-in user's registered events"""
+
+
+    if 'all' not in request.GET:
+        events = Event.objects.filter(registration__registrant__email=request.user.email).exclude(end_dt__lt=datetime.now())
+        show = 'True'
+    else:
+        events = Event.objects.filter(registration__registrant__email=request.user.email)
+        show = None
+
+    events = events.order_by('-start_dt')
+
+    types = Type.objects.all().order_by('name')
+
+    EventLog.objects.log()
+
+    return render_to_response(
+        template_name, 
+        {'events': events, 'show': show}, 
+        context_instance=RequestContext(request))

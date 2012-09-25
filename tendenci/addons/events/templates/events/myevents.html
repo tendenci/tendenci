@@ -1,0 +1,41 @@
+{% extends "events/base.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+{% load perm_tags %}
+{% load search_tags %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events-my_events.css">
+{% endblock %}
+
+{% block body %}
+
+<div class='t search-view'>
+    {% event_nav request.user %}
+    
+    <div class="header" style="margin-bottom: 20px;">
+        <h1> My Upcoming Events </h1>
+        {% if show %}
+            <a class="show-all-link" href="/events/myevents/?all=true"> Show all my registered and attended events. </a>
+        {% endif %}
+    </div>
+    
+    {% autopaginate events 10 %}
+    
+    <div class="events-wrap">
+        {% for event in events %}
+            {% search_result event %}
+        {% empty %}
+            You don't have upcoming events to attend. <a href="/events/">View our upcoming events!</a>            
+        {% endfor %}
+    </div>
+
+    {% paginate %}
+</div>
+
+{% endblock %}
