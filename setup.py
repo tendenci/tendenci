@@ -115,7 +115,7 @@ CLASSIFIERS = [
 
 setup(
     name='tendenci',
-    version='5.1alpha',
+    version='5.1.0',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
