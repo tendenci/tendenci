@@ -4,7 +4,7 @@
 </p>
 
 <p>
-{% blocktrans %}To view this job, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url job object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url job object.slug  %}</a>
+{% blocktrans %}To view this job, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a>
 </p>
 
 {% if object.invoice %}

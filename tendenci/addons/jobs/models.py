@@ -184,6 +184,10 @@ class Job(BaseJob):
     def get_absolute_url(self):
         return ("job", [self.slug])
 
+    @models.permalink
+    def get_approve_url(self):
+        return ("job.approve" [self.id])
+
 
 class JobPricing(models.Model):
     title = models.CharField(max_length=40, blank=True, null=True)
