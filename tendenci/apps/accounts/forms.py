@@ -171,17 +171,19 @@ class PasswordResetForm(forms.Form):
                 raise forms.ValidationError(_("That e-mail address doesn't have an associated user account."))
         return email
 
-    def save(self, email_template_name='registration/password_reset_email.html', **kwargs):
+    def save(self, email_template_name='registration/password_reset_email_user_list.html', **kwargs):
         """
         Generates a one-use only link for resetting password and sends to the designated email.
         The email will contain links for resetting passwords for all accounts associated to the email.
         """
         from django.core.mail import send_mail
-        
+
+        email_template_name = 'registration/password_reset_email_user_list.html'
+
         domain_override = kwargs.get('domain_override', False)
         use_https = kwargs.get('use_https', False)
         token_generator = kwargs.get('token_generator', default_token_generator)
-        
+
         user_list = []
         for user in self.users_cache:
             user_list.append({
@@ -189,11 +191,10 @@ class PasswordResetForm(forms.Form):
                     'user': user,
                     'token': token_generator.make_token(user),
                 })
-                
         if not domain_override:
             site_name = get_setting('site', 'global', 'sitedisplayname')
         else:
-            site_name  = domain_override
+            site_name = domain_override
         site_url = get_setting('site', 'global', 'siteurl')
         t = loader.get_template(email_template_name)
         c = {
@@ -203,7 +204,7 @@ class PasswordResetForm(forms.Form):
             'user_list': user_list,
             'protocol': use_https and 'https' or 'http',
         }
-        
+
         from_email = get_setting('site', 'global', 'siteemailnoreplyaddress')
         send_mail(_("Password reset on %s") % site_name,
             t.render(Context(c)), from_email, [user.email])
