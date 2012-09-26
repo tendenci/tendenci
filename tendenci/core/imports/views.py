@@ -103,6 +103,7 @@ def user_upload_preview(request, sid,
     import_dict['id'] = sid
     import_dict['total'] = request.session[sid].get('total', 0)
 
+    EventLog.objects.log()
     return render_to_response(template_name, import_dict,
         context_instance=RequestContext(request))
 
@@ -140,6 +141,7 @@ def user_upload_process(request, sid,
     request.session[sid] = d
     d = None
 
+    EventLog.objects.log()
     return render_to_response(template_name, import_dict,
         context_instance=RequestContext(request))
 
@@ -220,22 +222,8 @@ def user_upload_subprocess(request, sid,
     recap_dict = None
 
     if import_dict['is_completed']:
-        # log an event
-        log_defaults = {
-            'event_id': 129005,
-            'event_data': """User import: %s<br>INSERTS:%d<br>
-                        UPDATES:%d<br>INVALID:%d<br>TOTAL:%d""" % \
-                                    (import_dict['file_name'],
-                                   import_dict['count_insert'],
-                                   import_dict['count_update'],
-                                   import_dict['count_invalid'],
-                                   import_dict['total']),
-            'description': 'user import',
-            'user': request.user,
-            'request': request,
-            'source': 'auth',
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log()
 
         # clear up the session
         del request.session[sid]
@@ -321,6 +309,8 @@ def user_upload_recap(request, sid):
                                          (recap_name)
 
         recap_dict = None
+
+        EventLog.objects.log()
         return response
     else:
         raise Http404
@@ -347,4 +337,5 @@ def download_user_upload_template(request, file_ext='.xls'):
                          'username', 'password', 'member_number']
     data_row_list = []
 
+    EventLog.objects.log()
     return render_excel(filename, import_field_list, data_row_list, file_ext)

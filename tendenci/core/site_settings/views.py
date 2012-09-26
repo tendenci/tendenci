@@ -6,7 +6,7 @@ from django.contrib import messages
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.forms import build_settings_form
-from tendenci.core.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm, update_perms_and_save
 
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
@@ -22,6 +22,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         if form.is_valid():
             # this save method is overriden in the forms.py
             form.save()
+            form = update_perms_and_save(request, form, form)
             try:
                 if form.cleaned_data['theme']:
                     from django.core.management import call_command
@@ -73,6 +74,8 @@ def index(request, template_name="site_settings/settings.html"):
     if not has_perm(request.user,'site_settings.change_setting'):
         raise Http403
     settings = Setting.objects.values().exclude(scope='template').order_by('scope_category')
+
+    EventLog.objects.log()
     return render_to_response(template_name, {'settings':settings}, context_instance=RequestContext(request))
 
 
@@ -89,6 +92,7 @@ def single_setting(request, scope, scope_category, name, template_name="site_set
         if form.is_valid():
             # this save method is overriden in the forms.py
             form.save()
+            form = update_perms_and_save(request, form, form)
             try:
                 if form.cleaned_data['theme']:
                     from django.core.management import call_command

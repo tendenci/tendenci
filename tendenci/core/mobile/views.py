@@ -9,4 +9,6 @@ def toggle_mobile_mode(request):
         response.set_cookie(cookiename, "0")
     else:
         response.set_cookie(cookiename, "1")
+
+    EventLog.objects.log()
     return response

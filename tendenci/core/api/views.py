@@ -3,6 +3,7 @@ from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from api.utils import validate_api_request
 
+from tendenci.core.event_logs.models import EventLog
 
 @csrf_exempt  
 def api_rp(request):
@@ -69,6 +70,7 @@ def api_rp(request):
         ret_data.update(result_code_success)
     else:
         ret_data.update(result_code_invalid)
-        
+
+    EventLog.objects.log()
     return HttpResponse(simplejson.dumps(ret_data), mimetype='application/json')
     

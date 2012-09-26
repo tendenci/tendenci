@@ -143,6 +143,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     else:
         raise Http404
 
+    EventLog.objects.log(instance=file)
     # return response
     response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
     return response
@@ -203,6 +204,7 @@ def print_view(request, id, template_name="files/print-view.html"):
     if not has_view_perm(request.user,'files.view_file',file):
         raise Http403
 
+    EventLog.objects.log(instance=file)
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
 
@@ -349,7 +351,8 @@ def bulk_add(request, template_name="files/bulk-add.html"):
             'form-INITIAL_FORMS': u'0',
             'form-MAX_NUM_FORMS': u'',
         })
-            
+
+    EventLog.objects.log()
     return render_to_response(template_name, {
             'file_formset': file_formset,
         }, context_instance=RequestContext(request))
@@ -369,14 +372,14 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
         categoryform = category_form_class(content_type, request.POST, prefix='category')
         if form.is_valid() and categoryform.is_valid():
             file = form.save(commit=False)
-            
+
             # set up the user information
             file.creator = request.user
             file.creator_username = request.user.username
             file.owner = request.user
             file.owner_username = request.user.username
             file.save()
-            
+
             #setup categories
             category = Category.objects.get_for_object(file,'category')
             sub_category = Category.objects.get_for_object(file,'sub_category')
@@ -401,6 +404,7 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
             
             #Save relationships
             file.save()
+            file = update_perms_and_save(request, form, file)
 
             # assign creator permissions
             ObjectPermission.objects.assign(file.creator, file) 
@@ -431,6 +435,7 @@ def delete(request, id, template_name="files/delete.html"):
         raise Http403
 
     if request.method == "POST":
+        EventLog.objects.log(instance=file)
         file.delete()
 
         if 'ajax' in request.POST:
@@ -477,6 +482,7 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
                 media_file.file.url_large = '%s_large%s' % (file, ext)
         except ContentType.DoesNotExist: raise Http404
 
+    EventLog.objects.log()
     return render_to_response(template_name, {
         "media": files, 
         'csrf_token':csrf_get_token(request),
@@ -527,12 +533,15 @@ def swfupload(request):
             "url" : file.file.url,
         }
 
+        EventLog.objects.log()
         return HttpResponse(json.dumps([d]), mimetype="text/plain")
 
 
 @login_required
 def tinymce_upload_template(request, id, template_name="files/templates/tinymce_upload.html"):
     file = get_object_or_404(File, pk=id)
+
+    EventLog.objects.log(instance=file)
     return render_to_response(template_name, {'file': file}, 
         context_instance=RequestContext(request))
 
@@ -593,6 +602,8 @@ def display_less(request, path):
                                     path)
         url_obj = urllib2.urlopen(full_path)
         content = url_obj.read()
+
+    EventLog.objects.log()
     return HttpResponse(content, mimetype="text/css")
 
 def redirect_to_s3(request, path, file_type='themes'):
