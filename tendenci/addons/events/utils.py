@@ -50,7 +50,7 @@ def render_event_email(event, email):
                                             event.place.state,
                                             event.place.zip)
     context['event_link'] = '<a href="%s">%s</a>' % (
-                            reverse('event.edit.email', args=[event.id]),
+                            reverse('event', args=[event.id]),
                             event.title
                                                      )
     context = Context(context)

@@ -2381,7 +2381,7 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
 
     reg_conf = event.registration_configuration
     email = reg_conf.email
-    print request.user.email
+
     if request.method == "POST":
         form = form_class(request.POST, instance=email)
         if form.is_valid():
