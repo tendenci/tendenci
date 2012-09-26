@@ -504,6 +504,16 @@ def fieldify(str):
 def slugify_fields(match):
     return '{{ %s }}' % (slugify(match.group(2))).replace('-', '_')
 
+
+def convert_absolute_urls(content, base_url):
+    """
+    Convert the relative urls in the content to the absolute urls.
+    """
+    content = content.replace('src="/', 'src="%s/' % base_url)
+    content = content.replace('href="/', 'href="%s/' % base_url)
+    return content
+
+
 def is_blank(item):
     """
     Check if values inside list are blank

@@ -34,6 +34,9 @@ from tendenci.addons.events.settings import (FIELD_MAX_LENGTH,
                              FIELD_TYPE_CHOICES, 
                              USER_FIELD_CHOICES)
 from tendenci.core.base.utils import localize_date
+from tendenci.core.emails.models import Email
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
 
 
 class TypeColorSet(models.Model):
@@ -139,6 +142,15 @@ class RegistrationConfiguration(models.Model):
                                  choices=((True, 'Use one form for all pricings'),
                                           (False, 'Use separate form for each pricing')),
                                  default=True)
+    
+    # base email for reminder email
+    email = models.ForeignKey(Email, null=True)
+    send_reminder = models.BooleanField(_('Send Email Reminder to attendees'), default=False)
+    reminder_days = models.CharField(_('Specify when (? days before the event ' + \
+                                       'starts) the reminder should be sent '),
+                                     max_length=20, 
+                                     null=True, blank=True,
+                                     help_text='Comma delimited. Ex: 7,1')
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
