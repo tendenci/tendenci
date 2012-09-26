@@ -157,7 +157,12 @@ class FormForCustomRegForm(forms.ModelForm):
             else:
                 # this attr is required for form validation
                 self.empty_permitted = False
-                
+
+            # add reminder field if event opted to sending reminders to attendees
+            if reg_conf.send_reminder:
+                self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'), 
+                                                             required=False)
+
         # --------------------------
         if self.pricings:   
             # add the price options field
@@ -1078,7 +1083,12 @@ class RegistrantForm(forms.Form):
         super(RegistrantForm, self).__init__(*args, **kwargs)
         
         reg_conf=self.event.registration_configuration
-        
+
+        # add reminder field if event opted to sending reminders to attendees
+        if reg_conf.send_reminder:
+            self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
+                                                         required=False)
+
         # make the fields in the subsequent forms as not required
         if not reg_conf.require_guests_info:
             if self.form_index and self.form_index > 0:
