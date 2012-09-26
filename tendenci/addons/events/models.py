@@ -151,6 +151,7 @@ class RegistrationConfiguration(models.Model):
                                      max_length=20, 
                                      null=True, blank=True,
                                      help_text='Comma delimited. Ex: 7,1')
+    registration_email_text = models.TextField(_('Registration Email Text'), blank=True)
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)

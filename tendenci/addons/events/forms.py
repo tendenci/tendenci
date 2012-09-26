@@ -748,6 +748,7 @@ class Reg8nEditForm(BetterModelForm):
             'use_custom_reg',
             'send_reminder',
             'reminder_days',
+            'registration_email_text',
         )
 
         fieldsets = [('Registration Configuration', {
@@ -760,6 +761,7 @@ class Reg8nEditForm(BetterModelForm):
                     'use_custom_reg',
                     'send_reminder',
                     'reminder_days',
+                    'registration_email_text',
                     ],
           'legend': ''
           })

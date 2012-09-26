@@ -128,6 +128,10 @@
 <div>{{ event.description|relative_to_absolute_urls|safe }}</div>
 {% endif %}
 
+{% if event.registration_configuration.registration_email_text %}
+{{ event.registration_configuration.registration_email_text|safe }}
+{% endif %}
+
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>
 <ol style="margin-top:0;">
     <li>
