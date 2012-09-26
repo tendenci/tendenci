@@ -10,4 +10,6 @@ urlpatterns = patterns('tendenci.apps.invoices.views',
     url(r'^detail/(?P<id>\d+)/$',             'detail', name="invoice.detail"),
     url(r'^mark_as_paid/(?P<id>\d+)/$', 'mark_as_paid', name="invoice.mark_as_paid"),
     url(r'^search/$',                         'search', name="invoice.search"),
+    # invoice reports
+    url(r'^report/expenses_per_user/$', 'report_expenses_per_user', name="reports-expenses-per-user"),
 )
