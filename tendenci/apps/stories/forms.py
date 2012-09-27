@@ -121,5 +121,86 @@ class StoryForm(TendenciBaseForm):
             story.image = None
         return story
 
+class StoryAdminForm(TendenciBaseForm):
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
+    end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=END_DT_INITIAL)
+    expires = forms.BooleanField(
+        label=_('Expires'),
+        required=False,
+        help_text=_('Uncheck if you want this story to never expire'),
+        initial=True,
+    )
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    photo_upload = forms.FileField(label=_('Photo'), required=False)
+    remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
+
+    class Meta:
+        model = Story
+
+        fields = (
+            'title',
+            'content',
+            'full_story_link',
+            'link_title',
+            'tags',
+            'photo_upload',
+            'start_dt',
+            'end_dt',
+            'expires',
+            'syndicate',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+        )
+
+        fieldsets = [('Story Information', {
+                      'fields': ['title',
+                                 'content',
+                                 'photo_upload',
+                                 'full_story_link',
+                                 'link_title',
+                                 'tags',
+                                 'start_dt',
+                                 'end_dt',
+                                 'expires'
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Permissions', {
+                      'fields': ['allow_anonymous_view',
+                                 'user_perms',
+                                 'member_perms',
+                                 'group_perms',
+                                 ],
+                      'classes': ['permissions'],
+                      }),
+                     ('Administrator Only', {
+                      'fields': ['syndicate',
+                                 'status',
+                                 'status_detail'],
+                      'classes': ['admin-only'],
+                    })]
+
+    def clean_photo_upload(self):
+        photo_upload = self.cleaned_data['photo_upload']
+        if photo_upload:
+            extension = splitext(photo_upload.name)[1]
+
+            # check the extension
+            if extension.lower() not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
+
+            # check the image header
+            image_type = '.%s' % imghdr.what('', photo_upload.read())
+            if image_type not in ALLOWED_LOGO_EXT:
+                raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
+
+        return photo_upload
 
 
+class UploadStoryImageForm(forms.Form):
+    file  = forms.FileField(label=_("File Path"))
