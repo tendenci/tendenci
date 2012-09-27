@@ -1,0 +1,11 @@
+Greetings {{ event.organizer.user.get_full_name }},
+<br /><br />
+Event reminders for {{ event.title }} which is coming up on 
+{{ event.start_dt|date:"M j, Y" }} {{ event.start_dt|date:"P" }} - {{ event.end_dt|date:"P" }}
+have been distributed to all registrants requesting reminders. 
+<br /><br />
+To view the details of this event, go to <a href="{{ site_url }}{% url event event.id %}">{{ event.title }}</a>
+<br /><br />
+Thanks!
+<br /><br />
+{{ site_display_name }}

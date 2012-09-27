@@ -250,6 +250,14 @@ input.short_text_input{
     width: 100px !important;
 }
 
+div.id_regconf-reminder_days{
+    margin-left: 2em;
+}
+div.id_regconf-reminder_days label{
+    font-size: 0.8em;
+}
+
+
 /*= Print View
  ------------------------- */
 .t-print .event-wrap {

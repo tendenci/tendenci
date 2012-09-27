@@ -208,6 +208,13 @@
 									<div class="help-text">{{ field.help_text }}</div>   
 								</div>
 								{% else %}
+								{% if field.name == 'reminder' %}
+                                <div class=" form-field reminder">
+                                    <div class="error">{{ field.errors }}</div>
+                                    <div>{{ field }} <label for="id_registrant-{{ forloop_counter|add:'-1'}}-reminder">{% trans field.label %}</label></div>
+                                    <div class="help-text">{{ field.help_text }}</div>   
+                                </div>
+                                {% else %}
 								<div class="form-field{% if field.name == 'override' %} admin-override{% endif %}">
 									<div class="error">{{ field.errors }}</div>
 									<div class="label {% if field.field.required %} required{% endif %}">{% trans field.label %}</div>
@@ -216,6 +223,7 @@
 				                    <div class="help-text">{{ field.help_text }}</div>   
 				                    {% endif %}
 								</div>
+								{% endif %}
 								{% endif %}
 								{% endif %}
 							{% endif %}
