@@ -23,6 +23,7 @@ FIELD_CHOICES = (
     ("CharField", _("Text")),
     ("CharField/django.forms.Textarea", _("Paragraph Text")),
     ("BooleanField", _("Checkbox")),
+    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi-select checkboxes")),
     ("ChoiceField", _("Choose from a list")),
     ("MultipleChoiceField", _("Multi select")),
     ("EmailField", _("Email")),
