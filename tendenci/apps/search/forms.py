@@ -5,11 +5,13 @@ from django.db import models
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.contrib.auth.models import User
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.registry import site as registry_site
+from tendenci.core.event_logs.models import EventLog
 try:
     from tendenci.addons.corporate_memberships.models import CorporateMembership as CorpMemb
 except:
@@ -79,7 +81,7 @@ class SearchForm(forms.Form):
                 
         super(SearchForm, self).__init__(*args, **kwargs)
     
-    def search(self):
+    def search(self, order_by='newest'):
         self.clean()
 
         sqs = SearchQuerySet()
@@ -169,9 +171,14 @@ class SearchForm(forms.Form):
                     # if anonymous
                     sqs = sqs.filter(status=True).filter(status_detail='active')
                     sqs = sqs.filter(allow_anonymous_view=True)
-
-            sqs = sqs.order_by('-create_dt')
-        
+            
+            # for solr,
+            # order_by can only called once so we have to do it here
+            if order_by == 'newest':
+                sqs = sqs.order_by('-create_dt')
+            else:
+                sqs = sqs.order_by('create_dt')
+            
         if self.load_all:
             sqs = sqs.load_all()
         
@@ -196,6 +203,13 @@ class FacetedSearchForm(SearchForm):
 
 
 class ModelSearchForm(SearchForm):
+    SORT_CHOICES = (
+        ('newest','Newest'),
+        ('oldest', 'Oldest'),
+        ('most_viewed', 'Most Viewed')
+    )
+    sort_by = forms.ChoiceField(choices=SORT_CHOICES, required=False)
+    
     def __init__(self, *args, **kwargs):
         super(ModelSearchForm, self).__init__(*args, **kwargs)
 
@@ -237,8 +251,22 @@ class ModelSearchForm(SearchForm):
         return search_models
     
     def search(self):
-        sqs = super(ModelSearchForm, self).search()
-        return sqs.models(*self.get_models())
+        sqs = super(ModelSearchForm, self).search(order_by=self.cleaned_data['sort_by'])
+        sqs = sqs.models(*self.get_models())
+        if self.cleaned_data['sort_by'] == 'most_viewed':
+            # we need to query for number of views
+            for s in sqs:
+                instance = s.object
+                ct = ContentType.objects.get_for_model(instance)
+                views = EventLog.objects.filter(
+                            content_type=ct,
+                            action__icontains='detail',
+                            object_id=instance.pk).count()
+                s.views = views
+            # We need to do this unless we
+            # we have a 'view count' field for each model
+            sqs = sorted(sqs, key=lambda s: s.views, reverse=True) # no longer an sqs
+        return sqs
 
 
 class HighlightedModelSearchForm(ModelSearchForm):
