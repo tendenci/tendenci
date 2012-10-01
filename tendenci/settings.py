@@ -2,7 +2,7 @@ import os.path
 
 # Paths
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
-
+SITE_ADDONS_PATH = ''
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
