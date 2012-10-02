@@ -205,8 +205,8 @@ class FacetedSearchForm(SearchForm):
 class ModelSearchForm(SearchForm):
     SORT_CHOICES = (
         ('newest','Newest'),
-        ('oldest', 'Oldest'),
-        ('most_viewed', 'Most Viewed')
+        ('oldest', 'Oldest')
+        #('most_viewed', 'Most Viewed')
     )
     sort_by = forms.ChoiceField(choices=SORT_CHOICES, required=False)
     
