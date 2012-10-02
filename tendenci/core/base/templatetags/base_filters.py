@@ -2,6 +2,7 @@ import re
 import os
 import Image
 
+from decimal import Decimal
 from django.template import Library
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
