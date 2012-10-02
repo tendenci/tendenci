@@ -9,10 +9,10 @@ urlpatterns = patterns('tendenci.core.files.views',
     url(r'^$', 'search', name="files"),
     url(r'^(?P<id>\d+)/$', 'details', name="file"),
     url(r'^(?P<id>\d+)/(?P<download>(download)?)/$', 'details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>download)/(?P<constrain>constrain)/$', 'details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>download)/$', 'details', name="file"),
-    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<constrain>constrain)/$', 'details', name="file"),
     url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<constrain>constrain)/$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>download)/$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>download)/(?P<constrain>constrain)/$', 'details', name="file"),
 
     # crop and quality
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>crop)/$', 'details', name="file"),
