@@ -376,3 +376,7 @@ def md5_gs(value, arg=None):
         timestamp = datetime.now() + timedelta(hours=int(arg))
         hashdt = hashlib.md5(timestamp.strftime("%Y;%m;%d;%H;%M").replace(';0', ';')).hexdigest()
     return ''.join([value, hashdt])
+
+@register.filter
+def multiply(value, arg):
+    return Decimal(str(value)) * Decimal(str(arg))
