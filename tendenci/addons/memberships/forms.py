@@ -838,7 +838,6 @@ class AppEntryForm(forms.ModelForm):
             'hash',
             'entry_time',
             'allow_anonymous_view',
-            'allow_anonymous_edit',
             'allow_user_view',
             'allow_user_edit',
             'allow_member_view',
