@@ -37,7 +37,15 @@ from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
 
-    file = get_object_or_404(File, pk=id)
+    cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
+    cached_image = cache.get(cache_key)
+    if cached_image:
+        return redirect(cached_image)
+
+    try:
+        file = File.objects.get(pk=id)
+    except:
+        raise Http404
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
@@ -95,13 +103,39 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             raise Http404
 
         # gets resized image from cache or rebuilds
-        image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, unique_key=None)
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
         image.save(response, "JPEG", quality=quality)
 
+        if file.is_public_file():
+            file_name = "%s%s" % (file.get_name(), ".jpg")
+            file_path = 'cached%s%s' % (request.path, file_name)
+            default_storage.save(file_path, ContentFile(response.content))
+            full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+            cache.set(cache_key, full_file_path)
+            cache_group_key = "files_cache_set.%s" % file.pk
+            cache_group_list = cache.get(cache_group_key)
+
+            if cache_group_list is None:
+                cache.set(cache_group_key, [cache_key])
+            else:
+                cache_group_list += [cache_key]
+                cache.set(cache_group_key, cache_group_list)
+
         return response
+
+    if file.is_public_file():
+        cache.set(cache_key, file.get_file_public_url())
+        set_s3_file_permission(file.file, public=True)
+        cache_group_key = "files_cache_set.%s" % file.pk
+        cache_group_list = cache.get(cache_group_key)
+
+        if cache_group_list is None:
+            cache.set(cache_group_key, [cache_key])
+        else:
+            cache_group_list += cache_key
+            cache.set(cache_group_key, cache_group_list)
 
     # set mimetype
     if file.mime_type():

@@ -339,7 +339,6 @@ def export(request, template_name="resumes/export.html"):
             'allow_anonymous_view',
             'allow_user_view',
             'allow_member_view',
-            'allow_anonymous_edit',
             'allow_user_edit',
             'allow_member_edit',
             'create_dt',

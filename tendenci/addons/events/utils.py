@@ -13,22 +13,29 @@ from django.template.defaultfilters import slugify
 from django.utils import simplejson
 from django.db.models.fields import FieldDoesNotExist
 from django.db import connection
+from django.template import Context, Template
+from django.template.loader import render_to_string
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.core.imports.utils import extract_from_excel
+from tendenci.core.base.utils import format_datetime_range
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
+
 from tendenci.addons.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
     CustomRegForm, Addon, AddonOption, CustomRegField, Type,
     TypeColorSet)
+from tendenci.addons.events.forms import (FormForCustomRegForm,
+    EMAIL_AVAILABLE_TOKENS)
 from tendenci.addons.events.forms import FormForCustomRegForm
 
 try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
+
 
 VALID_DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
 EVENT_FIELDS = [
@@ -53,6 +60,49 @@ PLACE_FIELDS = [
     "place__country",
     "place__url",
 ]
+
+def render_event_email(event, email):
+    """
+    Render event email subject and body.
+    """
+    context = {}
+    context['event_title'] = event.title
+    context['event_date'] = format_datetime_range(event.start_dt, event.end_dt)
+    context['event_location'] = ''
+    if event.place:
+        context['event_location'] += '<div><strong>Location</strong>:</div>'
+        if event.place.name:
+            context['event_location']  += '%s<br />' % event.place.name
+        if event.place.address:
+            context['event_location']  += '%s<br />' % event.place.address
+        if event.place.city or event.place.state or event.place.zip:
+            context['event_location']  += '%s %s %s' % (
+                                            event.place.city,
+                                            event.place.state,
+                                            event.place.zip)
+    context['event_link'] = '<a href="%s">%s</a>' % (
+                            reverse('event', args=[event.id]),
+                            event.title
+                                                     )
+    context = Context(context)
+    
+    template = Template(email.subject)
+    email.subject = template.render(context)
+    
+    email.body = email.body.replace('event_location', 'event_location|safe')
+    email.body = email.body.replace('event_link', 'event_link|safe')
+    template = Template(email.body)
+    email.body = template.render(context)
+
+    return email
+
+
+def get_default_reminder_template(event):
+    context = {}
+    for token in EMAIL_AVAILABLE_TOKENS:
+        context[token] = '{{ %s }}' % token
+    return render_to_string('events/default_email.html', 
+                           context)
 
 
 def get_ACRF_queryset(event=None):
@@ -805,7 +855,8 @@ def create_registrant_from_form(*args, **kwargs):
     registrant.is_primary = kwargs.get('is_primary', False)
     custom_reg_form = kwargs.get('custom_reg_form', None)
     registrant.memberid = form.cleaned_data.get('memberid', '')
-    
+    registrant.reminder = form.cleaned_data.get('reminder', False)
+
     if custom_reg_form and isinstance(form, FormForCustomRegForm):
         entry = form.save(event)
         registrant.custom_reg_form_entry = entry
@@ -1128,7 +1179,6 @@ def copy_event(event, user):
         allow_anonymous_view = False,
         allow_user_view = event.allow_user_view,
         allow_member_view = event.allow_member_view,
-        allow_anonymous_edit = event.allow_anonymous_edit,
         allow_user_edit = event.allow_user_edit,
         allow_member_edit = event.allow_member_edit,
         creator = user,

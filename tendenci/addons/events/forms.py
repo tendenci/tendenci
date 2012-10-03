@@ -13,7 +13,7 @@ from django.forms.util import ErrorList
 from django.utils.importlib import import_module
 from django.contrib.auth.models import User, AnonymousUser
 from django.utils.safestring import mark_safe
-#from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
 from tendenci.addons.events.models import Event, Place, Payment, \
@@ -43,14 +43,15 @@ ALLOWED_LOGO_EXT = (
     '.jpg',
     '.jpeg',
     '.gif',
-    '.png' 
+    '.png'
 )
 
-KEY_CHOICES = (
-    ('title','title'),
-    ('title,type','Title and Type'),
-    ('title,type,place','Title, Type and Place'),
-)
+EMAIL_AVAILABLE_TOKENS = ['event_title',
+                          'event_date',
+                          'event_location',
+                          'event_link'
+                          ]
+
 
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -159,7 +160,12 @@ class FormForCustomRegForm(forms.ModelForm):
             else:
                 # this attr is required for form validation
                 self.empty_permitted = False
-                
+
+            # add reminder field if event opted to sending reminders to attendees
+            if reg_conf.send_reminder:
+                self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'), 
+                                                             required=False)
+
         # --------------------------
         if self.pricings:   
             # add the price options field
@@ -743,6 +749,9 @@ class Reg8nEditForm(BetterModelForm):
             'require_guests_info',
             'discount_eligible',
             'use_custom_reg',
+            'send_reminder',
+            'reminder_days',
+            'registration_email_text',
         )
 
         fieldsets = [('Registration Configuration', {
@@ -752,7 +761,10 @@ class Reg8nEditForm(BetterModelForm):
                     'payment_required',
                     'require_guests_info',
                     'discount_eligible',
-                    'use_custom_reg'
+                    'use_custom_reg',
+                    'send_reminder',
+                    'reminder_days',
+                    'registration_email_text',
                     ],
           'legend': ''
           })
@@ -796,8 +808,17 @@ class Reg8nEditForm(BetterModelForm):
                                           str(reg_form_id),
                                           str(self.instance.bind_reg_form_to_conf_only)
                                           )
+            reminder_edit_link = '<a href="%s" target="_blank">Edit Reminder Email</a>' % \
+                                reverse('event.edit.email', args=[self.instance.id])                            
+            self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
+                                        (self.fields['reminder_days'].help_text, 
+                                         reminder_edit_link)
         else:
             self.fields['use_custom_reg'].initial =',0,1'
+
+        #.short_text_input
+        self.fields['reminder_days'].initial = '7,1'
+        self.fields['reminder_days'].widget.attrs.update({'class': 'short_text_input'})
             
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
@@ -815,8 +836,26 @@ class Reg8nEditForm(BetterModelForm):
             if d['reg_form_id'] == '0':
                 raise forms.ValidationError(_('Please choose a custom registration form'))          
         return ','.join(data_list)
-                     
-                     
+
+    def clean_reminder_days(self):
+        value = self.cleaned_data['reminder_days']
+
+        if self.cleaned_data.get('send_reminder', False):
+            if not value:
+                raise forms.ValidationError(_('Please specify when to send email reminders'))
+            else:
+                days_list = value.split(',')
+                new_list = []
+                for item in days_list:
+                    try:
+                        item = int(item)
+                        new_list.append(item)
+                    except:
+                        pass
+                if not new_list:
+                    raise forms.ValidationError(_("Invalid value '%s'. Integer(s) only. " % value))
+        return value
+
     def save(self, *args, **kwargs):
         # handle three fields here - use_custom_reg_form, reg_form,
         # and bind_reg_form_to_conf_only
@@ -826,7 +865,7 @@ class Reg8nEditForm(BetterModelForm):
             self.instance.use_custom_reg_form = int(use_custom_reg_data_list[0])
         except:
             self.instance.use_custom_reg_form = 0
-            
+
         try:
             self.instance.bind_reg_form_to_conf_only = int(use_custom_reg_data_list[2])
         except:
@@ -1049,7 +1088,12 @@ class RegistrantForm(forms.Form):
         super(RegistrantForm, self).__init__(*args, **kwargs)
         
         reg_conf=self.event.registration_configuration
-        
+
+        # add reminder field if event opted to sending reminders to attendees
+        if reg_conf.send_reminder:
+            self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
+                                                         required=False)
+
         # make the fields in the subsequent forms as not required
         if not reg_conf.require_guests_info:
             if self.form_index and self.form_index > 0:
@@ -1356,6 +1400,24 @@ class MessageAddForm(forms.ModelForm):
     
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
+        
+class EmailForm(forms.ModelForm):
+    #events = forms.CharField()
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
+        mce_attrs={'storme_app_label':Email._meta.app_label,
+        'storme_model':Email._meta.module_name.lower()}),
+        label=_('Message'), help_text=_('Available tokens: <br />' + \
+        ', '.join(['{{ %s }}' % token for token in EMAIL_AVAILABLE_TOKENS])))
+
+    class Meta:
+        model = Email
+        fields = ('reply_to',
+                  'sender_display',
+                  'subject',
+                  'body',)
+    
+    def __init__(self, *args, **kwargs):
+        super(EmailForm, self).__init__(*args, **kwargs)
 
 class PendingEventForm(EventForm):
     class Meta:

@@ -1,6 +1,7 @@
 # python
 import os
 import codecs
+import urllib
 
 # django
 from django import forms
@@ -50,6 +51,9 @@ class FileForm(forms.Form):
                 public = True
             save_file_to_s3(file_path, public=public)
             
+            if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
+                urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+
             return True
         else:
             return False

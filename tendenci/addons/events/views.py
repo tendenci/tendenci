@@ -46,6 +46,7 @@ from tendenci.core.imports.forms import ImportForm
 from tendenci.core.imports.models import Import
 from tendenci.core.ics.utils import run_precreate_ics
 from tendenci.core.base.decorators import password_required
+from tendenci.core.base.utils import convert_absolute_urls
 from tendenci.core.imports.utils import (extract_from_excel,
                 render_excel)
 
@@ -62,10 +63,11 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
-    RegistrationPreForm, EventICSForm)
-from tendenci.addons.events.utils import (email_registrants, get_ievent,
-    add_registration, registration_has_started, get_pricing,
-    clean_price, get_event_spots_taken, split_table_price,
+    RegistrationPreForm, EventICSForm, EmailForm)
+from tendenci.addons.events.utils import (email_registrants, 
+    render_event_email, get_default_reminder_template,
+    add_registration, registration_has_started, get_pricing, clean_price,
+    get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel,
     event_import_process)
@@ -2404,6 +2406,60 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
         'form': form
         },context_instance=RequestContext(request))
 
+
+@login_required
+def edit_email(request, event_id, form_class=EmailForm, template_name='events/edit_email.html'):
+    event = get_object_or_404(Event, pk=event_id)
+    if not has_perm(request.user,'events.change_event',event): raise Http403
+
+    reg_conf = event.registration_configuration
+    email = reg_conf.email
+
+    if request.method == "POST":
+        form = form_class(request.POST, instance=email)
+        if form.is_valid():
+            email = form.save(commit=False)
+            if not email.id:
+                email.creator = request.user
+                email.creator_username = request.user.username
+
+            email.owner = request.user
+            email.owner_username = request.user.username
+            email.save()
+
+            if not reg_conf.email:
+                reg_conf.email = email
+                reg_conf.save()
+
+            messages.add_message(request, messages.SUCCESS, 'Successfully saved changes.')
+
+            if request.POST.get('submit', '') == 'Save & Test':
+                render_event_email(event, email)
+                site_url = get_setting('site', 'global', 'siteurl')
+                email.recipient = request.user.email
+                email.subject = "Reminder: %s" % email.subject
+                email.body = convert_absolute_urls(email.body, site_url)
+                email.send()
+
+                messages.add_message(request, messages.SUCCESS, 'Successfully sent a test email.')
+
+    else:
+        if not email:
+            openingtext = get_default_reminder_template(event)
+            [organizer] = Organizer.objects.filter(event=event)[:1] or [None]
+            form = form_class(initial={
+                                     'subject': '{{ event_title }}',
+                                     'body': openingtext,
+                                     'reply_to': organizer and organizer.user \
+                                      and organizer.user.email or request.user.email,
+                                     'sender_display': organizer and organizer.name})
+        else:
+            form = form_class(instance=email)
+    
+    return render_to_response(template_name, {
+        'event':event,
+        'form': form
+        },context_instance=RequestContext(request))
 
 def registrant_export(request, event_id, roster_view=''):
     """
