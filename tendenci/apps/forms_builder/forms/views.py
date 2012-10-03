@@ -188,7 +188,6 @@ def copy(request, id):
         allow_anonymous_view = form_instance.allow_anonymous_view,
         allow_user_view = form_instance.allow_user_view,
         allow_member_view = form_instance.allow_member_view,
-        allow_anonymous_edit = form_instance.allow_anonymous_edit,
         allow_user_edit = form_instance.allow_user_edit,
         allow_member_edit = form_instance.allow_member_edit,
         creator = request.user,
