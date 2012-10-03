@@ -30,8 +30,8 @@ FIELD_CHOICES = (
     ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
     ("DateField/django.forms.DateInput", _("Date - Text Input")),
     ("DateTimeField", _("Date/time")),
-    ("CharField/forms_builder.forms.widgets.Description", _("Description")),
-    ("CharField/forms_builder.forms.widgets.Header", _("Section Heading")),
+    ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
+    ("CharField/tendenci.apps.forms_builder.forms.widgets.Header", _("Section Heading")),
     #("ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi checkbox")),
 )
 
