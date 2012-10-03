@@ -56,7 +56,7 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption)
+    RegAddonOption, RegistrationConfiguration)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
@@ -135,8 +135,15 @@ def details(request, id=None, template_name="events/view.html"):
 
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
+    
+    if event.registration_configuration:
+        event.limit = event.registration_configuration.limit
+    else:
+        reg_conf = RegistrationConfiguration()
+        reg_conf.save()
+        event.registration_configuration = reg_conf
+        event.save()
 
-    event.limit = event.registration_configuration.limit
     event.spots_taken, event.spots_available = event.get_spots_status()
 
     EventLog.objects.log(instance=event)
