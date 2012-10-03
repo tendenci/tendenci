@@ -13,8 +13,8 @@ FIELD_TYPE_CHOICES = (
     ("EmailField", _("Email")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
-    ("CharField/forms_builder.forms.widgets.Description", _("Description")),
-    ("CharField/forms_builder.forms.widgets.Header", _("Section Heading")),
+    ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
+    ("CharField/tendenci.apps.forms_builder.forms.widgets.Header", _("Section Heading")),
 )
 
 USER_FIELD_CHOICES = (
