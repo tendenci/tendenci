@@ -3,29 +3,58 @@
 
 import re
 import os.path
-from django.core.urlresolvers import reverse
-from django.utils.html import strip_tags
-from django.contrib.auth.models import User
-from django.db import connection
 from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
+from django.core.urlresolvers import reverse
+from django.utils.html import strip_tags
+from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 from django.utils import simplejson
+from django.db.models.fields import FieldDoesNotExist
+from django.db import connection
 
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.addons.events.models import (Event, Place, Speaker, Organizer,
-    Registration, RegistrationConfiguration, Registrant, RegConfPricing,
-    CustomRegForm, Addon, AddonOption, CustomRegField)
-from tendenci.addons.events.forms import FormForCustomRegForm
 from tendenci.core.perms.utils import get_query_filters
+from tendenci.core.imports.utils import extract_from_excel
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
+from tendenci.addons.events.models import (Event, Place, Speaker, Organizer,
+    Registration, RegistrationConfiguration, Registrant, RegConfPricing,
+    CustomRegForm, Addon, AddonOption, CustomRegField, Type,
+    TypeColorSet)
+from tendenci.addons.events.forms import FormForCustomRegForm
 
 try:
     from tendenci.apps.notifications import models as notification
 except:
     notification = None
-    
+
+VALID_DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
+EVENT_FIELDS = [
+    "type",
+    "title",
+    "description",
+    "all_day",
+    "start_dt",
+    "end_dt",
+    "timezone",
+    "on_weekend",
+    "external_url",
+]
+
+PLACE_FIELDS = [
+    "place__name",
+    "place__description",
+    "place__address",
+    "place__city",
+    "place__state",
+    "place__zip",
+    "place__country",
+    "place__url",
+]
+
+
 def get_ACRF_queryset(event=None):
     """Get the queryset for the available custom registration forms to use for this event
         (include all custom reg forms that are not used by any other events)
@@ -1237,5 +1266,121 @@ def get_custom_registrants_initials(entries, **kwargs):
     return initials
 
 
-                        
-        
+def event_import_process(request, import_i, preview=True, id=''):
+    """
+    This function processes each row and store the data
+    in the event_object_dict. Then it updates the database
+    if preview=False.
+    """
+    data_dict_list = extract_from_excel(import_i.file.path)
+    data_dict_list_len = len(data_dict_list)
+
+    event_obj_list = []
+    invalid_list = []
+
+    # loop through the file's entries and determine valid imports
+    start = 0
+    finish = data_dict_list_len
+    for r in range(start, finish):
+        invalid = False
+        event_object_dict = {}
+        data_dict = data_dict_list[r]
+
+        for key in data_dict.keys():
+            event_object_dict[key] = data_dict[key]
+
+        event_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
+
+        # Validate date fields
+        try:
+            datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
+            datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
+        except ValueError, e:
+            invalid = True
+            invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
+
+        if invalid:
+            event_object_dict['ERROR'] = invalid_reason
+            event_object_dict['IS_VALID'] = False
+            import_i.total_invalid += 1
+            if not preview:
+                invalid_list.append({
+                    'ROW_NUM': event_object_dict['ROW_NUM'],
+                    'ERROR': event_object_dict['ERROR']})
+        else:
+            event_object_dict['IS_VALID'] = True
+            import_i.total_created += 1
+
+            if not preview:
+                event_import_dict = {}
+                event_import_dict['ACTION'] = 'insert'
+                event = do_event_import(request, event_object_dict)
+                event_import_dict = {}
+                event_import_dict['event'] = event
+                event_import_dict['ROW_NUM'] = event_object_dict['ROW_NUM']
+                event_obj_list.append(event_import_dict)
+
+        if preview:
+            event_obj_list.append(event_object_dict)
+
+    if not preview: # save import status
+        import_i.status = "completed"
+        import_i.save()
+
+    return event_obj_list, invalid_list
+
+
+def do_event_import(request, event_object_dict):
+    """Creates and Event and Place for the given event_object_dict
+    """
+    event = Event()
+    place = Place()
+
+    color_set = TypeColorSet.objects.all()[0] #default color set
+    for field in EVENT_FIELDS:
+        if field in event_object_dict:
+            if field == "type":
+                try:
+                    event_type = Type.objects.get(name=event_object_dict[field])
+                except Type.DoesNotExist:
+                    event_type = Type(
+                                    name=event_object_dict[field],
+                                    slug=slugify(event_object_dict[field]),
+                                    color_set=color_set
+                                    )
+            elif field == "start_dt" or field == "end_dt":
+                setattr(event, field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
+            else:
+                setattr(event, field, event_object_dict[field])
+
+    for field in PLACE_FIELDS:
+        if field in event_object_dict:
+            setattr(place, field.replace('place__', ''), event_object_dict[field])
+
+    # loop through user properties; truncate at max_length
+    for key, value in event.__dict__.items():
+        try:
+            max_length = Event._meta.get_field_by_name(key)[0].max_length
+        except FieldDoesNotExist:
+            max_length = None
+        if max_length:  # truncate per max_length field attribute
+            try:
+                setattr(event, key, value[:max_length])
+            except TypeError:
+                pass
+
+    # loop through user properties; truncate at max_length
+    for key, value in place.__dict__.items():
+        try:
+            max_length = Place._meta.get_field_by_name(key)[0].max_length
+        except FieldDoesNotExist:
+            max_length = None
+        if max_length:  # truncate per max_length field attribute
+            setattr(place, key, value[:max_length])
+
+    # associate event to place
+    place.save()
+    event.place = place
+    event.save()
+
+    return event

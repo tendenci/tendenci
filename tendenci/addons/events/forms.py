@@ -16,23 +16,25 @@ from django.utils.safestring import mark_safe
 #from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
-from tendenci.addons.events.models import Event, Place, RegistrationConfiguration, \
-    Payment, Sponsor, Organizer, Speaker, Type, \
+from tendenci.addons.events.models import Event, Place, Payment, \
+    Sponsor, Organizer, Speaker, Type, RegistrationConfiguration, \
     TypeColorSet, Registrant, RegConfPricing, Addon, \
     AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
     CustomRegFieldEntry
 
+from form_utils.forms import BetterModelForm
+from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.emails.models import Email
-from form_utils.forms import BetterModelForm
-from tendenci.apps.discounts.models import Discount
-from tendenci.addons.events.settings import FIELD_MAX_LENGTH
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.addons.memberships.models import Membership
+from tendenci.core.imports.utils import get_header_list_from_content
+from tendenci.core.imports.models import Import
+from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
+from tendenci.addons.events.settings import FIELD_MAX_LENGTH
+from tendenci.addons.memberships.models import Membership
 
 from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
 from widgets import UseCustomRegWidget
@@ -44,6 +46,11 @@ ALLOWED_LOGO_EXT = (
     '.png' 
 )
 
+KEY_CHOICES = (
+    ('title','title'),
+    ('title,type','Title and Type'),
+    ('title,type,place','Title, Type and Place'),
+)
 
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
@@ -1429,5 +1436,7 @@ class AddonOptionForm(forms.ModelForm):
         model = AddonOption
         fields = ('title',)
 
+
 class EventICSForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all())
+

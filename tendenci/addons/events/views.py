@@ -1,14 +1,19 @@
-# NOTE: When updating the registration scheme be sure to check with the 
-# anonymous registration impementation of events in the registration module.
+# NOTE: When updating the registration scheme be sure to check with the
+# anonymous registration impementation of events in the registration
+# module.
 
+import os
 import re
+import time
 import calendar
+import itertools
+import cPickle
 from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
-import itertools
 from haystack.query import SearchQuerySet
 
+from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
@@ -17,15 +22,15 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.http import QueryDict
 from django.core.urlresolvers import reverse
+from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.template.defaultfilters import date as date_filter
 from django.forms.formsets import formset_factory
-from django.forms.models import modelformset_factory, inlineformset_factory
+from django.forms.models import modelformset_factory, \
+    inlineformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson as json
-
-#from django.forms.models import BaseModelFormSet
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
@@ -37,7 +42,15 @@ from tendenci.core.meta.forms import MetaForm
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
+from tendenci.core.imports.forms import ImportForm
+from tendenci.core.imports.models import Import
 from tendenci.core.ics.utils import run_precreate_ics
+from tendenci.core.base.decorators import password_required
+from tendenci.core.imports.utils import (extract_from_excel,
+                render_excel)
+
+from tendenci.apps.discounts.models import Discount
+from tendenci.apps.notifications import models as notification
 
 from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
@@ -50,60 +63,64 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
     RegistrationPreForm, EventICSForm)
-from tendenci.addons.events.utils import (email_registrants, 
-    add_registration, registration_has_started, get_pricing, clean_price,
-    get_event_spots_taken, get_ievent, split_table_price,
+from tendenci.addons.events.utils import (email_registrants, get_ievent,
+    add_registration, registration_has_started, get_pricing,
+    clean_price, get_event_spots_taken, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
-    get_custom_registrants_initials, render_registrant_excel)
+    get_custom_registrants_initials, render_registrant_excel,
+    event_import_process)
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
-from tendenci.apps.discounts.models import Discount
 
-from tendenci.apps.notifications import models as notification
 
-def custom_reg_form_preview(request, id, template_name="events/custom_reg_form_preview.html"):
+def custom_reg_form_preview(request, id,
+        template_name="events/custom_reg_form_preview.html"):
     """
     Preview a custom registration form.
-    """    
+    """
     form = get_object_or_404(CustomRegForm, id=id)
-    
-    form_for_form = FormForCustomRegForm(request.POST or None, request.FILES or None, custom_reg_form=form, user=request.user)
+
+    form_for_form = FormForCustomRegForm(request.POST or None,
+        request.FILES or None, custom_reg_form=form, user=request.user)
 
     for field in form_for_form.fields:
         try:
             form_for_form.fields[field].initial = request.GET.get(field, '')
         except:
             pass
-        
+
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template_name, context, RequestContext(request))
 
+
 @login_required
-def event_custom_reg_form_list(request, event_id, 
-                               template_name="events/event_custom_reg_form_list.html"):
+def event_custom_reg_form_list(request, event_id,
+                template_name="events/event_custom_reg_form_list.html"):
     """
     List custom registration forms for this event.
     """
     event = get_object_or_404(Event, pk=event_id)
-    if not has_perm(request.user,'events.change_event', event):
+    if not has_perm(request.user, 'events.change_event', event):
         raise Http403
-    
+
     reg_conf = event.registration_configuration
     regconfpricings = reg_conf.regconfpricing_set.all()
-    
+
     if reg_conf.use_custom_reg_form:
         if reg_conf.bind_reg_form_to_conf_only:
-            reg_conf.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=reg_conf.reg_form)
+            reg_conf.reg_form.form_for_form = FormForCustomRegForm(
+                custom_reg_form=reg_conf.reg_form)
         else:
             for price in regconfpricings:
-                price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
-
+                price.reg_form.form_for_form = FormForCustomRegForm(
+                    custom_reg_form=price.reg_form)
 
     context = {'event': event,
                'reg_conf': reg_conf,
                'regconfpricings': regconfpricings}
     return render_to_response(template_name, context, RequestContext(request))
+
 
 def details(request, id=None, template_name="events/view.html"):
 
@@ -118,7 +135,7 @@ def details(request, id=None, template_name="events/view.html"):
 
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
-    
+
     event.limit = event.registration_configuration.limit
     event.spots_taken, event.spots_available = event.get_spots_status()
 
@@ -132,7 +149,7 @@ def details(request, id=None, template_name="events/view.html"):
         organizer = organizers[0]
 
     return render_to_response(template_name, {
-        'days':days,
+        'days': days,
         'event': event,
         'speakers': speakers,
         'organizer': organizer,
@@ -140,8 +157,10 @@ def details(request, id=None, template_name="events/view.html"):
         'addons': event.addon_set.filter(status=True),
     }, context_instance=RequestContext(request))
 
+
 def month_redirect(request):
     return HttpResponseRedirect(reverse('event.month'))
+
 
 def search(request, redirect=False, template_name="events/search.html"):
     """
@@ -171,7 +190,8 @@ def search(request, redirect=False, template_name="events/search.html"):
         filters = get_query_filters(request.user, 'events.view_event')
         events = Event.objects.filter(filters).distinct()
         if event_type:
-            events = events.filter(type__slug=event_type, end_dt__gte=start_dt)
+            events = events.filter(type__slug=event_type,
+                end_dt__gte=start_dt)
         else:
             events = events.filter(start_dt__gte=start_dt)
         if request.user.is_authenticated():
@@ -182,11 +202,14 @@ def search(request, redirect=False, template_name="events/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(
-        template_name,
-        {'events': events,'types': types, 'now': datetime.now(), 'event_type': event_type, 'start_dt': start_dt},
-        context_instance=RequestContext(request)
-    )
+    return render_to_response(template_name,{
+        'events': events,
+        'types': types,
+        'now': datetime.now(),
+        'event_type': event_type,
+        'start_dt': start_dt
+        }, context_instance=RequestContext(request))
+
 
 def icalendar(request):
     import os
@@ -237,6 +260,7 @@ def icalendar(request):
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
 
+
 def icalendar_single(request, id):
     from tendenci.addons.events.utils import get_vevents
     p = re.compile(r'http(s)?://(www.)?([^/]+)')
@@ -271,6 +295,7 @@ def icalendar_single(request, id):
     response['Content-Disposition'] = 'attachment; filename=%s' % (file_name)
     return response
 
+
 def print_view(request, id, template_name="events/print-view.html"):
     event = get_object_or_404(Event, pk=id)
 
@@ -281,6 +306,7 @@ def print_view(request, id, template_name="events/print-view.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
+
 
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
@@ -2896,21 +2922,23 @@ def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.ht
         'form':form,
         'event':event,
     }, context_instance=RequestContext(request))
-    
+
+
 @login_required
 def disable_addon(request, event_id, addon_id):
     """disable addon for an event"""
     event = get_object_or_404(Event, pk=event_id)
-    
+
     if not has_perm(request.user,'events.change_event', event):
         raise Http404
-    
+
     addon = get_object_or_404(Addon, pk=addon_id)
     EventLog.objects.log(instance=addon)
     addon.delete() # this just renders it inactive to not cause deletion of already existing regaddons
     messages.add_message(request, messages.SUCCESS, "Successfully disabled the %s" % addon.title)
-        
+
     return redirect('event.list_addons', event.id)
+
 
 @login_required
 def enable_addon(request, event_id, addon_id):
@@ -2926,9 +2954,11 @@ def enable_addon(request, event_id, addon_id):
 
     EventLog.objects.log(instance=addon)
 
-    messages.add_message(request, messages.SUCCESS, "Successfully enabled the %s" % addon.title)
-        
+    messages.add_message(request, messages.SUCCESS,
+        "Successfully enabled the %s" % addon.title)
+
     return redirect('event.list_addons', event.id)
+
 
 @login_required
 def export(request, template_name="events/export.html"):
@@ -2943,6 +2973,7 @@ def export(request, template_name="events/export.html"):
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
+
     
 @login_required
 def create_ics(request, template_name="events/ics.html"):
@@ -2963,6 +2994,7 @@ def create_ics(request, template_name="events/ics.html"):
         'form': form,
     }, context_instance=RequestContext(request))
 
+
 @login_required
 def myevents(request, template_name='events/myevents.html'):
     """ Logged-in user's registered events"""
@@ -2982,6 +3014,108 @@ def myevents(request, template_name='events/myevents.html'):
     EventLog.objects.log()
 
     return render_to_response(
-        template_name, 
-        {'events': events, 'show': show}, 
+        template_name,
+        {'events': events, 'show': show},
         context_instance=RequestContext(request))
+
+
+@login_required
+def download_template_csv(request, file_ext='.csv'):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if file_ext == '.csv':
+        filename = "import-events.csv"
+    else:
+        filename = "import-events.xls"
+    import_field_list = [
+        "type",
+        "title",
+        "description",
+        "all_day",
+        "start_dt",
+        "end_dt",
+        "timezone",
+        "place__name",
+        "place__description",
+        "place__address",
+        "place__city",
+        "place__state",
+        "place__zip",
+        "place__country",
+        "place__url",
+        "on_weekend",
+        "external_url",
+    ]
+    data_row_list = []
+
+    return render_excel(filename, import_field_list, data_row_list, file_ext)
+
+
+@login_required
+def import_add(request, form_class=ImportForm,
+                    template_name="events/imports/events_add.html"):
+    """Event Import Step 1: Validates and saves import file"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            import_i = form.save(commit=False)
+            import_i.app_label = 'events'
+            import_i.model_name = 'event'
+            import_i.save()
+
+            EventLog.objects.log()
+
+            # reset the password_promt session
+            request.session['password_promt'] = False
+
+            return HttpResponseRedirect(
+                reverse('event.import_preview', args=[import_i.id]))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {'form': form},
+        context_instance=RequestContext(request))
+
+
+@login_required
+def import_preview(request, import_id,
+                    template_name="events/imports/events_preview.html"):
+    """Import Step 2: Preview import result"""
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    import_i = get_object_or_404(Import, id=import_id)
+
+    event_list, invalid_list = event_import_process(request, import_i, 
+                                                        preview=True)
+
+    return render_to_response(template_name, {
+        'event_list': event_list,
+        'import_i': import_i,
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def import_process(request, import_id,
+                template_name="events/imports/events_process.html"):
+    """Import Step 3: Import into database"""
+
+    if not request.user.profile.is_superuser:
+        raise Http403   # admin only page
+
+    import_i = get_object_or_404(Import, id=import_id)
+    
+    # We can choose to leave the next line to a real subprocess call
+    # if needed
+    if import_i.status == "pending":
+        event_list, invalid_list = event_import_process(request, import_i, 
+                                                        preview=False)
+
+    return render_to_response(template_name, {
+        "import_i": import_i,
+    }, context_instance=RequestContext(request))
+

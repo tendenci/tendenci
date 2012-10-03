@@ -57,15 +57,17 @@
             {% endif %}
             {% if request.user.is_superuser %}
                 <li><a href="{% url event.pending %}">{% trans "Pending Events" %}</a></li>
-                <li><a href="{% url event.export %}">{% trans "Export Events" %}</a></li>
             {% endif %}
             {% if can_edit_event %}
                 <li><a href="{% url event.types %}">{% trans "Event Types" %}</a></li>
             {% endif %}
+            <li><a href="{% url event.ics %}" id="event_export_link">{% trans "Events ICS" %}</a></li>
             {% if request.user.is_superuser %}
                 <li><a href="{% url event.create_ics %}">{% trans "Precreate Event ICS" %}</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url event.export %}">{% trans "Export" %}</a></li>
+                <li><a href="{% url event.import_add %}">{% trans "Import" %}</a></li>
             {% endif %}
-            <li><a href="{% url event.ics %}" id="event_export_link">{% trans "Events ICS" %}</a></li>
         </ul>
         {% if nav_object %}
             <ul>

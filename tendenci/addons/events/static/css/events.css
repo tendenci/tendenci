@@ -858,3 +858,26 @@ table.pricing-list .price-disabled label {
 
 .message-item{
 	margin-bottom: 2em;
+}
+
+.t .imports .download-csv {
+    margin-bottom: 10px;
+}
+
+.t .imports .download-csv img{
+    float: left;
+    margin-right: 10px;
+    border: 0;
+}
+
+.t .imports .download-csv .item-right{
+    float: left;
+}
+
+.t .imports .download-csv a {
+    font-size: 1.5em;
+}
+
+.clear-both {
+    clear: both;
+}
