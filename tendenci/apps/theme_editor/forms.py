@@ -34,7 +34,7 @@ class FileForm(forms.Form):
                            max_length=500000
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
-    
+
     def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT):
         content = self.cleaned_data["content"]
         file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
@@ -58,29 +58,32 @@ class FileForm(forms.Form):
             # if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
             #     urllib.urlopen(settings.REMOTE_DEPLOY_URL)
 
+            if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
+                urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+
             return True
         else:
             return False
-            
+
 class ThemeSelectForm(forms.Form):
     THEME_CHOICES = ((x, x) for x in theme_choices())
     theme_edit = forms.ChoiceField(label = _('Theme:'), choices=THEME_CHOICES)
-    
+
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
-    
+
 class UploadForm(forms.Form):
     upload = forms.FileField()
     file_dir = forms.CharField(widget=forms.HiddenInput, required=False)
     overwrite = forms.BooleanField(widget=forms.HiddenInput, required=False)
-    
+
     def clean_file_dir(self):
         data = self.cleaned_data['file_dir']
         return data
-    
+
     def clean_upload(self):
         data = self.cleaned_data['upload']
         if not data.name.lower().endswith(FILE_EXTENTIONS):
             raise forms.ValidationError("This is not a valid file type to upload.")
         return data
-        
+
