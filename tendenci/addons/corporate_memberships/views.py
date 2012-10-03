@@ -1156,7 +1156,6 @@ def download_csv_import_template(request, file_ext='.csv'):
                          'allow_anonymous_view',
                          'allow_user_view',
                          'allow_member_view',
-                         'allow_anonymous_edit',
                          'allow_user_edit',
                          'allow_member_edit',
                          'creator_username',
