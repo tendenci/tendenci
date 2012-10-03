@@ -37,7 +37,7 @@ from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
 
-    cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality)
+    cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
     if cached_image:
         return redirect(cached_image)

@@ -8,7 +8,7 @@ from tendenci.core.base.utils import image_rescale
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
 
 
-def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
+def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
     """
     Gets resized-image-object from cache or rebuilds
     the resized-image-object using the original image-file.
@@ -21,7 +21,7 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
     binary = None
 
     if cache:
-        key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality)
+        key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, constrain)
         binary = django_cache.get(key)  # check if key exists
 
     if not binary:
@@ -30,6 +30,7 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
             'cache': cache,
             'quality': quality,
             'unique_key': unique_key,
+            'constrain': constrain,
         }
         binary = build_image(file, size, pre_key, **kwargs)
 
@@ -39,7 +40,7 @@ def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_k
         return ''
 
 
-def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None):
+def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
     """
     Builds a resized image based off of the original image.
     """
@@ -75,7 +76,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     output.close()
 
     if cache:
-        key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality)
+        key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, constrain)
         django_cache.add(key, binary, 60 * 60 * 24 * 30)  # cache for 30 days #issue/134
 
     return binary
@@ -151,7 +152,7 @@ def constrain_size(image_size, new_size):
     return int(w), int(h)
 
 
-def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality):
+def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, constrain=False):
     """
     Generates image cache key. You can use this for adding,
     retrieving or removing a cache record.
@@ -169,11 +170,16 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality):
     else:
         str_crop = ""
 
+    if constrain:
+        str_constrain = "constrain"
+    else:
+        str_constrain = ""
+
     # e.g. file_image.1294851570.200x300 file_image.<file-system-modified-time>.<width>x<height>
     if unique_key:
-        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop, str_quality))
+        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, unique_key, str_size, str_crop, str_quality, str_constrain))
     else:
-        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop, str_quality))
+        key = '.'.join((settings.CACHE_PRE_KEY, pre_key, str(file.size), file.name, str_size, str_crop, str_quality, str_constrain))
     # Remove spaces so key is valid for memcached
     key = key.replace(" ", "_")
 
