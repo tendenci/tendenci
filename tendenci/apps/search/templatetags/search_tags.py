@@ -45,9 +45,10 @@ class SearchResultNode(IncludeNode):
             if var_name == 'corporate_member':
                 var_name = 'corporate_membership'
             if var_name == 'photo':
-                var_name = 'photo_album'
+                var_name = 'photo_set'
             if var_name == 'photo_album':
                 #special case since Image and PhotoSet share the same app.
+                var_name = 'photo_set'
                 template_name = "photos/photo-set/search-result.html"
             elif var_name == 'application_entry':
                 var_name = 'entry'

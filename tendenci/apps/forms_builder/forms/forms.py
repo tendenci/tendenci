@@ -381,9 +381,9 @@ class FormForField(forms.ModelForm):
                 raise forms.ValidationError("This field's function requires Text as a field type")
         
         #unrequire the display only fields
-        if field_type == "CharField/forms_builder.forms.widgets.Description":
+        if field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Description":
             cleaned_data['required'] = False
-        elif field_type == "CharField/forms_builder.forms.widgets.Header":
+        elif field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Header":
             cleaned_data['required'] = False
             
         return cleaned_data

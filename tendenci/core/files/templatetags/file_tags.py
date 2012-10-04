@@ -105,8 +105,6 @@ def size(file, size):
     kwargs = {
         'id': unicode(file.pk),
         'size': size,
-        'constrain': u'',
-        'download': u''
     }
 
     if 'constrain' in options:

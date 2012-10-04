@@ -30,8 +30,8 @@ FIELD_CHOICES = (
     ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
     ("DateField/django.forms.DateInput", _("Date - Text Input")),
     ("DateTimeField", _("Date/time")),
-    ("CharField/forms_builder.forms.widgets.Description", _("Description")),
-    ("CharField/forms_builder.forms.widgets.Header", _("Section Heading")),
+    ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
+    ("CharField/tendenci.apps.forms_builder.forms.widgets.Header", _("Section Heading")),
     #("ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi checkbox")),
 )
 
@@ -373,9 +373,9 @@ class FieldEntry(models.Model):
     def include_in_email(self):
         widget = self.field.get_field_widget()
         field_class = self.field.get_field_class()
-        if widget == 'forms_builder.forms.widgets.Description':
+        if widget == 'tendenci.apps.forms_builder.forms.widgets.Description':
             return False
-        if widget == 'forms_builder.forms.widgets.Header':
+        if widget == 'tendenci.apps.forms_builder.forms.widgets.Header':
             return False
         if field_class == 'FileField':
             return False

@@ -86,5 +86,20 @@ $(document).ready(function() {
     });
     
  {% endif %}
+ 
+    var toggle_email_reminder = function(item){
+        if (item.is(':checked')){
+            $(item).closest('div.form-field').next().show();
+        }else{
+            $(item).closest('div.form-field').next().hide();
+        }
+    }
+    
+    var email_reminder = $('input[id=id_regconf-send_reminder]');
+    toggle_email_reminder(email_reminder);
+    email_reminder.click(function(){
+        var $this = $(this);
+        toggle_email_reminder($this);
+    });
     
 });

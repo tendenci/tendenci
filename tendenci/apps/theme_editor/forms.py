@@ -1,12 +1,14 @@
 # python
 import os
 import codecs
+import urllib
 
 # django
 from django import forms
 from django.core.files import File
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.core.cache import cache
 
 # local
 from tendenci.core.theme.utils import get_theme_root, get_theme, theme_choices
@@ -42,14 +44,20 @@ class FileForm(forms.Form):
             file = File(f)
             file.write(content)
             file.close()
-            
+
             # copy to s3 storage
             if os.path.splitext(file_path)[1] == '.html':
                 public = False
             else:
                 public = True
             save_file_to_s3(file_path, public=public)
-            
+
+            cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
+            cache.delete(cache_key)
+
+            # if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
+            #     urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+
             return True
         else:
             return False
