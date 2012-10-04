@@ -55,8 +55,8 @@ class FileForm(forms.Form):
             cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
             cache.delete(cache_key)
 
-            # if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
-            #     urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+            if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
+                urllib.urlopen(settings.REMOTE_DEPLOY_URL)
 
             return True
         else:
