@@ -499,6 +499,9 @@ class CorpMembRenewForm(forms.ModelForm):
         self.fields['members'].choices = members_choices
         self.fields['members'].label = "Select the individual members you " + \
                                         "want to renew"
+        if corporate_membership.corporate_membership_type.renewal_price == 0:
+            self.fields['select_all_members'].initial = True 
+            self.fields['members'].initial = [c[0] for c in members_choices]
 
         self.fields['payment_method'].widget = forms.RadioSelect(
                                     choices=get_payment_method_choices(
