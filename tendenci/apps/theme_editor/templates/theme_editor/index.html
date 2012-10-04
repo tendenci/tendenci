@@ -38,7 +38,7 @@
                     </div>
               </form>
             {% if current_file not in non_deletable_files  %}
-            <a href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
+            <a id="delete-btn" href="{% url theme_editor.delete %}?file={{ pwd }}/{{ current_file }}" class="btn" style="float:right;" class="delete">Delete this File</a>
             {% endif %}
             <div style="clear:both"></div>
             
@@ -144,8 +144,11 @@
                 </div>
                                <div class="well well-small">
                                <h4>Customize more templates:</h4>
+                               This functionality is temporarily unavailable.
+                               {% comment %}
                                Copy down one of Tendenci's built-in app templates and customize it.
                                <a href="{% url theme_editor.app_list %}" class="btn btn-mini">{% trans "Customize more templates" %}</a>
+                               {% endcomment %}
                                </div>
                                
            </div>
@@ -244,9 +247,9 @@ function open_archive(id)
 //                } else {
 //                    return false;
 //                }
-//            } else {
-                alert("An error occured. Please try again.");
-            }
+            // } else {
+            //     alert("An error occured. Please try again.");
+            // }
         } else {
             location.reload();
         }
@@ -302,5 +305,8 @@ $('.links').hide();
 $('.non-editable-file').hover(function() {
    $(this).children('.links').toggle();
 });
+    $('#delete-btn').click(function() {
+      return window.confirm(this.title || 'Are you sure you want to delete the following file? {{ pwd }}/{{ current_file }}');
+    });
 </script>
 {% endblock %}
