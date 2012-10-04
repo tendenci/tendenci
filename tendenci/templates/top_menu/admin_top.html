@@ -125,6 +125,7 @@
             </div>
         </li> -->
         {% endcomment %}
+        {% comment %}
         {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         <li><a href="{% url settings %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
         	<div class="sub">
@@ -139,6 +140,7 @@
             </div>
         </li>
         {% endif %}
+        {% endcomment %}
         <li><a href="/reports"><span class="glyph heading">&#117;</span>&nbsp;&nbsp;{% trans "Reports" %}</a>
             <div class="sub">
             	<div class="column">                
@@ -187,7 +189,9 @@
                         <li><a href="/settings/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Full Settings List" %}</a></li>
                         <li><a href="{% url dashboard %}">{% trans "Dashboard" %}</a></li>
                         <li><a href="{% url admin:index %}">{% trans "Admin Backend" %}</a></li>
+                        {% comment %}
                         <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
+                        {% endcomment %}
                         <li><a href="{% url campaign_monitor.template_index %}">{% trans "Campaign Monitor" %}</a></li>
                         <li><a href="{% url event_log.search %}">{% trans "Event Logs" %}</a></li>
                         <li><a href="{% url clear_cache %}">{% trans "Clear Cache" %}</a></li>
@@ -212,8 +216,10 @@
                 </div>
             </div>
         </li>
+
         {% if CUSTOM_TEMPLATE %}
             <li><a href="#">{% trans "Using Custom Template" %}</a>
+                {% comment %}
                 <div class="sub">
                 <div class="column">
                     <ul>
@@ -223,6 +229,7 @@
                     </ul>
                 </div>
                 </div>
+                {% endcomment %}
             </li>
         {% endif %}
         {% if TOGGLE_TEMPLATE %}
