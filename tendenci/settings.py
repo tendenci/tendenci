@@ -221,7 +221,7 @@ INSTALLED_APPS = (
     'tendenci.core.event_logs',
     'tendenci.core.categories',
     'tendenci.apps.contributions',
-    'tendenci.apps.theme_editor',
+    #'tendenci.apps.theme_editor',
     'tendenci.libs.styled_forms',
     'tendenci.core.newsletters',
     'tendenci.apps.redirects',
