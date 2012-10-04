@@ -65,6 +65,10 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
                 from tendenci.core.payments.payflowlink.utils import prepare_payflowlink_form
                 form = prepare_payflowlink_form(request, payment)
                 post_url = settings.PAYFLOWLINK_POST_URL
+            elif merchant_account == 'paypal':
+                from tendenci.core.payments.paypal.utils import prepare_paypal_form
+                form = prepare_paypal_form(request, payment)
+                post_url = settings.PAYPAL_POST_URL
             else:   # more vendors 
                 form = None
                 post_url = ""
