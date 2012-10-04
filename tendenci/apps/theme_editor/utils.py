@@ -1,14 +1,10 @@
 import os
 import shutil
 import sys
-from tempfile import mkstemp
 
-from shutil import move
 from os import remove, close
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.core.management import call_command
 from django.utils.importlib import import_module
 
 from tendenci.core.theme.utils import get_theme_root, get_theme
@@ -42,6 +38,7 @@ for app in settings.INSTALLED_APPS:
     if os.path.isdir(template_dir):
         app_templates[app] = template_dir.decode(fs_encoding)
 
+
 def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
     """Copies a file and all associated directories into TO_ROOT
     """
@@ -49,20 +46,19 @@ def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
         os.makedirs(os.path.join(TO_ROOT, "templates", path_to_file))
     except OSError:
         pass
-    
+
     filecopy = os.path.join(TO_ROOT, "templates", path_to_file, filename)
     shutil.copy(full_filename, filecopy)
-    
+
     # copy to s3
-    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+    if settings.USE_S3_THEME:
         if os.path.splitext(filename)[1] == '.html':
             public = False
         else:
             public = True
         save_file_to_s3(filecopy, public=public)
-    
-    
-    
+
+
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not
@@ -70,12 +66,14 @@ def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
     current_dir = os.path.join(ROOT_DIR, query_string)
     return os.path.isdir(current_dir)
 
+
 def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not
     """
     current_file = os.path.join(ROOT_DIR, query_string)
     return os.path.isfile(current_file)
+
 
 def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
     """
@@ -92,8 +90,9 @@ def get_dir_list(pwd, ROOT_DIR=THEME_ROOT):
         for item in item_list:
             current_item = os.path.join(current_dir, item)
             if os.path.isdir(current_item):
-                dir_list.append(os.path.join(pwd,item))
+                dir_list.append(os.path.join(pwd, item))
     return sorted(dir_list)
+
 
 def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
     """
@@ -116,6 +115,7 @@ def get_file_list(pwd, ROOT_DIR=THEME_ROOT):
         return sorted(file_list), sorted(others_list)
     return file_list, others_list
 
+
 def get_all_files_list(ROOT_DIR=THEME_ROOT):
     """
     Get a list of files and folders from within
@@ -130,15 +130,16 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
         folders = path[start:].split(os.sep)
         for f in files:
             editable = False
-            if os.path.splitext(os.path.join(path,f))[1] in ALLOWED_EXTENSIONS:
+            if os.path.splitext(os.path.join(path, f))[1] in ALLOWED_EXTENSIONS:
                 editable = True
-            subdir['contents'].append({'name': f,'path': os.path.join(path[len(root_dir)+1:],f), 'editable': editable})
+            subdir['contents'].append({'name': f, 'path': os.path.join(path[len(root_dir) + 1:], f), 'editable': editable})
         parent = reduce(dict.get, folders[:-1], files_folders)
         parent[folders[-1]] = subdir
         for parent in files_folders:
             subdir['contents'].append({'folder_path': path})
 
     return files_folders
+
 
 def get_file_content(file, ROOT_DIR=THEME_ROOT):
     """
@@ -147,7 +148,7 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
     """
     content = ''
 
-    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+    if settings.USE_S3_THEME:
         try:
             theme = get_theme()
             content = read_theme_file_from_s3(os.path.join(theme, file))
@@ -162,6 +163,7 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
             fd.close()
     return content
 
+
 def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
     """
     Archive the file into the database if it is edited
@@ -173,10 +175,11 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
         content = fd.read()
         fd.close()
         archive = ThemeFileVersion(file_name=file_name,
-                                  content=content, 
+                                  content=content,
                                   relative_file_path=relative_file_path,
                                   author=request.user)
         archive.save()
+
 
 def handle_uploaded_file(f, file_dir):
     file_path = os.path.join(file_dir, f.name)
@@ -184,14 +187,11 @@ def handle_uploaded_file(f, file_dir):
     for chunk in f.chunks():
         destination.write(chunk)
     destination.close()
-    
+
     # copy to s3
-    if settings.USE_S3_STORAGE:
+    if settings.USE_S3_THEME:
         if os.path.splitext(f.name)[1] == '.html':
             public = False
         else:
             public = True
         save_file_to_s3(file_path, public=public)
-    
-    
-    
