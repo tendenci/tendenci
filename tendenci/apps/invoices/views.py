@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.template import RequestContext
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -340,10 +340,9 @@ def report_expenses_per_user(request, template_name="reports/expenses_per_user.h
     entry_list = []
     users = User.objects.all()
     for user in users:
-        invoices = Invoice.objects.filter(creator=user).aggregate(Sum('total'))
-        if invoices['total__sum'] is None:
-            invoices['total__sum'] = 0
-        entry_list.append({'user':user, 'invoices':invoices})
+        invoices = Invoice.objects.filter(Q(creator=user) | Q(owner=user) | Q(bill_to_email=user.email)).aggregate(Sum('total'))
+        if invoices['total__sum'] is not None and invoices['total__sum'] > 0:
+            entry_list.append({'user':user, 'invoices':invoices})
 
     entry_list = sorted(entry_list, key=lambda entry:entry['invoices']['total__sum'], reverse=True)[:20]
 
