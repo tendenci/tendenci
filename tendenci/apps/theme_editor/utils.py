@@ -148,9 +148,13 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
     content = ''
 
     if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-        theme = get_theme()
-        content = read_theme_file_from_s3(os.path.join(theme, file))
-    else:
+        try:
+            theme = get_theme()
+            content = read_theme_file_from_s3(os.path.join(theme, file))
+        except:
+            pass
+
+    if not content:
         current_file = os.path.join(ROOT_DIR, file)
         if os.path.isfile(current_file):
             fd = open(current_file, 'r')
