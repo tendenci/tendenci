@@ -15,29 +15,23 @@
 {% block body %}
 <div class="t">
 {% event_nav request.user %}
-
+<h1>Import Events Process</h1>
 <div class="imports">
-	<b>
-    {% blocktrans with request.user.username as requser %}
-        You ({{ requser }}) are importing the following file at (time)
-    {% endblocktrans %}({% now "D d M Y P" %})</b>: <br> 
-	<font color="red">
-	{{ file_name }}
-	</font>
-	<br>
-	{% trans "Note: Event Logging Will be Suspended for the duration of import for this session only." %}<br>
-	<br>
-	<div class="results">
-		<div class="loading-icon" style="position:absolute;top:100;left:50;width:300px;padding:5px;border:1px solid #071C7F;margin-bottom:3em;">
-			<img src="{{ STATIC_URL }}images/icons/loading.gif" alt="loading"/> {% trans "loading ..." %}
-		</div>
-	</div>
-	<p>&nbsp;</p>
-	<p>&nbsp;</p>
+    <p><strong>{% trans "Import ID" %}:</strong> {{ import_i.id }}</p>
+    <p><strong>{% trans "File" %}:</strong> {{ import_i.file.name }}</p>
+    <p><strong>{% trans "Status" %}:</strong> {{ import_i.status }}</p>
+    <p><strong>{% trans "Total Events Created" %}:</strong> {{ import_i.total_created }}</p>
 </div>
 </div>
 {% endblock %}
 
 {% block extra_body %}
 {{ block.super }}
+{% if import_i.status != "completed" %}
+<script language="javascript" type="text/javascript">
+    $(document).ready(function(){
+        setInterval("location.reload(true)", 300000);
+    });
+</script>
+{% endif %}
 {% endblock %}

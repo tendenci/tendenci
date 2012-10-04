@@ -8,6 +8,8 @@ import time
 import calendar
 import itertools
 import cPickle
+import threading
+
 from datetime import datetime
 from datetime import date, timedelta
 from decimal import Decimal
@@ -3153,7 +3155,7 @@ def import_preview(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    event_list, invalid_list = event_import_process(request, import_i, 
+    event_list, invalid_list = event_import_process(import_i, 
                                                         preview=True)
 
     return render_to_response(template_name, {
@@ -3175,8 +3177,9 @@ def import_process(request, import_id,
     # We can choose to leave the next line to a real subprocess call
     # if needed
     if import_i.status == "pending":
-        event_list, invalid_list = event_import_process(request, import_i, 
-                                                        preview=False)
+        thread = threading.Thread(target=event_import_process,
+                            args=(import_i,), kwargs={'preview':False})
+        thread.run()
 
     return render_to_response(template_name, {
         "import_i": import_i,

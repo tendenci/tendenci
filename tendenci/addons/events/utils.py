@@ -1316,17 +1316,22 @@ def get_custom_registrants_initials(entries, **kwargs):
     return initials
 
 
-def event_import_process(request, import_i, preview=True, id=''):
+def event_import_process(import_i, preview=True):
     """
     This function processes each row and store the data
     in the event_object_dict. Then it updates the database
     if preview=False.
     """
+    #print "START IMPORT PROCESS"
     data_dict_list = extract_from_excel(import_i.file.path)
     data_dict_list_len = len(data_dict_list)
 
     event_obj_list = []
     invalid_list = []
+    
+    if not preview: #update import status
+        import_i.status = "processing"
+        import_i.save()
 
     # loop through the file's entries and determine valid imports
     start = 0
@@ -1364,7 +1369,7 @@ def event_import_process(request, import_i, preview=True, id=''):
             if not preview:
                 event_import_dict = {}
                 event_import_dict['ACTION'] = 'insert'
-                event = do_event_import(request, event_object_dict)
+                event = do_event_import(event_object_dict)
                 event_import_dict = {}
                 event_import_dict['event'] = event
                 event_import_dict['ROW_NUM'] = event_object_dict['ROW_NUM']
@@ -1376,11 +1381,12 @@ def event_import_process(request, import_i, preview=True, id=''):
     if not preview: # save import status
         import_i.status = "completed"
         import_i.save()
-
+    
+    #print "END IMPORT PROCESS"
     return event_obj_list, invalid_list
 
 
-def do_event_import(request, event_object_dict):
+def do_event_import(event_object_dict):
     """Creates and Event and Place for the given event_object_dict
     """
     event = Event()

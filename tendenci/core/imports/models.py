@@ -17,8 +17,9 @@ def file_directory(instance, filename):
 
 class Import(models.Model):
     STATUS_CHOICES = (
-        ("completed", _(u"Completed")),
         ("pending", _(u"Pending")),
+        ("processing", _(u"Processing")),
+        ("completed", _(u"Completed")),
         ("failed", _(u"Failed")),
     )
     app_label = models.CharField(max_length=50)
