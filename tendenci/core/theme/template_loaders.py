@@ -45,7 +45,7 @@ class Loader(BaseLoader):
 
         for template_path in theme_templates:
             try:
-                if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                if settings.USE_S3_THEME:
                     yield os.path.join(template_path, template_name)
                 else:
                     yield safe_join(template_path, template_name)
@@ -63,7 +63,7 @@ class Loader(BaseLoader):
 
         for filepath in self.get_template_sources(template_name, template_dirs):
             # First try to read from S3
-            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+            if settings.USE_S3_THEME:
                 # first try to read from cache
                 cache_key = ".".join([settings.SITE_CACHE_KEY, "theme", filepath])
                 cached_template = cache.get(cache_key)
@@ -95,6 +95,7 @@ class Loader(BaseLoader):
 
             # Otherwise, look on to local file system.
             else:
+                #print filepath
                 try:
                     file = open(filepath)
                     try:
@@ -112,10 +113,12 @@ class Loader(BaseLoader):
 
 _loader = Loader()
 
+
 def load_template_source(template_name, template_dirs=None):
     # For backwards compatibility
     return _loader.load_template_source(template_name, template_dirs)
 load_template_source.is_usable = True
+
 
 def find_default_template(name, dirs=None):
     """
@@ -141,7 +144,8 @@ def find_default_template(name, dirs=None):
         except TemplateDoesNotExist:
             pass
     raise TemplateDoesNotExist(name)
-    
+
+
 def get_default_template(template_name):
     """
     Returns a compiled Template object for the given template name,
