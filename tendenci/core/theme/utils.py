@@ -16,11 +16,12 @@ def get_theme_root(theme=None):
         theme = get_theme()
     if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
         # local theme root
-        theme_root = (os.path.join(settings.ORIGINAL_THEMES_DIR, theme)).replace('\\', '/')
+        theme_root = theme
     else:
         theme_root = (os.path.join(settings.THEMES_DIR, theme)).replace('\\', '/')
     return theme_root
-    
+
+
 def get_theme_template(template_name, theme=None):
     """Returns a relative path for the theme template.
     This is used primarily as an input for loader's get_template
