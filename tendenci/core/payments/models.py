@@ -177,6 +177,8 @@ class Payment(models.Model):
                 self.response_page = site_url + reverse('firstdata.thank_you', args=[self.id])
             elif merchant_account.lower() == "paypalpayflowlink":
                 self.response_page = site_url + reverse('payflowlink.thank_you')
+            elif merchant_account.lower() == "paypal":
+                self.response_page = site_url + reverse('paypal.thank_you')
             else:
                 self.response_page = site_url + "/payments/thankyou/%d" % (self.id)
                 
