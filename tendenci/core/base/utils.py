@@ -462,27 +462,38 @@ def detect_template_tags(string):
     p = re.compile('{[#{%][^#}%]+[%}#]}', re.IGNORECASE)
     return p.search(string)
 
+
 def get_template_list():
     """
     Get a list of files from the template
     directory that begin with 'default-'
     """
     file_list = []
-    current_dir = os.path.join(THEME_ROOT, template_directory)
+    theme = get_setting('module', 'theme_editor', 'theme')
+    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+        theme_dir = settings.ORIGINAL_THEMES_DIR
+    else:
+        theme_dir = settings.THEMES_DIR
+
+    current_dir = os.path.join(theme_dir, theme, template_directory)
+
     if os.path.isdir(current_dir):
         item_list = os.listdir(current_dir)
-        for item in item_list:
-            current_item = os.path.join(current_dir, item)
-            path_split = os.path.splitext(current_item)
-            extension = path_split[1]
-            base_name = os.path.basename(path_split[0])
-            if os.path.isfile(current_item):
-                if extension == ".html" and "default-" in base_name:
-                    base_display_name = base_name[8:].replace('-',' ').title()
-                    file_list.append((item,base_display_name,))
-        return sorted(file_list)
-    return file_list
-    
+    else:
+        item_list = []
+
+    for item in item_list:
+        current_item = os.path.join(current_dir, item)
+        path_split = os.path.splitext(current_item)
+        extension = path_split[1]
+        base_name = os.path.basename(path_split[0])
+        if os.path.isfile(current_item):
+            if extension == ".html" and "default-" in base_name:
+                base_display_name = base_name[8:].replace('-',' ').title()
+                file_list.append((item,base_display_name,))
+    return sorted(file_list)
+
+
 def check_template(filename):
     """
     Check to see if the file exists
