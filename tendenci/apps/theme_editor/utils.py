@@ -11,9 +11,9 @@ from django.core.urlresolvers import reverse
 from django.core.management import call_command
 from django.utils.importlib import import_module
 
-from tendenci.core.theme.utils import get_theme_root
+from tendenci.core.theme.utils import get_theme_root, get_theme
 from tendenci.apps.theme_editor.models import ThemeFileVersion
-from tendenci.libs.boto_s3.utils import save_file_to_s3
+from tendenci.libs.boto_s3.utils import save_file_to_s3, read_theme_file_from_s3
 
 
 template_directory = "/templates"
@@ -146,11 +146,16 @@ def get_file_content(file, ROOT_DIR=THEME_ROOT):
     the navigation
     """
     content = ''
-    current_file = os.path.join(ROOT_DIR, file)
-    if os.path.isfile(current_file):
-        fd = open(current_file, 'r')
-        content = fd.read()
-        fd.close()
+
+    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+        theme = get_theme()
+        content = read_theme_file_from_s3(os.path.join(theme, file))
+    else:
+        current_file = os.path.join(ROOT_DIR, file)
+        if os.path.isfile(current_file):
+            fd = open(current_file, 'r')
+            content = fd.read()
+            fd.close()
     return content
 
 def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):

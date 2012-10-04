@@ -52,8 +52,8 @@ class FileForm(forms.Form):
                 public = True
             save_file_to_s3(file_path, public=public)
 
-            # print file_path
-            # cache.delete(".".join([settings.SITE_CACHE_KEY, 'theme', file_path]))
+            cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
+            cache.delete(cache_key)
 
             # if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
             #     urllib.urlopen(settings.REMOTE_DEPLOY_URL)
