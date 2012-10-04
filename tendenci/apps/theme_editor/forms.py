@@ -41,6 +41,14 @@ class FileForm(forms.Form):
         file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
         if os.path.isfile(file_path) and content != "":
             archive_file(request, file_relative_path, ROOT_DIR=ROOT_DIR)
+
+            # Save the file locally no matter the theme location.
+            # The save to S3 reads from the local file, so we need to save it first.
+            f = codecs.open(file_path, 'w', 'utf-8', 'replace')
+            file = File(f)
+            file.write(content)
+            file.close()
+
             if settings.USE_S3_THEME:
                 # copy to s3 storage
                 if os.path.splitext(file_path)[1] == '.html':
@@ -54,11 +62,6 @@ class FileForm(forms.Form):
 
                 if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
                     urllib.urlopen(settings.REMOTE_DEPLOY_URL)
-            else:
-                f = codecs.open(file_path, 'w', 'utf-8', 'replace')
-                file = File(f)
-                file.write(content)
-                file.close()
 
             return True
         else:
@@ -87,3 +90,4 @@ class UploadForm(forms.Form):
         if not data.name.lower().endswith(FILE_EXTENTIONS):
             raise forms.ValidationError("This is not a valid file type to upload.")
         return data
+        
