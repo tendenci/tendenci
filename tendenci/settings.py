@@ -376,6 +376,11 @@ PAYFLOWLINK_PARTNER = ''
 PAYPAL_MERCHANT_LOGIN = ''
 PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
 
+# PAYPAL 
+PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
+# for test mode
+# PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
+
 # --------------------------------------#
 # RSS
 # --------------------------------------#
