@@ -270,6 +270,7 @@ THEMES_DIR = os.path.join(TENDENCI_ROOT, 'themes')
 
 # ORIGINAL_THEMES_DIR is used when USE_S3_STORAGE==True
 ORIGINAL_THEMES_DIR = THEMES_DIR
+USE_S3_THEME = False
 
 # -------------------------------------- #
 #    TINYMCE

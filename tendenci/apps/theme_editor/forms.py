@@ -28,56 +28,63 @@ FILE_EXTENTIONS = (
     '.gif'
 )
 
+
 class FileForm(forms.Form):
     content = forms.CharField(label="Content",
-                           widget=forms.Textarea(attrs={'rows':26, 'cols':73}),
+                           widget=forms.Textarea(attrs={'rows': 26, 'cols': 73}),
                            max_length=500000
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
-    
+
     def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT):
         content = self.cleaned_data["content"]
         file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
-        if os.path.isfile(file_path) and content <> "":
+        if os.path.isfile(file_path) and content != "":
             archive_file(request, file_relative_path, ROOT_DIR=ROOT_DIR)
+
+            # Save the file locally no matter the theme location.
+            # The save to S3 reads from the local file, so we need to save it first.
             f = codecs.open(file_path, 'w', 'utf-8', 'replace')
             file = File(f)
             file.write(content)
             file.close()
 
-            # copy to s3 storage
-            if os.path.splitext(file_path)[1] == '.html':
-                public = False
-            else:
-                public = True
-            save_file_to_s3(file_path, public=public)
+            if settings.USE_S3_THEME:
+                # copy to s3 storage
+                if os.path.splitext(file_path)[1] == '.html':
+                    public = False
+                else:
+                    public = True
+                save_file_to_s3(file_path, public=public)
 
-            cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
-            cache.delete(cache_key)
+                cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', "%s/%s" % (get_theme(), file_relative_path)])
+                cache.delete(cache_key)
 
-            # if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
-            #     urllib.urlopen(settings.REMOTE_DEPLOY_URL)
+                if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
+                    urllib.urlopen(settings.REMOTE_DEPLOY_URL)
 
             return True
         else:
             return False
-            
+
+
 class ThemeSelectForm(forms.Form):
     THEME_CHOICES = ((x, x) for x in theme_choices())
-    theme_edit = forms.ChoiceField(label = _('Theme:'), choices=THEME_CHOICES)
-    
+    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=THEME_CHOICES)
+
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
-    
+
+
 class UploadForm(forms.Form):
     upload = forms.FileField()
     file_dir = forms.CharField(widget=forms.HiddenInput, required=False)
     overwrite = forms.BooleanField(widget=forms.HiddenInput, required=False)
-    
+
     def clean_file_dir(self):
         data = self.cleaned_data['file_dir']
         return data
-    
+
     def clean_upload(self):
         data = self.cleaned_data['upload']
         if not data.name.lower().endswith(FILE_EXTENTIONS):
