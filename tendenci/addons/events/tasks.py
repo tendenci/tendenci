@@ -6,8 +6,8 @@ from django.contrib.contenttypes import generic
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from celery.task import Task
 from celery.registry import tasks
-from tendenci.core.ics.models import ICS
-from tendenci.core.ics.utils import create_ics
+from tendenci.addons.events.ics.models import ICS
+from tendenci.addons.events.ics.utils import create_ics
 from tendenci.core.exports.utils import full_model_to_dict, render_csv
 from tendenci.addons.events.models import Event
 

@@ -140,4 +140,5 @@ urlpatterns = patterns('tendenci.addons.events',
     
     # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
+    
 )

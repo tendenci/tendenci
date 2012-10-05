@@ -37,7 +37,7 @@ from tendenci.core.meta.forms import MetaForm
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
-from tendenci.core.ics.utils import run_precreate_ics
+from tendenci.addons.events.ics.utils import run_precreate_ics
 
 from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,

@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            from tendenci.core.ics.models import ICS
+            from tendenci.addons.events.ics.models import ICS
             from tendenci.addons.events.tasks import EventsICSTask
             
             if args:
