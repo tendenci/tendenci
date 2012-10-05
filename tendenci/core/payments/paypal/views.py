@@ -9,8 +9,10 @@ from tendenci.core.payments.utils import log_silent_post
 
 @csrf_exempt
 def thank_you(request, template_name='payments/receipt.html'):
+    validate_type = 'PDT'
     payment, processed = paypal_thankyou_processing(request,
-                                    dict(request.POST.items()))
+                                    dict(request.POST.items()),
+                                    validate_type=validate_type)
 
     return render_to_response(template_name, {'payment': payment},
                               context_instance=RequestContext(request))
@@ -18,8 +20,10 @@ def thank_you(request, template_name='payments/receipt.html'):
 
 @csrf_exempt
 def ipn(request):
+    validate_type = 'IPN'
     payment, processed = paypal_thankyou_processing(request,
-                                dict(request.POST.items()))
+                                dict(request.POST.items()),
+                                validate_type=validate_type)
 
     if processed:
         log_silent_post(request, payment)
