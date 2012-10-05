@@ -192,12 +192,12 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
 def payment_update_paypal(request, response_d, payment, **kwargs):
     payment.first_name = response_d.get('first_name', '')
     payment.last_name = response_d.get('last_name', '')
-    payment.address = response_d.get('address', '')
-    payment.address2 = response_d.get('address2', '')
-    payment.city = response_d.get('city', '')
-    payment.state = response_d.get('state', '')
-    payment.country = response_d.get('country', '')
-    payment.phone = response_d.get('night_phone_a', '')
+#    payment.address = response_d.get('address', '')
+#    payment.address2 = response_d.get('address2', '')
+#    payment.city = response_d.get('city', '')
+#    payment.state = response_d.get('state', '')
+#    payment.country = response_d.get('country', '')
+#    payment.phone = response_d.get('night_phone_a', '')
 
     result = response_d.get('payment_status', '')
 
@@ -207,11 +207,12 @@ def payment_update_paypal(request, response_d, payment, **kwargs):
         payment.response_reason_code = '1'
         payment.status_detail = 'approved'
         payment.trans_id = response_d.get('txn_id')
-        payment.response_reason_text = 'approved'
+        payment.response_reason_text = 'This transaction has been approved.'
     else:
         payment.response_code = 0
         payment.response_reason_code = 0
-        payment.response_reason_text = response_d.get('payment_status')
+        payment.response_reason_text = 'This transaction is %s.' % (
+                                response_d.get('payment_status')).lower()
 
     if payment.is_approved:
         payment.mark_as_paid()
