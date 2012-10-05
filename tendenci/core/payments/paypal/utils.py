@@ -1,8 +1,14 @@
+import urllib
+import urllib2
+import cgi
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django import forms
-#from django.http import Http404
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+
 from tendenci.core.payments.paypal.forms import PayPalPaymentForm
 from tendenci.core.payments.models import Payment
 from tendenci.core.payments.utils import payment_processing_object_updates
@@ -45,9 +51,106 @@ def prepare_paypal_form(request, payment):
     return form
 
 
+def parse_pdt_validation(data):
+    result_params = {}
+    success = False
+    items_list = data.split('\n')
+
+    for i, item in enumerate(items_list):
+        if i == 0:
+            success = (item.lower() == 'success')
+        else:
+            # the item is url encoded - decode it
+            result_params.update(cgi.parse_qsl(item))
+
+    return success, result_params
+
+
+def validate_with_paypal(request, validate_type):
+    """
+    Validate either PDT or IPN with PayPal.
+    """
+    if validate_type == 'PDT':
+        # we are on return url
+        # need to verify if payment is completed
+        # MERCHANT_TXN_KEY is your PDT identity token
+        params = {
+                  'cmd': '_notify-synch',
+                  'tx': request.GET.get('tx', ''),
+                  'at': settings.MERCHANT_TXN_KEY
+                  }
+        data = urllib.urlencode(params)
+
+        # Sample response:
+        # SUCCESS
+        # first_name=Jane+Doe
+        # last_name=Smith
+        # payment_status=Completed payer_email=janedoesmith%40hotmail.com
+        # payment_gross=3.99
+        # mc_currency=USD custom=For+the+purchase+of+the+rare+book+Green+Eggs+%26+Ham
+
+        # If the response is FAIL, PayPal recommends making sure that:
+        # The Transaction token is not bad.
+        # The ID token is not bad.
+        # The tokens have not expired.
+
+    else:   # IPN
+        data = 'cmd=_notify-validate&%s' % request.POST.urlencode()
+
+        # The response is one single-word: VERIFIED or INVALID
+
+    headers = {"Content-type": "application/x-www-form-urlencoded",
+               'encoding': 'utf-8',
+               "Accept": "text/plain"}
+    request = urllib2.Request(settings.PAYPAL_POST_URL,
+                              data,
+                              headers)
+    response = urllib2.urlopen(request)
+    data = response.read()
+
+    if validate_type == 'PDT':
+        return parse_pdt_validation(data)
+    else:
+        return data.strip('\n').lower() == 'verified', None
+
+
+def verify_no_fraud(response_d, payment):
+    # Has duplicate txn_id?
+    txn_id = response_d.get('txn_id')
+    if not txn_id:
+        return False
+
+    txn_id_exists = Payment.objects.filter(trans_id=txn_id).exists()
+    if txn_id_exists:
+        return False
+
+    # Does receiver_email matches?
+    receiver_email = response_d.get('receiver_email')
+    if receiver_email != settings.PAYPAL_MERCHANT_LOGIN:
+        return False
+
+    # Is the amount correct?
+    payment_gross = response_d.get('payment_gross')
+    if Decimal(payment_gross) != payment.amount:
+        return False
+
+    return True
+
+
 def paypal_thankyou_processing(request, response_d, **kwargs):
-    from django.shortcuts import get_object_or_404
-    response_d = dict(map(lambda x: (x[0].lower(), x[1]), response_d.items()))
+
+    # validate with PayPal
+    validate_type = kwargs.get('validate_type', 'PDT')
+
+    if validate_type == 'PDT':
+        success, response_d = validate_with_paypal(request, validate_type)
+    else:
+        success = validate_with_paypal(request, validate_type)[0]
+        response_d = dict(map(lambda x: (x[0].lower(), x[1]),
+                              response_d.items()))
+
+    if not success:
+        raise Http404
 
     paymentid = response_d.get('invoice', 0)
 
@@ -58,23 +161,35 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
     payment = get_object_or_404(Payment, pk=paymentid)
     processed = False
 
-    if payment.invoice.balance > 0:  # if balance==0, it means already processed
-        payment_update_paypal(request, response_d, payment)
-        payment_processing_object_updates(request, payment)
-        processed = True
+    # To prevent the fraud, verify the following:
+    # 1) txn_id is not a duplicate to prevent someone from reusing an old,
+    #    completed transaction.
+    # 2) receiver_email is an email address registered in your PayPal
+    #    account, to prevent the payment from being sent to a fraudulent
+    #    account.
+    # 3) Other transaction details, such as the item number and price,
+    #    to confirm that the price has not been changed.
 
-        # log an event
-        log_payment(request, payment)
+    # if balance==0, it means already processed
+    if payment.invoice.balance > 0:
+        # verify before updating database
+        is_valid = verify_no_fraud(response_d, payment)
 
-        # send payment recipients notification
-        send_payment_notice(request, payment)
+        if is_valid:
+            payment_update_paypal(request, response_d, payment)
+            payment_processing_object_updates(request, payment)
+            processed = True
+
+            # log an event
+            log_payment(request, payment)
+
+            # send payment recipients notification
+            send_payment_notice(request, payment)
 
     return payment, processed
 
 
 def payment_update_paypal(request, response_d, payment, **kwargs):
-    # validate the post data
-
     payment.first_name = response_d.get('first_name', '')
     payment.last_name = response_d.get('last_name', '')
     payment.address = response_d.get('address', '')
@@ -85,18 +200,18 @@ def payment_update_paypal(request, response_d, payment, **kwargs):
     payment.phone = response_d.get('night_phone_a', '')
 
     result = response_d.get('payment_status', '')
-#    respmsg = (response_d.get('respmsg', '')).lower()
-#    payment.response_reason_text = respmsg
 
-    if result == 'completed':
+    if result.lower() == 'completed':
         payment.response_code = '1'
         payment.response_subcode = '1'
         payment.response_reason_code = '1'
         payment.status_detail = 'approved'
-        payment.trans_id = response_d.get('pnref', '')
+        payment.trans_id = response_d.get('txn_id')
+        payment.response_reason_text = 'approved'
     else:
         payment.response_code = 0
         payment.response_reason_code = 0
+        payment.response_reason_text = response_d.get('payment_status')
 
     if payment.is_approved:
         payment.mark_as_paid()

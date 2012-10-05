@@ -35,7 +35,7 @@ class PayPalPaymentForm(forms.Form):
                               initial='0')
     paymentaction = forms.CharField(max_length=10,
                               widget=forms.HiddenInput,
-                              initial='')
+                              initial='sale')
     # link to ipn
     notify_url = forms.CharField(max_length=100,
                                  widget=forms.HiddenInput)
