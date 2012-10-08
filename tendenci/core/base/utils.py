@@ -498,7 +498,7 @@ def check_template(filename):
     """
     Check to see if the file exists
     """
-    current_file = os.path.join(THEME_ROOT, template_directory, filename)
+    current_file = os.path.join(settings.ORIGINAL_THEMES_DIR, THEME_ROOT, template_directory, filename)
     return os.path.isfile(current_file)
 
 def fieldify(str):
