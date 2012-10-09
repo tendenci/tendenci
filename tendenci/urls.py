@@ -4,7 +4,6 @@ from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
 
-from tendenci.core.theme.utils import get_theme_root, get_theme, theme_choices
 from tendenci.core.registry import autodiscover as reg_autodiscover
 
 # load the apps that are in Django Admin
@@ -161,6 +160,8 @@ except ImportError:
 #PLUGINS:
 from tendenci.core.registry.utils import get_url_patterns
 urlpatterns += get_url_patterns()
+
+urlpatterns += patterns('', url(r'^en/$', redirect_to, {'url': '/accounts/login/'}),)
 
 # tack on the pages pattern at the very end so let custom and software patterns
 # happen first
