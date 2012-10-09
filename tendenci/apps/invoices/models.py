@@ -99,8 +99,10 @@ class Invoice(models.Model):
         return u'%s' % (self.title)
 
     def split_title(self):
-        split_title = ': '.join(self.title.split(': ')[1:])
-        return u'%s' % split_title
+        if ": " in self.title:
+            split_title = ': '.join(self.title.split(': ')[1:])
+            return u'%s' % split_title
+        return self.title
 
 #    def past_due(self):
 #        if self.object_type == 'registration':
