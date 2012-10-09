@@ -1,10 +1,10 @@
 import os
 import shutil
 import sys
-
-from os import remove, close
+import urllib
 
 from django.conf import settings
+from django.core.cache import cache
 from django.utils.importlib import import_module
 
 from tendenci.core.theme.utils import get_theme_root, get_theme
@@ -195,3 +195,9 @@ def handle_uploaded_file(f, file_dir):
         else:
             public = True
         save_file_to_s3(file_path, public=public)
+
+        cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', file_path[(file_path.find(THEME_ROOT)):]])
+        cache.delete(cache_key)
+
+        if hasattr(settings, 'REMOTE_DEPLOY_URL') and settings.REMOTE_DEPLOY_URL:
+            urllib.urlopen(settings.REMOTE_DEPLOY_URL)
