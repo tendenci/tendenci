@@ -52,7 +52,8 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     RegistrationPreForm, EventICSForm, EmailForm)
 from tendenci.addons.events.utils import (email_registrants, 
     render_event_email, get_default_reminder_template,
-    add_registration, registration_has_started, get_pricing, clean_price,
+    add_registration, registration_has_started, registration_has_ended,
+    registration_earliest_time, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
@@ -141,6 +142,47 @@ def details(request, id=None, template_name="events/view.html"):
         'now': datetime.now(),
         'addons': event.addon_set.filter(status=True),
     }, context_instance=RequestContext(request))
+
+
+def view_attendees(request, event_id, template_name='events/attendees.html'):
+    event = get_object_or_404(Event, pk=event_id)
+
+    if not event.can_view_registrants(request.user):
+        raise Http403
+
+    limit = event.registration_configuration.limit
+    registration = event.registration_configuration
+
+    pricing = registration.get_available_pricings(request.user, is_strict=False)
+    pricing = pricing.order_by('display_order', '-price')
+    
+    reg_started = registration_has_started(event, pricing=pricing)
+    reg_ended = registration_has_ended(event, pricing=pricing)
+    earliest_time = registration_earliest_time(event, pricing=pricing)
+
+    # spots taken
+    if limit > 0:
+        slots_taken, slots_available = event.get_spots_status()
+    else:
+        slots_taken, slots_available = (-1, -1)
+
+    is_registrant = False
+    # check if user has already registered
+    if hasattr(request.user, 'registrant_set'):
+        is_registrant = request.user.registrant_set.filter(registration__event=event).exists()
+
+    return render_to_response(template_name, {
+        'event': event,
+        'registration': registration,
+        'limit': limit,
+        'slots_taken': slots_taken,
+        'slots_available': slots_available,
+        'reg_started': reg_started,
+        'reg_ended': reg_ended,
+        'earliest_time': earliest_time,
+        'is_registrant': is_registrant,
+    }, context_instance=RequestContext(request))
+
 
 def month_redirect(request):
     return HttpResponseRedirect(reverse('event.month'))

@@ -1,0 +1,21 @@
+.t .event-wrap .info .event-date,
+.t .event-wrap .info .registration-info .event-slots {
+    margin-top: 20px;
+}
+.t .event-wrap .info .attendees-wrap .attendees-header, 
+.t .event-wrap .info .registration-info {
+	padding: 5px;
+	background-color: #F7F7F7;
+    border: 1px solid silver;
+    margin-bottom: 20px;
+}
+.t .event-wrap .info .attendees-wrap .attendees-header h2{
+    margin: 0;
+    font-size: 20px;
+}
+.t .event-wrap .info .attendees-wrap .attendee {
+    float: left;
+    width: 100px;
+    text-align: center;
+    margin-right: 20px;
+}

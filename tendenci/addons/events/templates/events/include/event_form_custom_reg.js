@@ -102,4 +102,16 @@ $(document).ready(function() {
         toggle_email_reminder($this);
     });
     
+    if ($("#id_display_event_registrants:checked").length == 1) {
+        $('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').show();
+    }else {
+        $('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').hide();
+    }
+    $('#id_display_event_registrants').click(function(){
+        if($("#id_display_event_registrants:checked").length == 1){
+            $('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').slideDown('fast');
+        }else{
+            $('fieldset.attendees .form-field:not(fieldset.attendees .form-field:first)').slideUp('fast');
+        }
+    });
 });

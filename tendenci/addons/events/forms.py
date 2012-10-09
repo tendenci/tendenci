@@ -428,6 +428,8 @@ class EventForm(TendenciBaseForm):
             'external_url',
             'photo_upload',
             'tags',
+            'display_event_registrants',
+            'display_registrants_to',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -449,6 +451,12 @@ class EventForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
+                      ('Attendees', {
+                      'fields': ['display_event_registrants',
+                                 'display_registrants_to',  
+                                ],
+                      'classes': ['attendees']
+                      }),
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
@@ -463,6 +471,9 @@ class EventForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })
                     ]
+        widgets = {
+            'display_registrants_to': forms.RadioSelect
+        }
         
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
@@ -479,7 +490,7 @@ class EventForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:

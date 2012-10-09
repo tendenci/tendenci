@@ -880,6 +880,14 @@ class Event(TendenciBaseModel):
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
+    # additional permissions
+    display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
+    DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
+                                    ("user","Users Only"),
+                                    ("member","Members Only"),
+                                    ("admin","Admin Only"),)
+    display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="public")
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
 
@@ -1002,7 +1010,20 @@ class Event(TendenciBaseModel):
                 registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
-        
+    
+    def can_view_registrants(self, user):
+        if self.display_event_registrants:
+            if self.display_registrants_to == 'public':
+                return True
+            if user.profile.is_superuser and self.display_registrants_to == 'admin':
+                return True
+            if user.profile.is_member and self.display_registrants_to == 'member':
+                return True
+            if not user.profile.is_member and not user.is_anonymous() and self.display_registrants_to == 'user':
+                return True
+            
+        return False
+
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
         return delta.days
