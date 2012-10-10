@@ -6,3 +6,4 @@ class EntityManager(TendenciBaseManager):
     Model Manager
     """
     pass
+    
