@@ -607,6 +607,14 @@ class CSVForm(forms.Form):
                          key.lower() == choice.lower():
                             self.fields[key].initial = choice
 
+    def clean_csv(self):
+        csv = self.cleaned_data['csv']
+        SUPPORTED_FILE_TYPES = ['text/csv',]
+
+        if not csv.content_type in SUPPORTED_FILE_TYPES:
+            raise forms.ValidationError(_('File type is not supported. Please upload a CSV File.'))
+        return csv
+
     def save(self, *args, **kwargs):
         """
         Loop through the dynamic fields and create a
