@@ -84,6 +84,7 @@ class Form(TendenciBaseModel):
         max_length=2000)
     completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
         help_text=_("Redirect to this page after form completion."))
+    template = models.CharField(_('Template'), max_length=50, blank=True)
 
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,

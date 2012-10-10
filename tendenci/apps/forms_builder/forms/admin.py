@@ -63,7 +63,7 @@ class FormAdmin(TendenciBaseModelAdmin):
 #    radio_fields = {"status": admin.HORIZONTAL}
     prepopulated_fields = {'slug': ['title']}
     fieldsets = (
-        (None, {"fields": ("title", "slug", "intro", "response", "completion_url")}),
+        (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',),'fields': (
