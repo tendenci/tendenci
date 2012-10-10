@@ -7,6 +7,8 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
+from django.template.loader import get_template
+from django.template import TemplateDoesNotExist
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.utils import get_theme_root
@@ -496,10 +498,20 @@ def get_template_list():
 
 def check_template(filename):
     """
-    Check to see if the file exists
+    Check to see if the file exists in the theme root
     """
     current_file = os.path.join(settings.ORIGINAL_THEMES_DIR, THEME_ROOT, template_directory, filename)
     return os.path.isfile(current_file)
+
+def template_exists(template):
+    """
+    Check if the template exists
+    """
+    try:
+        get_template(template)
+    except TemplateDoesNotExist:
+        return False
+    return True
 
 def fieldify(str):
     """Convert the fields in the square brackets to the django field type. 
