@@ -13,9 +13,11 @@ from django.contrib import messages
 from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
+from django.template.loader import get_template
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
+from tendenci.core.base.utils import check_template, template_exists
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.core.event_logs.models import EventLog
@@ -185,6 +187,7 @@ def copy(request, id):
         email_from = form_instance.email_from,
         email_copies = form_instance.email_copies,
         completion_url = form_instance.completion_url,
+        template = form_instance.template,
         allow_anonymous_view = form_instance.allow_anonymous_view,
         allow_user_view = form_instance.allow_user_view,
         allow_member_view = form_instance.allow_member_view,
@@ -488,7 +491,14 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             if form.completion_url:
                 return redirect(form.completion_url)
             return redirect("form_sent", form.slug)
-    context = {"form": form, "form_for_form": form_for_form}
+    # set form's template to default if no template or template doesn't exist
+    if not form.template or not template_exists(form.template):
+        form.template = "default.html"
+    context = {
+        "form": form,
+        "form_for_form": form_for_form,
+        'form_template': form.template,
+    }
     return render_to_response(template, context, RequestContext(request))
 
 def form_sent(request, slug, template="forms/form_sent.html"):
@@ -497,7 +507,10 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     """
     published = Form.objects.published(for_user=request.user)
     form = get_object_or_404(published, slug=slug)
-    context = {"form": form}
+    # set form's template to default if no template or template doesn't exist
+    if not form.template or not template_exists(form.template):
+        form.template = "default.html"
+    context = {"form": form, "form_template": form.template}
     return render_to_response(template, context, RequestContext(request))
 
 def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
@@ -528,10 +541,14 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
                         'email':request.user.email})
         else:
             form = form_class()
-
+    # set form's template to default if no template or template doesn't exist
+    form_template = entry.form.template
+    if not form_template or not template_exists(form_template):
+        form_template = "default.html"
     return render_to_response(template, {
             'payment_form':form,
             'form':entry.form,
+            'form_template': form_template,
         }, context_instance=RequestContext(request))
 
 @login_required
