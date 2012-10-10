@@ -54,7 +54,7 @@ class PayPalPaymentForm(forms.Form):
     first_name = forms.CharField(max_length=100, widget=forms.HiddenInput)
     last_name = forms.CharField(max_length=100, widget=forms.HiddenInput)
     email = forms.CharField(max_length=255, widget=forms.HiddenInput)
-    address = forms.CharField(max_length=100, widget=forms.HiddenInput)
+    address1 = forms.CharField(max_length=100, widget=forms.HiddenInput)
     address2 = forms.CharField(max_length=100, widget=forms.HiddenInput)
     city = forms.CharField(max_length=40, widget=forms.HiddenInput)
     state = forms.CharField(max_length=40, widget=forms.HiddenInput)
