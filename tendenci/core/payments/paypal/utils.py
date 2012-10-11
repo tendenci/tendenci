@@ -192,12 +192,23 @@ def paypal_thankyou_processing(request, response_d, **kwargs):
 def payment_update_paypal(request, response_d, payment, **kwargs):
     payment.first_name = response_d.get('first_name', '')
     payment.last_name = response_d.get('last_name', '')
-    payment.address = response_d.get('address1', '')
-    payment.address2 = response_d.get('address2', '')
-    payment.city = response_d.get('city', '')
-    payment.state = response_d.get('state', '')
-    payment.country = response_d.get('country', '')
-    payment.phone = response_d.get('night_phone_a', '')
+    address = response_d.get('address1', '')
+    if address:
+        payment.address = address
+    address2 = response_d.get('address2', '')
+    if address2:
+        payment.address2 = address2
+    city = response_d.get('city', '')
+    if city:
+        payment.city = city
+    state = response_d.get('state', '')
+    if state:
+        payment.state = state
+    phone = response_d.get('night_phone_a', '')
+    if phone:
+        payment.phone = phone
+
+    payment.payment_type = response_d.get('payment_type', '')
 
     result = response_d.get('payment_status', '')
 
