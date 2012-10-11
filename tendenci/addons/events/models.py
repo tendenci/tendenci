@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.contrib.auth.models import Group
 from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -879,7 +878,7 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
     tags = TagField(blank=True)
 
     # additional permissions

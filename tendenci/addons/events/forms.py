@@ -28,6 +28,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.emails.models import Email
 from form_utils.forms import BetterModelForm
+from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
 from tendenci.core.site_settings.utils import get_setting
@@ -411,6 +412,7 @@ class EventForm(TendenciBaseForm):
     
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=False)
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -425,6 +427,7 @@ class EventForm(TendenciBaseForm):
             'on_weekend',
             'timezone',
             'type',
+            'group',
             'external_url',
             'photo_upload',
             'tags',
@@ -445,6 +448,7 @@ class EventForm(TendenciBaseForm):
                                  'on_weekend',
                                  'timezone',
                                  'type',
+                                 'group',
                                  'external_url',
                                  'photo_upload',
                                  'tags',
