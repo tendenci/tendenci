@@ -162,10 +162,10 @@ def list_photos(parser, token):
 
         {% list_photos as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``photos_sidebar`` or 
+    Be sure the [varname] has a specific name like ``photos_sidebar`` or
     ``photos_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
@@ -176,6 +176,8 @@ def list_photos(parser, token):
            The text to search for items. Will not affect order.
         ``tags``
            The tags required on items to be included.
+        ``group``
+           The group id associated with items to be included.
         ``random``
            Use this with a value of true to randomize the items included.
 
