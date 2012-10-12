@@ -282,9 +282,9 @@ class UserPermissionForm(forms.ModelForm):
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
         content_types = ContentType.objects.exclude(app_label='auth')
-        
-        self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
-    
+        perms = Permission.objects.select_related('content_type').filter(content_type__in=content_types)
+        self.fields['user_permissions'].queryset = perms
+
 class UserGroupsForm(forms.Form):
     groups = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required=False)
     
