@@ -242,9 +242,10 @@ def application_details(request, template_name="memberships/applications/details
 
         # if an application entry was submitted
         # after your current membership was created
-        if user.memberships.get_membership():
+        user_membership = user.memberships.get_membership()
+        if user_membership:
             pending_entries.filter(
-                entry_time__gte=user.memberships.get_membership().subscribe_dt
+                entry_time__gte=user_membership.subscribe_dt
             )
 
     try:

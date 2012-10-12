@@ -1552,7 +1552,7 @@ class AppEntry(TendenciBaseModel):
         return items
 
     def ordered_fields(self):
-        return self.fields.all().order_by('field__position')
+        return self.fields.select_related('field').all().order_by('field__position')
 
 
 class AppFieldEntry(models.Model):
