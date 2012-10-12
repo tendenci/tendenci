@@ -6,7 +6,7 @@ class Command(BaseCommand):
     """
     Scan and retrieve media files (images, pdf..) from T4 to heroku.
 
-    Scan content for Articles, Events, News, ...
+    Scan content for Articles, News, Pages, Jobs and Events.
     """
     def handle(self, *apps, **kwargs):
         from tendenci.core.site_settings.utils import get_setting
@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         exts = '|'.join(['jpg', 'jpeg', 'gif', 'tif',
                            'tiff', 'bmp', 'png',
-                           'pdf'])
+                           'pdf', 'doc'])
         p = re.compile('(src|href)=\"([^"]+.(%s))\"' % exts,
                        re.IGNORECASE)
 
