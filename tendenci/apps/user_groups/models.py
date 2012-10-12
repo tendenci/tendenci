@@ -7,7 +7,6 @@ from django.template.defaultfilters import slugify
 
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.files.models import File
 from tendenci.apps.user_groups.managers import GroupManager
 
 
@@ -153,10 +152,3 @@ class GroupMembership(models.Model):
             status=status,
             status_detail=status_detail
         )
-
-
-class ImportFile(File):
-    pass
-
-    def __unicode__(self):
-        return "%s" % self.group.name

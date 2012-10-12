@@ -9,7 +9,6 @@ import cStringIO
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.contrib.contenttypes import generic
@@ -19,6 +18,7 @@ from tagging.fields import TagField
 
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
+from tendenci.apps.user_groups.models import Group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.files.managers import FileManager
 from tendenci.core.site_settings.utils import get_setting
