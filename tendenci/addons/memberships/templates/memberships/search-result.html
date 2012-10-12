@@ -12,14 +12,16 @@
         <div>{{ membership.subscribe_dt|date }} - {% firstof membership.expire_dt|date "Forever" %}</div>
     </div>
 
-    {% if membership.entries.all %}
+    {% with membership.entries.all as entries %}
+    {% if entries %}
     <div>
         <h2>{% trans "Application Entries" %}:</h2>
-        {% for entry in membership.entries.all %}
+        {% for entry in entries %}
             <div><a href="{% url membership.application_entries entry.pk %}">{{ entry }} - {{ entry.status_msg }}</a></div>
         {% endfor %}
     </div>
     {% endif %}
+    {% endwith %}
 </div>
 {% include 'memberships/meta.html' %}
 </div>

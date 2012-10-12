@@ -66,6 +66,17 @@
                 {% endcomment %}
             </div>
         </li>
+        <li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
+        	<div class="sub">
+                <div class="column">
+                    <ul>
+                        {% if MODULE_MEMBERSHIPS_ENABLED %}
+                            <li><a href="{% url membership.search %}">{% trans "Memberships" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </li>
         {% if MODULE_USERS_ALLOWUSERSEARCH %}
         <li><a href="{% url profile.search %}"><span class="glyph heading">&#85;</span>&nbsp;&nbsp;{% trans "People" %}</a>
             <div class="sub">
