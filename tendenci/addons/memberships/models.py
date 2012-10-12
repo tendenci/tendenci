@@ -285,7 +285,8 @@ class Membership(TendenciBaseModel):
     class Meta:
         verbose_name = _("Member")
         verbose_name_plural = _("Members")
-        permissions = (("view_membership", "Can view membership"),)
+        permissions = (("view_membership", "Can view membership"),
+            ("approve_membership", "Can approve membership"),)
 
     def __unicode__(self):
         label = u''
@@ -417,7 +418,7 @@ class Membership(TendenciBaseModel):
         return in_contract
 
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser:
+        if this_user.profile.is_superuser or has_perm(this_user, 'memberships.approve_membership', self):
             return True
 
         if this_user.is_anonymous():
@@ -792,7 +793,8 @@ class App(TendenciBaseModel):
 
     class Meta:
         verbose_name = "Membership Application"
-        permissions = (("view_app", "Can view membership application"),)
+        permissions = (
+            ("view_app", "Can view membership application"),)
 
     def __unicode__(self):
         return self.name
@@ -848,7 +850,7 @@ class App(TendenciBaseModel):
         return initial
 
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser:
+        if this_user.profile.is_superuser or has_perm(this_user, 'memberships.approve_membership', self):
             return True
 
         if this_user.is_anonymous():
@@ -978,7 +980,7 @@ class AppEntry(TendenciBaseModel):
         return ('membership.application_entries', [self.pk])
 
     def allow_view_by(self, this_user):
-        if this_user.profile.is_superuser:
+        if this_user.profile.is_superuser or has_perm(this_user, 'memberships.approve_membership', self.app):
             return True
 
         if this_user.is_anonymous():

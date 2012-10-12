@@ -34,9 +34,10 @@
         </p>
         {% else %}
         </p>
-        {% if request.user == membership.user or admin %}
-            {% if membership.can_renew and membership.ma %}
-                <p><a href="{{ membership.ma.get_absolute_url }}?username={{ membership.user.username }}">Renew Membership Now</a></p>
+            {% if request.user == membership.user or admin %}
+                {% if membership.can_renew and membership.ma %}
+                    <p><a href="{{ membership.ma.get_absolute_url }}?username={{ membership.user.username }}">Renew Membership Now</a></p>
+                {% endif %}
             {% endif %}
         {% endif %}
         <p><strong>{% trans "Membership Type" %}:</strong> {{ membership.membership_type }}</p>

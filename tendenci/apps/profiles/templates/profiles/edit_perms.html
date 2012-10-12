@@ -30,46 +30,43 @@
 
 <div class="t">
 <div class="t-profile">
-<div class="t-perm">
 {% users_nav request.user user_this %}
- {% users_options request.user user_this %}
+<div class="t-perm">
     <h1>{% trans "Grant/Remove Module Level Permissions" %}</h1>
     <h2>{% trans "User:" %} <a href="{{ user_this.get_absolute_url}}">
     {{ user_this.firstname}} {{ user_this.lastname}}({{ user_this.username}})</a></h2>
-<div class="clear-right"></div>
 
     <div class="profile-wrap edit-profile-perms">
     <form action="" method="post">{% csrf_token %}
 	       
-	<div class="field-wrapper">
-		{% if form.is_superuser.errors %}
-			{{ form.is_superuser.errors }}
-		{% endif %}
-		 <b>{{form.is_superuser.label_tag }}</b>
-		{{ form.is_superuser }}
-		 {{form.is_superuser.help_text }}
-	</div>
-	
-	<div class="field-wrapper">
-		{% if form.user_permissions.errors %}
-			{{ form.user_permissions.errors }}
-		{% endif %}
-		<label for="id_user_permissions" style="float:left; padding-right: 1em;"><b>{% trans "User Permissions:" %}</b></label>
-		<br />
-		{{ form.user_permissions }}
-	   <div style="clear:left;"></div>
-	</div>
-        <div style="display:block">
-        <input type="submit" value="Save" />
+        <div class="field-wrapper">
+            {% if form.is_superuser.errors %}
+                {{ form.is_superuser.errors }}
+            {% endif %}
+             <b>{{form.is_superuser.label_tag }}</b>
+            {{ form.is_superuser }}
+             {{form.is_superuser.help_text }}
         </div>
-    </form>
-
+	
+        <div class="field-wrapper">
+            {% if form.user_permissions.errors %}
+                {{ form.user_permissions.errors }}
+            {% endif %}
+            <label for="id_user_permissions" style="float:left; padding-right: 1em;"><b>{% trans "User Permissions:" %}</b></label>
+            <br />
+            {{ form.user_permissions }}
+        </div>
+        
+        <div style="clear:both"></div>
+        <input type="submit" value="Save" />
+        </form>
     </div>
+</div>
+</div>
+</div>
+{% endblock %}
 
-</div>
-</div>
-</div>
-
+{% block extra_body %}
 <script type="text/javascript" src="{{ STATIC_URL }}js/global/dropdown.js"></script>
 <script type="text/javascript">
 var iconrow = new dropdown({
