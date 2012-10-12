@@ -564,6 +564,8 @@ def photos_batch_add(request, photoset_id=0):
 
                 photo.save()
 
+                #photo.get_display_url()
+
                 # photo group perms = album group perms
                 group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
                 group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
