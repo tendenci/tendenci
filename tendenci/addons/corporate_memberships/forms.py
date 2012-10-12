@@ -82,8 +82,8 @@ class CorpAppForm(forms.ModelForm):
     confirmation_text = forms.CharField(required=False,
                  widget=TinyMCE(
                     attrs={'style': 'width:70%'},
-                    mce_attrs={'storme_app_label': "confirmation_text",
-                               'storme_model': "confirmation_text"}),
+                    mce_attrs={'storme_app_label': CorpApp._meta.app_label,
+                               'storme_model': CorpApp._meta.module_name.lower()}),
                                help_text='Will show on the confirmation page.')
     notes = forms.CharField(label=_('Notes'), required=False,
                widget=forms.Textarea(attrs={'rows': '3'}),
@@ -110,6 +110,15 @@ class CorpAppForm(forms.ModelForm):
                   'status',
                   'status_detail',
                   )
+
+    def __init__(self, *args, **kwargs): 
+        super(CorpAppForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = 0
 
 default_corpapp_inline_fields_list = get_corpapp_default_fields_list()
 if default_corpapp_inline_fields_list:
