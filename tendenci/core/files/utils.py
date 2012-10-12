@@ -323,7 +323,7 @@ class AppRetrieveFiles(object):
                 print '-- External broken link: ', link
             return
 
-        # if link doesn't exist on the site but does on the src
+        # if link doesn't exist on the site but on the src
         if not self.link_exists(relative_url, self.site_domain):
             if self.link_exists(relative_url, self.src_domain):
                 url = '%s%s' % (self.src_url, relative_url)
