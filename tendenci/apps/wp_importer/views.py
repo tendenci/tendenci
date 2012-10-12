@@ -22,6 +22,7 @@ from djcelery.models import TaskMeta
 from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import has_perm, update_perms_and_save
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.base.utils import send_email_notification
 
 @login_required
 def index(request, template_name="wp_importer/index.html"):
@@ -40,8 +41,13 @@ def index(request, template_name="wp_importer/index.html"):
                 #uncomment the next line if there is no celery server yet.
                 #result.wait()
                 subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
-                
-                return redirect("wp_importer.views.detail", result.task_id)
+
+                recipients = [request.user.email]
+                extra_context = {
+                    'request': request,
+                }
+                #send_email_notification('wp_import', recipients, extra_context)
+                return redirect("detail", result.task_id)
                 
             elif not request.FILES['blog'].name.endswith('xml'):
                 messages.add_message(

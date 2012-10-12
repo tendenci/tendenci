@@ -1,0 +1,22 @@
+{% load i18n %}
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd"> 
+<html>
+<head>
+<title>{% trans "Article Add Notice" %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body bgcolor="#ffffff" text="#000000">
+<p>{% blocktrans with request.user.get_full_name as author %}
+A new blog was added to the {{ SITE_GLOBAL_SITEDISPLAYNAME }} Articles module by {{ author }}
+{% endblocktrans %}.
+</p>
+
+<p>To view the articles added by the blog, go to: 
+<b><a href="{{ SITE_GLOBAL_SITEURL }}/articles">{{ SITE_GLOBAL_SITEURL }}/articles</a></b><br>
+ 
+<P>Time submitted:  {% now "D d M Y P" %}</P>
+ 
+</body>
+</html>

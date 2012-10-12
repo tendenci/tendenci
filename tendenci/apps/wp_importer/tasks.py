@@ -16,6 +16,7 @@ class WPImportTask(Task):
         f = open(file_name, 'r')
         xml = f.read()
         f.close()
+        print xml
 
         uri_parser = ParseUri()
         soup = BeautifulStoneSoup(xml)
