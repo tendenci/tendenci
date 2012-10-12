@@ -253,7 +253,7 @@ class AppRetrieveFiles(object):
                 if updated:
                     job.save()
         elif app_name == 'events':
-            from tendenci.addons.events.models import Event, Specker
+            from tendenci.addons.events.models import Event, Speaker
             events = Event.objects.all()
             for event in events:
                 print 'Processing event -', event.id, event
@@ -263,17 +263,17 @@ class AppRetrieveFiles(object):
                 if updated:
                     event.save()
 
-            # speakers     
-            speckers = Specker.objects.all()
-            for specker in speckers:
-                print 'Processing event speaker -', specker.id, specker
-                kwargs['instance'] = specker
-                updated, specker.description = self.process_content(
-                                        specker.description, **kwargs)
+            # speakers
+            speakers = Speaker.objects.all()
+            for speaker in speakers:
+                print 'Processing event speaker -', speaker.id, speaker
+                kwargs['instance'] = speaker
+                updated, speaker.description = self.process_content(
+                                        speaker.description, **kwargs)
                 if updated:
-                    specker.save()
+                    speaker.save()
 
-        print "\nTotal links updated: ", self.total_count
+        print "\nTotal links updated for %s: " % app_name, self.total_count
 
     def process_content(self, content, **kwargs):
         self.replace_dict = {}
@@ -362,8 +362,3 @@ class AppRetrieveFiles(object):
         tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
         tfile.save()
         return tfile
-
-
-
-
-
