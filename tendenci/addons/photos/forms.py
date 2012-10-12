@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_unicode
 
+from tendenci.apps.user_groups.models import Group
 from tendenci.addons.photos.models import Image, PhotoSet, License
 from tendenci.core.perms.forms import TendenciBaseForm
 
@@ -54,7 +55,7 @@ class PhotoUploadForm(TendenciBaseForm):
     
     class Meta:
         model = Image
-        exclude = ('member', 'photoset', 'title_slug', 'effect', 'crop_from')
+        exclude = ('member', 'photoset', 'title_slug', 'effect', 'crop_from', 'group')
 
     def __init__(self, *args, **kwargs):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
@@ -67,7 +68,7 @@ class PhotoEditForm(TendenciBaseForm):
                 ('pending','Pending'),))
     license = LicenseField(queryset=License.objects.all(),
                 widget = forms.RadioSelect(), empty_label=None)
-    
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=False)
     class Meta:
         model = Image
 
@@ -76,6 +77,7 @@ class PhotoEditForm(TendenciBaseForm):
             'caption',
             'license',
             'tags',
+            'group',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -89,6 +91,7 @@ class PhotoEditForm(TendenciBaseForm):
                           'title',
                           'caption',
                           'tags',
+                          'group',
                           'license',
                       ], 'legend': '',
                   }),

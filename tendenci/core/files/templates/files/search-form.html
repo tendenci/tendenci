@@ -5,14 +5,17 @@
         {{ form.q }}
     </div>
 	<div class="fieldWrapper">
-        <label for="id_q">Category</label>
+        <label for="id_category">Category</label>
         {{ form.category }}
     </div>
     <div class="fieldWrapper">
-        <label for="id_q">Sub Category</label>
+        <label for="id_subcategory">Sub Category</label>
         {{ form.sub_category }}
     </div>
-    
+    <div class="fieldWrapper">
+        <label for="id_group">Group</label>
+        {{ form.group }}
+    </div>
 	<input class="btn" type="submit" value="Search Files" />
 </form>
 {% endif %}
