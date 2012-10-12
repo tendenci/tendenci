@@ -1,11 +1,21 @@
 import Image
 from os.path import exists
 from cStringIO import StringIO
+import os
+import httplib
+import urllib
+import urllib2
+from urlparse import urlparse
+from django.core.files.base import ContentFile
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.shortcuts import Http404
 from django.core.cache import cache as django_cache
 from tendenci.core.base.utils import image_rescale
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
+
+from tendenci.core.files.models import File as TFile
+from tendenci.core.files.models import file_directory
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
@@ -184,3 +194,176 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, con
     key = key.replace(" ", "_")
 
     return key
+
+
+class AppRetrieveFiles(object):
+    """
+    Retrieve files (images) from src url.
+    """
+    def __init__(self, **kwargs):
+        self.site_url = kwargs.get('site_url')
+        self.site_domain = urllib2.Request(self.site_url).get_host()
+        self.src_url = kwargs.get('src_url')
+        self.src_domain = urllib2.Request(self.src_url).get_host()
+        self.p = kwargs.get('p')
+        self.replace_dict = {}
+        self.total_count = 0
+
+    def process_app(self, app_name, **kwargs):
+        if app_name == 'articles':
+            from tendenci.addons.articles.models import Article
+
+            articles = Article.objects.all()
+            for article in articles:
+                print 'Processing article - ', article.id,  article
+                kwargs['instance'] = article
+                updated, article.body = self.process_content(
+                                        article.body, **kwargs)
+
+                if updated:
+                    article.save()
+        elif app_name == 'news':
+            from tendenci.addons.news.models import News
+            news = News.objects.all()
+            for n in news:
+                print 'Processing news -', n.id, n
+                kwargs['instance'] = n
+                updated, n.body = self.process_content(
+                                        n.body, **kwargs)
+                if updated:
+                    n.save()
+        elif app_name == 'pages':
+            from tendenci.apps.pages.models import Page
+            pages = Page.objects.all()
+            for page in pages:
+                print 'Processing page -', page.id, page
+                kwargs['instance'] = page
+                updated, page.content = self.process_content(
+                                        page.content, **kwargs)
+                if updated:
+                    page.save()
+        elif app_name == 'jobs':
+            from tendenci.addons.jobs.models import Job
+            jobs = Job.objects.all()
+            for job in jobs:
+                print 'Processing job -', job.id, job
+                kwargs['instance'] = job
+                updated, job.description = self.process_content(
+                                        job.description, **kwargs)
+                if updated:
+                    job.save()
+        elif app_name == 'events':
+            from tendenci.addons.events.models import Event, Specker
+            events = Event.objects.all()
+            for event in events:
+                print 'Processing event -', event.id, event
+                kwargs['instance'] = event
+                updated, event.description = self.process_content(
+                                        event.description, **kwargs)
+                if updated:
+                    event.save()
+
+            # speakers     
+            speckers = Specker.objects.all()
+            for specker in speckers:
+                print 'Processing event speaker -', specker.id, specker
+                kwargs['instance'] = specker
+                updated, specker.description = self.process_content(
+                                        specker.description, **kwargs)
+                if updated:
+                    specker.save()
+
+        print "\nTotal links updated: ", self.total_count
+
+    def process_content(self, content, **kwargs):
+        self.replace_dict = {}
+
+        matches = self.p.findall(content)
+        print '... ', len(matches), 'matches found.'
+
+        for match in matches:
+            link = match[1]
+            self.process_link(link, **kwargs)
+
+        # find and replace urls
+        if self.replace_dict:
+            updated = True
+            for url_find, url_repl in self.replace_dict.iteritems():
+                content = content.replace(url_find, url_repl)
+            count = self.replace_dict.__len__()
+            print '...', count, 'link(s) replaced.'
+            self.total_count += count
+        else:
+            updated = False
+
+        return updated, content
+
+    def process_link(self, link, **kwargs):
+        # check if this is a broken link
+        # the link can from three different sources:
+        # this site:
+        #    absolute url
+        #    relative url
+        # the src site:
+        #    absolute url
+        # the other sites:
+        #    absolute url
+
+        # handle absolute url
+        o = urlparse(link)
+        relative_url = urllib.quote(o.path)
+        hostname = o.hostname
+
+        # skip if link is external other than the src site.
+        if hostname and hostname not in (self.site_domain,
+                                         self.site_domain.lstrip('www.'),
+                                         self.src_domain,
+                                         self.src_domain.lstrip('www.')):
+            if not self.link_exists(relative_url, hostname):
+                print '-- External broken link: ', link
+            return
+
+        # if link doesn't exist on the site but does on the src
+        if not self.link_exists(relative_url, self.site_domain):
+            if self.link_exists(relative_url, self.src_domain):
+                url = '%s%s' % (self.src_url, relative_url)
+                # go get from the src site
+                tfile = self.save_file_from_url(url, kwargs.get('instance'))
+                self.replace_dict[link] = tfile.get_absolute_url()
+            else:
+                print '** Broken link - ', link, "doesn't exist on both sites."
+
+    def link_exists(self, relative_link, domain):
+        """
+        Check if this link exists for the given domain.
+
+        example of a relative_link:
+        /images/newsletter/young.gif
+        """
+        conn = httplib.HTTPConnection(domain)
+        conn.request('HEAD', relative_link)
+        res = conn.getresponse()
+        conn.close()
+
+        return res.status == 200
+
+    def save_file_from_url(self, url, instance):
+        file_name = os.path.basename(urllib.unquote(url).replace(' ', '_'))
+        tfile = TFile()
+        tfile.name = file_name
+        tfile.content_type = ContentType.objects.get_for_model(instance)
+        tfile.object_id = instance.id
+        tfile.creator = instance.creator
+        tfile.creator_username = instance.creator_username
+        tfile.owner = instance.owner
+        tfile.owner_username = instance.owner_username
+
+        file_path = file_directory(tfile, tfile.name)
+        tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
+        tfile.save()
+        return tfile
+
+
+
+
+
