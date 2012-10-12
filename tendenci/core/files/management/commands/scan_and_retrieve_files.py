@@ -8,12 +8,16 @@ class Command(BaseCommand):
 
     Scan content for Articles, Events, News, ...
     """
-    def handle(self, *args, **kwargs):
+    def handle(self, *apps, **kwargs):
         from tendenci.core.site_settings.utils import get_setting
         from tendenci.core.files.utils import AppRetrieveFiles
 
-        #apps_to_scan = ['articles', 'news', 'pages', 'jobs', 'events']
-        apps_to_scan = ['pages']
+        if apps:
+            apps_to_scan = apps
+        else:
+            apps_to_scan = ['articles', 'news', 'pages', 'jobs', 'events']
+            #apps_to_scan = ['articles']
+
         t4_src_url = 'http://www.spegcs.org'
         site_url = get_setting('site', 'global', 'siteurl')
         # if site_url == t4_src_url, throws an error
@@ -33,5 +37,3 @@ class Command(BaseCommand):
 
         for app in apps_to_scan:
             retriever.process_app(app)
-
-
