@@ -42,11 +42,6 @@ def index(request, template_name="wp_importer/index.html"):
                 #result.wait()
                 subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
 
-                recipients = [request.user.email]
-                extra_context = {
-                    'request': request,
-                }
-                #send_email_notification('wp_import', recipients, extra_context)
                 return redirect("detail", result.task_id)
                 
             elif not request.FILES['blog'].name.endswith('xml'):
