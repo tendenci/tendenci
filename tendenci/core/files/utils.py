@@ -311,7 +311,7 @@ class AppRetrieveFiles(object):
 
         # handle absolute url
         o = urlparse(link)
-        relative_url = urllib.quote(o.path)
+        relative_url = urllib.quote(urllib.unquote(o.path))
         hostname = o.hostname
 
         # skip if link is external other than the src site.
@@ -345,7 +345,7 @@ class AppRetrieveFiles(object):
         res = conn.getresponse()
         conn.close()
 
-        return res.status == 200
+        return res.status in (200, 304)
 
     def save_file_from_url(self, url, instance):
         file_name = os.path.basename(urllib.unquote(url).replace(' ', '_'))
