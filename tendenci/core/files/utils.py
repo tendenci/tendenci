@@ -353,10 +353,14 @@ class AppRetrieveFiles(object):
         tfile.name = file_name
         tfile.content_type = ContentType.objects.get_for_model(instance)
         tfile.object_id = instance.id
-        tfile.creator = instance.creator
-        tfile.creator_username = instance.creator_username
-        tfile.owner = instance.owner
-        tfile.owner_username = instance.owner_username
+        if hasattr(instance, 'creator'):
+            tfile.creator = instance.creator
+        if hasattr(instance, 'creator_username'):
+            tfile.creator_username = instance.creator_username
+        if hasattr(instance, 'owner'):
+            tfile.owner = instance.owner
+        if hasattr(instance, 'owner_username'):
+            tfile.owner_username = instance.owner_username
 
         file_path = file_directory(tfile, tfile.name)
         tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
