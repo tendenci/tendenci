@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from tendenci.core.base.http import Http403
-from tendenci.core.base.utils import check_template
+from tendenci.core.base.utils import template_exists
 from tendenci.core.base.views import file_display
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
@@ -77,7 +77,7 @@ def index(request, slug=None, id=None, hash=None,
     if not has_view_perm(request.user, 'pages.view_page', page):
         raise Http403
 
-    if not page.template or not check_template(page.template):
+    if not page.template or not template_exists(page.template):
         page.template = "pages/base.html"
 
     EventLog.objects.log(instance=page)

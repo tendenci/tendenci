@@ -1148,7 +1148,6 @@ def copy_event(event, user):
         allow_anonymous_view = False,
         allow_user_view = event.allow_user_view,
         allow_member_view = event.allow_member_view,
-        allow_anonymous_edit = event.allow_anonymous_edit,
         allow_user_edit = event.allow_user_edit,
         allow_member_edit = event.allow_member_edit,
         creator = user,

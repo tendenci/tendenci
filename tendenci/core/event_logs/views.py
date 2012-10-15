@@ -110,21 +110,28 @@ def colored_image(request, color):
     base_dir = join(settings.MEDIA_ROOT, 'event_logs')
     full_path = join(base_dir, '%s.png' % color)
 
-    # make the dir if it doesn't exist
-    if not isdir(base_dir):
-        mkdir(base_dir)
-
-    try:
-        f = open(full_path, 'rb')
-        data = f.read()
-        f.close()
-    except:
+    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
         rgb = hex_to_rgb('#%s' % color)
         image = Image.new('RGB', (1, 1), rgb)
-        image.save(full_path, "PNG")
-        f = open(full_path, 'rb')
-        data = f.read()
-        f.close()
+        response = HttpResponse(mimetype="image/png")
+        image.save(response, "PNG")
+        return response
+    else:
+        # make the dir if it doesn't exist
+        if not isdir(base_dir):
+            mkdir(base_dir)
+
+        try:
+            f = open(full_path, 'rb')
+            data = f.read()
+            f.close()
+        except:
+            rgb = hex_to_rgb('#%s' % color)
+            image = Image.new('RGB', (1, 1), rgb)
+            image.save(full_path, "PNG")
+            f = open(full_path, 'rb')
+            data = f.read()
+            f.close()
 
     return HttpResponse(data, mimetype="image/png")
 

@@ -18,11 +18,15 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.perms.forms import TendenciBaseForm
 from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
+from tendenci.core.base.utils import get_template_list
 
 from tendenci.addons.recurring_payments.fields import BillingCycleField
 from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
 from tendenci.apps.forms_builder.forms.models import FormEntry, FieldEntry, Field, Form, Pricing
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+
+template_choices = [('default.html','Default')]
+template_choices += get_template_list()
 
 #fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -195,12 +199,15 @@ class FormAdminForm(TendenciBaseForm):
         mce_attrs={'storme_app_label':Form._meta.app_label, 
         'storme_model':Form._meta.module_name.lower()}))
 
+    template = forms.ChoiceField(choices=template_choices)
+
     class Meta:
         model = Form
         fields = ('title',
                   'slug',
                   'intro',
                   'response',
+                  'template',
                   'send_email', # removed per ed's request, added back per Aaron's request 2011-10-14
                   'email_text',
                   'subject_template',
@@ -381,9 +388,9 @@ class FormForField(forms.ModelForm):
                 raise forms.ValidationError("This field's function requires Text as a field type")
         
         #unrequire the display only fields
-        if field_type == "CharField/forms_builder.forms.widgets.Description":
+        if field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Description":
             cleaned_data['required'] = False
-        elif field_type == "CharField/forms_builder.forms.widgets.Header":
+        elif field_type == "CharField/tendenci.apps.forms_builder.forms.widgets.Header":
             cleaned_data['required'] = False
             
         return cleaned_data

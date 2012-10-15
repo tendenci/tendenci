@@ -18,7 +18,7 @@ class Version(models.Model):
     """
 
     create_dt = models.DateTimeField(_('create time'))
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     content_type = models.ForeignKey(ContentType)
     object_id = models.IntegerField(_('object id'))
     object_repr = models.CharField(_('object repr'), max_length=200)

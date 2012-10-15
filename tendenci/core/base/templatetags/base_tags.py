@@ -510,6 +510,7 @@ class ImageURL(Node):
         self.size = kwargs.get("size", None)
         self.crop = kwargs.get("crop", False)
         self.quality = kwargs.get("quality", None)
+        self.constrain = kwargs.get("constrain", None)
         self.file = Variable(file)
 
     def render(self, context):
@@ -517,7 +518,7 @@ class ImageURL(Node):
 
         if file and file.pk:
 
-            cache_key = generate_image_cache_key(file=str(file.id), size=self.size, pre_key=FILE_IMAGE_PRE_KEY, crop=self.crop, unique_key=str(file.id), quality=self.quality)
+            cache_key = generate_image_cache_key(file=str(file.id), size=self.size, pre_key=FILE_IMAGE_PRE_KEY, crop=self.crop, unique_key=str(file.id), quality=self.quality, constrain=self.constrain)
             cached_image_url = cache.get(cache_key)
             if cached_image_url:
                 return cached_image_url

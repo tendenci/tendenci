@@ -43,7 +43,7 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption)
+    RegAddonOption, EventPhoto)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
@@ -397,10 +397,19 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
 
-                # save photo
-                photo = form_event.cleaned_data['photo_upload']
-                if photo:
-                    event.save(photo=photo)
+                # handle image
+                f = form_event.cleaned_data['photo_upload']
+                if f:
+                    image = EventPhoto()
+                    image.object_id = event.id
+                    image.creator = request.user
+                    image.creator_username = request.user.username
+                    image.owner = request.user
+                    image.owner_username = request.user.username
+                    filename = "%s-%s" % (event.id, f.name)
+                    f.file.seek(0)
+                    image.file.save(filename, f)
+                    event.image = image
 
                 # make dict (i.e. speaker_bind); bind speaker with speaker image
                 pattern = re.compile('speaker-\d+-name')
@@ -632,10 +641,19 @@ def add(request, year=None, month=None, day=None, \
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
 
-                # save photo
-                photo = form_event.cleaned_data['photo_upload']
-                if photo:
-                    event.save(photo=photo)
+                # handle image
+                f = form_event.cleaned_data['photo_upload']
+                if f:
+                    image = EventPhoto()
+                    image.object_id = event.id
+                    image.creator = request.user
+                    image.creator_username = request.user.username
+                    image.owner = request.user
+                    image.owner_username = request.user.username
+                    filename = "%s-%s" % (event.id, f.name)
+                    f.file.seek(0)
+                    image.file.save(filename, f)
+                    event.image = image
 
                 for speaker in speakers:
                     speaker.event = [event]

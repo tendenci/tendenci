@@ -2,7 +2,7 @@ import os.path
 
 # Paths
 TENDENCI_ROOT = os.path.abspath(os.path.dirname(__file__))
-
+SITE_ADDONS_PATH = ''
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -270,6 +270,7 @@ THEMES_DIR = os.path.join(TENDENCI_ROOT, 'themes')
 
 # ORIGINAL_THEMES_DIR is used when USE_S3_STORAGE==True
 ORIGINAL_THEMES_DIR = THEMES_DIR
+USE_S3_THEME = False
 
 # -------------------------------------- #
 #    TINYMCE
@@ -375,6 +376,11 @@ AUTHNET_CIM_API_URL = "https://api.authorize.net/xml/v1/request.api"
 PAYFLOWLINK_PARTNER = ''
 PAYPAL_MERCHANT_LOGIN = ''
 PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
+
+# PAYPAL 
+PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
+# for test mode
+# PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'
 
 # --------------------------------------#
 # RSS
