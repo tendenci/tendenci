@@ -224,7 +224,7 @@ def detail(request, id, template_name="invoices/detail.html"):
                 INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id 
                 INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id 
                 WHERE accountings_acctentry.object_id = %d 
-                GROUP BY account_number 
+                GROUP BY account_number, description 
                 ORDER BY account_number  """ % (invoice.id)) 
     account_numbers = []
     for row in cursor.fetchall():

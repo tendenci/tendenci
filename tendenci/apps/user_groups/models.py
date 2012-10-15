@@ -7,7 +7,6 @@ from django.template.defaultfilters import slugify
 
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
-from tendenci.core.files.models import File
 from tendenci.apps.user_groups.managers import GroupManager
 
 
@@ -50,14 +49,23 @@ class Group(TendenciBaseModel):
     def get_absolute_url(self):
         return ('group.detail', [self.slug])
 
-    def save(self, force_insert=False, force_update=False):
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if not self.id:
             name = self.name
             self.guid = uuid.uuid1()
             if not self.slug:
                 self.slug = slugify(name)
-            
-        super(Group, self).save(force_insert, force_update)
+
+        if self.name and not self.group:
+            group = AuthGroup.objects.create(name=self.name)
+            group.save()
+            self.group = group
+
+        if self.name and self.group:
+            self.group.name = self.name
+            self.group.save()
+
+        super(Group, self).save(force_insert, force_update, *args, **kwargs)
      
     @property    
     def active_members(self):
@@ -144,10 +152,3 @@ class GroupMembership(models.Model):
             status=status,
             status_detail=status_detail
         )
-
-
-class ImportFile(File):
-    pass
-
-    def __unicode__(self):
-        return "%s" % self.group.name

@@ -45,8 +45,16 @@
                             <option value="{{ l.pk }}">{{ l.name }}</option>
                             {% endfor %}
                         </select>
+                        <div class="bulk-group">
+                            <div>{% trans "Update all Groups" %}</div>
+                            <select>
+                                <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
+                                {% for g in groups %}
+                                <option value="{{ g.pk }}">{{ g.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
-        
                     <div class="save-wrap">
                         <input type="submit" value="Save all changes to these photos" />
                     </div>
@@ -91,6 +99,10 @@
                             <div class="label">{{ photo_form.license.label_tag }}</div>
                             <div class="field">{{ photo_form.license }}</div>
                         </div>
+                        <div class="group-wrap">
+                            <div class="label">{{ photo_form.group.label_tag }}</div>
+                            <div class="field">{{ photo_form.group }}</div>
+                        </div>
                         <div class="cover-wrap">
                             <div class="field">
                                 <input type="radio" name="album_cover" value="{{ photo_form.initial.id }}" {% if photo_form.initial.id == photo_set.albumcover.photo.id %}selected{% endif %}>
@@ -129,6 +141,10 @@
 
     $(".bulk-license select").change(function(event) {
         $(".license-wrap select").val($(this).val());
+    });
+
+    $(".bulk-group select").change(function(event) {
+        $(".group-wrap select").val($(this).val());
     });
 
 
