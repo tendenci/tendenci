@@ -30,6 +30,14 @@ def job_search(context):
     return context
 
 
+@register.inclusion_tag("jobs/search-form.html", takes_context=True)
+def my_job_search(context):
+    context.update({
+        'my_job': True
+    })
+    return context
+
+
 @register.inclusion_tag("jobs/pricing-nav.html", takes_context=True)
 def job_pricing_nav(context, user, job_pricing=None):
     context.update({

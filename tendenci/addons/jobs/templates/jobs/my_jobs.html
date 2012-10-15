@@ -21,7 +21,7 @@
 {% job_nav request.user %}
     <h1>{% trans "My" %} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "List" %}</h1>
     
-    {% job_search %}
+    {% my_job_search %}
     <span><em>{{ jobs|length }} {% firstof MODULE_JOBS_LABEL_PLURAL 'Jobs' %} {% trans "Found" %}</em></span>
     {% autopaginate jobs 10 %}
     
