@@ -29,7 +29,7 @@ def index(request, form_class=ExportForm ,template_name="wp_exporter/index.html"
             #result.wait()
             subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
 
-            return redirect("detail", result.task_id)
+            return redirect("export_detail", result.task_id)
     else:
         form = form_class()
     
