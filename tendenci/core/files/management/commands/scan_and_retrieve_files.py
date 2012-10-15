@@ -43,7 +43,10 @@ class Command(BaseCommand):
 
         exts = '|'.join(['jpg', 'jpeg', 'gif', 'tif',
                            'tiff', 'bmp', 'png',
-                           'pdf', 'doc'])
+                           'pdf', 'doc', 'xls',
+                           'ppt', 'pps', 'mp3',
+                           'mp4', 'zip', 'docx',
+                           'pptx', 'xlsx'])
         p = re.compile('(src|href)=\"([^"]+.(%s))\"' % exts,
                        re.IGNORECASE)
 
