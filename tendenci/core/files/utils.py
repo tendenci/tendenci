@@ -327,7 +327,8 @@ class AppRetrieveFiles(object):
         #    absolute url
 
         # handle absolute url
-        o = urlparse(link)
+        cleaned_link = link.replace('&amp;', '&')
+        o = urlparse(cleaned_link)
         relative_url = urllib.quote(urllib.unquote(o.path))
         hostname = o.hostname
 
