@@ -6,7 +6,6 @@ from inspect import isclass
 from cStringIO import StringIO
 
 from django.db import models
-from django.contrib.auth.models import Group
 from django.db.models.signals import post_init
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes import generic
@@ -21,6 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from tagging.fields import TagField
 
+from tendenci.apps.user_groups.models import Group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import get_query_filters
@@ -647,7 +647,7 @@ class Image(ImageModel, TendenciBaseModel):
         (1, _('Safe')),
         (2, _('Not Safe')),
     )
-    guid = models.CharField(max_length=40, editable=False) 
+    guid = models.CharField(max_length=40, editable=False)
     title = models.CharField(_('title'), max_length=200)
     title_slug = models.SlugField(_('slug'))
     caption = models.TextField(_('caption'), blank=True)
@@ -658,7 +658,8 @@ class Image(ImageModel, TendenciBaseModel):
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
-    
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
 

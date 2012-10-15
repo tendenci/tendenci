@@ -855,6 +855,7 @@ class AppEntryForm(forms.ModelForm):
             'decision_dt',
             'judge',
             'invoice',
+            'entity',
         )
 
     def __init__(self, app=None, *args, **kwargs):

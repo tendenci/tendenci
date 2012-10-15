@@ -23,6 +23,7 @@ from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.files.utils import get_image
+from tendenci.apps.user_groups.models import Group
 from djcelery.models import TaskMeta
 
 from tendenci.addons.photos.cache import PHOTO_PRE_KEY
@@ -563,6 +564,8 @@ def photos_batch_add(request, photoset_id=0):
 
                 photo.save()
 
+                #photo.get_display_url()
+
                 # photo group perms = album group perms
                 group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
                 group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
@@ -662,6 +665,8 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     cc_licenses = License.objects.all()
 
+    groups = Group.objects.filter(status=True, status_detail="active")
+
     tag_help_text = Image._meta.get_field_by_name('tags')[0].help_text
 
     return render_to_response(template_name, {
@@ -669,6 +674,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         "photo_set": photo_set,
         "cc_licenses": cc_licenses,
         "tag_help_text": tag_help_text,
+        "groups": groups,
     }, context_instance=RequestContext(request))
 
 

@@ -84,6 +84,7 @@ class Form(TendenciBaseModel):
         max_length=2000)
     completion_url = models.URLField(_("Completion URL"), blank=True, null=True,
         help_text=_("Redirect to this page after form completion."))
+    template = models.CharField(_('Template'), max_length=50, blank=True)
 
     # payments
     custom_payment = models.BooleanField(_("Is Custom Payment"), default=False,
@@ -373,9 +374,9 @@ class FieldEntry(models.Model):
     def include_in_email(self):
         widget = self.field.get_field_widget()
         field_class = self.field.get_field_class()
-        if widget == 'forms_builder.forms.widgets.Description':
+        if widget == 'tendenci.apps.forms_builder.forms.widgets.Description':
             return False
-        if widget == 'forms_builder.forms.widgets.Header':
+        if widget == 'tendenci.apps.forms_builder.forms.widgets.Header':
             return False
         if field_class == 'FileField':
             return False

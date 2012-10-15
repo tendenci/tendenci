@@ -28,6 +28,24 @@ def read_media_file_from_s3(file_path):
     return content
 
 
+def read_theme_file_from_s3(file_path):
+    """
+    Read a theme file from S3.
+    The file_path should be the relative path in the media directory.
+
+    Example:
+    file_content = read_theme_file_from_s3('themename/templates/default.html')
+    """
+    # the DEFAULT_S3_PATH is where the media files are stored.
+    file_path = '%s/%s' % (settings.THEME_S3_PATH, unicode(file_path).lstrip('/'))
+    storage = S3BotoStorage()
+    f = S3BotoStorageFile(file_path, 'r', storage)
+    content = f.read()
+    f.close()
+
+    return content
+
+
 def save_file_to_s3(file_path, dirpath=None, public=False):
     """
     Save the file to S3.

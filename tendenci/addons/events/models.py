@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.contrib.auth.models import Group
 from django.db.models.aggregates import Sum
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
@@ -35,6 +34,8 @@ from tendenci.addons.events.settings import (FIELD_MAX_LENGTH,
                              USER_FIELD_CHOICES)
 from tendenci.core.base.utils import localize_date
 from tendenci.core.emails.models import Email
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
+
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
 
@@ -877,7 +878,7 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
     tags = TagField(blank=True)
 
     # html-meta tags
@@ -921,22 +922,11 @@ class Event(TendenciBaseModel):
         photo_upload = kwargs.pop('photo', None)
         super(Event, self).save(*args, **kwargs)
 
-        if photo_upload and self.pk:
-            image = EventPhoto(
-                        creator = self.creator,
-                        creator_username = self.creator_username,
-                        owner = self.owner,
-                        owner_username = self.owner_username
-                    )
-
-            image.file.save(photo_upload.name, photo_upload)  # save file row
-            image.save()  # save image row
-
-            if self.image:
-                self.image.delete()  # delete image and file row
-            self.image = image  # set image
-
-            self.save()
+        if self.image:
+            if self.is_public():
+                set_s3_file_permission(self.image.file, public=True)
+            else:
+                set_s3_file_permission(self.image.file, public=False)
 
     def __unicode__(self):
         return self.title
@@ -1064,7 +1054,13 @@ class Event(TendenciBaseModel):
             return  (spots_taken, 0)
 
         return (spots_taken, limit-spots_taken)
-    
+
+    def is_public(self):
+        return all([self.allow_anonymous_view,
+                self.status,
+                self.status_detail in ['active']])
+
+
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
     notes = models.TextField(_("Notes"), max_length=2000, blank=True)
