@@ -31,8 +31,12 @@
 				{% avatar user_this 128 %}
 			</a>
 		</div>
-
-		<h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+        {% if profile.display_name %}
+            <h1>{% firstof profile.display_name %}</h1>
+		    <h3>{% firstof user_this.get_full_name user_this.username %}</h3>
+        {% else %}
+            <h1>{% firstof user_this.get_full_name user_this.username %}</h1>
+        {% endif %}
 			{% if profile.member_number %}
 			{% if profile|allow_edit_by:user %}
 			<div style="padding-bottom: 1em;">
