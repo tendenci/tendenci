@@ -10,7 +10,7 @@ class Command(BaseCommand):
     Scan content for Articles, News, Pages, Jobs and Events.
 
     Example:
-        ./manage.py scan_and_retriev_files articles pages --src_url=http://YourOldSite.com
+        ./manage.py scan_and_retrieve_files articles pages --src_url=http://YourOldSite.com
     """
     option_list = BaseCommand.option_list + (
         make_option('--src_url',
@@ -39,8 +39,6 @@ class Command(BaseCommand):
         if src_url == site_url:
             raise CommandError('src_url cannot be the same as the site_url')
 
-        # if site_url == t4_src_url, throws an error
-
         exts = '|'.join(['jpg', 'jpeg', 'gif', 'tif',
                            'tiff', 'bmp', 'png',
                            'pdf', 'doc', 'xls',
@@ -59,3 +57,11 @@ class Command(BaseCommand):
 
         for app in apps_to_scan:
             retriever.process_app(app)
+
+        if retriever.broken_links:
+            print '\nBROKEN LINKS:\n', '-' * 30
+            for key in retriever.broken_links.keys():
+                print
+                print key
+                for link in retriever.broken_links[key]:
+                    print ' ' * 4, link

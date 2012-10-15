@@ -208,6 +208,7 @@ class AppRetrieveFiles(object):
         self.p = kwargs.get('p')
         self.replace_dict = {}
         self.total_count = 0
+        self.broken_links = {}
 
     def process_app(self, app_name, **kwargs):
         if app_name == 'articles':
@@ -217,6 +218,8 @@ class AppRetrieveFiles(object):
             for article in articles:
                 print 'Processing article - ', article.id,  article
                 kwargs['instance'] = article
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  article.get_absolute_url())
                 updated, article.body = self.process_content(
                                         article.body, **kwargs)
 
@@ -228,6 +231,8 @@ class AppRetrieveFiles(object):
             for n in news:
                 print 'Processing news -', n.id, n
                 kwargs['instance'] = n
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  n.get_absolute_url())
                 updated, n.body = self.process_content(
                                         n.body, **kwargs)
                 if updated:
@@ -238,6 +243,8 @@ class AppRetrieveFiles(object):
             for page in pages:
                 print 'Processing page -', page.id, page
                 kwargs['instance'] = page
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  page.get_absolute_url())
                 updated, page.content = self.process_content(
                                         page.content, **kwargs)
                 if updated:
@@ -248,6 +255,8 @@ class AppRetrieveFiles(object):
             for job in jobs:
                 print 'Processing job -', job.id, job
                 kwargs['instance'] = job
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  job.get_absolute_url())
                 updated, job.description = self.process_content(
                                         job.description, **kwargs)
                 if updated:
@@ -258,6 +267,8 @@ class AppRetrieveFiles(object):
             for event in events:
                 print 'Processing event -', event.id, event
                 kwargs['instance'] = event
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  event.get_absolute_url())
                 updated, event.description = self.process_content(
                                         event.description, **kwargs)
                 if updated:
@@ -268,6 +279,9 @@ class AppRetrieveFiles(object):
             for speaker in speakers:
                 print 'Processing event speaker -', speaker.id, speaker
                 kwargs['instance'] = speaker
+                event = speaker.event.all()[0]
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  event.get_absolute_url())
                 updated, speaker.description = self.process_content(
                                         speaker.description, **kwargs)
                 if updated:
@@ -321,6 +335,7 @@ class AppRetrieveFiles(object):
                                          self.src_domain.lstrip('www.')):
             if not self.link_exists(relative_url, hostname):
                 print '-- External broken link: ', link
+                self.add_broken_link(link, **kwargs)
             return
 
         # if link doesn't exist on the site but on the src
@@ -332,6 +347,7 @@ class AppRetrieveFiles(object):
                 self.replace_dict[link] = tfile.get_absolute_url()
             else:
                 print '** Broken link - ', link, "doesn't exist on both sites."
+                self.add_broken_link(link, **kwargs)
 
     def link_exists(self, relative_link, domain):
         """
@@ -346,6 +362,16 @@ class AppRetrieveFiles(object):
         conn.close()
 
         return res.status in (200, 304)
+
+    def add_broken_link(self, broken_link, **kwargs):
+        """
+        Append the broken link to the list.
+        """
+        key = kwargs['content_url']
+        if not key in self.broken_links.keys():
+            self.broken_links[key] = [broken_link]
+        else:
+            self.broken_links[key].append(broken_link)
 
     def save_file_from_url(self, url, instance):
         file_name = os.path.basename(urllib.unquote(url).replace(' ', '_'))
