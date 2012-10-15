@@ -279,9 +279,12 @@ class AppRetrieveFiles(object):
             for speaker in speakers:
                 print 'Processing event speaker -', speaker.id, speaker
                 kwargs['instance'] = speaker
-                event = speaker.event.all()[0]
-                kwargs['content_url'] = '%s%s' % (self.site_url,
-                                                  event.get_absolute_url())
+                [event] = speaker.event.all()[:1] or [None]
+                if event:
+                    kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                      event.get_absolute_url())
+                else:
+                    kwargs['content_url'] = 'event speaker %d' % speaker.id
                 updated, speaker.description = self.process_content(
                                         speaker.description, **kwargs)
                 if updated:
