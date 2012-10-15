@@ -7,15 +7,14 @@ from tendenci.apps.wp_importer.utils import get_media, get_posts, get_pages
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.template import RequestContext
+from tendenci.core.site_settings.utils import get_setting
 
 class WPImportTask(Task):
 
-    def run(self, file_name, request, **kwargs):
+    def run(self, file_name, user, **kwargs):
         """
         Parse the given xml file using BeautifulSoup. Save all Article, Redirect and Page objects.
         """
-        user = request.user
         f = open(file_name, 'r')
         xml = f.read()
         f.close()
@@ -39,12 +38,11 @@ class WPImportTask(Task):
                 get_pages(item, uri_parser, user)
         
         if user.email:
-            context_instance = RequestContext(request)
-            context_instance.autoescape = False
+            context_instance = {
+                'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+            }
             subject = ''.join(render_to_string(('notification/wp_import/short.txt'), context_instance).splitlines())
-
-            context_instance = RequestContext(request)
-            context_instance.autoescape = True
             body = render_to_string(('notification/wp_import/full.html'), context_instance)
 
             #send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)

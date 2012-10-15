@@ -37,7 +37,7 @@ def index(request, template_name="wp_importer/index.html"):
                 upload = form.save()
                 file_name = os.path.join(settings.MEDIA_ROOT, 'blogimport', request.FILES['blog'].name)
                 
-                result = WPImportTask.delay(file_name, request)
+                result = WPImportTask.delay(file_name, request.user)
                 #uncomment the next line if there is no celery server yet.
                 #result.wait()
                 subprocess.Popen(['python', 'manage.py', 'celeryd_detach'])
