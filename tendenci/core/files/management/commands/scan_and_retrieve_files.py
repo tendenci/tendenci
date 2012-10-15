@@ -44,7 +44,12 @@ class Command(BaseCommand):
                            'pdf', 'doc', 'xls',
                            'ppt', 'pps', 'mp3',
                            'mp4', 'zip', 'docx',
-                           'pptx', 'xlsx'])
+                           'pptx', 'xlsx', 'wpd',
+                           'wp5', 'txt', 'csv',
+                           'rtf', 'avi', 'mov',
+                           'mpe', 'mpg', 'mpeg',
+                           'wmv', 'xml', 'swf',
+                           'flv', 'fla'])
         p = re.compile('(src|href)=\"([^"]+.(%s))\"' % exts,
                        re.IGNORECASE)
 
