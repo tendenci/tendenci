@@ -332,7 +332,7 @@ def export(request, template_name="invoices/export.html"):
 
 
 @staff_member_required
-def report_expenses_per_user(request, template_name="reports/expenses_per_user.html"):
+def report_top_spenders(request, template_name="reports/expenses_per_user.html"):
     """Show dollars per user report"""
     if not request.user.is_superuser:
         raise Http403
