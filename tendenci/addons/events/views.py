@@ -49,10 +49,11 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
-    RegistrationPreForm, EventICSForm, EmailForm)
+    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm)
 from tendenci.addons.events.utils import (email_registrants, 
     render_event_email, get_default_reminder_template,
-    add_registration, registration_has_started, get_pricing, clean_price,
+    add_registration, registration_has_started, registration_has_ended,
+    registration_earliest_time, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel)
@@ -141,6 +142,47 @@ def details(request, id=None, template_name="events/view.html"):
         'now': datetime.now(),
         'addons': event.addon_set.filter(status=True),
     }, context_instance=RequestContext(request))
+
+
+def view_attendees(request, event_id, template_name='events/attendees.html'):
+    event = get_object_or_404(Event, pk=event_id)
+
+    if not event.can_view_registrants(request.user):
+        raise Http403
+
+    limit = event.registration_configuration.limit
+    registration = event.registration_configuration
+
+    pricing = registration.get_available_pricings(request.user, is_strict=False)
+    pricing = pricing.order_by('display_order', '-price')
+    
+    reg_started = registration_has_started(event, pricing=pricing)
+    reg_ended = registration_has_ended(event, pricing=pricing)
+    earliest_time = registration_earliest_time(event, pricing=pricing)
+
+    # spots taken
+    if limit > 0:
+        slots_taken, slots_available = event.get_spots_status()
+    else:
+        slots_taken, slots_available = (-1, -1)
+
+    is_registrant = False
+    # check if user has already registered
+    if hasattr(request.user, 'registrant_set'):
+        is_registrant = request.user.registrant_set.filter(registration__event=event).exists()
+
+    return render_to_response(template_name, {
+        'event': event,
+        'registration': registration,
+        'limit': limit,
+        'slots_taken': slots_taken,
+        'slots_available': slots_available,
+        'reg_started': reg_started,
+        'reg_ended': reg_ended,
+        'earliest_time': earliest_time,
+        'is_registrant': is_registrant,
+    }, context_instance=RequestContext(request))
+
 
 def month_redirect(request):
     return HttpResponseRedirect(reverse('event.month'))
@@ -338,6 +380,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 reg_form_queryset=reg_form_queryset,
                 prefix='regconf'
             )
+            form_attendees = DisplayAttendeesForm(request.POST)
 
             # form sets
             form_speaker = SpeakerFormSet(
@@ -381,6 +424,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 form_speaker,
                 form_organizer,
                 form_regconf,
+                form_attendees,
                 form_regconfpricing
             ]
 
@@ -393,6 +437,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 regconf_pricing = form_regconfpricing.save()
 
                 event = form_event.save(commit=False)
+                event.display_event_registrants = form_attendees.cleaned_data['display_event_registrants']
+                event.display_registrants_to = form_attendees.cleaned_data['display_registrants_to']
 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
@@ -482,6 +528,12 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 reg_form_queryset=reg_form_queryset,
                 prefix='regconf'
             )
+            form_attendees = DisplayAttendeesForm(
+                initial={
+                    'display_event_registrants':event.display_event_registrants,
+                    'display_registrants_to':event.display_registrants_to,
+                }
+            )
 
             # form sets
             form_speaker = SpeakerFormSet(
@@ -514,6 +566,7 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 form_organizer,
                 form_speaker,
                 form_regconf,
+                form_attendees,
                 form_regconfpricing
                 ],
             },
@@ -584,6 +637,7 @@ def add(request, year=None, month=None, day=None, \
             form_organizer = OrganizerForm(request.POST, prefix='organizer')
             form_regconf = Reg8nEditForm(request.POST, prefix='regconf',
                                          reg_form_queryset=reg_form_queryset,)
+            form_attendees = DisplayAttendeesForm(request.POST)
 
             # form sets
             form_speaker = SpeakerFormSet(
@@ -624,6 +678,7 @@ def add(request, year=None, month=None, day=None, \
                 form_speaker,
                 form_organizer,
                 form_regconf,
+                form_attendees,
                 form_regconfpricing
             ]
 
@@ -637,6 +692,8 @@ def add(request, year=None, month=None, day=None, \
                 regconf_pricing = form_regconfpricing.save()
 
                 event = form_event.save(commit=False)
+                event.display_event_registrants = form_attendees.cleaned_data['display_event_registrants']
+                event.display_registrants_to = form_attendees.cleaned_data['display_registrants_to']
 
                 # update all permissions and save the model
                 event = update_perms_and_save(request, form_event, event)
@@ -736,6 +793,7 @@ def add(request, year=None, month=None, day=None, \
             form_organizer = OrganizerForm(prefix='organizer')
             form_regconf = Reg8nEditForm(initial=reg_init, prefix='regconf',
                                          reg_form_queryset=reg_form_queryset,)
+            form_attendees = DisplayAttendeesForm()
 
             # form sets
             form_speaker = SpeakerFormSet(
@@ -763,6 +821,7 @@ def add(request, year=None, month=None, day=None, \
                 form_organizer,
                 form_speaker,
                 form_regconf,
+                form_attendees,
                 form_regconfpricing
                 ],
             },

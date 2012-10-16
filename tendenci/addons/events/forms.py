@@ -483,7 +483,7 @@ class EventForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-            
+
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
@@ -519,6 +519,17 @@ class EventForm(TendenciBaseForm):
         if self.cleaned_data.get('remove_photo'):
             event.image = None
         return event
+
+class DisplayAttendeesForm(forms.Form):
+    display_event_registrants = forms.BooleanField(required=False)
+    DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
+                                    ("user","Users Only"),
+                                    ("member","Members Only"),
+                                    ("admin","Admin Only"),)
+    display_registrants_to = forms.ChoiceField(choices=DISPLAY_REGISTRANTS_TO_CHOICES,
+                                                widget=forms.RadioSelect,
+                                                initial='public')
+    label = 'Display Attendees'
 
 class TypeChoiceField(forms.ModelChoiceField):
 

@@ -34,9 +34,13 @@ def event_options(context, user, event):
 
 @register.inclusion_tag("events/nav.html", takes_context=True)
 def event_nav(context, user, event=None):
+    display_attendees = False
+    if event:
+        display_attendees = event.can_view_registrants(user)
     context.update({
         "nav_object": event,
         "user": user,
+        "can_view_attendees": display_attendees,
         "today": datetime.today()
     })
     return context
