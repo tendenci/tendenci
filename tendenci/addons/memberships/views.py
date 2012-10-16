@@ -299,7 +299,7 @@ def application_details(request, template_name="memberships/applications/details
             if entry_invoice.total > 0 and entry.payment_method and entry.payment_method.is_online:
 
                 return HttpResponseRedirect(reverse(
-                    'payments.views.pay_online',
+                    'payment.pay_online',
                     args=[entry_invoice.pk, entry_invoice.guid]
                 ))
 

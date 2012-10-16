@@ -204,7 +204,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
             #if corporate_membership.payment_method.lower() in ['credit card', 'cc']:
             if corporate_membership.payment_method.is_online:
                 if corporate_membership.invoice and corporate_membership.invoice.balance > 0:
-                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[corporate_membership.invoice.id, corporate_membership.invoice.guid])) 
+                    return HttpResponseRedirect(reverse('payment.pay_online', args=[corporate_membership.invoice.id, corporate_membership.invoice.guid])) 
             
             return HttpResponseRedirect(reverse('corp_memb.add_conf', args=[corporate_membership.id]))
         
@@ -398,7 +398,7 @@ def renew(request, id, template="corporate_memberships/renew.html"):
                 if corp_renew_entry.get_payment_method().is_online:
                 #if corp_renew_entry.payment_method.lower() in ['credit card', 'cc']:
                     if corp_renew_entry.invoice and corp_renew_entry.invoice.balance > 0:
-                        return HttpResponseRedirect(reverse('payments.views.pay_online', 
+                        return HttpResponseRedirect(reverse('payment.pay_online', 
                                                             args=[corp_renew_entry.invoice.id, 
                                                                   corp_renew_entry.invoice.guid]))
                         

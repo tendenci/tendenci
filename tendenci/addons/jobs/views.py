@@ -229,7 +229,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 if job.payment_method.lower() in ['credit card', 'cc']:
                     if job.invoice and job.invoice.balance > 0:
                         return HttpResponseRedirect(reverse(
-                            'payments.views.pay_online',
+                            'payment.pay_online',
                             args=[job.invoice.id, job.invoice.guid])
                         )
 
