@@ -887,7 +887,7 @@ class Event(TendenciBaseModel):
                                     ("user","Users Only"),
                                     ("member","Members Only"),
                                     ("admin","Admin Only"),)
-    display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="public")
+    display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="admin")
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
