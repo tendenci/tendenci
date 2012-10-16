@@ -19,7 +19,7 @@
 <div class="make-payment-view">
 <div class="label">{% trans "Payment Amount:" %}</div><div>{{ mp.payment_amount }}</div>
 <div class="clear-left"></div>
-<div class="label">{% trans "Invoice ID:" %}</div><div><a href="{% url invoices.views.view mp.invoice_id %}">{{ mp.invoice_id }}</a></div>
+<div class="label">{% trans "Invoice ID:" %}</div><div><a href="{% url invoice.view mp.invoice_id %}">{{ mp.invoice_id }}</a></div>
 <div class="clear-left"></div>
 {% if mp.user %}
 <div class="label">{% trans "User:" %}</div><div><a href="{% url profile mp.user.username %}">{{mp.user.username }}</a></div>
