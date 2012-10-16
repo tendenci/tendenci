@@ -213,11 +213,13 @@ def has_view_perm(user, perm, obj=None):
 def get_query_filters(user, perm, **kwargs):
     """
     Method to generate search query filters for different user types.
+    * super_perm kwarg simulates admin behavior.
     """
     # impersonation
     user = getattr(user, 'impersonated_user', user)
 
     perms_field = kwargs.get('perms_field', True)
+    super_perm = kwargs.get('super_perm', False)
 
     group_perm = Q()
     group_q = Q()
@@ -229,7 +231,7 @@ def get_query_filters(user, perm, **kwargs):
         anon_filter = (anon_q & status_q & status_detail_q)
         return anon_filter
     else:
-        if user.profile.is_superuser:
+        if user.profile.is_superuser or super_perm:
             return Q()
         else:
 

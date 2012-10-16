@@ -69,8 +69,8 @@ class MemberAppEntryManager(TendenciBaseManager):
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-        
-        if user.profile.is_superuser:
+
+        if user.profile.is_superuser or has_perm(user, 'memberships.approve_membership'):
             sqs = sqs.all()
         else:
             if user.is_anonymous():
