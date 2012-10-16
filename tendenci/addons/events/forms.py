@@ -431,8 +431,6 @@ class EventForm(TendenciBaseForm):
             'external_url',
             'photo_upload',
             'tags',
-            'display_event_registrants',
-            'display_registrants_to',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -455,12 +453,6 @@ class EventForm(TendenciBaseForm):
                                  ],
                       'legend': ''
                       }),
-                      ('Attendees', {
-                      'fields': ['display_event_registrants',
-                                 'display_registrants_to',  
-                                ],
-                      'classes': ['attendees']
-                      }),
                       ('Permissions', {
                       'fields': ['allow_anonymous_view',
                                  'user_perms',
@@ -475,9 +467,6 @@ class EventForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })
                     ]
-        widgets = {
-            'display_registrants_to': forms.RadioSelect
-        }
         
     def __init__(self, *args, **kwargs):
         super(EventForm, self).__init__(*args, **kwargs)
@@ -530,6 +519,17 @@ class EventForm(TendenciBaseForm):
         if self.cleaned_data.get('remove_photo'):
             event.image = None
         return event
+
+class DisplayAttendeesForm(forms.Form):
+    display_event_registrants = forms.BooleanField(required=False)
+    DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
+                                    ("user","Users Only"),
+                                    ("member","Members Only"),
+                                    ("admin","Admin Only"),)
+    display_registrants_to = forms.ChoiceField(choices=DISPLAY_REGISTRANTS_TO_CHOICES,
+                                                widget=forms.RadioSelect,
+                                                initial='public')
+    label = 'Display Attendees'
 
 class TypeChoiceField(forms.ModelChoiceField):
 

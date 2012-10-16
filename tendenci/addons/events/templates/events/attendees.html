@@ -68,7 +68,7 @@
             
             <div class="attendees-wrap">
                 <div class="attendees-header">
-                    <h2>{{ event.registrants|length }} {% trans "Attendees" %}</h2>
+                    <h2>{{ event.registrants|length }} {% trans "Attendee" %}{{ event.registrants.count|pluralize }}</h2>
                 </div>
                 <div class="attendees-list">
                 {% for registrant in event.registrants %}
@@ -76,7 +76,7 @@
                     <div class="image-wrap">
 			            {% avatar registrant.user 80 %}
 					</div>
-                    <span class="attendee-name">{% firstof registrant.last_name registrant.first_name %}</span>
+                    <span class="attendee-name">{{ registrant.last_name }}, {{ registrant.first_name }}</span>
                 </div>
                 {% endfor %}
                 </div>
