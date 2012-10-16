@@ -76,7 +76,7 @@
                     <div class="image-wrap">
 			            {% avatar registrant.user 80 %}
 					</div>
-                    <span class="attendee-name">{{ registrant.first_name }} {{ registrant.last_name }}</span>
+                    <span class="attendee-name">{% if registrant.first_name or registrant.last_name %}{% if registrant.first_name%}{{ registrant.first_name }}{% endif %} {% if registrant.last_name %}{{ registrant.last_name }}{% endif %}{% else %}{% trans "(Anonymous)" %}{% endif %}</span>
                 </div>
                 {% endfor %}
                 </div>
