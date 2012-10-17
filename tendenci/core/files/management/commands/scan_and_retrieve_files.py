@@ -10,7 +10,7 @@ class Command(BaseCommand):
     Scan content for Articles, News, Pages, Jobs and Events.
 
     Example:
-        ./manage.py scan_and_retrieve_files articles pages --src_url=http://YourOldSite.com
+        ./manage.py scan_and_retrieve_files articles pages --src_url=http://www.YourOldSite.com
     """
     option_list = BaseCommand.option_list + (
         make_option('--src_url',

@@ -5,6 +5,7 @@ import os
 import httplib
 import urllib
 import urllib2
+import socket
 from urlparse import urlparse
 from django.core.files.base import ContentFile
 from django.contrib.contenttypes.models import ContentType
@@ -361,9 +362,12 @@ class AppRetrieveFiles(object):
         /images/newsletter/young.gif
         """
         conn = httplib.HTTPConnection(domain)
-        conn.request('HEAD', relative_link)
-        res = conn.getresponse()
-        conn.close()
+        try:
+            conn.request('HEAD', relative_link)
+            res = conn.getresponse()
+            conn.close()
+        except socket.gaierror:
+            return False
 
         return res.status in (200, 304)
 
