@@ -6,6 +6,7 @@
 {% load photo_tags %}
 {% load pagination_tags %}
 {% load smart_if %}
+{% load base_tags %}
 
 {% block meta_description %}{{ photo.title|striptags|truncatewords:20 }}{% endblock %}
 {% block meta_keywords %}{{ photo.meta_keywords }}{% endblock %}
@@ -44,15 +45,15 @@
             <div class="photo">
                 </a>
                 <br>
-                <div about="{{ photo.get_medium_640_url }}" 
+                <div about="{% photo_image_url photo size=640x640 constrain=True %}" 
                     xmlns:dct="http://purl.org/dc/terms/"
                     xmlns:cc="http://creativecommons.org/ns#">
 
                     {% if photo_next_url %}
                     <a id="image-photo-next" href="{{ photo_next_url }}">
-                        <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" /></a>
+                        <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title }}" /></a>
                     {% else %}
-                    <img src="{{ photo.get_medium_640_url }}" alt="{{ photo.title }}" />
+                    <img src="{% photo_image_url photo size=640x640 constrain=True %}" alt="{{ photo.title }}" />
                     {% endif %}
 
                     <br />

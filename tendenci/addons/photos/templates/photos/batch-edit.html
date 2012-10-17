@@ -1,8 +1,8 @@
 {% extends "photos/base-wide.html" %}
-{% load photo_tags %}
 
 {% load i18n %}
 {% load photo_tags %}
+{% load base_tags %}
 {% load pagination_tags %}
 
 {% block title %}{% blocktrans %}Batch Edit Photos{% endblocktrans %}{% endblock %}
@@ -73,7 +73,7 @@
                     {% endfor %}
     
                     <div class="photo-wrap">
-                        <img src="{{ photo_form.instance.get_display_url }}" />
+                        <img src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" />
                     </div>
                     <div class="set-wrap">
                         {{ photo_form.photoset }}

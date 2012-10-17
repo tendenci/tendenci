@@ -11,10 +11,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core import serializers
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage
 from django.forms.models import modelformset_factory
+from django.core.files.base import ContentFile
 from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -22,7 +24,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
-from tendenci.core.files.utils import get_image
+from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
 from tendenci.apps.user_groups.models import Group
 from djcelery.models import TaskMeta
 
@@ -157,7 +159,8 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         "is_me": is_me,
     }, context_instance=RequestContext(request))
 
-def photo_size(request, id, size, crop=False, quality=90, download=False):
+
+def photo_size(request, id, size, crop=False, quality=90, download=False, constrain=False):
     """
     Renders image and returns response
     Does not use template
@@ -168,27 +171,48 @@ def photo_size(request, id, size, crop=False, quality=90, download=False):
     if isinstance(quality, unicode) and quality.isdigit():
         quality = int(quality)
 
+    cache_key = generate_image_cache_key(file=id, size=size, pre_key=PHOTO_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
+    cached_image = cache.get(cache_key)
+    if cached_image:
+        return redirect(cached_image)
+
     photo = get_object_or_404(Image, id=id)
     size = [int(s) for s in size.split('x')]
+    size = aspect_ratio(photo.image_dimensions(), size, constrain)
 
     # check permissions
-    if not has_perm(request.user,'photos.view_image',photo):
+    if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
 
     attachment = ''
-    if download: 
+    if download:
         attachment = 'attachment;'
-    
+
     # gets resized image from cache or rebuild
-    image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk))
+    image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
 
     # if image not rendered; quit
     if not image:
         raise Http404
 
     response = HttpResponse(mimetype='image/jpeg')
-    response['Content-Disposition'] = '%s filename=%s'% (attachment, photo.image.file.name)
+    response['Content-Disposition'] = '%s filename=%s' % (attachment, photo.image.file.name)
     image.save(response, "JPEG", quality=quality)
+
+    if photo.is_public_photo() and photo.is_public_photoset():
+        file_name = photo.image.file.name
+        file_path = 'cached%s%s' % (request.path, file_name)
+        default_storage.save(file_path, ContentFile(response.content))
+        full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
+        cache.set(cache_key, full_file_path)
+        cache_group_key = "photos_cache_set.%s" % photo.pk
+        cache_group_list = cache.get(cache_group_key)
+
+        if cache_group_list is None:
+            cache.set(cache_group_key, [cache_key])
+        else:
+            cache_group_list += [cache_key]
+            cache.set(cache_group_key, cache_group_list)
 
     return response
 
@@ -280,7 +304,7 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 }
                 EventLog.objects.log(**log_defaults)
 
-                messages.add_message(request, messages.INFO, _("Successfully updated photo '%s'") % photo.title)
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%s'") % photo.title)
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
             form = form_class(instance=photo, user=request.user)
@@ -306,7 +330,7 @@ def delete(request, id, set_id=0):
         raise Http403
 
     if request.method == "POST":
-        messages.add_message(request, messages.INFO, _("Successfully deleted photo '%s'") % photo.title)
+        messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%s'") % photo.title)
         log_defaults = {
             'event_id' : 990300,
             'event_data': '%s (%d) deleted by %s' % (photo._meta.object_name, photo.pk, request.user),
@@ -319,7 +343,7 @@ def delete(request, id, set_id=0):
 
         photo.delete()
 
-        messages.add_message(request, messages.INFO, 'Photo %s deleted' % id)
+        messages.add_message(request, messages.SUCCESS, 'Photo %s deleted' % id)
         
         try:
             photo_set = PhotoSet.objects.get(id=set_id)
@@ -361,7 +385,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                 }
                 EventLog.objects.log(**log_defaults) 
                 
-                messages.add_message(request, messages.INFO, 'Successfully added photo set!')
+                messages.add_message(request, messages.SUCCESS, 'Successfully added photo set!')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
         form = form_class(user=request.user)
@@ -401,7 +425,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                     ObjectPermission.objects.remove_all(photo)
                     ObjectPermission.objects.assign_group(group_perms, photo)
 
-                messages.add_message(request, messages.INFO, _("Successfully updated photo set! "))
+                messages.add_message(request, messages.SUCCESS, _("Successfully updated photo set! "))
                 EventLog.objects.log(**{
                     'event_id': 991200,
                     'event_data': '%s (%d) edited by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
@@ -443,7 +467,7 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         # soft delete all images in photo set
         Image.objects.filter(photoset=photo_set).delete()
 
-        messages.add_message(request, messages.INFO, 'Photo Set %s deleted' % photo_set)
+        messages.add_message(request, messages.SUCCESS, 'Photo Set %s deleted' % photo_set)
 
         if "delete" in request.META.get('HTTP_REFERER', None):
             #if the referer is the get page redirect to the photo set search
@@ -653,7 +677,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     cover.photo = chosen_cover
                     cover.save()
             
-            messages.add_message(request, messages.INFO, 'Photo changes saved')
+            messages.add_message(request, messages.SUCCESS, 'Photo changes saved')
             return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
 
     else:  # if request.method != POST

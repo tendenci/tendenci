@@ -78,5 +78,7 @@ urlpatterns = patterns('tendenci.addons',
 
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/$', 'photos.views.photo_size', name="photo.size"),
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/$', 'photos.views.photo_size', name="photo.size"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<constrain>[constrain]*)/$', 'photos.views.photo_size', name="photo.size"),
     url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<crop>[crop]*)/(?P<quality>\d+)/$', 'photos.views.photo_size', name="photo.size"),
+    url(r'^(?P<id>\d+)/(?P<size>\d+x\d+)/(?P<constrain>[constrain]*)/(?P<quality>\d+)/$', 'photos.views.photo_size', name="photo.size"),
 )

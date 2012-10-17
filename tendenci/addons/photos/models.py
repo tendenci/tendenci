@@ -1,5 +1,6 @@
 import uuid
 import os
+import Image as rImage
 
 from datetime import datetime
 from inspect import isclass
@@ -14,6 +15,7 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.core.exceptions import SuspiciousOperation
 from django.conf import settings
+from django.core.cache import cache
 from django.utils.encoding import smart_str, force_unicode
 from django.utils.functional import curry
 from django.utils.translation import ugettext_lazy as _
@@ -27,6 +29,7 @@ from tendenci.core.perms.utils import get_query_filters
 from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 import Image as PILImage
 import ImageFile
@@ -567,6 +570,15 @@ class PhotoSet(TendenciBaseModel):
 
         super(PhotoSet, self).save()
 
+        if not self.is_public():
+            for photo in Image.objects.filter(photoset=self.pk):
+                set_s3_file_permission(photo.image.file, public=False)
+                cache_set = cache.get("photos_cache_set.%s" % photo.pk)
+                if cache_set is not None:
+                    # TODO remove cached images
+                    cache.delete_many(cache.get("photos_cache_set.%s" % photo.pk))
+                    cache.delete("photos_cache_set.%s" % photo.pk)
+
     def get_default_cover_photo_small(self):
         return settings.STATIC_URL + "images/default-photo-small.jpg"
 
@@ -638,6 +650,12 @@ class PhotoSet(TendenciBaseModel):
         self.delete_all_images()
         super(PhotoSet, self).delete(*args, **kwargs)
 
+    def is_public(self):
+        return all([self.allow_anonymous_view,
+            self.status,
+            self.status_detail.lower() == "active"]
+            )
+
 
 class Image(ImageModel, TendenciBaseModel):
     """
@@ -682,12 +700,20 @@ class Image(ImageModel, TendenciBaseModel):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(Image, self).save(*args, **kwargs)
-        # clear the cache
-#        caching.instance_cache_clear(self, self.pk)
-#        caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
+       # # clear the cache
+       # caching.instance_cache_clear(self, self.pk)
+       # caching.cache_clear(PHOTOS_KEYWORDS_CACHE, key=self.pk)
 
-#        # re-add instance to the cache
-#        caching.instance_cache_add(self, self.pk)
+       # # re-add instance to the cache
+       # caching.instance_cache_add(self, self.pk)
+
+        if not self.is_public_photo() or not self.is_public_photoset():
+            set_s3_file_permission(self.image.file, public=False)
+            cache_set = cache.get("photos_cache_set.%s" % self.pk)
+            if cache_set is not None:
+                # TODO remove cached images
+                cache.delete_many(cache.get("photos_cache_set.%s" % self.pk))
+                cache.delete("photos_cache_set.%s" % self.pk)
 
     def delete(self, *args, **kwargs):
         """
@@ -771,6 +797,22 @@ class Image(ImageModel, TendenciBaseModel):
         except ValueError:
             return None
 
+    def is_public_photo(self):
+        return all([self.is_public,
+            self.allow_anonymous_view,
+            self.status,
+            self.status_detail.lower() == "active"]
+            )
+
+    def is_public_photoset(self):
+        for photo_set in self.photoset.all():
+            if not all([self.allow_anonymous_view,
+            self.status,
+            self.status_detail.lower() == "active"]
+            ):
+                return False
+        return True
+
     def get_license(self):
         return self.license or self.default_license()
 
@@ -782,6 +824,19 @@ class Image(ImageModel, TendenciBaseModel):
 
     def default_thumbnail(self):
         return settings.STATIC_URL + "images/default-photo-album-cover.jpg"
+
+    def get_file_from_remote_storage(self):
+        return StringIO(default_storage.open(self.image.file.name).read())
+
+    def image_dimensions(self):
+        try:
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                im = rImage.open(self.get_file_from_remote_storage())
+            else:
+                im = rImage.open(self.image.file.path)
+            return im.size
+        except Exception:
+            return (0, 0)
 
     objects = PhotoManager()
 
