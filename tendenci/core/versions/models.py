@@ -45,7 +45,7 @@ class Version(models.Model):
             field_name = unicode(f.name)
             if field_name in data:
                 #print unicode(f.get_internal_type())
-                if unicode(f.get_internal_type()) == 'ForeignKey':
+                if unicode(f.get_internal_type()) == 'ForeignKey' or unicode(f.get_internal_type()) == 'OneToOneField':
                     obj_data[field_name + "_id"] = data[field_name]
                 elif unicode(f.get_internal_type()) == 'DateTimeField':
                     obj_data[field_name] = parse(data[field_name])
