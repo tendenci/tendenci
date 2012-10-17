@@ -136,6 +136,15 @@ def aspect_ratio(image_size, new_size, constrain=False):
     w1, h1 = constrain_size(image_size, [w, 0])
     w2, h2 = constrain_size(image_size, [0, h])
 
+    if h1 == 0:
+        h1 = w1
+    if w1 == 0:
+        w1 = h1
+    if h2 == 0:
+        h2 = w2
+    if w2 == 0:
+        w2 = h2
+
     if h1 <= h:
         return w1, h1
 
