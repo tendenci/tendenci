@@ -50,7 +50,7 @@
                             <select>
                                 <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
                                 {% for g in groups %}
-                                <option value="{{ g.pk }}">{{ g.name }}</option>
+                                <option value="{{ g.pk }}">{{ g }}</option>
                                 {% endfor %}
                             </select>
                         </div>

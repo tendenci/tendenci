@@ -1,6 +1,8 @@
 import os
 import re
 
+from subprocess import Popen
+
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.utils.translation import ugettext_lazy as _
@@ -34,6 +36,7 @@ from tendenci.addons.photos.models import Image, Pool, PhotoSet, AlbumCover, Lic
 from tendenci.addons.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
 from tendenci.addons.photos.utils import get_privacy_settings
 from tendenci.addons.photos.tasks import ZipPhotoSetTask
+
 
 def search(request, template_name="photos/search.html"):
     """ Photos search """
@@ -588,8 +591,6 @@ def photos_batch_add(request, photoset_id=0):
 
                 photo.save()
 
-                #photo.get_display_url()
-
                 # photo group perms = album group perms
                 group_perms = photo_set.perms.filter(group__isnull=False).values_list('group', 'codename')
                 group_perms = tuple([(unicode(g), c.split('_')[0]) for g, c in group_perms])
@@ -597,6 +598,8 @@ def photos_batch_add(request, photoset_id=0):
 
                 # serialize queryset
                 data = serializers.serialize("json", Image.objects.filter(id=photo.id))
+
+                cache_image = Popen(["python", "manage.py", "precache_photo", str(photo.pk)])
 
                 # returning a response of "ok" (flash likes this)
                 # response is for flash, not humans
@@ -611,11 +614,12 @@ def photos_batch_add(request, photoset_id=0):
 
         # show the upload UI
         return render_to_response('photos/batch-add.html', {
-            "photoset_id":photoset_id,
+            "photoset_id": photoset_id,
             "photo_set": photo_set,
             "csrf_token": csrf_get_token(request)
              },
             context_instance=RequestContext(request))
+
 
 @login_required
 def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.html"):
