@@ -1,11 +1,13 @@
 # NOTE: When updating the registration scheme be sure to check with the 
 # anonymous registration impementation of events in the registration module.
 
+import ast
 import re
 import os.path
 from datetime import datetime, timedelta
 from datetime import date
 from decimal import Decimal
+from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
@@ -1392,6 +1394,7 @@ def do_event_import(event_object_dict):
     event = Event()
     place = Place()
 
+    # assure the correct fields get the right value types
     color_set = TypeColorSet.objects.all()[0] #default color set
     for field in EVENT_FIELDS:
         if field in event_object_dict:
@@ -1404,35 +1407,34 @@ def do_event_import(event_object_dict):
                                     slug=slugify(event_object_dict[field]),
                                     color_set=color_set
                                     )
-            elif field == "start_dt" or field == "end_dt":
-                setattr(event, field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
             else:
-                setattr(event, field, event_object_dict[field])
+                field_type = Event._meta.get_field_by_name(field)[0]
+                if isinstance(field_type, models.DateTimeField):
+                    setattr(event, field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
+                elif isinstance(field_type, models.BooleanField):
+                    if event_object_dict[field].lower() == "false" or event_object_dict[field] == "0":
+                        setattr(event, field, False)
+                    else:
+                        setattr(event, field, True)
+                else: # assume its a string
+                    if field_type.max_length:
+                        setattr(event, field, unicode(event_object_dict[field])[:field_type.max_length])
+                    else:
+                        setattr(event, field, unicode(event_object_dict[field]))
 
     for field in PLACE_FIELDS:
         if field in event_object_dict:
-            setattr(place, field.replace('place__', ''), event_object_dict[field])
-
-    # loop through user properties; truncate at max_length
-    for key, value in event.__dict__.items():
-        try:
-            max_length = Event._meta.get_field_by_name(key)[0].max_length
-        except FieldDoesNotExist:
-            max_length = None
-        if max_length:  # truncate per max_length field attribute
-            try:
-                setattr(event, key, value[:max_length])
-            except TypeError:
-                pass
-
-    # loop through user properties; truncate at max_length
-    for key, value in place.__dict__.items():
-        try:
-            max_length = Place._meta.get_field_by_name(key)[0].max_length
-        except FieldDoesNotExist:
-            max_length = None
-        if max_length:  # truncate per max_length field attribute
-            setattr(place, key, value[:max_length])
+            p_field = field.replace('place__', '')
+            field_type = Place._meta.get_field_by_name(p_field)[0]
+            if isinstance(field_type, models.DateTimeField):
+                setattr(place, p_field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
+            elif isinstance(field_type, models.BooleanField):
+                setattr(place, p_field, bool(ast.literal_eval(event_object_dict[field])))
+            else: # assume its a string
+                if field_type.max_length:
+                    setattr(place, p_field, unicode(event_object_dict[field])[:field_type.max_length])
+                else:
+                    setattr(place, p_field, unicode(event_object_dict[field]))
 
     # associate event to place
     place.save()
