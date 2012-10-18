@@ -207,6 +207,9 @@ class DirectoryPricing(models.Model):
     class Meta:
         permissions = (("view_directorypricing", "Can view directory pricing"),)
     
+    def __unicode__(self):
+        return "Directory Pricing %s" % (self.id)
+
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
