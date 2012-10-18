@@ -1331,6 +1331,8 @@ def event_import_process(import_i, preview=True):
     event_obj_list = []
     invalid_list = []
     
+    import_i.total_invalid = 0
+    import_i.total_created = 0
     if not preview: #update import status
         import_i.status = "processing"
         import_i.save()

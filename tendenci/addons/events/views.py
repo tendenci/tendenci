@@ -3177,6 +3177,7 @@ def import_preview(request, import_id,
                                                         preview=True)
 
     return render_to_response(template_name, {
+        'total': import_i.total_created + import_i.total_invalid,
         'event_list': event_list,
         'import_i': import_i,
     }, context_instance=RequestContext(request))
@@ -3200,6 +3201,7 @@ def import_process(request, import_id,
         thread.run()
 
     return render_to_response(template_name, {
+        'total': import_i.total_created + import_i.total_invalid,
         "import_i": import_i,
     }, context_instance=RequestContext(request))
 

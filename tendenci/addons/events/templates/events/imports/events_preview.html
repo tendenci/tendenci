@@ -18,48 +18,52 @@
 
 <div class="imports">
     <h1>{% trans "Preview Your Import" %}</h1>
+    
     <p>{% trans "You're almost done! To complete your import click 'Import Now.'" %}</p>
 
     <div class="csv-icon">
         <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="{{ import_i.file.name }}" />
         <p>{{ import_i.file.name }}<br /></p>
+    </div>
+    
+    <div class="summary">
     <ul>
         <li>{{ total }} {% trans "Total Events" %}</li>
         <li>{{ import_i.total_created }} {% trans "Valid Events" %}</li>
         <li class="last highlight">{{ import_i.total_invalid}} {% trans "Invalid Events" %}</li>
     </ul>
-
     </div>
 
     <div style="clear: both; "></div>
-
-	<form class="import" method="post" action="{% url event.import_process import_i.pk %}">{% csrf_token %}
+    
 	<div class="results">
     {% for event in event_list %}
         <div class="result">
-            <div class="result-header">
-            <strong>{% trans "Row" %} {{ event.ROW_NUM }} - {{ event.title }}</strong><br/>
+            <div class="header">
+                <strong>{% trans "Row" %} {{ event.ROW_NUM }} - {{ event.title }}</strong>
+            </div>
+            <div class="verdict">
             {% if not event.IS_VALID %}
-                <strong>{% trans 'ERROR' %}: {{ event.ERROR }}</strong><br/>
-                {% trans "This event will be ignored (not added)" %}
+                <span class="error"><strong>{% trans 'ERROR' %}: {{ event.ERROR }}</strong></span><br/>
+                <span class="error">{% trans "This event will be ignored (not added)" %}</span>
             {% else %}
-                {% trans "This event will be included" %}
+                <span class="message">{% trans "This event will be included" %}</span>
             {% endif %}
             </div>
-            <p>
+            <div class="details">
                 Date: {{ event.start_dt }} - {{ event.end_dt }}<br/>
                 Place: {{ event.place__name }}<br/>
                 Description: {{ event.description }}<br/>
-            </p>
+            </div>
         </div>
 	{% endfor %}
 	</div>
-
+    
 	<div align="right">
+    <form class="import" method="post" action="{% url event.import_process import_i.pk %}">{% csrf_token %}
 	<input type="submit" class="submit-btn" name="submit" value="Import Now" >
-	</div>
-
 	</form>
+	</div>
 
 </div>
 </div>

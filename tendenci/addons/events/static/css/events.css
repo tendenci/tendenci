@@ -886,6 +886,27 @@ table.pricing-list .price-disabled label {
     font-size: 1.5em;
 }
 
+.t .imports .summary {
+    padding: 5px;
+}
+
+.t .imports .result {
+    padding: 10px 5px;
+    border-top: 1px solid black;
+}
+
+.t .imports .result .error {
+    color: #FF0000;
+}
+
+.t .imports .result .warning {
+    color: #FFFF00;
+}
+
+.t .imports .result .message {
+    color: #00FF00;
+}
+
 .clear-both {
     clear: both;
 }
