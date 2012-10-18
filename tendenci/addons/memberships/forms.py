@@ -78,9 +78,9 @@ CLASS_AND_WIDGET = {
     'first-name': ('CharField', None),
     'last-name': ('CharField', None),
     'email': ('EmailField', None),
-    'header': ('CharField', 'memberships.widgets.Header'),
-    'description': ('CharField', 'memberships.widgets.Description'),
-    'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+    'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
+    'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+    'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
 
@@ -900,9 +900,9 @@ class AppEntryForm(forms.ModelForm):
             'first-name': ('CharField', None),
             'last-name': ('CharField', None),
             'email': ('EmailField', None),
-            'header': ('CharField', 'memberships.widgets.Header'),
-            'description': ('CharField', 'memberships.widgets.Description'),
-            'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+            'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
+            'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+            'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
             'corporate_membership_id': ('ChoiceField', None),
         }
 
