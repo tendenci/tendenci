@@ -102,7 +102,12 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                (request.user.profile.is_member and get_setting('module', 'directories', 'directoriesrequiresmembership'))
                ]):
         raise Http403
-     
+
+    pricings = DirectoryPricing.objects.all()
+    if not pricings and has_perm(request.user, 'directories.add_directorypricing'):
+        messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add %s.' % (get_setting('module', 'directories', 'label_plural'),get_setting('module', 'directories', 'label')))
+        return HttpResponseRedirect(reverse('directory_pricing.add'))     
+
     require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
     
     form = form_class(request.POST or None, request.FILES or None, user=request.user)
