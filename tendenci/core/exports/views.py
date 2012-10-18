@@ -18,7 +18,6 @@ def status(request, export_id, template_name='exports/export_status.html'):
 
     export = get_object_or_404(Export, pk=export_id)
 
-    EventLog.objects.log(instance=export)
     return render_to_response(template_name, {
         'export': export,
         'datetime': datetime,
@@ -34,9 +33,10 @@ def download(request, export_id):
 
     export = get_object_or_404(Export, pk=export_id)
 
+    EventLog.objects.log(instance=export)
+
     if export.status == "completed":
         response = export.result
         return response
 
-    EventLog.objects.log(instance=export)
     return redirect("export.status", export_id)

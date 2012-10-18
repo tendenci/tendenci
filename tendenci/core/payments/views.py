@@ -21,14 +21,30 @@ def pay_online(request, invoice_id, guid="", template_name="payments/pay_online.
     if not invoice.is_tendered:
         invoice.tender(request.user)
         # log an event for invoice edit
-        EventLog.objects.log(instance=invoice)
+        log_defaults = {
+            'event_id' : 312000,
+            'event_data': '%s (%d) edited by %s' % (invoice._meta.object_name, invoice.pk, request.user),
+            'description': '%s edited' % invoice._meta.object_name,
+            'user': request.user,
+            'request': request,
+            'instance': invoice,
+        }
+        EventLog.objects.log(**log_defaults)  
       
     # generate the payment
     payment = Payment()
     
     boo = payment.payments_pop_by_invoice_user(request.user, invoice, guid)
     # log an event for payment add
-    EventLog.objects.log(instance=payment)
+    log_defaults = {
+        'event_id' : 281000,
+        'event_data': '%s (%d) added by %s' % (payment._meta.object_name, payment.pk, request.user),
+        'description': '%s added' % payment._meta.object_name,
+        'user': request.user,
+        'request': request,
+        'instance': payment,
+    }
+    EventLog.objects.log(**log_defaults)
     
     # post payment form to gateway and redirect to the vendor so customer can pay from there
     if boo:
@@ -68,8 +84,7 @@ def view(request, id, guid=None, template_name="payments/view.html"):
 
     if not payment.allow_view_by(request.user, guid): raise Http403
     #payment.amount = tcurrency(payment.amount)
-
-    EventLog.objects.log(instance=payment)
+    
     return render_to_response(template_name, {'payment':payment}, 
         context_instance=RequestContext(request))
     
@@ -77,8 +92,7 @@ def receipt(request, id, guid, template_name='payments/receipt.html'):
     payment = get_object_or_404(Payment, pk=id)
     if payment.guid <> guid:
         raise Http403
-
-    EventLog.objects.log(instance=payment)
+        
     return render_to_response(template_name,{'payment':payment},
                               context_instance=RequestContext(request))
 

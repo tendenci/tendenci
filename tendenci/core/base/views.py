@@ -18,7 +18,6 @@ from django.core.files.storage import default_storage
 # local
 from tendenci.core.base.cache import IMAGE_PREVIEW_CACHE
 from tendenci.core.base.forms import PasswordForm
-from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
 
@@ -84,7 +83,6 @@ def image_preview(request, app_label, model, id,  size):
         else: # raise http 404 error (returns page not found)
             return HttpResponseNotFound("Image not found.", mimetype="text/plain")
     else:
-        EventLog.objects.log()
         return response
 
 
@@ -158,14 +156,11 @@ def plugin_static_serve(request, plugin, path, show_indexes=False):
     response = HttpResponse(contents, mimetype=mimetype)
     response["Last-Modified"] = http_date(statobj[stat.ST_MTIME])
     response["Content-Length"] = len(contents)
-
-    EventLog.objects.log()
     return response
 
     
 def clear_cache(request):
     cache.clear()
-    EventLog.objects.log()
     return redirect('dashboard')
 
 
@@ -212,7 +207,6 @@ def memcached_status(request):
 
     host.close_socket()
 
-    EventLog.objects.log()
     return render_to_response('base/memcached_status.html', {
             'stats': stats,
             'hit_rate': 100 * stats.get_hits / stats.cmd_get,
@@ -228,8 +222,10 @@ def feedback(request, template_name="base/feedback.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
     
 def homepage(request, template_name="homepage.html"):
+    from tendenci.core.event_logs.models import EventLog
 
     EventLog.objects.log()
+
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
 
@@ -264,7 +260,6 @@ def file_display(request, file_path):
     response = HttpResponse(data, mimetype=mime_type)
     response['Content-Disposition'] = 'filename=%s' % base_name
 
-    EventLog.objects.log()
     return response
 
 
@@ -276,8 +271,6 @@ def password_again(request, template_name="base/password.html"):
         form = PasswordForm(request.POST, user=request.user)
         if form.is_valid():
             request.session['password_promt'] = True
-
-            EventLog.objects.log()
             return redirect(next)
     else:
         form = PasswordForm(user=request.user)

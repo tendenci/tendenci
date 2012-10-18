@@ -9,7 +9,6 @@ from django.contrib import messages
 from tendenci.core.base.http import Http403
 from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category
-from tendenci.core.perms.utils import update_perms_and_save
 
 @login_required
 def edit_categories(request, app_label, model, pk, form_class=CategoryForm, template_name="categories/update.html"):
@@ -61,7 +60,6 @@ def edit_categories(request, app_label, model, pk, form_class=CategoryForm, temp
             # kind of a bummer, but save the object to update the search index.
             # TODO: find a better way to update the index if a category has been changed
             object.save()
-            object = update_perms_and_save(request, form, object)
             
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s categories.' % model)
             return HttpResponseRedirect(reverse('category.update', 
