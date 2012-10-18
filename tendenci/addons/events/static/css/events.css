@@ -242,6 +242,13 @@ div.forms div.form-field .field input[name*='late_price'] {
 	width: 100px;	
 }
 
+div.forms fieldset.attendees {
+    background-color: #EFEFEF;
+    border-radius: 3px 3px 3px 3px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
 input#id_regconf-limit {
 	width: 100px;	
 }

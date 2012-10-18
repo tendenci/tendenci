@@ -52,7 +52,6 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
-    my_jobs = request.GET.get('my_jobs', False)
     my_pending_jobs = request.GET.get('my_pending_jobs', False)
 
     if get_setting('site', 'global', 'searchindex') and query:
@@ -64,11 +63,6 @@ def search(request, template_name="jobs/search.html"):
             jobs = jobs.select_related()
 
     jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
-
-    # filter for "my jobs"
-    if my_jobs and not request.user.is_anonymous():
-        template_name = "jobs/my_jobs.html"
-        jobs = jobs.filter(creator_username=request.user.username)
 
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
@@ -87,6 +81,25 @@ def search(request, template_name="jobs/search.html"):
 def search_redirect(request):
     return HttpResponseRedirect(reverse('jobs'))
 
+
+def my_jobs(request, template_name = "jobs/my_jobs.html"):
+    query = request.GET.get('q', None)
+    if not request.user.is_anonymous():
+        if get_setting('site', 'global', 'searchindex') and query:
+            jobs = Job.objects.search(query, user=request.user)
+        else:
+            filters = get_query_filters(request.user, 'jobs.view_job')
+            jobs = Job.objects.filter(filters).distinct()
+            jobs = jobs.select_related()
+        jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+        jobs = jobs.filter(creator_username=request.user.username)
+        
+        EventLog.objects.log()
+
+        return render_to_response(template_name, {'jobs': jobs},
+            context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect(reverse('jobs'))
 
 def print_view(request, slug, template_name="jobs/print-view.html"):
     job = get_object_or_404(Job, slug=slug)
@@ -216,7 +229,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 if job.payment_method.lower() in ['credit card', 'cc']:
                     if job.invoice and job.invoice.balance > 0:
                         return HttpResponseRedirect(reverse(
-                            'payments.views.pay_online',
+                            'payment.pay_online',
                             args=[job.invoice.id, job.invoice.guid])
                         )
 

@@ -41,7 +41,7 @@
 	<tr>
 		<td colspan="2">
 			{% if invoice.balance > 0 and merchant_login %}
-		     <a class="invoice-pay" href="{% url payments.views.pay_online invoice.id invoice.guid %}" title="Pay Invoice">{% trans "Pay Invoice" %}</a>
+		     <a class="invoice-pay" href="{% url payment.pay_online invoice.id invoice.guid %}" title="Pay Invoice">{% trans "Pay Invoice" %}</a>
 			{% endif %}
 		</td>
 </table>

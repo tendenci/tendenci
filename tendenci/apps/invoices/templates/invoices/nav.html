@@ -37,6 +37,7 @@
             <li><a href="{% url invoice.search %}">{% trans "Search Invoices" %}</a></li>
             {% if user.profile.is_superuser %}
                 <li><a href="{% url invoice.export %}">{% trans "Export Invoices" %}</a></li>
+                <li><a href="{% url reports-top-spenders %}">{% trans "Top Spenders Report" %}</a></li>
             {% endif %}
         </ul>
         {% if nav_object %}

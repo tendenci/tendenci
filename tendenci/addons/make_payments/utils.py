@@ -11,7 +11,8 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.bill_to_first_name = make_payment.first_name
     inv.bill_to_last_name = make_payment.last_name
     inv.bill_to_company = make_payment.company
-    inv.bill_to_address = make_payment.address
+    inv.bill_to_address = '%s %s' % (make_payment.address,
+                                     make_payment.address2)
     inv.bill_to_city = make_payment.city
     inv.bill_to_state =  make_payment.state
     inv.bill_to_zip_code = make_payment.zip_code
@@ -22,7 +23,8 @@ def make_payment_inv_add(user, make_payment, **kwargs):
     inv.ship_to_first_name = make_payment.first_name
     inv.ship_to_last_name = make_payment.last_name
     inv.ship_to_company = make_payment.company
-    inv.ship_to_address = make_payment.address
+    inv.ship_to_address = '%s %s' % (make_payment.address,
+                                     make_payment.address2)
     inv.ship_to_city = make_payment.city
     inv.ship_to_state = make_payment.state
     inv.ship_to_zip_code =  make_payment.zip_code

@@ -169,7 +169,7 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                     
             if directory.payment_method.lower() in ['credit card', 'cc']:
                 if directory.invoice and directory.invoice.balance > 0:
-                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
+                    return HttpResponseRedirect(reverse('payment.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
             if can_add_active:  
                 return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
             else:

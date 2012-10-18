@@ -12,6 +12,7 @@ if not urlpath:
 urlpatterns = patterns('tendenci.addons.jobs.views',
     url(r'^%s/$' % urlpath, 'search', name="jobs"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="job.search"),
+    url(r'^%s/my-jobs/$' % urlpath, 'my_jobs', name="myjobs"),
     url(r'^%s/print-view/(?P<slug>[\w\-\/]+)/$' % urlpath, 'print_view', name="job.print_view"),
     url(r'^%s/add/$' % urlpath, 'add', name="job.add"),
     url(r'^%s/edit/(?P<id>\d+)/$' % urlpath, 'edit', name="job.edit"),

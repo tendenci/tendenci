@@ -5,6 +5,7 @@ import os
 import httplib
 import urllib
 import urllib2
+import socket
 from urlparse import urlparse
 from django.core.files.base import ContentFile
 from django.contrib.contenttypes.models import ContentType
@@ -134,6 +135,15 @@ def aspect_ratio(image_size, new_size, constrain=False):
 
     w1, h1 = constrain_size(image_size, [w, 0])
     w2, h2 = constrain_size(image_size, [0, h])
+
+    if h1 == 0:
+        h1 = w1
+    if w1 == 0:
+        w1 = h1
+    if h2 == 0:
+        h2 = w2
+    if w2 == 0:
+        w2 = h2
 
     if h1 <= h:
         return w1, h1
@@ -327,7 +337,8 @@ class AppRetrieveFiles(object):
         #    absolute url
 
         # handle absolute url
-        o = urlparse(link)
+        cleaned_link = link.replace('&amp;', '&')
+        o = urlparse(cleaned_link)
         relative_url = urllib.quote(urllib.unquote(o.path))
         hostname = o.hostname
 
@@ -360,9 +371,12 @@ class AppRetrieveFiles(object):
         /images/newsletter/young.gif
         """
         conn = httplib.HTTPConnection(domain)
-        conn.request('HEAD', relative_link)
-        res = conn.getresponse()
-        conn.close()
+        try:
+            conn.request('HEAD', relative_link)
+            res = conn.getresponse()
+            conn.close()
+        except socket.gaierror:
+            return False
 
         return res.status in (200, 304)
 

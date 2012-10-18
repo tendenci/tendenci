@@ -26,6 +26,8 @@ urlpatterns = patterns('tendenci.addons.events',
     url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.details', name="event"),
+
+    url(r'^(?P<event_id>\d+)/attendees$', 'views.view_attendees', name="event.attendees"),
     
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
@@ -141,4 +143,5 @@ urlpatterns = patterns('tendenci.addons.events',
     
     # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
+    
 )

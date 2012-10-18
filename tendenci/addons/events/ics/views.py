@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from tendenci.core.base.http import Http403
-from tendenci.core.ics.models import ICS
+from tendenci.addons.events.ics.models import ICS
 
 
 @login_required

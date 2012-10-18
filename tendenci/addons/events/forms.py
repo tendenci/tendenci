@@ -524,6 +524,17 @@ class EventForm(TendenciBaseForm):
             event.image = None
         return event
 
+class DisplayAttendeesForm(forms.Form):
+    display_event_registrants = forms.BooleanField(required=False)
+    DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
+                                    ("user","Users Only"),
+                                    ("member","Members Only"),
+                                    ("admin","Admin Only"),)
+    display_registrants_to = forms.ChoiceField(choices=DISPLAY_REGISTRANTS_TO_CHOICES,
+                                                widget=forms.RadioSelect,
+                                                initial='public')
+    label = 'Display Attendees'
+
 class TypeChoiceField(forms.ModelChoiceField):
 
     def __init__(self, queryset, empty_label=u"---------", cache_choices=False,
@@ -1506,4 +1517,3 @@ class AddonOptionForm(forms.ModelForm):
 
 class EventICSForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all())
-

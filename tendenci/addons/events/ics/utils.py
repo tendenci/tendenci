@@ -3,7 +3,7 @@ import subprocess
 import os
 from tendenci.settings import MEDIA_ROOT
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.ics.models import ICS
+from tendenci.addons.events.ics.models import ICS
 
 def create_ics(user):
     try:

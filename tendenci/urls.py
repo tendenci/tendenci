@@ -64,7 +64,7 @@ urlpatterns += patterns('',
     (r'^contributions/', include('tendenci.apps.contributions.urls')),
     (r'^theme-editor/', include('tendenci.apps.theme_editor.urls')),
     (r'^exports/', include('tendenci.core.exports.urls')),
-    (r'^ics/', include('tendenci.core.ics.urls')),
+    (r'^ics/', include('tendenci.addons.events.ics.urls')),
     (r'^boxes/', include('tendenci.apps.boxes.urls')),
     (r'^sitemap.xml', include('tendenci.core.sitemaps.urls')),
 

@@ -11,7 +11,6 @@ class VersionManager(Manager):
     def save_version(self, old_instance, new_instance, **kwargs):
         if old_instance and new_instance:
             version = self.model()
-
             changes = []
             for field in old_instance._meta.fields:
                 field = unicode(field.name)
@@ -22,10 +21,10 @@ class VersionManager(Manager):
                     old = getattr(old_instance, field)
                     new = getattr(new_instance, field)
                     if old != new:
-                        if hasattr(old, '_meta'):
+                        if old and hasattr(old, '_meta'):
                             old = serializers.serialize('json', [old], ensure_ascii=False)
-                        if hasattr(new, '_meta'):
-                            new = serializers.serialize('json', [old], ensure_ascii=False)
+                        if new and hasattr(new, '_meta'):
+                            new = serializers.serialize('json', [new], ensure_ascii=False)
                         changes.append({
                             "field": field,
                             "old": old,
