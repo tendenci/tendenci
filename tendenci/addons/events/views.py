@@ -24,6 +24,7 @@ from django.forms.formsets import formset_factory
 from django.forms.models import modelformset_factory, inlineformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson as json
+from django.db import connection
 
 #from django.forms.models import BaseModelFormSet
 
@@ -863,6 +864,10 @@ def delete(request, id, template_name="events/delete.html"):
             try:
                 event.registration_configuration.delete()
             except:
+                # roll back the transaction to fix the error for postgresql
+                #"current transaction is aborted, commands ignored until 
+                # end of transaction block"
+                connection._rollback()
                 event.delete()
 
             return HttpResponseRedirect(reverse('event.search'))
