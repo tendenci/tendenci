@@ -121,8 +121,12 @@ def details(request, id=None, template_name="events/view.html"):
 
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
-    
-    event.limit = event.registration_configuration.limit
+
+    if event.registration_configuration:
+        event.limit = event.registration_configuration.limit
+    else:
+        event.limit = 0
+
     event.spots_taken, event.spots_available = event.get_spots_status()
 
     EventLog.objects.log(instance=event)
