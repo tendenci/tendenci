@@ -1062,7 +1062,7 @@ class Event(TendenciBaseModel):
         """
         Return a tuple of (spots_taken, spots_available) for this event.
         """
-        limit = self.registration_configuration.limit
+        limit = self.get_limit()
         spots_taken = Registrant.objects.filter(
                                     registration__event=self, 
                                     cancel_dt__isnull=True).count()
@@ -1080,6 +1080,15 @@ class Event(TendenciBaseModel):
         return all([self.allow_anonymous_view,
                 self.status,
                 self.status_detail in ['active']])
+
+    def get_limit(self):
+        """
+        Return the limit for registration if it exists.
+        """
+        limit = 0
+        if self.registration_configuration:
+            limit = self.registration_configuration.limit
+        return int(limit)
 
 
 class CustomRegForm(models.Model):

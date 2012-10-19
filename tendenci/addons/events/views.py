@@ -102,11 +102,11 @@ def event_custom_reg_form_list(request, event_id,
             for price in regconfpricings:
                 price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
 
-
     context = {'event': event,
                'reg_conf': reg_conf,
                'regconfpricings': regconfpricings}
     return render_to_response(template_name, context, RequestContext(request))
+
 
 def details(request, id=None, template_name="events/view.html"):
 
@@ -122,10 +122,7 @@ def details(request, id=None, template_name="events/view.html"):
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
 
-    if event.registration_configuration:
-        event.limit = event.registration_configuration.limit
-    else:
-        event.limit = 0
+    event.limit = event.get_limit()
 
     event.spots_taken, event.spots_available = event.get_spots_status()
 
@@ -139,7 +136,7 @@ def details(request, id=None, template_name="events/view.html"):
         organizer = organizers[0]
 
     return render_to_response(template_name, {
-        'days':days,
+        'days': days,
         'event': event,
         'speakers': speakers,
         'organizer': organizer,
@@ -154,7 +151,7 @@ def view_attendees(request, event_id, template_name='events/attendees.html'):
     if not event.can_view_registrants(request.user):
         raise Http403
 
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(request.user, is_strict=False)
@@ -882,7 +879,7 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
     anony_reg8n = get_setting('module', 'events', 'anonymousregistration')
     
     # check spots available
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken, spots_available = event.get_spots_status()
     
     if limit > 0 and spots_available == 0:
@@ -948,7 +945,7 @@ def register(request, event_id=0,
         raise Http404
     
     # check spots available
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken, spots_available = event.get_spots_status()
     
     if limit > 0 and spots_available == 0:
@@ -1340,7 +1337,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         return multi_register_redirect(request, event, _('Registration has been closed.'))     
 
     # update the spots left
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken = 0
     if limit > 0:
         spots_taken = get_event_spots_taken(event)

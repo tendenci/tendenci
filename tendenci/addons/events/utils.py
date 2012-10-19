@@ -908,7 +908,7 @@ def get_pricing(user, event, pricing=None):
     failure_type: string of what permissions it failed on
     """
     pricing_list = []
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken = get_event_spots_taken(event)
     spots_left = limit - spots_taken
     if not pricing:
