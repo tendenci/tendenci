@@ -30,4 +30,4 @@ class Command(BaseCommand):
                 count += 1
 
         print 'Done'
-        print 'Total files processed %d', count
+        print 'Total files processed', count
