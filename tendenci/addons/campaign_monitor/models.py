@@ -8,6 +8,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.forms_builder.forms.models import FormEntry
 from tendenci.apps.subscribers.models import GroupSubscription
 from tendenci.core.files.models import file_directory
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class ListMap(models.Model):
     group = models.ForeignKey(Group)
@@ -84,6 +85,14 @@ class Template(models.Model):
         
     def __unicode__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        super(Template, self).save(*args, **kwargs)
+        if self.html_file:
+            set_s3_file_permission(self.html_file.file, public=True)
+        if self.zip_file:
+            set_s3_file_permission(self.zip_file.file, public=True)
+        
     
 class Campaign(models.Model):
     """

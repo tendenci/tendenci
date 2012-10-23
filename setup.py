@@ -164,7 +164,7 @@ setup(
         "oauth2>=1.5.167",
         "python_openid>=2.2",
         "ordereddict==1.1",
-        "createsend>=0.3.2",
+        "createsend>=2.3.0",
         "celery==3.0.1",
         "django-celery==3.0.1",
         "django-kombu>=0.9.4",

@@ -70,7 +70,7 @@ def registrant_search(context, event=None):
 
 @register.inclusion_tag('events/reg8n/registration_pricing.html', takes_context=True)
 def registration_pricing_and_button(context, event, user):
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken = 0
     spots_left = limit - spots_taken
     registration = event.registration_configuration

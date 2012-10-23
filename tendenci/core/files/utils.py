@@ -315,8 +315,6 @@ class AppRetrieveFiles(object):
                 return
             tfiles = TFile.objects.all()
             for tfile in tfiles:
-                if tfile.id != 17:
-                    continue
                 kwargs['content_url'] = '%s%s' % (self.site_url,
                                                   tfile.get_absolute_url())
                 self.check_file(tfile, cursor, mig_file_table, **kwargs)

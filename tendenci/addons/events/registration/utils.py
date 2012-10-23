@@ -23,7 +23,7 @@ def reg_status(event, user):
     """
     
     # check available spots left
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken = 0
     if limit > 0: # 0 is no limit
         spots_taken = get_event_spots_taken(event)

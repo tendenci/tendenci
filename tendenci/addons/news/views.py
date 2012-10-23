@@ -18,7 +18,7 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.addons.news.models import News
 from tendenci.addons.news.forms import NewsForm
 from tendenci.apps.notifications import models as notification
-
+from tendenci.core.perms.utils import assign_files_perms
 
 def detail(request, slug=None, template_name="news/view.html"):
     if not slug:
@@ -83,12 +83,18 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     form = form_class(instance=news, user=request.user)
 
     if request.method == "POST":
-        form = form_class(request.POST, instance=news, user=request.user)
+        form = form_class(request.POST, request.FILES, instance=news, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
+
+            # save photo
+            photo = form.cleaned_data['photo_upload']
+            if photo:
+                news.save(photo=photo)
+                assign_files_perms(news, files=[news.image])
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
@@ -138,12 +144,18 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
         raise Http403
 
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        form = form_class(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
+
+            # save photo
+            photo = form.cleaned_data['photo_upload']
+            if photo:
+                news.save(photo=photo)
+                assign_files_perms(news, files=[news.image])
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % news)
 
