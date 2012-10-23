@@ -755,6 +755,19 @@ def admin_list(request, template_name='profiles/admin_list.html'):
                               context_instance=RequestContext(request))
 
 @login_required
+def users_not_in_groups(request, template_name='profiles/users_not_in_groups.html'):
+    # superuser only
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    users = []
+    for user in User.objects.all():
+        if not user.profile.get_groups():
+            users.append(user)
+    
+    return render_to_response(template_name, {'users': users}, context_instance=RequestContext(request))
+
+@login_required
 def user_groups_edit(request, username, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
     user = get_object_or_404(User, username=username)
     
