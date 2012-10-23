@@ -94,6 +94,8 @@ def set_s3_file_permission(file, public=False):
                 k.set_acl('public-read')
             else:
                 k.set_acl('private')
+        else:
+            print file_path, 'does not exist.'
 
 
 def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=False):
