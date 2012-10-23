@@ -50,7 +50,7 @@ def detail(request, task_id, template_name="wp_exporter/detail.html"):
     messages.add_message(
         request,
         messages.INFO,
-        _("Your site export is being processed. You will receive an email when the export is complete.")
+        _("Your site export is being processed. You will receive an email at %s when the export is complete." % request.user.email)
     )
     
     return render_to_response(template_name, {},
