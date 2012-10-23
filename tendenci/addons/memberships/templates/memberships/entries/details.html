@@ -35,7 +35,9 @@
         <div class="entry_dt">{% trans "Submitted" %} {{ entry.entry_time|date_short }}
             {% if request.user.is_superuser %}
             <a class="entry-link" href="{% url membership.entry_delete entry.pk %}">{% trans "Delete" %}</a>
+            {% comment %}
             <a class="entry-link" href="{% url membership.entry_edit entry.pk %}">{% trans "Edit" %}</a>
+            {% endcomment %}
             <a class="entry-link" href="{% url membership.application_entries_print entry.pk %}">{% trans "Print" %}</a>
             {% endif %}
         </div>
