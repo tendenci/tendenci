@@ -9,6 +9,7 @@ import calendar
 import itertools
 import cPickle
 import threading
+import subprocess
 
 from datetime import datetime
 from datetime import date, timedelta
@@ -3251,12 +3252,7 @@ def import_process(request, import_id,
 
     import_i = get_object_or_404(Import, id=import_id)
 
-    # We can choose to leave the next line to a real subprocess call
-    # if needed
-    if import_i.status == "pending":
-        thread = threading.Thread(target=event_import_process,
-                            args=(import_i,), kwargs={'preview':False})
-        thread.run()
+    subprocess.Popen(['python', 'manage.py', 'import_events', str(import_id)])
 
     return render_to_response(template_name, {
         'total': import_i.total_created + import_i.total_invalid,

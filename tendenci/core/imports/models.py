@@ -26,6 +26,7 @@ class Import(models.Model):
     model_name = models.CharField(max_length=50)
     status = models.CharField(_(u"status"), max_length=50,
             default="pending", choices=STATUS_CHOICES)
+    failure_reason = models.CharField(max_length=250, blank=True, default="")
     file = models.FileField("", max_length=260, upload_to=file_directory)
     total_created = models.IntegerField(default=0)
     total_updated = models.IntegerField(default=0)

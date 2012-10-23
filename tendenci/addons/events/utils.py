@@ -1336,56 +1336,61 @@ def event_import_process(import_i, preview=True):
     if not preview: #update import status
         import_i.status = "processing"
         import_i.save()
-
-    # loop through the file's entries and determine valid imports
-    start = 0
-    finish = data_dict_list_len
-    for r in range(start, finish):
-        invalid = False
-        event_object_dict = {}
-        data_dict = data_dict_list[r]
-
-        for key in data_dict.keys():
-            event_object_dict[key] = data_dict[key]
-
-        event_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
-
-        # Validate date fields
-        try:
-            datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
-            datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
-        except ValueError, e:
-            invalid = True
-            invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
-
-        if invalid:
-            event_object_dict['ERROR'] = invalid_reason
-            event_object_dict['IS_VALID'] = False
-            import_i.total_invalid += 1
-            if not preview:
-                invalid_list.append({
-                    'ROW_NUM': event_object_dict['ROW_NUM'],
-                    'ERROR': event_object_dict['ERROR']})
-        else:
-            event_object_dict['IS_VALID'] = True
-            import_i.total_created += 1
-
-            if not preview:
-                event_import_dict = {}
-                event_import_dict['ACTION'] = 'insert'
-                event = do_event_import(event_object_dict)
-                event_import_dict = {}
-                event_import_dict['event'] = event
-                event_import_dict['ROW_NUM'] = event_object_dict['ROW_NUM']
-                event_obj_list.append(event_import_dict)
-
-        if preview:
-            event_obj_list.append(event_object_dict)
-
-    if not preview: # save import status
-        import_i.status = "completed"
-        import_i.save()
     
+    try:
+        # loop through the file's entries and determine valid imports
+        start = 0
+        finish = data_dict_list_len
+        for r in range(start, finish):
+            invalid = False
+            event_object_dict = {}
+            data_dict = data_dict_list[r]
+
+            for key in data_dict.keys():
+                event_object_dict[key] = data_dict[key]
+
+            event_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
+
+            # Validate date fields
+            try:
+                datetime.strptime(event_object_dict["start_dt"], VALID_DATE_FORMAT)
+                datetime.strptime(event_object_dict["end_dt"], VALID_DATE_FORMAT)
+            except ValueError, e:
+                invalid = True
+                invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
+
+            if invalid:
+                event_object_dict['ERROR'] = invalid_reason
+                event_object_dict['IS_VALID'] = False
+                import_i.total_invalid += 1
+                if not preview:
+                    invalid_list.append({
+                        'ROW_NUM': event_object_dict['ROW_NUM'],
+                        'ERROR': event_object_dict['ERROR']})
+            else:
+                event_object_dict['IS_VALID'] = True
+                import_i.total_created += 1
+
+                if not preview:
+                    event_import_dict = {}
+                    event_import_dict['ACTION'] = 'insert'
+                    event = do_event_import(event_object_dict)
+                    event_import_dict = {}
+                    event_import_dict['event'] = event
+                    event_import_dict['ROW_NUM'] = event_object_dict['ROW_NUM']
+                    event_obj_list.append(event_import_dict)
+
+            if preview:
+                event_obj_list.append(event_object_dict)
+
+        if not preview: # save import status
+            import_i.status = "completed"
+            import_i.save()
+    except Exception, e:
+        import_i.status = "failed"
+        import_i.failure_reason = unicode(e)
+        import_i.save()
+
     #print "END IMPORT PROCESS"
     return event_obj_list, invalid_list
 
