@@ -90,7 +90,7 @@ def detail(request, task_id, template_name="wp_importer/detail.html"):
     messages.add_message(
         request,
         messages.INFO,
-        _("Your site import is being processed. You will receive an email when the import is complete.")
+        _("Your site import is being processed. You will receive an email at %s when the import is complete." % request.user.email)
     )
     
     return render_to_response(template_name, {},
