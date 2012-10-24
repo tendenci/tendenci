@@ -12,19 +12,19 @@ from tendenci.apps.user_groups.managers import GroupManager
 
 class Group(TendenciBaseModel):
     name = models.CharField(_('Group Name'), max_length=255, unique=True)
-    slug = SlugField(_('URL Path'), unique=True) 
+    slug = SlugField(_('URL Path'), unique=True)
     guid = models.CharField(max_length=40)
     label = models.CharField(_('Group Label'), max_length=255, blank=True)
     type = models.CharField(max_length=75, blank=True, choices=(
-                                                             ('distribution','Distribution'),
-                                                             ('security','Security'),), default='distribution')
+                                                             ('distribution', 'Distribution'),
+                                                             ('security', 'Security'),), default='distribution')
     email_recipient = models.CharField(_('Recipient Email'), max_length=255, blank=True)
     show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
-    auto_respond_template =  models.CharField(_('Auto Responder Template'), 
+    auto_respond_template = models.CharField(_('Auto Responder Template'),
         help_text=_("Auto Responder Template URL"), max_length=100, blank=True)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
@@ -33,15 +33,15 @@ class Group(TendenciBaseModel):
     group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.SET_NULL)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
     # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
-    
+
     objects = GroupManager()
 
     class Meta:
-        permissions = (("view_group","Can view group"),)
+        permissions = (("view_group", "Can view group"),)
         verbose_name = "Group"
         verbose_name_plural = "Groups"
-        
-            
+        ordering = ("name",)
+
     def __unicode__(self):
         return self.label or self.name
 
