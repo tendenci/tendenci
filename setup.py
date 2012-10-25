@@ -180,6 +180,5 @@ setup(
 #         "Geraldo==0.4.14",
         "django-tastypie",
         "johnny-cache==1.4",
-        "django-debug-toolbar"
     ],
 )
