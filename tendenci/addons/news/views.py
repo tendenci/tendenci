@@ -94,7 +94,7 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
             photo = form.cleaned_data['photo_upload']
             if photo:
                 news.save(photo=photo)
-                assign_files_perms(news, files=[news.image])
+                assign_files_perms(news, files=[news.thumbnail])
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
@@ -155,7 +155,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
             photo = form.cleaned_data['photo_upload']
             if photo:
                 news.save(photo=photo)
-                assign_files_perms(news, files=[news.image])
+                assign_files_perms(news, files=[news.thumbnail])
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % news)
 
