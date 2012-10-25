@@ -409,16 +409,6 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
-
-        log_defaults = {
-            'event_id' : 123000,
-            'event_data': '%s (%d) deleted by %s' % (user._meta.object_name, user.pk, request.user),
-            'description': '%s deleted' % user._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': user,
-        }
-        EventLog.objects.log(**log_defaults)
         
         
         return HttpResponseRedirect(reverse('profile.search'))
@@ -445,6 +435,8 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
+        EventLog.objects.log(instance=user_edit)
+
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
    
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 

@@ -24,9 +24,11 @@ def invoices_search_results_line(request, invoice):
         template_name = "%s/invoice_search_result_line.html" % (app_label)
 
         try:
-            search_line_display = render_to_string(template_name, {'obj':obj,
-                                                              'invoice':invoice},
-                                                            context_instance=RequestContext(request))
+            search_line_display = render_to_string(
+                template_name,
+                {'obj':obj,'invoice':invoice},
+                context_instance=RequestContext(request)
+            )
         except TemplateDoesNotExist:
             pass
 
