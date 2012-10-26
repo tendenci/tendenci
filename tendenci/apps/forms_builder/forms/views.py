@@ -385,6 +385,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if not has_view_perm(request.user,'forms.view_form',form):
         raise Http403
 
+    # If form has a recurring payment, make sure the user is logged in
+    if form.recurring_payment and request.user.is_anonymous():
+        response = redirect('auth_login')
+        response['Location'] += '?next=%s' % form.get_absolute_url()
+        return response
+
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
 
     for field in form_for_form.fields:
