@@ -162,8 +162,14 @@ class ImageModel(models.Model):
         photosize = PhotoSizeCache().sizes.get(size)
         if not self.size_exists(photosize):
             self.create_size(photosize)
-        content = default_storage.open(self._get_SIZE_filename(size)).read()
-        return PILImage.open(StringIO(content)).size
+        file_path = self._get_SIZE_filename(size)
+
+        if not default_storage.exists(file_path):
+            return 0
+        try:
+            return PILImage.open(default_storage.open(file_path)).size
+        except:
+            return 0
 
     def _get_SIZE_url(self, size):
         photosize = PhotoSizeCache().sizes.get(size)
