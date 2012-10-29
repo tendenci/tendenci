@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.core.management import call_command
 
 from djcelery.models import TaskMeta
 from geraldo.generators import PDFGenerator
@@ -821,6 +822,10 @@ def membership_import_confirm(request, id):
                 }, context_instance=RequestContext(request))
             else:
                 result = ImportMembershipsTask.delay(memport, cleaned_data)
+
+            # updates membership protection
+            # uses setting on membership settings page
+            call_command('membership_update_protection')
 
             return redirect('membership_import_status', result.task_id)
     else:
