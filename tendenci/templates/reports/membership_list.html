@@ -11,8 +11,18 @@
         <h1>{% trans "Expired Memberships Report" %}</h1>
         {% trans "Lists all memberships that have expired.  Grace periods are not included." %}
     {% endif %}
+
     {{ mems|length }} {% trans "Members listed" %}
     {% autopaginate mems 50 %}
+
+    {% if active %}
+    <p><a href="{% url reports-active-members %}?output=csv">
+        Download CSV File</a></p>
+    {% else %}
+    <p><a href="{% url reports-expired-members %}?output=csv">
+        Download CSV File</a></p>
+    {% endif %}
+
     <table>
         <tr>
             {% if active %}
