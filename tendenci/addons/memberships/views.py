@@ -47,6 +47,11 @@ def membership_index(request):
 
 
 def membership_search(request, template_name="memberships/search.html"):
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
+
+    if not membership_view_perms == "public":
+        return HttpResponseRedirect(reverse('profile.search') + "?members=on")
+
     query = request.GET.get('q')
     mem_type = request.GET.get('type')
     total_count = Membership.objects.all().count()
