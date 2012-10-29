@@ -19,15 +19,6 @@
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script> 
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script> 
 
-{% if user.is_superuser %}
-<script type="text/javascript">
-    django.jQuery('document').ready(function() {
-        var content_main = django.jQuery('#content-main');
-        content_main.prepend('<a href="#" class="module-toggle" alt="Toggle Modules" data-show="false">Show Advanced Modules</a>');
-    });
-</script>
-{% endif %}
-
 {% endblock %}
 
 {% block coltype %}colMS{% endblock %}
