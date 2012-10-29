@@ -28,6 +28,10 @@
          margin-top: 2em;
          font-size: 1.2em;
      }
+     .campaign-monitor-msg{
+         margin-top: 2em;
+         font-weight: bold;
+     }
 </style>
 {% endblock %}
 
@@ -46,6 +50,11 @@
                <a href="http://mailchimp.com" target="_blank">MailChimp</a> helps you to design email 
                campaigns, share them on social networks, integrate with
                web services, manage subscribers, and track your results. <a href="" target="_blank">More...</a>
+               
+               <br /><br />
+               MailChimp is not integrated with Tendenci. To start, you can 
+               <a href="{% url profile.export %}">export users</a>
+               to MailChimp.
            </div>
        
        </div>
@@ -60,7 +69,13 @@
            <div class="tpn-detail">
                <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">Constant Contact</a>'s email marketing is easy for you to connect with your customers,
                and for customers to share your message with their networks. <a href="" target="_blank">More...</a>
+           
+           <br /><br />
+               Constant Contact is not integrated with Tendenci. To start, you can 
+               <a href="{% url profile.export %}">export users</a>
+               to Constant Contact.
            </div>
+           
        </div>
        
        <h3>Campaign Monitor</h3>
@@ -74,11 +89,19 @@
                makes it easy for your to send beautiful email newsletters and 
                manage your subscribers. <a href="" target="_blank">More...</a>
                
+               
+               
                {% if CAMPAIGNMONITOR_ENABLED %}
                <div class="campaign-monitor-link">
-                   <a href="{% url campaign_monitor.template_index%}">Go to Campaign Monitor</a>
-               </div>
-               {% endif %}
+               <a href="{% url campaign_monitor.template_index%}">Go to Campaign Monitor</a>
+                </div>
+                {% else %}
+                <div class="campaign-monitor-msg">
+                To set up campaign monitor, please contact support at 281-497-6567 ext. 411.
+                </div>
+                {% endif %}
+               
+               
            </div>
        </div>
 </div>
