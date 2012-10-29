@@ -35,10 +35,13 @@ def full_model_to_dict(instance, fields=None, exclude=None):
 
 
 def render_csv(filename, title_list, data_list):
-    """Render a csv file response"""
-    output = StringIO("")
-    #output = open('eggs.csv', 'wb')
-    csv_writer = csv.writer(output)
+    """
+    Returns .csv response
+    """
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    csv_writer = csv.writer(response)
 
     csv_writer.writerow(title_list)
 
@@ -54,9 +57,6 @@ def render_csv(filename, title_list, data_list):
                 row_item_list[i] = row_item_list[i].encode("utf-8")
         csv_writer.writerow(row_item_list)
 
-    response = HttpResponse(output.getvalue())
-    response['Content-Type'] = "application/text"
-    response['Content-Disposition'] = 'attachment; filename=' + filename
     return response
 
 
