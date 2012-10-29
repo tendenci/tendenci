@@ -20,7 +20,7 @@ from tendenci.addons.events.models import Event, Place, RegistrationConfiguratio
     Payment, Sponsor, Organizer, Speaker, Type, \
     TypeColorSet, Registrant, RegConfPricing, Addon, \
     AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
-    CustomRegFieldEntry
+    CustomRegFieldEntry, RecurringEvent
 
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -530,6 +530,31 @@ class DisplayAttendeesForm(forms.Form):
                                                 widget=forms.RadioSelect,
                                                 initial='public')
     label = 'Display Attendees'
+
+class RecurringEventForm(forms.Form):
+    label = 'Recurring Event'
+    RECURRENCE_CHOICES = (
+        (RecurringEvent.RECUR_DAILY, 'Daily'),
+        (RecurringEvent.RECUR_WEEKLY, 'Weekly'),
+        (RecurringEvent.RECUR_MONTHLY, 'Monthly'),
+        (RecurringEvent.RECUR_YEARLY, 'Yearly')
+    )
+    FREQUENCY_CHOICES = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10'),
+    )
+    is_recurring = forms.BooleanField(label=_('Is Recurring'), required=False)
+    repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
+    frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
+    end_recurring = forms.SplitDateTimeField(label=_('Ends On'), initial=datetime.now()+timedelta(days=30,hours=6))
 
 class TypeChoiceField(forms.ModelChoiceField):
 

@@ -858,6 +858,26 @@ class Speaker(models.Model):
 
         return photo
 
+class RecurringEvent(models.Model):
+    RECUR_DAILY = 1
+    RECUR_WEEKLY = 2
+    RECUR_MONTHLY = 3
+    RECUR_YEARLY = 4
+    RECURRENCE_CHOICES = (
+        (RECUR_DAILY, 'Daily'),
+        (RECUR_WEEKLY, 'Weekly'),
+        (RECUR_MONTHLY, 'Monthly'),
+        (RECUR_YEARLY, 'Yearly')
+    )
+    repeat_type = models.IntegerField(_("Repeats"), choices=RECURRENCE_CHOICES)
+    frequency = models.IntegerField(_("Repeats every"))
+    starts_on = models.DateTimeField(default=datetime.now()+timedelta(days=30))
+    ends_on = models.DateTimeField()
+
+    class Meta:
+        verbose_name = _("Recurring Event")
+        verbose_name_plural = _("Recurring Events")
+
 class Event(TendenciBaseModel):
     """
     Calendar Event
@@ -880,6 +900,10 @@ class Event(TendenciBaseModel):
         help_text=_('Photo that represents this event.'), null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
     tags = TagField(blank=True)
+
+    # recurring events
+    is_recurring_event = models.BooleanField(_('Is Recurring Event'), default=False)
+    recurring_event = models.ForeignKey(RecurringEvent, null=True)
 
     # additional permissions
     display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
@@ -1089,7 +1113,6 @@ class Event(TendenciBaseModel):
         if self.registration_configuration:
             limit = self.registration_configuration.limit
         return int(limit)
-
 
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)

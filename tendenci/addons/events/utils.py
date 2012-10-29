@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db import connection
 from datetime import datetime, timedelta
 from datetime import date
+from dateutil.relativedelta import relativedelta
 from decimal import Decimal
 from django.utils import simplejson
 from django.template import Context, Template
@@ -17,7 +18,7 @@ from django.template.loader import render_to_string
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.events.models import (Event, Place, Speaker, Organizer,
     Registration, RegistrationConfiguration, Registrant, RegConfPricing,
-    CustomRegForm, Addon, AddonOption, CustomRegField)
+    CustomRegForm, Addon, AddonOption, CustomRegField, RecurringEvent)
 from tendenci.addons.events.forms import FormForCustomRegForm, EMAIL_AVAILABLE_TOKENS
 from tendenci.core.perms.utils import get_query_filters
 from tendenci.apps.discounts.models import Discount, DiscountUse
@@ -1285,5 +1286,12 @@ def get_custom_registrants_initials(entries, **kwargs):
     return initials
 
 
-                        
-        
+def get_recurrence_date(repeat_type, start_dt, delta):
+    if repeat_type == RecurringEvent.RECUR_DAILY:
+        return start_dt + relativedelta(days=+delta)
+    elif repeat_type == RecurringEvent.RECUR_WEEKLY:
+        return start_dt + relativedelta(weeks=+delta)
+    elif repeat_type == RecurringEvent.RECUR_MONTHLY:
+        return start_dt + relativedelta(months=+delta)
+    elif repeat_type == RecurringEvent.RECUR_YEARLY:
+        return start_dt + relativedelta(years=+delta)
