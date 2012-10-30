@@ -263,7 +263,7 @@ class FormEntry(models.Model):
             pass
 
     def entry_fields(self):
-        return self.fields.all().order_by('position')
+        return self.fields.all().order_by('field__position')
 
     def get_name_email(self):
         """Try to figure out the name and email from this entry
