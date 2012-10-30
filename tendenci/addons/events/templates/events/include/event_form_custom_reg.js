@@ -118,4 +118,17 @@ $(document).ready(function() {
             $('div.id_display_registrants_to').parent().slideUp('fast');
         }
     });
+
+    if ($("#id_is_recurring_event:checked").length == 1) {
+        $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').show();
+    }else {
+        $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').hide();
+    }
+    $('#id_is_recurring_event').click(function(){
+        if($("#id_is_recurring_event:checked").length == 1){
+            $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideDown('fast');
+        }else{
+            $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideUp('fast');
+        }
+    });
 });

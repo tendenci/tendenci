@@ -414,6 +414,23 @@ class EventForm(TendenciBaseForm):
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=False)
 
+    FREQUENCY_CHOICES = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10'),
+    )
+    is_recurring_event = forms.BooleanField(label=_('Is Recurring'), required=False)
+    repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RecurringEvent.RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
+    frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
+    end_recurring = SplitDateTimeField(label=_('Ends On'), initial=datetime.now()+timedelta(days=30,hours=6))
+
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
 
@@ -424,6 +441,10 @@ class EventForm(TendenciBaseForm):
             'description',
             'start_dt',
             'end_dt',
+            'is_recurring_event',
+            'repeat_type',
+            'frequency',
+            'end_recurring',
             'on_weekend',
             'timezone',
             'type',
@@ -443,13 +464,25 @@ class EventForm(TendenciBaseForm):
                                  'description',
                                  'start_dt',
                                  'end_dt',
-                                 'on_weekend',
-                                 'timezone',
-                                 'type',
-                                 'group',
-                                 'external_url',
-                                 'photo_upload',
-                                 'tags',
+                                 ],
+                      'legend': ''
+                      }),
+                      ('Recurring Event', {
+                       'fields': ['is_recurring_event',
+                                  'repeat_type',
+                                  'frequency',
+                                  'end_recurring',
+                                 ],
+                      'classes': ['recurring'],
+                      }),
+                      ('Event Information', {
+                       'fields': ['on_weekend',
+                                  'timezone',
+                                  'type',
+                                  'group',
+                                  'external_url',
+                                  'photo_upload',
+                                  'tags',
                                  ],
                       'legend': ''
                       }),
@@ -469,6 +502,8 @@ class EventForm(TendenciBaseForm):
                     ]
         
     def __init__(self, *args, **kwargs):
+        edit_mode = kwargs.pop('edit_mode', False)
+        recurring_mode = kwargs.pop('recurring_mode', False)
         super(EventForm, self).__init__(*args, **kwargs)
 
         if self.instance.pk:
@@ -483,6 +518,16 @@ class EventForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+        
+        if edit_mode:
+            self.fields.pop('is_recurring_event')
+            self.fields.pop('repeat_type')
+            self.fields.pop('frequency')
+            self.fields.pop('end_recurring')
+
+        if edit_mode and recurring_mode:
+            self.fields.pop('start_dt')
+            self.fields.pop('end_dt')
 
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
@@ -531,30 +576,8 @@ class DisplayAttendeesForm(forms.Form):
                                                 initial='public')
     label = 'Display Attendees'
 
-class RecurringEventForm(forms.Form):
-    label = 'Recurring Event'
-    RECURRENCE_CHOICES = (
-        (RecurringEvent.RECUR_DAILY, 'Daily'),
-        (RecurringEvent.RECUR_WEEKLY, 'Weekly'),
-        (RecurringEvent.RECUR_MONTHLY, 'Monthly'),
-        (RecurringEvent.RECUR_YEARLY, 'Yearly')
-    )
-    FREQUENCY_CHOICES = (
-        (1, '1'),
-        (2, '2'),
-        (3, '3'),
-        (4, '4'),
-        (5, '5'),
-        (6, '6'),
-        (7, '7'),
-        (8, '8'),
-        (9, '9'),
-        (10, '10'),
-    )
-    is_recurring = forms.BooleanField(label=_('Is Recurring'), required=False)
-    repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
-    frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
-    end_recurring = forms.SplitDateTimeField(label=_('Ends On'), initial=datetime.now()+timedelta(days=30,hours=6))
+class ApplyRecurringChangesForm(forms.Form):
+    apply_to_all = forms.BooleanField(label=_('Apply changes to all recurring events in series'), required=False)
 
 class TypeChoiceField(forms.ModelChoiceField):
 
