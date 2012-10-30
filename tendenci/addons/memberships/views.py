@@ -729,6 +729,13 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             )
 
             csv = File.objects.save_files_for_instance(request, memport)[0]
+
+            # hiding membership import
+            csv.allow_anonymous_view = False
+            csv.allow_user_view = False
+            csv.is_public = False
+            csv.save()
+
             file_path = str(csv.file.name)
             #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
 
