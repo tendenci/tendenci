@@ -499,7 +499,7 @@ def make_csv(**kwargs):
     labels = [field.label for field in fields]
 
     extra_labels = [
-        'User Name',
+        'username',
         'Member Number',
         'Join Date',
         'Renew Date',
