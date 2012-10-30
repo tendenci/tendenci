@@ -43,6 +43,9 @@ from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
 
 
 def membership_index(request):
+    if request.user.profile:
+        if request.user.profile.is_superuser or request.user.profile.is_staff:
+            return HttpResponseRedirect(reverse('membership.application_entries_search'))
     return HttpResponseRedirect(reverse('membership.search'))
 
 
