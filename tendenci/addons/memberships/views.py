@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.core.management import call_command
 
 from djcelery.models import TaskMeta
 from geraldo.generators import PDFGenerator
@@ -46,6 +47,11 @@ def membership_index(request):
 
 
 def membership_search(request, template_name="memberships/search.html"):
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
+
+    if not membership_view_perms == "public":
+        return HttpResponseRedirect(reverse('profile.search') + "?members=on")
+
     query = request.GET.get('q')
     mem_type = request.GET.get('type')
     total_count = Membership.objects.all().count()
@@ -822,6 +828,10 @@ def membership_import_confirm(request, id):
             else:
                 result = ImportMembershipsTask.delay(memport, cleaned_data)
 
+            # updates membership protection
+            # uses setting on membership settings page
+            call_command('membership_update_protection')
+
             return redirect('membership_import_status', result.task_id)
     else:
         return redirect('membership_import_preview', memport.id)
@@ -1037,7 +1047,7 @@ def membership_join_report_pdf(request):
 def report_active_members(request, template_name='reports/membership_list.html'):
 
     mems = Membership.objects.filter(expire_dt__gt=datetime.now())
-    
+
     # sort order of all fields for the upcoming response
     is_ascending_username = True
     is_ascending_full_name = True
@@ -1116,6 +1126,39 @@ def report_active_members(request, template_name='reports/membership_list.html')
         is_ascending_invoice = True
 
     EventLog.objects.log()
+
+    # returns csv response ---------------
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'username',
+            'full name',
+            'email',
+            'application',
+            'type',
+            'subscription',
+            'expiration',
+        ]
+
+        table_data = []
+        for mem in mems:
+            table_data = [
+                mem.user.username,
+                mem.user.get_full_name,
+                mem.user.email,
+                mem.ma.name,
+                mem.membership_type.name,
+                mem.subscribe_dt,
+                mem.expire_dt,
+            ]
+
+        return render_csv(
+            'active-memberships.csv',
+            table_header,
+            table_data,
+        )
+    # ------------------------------------
 
     return render_to_response(template_name, {
             'mems': mems,
@@ -1215,6 +1258,39 @@ def report_expired_members(request, template_name='reports/membership_list.html'
 
     EventLog.objects.log()
 
+    # returns csv response ---------------
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'username',
+            'full name',
+            'email',
+            'application',
+            'type',
+            'subscription',
+            'expiration',
+        ]
+
+        table_data = []
+        for mem in mems:
+            table_data = [
+                mem.user.username,
+                mem.user.get_full_name,
+                mem.user.email,
+                mem.ma.name,
+                mem.membership_type.name,
+                mem.subscribe_dt,
+                mem.expire_dt,
+            ]
+
+        return render_csv(
+            'expired-memberships.csv',
+            table_header,
+            table_data,
+        )
+    # ------------------------------------
+
     return render_to_response(template_name, {
             'mems': mems,
             'active': False,
@@ -1227,6 +1303,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
             'is_ascending_expiration': is_ascending_expiration,
             'is_ascending_invoice': is_ascending_invoice,
             }, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_members_summary(request, template_name='reports/membership_summary.html'):

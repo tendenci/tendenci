@@ -37,7 +37,6 @@
             <div>
             <ul class="dropdown-menu">
         {% endif %}
-            <li><a href="{% url membership.search %}">{% trans "Search" %}</a></li> 
             <li><a href="{% url membership.application_entries_search %}?status=pending">{% trans "Pending" %}</a></li>
 
             {% if user.profile.is_superuser %}

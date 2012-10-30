@@ -88,7 +88,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         request.user == photo.owner,
         photo.get_license().name != 'All Rights Reserved',
     ]
-
+    
     return render_to_response(template_name, {
         "photo": photo,
         "size_name": size_name.replace("_"," "),
@@ -191,6 +191,8 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if download:
         attachment = 'attachment;'
 
+    if not photo.image or not default_storage.exists(photo.image.name):
+        raise Http404
     # gets resized image from cache or rebuild
     image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
 
