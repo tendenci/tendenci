@@ -269,7 +269,7 @@ def application_details(request, template_name="memberships/applications/details
         print e
 
         user_memberships = None
-        if user.memberships:
+        if hasattr(user, 'memberships'):
             user_memberships = user.memberships.all()
         # non-admin has no membership-types available in this application
         # let them know to wait for their renewal period before trying again
