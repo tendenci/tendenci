@@ -27,7 +27,7 @@ from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query
 from tendenci.addons.corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from reports import ReportNewMems
 from tendenci.core.files.models import File
-from tendenci.core.exports.utils import render_csv
+from tendenci.core.exports.utils import render_csv, run_export_task
 
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, AppField, MembershipImport)
@@ -920,8 +920,6 @@ def membership_join_report(request):
 @staff_member_required
 @password_required
 def membership_export(request):
-    from django.template.defaultfilters import slugify
-
     template_name = 'memberships/export.html'
     form = ExportForm(request.POST or None, user=request.user)
 
@@ -930,102 +928,8 @@ def membership_export(request):
             # reset the password_promt session
             request.session['password_promt'] = False
             app = form.cleaned_data['app']
-
-            file_name = "%s.csv" % slugify(app.name)
-
-            exclude_params = (
-                'horizontal-rule',
-                'header',
-            )
-
-            fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
-
-            label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name', 'Member Number', 'Join Date', 'Renew Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
-            extra_field_names = ['user', 'member_number', 'join_dt', 'renew_dt', 'expire_dt', 'status', 'status_detail', 'invoice', 'invoice_total', 'invoice_balance']
-
-            label_list.extend(extra_field_labels)
-
-            data_row_list = []
-            memberships = Membership.objects.filter(ma=app).exclude(status_detail='archive')
-            for memb in memberships:
-                data_row = []
-                field_entry_d = memb.entry_items
-                invoice = None
-                if memb.get_entry():
-                    invoice = memb.get_entry().invoice
-                for field in fields:
-                    field_name = slugify(field.label).replace('-', '_')
-                    value = ''
-
-                    if field.field_type in ['first-name', 'last-name', 'email', 'membership-type', 'payment-method', 'corporate_membership_id']:
-                        if field.field_type == 'first-name':
-                            value = memb.user.first_name
-                        elif field.field_type == 'last-name':
-                            value = memb.user.last_name
-                        elif field.field_type == 'email':
-                            value = memb.user.email
-                        elif field.field_type == 'membership-type':
-                            value = memb.membership_type.name
-                        elif field.field_type == 'payment-method':
-                            if memb.payment_method:
-                                value = memb.payment_method.human_name
-                        elif field.field_type == 'corporate_membership_id':
-                            value = memb.corporate_membership_id
-
-                    if field_name in field_entry_d:
-                        value = field_entry_d[field_name]
-
-                    value = value or u''
-                    if type(value) in (bool, int, long, None):
-                        value = unicode(value)
-
-                    data_row.append(value)
-
-                for field in extra_field_names:
-
-                    if field == 'user':
-                        value = memb.user.username
-                    elif field == 'join_dt':
-                        if memb.renewal:
-                            value = ''
-                        else:
-                            value = memb.subscribe_dt
-                    elif field == 'renew_dt':
-                        if memb.renewal:
-                            value = memb.subscribe_dt
-                        else:
-                            value = ''
-                    elif field == 'expire_dt':
-                        value = memb.expire_dt or 'never expire'
-                    elif field == 'invoice':
-                        if invoice:
-                            value = unicode(invoice.id)
-                        else:
-                            value = ""
-                    elif field == 'invoice_total':
-                        if invoice:
-                            value = unicode(invoice.total)
-                        else:
-                            value = ""
-                    elif field == 'invoice_balance':
-                        if invoice:
-                            value = unicode(invoice.balance)
-                        else:
-                            value = ""
-                    else:
-                        value = getattr(memb, field, '')
-
-                    if type(value) in (bool, int, long):
-                        value = unicode(value)
-
-                    data_row.append(value)
-
-                data_row_list.append(data_row)
-
-            EventLog.objects.log()
-
-            return render_csv(file_name, label_list, data_row_list)
+            export_id = run_export_task('memberships', 'membership', [], app)
+            return redirect('export.status', export_id)
 
     return render_to_response(template_name, {
             'form': form
