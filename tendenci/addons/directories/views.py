@@ -22,7 +22,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.directories.models import Directory, DirectoryPricing
-from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingForm
+from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingForm, DirectoryRenewForm
 from tendenci.addons.directories.utils import directory_set_inv_payment
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
@@ -501,3 +501,73 @@ def export(request, template_name="directories/export.html"):
         
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
+
+def renew(request, id, form_class=DirectoryRenewForm, template_name="directories/renew.html"):
+    can_add_active = has_perm(request.user,'directories.add_directory')
+    require_approval = get_setting('module', 'directories', 'renewalrequiresapproval')
+    directory = get_object_or_404(Directory, pk=id)
+    
+    if not has_perm(request.user,'directories.change_directory', directory) or not request.user == directory.creator:
+        raise Http403
+    
+    # pop payment fields if not required
+    require_payment = get_setting('module', 'directories', 'directoriesrequirespayment')
+    form = form_class(request.POST or None, request.FILES or None, instance=directory, user=request.user)
+    if not require_payment:
+        del form.fields['payment_method']
+        del form.fields['list_type']
+    
+    if request.method == "POST":
+        if form.is_valid():           
+            directory = form.save(commit=False)
+            pricing = form.cleaned_data['pricing']
+            
+            if directory.payment_method: 
+                directory.payment_method = directory.payment_method.lower()
+            if not directory.requested_duration:
+                directory.requested_duration = 30
+            if not directory.list_type:
+                directory.list_type = 'regular'
+            
+            if not directory.slug:
+                directory.slug = '%s-%s' % (slugify(directory.headline), Directory.objects.count())
+            
+            if not can_add_active and require_approval:
+                directory.status = True
+                directory.status_detail = 'pending'
+            else:
+                directory.activation_dt = datetime.now()
+                # set the expiration date
+                directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
+                # mark renewal as not sent for new exp date
+                directory.renewal_notice_sent = False
+            # update all permissions and save the model
+            directory = update_perms_and_save(request, form, directory)             
+                        
+            # create invoice
+            directory_set_inv_payment(request.user, directory, pricing)
+
+            messages.add_message(request, messages.SUCCESS, 'Successfully renewed %s' % directory)
+            
+            # send notification to administrators
+            # get admin notice recipients
+            recipients = get_notice_recipients('module', 'directories', 'directoryrecipients')
+            if recipients:
+                if notification:
+                    extra_context = {
+                        'object': directory,
+                        'request': request,
+                    }
+                    notification.send_emails(recipients,'directory_renewed', extra_context)
+                    
+            if directory.payment_method.lower() in ['credit card', 'cc']:
+                if directory.invoice and directory.invoice.balance > 0:
+                    return HttpResponseRedirect(reverse('payments.views.pay_online', args=[directory.invoice.id, directory.invoice.guid])) 
+            if can_add_active:  
+                return HttpResponseRedirect(reverse('directory', args=[directory.slug])) 
+            else:
+                return HttpResponseRedirect(reverse('directory.thank_you'))  
+        
+    
+    return render_to_response(template_name, {'directory':directory, 'form':form}, 
+        context_instance=RequestContext(request))
