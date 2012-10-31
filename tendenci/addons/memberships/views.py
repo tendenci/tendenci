@@ -268,10 +268,13 @@ def application_details(request, template_name="memberships/applications/details
     except NoMembershipTypes as e:
         print e
 
+        user_memberships = None
+        if user.memberships:
+            user_memberships = user.memberships.all()
         # non-admin has no membership-types available in this application
         # let them know to wait for their renewal period before trying again
         return render_to_response("memberships/applications/no-renew.html", {
-            "app": app, "user": user, "memberships": user.memberships.all()},
+            "app": app, "user": user, "memberships": user_memberships},
             context_instance=RequestContext(request))
 
     if request.method == "POST":
