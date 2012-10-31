@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
@@ -64,6 +66,9 @@ def search(request, template_name="articles/search.html"):
         articles = Article.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             articles = articles.select_related()
+
+    if not has_perm(request.user, 'articles.view_article'):
+        articles = articles.filter(release_dt__lte=datetime.now())
 
     articles = articles.order_by('-release_dt')
 
