@@ -29,10 +29,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
         raise Http403
 
     selected_theme = request.GET.get("theme_edit", get_theme())
-    if settings.USE_S3_STORAGE:
-        theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
+    original_theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
+    if settings.USE_S3_THEME:
+        theme_root = os.path.join(settings.THEME_S3_PATH, selected_theme)
     else:
-        theme_root = os.path.join(settings.THEMES_DIR, selected_theme)
+        theme_root = os.path.join(settings.ORIGINAL_THEMES_DIR, selected_theme)
 
     # get the default file and clean up any input
     default_file = request.GET.get("file", DEFAULT_FILE)
@@ -100,19 +101,11 @@ def edit_file(request, form_class=FileForm, template_name="theme_editor/index.ht
     if request.method == "POST":
         file_form = form_class(request.POST)
         if file_form.is_valid():
-            if file_form.save(request, default_file, ROOT_DIR=theme_root):
+            if file_form.save(request, default_file, ROOT_DIR=theme_root, ORIG_ROOT_DIR=original_theme_root):
                 message = "Successfully updated %s" % current_file
                 message_status = messages.SUCCESS
 
-                log_defaults = {
-                    'event_id': 1110000,
-                    'event_data': '%s updated by %s' % (current_file, request.user),
-                    'description': 'theme file edited',
-                    'user': request.user,
-                    'request': request,
-                    'source': 'theme_editor',
-                }
-                EventLog.objects.log(**log_defaults)
+                EventLog.objects.log()
             else:
                 message = "Cannot update"
                 message_status = messages.WARNING
@@ -244,7 +237,7 @@ def copy_to_theme(request, app=None):
         'source': 'theme_editor',
     }
     EventLog.objects.log(**log_defaults)
-    return redirect('theme_editor.original_templates')
+    return redirect('theme_editor.editor')
 
 
 def delete_file(request):
