@@ -24,7 +24,6 @@
 	<div class="entities-wrap">
     {% for entity in entities %}
 
-    	{% with entity.object as entity %}
     	{% has_perm user entities.view_entity entity as can_view %}
     	{% if can_view %}
 
@@ -60,7 +59,6 @@
 
 		</div>
 		{% endif %}
-	{% endwith %}
 
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>	

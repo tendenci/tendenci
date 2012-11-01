@@ -144,7 +144,10 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
+    if file.get_name().endswith(file.ext()):
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+    else:
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
     return response
 
 @login_required

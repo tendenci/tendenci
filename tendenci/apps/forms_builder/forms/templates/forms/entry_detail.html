@@ -18,7 +18,7 @@
          <div class="quick-options">
 			{% forms_entry_options request.user entry %}       
          </div>
-    	{% for field in entry.fields.all %}
+    	{% for field in entry.entry_fields %}
     		{% if field.field.field_type == 'FileField' %}
     		<p>
     			<strong>{{ field.field.label }}</strong><br />

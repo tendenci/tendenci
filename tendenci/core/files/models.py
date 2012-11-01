@@ -7,7 +7,7 @@ from slate import PDF
 import urllib
 import cStringIO
 
-from django.db import models
+from django.db import models, connection
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
@@ -99,6 +99,11 @@ class File(TendenciBaseModel):
         for story in stories:
             story.image = None
             story.save()
+
+        # roll back the transaction to fix the error for postgresql
+        #"current transaction is aborted, commands ignored until 
+        # end of transaction block"
+        connection._rollback()
 
         # delete actual file; do not save() self.instance
         self.file.delete(save=False)

@@ -7,7 +7,7 @@
 {% load base_filters %}
 {% load i18n %}
 
-{% block title %}Users Search Page{% endblock %}
+{% block title %}{% trans "People Search" %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -19,15 +19,15 @@
 {{ block.super }}
 <div class="t">
 {% users_nav request.user user_this %}
-    <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "Users Search" %}{% else %}{% trans "Users List" %}{% endif %}</h1>
+    <h1>{% if SITE_GLOBAL_SEARCHINDEX %}{% trans "People Search" %}{% else %}{% trans "People List" %}{% endif %}</h1>
     {{ MODULE_USERS_USERSEARCHSTATEMENT }}
     
     {% autopaginate profiles 10 %}
     {% profile_search %}
     {% if profiles %}
-        <span><em>{{ paginator.count }} {% trans "Users" %} {% trans "Found" %}</em></span>
+        <span><em>{{ paginator.count }} Pe{{ paginator.count|pluralize:"rson,ople" }} {% trans "Found" %}</em></span>
     {% else %}
-        <span>{% trans "Hmm.. didn't find anything."%} <a href="{% url haystack_search %}?q={{ request.GET.q}}">{% blocktrans %}Try the power search</a>.{% endblocktrans %}</span>
+        <span>{% trans "Hmm.. didn't find anything."%} <a href="{% url haystack_search %}?q={{ request.GET.q}}">{% trans 'Try the power search' %}</a>.</span>
     {% endif %}
     
 

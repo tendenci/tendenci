@@ -34,6 +34,7 @@ from django.forms.models import modelformset_factory, \
     inlineformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson as json
+from django.db import connection
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
@@ -177,12 +178,12 @@ def view_attendees(request, event_id, template_name='events/attendees.html'):
     if not event.can_view_registrants(request.user):
         raise Http403
 
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(request.user, is_strict=False)
     pricing = pricing.order_by('display_order', '-price')
-    
+
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
     earliest_time = registration_earliest_time(event, pricing=pricing)
@@ -897,6 +898,10 @@ def delete(request, id, template_name="events/delete.html"):
             try:
                 event.registration_configuration.delete()
             except:
+                # roll back the transaction to fix the error for postgresql
+                #"current transaction is aborted, commands ignored until
+                # end of transaction block"
+                connection._rollback()
                 event.delete()
 
             return HttpResponseRedirect(reverse('event.search'))
@@ -913,7 +918,7 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
     anony_reg8n = get_setting('module', 'events', 'anonymousregistration')
 
     # check spots available
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken, spots_available = event.get_spots_status()
 
     if limit > 0 and spots_available == 0:
@@ -979,7 +984,7 @@ def register(request, event_id=0,
         raise Http404
 
     # check spots available
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken, spots_available = event.get_spots_status()
 
     if limit > 0 and spots_available == 0:
@@ -1371,7 +1376,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
         return multi_register_redirect(request, event, _('Registration has been closed.'))
 
     # update the spots left
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken = 0
     if limit > 0:
         spots_taken = get_event_spots_taken(event)

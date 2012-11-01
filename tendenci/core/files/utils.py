@@ -7,7 +7,9 @@ import urllib
 import urllib2
 import socket
 from urlparse import urlparse
+from django.db import connection
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.shortcuts import Http404
@@ -300,6 +302,23 @@ class AppRetrieveFiles(object):
                 if updated:
                     speaker.save()
 
+        elif app_name == 'files':
+            # we need to dig the info from mig_files_file_t4_to_t5
+            cursor = connection.cursor()
+            mig_file_table = 'mig_files_file_t4_to_t5'
+            cursor.execute("""select count(*) from pg_class
+                            where relname='%s' and relkind='r'
+                            """ % mig_file_table)
+            row = cursor.fetchone()
+            if row[0] == 0:
+                print 'File migration table %s does not exist. Exiting..' % mig_file_table
+                return
+            tfiles = TFile.objects.all()
+            for tfile in tfiles:
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  tfile.get_absolute_url())
+                self.check_file(tfile, cursor, mig_file_table, **kwargs)
+
         print "\nTotal links updated for %s: " % app_name, self.total_count
 
     def process_content(self, content, **kwargs):
@@ -324,6 +343,43 @@ class AppRetrieveFiles(object):
             updated = False
 
         return updated, content
+
+    def check_file(self, tfile, cursor, mig_file_table, **kwargs):
+        """
+        Check and download files from t4 based on the info in the
+        table mig_files_file_t4_to_t5
+        """
+        if tfile.file:
+            file_path = tfile.file.name
+            # if file doesn't exist
+            if not default_storage.exists(file_path):
+                # get t4 url from the mig table
+                file_name = os.path.basename(file_path)
+                sql = """select t4_object_id, t4_object_type
+                        from %s
+                        where t5_id=%d
+                     """ % (mig_file_table, tfile.id)
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                if row:
+                    (t4_object_id, t4_object_type) = row
+                    t4_relative_url = '/attachments/%s/%s/%s' % (
+                                t4_object_type,
+                                t4_object_id,
+                                file_name)
+                    t4_url = '%s%s' % (self.src_url, t4_relative_url)
+                    # if link exists on the t4 site, go get it
+                    if self.link_exists(t4_relative_url, self.src_domain):
+                        tfile.file.save(file_path,
+                                        ContentFile(
+                                    urllib2.urlopen(t4_url).read()))
+                        print tfile.get_absolute_url(), 'file downloaded.'
+                    else:
+                        # t4_url not exist
+                        self.add_broken_link(t4_url, **kwargs)
+                else:
+                    # cannot retrieve the info from the mig table
+                    self.add_broken_link('No entry in mig table', **kwargs)
 
     def process_link(self, link, **kwargs):
         # check if this is a broken link

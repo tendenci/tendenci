@@ -49,6 +49,7 @@ from tendenci.addons.corporate_memberships.utils import (get_corporate_membershi
                                          validate_import_file,
                                          new_corp_mems_from_csv,
                                          get_over_time_stats,
+                                         get_indiv_membs_choices,
                                          get_summary)
 #from tendenci.addons.memberships.models import MembershipType
 from tendenci.addons.memberships.models import Membership
@@ -430,6 +431,9 @@ def renew(request, id, template="corporate_memberships/renew.html"):
     
     summary_data = {'corp_price':0, 'individual_price':0, 'individual_count':0, 
                     'individual_total':0, 'total_amount':0}
+    if corporate_membership.corporate_membership_type.renewal_price == 0:
+        summary_data['individual_count'] = len(get_indiv_membs_choices(corporate_membership))
+
     if request.method == "POST":
         cmt_id = request.POST.get('corporate_membership_type', 0)
         try:
@@ -888,7 +892,7 @@ def corp_import(request, step=None):
                     request.session['corp_memb.import.corp_app'] = corp_app
                     request.session['corp_memb.import.file_path'] = file_path
                     request.session['corp_memb.import.update_option'] = cleaned_data['update_option']
-    
+            
                     # move to next wizard page
                     return redirect('corp_memb_import_map_fields')
                 else:

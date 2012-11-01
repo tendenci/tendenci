@@ -35,10 +35,13 @@ def full_model_to_dict(instance, fields=None, exclude=None):
 
 
 def render_csv(filename, title_list, data_list):
-    """Render a csv file response"""
-    output = StringIO("")
-    #output = open('eggs.csv', 'wb')
-    csv_writer = csv.writer(output)
+    """
+    Returns .csv response
+    """
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=' + filename
+
+    csv_writer = csv.writer(response)
 
     csv_writer.writerow(title_list)
 
@@ -54,16 +57,14 @@ def render_csv(filename, title_list, data_list):
                 row_item_list[i] = row_item_list[i].encode("utf-8")
         csv_writer.writerow(row_item_list)
 
-    response = HttpResponse(output.getvalue())
-    response['Content-Type'] = "application/text"
-    response['Content-Disposition'] = 'attachment; filename=' + filename
     return response
 
 
-def run_export_task(app_label, model_name, fields):
+def run_export_task(app_label, model_name, fields, memb_app=None):
     export = Export.objects.create(
         app_label=app_label,
         model_name=model_name,
+        memb_app=memb_app,
     )
     # subprocess.Popen(['python', 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
 

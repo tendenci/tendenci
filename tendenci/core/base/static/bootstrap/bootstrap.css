@@ -1107,6 +1107,7 @@ table {
   font-size: 13px;
   border-collapse: collapse;
 }
+
 table th, table td {
   padding: 10px 10px 9px;
   line-height: 18px;
@@ -1124,6 +1125,10 @@ table td {
 table tbody th {
   border-top: 1px solid #ddd;
   vertical-align: top;
+}
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #f5f5f5;
 }
 .condensed-table th, .condensed-table td {
   padding: 5px 5px 4px;

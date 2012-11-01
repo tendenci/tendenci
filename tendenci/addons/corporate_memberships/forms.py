@@ -82,8 +82,8 @@ class CorpAppForm(forms.ModelForm):
     confirmation_text = forms.CharField(required=False,
                  widget=TinyMCE(
                     attrs={'style': 'width:70%'},
-                    mce_attrs={'storme_app_label': "confirmation_text",
-                               'storme_model': "confirmation_text"}),
+                    mce_attrs={'storme_app_label': CorpApp._meta.app_label,
+                               'storme_model': CorpApp._meta.module_name.lower()}),
                                help_text='Will show on the confirmation page.')
     notes = forms.CharField(label=_('Notes'), required=False,
                widget=forms.Textarea(attrs={'rows': '3'}),
@@ -110,6 +110,15 @@ class CorpAppForm(forms.ModelForm):
                   'status',
                   'status_detail',
                   )
+
+    def __init__(self, *args, **kwargs): 
+        super(CorpAppForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            self.fields['confirmation_text'].widget.mce_attrs['app_instance_id'] = 0
 
 default_corpapp_inline_fields_list = get_corpapp_default_fields_list()
 if default_corpapp_inline_fields_list:
@@ -490,6 +499,9 @@ class CorpMembRenewForm(forms.ModelForm):
         self.fields['members'].choices = members_choices
         self.fields['members'].label = "Select the individual members you " + \
                                         "want to renew"
+        if corporate_membership.corporate_membership_type.renewal_price == 0:
+            self.fields['select_all_members'].initial = True 
+            self.fields['members'].initial = [c[0] for c in members_choices]
 
         self.fields['payment_method'].widget = forms.RadioSelect(
                                     choices=get_payment_method_choices(
@@ -594,6 +606,14 @@ class CSVForm(forms.Form):
                         if label.lower() == choice.lower() or \
                          key.lower() == choice.lower():
                             self.fields[key].initial = choice
+
+    def clean_csv(self):
+        csv = self.cleaned_data['csv']
+        SUPPORTED_FILE_TYPES = ['text/csv',]
+
+        if not csv.content_type in SUPPORTED_FILE_TYPES:
+            raise forms.ValidationError(_('File type is not supported. Please upload a CSV File.'))
+        return csv
 
     def save(self, *args, **kwargs):
         """

@@ -132,6 +132,7 @@ def search(request, template_name="profiles/search.html"):
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
     if request.user.is_anonymous():
         if not allow_anonymous_search:
@@ -141,26 +142,39 @@ def search(request, template_name="profiles/search.html"):
         if not allow_user_search and not request.user.profile.is_superuser:
             raise Http403
 
+    members = request.GET.get('members', None)
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
-    profiles = Profile.objects.filter(filters).distinct()
+    profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query))
+        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query))
+
+    if members:
+        if not request.user.profile.is_superuser:
+            if membership_view_perms == "private":
+                profiles = profiles.filter(member_number="")
+            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
+                if request.user.profile and request.user.profile.is_member:
+                    profiles = profiles.exclude(member_number="")
+                else:
+                    profiles = profiles.filter(member_number="")
+            else:
+                profiles = profiles.exclude(member_number="")
+        else:
+            profiles = profiles.exclude(member_number="")
+    else:
+        if not request.user.profile.is_superuser:
+            if membership_view_perms == "private":
+                    profiles = profiles.filter(member_number="")
+            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
+                if not request.user.profile or not request.user.profile.is_member:
+                    profiles = profiles.filter(member_number="")
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
-    log_defaults = {
-        'event_id' : 124000,
-        'event_data': '%s searched by %s' % ('Profile', request.user),
-        'description': '%s searched' % 'Profile',
-        'user': request.user,
-        'request': request,
-        'source': 'profiles'
-    }
-    EventLog.objects.log(**log_defaults)
-
-    return render_to_response(template_name, {'profiles':profiles, "user_this":None}, 
+    EventLog.objects.log()
+    return render_to_response(template_name, {'profiles': profiles, "user_this": None},
         context_instance=RequestContext(request))
 
 
@@ -753,6 +767,19 @@ def admin_list(request, template_name='profiles/admin_list.html'):
     
     return render_to_response(template_name, {'admins': admins},
                               context_instance=RequestContext(request))
+
+@login_required
+def users_not_in_groups(request, template_name='profiles/users_not_in_groups.html'):
+    # superuser only
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    users = []
+    for user in User.objects.all():
+        if not user.profile.get_groups():
+            users.append(user)
+    
+    return render_to_response(template_name, {'users': users}, context_instance=RequestContext(request))
 
 @login_required
 def user_groups_edit(request, username, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):

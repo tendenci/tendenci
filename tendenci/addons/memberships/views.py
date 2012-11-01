@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.core.management import call_command
 
 from djcelery.models import TaskMeta
 from geraldo.generators import PDFGenerator
@@ -26,7 +27,7 @@ from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query
 from tendenci.addons.corporate_memberships.models import CorporateMembership, IndivMembEmailVeri8n
 from reports import ReportNewMems
 from tendenci.core.files.models import File
-from tendenci.core.exports.utils import render_csv
+from tendenci.core.exports.utils import render_csv, run_export_task
 
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, AppField, MembershipImport)
@@ -42,10 +43,18 @@ from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
 
 
 def membership_index(request):
+    if request.user.profile:
+        if request.user.profile.is_superuser or request.user.profile.is_staff:
+            return HttpResponseRedirect(reverse('membership.application_entries_search'))
     return HttpResponseRedirect(reverse('membership.search'))
 
 
 def membership_search(request, template_name="memberships/search.html"):
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
+
+    if not membership_view_perms == "public":
+        return HttpResponseRedirect(reverse('profile.search') + "?members=on")
+
     query = request.GET.get('q')
     mem_type = request.GET.get('type')
     total_count = Membership.objects.all().count()
@@ -259,10 +268,13 @@ def application_details(request, template_name="memberships/applications/details
     except NoMembershipTypes as e:
         print e
 
+        user_memberships = None
+        if hasattr(user, 'memberships'):
+            user_memberships = user.memberships.all()
         # non-admin has no membership-types available in this application
         # let them know to wait for their renewal period before trying again
         return render_to_response("memberships/applications/no-renew.html", {
-            "app": app, "user": user, "memberships": user.memberships.all()},
+            "app": app, "user": user, "memberships": user_memberships},
             context_instance=RequestContext(request))
 
     if request.method == "POST":
@@ -720,6 +732,13 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             )
 
             csv = File.objects.save_files_for_instance(request, memport)[0]
+
+            # hiding membership import
+            csv.allow_anonymous_view = False
+            csv.allow_user_view = False
+            csv.is_public = False
+            csv.save()
+
             file_path = str(csv.file.name)
             #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
 
@@ -822,6 +841,10 @@ def membership_import_confirm(request, id):
             else:
                 result = ImportMembershipsTask.delay(memport, cleaned_data)
 
+            # updates membership protection
+            # uses setting on membership settings page
+            call_command('membership_update_protection')
+
             return redirect('membership_import_status', result.task_id)
     else:
         return redirect('membership_import_preview', memport.id)
@@ -897,8 +920,6 @@ def membership_join_report(request):
 @staff_member_required
 @password_required
 def membership_export(request):
-    from django.template.defaultfilters import slugify
-
     template_name = 'memberships/export.html'
     form = ExportForm(request.POST or None, user=request.user)
 
@@ -907,102 +928,8 @@ def membership_export(request):
             # reset the password_promt session
             request.session['password_promt'] = False
             app = form.cleaned_data['app']
-
-            file_name = "%s.csv" % slugify(app.name)
-
-            exclude_params = (
-                'horizontal-rule',
-                'header',
-            )
-
-            fields = AppField.objects.filter(app=app, exportable=True).exclude(field_type__in=exclude_params).order_by('position')
-
-            label_list = [field.label for field in fields]
-            extra_field_labels = ['User Name', 'Member Number', 'Join Date', 'Renew Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
-            extra_field_names = ['user', 'member_number', 'join_dt', 'renew_dt', 'expire_dt', 'status', 'status_detail', 'invoice', 'invoice_total', 'invoice_balance']
-
-            label_list.extend(extra_field_labels)
-
-            data_row_list = []
-            memberships = Membership.objects.filter(ma=app).exclude(status_detail='archive')
-            for memb in memberships:
-                data_row = []
-                field_entry_d = memb.entry_items
-                invoice = None
-                if memb.get_entry():
-                    invoice = memb.get_entry().invoice
-                for field in fields:
-                    field_name = slugify(field.label).replace('-', '_')
-                    value = ''
-
-                    if field.field_type in ['first-name', 'last-name', 'email', 'membership-type', 'payment-method', 'corporate_membership_id']:
-                        if field.field_type == 'first-name':
-                            value = memb.user.first_name
-                        elif field.field_type == 'last-name':
-                            value = memb.user.last_name
-                        elif field.field_type == 'email':
-                            value = memb.user.email
-                        elif field.field_type == 'membership-type':
-                            value = memb.membership_type.name
-                        elif field.field_type == 'payment-method':
-                            if memb.payment_method:
-                                value = memb.payment_method.human_name
-                        elif field.field_type == 'corporate_membership_id':
-                            value = memb.corporate_membership_id
-
-                    if field_name in field_entry_d:
-                        value = field_entry_d[field_name]
-
-                    value = value or u''
-                    if type(value) in (bool, int, long, None):
-                        value = unicode(value)
-
-                    data_row.append(value)
-
-                for field in extra_field_names:
-
-                    if field == 'user':
-                        value = memb.user.username
-                    elif field == 'join_dt':
-                        if memb.renewal:
-                            value = ''
-                        else:
-                            value = memb.subscribe_dt
-                    elif field == 'renew_dt':
-                        if memb.renewal:
-                            value = memb.subscribe_dt
-                        else:
-                            value = ''
-                    elif field == 'expire_dt':
-                        value = memb.expire_dt or 'never expire'
-                    elif field == 'invoice':
-                        if invoice:
-                            value = unicode(invoice.id)
-                        else:
-                            value = ""
-                    elif field == 'invoice_total':
-                        if invoice:
-                            value = unicode(invoice.total)
-                        else:
-                            value = ""
-                    elif field == 'invoice_balance':
-                        if invoice:
-                            value = unicode(invoice.balance)
-                        else:
-                            value = ""
-                    else:
-                        value = getattr(memb, field, '')
-
-                    if type(value) in (bool, int, long):
-                        value = unicode(value)
-
-                    data_row.append(value)
-
-                data_row_list.append(data_row)
-
-            EventLog.objects.log()
-
-            return render_csv(file_name, label_list, data_row_list)
+            export_id = run_export_task('memberships', 'membership', [], app)
+            return redirect('export.status', export_id)
 
     return render_to_response(template_name, {
             'form': form
@@ -1037,7 +964,7 @@ def membership_join_report_pdf(request):
 def report_active_members(request, template_name='reports/membership_list.html'):
 
     mems = Membership.objects.filter(expire_dt__gt=datetime.now())
-    
+
     # sort order of all fields for the upcoming response
     is_ascending_username = True
     is_ascending_full_name = True
@@ -1116,6 +1043,39 @@ def report_active_members(request, template_name='reports/membership_list.html')
         is_ascending_invoice = True
 
     EventLog.objects.log()
+
+    # returns csv response ---------------
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'username',
+            'full name',
+            'email',
+            'application',
+            'type',
+            'subscription',
+            'expiration',
+        ]
+
+        table_data = []
+        for mem in mems:
+            table_data = [
+                mem.user.username,
+                mem.user.get_full_name,
+                mem.user.email,
+                mem.ma.name,
+                mem.membership_type.name,
+                mem.subscribe_dt,
+                mem.expire_dt,
+            ]
+
+        return render_csv(
+            'active-memberships.csv',
+            table_header,
+            table_data,
+        )
+    # ------------------------------------
 
     return render_to_response(template_name, {
             'mems': mems,
@@ -1215,6 +1175,39 @@ def report_expired_members(request, template_name='reports/membership_list.html'
 
     EventLog.objects.log()
 
+    # returns csv response ---------------
+    ouput = request.GET.get('output', '')
+    if ouput == 'csv':
+
+        table_header = [
+            'username',
+            'full name',
+            'email',
+            'application',
+            'type',
+            'subscription',
+            'expiration',
+        ]
+
+        table_data = []
+        for mem in mems:
+            table_data = [
+                mem.user.username,
+                mem.user.get_full_name,
+                mem.user.email,
+                mem.ma.name,
+                mem.membership_type.name,
+                mem.subscribe_dt,
+                mem.expire_dt,
+            ]
+
+        return render_csv(
+            'expired-memberships.csv',
+            table_header,
+            table_data,
+        )
+    # ------------------------------------
+
     return render_to_response(template_name, {
             'mems': mems,
             'active': False,
@@ -1227,6 +1220,7 @@ def report_expired_members(request, template_name='reports/membership_list.html'
             'is_ascending_expiration': is_ascending_expiration,
             'is_ascending_invoice': is_ascending_invoice,
             }, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_members_summary(request, template_name='reports/membership_summary.html'):

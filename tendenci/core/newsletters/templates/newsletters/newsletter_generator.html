@@ -1,0 +1,114 @@
+{% extends "newsletters/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block title %}
+{{ block.super }}{% trans '3rd Party Newsletter Generator'%}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/newsletters.css">
+<style>
+    .third-party-newletter{
+        margin: 2em 0;
+        position: relative;
+    }
+    .provider-logo{
+        -moz-box-shadow: 0 0 3px #888;
+        -webkit-box-shadow: 0 0 3px #888;
+        box-shadow: 0 0 3px #888;
+     }
+     .tpn-detail{
+         position: absolute;
+         top: 0;
+         left: 365px;
+     }
+     .campaign-monitor-link{
+         margin-top: 2em;
+         font-size: 1.2em;
+     }
+     .campaign-monitor-msg{
+         margin-top: 2em;
+         font-weight: bold;
+     }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ <div id="t-newsletters">
+        <h1>{% trans 'Third-Party Newsletter Providers'%}</h1>
+        
+       <h3>MailChimp</h3>
+       <div class="third-party-newletter">
+          <a href="http://mailchimp.com" target="_blank">
+          <img src="{{ STATIC_URL }}images/newsletters/mailchimp_logo.jpg" class="provider-logo" alt="mailchimp logo" title="mailchimp" />  
+           </a>
+           
+           <div class="tpn-detail">
+               <a href="http://mailchimp.com" target="_blank">MailChimp</a> helps you to design email 
+               campaigns, share them on social networks, integrate with
+               web services, manage subscribers, and track your results. <a href="" target="_blank">More...</a>
+               
+               <br /><br />
+               MailChimp is not integrated with Tendenci. To start, you can 
+               <a href="{% url profile.export %}">export users</a>
+               to MailChimp.
+           </div>
+       
+       </div>
+       
+       
+        <h3>Constant Contact</h3>
+       <div class="third-party-newletter">
+          <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">
+          <img src="{{ STATIC_URL }}images/newsletters/constant_contact_logo.jpg" class="provider-logo" alt="constant contact logo" title="constant contact" />  
+           </a>
+           
+           <div class="tpn-detail">
+               <a href="http://search.constantcontact.com/mainpage.jsp" target="_blank">Constant Contact</a>'s email marketing is easy for you to connect with your customers,
+               and for customers to share your message with their networks. <a href="" target="_blank">More...</a>
+           
+           <br /><br />
+               Constant Contact is not integrated with Tendenci. To start, you can 
+               <a href="{% url profile.export %}">export users</a>
+               to Constant Contact.
+           </div>
+           
+       </div>
+       
+       <h3>Campaign Monitor</h3>
+       <div class="third-party-newletter">
+          <a href="http://www.campaignmonitor.com/" target="_blank">
+          <img src="{{ STATIC_URL }}images/newsletters/campaign_monitor_logo.jpg" class="provider-logo" alt="campaign monitor logo" title="campaign monitor" />  
+           </a>
+           
+           <div class="tpn-detail">
+               <a href="http://www.campaignmonitor.com/" target="_blank">Campaign Monitor</a>
+               makes it easy for your to send beautiful email newsletters and 
+               manage your subscribers. <a href="" target="_blank">More...</a>
+               
+               
+               
+               {% if CAMPAIGNMONITOR_ENABLED %}
+               <div class="campaign-monitor-link">
+               <a href="{% url campaign_monitor.template_index%}">Go to Campaign Monitor</a>
+                </div>
+                {% else %}
+                <div class="campaign-monitor-msg">
+                To set up campaign monitor, please contact support at 281-497-6567 ext. 411.
+                </div>
+                {% endif %}
+               
+               
+           </div>
+       </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+
+{% endblock %}

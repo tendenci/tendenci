@@ -5,6 +5,7 @@ from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
 
 from tendenci.core.registry import autodiscover as reg_autodiscover
+from tendenci.core.newsletters.views import NewsletterGeneratorView
 
 # load the apps that are in Django Admin
 admin.autodiscover()
@@ -26,6 +27,7 @@ urlpatterns += patterns('',
     (r'^metrics/', include('tendenci.apps.metrics.urls')),
     url(r'^users/reports/users-activity-top10/$', 'tendenci.apps.profiles.views.user_activity_report', name='reports-user-activity'),
     url(r'^users/reports/active-logins/$', 'tendenci.apps.profiles.views.user_access_report', name='reports-user-access'),
+    url(r'^users/reports/not-in-groups/$', 'tendenci.apps.profiles.views.users_not_in_groups', name='reports-users-not-in-groups'),
     url(r'^users/reports/admin/$', 'tendenci.apps.profiles.views.admin_users_report', name='reports-admin-users'),
     url(r'^users/reports/users-added/$', 'tendenci.apps.user_groups.views.users_added_report', {'kind': 'added'}, name='reports-user-added'),
     url(r'^users/reports/contacts-referral/$', 'tendenci.apps.user_groups.views.users_added_report', {'kind': 'referral'}, name='reports-contacts-referral'),
@@ -91,6 +93,7 @@ urlpatterns += patterns('',
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
+    (r'^newsletter_generator/', NewsletterGeneratorView.as_view()),
 
     url(r'^', include('tendenci.apps.contacts.urls')),
     url(r'^', include('tendenci.addons.articles.urls')),
