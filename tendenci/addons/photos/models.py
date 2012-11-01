@@ -684,6 +684,8 @@ class Image(ImageModel, TendenciBaseModel):
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
 
+    photoset_position = models.IntegerField(default=0, null=True)
+
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
 
