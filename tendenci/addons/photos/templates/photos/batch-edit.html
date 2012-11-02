@@ -21,14 +21,14 @@
 		<h1>{% trans "Bulk edit photos" %}</h1>
 
         <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
-    
+            <div class="minimize-wrap-link">
+                <h3><a href="#" class="minimize-all-button" onClick="minimizeAll(); return false;">{% trans "Enable Photo Drag/Drop Reordering" %}</a></h3>
+            </div>
+            <div class="clearfix"></div>
             <div class="side-panel">
 
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
-                    <div class="minimize-wrap-link">
-                        <h3><a href="#" class="minimize-all-button" onClick="minimizeAll(); return false;">{% trans "Enable Photo Drag/Drop Reordering" %}</a></h3>
-                    </div>
                     <div class="photo-bulk-editor">
                         <div>{% trans "Replace all titles" %}</div>
                         <div><input class="title" type="text" /></div>
@@ -82,7 +82,6 @@
                         {{ photo_form.photoset }}
                     </div>
                     <div style="clear:both;"><!-- ie7 fix --></div>
-                    <div class="minimize-link"><a href="#" onClick="return false;">{% trans "Hide Photo Details" %}</a></div>
                     <div class="title-wrap">
                         <div class="label">{{ photo_form.title.label_tag }}</div>
                         <div class="field">{{ photo_form.title }}</div>
@@ -211,6 +210,8 @@
 
     function minimizeAll() {
         if ($('.minimize-all-button').text() == '{% trans "Enable Photo Drag/Drop Reordering" %}') {
+            $( ".t" ).css("width", "160%");
+            $( ".side-panel" ).css("display", "none");
             $( ".sortable-photos" ).sortable({
                 disabled: false,
                 items: 'div.edit-wrap',
@@ -231,10 +232,11 @@
                 $(this).find('.group-wrap').hide();
                 $(this).find('.cover-wrap').hide();
                 $(this).find('.delete-wrap').hide();
-                $(this).find('.minimize-link a').text('{% trans "Show Photo Details" %}');
             });
             $('.minimize-all-button').text('{% trans "Show all photo details for editing" %}')
         } else {
+            $( ".t" ).css("width", "105%");
+            $( ".side-panel" ).css("display", "inline");
             $( ".sortable-photos" ).sortable({ disabled: true});
             $('.edit-wrap').each(function(){
                 $(this).removeClass('minimize-photo');
@@ -245,7 +247,6 @@
                 $(this).find('.group-wrap').show();
                 $(this).find('.cover-wrap').show();
                 $(this).find('.delete-wrap').show();
-                $(this).find('.minimize-link a').text('{% trans "Hide Photo Details" %}');
             });
             $('.minimize-all-button').text('{% trans "Enable Photo Drag/Drop Reordering" %}')
         }

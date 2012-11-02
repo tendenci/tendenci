@@ -327,16 +327,12 @@ table.photo-form select {
 	padding: 20px;
     float: left;
 	margin-bottom: 10px;
-	-webkit-border-top-left-radius: 8px;
-	-webkit-border-top-right-radius: 8px;
-	-moz-border-radius-topleft: 8px;
-	-moz-border-radius-topright: 8px;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
 }
 
 .edit-wrap .photo-wrap {
-	margin-bottom: 5px;
 	float: left;
 }
 .set-wrap {
@@ -435,7 +431,6 @@ div.side-panel {
 	overflow: visible; /* ie7 and below: remove extra padding on button */
 	*padding: 0 10px; /* ie7 and below: custom padding */
 }
-
 
 
 /*= photo edit
@@ -703,6 +698,7 @@ div.gallery-photo-thumb img {
 .minimize-photo {
     margin-right: 12px;
     cursor: move;
+    padding: 5px;
 }
 .minimize-link {
     text-align: center;
