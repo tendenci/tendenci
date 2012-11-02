@@ -435,7 +435,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
-        EventLog.objects.log(instance=user_edit)
+        EventLog.objects.log(instance=profile)
 
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
    
