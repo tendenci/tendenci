@@ -17,6 +17,8 @@ from django.db.models.fields import FieldDoesNotExist
 from django.db import connection
 from django.template import Context, Template
 from django.template.loader import render_to_string
+from pytz import timezone
+from pytz import UnknownTimeZoneError
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import get_query_filters
@@ -1358,6 +1360,12 @@ def event_import_process(import_i, preview=True):
             except ValueError, e:
                 invalid = True
                 invalid_reason = "INVALID DATE FORMAT. SHOULD BE: %s" % VALID_DATE_FORMAT
+
+            try:
+                timezone(event_object_dict["timezone"])
+            except UnknownTimeZoneError, e:
+                invalid = True
+                invalid_reason = "UNKNOWN TIMEZONE %s" % event_object_dict["timezone"]
 
             if invalid:
                 event_object_dict['ERROR'] = invalid_reason
