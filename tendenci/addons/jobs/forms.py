@@ -13,6 +13,7 @@ from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.addons.jobs.models import JobPricing
 from tendenci.addons.jobs.utils import get_payment_method_choices, pricing_choices
+from tendenci.apps.user_groups.models import Group
 
 
 request_duration_defaults = {
@@ -71,6 +72,8 @@ class JobForm(TendenciBaseForm):
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
     
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True)
+
     pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
                     queryset=JobPricing.objects.filter(status=True).order_by('duration'))
 
@@ -80,6 +83,7 @@ class JobForm(TendenciBaseForm):
         'title',
         'slug',
         'description',
+        'group',
         'code',
         'location',
         'skills',
@@ -127,6 +131,7 @@ class JobForm(TendenciBaseForm):
                       'fields': ['title',
                                 'slug',
                                 'description',
+                                'group',
                                 'job_url',
                                 'start_dt',
                                 'code',
@@ -234,6 +239,7 @@ class JobForm(TendenciBaseForm):
             fields_to_pop += [
                 'slug',
                 'entity',
+                'group',
                 'allow_anonymous_view',
                 'user_perms',
                 'member_perms',

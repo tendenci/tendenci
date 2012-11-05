@@ -11,7 +11,7 @@ from tendenci.apps.user_groups.models import Group
 
 class FileForm(TendenciBaseForm):
 
-    group = forms.ModelChoiceField(required=False, queryset=Group.objects.filter(status=True, status_detail='active'))
+    group = forms.ModelChoiceField(required=True, queryset=Group.objects.filter(status=True, status_detail='active'))
 
     class Meta:
         model = File
