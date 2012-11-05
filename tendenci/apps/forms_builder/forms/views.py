@@ -121,7 +121,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         form = form_class(request.POST, instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
         if form.is_valid():
             form.save()
-
+            EventLog.objects.log()
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % form_instance)
             return redirect('form_detail', form_instance.slug)
     else:
@@ -216,6 +216,7 @@ def copy(request, id):
             default = field.default,
             )
 
+    EventLog.objects.log(instance=form_instance)
     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
     return redirect('form_edit', new_form.pk)
 
@@ -480,15 +481,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
                     # log an event for invoice add
-                    log_defaults = {
-                        'event_id' : 311000,
-                        'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
-                        'description': '%s added' % invoice._meta.object_name,
-                        'user': request.user,
-                        'request': request,
-                        'instance': invoice,
-                    }
-                    EventLog.objects.log(**log_defaults)
+
+                    EventLog.objects.log(instance=form)
 
                     # redirect to billing form
                     return redirect('form_entry_payment', invoice.id, invoice.guid)
@@ -551,6 +545,7 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
     form_template = entry.form.template
     if not form_template or not template_exists(form_template):
         form_template = "default.html"
+    EventLog.objects.log(instance=entry)
     return render_to_response(template, {
             'payment_form':form,
             'form':entry.form,
@@ -609,6 +604,7 @@ def files(request, id):
     data = default_storage.open(field.value).read()
     f = ContentFile(data)
 
+    EventLog.objects.log()
     response = HttpResponse(f.read(), mimetype=mime_type)
     response['Content-Disposition'] = 'filename=%s' % base_name
     return response

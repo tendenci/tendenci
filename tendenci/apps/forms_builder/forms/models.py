@@ -262,6 +262,9 @@ class FormEntry(models.Model):
         except GS.DoesNotExist:
             pass
 
+    def entry_fields(self):
+        return self.fields.all().order_by('field__position')
+
     def get_name_email(self):
         """Try to figure out the name and email from this entry
             Assume: 1) email field type is EmailField

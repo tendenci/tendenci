@@ -136,7 +136,7 @@ setup(
         "Reportlab==2.5",
     ],
     install_requires=[
-        "Django==1.4.1",
+        "Django==1.4.2",
         "Reportlab==2.5",
         "PIL==1.1.7",
         "South==0.7.3",
@@ -180,5 +180,6 @@ setup(
 #         "Geraldo==0.4.14",
         "django-tastypie",
         "johnny-cache==1.4",
+        "docutils==0.9.1",
     ],
 )

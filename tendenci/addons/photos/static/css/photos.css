@@ -265,7 +265,7 @@ div.gallery-photo-thumb img {
 /*= photo batch-edit
 -------------------------------- */
 .batch-edit-form {
-    width: 95%;
+    width: 94%;
 }
 
 
@@ -322,21 +322,17 @@ table.photo-form select {
 }
 
 .edit-wrap {
-	width: 45%;
 	background-color: white;
 	border: 1px solid silver;
 	padding: 20px;
+    float: left;
 	margin-bottom: 10px;
-	-webkit-border-top-left-radius: 8px;
-	-webkit-border-top-right-radius: 8px;
-	-moz-border-radius-topleft: 8px;
-	-moz-border-radius-topright: 8px;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
 }
 
 .edit-wrap .photo-wrap {
-	margin-bottom: 5px;
 	float: left;
 }
 .set-wrap {
@@ -416,6 +412,10 @@ div.side-panel {
 	width: 330px;
 }
 
+.minimize-wrap {
+    text-align: right;
+    width: 47%;
+}
 .float-window .save-wrap {
 	text-align: center;
 	border: 1px solid silver;
@@ -431,7 +431,6 @@ div.side-panel {
 	overflow: visible; /* ie7 and below: remove extra padding on button */
 	*padding: 0 10px; /* ie7 and below: custom padding */
 }
-
 
 
 /*= photo edit
@@ -693,3 +692,22 @@ div.gallery-photo-thumb img {
 	height: 50px;
 }
 
+.sortable-photos {
+    width: 63%;
+}
+.minimize-photo {
+    margin-right: 12px;
+    cursor: move;
+    padding: 5px;
+}
+.minimize-link {
+    text-align: center;
+    margin: 5px;
+}
+.minimize-photo .photo-wrap img{
+    width: 122px;
+    cursor: move;
+}
+.position-wrap{
+    display: none;
+}

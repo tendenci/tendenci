@@ -52,7 +52,7 @@ urlpatterns += patterns('',
     (r'^invoices/', include('tendenci.apps.invoices.urls')),
     (r'^py/', include('tendenci.addons.make_payments.urls')),
     (r'^payments/', include('tendenci.core.payments.urls')),
-    (r'^recurring_payments/', include('tendenci.addons.recurring_payments.urls')),
+    (r'^rp/', include('tendenci.addons.recurring_payments.urls')),
     (r'^accountings/', include('tendenci.apps.accountings.urls')),
     (r'^emails/', include('tendenci.core.emails.urls')),
     (r'^rss/', include('tendenci.core.rss.urls')),
@@ -110,7 +110,7 @@ handler500 = 'tendenci.core.base.views.custom_error'
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     urlpatterns += patterns('',
     # serve .less files - this is to resolve the cross domain issue for less js
-    url(r'^(?P<path>.*).less$', 
+    url(r'^(?P<path>.*)\.less$', 
         'tendenci.core.files.views.display_less',  name='less_file'),
     url(r'^static/(?P<path>.*)$',
             'tendenci.core.files.views.redirect_to_s3',

@@ -12,7 +12,7 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display = ('update_dt', 'create_dt', 'tags',)
 
     fieldsets = (
-        (None, {'fields': ('title', 'tags',)}),
+        (None, {'fields': ('tags',)}),
         ('Administrative', 
             {'fields': 
                 (

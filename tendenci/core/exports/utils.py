@@ -60,10 +60,11 @@ def render_csv(filename, title_list, data_list):
     return response
 
 
-def run_export_task(app_label, model_name, fields):
+def run_export_task(app_label, model_name, fields, memb_app=None):
     export = Export.objects.create(
         app_label=app_label,
         model_name=model_name,
+        memb_app=memb_app,
     )
     # subprocess.Popen(['python', 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
 

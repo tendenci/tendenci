@@ -14,6 +14,7 @@ class JobAdmin(TendenciBaseModelAdmin):
             'fields': ('title',
                 'slug',
                 'description',
+                'group',
                 'skills',
                 'location',
                 'contact_email',
