@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from tendenci.apps.user_groups.models import Group
 
 
 def member_choices(group, member_label):
@@ -18,3 +19,9 @@ def member_choices(group, member_label):
     for member in members:
         choices.append((member.pk, label(member)))
     return choices
+
+def get_default_group():
+    """
+    get lowest id group to use as default in other apps that FK to Group
+    """
+    return Group.objects.filter(status=True, status_detail="active").order_by('id')[0]
