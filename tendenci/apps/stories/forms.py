@@ -35,7 +35,7 @@ class StoryForm(TendenciBaseForm):
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     class Meta:
         model = Story

@@ -3,7 +3,8 @@ import uuid
 from parse_uri import ParseUri
 
 from django.db import models
-from django.contrib.auth.models import Group
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
@@ -44,7 +45,7 @@ class Story(TendenciBaseModel):
     ncsortorder = models.IntegerField(null=True, blank=True)
     image = models.ForeignKey('StoryPhoto',
         help_text=_('Photo that represents this story.'), null=True, default=None)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, default='')
 
     categories = generic.GenericRelation(CategoryItem,

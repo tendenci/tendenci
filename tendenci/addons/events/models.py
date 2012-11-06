@@ -22,6 +22,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.files.models import File
@@ -878,7 +879,7 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
+    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
 
     # additional permissions
