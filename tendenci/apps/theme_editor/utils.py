@@ -169,7 +169,7 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
                         'editable': editable})
             elif splits == 2:
                 if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': []}
+                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
                 s3_files_folders[path_split[0]]['contents'].append({
                         'name': path_split[1],
@@ -177,10 +177,10 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
                         'editable': editable})
             elif splits == 3:
                 if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': []}
+                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
                 if not path_split[1] in s3_files_folders[path_split[0]]:
-                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': []}
+                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
                 s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
                         'name': path_split[2],
@@ -188,13 +188,13 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
                         'editable': editable})
             elif splits == 4:
                 if not path_split[0] in s3_files_folders:
-                    s3_files_folders[path_split[0]] = {'contents': []}
+                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
                 if not path_split[1] in s3_files_folders[path_split[0]]:
-                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': []}
+                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
                 if not path_split[2] in s3_files_folders[path_split[0]][path_split[1]]:
-                    s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': []}
+                    s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
 
                 s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
                         'name': path_split[3],
@@ -247,7 +247,9 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
 
 
 def handle_uploaded_file(f, file_dir):
-    file_path = os.path.join(file_dir, f.name)
+    filecopy = os.path.join(THEME_ROOT, file_dir, f.name)
+    file_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
+
     destination = open(file_path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
@@ -259,7 +261,8 @@ def handle_uploaded_file(f, file_dir):
             public = False
         else:
             public = True
-        save_file_to_s3(file_path, public=public)
+        dest_path = "/themes/%s" % filecopy
+        save_file_to_s3(file_path, dest_path=dest_path, public=public)
 
         cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', file_path[(file_path.find(THEME_ROOT)):]])
         cache.delete(cache_key)
