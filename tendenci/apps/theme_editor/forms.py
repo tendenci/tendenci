@@ -54,7 +54,7 @@ class FileForm(forms.Form):
             new_file.close()
 
         if os.path.isfile(file_path) and content != "":
-            archive_file(request, file_relative_path, ROOT_DIR=ROOT_DIR)
+            archive_file(request, file_relative_path, ROOT_DIR=ORIG_ROOT_DIR)
 
             # Save the file locally no matter the theme location.
             # The save to S3 reads from the local file, so we need to save it first.
