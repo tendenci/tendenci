@@ -6,8 +6,8 @@ from django.db.models.loading import get_models
 class Command(BaseCommand):
     """
     Loop through all models that are subclasses of the TendenciBaseModel
-    and populate the entity with the default entity (id=1). If no entity
-    exists, create one first.
+    and populate the entity with the default entity (id=1 or the first one
+    in the system). If no entity exists, create one first.
 
     Also, check if we have a group with the same name of site
     display name and associated to the default entity (id=1).
