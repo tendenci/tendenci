@@ -1,4 +1,5 @@
 from south.signals import post_migrate
+from south.models import MigrationHistory
 
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.site_settings.utils import get_setting
@@ -8,7 +9,7 @@ def create_default_group(sender, app, **kwargs):
     """
     Auto-create a default group if no groups exist.
     """
-    if app == "user_groups" and not Group.objects.all().exists():
+    if MigrationHistory.objects.filter(app_name="site_settings").count() > 0 and app == "user_groups" and not Group.objects.all().exists():
         site_name = get_setting("site", "global", "sitedisplayname")
         group = Group()
         if site_name:
