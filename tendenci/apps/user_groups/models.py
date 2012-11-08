@@ -23,6 +23,7 @@ class Group(TendenciBaseModel):
     show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
+    sync_newsletters = models.BooleanField(_('Sync for newsletters'), default=1)
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
     auto_respond_template = models.CharField(_('Auto Responder Template'),
