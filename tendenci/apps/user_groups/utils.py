@@ -4,7 +4,7 @@ from tendenci.apps.user_groups.models import Group
 
 def member_choices(group, member_label):
     """
-    Creates a list of 2 tuples of a user's pk and the selected 
+    Creates a list of 2 tuples of a user's pk and the selected
     member label. This is used for generating choices for a form.
     choices for member label are: email, full name and username.
     """
@@ -20,8 +20,10 @@ def member_choices(group, member_label):
         choices.append((member.pk, label(member)))
     return choices
 
+
 def get_default_group():
     """
     get lowest id group to use as default in other apps that FK to Group
     """
-    return Group.objects.filter(status=True, status_detail="active").order_by('id')[0]
+    return (Group.objects.filter(
+        status=True, status_detail="active").order_by('id')[:1] or [None])[0]
