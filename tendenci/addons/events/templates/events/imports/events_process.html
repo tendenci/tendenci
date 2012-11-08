@@ -17,6 +17,7 @@
 {% event_nav request.user %}
 <h1>Import Events Process</h1>
 <div class="imports">
+{% trans "We're not done yet! This page will be updated as your events are imported." %}
     <p><strong>{% trans "Import ID" %}:</strong> {{ import_i.id }}</p>
     <p><strong>{% trans "File" %}:</strong> {{ import_i.file.name }}</p>
     <p><strong>{% trans "Status" %}:</strong> {{ import_i.status }}</p>
