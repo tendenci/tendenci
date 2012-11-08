@@ -45,14 +45,12 @@ class Entity(models.Model):
     class Meta:
         permissions = (("view_entity","Can view entity"),)
         verbose_name_plural = "entities"
-        
+
     def __unicode__(self):
         return self.entity_name
-    
+
     def save(self, *args, **kwargs):
-        if not self.id:
+        if not self.guid:
             self.guid = str(uuid.uuid1())
-            
+
         super(Entity, self).save(*args, **kwargs)
-
-

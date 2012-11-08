@@ -1,26 +1,32 @@
 from south.signals import post_migrate
-from south.models import MigrationHistory
+from django.db import connection
 
+from tendenci.core.site_settings.models import Setting
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.site_settings.utils import get_setting
 
 
 def create_default_group(sender, app, **kwargs):
     """
-    Auto-create a default group if no groups exist.
+    Auto-create a default group with id=1 if none exist.
     """
-    if MigrationHistory.objects.filter(app_name="site_settings").count() > 0 and app == "user_groups" and not Group.objects.all().exists():
-        site_name = get_setting("site", "global", "sitedisplayname")
-        group = Group()
-        if site_name:
-            group.name = site_name
-        else:
-            group.name = "Default"
-        group.show_as_option = False
-        group.allow_self_add = False
-        group.allow_self_remove = False
-        group.description = "Initial group auto-generated on site creation."
+    if app == "user_groups":
+        if not Group.objects.filter(pk=1):
+            site_name = "Default"
+            table_exists = Setting._meta.db_table in \
+                connection.introspection.table_names()
+            if table_exists and get_setting("site", "global", "sitedisplayname"):
+                site_name = get_setting("site", "global", "sitedisplayname")
 
-        group.save()
+            group = Group()
+            group.name = site_name
+            group.label = site_name
+            group.show_as_option = False
+            group.allow_self_add = False
+            group.allow_self_remove = False
+            group.description = "Initial group auto-generated on site creation."
+            group.id = 1
+
+            group.save()
 
 post_migrate.connect(create_default_group)

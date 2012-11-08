@@ -13,7 +13,7 @@ class Command(BaseCommand):
         """
         from tendenci.core.site_settings.models import Setting
         from tendenci.core.site_settings.utils import delete_all_settings_cache
-        
+
         if scope and scope_category and name and value:
             try:
                 setting = Setting.objects.get(
@@ -23,7 +23,27 @@ class Command(BaseCommand):
                 )
                 setting.set_value(value)
                 setting.save()
+
             except Setting.DoesNotExist:
                 if int(options['verbosity']) > 0:
                     print "We could not update that setting."
             delete_all_settings_cache()
+
+            if name == "sitedisplayname":
+                from tendenci.apps.user_groups.models import Group
+                from tendenci.apps.entities.models import Entity
+                try:
+                    entity = Entity.objects.get(pk=1)
+                    entity.entity_name = value
+                    entity.save()
+                except:
+                    pass
+
+                try:
+                    group = Group.objects.get(pk=1)
+                    group.name = value
+                    group.label = value
+                    group.slug = ''
+                    group.save()
+                except:
+                    pass
