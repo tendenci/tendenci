@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.db.models.loading import get_models
-from django.db import connection, transaction
 
 
 class Command(BaseCommand):
@@ -69,12 +68,6 @@ class Command(BaseCommand):
 
         # loop through all the tables and populate
         # the entity field only if it's null.
-        sql_template = """
-                    UPDATE %s
-                    SET entity_id=1
-                    WHERE entity_id is NULL
-                """
-        #cursor = connection.cursor()
         models = get_models()
         table_updated = []
         for model in models:
@@ -85,10 +78,6 @@ class Command(BaseCommand):
                         if not row.entity:
                             row.entity = entity
                             row.save()
-#                    sql = sql_template % table_name
-#                    model.objects.raw(sql)
-#                    cursor.execute(sql)
-#                    transaction.commit_unless_managed()
                     table_updated.append(table_name)
 
         if verbosity >= 2:
