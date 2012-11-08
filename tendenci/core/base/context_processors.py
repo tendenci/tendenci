@@ -16,11 +16,8 @@ def today(request):
 
 
 def newrelic(request):
-    try:
-        import newrelic.agent
-        return {
-            'NEW_RELIC_HEADER': newrelic.agent.get_browser_timing_header(),
-            'NEW_RELIC_FOOTER': newrelic.agent.get_browser_timing_footer(),
-        }
-    except ImportError:
-        return {}
+    """ newrelic removed due to increase of timeouts """
+    return {
+        'NEW_RELIC_HEADER': "",
+        'NEW_RELIC_FOOTER': "",
+    }
