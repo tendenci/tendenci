@@ -72,20 +72,24 @@ class Command(BaseCommand):
         sql_template = """
                     UPDATE %s
                     SET entity_id=1
-                    WHERE entity_id=NULL
+                    WHERE entity_id is NULL
                 """
-        cursor = connection.cursor()
+        #cursor = connection.cursor()
         models = get_models()
         table_updated = []
         for model in models:
             if TendenciBaseModel in model.__bases__:
                 if hasattr(model, 'entity'):
                     table_name = model._meta.db_table
-                    sql = sql_template % table_name
-                    cursor.execute(sql)
-                    transaction.commit_unless_managed()
+                    for row in model.objects.all():
+                        if not row.entity:
+                            row.entity = entity
+                            row.save()
+#                    sql = sql_template % table_name
+#                    model.objects.raw(sql)
+#                    cursor.execute(sql)
+#                    transaction.commit_unless_managed()
                     table_updated.append(table_name)
-                    print sql
 
         if verbosity >= 2:
             print 'List of table updated: '
