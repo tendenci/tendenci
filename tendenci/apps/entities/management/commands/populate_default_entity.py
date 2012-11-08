@@ -6,8 +6,8 @@ from django.db.models.loading import get_models
 class Command(BaseCommand):
     """
     Loop through all models that are subclasses of the TendenciBaseModel
-    and populate the entity with the default entity (id=1 or the first one
-    in the system). If no entity exists, create one first.
+    and populate the entity with the default entity (id=1). If no entity
+    exists, create one first.
 
     Also, check if we have a group with the same name of site
     display name and associated to the default entity (id=1).
@@ -24,12 +24,14 @@ class Command(BaseCommand):
 
         verbosity = int(options['verbosity'])
 
-        [entity] = Entity.objects.all().order_by('id')[:1] or [None]
+        [entity] = Entity.objects.filter(pk=1)[:1] or [None]
         user = User.objects.get(pk=1)
 
         site_display_name = get_setting('site',
                                         'global',
                                         'sitedisplayname')
+        if not site_display_name:
+            site_display_name = 'Default'
         site_contact_name = get_setting('site',
                                         'global',
                                         'sitecontactname')
@@ -61,10 +63,11 @@ class Command(BaseCommand):
                     owner=user,
                     owner_username=user.username,
                     status=True,
-                    status_detail='active')
+                    status_detail='active',
+                    id=1)
 
             entity.save()
-            print 'entity created: ', entity.name
+            print 'entity created: ', entity.entity_name
 
         # loop through all the tables and populate
         # the entity field only if it's null.
