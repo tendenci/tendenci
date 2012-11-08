@@ -84,8 +84,10 @@ class Command(BaseCommand):
                     table_updated.append(table_name)
 
         if verbosity >= 2:
-            print 'List of table updated: '
+            print
+            print 'List of tables updated: '
             print '\n'.join(table_updated)
+            print
 
         # GROUP - check if we have a group associated with
         group_exists = Group.objects.filter(
