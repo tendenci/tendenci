@@ -1,4 +1,3 @@
-import os.path
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.core.cache import cache
@@ -19,6 +18,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         cache_group_key = "%s.theme_files_cache_list" % settings.SITE_CACHE_KEY
         cache_group_list = cache.get(cache_group_key)
-        for key in cache_group_list:
-            cache.delete(key)
-        cache.set(cache_group_key, [])
+
+        if cache_group_list:  # protects against NoneType object
+            for key in cache_group_list:
+                cache.delete(key)
+            cache.set(cache_group_key, [])
