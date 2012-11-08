@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         verbosity = int(options['verbosity'])
 
-        [entity] = Entity.objects.all()[:1] or [None]
+        [entity] = Entity.objects.all().order_by('id')[:1] or [None]
         user = User.objects.get(pk=1)
 
         site_display_name = get_setting('site',
