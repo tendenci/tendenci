@@ -187,7 +187,7 @@ class Job(BaseJob):
 
     @models.permalink
     def get_approve_url(self):
-        return ("job.approve" [self.id])
+        return ("job.approve", [self.id])
 
 
 class JobPricing(models.Model):
