@@ -821,7 +821,7 @@ class Reg8nEditForm(BetterModelForm):
                                           str(self.instance.bind_reg_form_to_conf_only)
                                           )
             reminder_edit_link = '<a href="%s" target="_blank">Edit Reminder Email</a>' % \
-                                reverse('event.edit.email', args=[self.instance.id])                            
+                                reverse('event.edit.email', args=[self.instance.event.id])                            
             self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
                                         (self.fields['reminder_days'].help_text, 
                                          reminder_edit_link)
