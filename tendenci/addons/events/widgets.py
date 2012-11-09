@@ -39,9 +39,8 @@ class UseCustomRegWidget(forms.MultiWidget):
                                                 name, value, final_attrs, 
                                                 1, id_)
         bind_reg_form_to_conf_only_widget = self.widgets[2]
-        choices=(('1', mark_safe('Use one form for all pricing %s' \
-                                 % rendered_reg_form)), 
-                 ('0', 'Use separate form for each pricing (if checked, select a form for each pricing below)'), )
+        choices=(('1', mark_safe('Use one form for all pricings %s' \
+                                 % rendered_reg_form)),)
         bind_reg_form_to_conf_only_widget.choices = choices
         rendered_bind_reg_form_to_conf_only = self.render_widget(
                                     bind_reg_form_to_conf_only_widget,
