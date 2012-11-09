@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
 from captcha.fields import CaptchaField
+from tendenci.core.categories.models import Category
 from tendenci.addons.jobs.models import Job
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -285,3 +286,30 @@ class JobPricingForm(forms.ModelForm):
             'show_member_pricing',
             'status',
          )
+
+class JobSearchForm(forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    categories = forms.ChoiceField(required=False)
+    subcategories = forms.ChoiceField(required=False)
+    
+    def __init__(self, *args, **kwargs):
+        super(JobSearchForm, self).__init__(*args, **kwargs)
+        
+        #setup categories        
+        (categories, sub_categories) = Category.objects.get_for_model(Job)
+        cat_length = len(categories)
+        cat_choices = [('', 'Categories (%s)' % cat_length)]
+        for category in categories:
+            cat_choices.append((category.pk, category.name))
+
+        query_string = args[0]
+        category = query_string.get('categories', None)
+        if category:
+            sub_categories = Category.objects.get_for_model(Job, category)[1]
+        subcat_length = len(sub_categories)
+        subcat_choices = [('', 'Subcategories (%s)' % subcat_length)]
+        for category in sub_categories:
+            subcat_choices.append((category.pk, category.name))
+
+        self.fields['categories'].choices = cat_choices
+        self.fields['subcategories'].choices = subcat_choices
