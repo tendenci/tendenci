@@ -3,6 +3,7 @@ Created on 28-02-2011
 
 @author: hpolloni
 '''
+import subprocess
 
 from django.contrib.sites.models import get_current_site
 from django.core.paginator import EmptyPage, PageNotAnInteger
@@ -48,6 +49,7 @@ def sitemap(request, sitemaps, section=None,
     page = request.GET.get("p", 1)
 
     urls = []
+    cached = False
     for site in maps:
         try:
             if callable(site):
@@ -58,7 +60,10 @@ def sitemap(request, sitemaps, section=None,
             # Cache the sitemap urls
             sitemap_cache_key = '.'.join([settings.SITE_CACHE_KEY, 'sitemap_cache', site_key])
             site_urls = cache.get(sitemap_cache_key)
-            if not site_urls:
+            if not isinstance(site_urls, list):
+                if not cached:
+                    subprocess.Popen(['python', 'manage.py', 'sitemap_cache'])
+                    cached = True
                 site_urls = site.get_urls(page=page, site=req_site,
                                           protocol=req_protocol)
                 cache.set(sitemap_cache_key, list(site_urls), 86400)
