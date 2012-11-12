@@ -26,6 +26,7 @@ from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.notifications import models as notification
 
 from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
