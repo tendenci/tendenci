@@ -525,7 +525,6 @@ class Registration(models.Model):
         
         return registrant
 
-
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())

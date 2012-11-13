@@ -1127,6 +1127,13 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
+            self.fields['pricing'].choices = [(p.pk,  
+                mark_safe(
+                '<div>' + 
+                unicode(p) + 
+                    '<br/>(ends ' + unicode(p.end_dt.date()) + ')' + 
+                '</div>'))
+                for p in self.pricings]
             
         # member id
         if hasattr(self.event, 'has_member_price') and \
