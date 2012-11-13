@@ -5,14 +5,27 @@
 <div class="meta">
     <div class="meta-left">
         <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ article.release_dt|date:"long" }}
-        {% if article.creator.first_name %}
-         {% trans "by" %} {% if user.is_authenticated %}
-         <a href="{{ article.creator.get_absolute_url }}">{{ article.creator.first_name }} {{ article.creator.last_name }}</a>
-           {% else %}
-           {{ article.creator.first_name }} {{ article.creator.last_name }}
-           {% endif %}
-        {% endif %}
         </div>
+        
+        {% if article.first_name or article.last_name or article.phone or article.fax or article.email or article.website %} 
+        <div class="contact">
+            {% if article.first_name or article.last_name %}
+                <div><strong>{% trans "Contact:" %}</strong> {{ article.first_name }} {{ article.last_name }}</div>
+            {% endif %}	
+            {% if article.phone %}
+                <div><strong>{% trans "Phone:" %}</strong> {{ article.phone }}</div>	
+            {% endif %}	
+            {% if article.fax %}
+                <div><strong>{% trans "Fax:" %}</strong> {{ article.fax }}</div>	
+            {% endif %}	
+            {% if article.email %}
+            <div><strong>{% trans "Email:" %}</strong>{{ article.email|obfuscate_email }}</div>
+            {% endif %}
+            {% if article.website %}	
+            <div><strong>{% trans "Website:" %}</strong>{{ article.website|urlize }}</div>	
+            {% endif %}
+        </div> 
+        {% endif %}
 
         {% with article.category_set as article_cat %}
         {% if article_cat.category %}
@@ -41,10 +54,6 @@
                 <strong>Owned by you</strong>{% if not article.status_detail == "active" %} - status: {{ article.obj_status }}{% endif %}
             </div>
             {% endif %}
-            {% endif %}
-
-            {% if user.profile.is_superuser or user == article.creator or user == article.owner %}
-                {% meta_creator_owner article %}
             {% endif %}
         {% endif %}
     </div>

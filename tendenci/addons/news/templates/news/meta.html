@@ -6,13 +6,6 @@
 <div class="meta">
     <div class="meta-left">
         <div class="submitted"><strong>{% trans "Released:" %}</strong> {{ news.release_dt|date:"long" }}
-            {% if news.creator.first_name %}
-                {% trans "by" %}{% if user.is_authenticated %}
-                    <a href="{{ article.creator.get_absolute_url }}">{{ news.creator.first_name }} {{ news.creator.last_name }}</a>
-                {% else %}
-                    {{ news.creator.first_name }} {{ news.creator.last_name }}
-                {% endif %}
-            {% endif %}
         </div>
         
         {% if news.source %}
@@ -22,19 +15,19 @@
         {% if news.first_name or news.last_name or news.phone or news.fax or news.email or news.website %} 
         <div class="contact">
             {% if news.first_name or news.last_name %}
-                <div>{{ news.first_name }} {{ news.last_name }}</div>
+                <div><strong>{% trans "Contact:" %}</strong> {{ news.first_name }} {{ news.last_name }}</div>
             {% endif %}	
             {% if news.phone %}
-                <div>{{ news.phone }}</div>	
+                <div><strong>{% trans "Phone:" %}</strong> {{ news.phone }}</div>	
             {% endif %}	
             {% if news.fax %}
-                <div>{{ news.fax }}</div>	
+                <div><strong>{% trans "Fax:" %}</strong> {{ news.fax }}</div>	
             {% endif %}	
             {% if news.email %}
-            <div>{{ news.email|obfuscate_email }}</div>
+            <div><strong>{% trans "Email:" %}</strong>{{ news.email|obfuscate_email }}</div>
             {% endif %}
             {% if news.website %}	
-            <div>{{ news.website|urlize }}</div>	
+            <div><strong>{% trans "Website:" %}</strong>{{ news.website|urlize }}</div>	
             {% endif %}
         </div> 
         {% endif %}
@@ -56,10 +49,6 @@
                 <a href="{% url news %}?q=tag:{{ tag|lower }}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
             {% endfor %}
         </div>
-        {% endif %}
-        
-        {% if user.profile.is_superuser or user == news.creator or user == news.owner %}
-            {% meta_creator_owner news %}
         {% endif %}
     </div>
     <div class="meta-right">
