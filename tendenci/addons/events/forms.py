@@ -116,7 +116,7 @@ class FormForCustomRegForm(forms.ModelForm):
             else:
                 field_class, field_widget = field.field_type, None
             field_class = getattr(forms, field_class)
-            field_args = {"label": field.label, "required": field.required}
+            field_args = {"label": mark_safe(field.label), "required": field.required}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
