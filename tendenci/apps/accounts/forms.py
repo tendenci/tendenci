@@ -168,8 +168,8 @@ class LoginForm(forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                u"Woohoo %s, you've successfully logged in." % \
-                    self.user.first_name or self.user.username
+                u"Woohoo %s %s, you've successfully logged in." % \
+                    (self.user.first_name or self.user.username, self.user.last_name)
             )
 
             if self.cleaned_data['remember']:
