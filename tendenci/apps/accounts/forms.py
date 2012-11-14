@@ -11,6 +11,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template import Context, loader
 from django.utils.http import int_to_base36
 
+from johnny.cache import invalidate
 from captcha.fields import CaptchaField
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
@@ -140,6 +141,7 @@ class LoginForm(forms.Form):
     def clean(self):
         if self._errors:
             return
+        invalidate('auth_user')
         user = authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"])
 
         if user:
