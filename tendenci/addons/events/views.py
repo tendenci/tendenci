@@ -838,6 +838,7 @@ def delete(request, id, template_name="events/delete.html"):
     if has_perm(request.user,'events.delete_event'):
         if request.method == "POST":
 
+            eventlog = EventLog.objects.log(instance=event)
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
