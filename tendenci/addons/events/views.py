@@ -838,10 +838,6 @@ def delete(request, id, template_name="events/delete.html"):
     if has_perm(request.user,'events.delete_event'):
         if request.method == "POST":
 
-            eventlog = EventLog.objects.log(instance=event)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
-
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -868,7 +864,12 @@ def delete(request, id, template_name="events/delete.html"):
                 #"current transaction is aborted, commands ignored until 
                 # end of transaction block"
                 connection._rollback()
-                event.delete()
+            
+            if event.image:
+                event.image.delete()
+            event.delete()
+
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
             return HttpResponseRedirect(reverse('event.search'))
     
