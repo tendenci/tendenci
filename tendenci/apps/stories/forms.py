@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.stories.models import Story
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -34,6 +35,7 @@ class StoryForm(TendenciBaseForm):
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True)
 
     class Meta:
         model = Story
@@ -48,6 +50,7 @@ class StoryForm(TendenciBaseForm):
             'start_dt',
             'end_dt',
             'expires',
+            'group',
             'syndicate',
             'allow_anonymous_view',
             'user_perms',
@@ -66,7 +69,8 @@ class StoryForm(TendenciBaseForm):
                                  'tags',
                                  'start_dt',
                                  'end_dt',
-                                 'expires'
+                                 'expires',
+                                 'group',
                                  ],
                       'legend': ''
                       }),

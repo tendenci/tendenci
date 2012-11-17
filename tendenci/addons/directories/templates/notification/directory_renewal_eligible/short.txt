@@ -1,0 +1,3 @@
+{% load i18n %}
+
+{% blocktrans with object.headline as objname %}Directory ({{ objname }}) available for renewal on {{ SITE_GLOBAL_SITEDISPLAYNAME }}{% endblocktrans %}

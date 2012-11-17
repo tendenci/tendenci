@@ -13,7 +13,7 @@ class HelpFileAdmin(TendenciBaseModelAdmin):
     filter_horizontal = ['topics']
     search_fields = ['question', 'answer']
     fieldsets = (
-        (None, {'fields': ('question', 'slug', 'answer', 'level', 'topics')}),
+        (None, {'fields': ('question', 'slug', 'answer', 'group', 'level', 'topics')}),
         ('Flags', {'fields': (
             ('is_faq', 'is_featured', 'is_video', 'syndicate'),)}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -19,6 +21,7 @@ from tendenci.addons.news.models import News
 from tendenci.addons.news.forms import NewsForm
 from tendenci.apps.notifications import models as notification
 from tendenci.core.perms.utils import assign_files_perms
+
 
 def detail(request, slug=None, template_name="news/view.html"):
     if not slug:
@@ -47,6 +50,9 @@ def search(request, template_name="news/search.html"):
     else:
         filters = get_query_filters(request.user, 'news.view_news')
         news = News.objects.filter(filters).distinct()
+
+    if not has_perm(request.user, 'news.view_news'):
+        news = news.filter(release_dt__lte=datetime.now())
 
     news = news.order_by('-release_dt')
 

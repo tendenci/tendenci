@@ -9,6 +9,7 @@ from tendenci.addons.news.models import News
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.apps.user_groups.models import Group
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -32,6 +33,8 @@ class NewsForm(TendenciBaseForm):
     photo_upload = forms.FileField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
 
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True)
+
     class Meta:
         model = News
 
@@ -40,6 +43,7 @@ class NewsForm(TendenciBaseForm):
         'slug',
         'summary',
         'body',
+        'group',
         'photo_upload',
         'source',
         'website',
@@ -65,6 +69,7 @@ class NewsForm(TendenciBaseForm):
                                  'slug',
                                  'summary',
                                  'body',
+                                 'group',
                                  'tags',
                                  'photo_upload',
                                  'source', 

@@ -185,21 +185,14 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
 def delete(request, id, template_name="stories/delete.html"):
     story = get_object_or_404(Story, pk=id)
 
-    if has_perm(request.user,'stories.delete_story'):   
+    if has_perm(request.user,'stories.delete_story'):
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 1060300,
-                'event_data': '%s (%d) deleted by %s' % (story._meta.object_name, story.pk, request.user),
-                'description': '%s deleted' % story._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': story,
-            }
-            EventLog.objects.log(**log_defaults)
-            
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % story)
+            if story.image:
+                # Delete story.image to prevent transaction issues.
+                story.image.delete()
             story.delete()
-            
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % story)
+
             return HttpResponseRedirect(reverse('story.search'))
     
         return render_to_response(template_name, {'story': story}, 

@@ -36,9 +36,23 @@ class FileForm(forms.Form):
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
 
-    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT):
+    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT, ORIG_ROOT_DIR=THEME_ROOT):
         content = self.cleaned_data["content"]
         file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
+
+        if settings.USE_S3_THEME:
+            file_path = (os.path.join(ORIG_ROOT_DIR, file_relative_path)).replace("\\", "/")
+
+        # write the theme file locally in case it was wiped by a restart
+        if settings.USE_S3_THEME and not os.path.isfile(file_path):
+            file_dir = os.path.dirname(file_path)
+            if not os.path.isdir(file_dir):
+                # if directory does not exist, create it
+                os.makedirs(file_dir)
+            new_file = open(file_path, 'w')
+            new_file.write('')
+            new_file.close()
+
         if os.path.isfile(file_path) and content != "":
             archive_file(request, file_relative_path, ROOT_DIR=ROOT_DIR)
 

@@ -343,7 +343,7 @@ def get_notice_token_help_text(notice=None):
                 A token is composed of a field label or label lower case with underscore (_)
                 instead of spaces, wrapped in
                 {{ }} or [ ]. <br />
-                For example, token for "First Name" field: {{ first_name }}
+                For example, token for "First Name" field: {{ first_name }}. Please note that tokens for member number, membership link, and expiration date/time are not available until the membership is approved.
                 </div>
                 """
 
@@ -499,7 +499,7 @@ def make_csv(**kwargs):
     labels = [field.label for field in fields]
 
     extra_labels = [
-        'User Name',
+        'username',
         'Member Number',
         'Join Date',
         'Renew Date',
