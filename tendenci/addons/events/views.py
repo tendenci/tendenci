@@ -372,8 +372,8 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
                 if event.is_recurring_event and form_apply_recurring.cleaned_data['apply_to_all']:
                     for cur_event in event.recurring_event.event_set.all():
                         eventform_params = {'edit_mode': True, 'recurring_mode': True}
-                        edit_util(request, cur_event, eventform_params)
-                        messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
+                        edit_util(request, cur_event, eventform_params)                        
+                    messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 else:
                     eventform_params = {'edit_mode': True}
                     edit_util(request, event, eventform_params)
@@ -818,7 +818,6 @@ def add(request, year=None, month=None, day=None, \
                         event.registration_configuration = regconf
                         event.save(log=False)
 
-                        messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % event)
                         # notification to administrator(s) and module recipient(s)
                         recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
                         if recipients and notification:
@@ -831,6 +830,7 @@ def add(request, year=None, month=None, day=None, \
                                 'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                             })
                         counter = counter + 1
+                    messages.add_message(request, messages.SUCCESS, 'Successfully added the recurring event %s' % event)
                     return HttpResponseRedirect(reverse('event.search'))
 
                 else:
