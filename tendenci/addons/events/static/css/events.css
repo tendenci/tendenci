@@ -572,9 +572,9 @@ ul.errorlist {;
 }
 .month-view div.day div.event-item .event-priority {
     display: inline-block;
-    background: url('../images/icons/answer_correct.gif') no-repeat;
-    height: 14px;
-    width: 14px;
+    background: url('../images/icons/star_icon.png') no-repeat;
+    height: 16px;
+    width: 16px;
 }
 
 
