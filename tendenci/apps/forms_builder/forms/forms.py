@@ -19,6 +19,7 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from captcha.fields import CaptchaField
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.base.utils import get_template_list
+from tendenci.core.base.fields import EmailVerificationField
 
 from tendenci.addons.recurring_payments.fields import BillingCycleField
 from tendenci.addons.recurring_payments.widgets import BillingCycleWidget, BillingDateSelectWidget
@@ -52,7 +53,11 @@ class FormForForm(forms.ModelForm):
                 field_class, field_widget = field.field_type.split("/")
             else:
                 field_class, field_widget = field.field_type, None
-            field_class = getattr(forms, field_class)
+
+            if field.field_type == 'EmailVerificationField':
+                field_class = EmailVerificationField
+            else:
+                field_class = getattr(forms, field_class)
             field_args = {"label": mark_safe(field.label), "required": field.required}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
             if "max_length" in arg_names:

@@ -175,6 +175,9 @@
         	if (field_name == 'comments'){
         		field_type = 'CharField/django.forms.Textarea';
         	}
+        	if (field_name == 'email'){
+        		field_type = 'EmailVerificationField';
+        	}
         	if (field_name == 'meal_option'){
         		field_type = 'ChoiceField';
         		
