@@ -14,5 +14,6 @@ urlpatterns = patterns('tendenci.addons.resumes.views',
     url(r'^approve/(?P<id>\d+)/$', 'approve', name="resume.approve"),
     url(r'^thank-you/$', 'thank_you', name="resume.thank_you"),
     url(r'^export/$', 'export', name="resume.export"),
+    url(r'^(?P<slug>[\w\-\/]+)/file/$', 'resume_file', name="resume.resume_file"),
     url(r'^(?P<slug>[\w\-\/]+)/$', 'index', name="resume"),
 )
