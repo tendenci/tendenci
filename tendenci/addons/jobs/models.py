@@ -35,7 +35,6 @@ class BaseJob(TendenciBaseModel):
     level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
     period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
     is_agency = models.BooleanField()  # defines if the job posting is by a third party agency
-    percent_travel = models.IntegerField(null=True, blank=True)  # how much travel is required for the position
 
     contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
     position_reports_to = models.CharField(max_length=200, blank=True)  # manager, CEO, VP, etc

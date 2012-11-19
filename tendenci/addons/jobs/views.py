@@ -608,7 +608,6 @@ def export(request, template_name="jobs/export.html"):
             'level',
             'period',
             'is_agency',
-            'percent_travel',
             'contact_method',
             'position_reports_to',
             'salary_from',
