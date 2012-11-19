@@ -223,7 +223,7 @@ def search(request, redirect=False, template_name="events/search.html"):
         if request.user.is_authenticated():
             events = events.select_related()
 
-    events = events.order_by('start_dt')
+    events = events.order_by('-priority', 'start_dt')
     types = Type.objects.all().order_by('name')
 
     EventLog.objects.log()

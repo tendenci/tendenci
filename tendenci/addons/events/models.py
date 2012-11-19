@@ -880,6 +880,7 @@ class Event(TendenciBaseModel):
         help_text=_('Photo that represents this event.'), null=True, blank=True)
     group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
+    priority = models.BooleanField(default=False)
 
     # additional permissions
     display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)

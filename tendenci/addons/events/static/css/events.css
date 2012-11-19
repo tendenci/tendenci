@@ -570,6 +570,12 @@ ul.errorlist {;
 	background-color: #FFC;
 	padding: 5px;
 }
+.month-view div.day div.event-item .event-priority {
+    display: inline-block;
+    background: url('../images/icons/answer_correct.gif') no-repeat;
+    height: 14px;
+    width: 14px;
+}
 
 
 .month-names {
