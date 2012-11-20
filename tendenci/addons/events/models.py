@@ -863,7 +863,7 @@ class Event(TendenciBaseModel):
     Calendar Event
     """
     guid = models.CharField(max_length=40, editable=False)
-    type = models.ForeignKey(Type, blank=True, null=True)
+    type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField()
