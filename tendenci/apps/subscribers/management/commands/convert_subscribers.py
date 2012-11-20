@@ -30,9 +30,9 @@ class Command(BaseCommand):
                         )
                         
                         if sub.subscriber_id:
-                            user.first_name = sub.subscriber.get_first_name 
-                            user.last_name = sub.subscriber.get_last_name
-                            phone = sub.subscriber.get_phone_number
+                            user.first_name = sub.subscriber.get_first_name() 
+                            user.last_name = sub.subscriber.get_last_name()
+                            phone = sub.subscriber.get_phone_number()
                         else:
                             if SubscriberData.objects.filter(field_label="First Name").filter(subscription_id=sub.id):
                                 user.first_name = SubscriberData.objects.filter(field_label="First Name").filter(subscription_id=sub.id)[0].value
