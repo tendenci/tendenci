@@ -20,7 +20,7 @@ class HelpFileAdminForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
     
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
     
     class Meta:
         model = HelpFile

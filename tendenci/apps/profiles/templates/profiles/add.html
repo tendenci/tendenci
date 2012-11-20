@@ -511,6 +511,7 @@
 {% block extra_body %}
 {{ block.super }}
 {# dynamically load jquery #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 <script>
 	if (!(window.jQuery)) { 
 		var s = document.createElement('script');

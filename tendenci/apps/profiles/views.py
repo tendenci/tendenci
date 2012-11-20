@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.db.models import Count, Q, get_app
 from django.contrib.admin.views.decorators import staff_member_required
@@ -148,7 +148,7 @@ def search(request, template_name="profiles/search.html"):
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query))
+        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query))
 
     if members:
         if not request.user.profile.is_superuser:

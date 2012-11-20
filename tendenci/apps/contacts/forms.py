@@ -3,6 +3,8 @@ from django import forms
 from captcha.fields import CaptchaField
 from django.utils.translation import ugettext_lazy as _ 
 
+from tendenci.core.base.fields import EmailVerificationField
+
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
@@ -29,7 +31,7 @@ class SubmitContactForm(forms.Form):
     country = forms.CharField(max_length=100, required=False)
 
     phone = forms.CharField(max_length=20, required=False)
-    email = forms.EmailField(max_length=100)
+    email = EmailVerificationField(label=_("Email"))
     url = forms.URLField(label=_('URL'), max_length=200, required=False)
 
     message = forms.CharField(widget=forms.Textarea)

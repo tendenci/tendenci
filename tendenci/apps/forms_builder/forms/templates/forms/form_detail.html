@@ -39,6 +39,7 @@
 
 {% block extra_body %}
     {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
     <script type="text/javascript">
 		$(document).ready(function(){
 			$('.custom-price').closest('label').attr('for', '');

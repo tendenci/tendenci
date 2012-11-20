@@ -25,7 +25,7 @@ from tendenci.addons.events.models import Event, Place, RegistrationConfiguratio
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.emails.models import Email
 from form_utils.forms import BetterModelForm
 from tendenci.apps.user_groups.models import Group
@@ -62,36 +62,36 @@ class CustomRegFormAdminForm(forms.ModelForm):
                   'notes',
                   'status',
                   #'used',
-                  'first_name', 
-                  'last_name', 
+                  'first_name',
+                  'last_name',
                   'mail_name',
-                  'address', 
-                  'city', 
-                  'state', 
+                  'address',
+                  'city',
+                  'state',
                   'zip',
-                  'country', 
-                  'phone', 
-                  'email', 
+                  'country',
+                  'phone',
+                  'email',
                   'position_title',
-                  'company_name', 
-                  'meal_option', 
+                  'company_name',
+                  'meal_option',
                   'comments',
                  )
-        
+
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
-        exclude = ["position"] 
-        
+        exclude = ["position"]
+
 class FormForCustomRegForm(forms.ModelForm):
 
     class Meta:
         model = CustomRegFormEntry
         exclude = ("form", "entry_time")
-    
+
     def __init__(self, *args, **kwargs):
         """
-        Dynamically add each of the form fields for the given form model 
+        Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
         """
         self.user = kwargs.pop('user', None)
@@ -100,11 +100,11 @@ class FormForCustomRegForm(forms.ModelForm):
         self.entry = kwargs.pop('entry', None)
         self.form_index = kwargs.pop('form_index', None)
         self.form_fields = self.custom_reg_form.fields.filter(visible=True).order_by('position')
-        
+
         self.pricings = kwargs.pop('pricings', None)
         if self.event:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
-            
+
         super(FormForCustomRegForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             if field.map_to_field:
@@ -115,8 +115,12 @@ class FormForCustomRegForm(forms.ModelForm):
                 field_class, field_widget = field.field_type.split("/")
             else:
                 field_class, field_widget = field.field_type, None
-            field_class = getattr(forms, field_class)
-            field_args = {"label": field.label, "required": field.required}
+
+            if field.field_type == 'EmailVerificationField':
+                field_class = EmailVerificationField
+            else:
+                field_class = getattr(forms, field_class)
+            field_args = {"label": mark_safe(field.label), "required": field.required}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
@@ -138,7 +142,7 @@ class FormForCustomRegForm(forms.ModelForm):
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
             self.fields[field_key] = field_class(**field_args)
-            
+
         # add class attr registrant-email to the email field
         if hasattr(self.fields, 'email'):
             self.fields['email'].widget.attrs = {'class': 'registrant-email'}
@@ -147,9 +151,9 @@ class FormForCustomRegForm(forms.ModelForm):
 #                self.email_key = "field_%s" % field.id
 #                self.fields[self.email_key].widget.attrs = {'class': 'registrant-email'}
 #                break
-         
+
         if self.event:
-            reg_conf=self.event.registration_configuration   
+            reg_conf=self.event.registration_configuration
             # make the fields in the subsequent forms as not required
             if not reg_conf.require_guests_info:
                 if self.form_index and self.form_index > 0:
@@ -161,11 +165,11 @@ class FormForCustomRegForm(forms.ModelForm):
 
             # add reminder field if event opted to sending reminders to attendees
             if reg_conf.send_reminder:
-                self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'), 
+                self.fields['reminder'] = forms.BooleanField(label=_('Receive event reminders'),
                                                              required=False)
 
         # --------------------------
-        if self.pricings:   
+        if self.pricings:
             # add the price options field
             self.fields['pricing'] = forms.ModelChoiceField(
                     label='Price Options',
@@ -175,40 +179,40 @@ class FormForCustomRegForm(forms.ModelForm):
                     )
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
-            
+
         # member id
         if hasattr(self.event, 'has_member_price') and \
                     get_setting('module', 'events', 'requiresmemberid') and \
                     self.event.has_member_price:
             self.fields['memberid'] = forms.CharField(label='Member ID', required=False,
                                 help_text='Please enter a member ID if a member price is selected.')
-         
-        # add override and override_price to allow admin override the price 
+
+        # add override and override_price to allow admin override the price
         if hasattr(self.event, 'is_table') and hasattr(self.event, 'free_event'):
             if self.event and not self.event.is_table and not self.event.free_event:
                 if (not self.user.is_anonymous() and self.user.profile.is_superuser):
-                    self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
+                    self.fields['override'] = forms.BooleanField(label="Admin Price Override?",
                                                                  required=False)
                     self.fields['override_price'] = forms.DecimalField(label="Override Price",
-                                                                max_digits=10, 
+                                                                max_digits=10,
                                                                 decimal_places=2,
                                                                 required=False)
                     self.fields['override_price'].widget.attrs.update({'size': '8'})
-                    
-                                                                  
-                
-        
+
+
+
+
         # initialize internal variables
         self.price = Decimal('0.00')
-        self.saved_data = {}     
+        self.saved_data = {}
         # -------------------------
-     
+
     def get_user(self, email=None):
-        user = None 
-        
+        user = None
+
         if not email:
             email = self.cleaned_data.get('email', '')
-            
+
         if email:
             [profile] = Profile.objects.filter(user__email=email,
                                              user__is_active=True,
@@ -218,16 +222,16 @@ class FormForCustomRegForm(forms.ModelForm):
                                             )[:1] or [None]
             if profile:
                 user = profile.user
-       
+
         return user or AnonymousUser()
-    
+
     def clean_pricing(self):
         pricing = self.cleaned_data['pricing']
 
         # if pricing allows anonymous, let go.
         if pricing.allow_anonymous:
             return pricing
-        
+
         # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
         # Both 'validated' and 'strict' require validation.
         if self.event.anony_setting <> 'open':
@@ -238,18 +242,18 @@ class FormForCustomRegForm(forms.ModelForm):
             if not registrant_user.is_anonymous():
                 if pricing.allow_user:
                     return pricing
-                                   
+
                 [registrant_profile] = Profile.objects.filter(user=registrant_user)[:1] or [None]
-                
+
                 if pricing.allow_member and registrant_profile and registrant_profile.is_member:
                     return pricing
-                
+
                 if pricing.group and pricing.group.is_member(registrant_user):
                     return pricing
-             
-            
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
-            err_msg = "" 
+
+
+            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+            err_msg = ""
             if not email:
                 err_msg = 'An email address is required for this price %s%s %s. ' % (
                                              currency_symbol, pricing.price, pricing.title
@@ -264,28 +268,28 @@ class FormForCustomRegForm(forms.ModelForm):
                         if pricing.group:
                             err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
                 if not err_msg:
-                    
+
                     err_msg = 'Not eligible for the price.%s%s %s.' % (
                                                                 currency_symbol,
                                                                 pricing.price,
                                                                 pricing.title,)
                 err_msg += ' Please choose another price option.'
             raise forms.ValidationError(err_msg)
-                
+
         return pricing
-    
+
     def clean_memberid(self):
         memberid = self.cleaned_data['memberid']
         pricing = self.cleaned_data.get('pricing', None)
         if not pricing:
             return memberid
-        
+
         price_requires_member = False
-        
+
         if pricing.allow_member:
             if not (pricing.allow_anonymous and pricing.allow_user):
                 price_requires_member = True
-                
+
         if price_requires_member:
             if not memberid:
                 raise forms.ValidationError("We don't detect you as a member. " + \
@@ -297,11 +301,11 @@ class FormForCustomRegForm(forms.ModelForm):
                                             "require membership." + \
                                             "Please either choose the member option " + \
                                             "or remove your member id.")
-            
-                    
+
+
         return memberid
-        
-    
+
+
     def clean_override_price(self):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
@@ -309,11 +313,11 @@ class FormForCustomRegForm(forms.ModelForm):
         if override and override_price <0:
             raise forms.ValidationError('Override price must be a positive number.')
         return override_price
-        
-                
+
+
     def save(self, event, **kwargs):
         """
-        Create a FormEntry instance and related FieldEntry instances for each 
+        Create a FormEntry instance and related FieldEntry instances for each
         form field.
         """
         if event:
@@ -333,7 +337,7 @@ class FormForCustomRegForm(forms.ModelForm):
                 if isinstance(value,list):
                     value = ','.join(value)
                 if not value: value=''
-                
+
                 field_entry = None
                 if self.entry:
                     field_entries = self.entry.field_entries.filter(field=field)
@@ -344,13 +348,13 @@ class FormForCustomRegForm(forms.ModelForm):
                 if not field_entry:
                     #field_entry = CustomRegFieldEntry(field_id=field.id, entry=entry, value=value)
                     field_entry = CustomRegFieldEntry(field=field, entry=entry, value=value)
-                    
-                
+
+
                 field_entry.save()
             return entry
         return
-            
-    
+
+
 
 def _get_price_labels(pricing):
     currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
@@ -358,13 +362,13 @@ def _get_price_labels(pricing):
         target_display = ' (%s)' % pricing.target_display()
     else:
         target_display = ''
-    
+
     return mark_safe('<span data-price="%s">%s%s %s%s</span>' % (
                                       pricing.price,
                                       currency_symbol,
                                       pricing.price,
                                       pricing.title,
-                                      target_display) )  
+                                      target_display) )
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -379,7 +383,7 @@ class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
 class RadioImageInput(forms.widgets.RadioInput):
 
-    def __unicode__(self):        
+    def __unicode__(self):
         if 'id' in self.attrs:
             label_for = ' for="%s_%s"' % (self.attrs['id'], self.index)
         else:
@@ -401,18 +405,18 @@ class RadioImageInput(forms.widgets.RadioInput):
 
 class EventForm(TendenciBaseForm):
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Event._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Event._meta.app_label,
         'storme_model':Event._meta.module_name.lower()}))
 
-    start_dt = SplitDateTimeField(label=_('Start Date/Time'), 
+    start_dt = SplitDateTimeField(label=_('Start Date/Time'),
                                   initial=datetime.now()+timedelta(days=30))
-    end_dt = SplitDateTimeField(label=_('End Date/Time'), 
+    end_dt = SplitDateTimeField(label=_('End Date/Time'),
                                 initial=datetime.now()+timedelta(days=30, hours=2))
-    
+
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     FREQUENCY_CHOICES = (
         (1, '1'),
@@ -447,6 +451,7 @@ class EventForm(TendenciBaseForm):
             'end_recurring',
             'on_weekend',
             'timezone',
+            'priority',
             'type',
             'group',
             'external_url',
@@ -483,6 +488,14 @@ class EventForm(TendenciBaseForm):
                                   'external_url',
                                   'photo_upload',
                                   'tags',
+                                  'on_weekend',
+                                  'timezone',
+                                  'priority',
+                                  'type',
+                                  'group',
+                                  'external_url',
+                                  'photo_upload',
+                                  'tags',
                                  ],
                       'legend': ''
                       }),
@@ -500,7 +513,7 @@ class EventForm(TendenciBaseForm):
                       'classes': ['admin-only'],
                     })
                     ]
-        
+
     def __init__(self, *args, **kwargs):
         edit_mode = kwargs.pop('edit_mode', False)
         recurring_mode = kwargs.pop('recurring_mode', False)
@@ -518,7 +531,7 @@ class EventForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
-        
+
         if edit_mode:
             self.fields.pop('is_recurring_event')
             self.fields.pop('repeat_type')
@@ -533,18 +546,18 @@ class EventForm(TendenciBaseForm):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
             extension = splitext(photo_upload.name)[1]
-            
+
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
-            
+
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
 
         return photo_upload
-            
+
     def clean(self):
         cleaned_data = self.cleaned_data
         start_dt = cleaned_data.get("start_dt")
@@ -605,13 +618,13 @@ class TypeChoiceField(forms.ModelChoiceField):
 class TypeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TypeForm, self).__init__(*args, **kwargs)
-        
+
         colorsets = TypeColorSet.objects.all()
 
-        color_set_choices = [(color_set.pk, 
+        color_set_choices = [(color_set.pk,
             '<img style="width:25px; height:25px" src="/event-logs/colored-image/%s" />'
             % color_set.bg_color) for color_set in colorsets]
-        
+
         self.fields['color_set'] = TypeChoiceField(
             choices=color_set_choices,
             queryset=colorsets,
@@ -624,8 +637,8 @@ class TypeForm(forms.ModelForm):
 
 class PlaceForm(forms.ModelForm):
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Place._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Place._meta.app_label,
         'storme_model':Place._meta.module_name.lower()}))
     label = 'Location Information'
     class Meta:
@@ -635,20 +648,20 @@ class PlaceForm(forms.ModelForm):
 class SponsorForm(forms.ModelForm):
     label = 'Sponsor'
     class Meta:
-        model = Sponsor 
+        model = Sponsor
 
 
 class SpeakerForm(BetterModelForm):
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Speaker._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Speaker._meta.app_label,
         'storme_model':Speaker._meta.module_name.lower()}))
     label = 'Speaker'
     file = forms.FileField(required=False)
 
     class Meta:
         model = Speaker
-        
+
         fields = (
             'name',
             'file',
@@ -668,8 +681,8 @@ class SpeakerForm(BetterModelForm):
 
 class OrganizerForm(forms.ModelForm):
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Organizer._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Organizer._meta.app_label,
         'storme_model':Organizer._meta.module_name.lower()}))
     label = 'Organizer'
 
@@ -692,7 +705,7 @@ class Reg8nConfPricingForm(BetterModelForm):
     start_dt = SplitDateTimeField(label=_('Start Date/Time'), initial=datetime.now())
     end_dt = SplitDateTimeField(label=_('End Date/Time'), initial=datetime.now()+timedelta(days=30,hours=6))
     dates = Reg8nDtField(label=_("Start and End"), required=False)
-    
+
     def __init__(self, *args, **kwargs):
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         self.reg_form_required = kwargs.pop('reg_form_required', False)
@@ -701,7 +714,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                                    'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
-        
+
         # skip the field if there is no custom registration forms
         if not reg_form_queryset:
             del self.fields['reg_form']
@@ -709,22 +722,22 @@ class Reg8nConfPricingForm(BetterModelForm):
             self.fields['reg_form'].queryset = reg_form_queryset
             if self.reg_form_required:
                 self.fields['reg_form'].required = True
-                
-        
+
+
     def clean_quantity(self):
         # make sure that quantity is always a positive number
         quantity = self.cleaned_data['quantity']
         if quantity <= 0:
             quantity = 1
         return quantity
-    
+
 
     def clean(self):
         data = self.cleaned_data
         if data['start_dt'] > data['end_dt']:
             raise forms.ValidationError('Start Date/Time should come after End Date/Time')
         return data
-    
+
     class Meta:
         model = RegConfPricing
 
@@ -741,7 +754,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'allow_member',
             'display_order'
          ]
-        
+
         fieldsets = [('Registration Pricing', {
           'fields': ['title',
                     'quantity',
@@ -765,21 +778,21 @@ class Reg8nConfPricingForm(BetterModelForm):
                          #  Note that: cannot use reverse setting url here...
           })             #  it would break everything.
         ]
-        
+
     def save(self, *args, **kwargs):
         """
         Save a pricing and handle the reg_form
-        """ 
+        """
         if not self.reg_form_required:
             self.cleaned_data['reg_form'] = None
         else:
-            # To clone or not to clone? - 
+            # To clone or not to clone? -
             # clone the custom registration form only if it's a template.
             # in other words, it's not associated with any pricing or regconf
             reg_form = self.cleaned_data['reg_form']
             if reg_form.is_template:
                 self.cleaned_data['reg_form'] = reg_form.clone()
-            
+
         return super(Reg8nConfPricingForm, self).save(*args, **kwargs)
 
 
@@ -796,7 +809,7 @@ class Reg8nEditForm(BetterModelForm):
         required=False,
         initial=[1,2,3]) # first three items (inserted via fixture)
     use_custom_reg = UseCustomRegField(label="Custom Registration Form")
-    
+
 
     class Meta:
         model = RegistrationConfiguration
@@ -838,7 +851,7 @@ class Reg8nEditForm(BetterModelForm):
         user = kwargs.pop('user', None)
         reg_form_queryset = kwargs.pop('reg_form_queryset', None)
         super(Reg8nEditForm, self).__init__(*args, **kwargs)
-        
+
         #custom_reg_form = CustomRegForm.objects.all()
         reg_form_choices = [('0', '---------')]
         if reg_form_queryset:
@@ -847,8 +860,8 @@ class Reg8nEditForm(BetterModelForm):
             event_id = self.instance.event.id
         else:
             event_id = None
-        self.fields['use_custom_reg'].widget = UseCustomRegWidget(reg_form_choices=reg_form_choices, 
-                                                                  event_id=event_id)        
+        self.fields['use_custom_reg'].widget = UseCustomRegWidget(reg_form_choices=reg_form_choices,
+                                                                  event_id=event_id)
         # get initial for the field use_custom_reg
         if self.instance.id:
             if self.instance.use_custom_reg_form:
@@ -864,14 +877,14 @@ class Reg8nEditForm(BetterModelForm):
             else:
                 self.instance.bind_reg_form_to_conf_only = 0
             self.fields['use_custom_reg'].initial = '%s,%s,%s' % \
-                                         (str(self.instance.use_custom_reg_form), 
+                                         (str(self.instance.use_custom_reg_form),
                                           str(reg_form_id),
                                           str(self.instance.bind_reg_form_to_conf_only)
                                           )
             reminder_edit_link = '<a href="%s" target="_blank">Edit Reminder Email</a>' % \
-                                reverse('event.edit.email', args=[self.instance.id])                            
+                                reverse('event.edit.email', args=[self.instance.event.id])
             self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
-                                        (self.fields['reminder_days'].help_text, 
+                                        (self.fields['reminder_days'].help_text,
                                          reminder_edit_link)
         else:
             self.fields['use_custom_reg'].initial =',0,1'
@@ -879,7 +892,7 @@ class Reg8nEditForm(BetterModelForm):
         #.short_text_input
         self.fields['reminder_days'].initial = '7,1'
         self.fields['reminder_days'].widget.attrs.update({'class': 'short_text_input'})
-            
+
     def clean_use_custom_reg(self):
         value = self.cleaned_data['use_custom_reg']
         data_list = value.split(',')
@@ -894,7 +907,7 @@ class Reg8nEditForm(BetterModelForm):
              }
         if d['use_custom_reg_form'] == '1' and d['bind_reg_form_to_conf_only'] == '1':
             if d['reg_form_id'] == '0':
-                raise forms.ValidationError(_('Please choose a custom registration form'))          
+                raise forms.ValidationError(_('Please choose a custom registration form'))
         return ','.join(data_list)
 
     def clean_reminder_days(self):
@@ -930,22 +943,22 @@ class Reg8nEditForm(BetterModelForm):
             self.instance.bind_reg_form_to_conf_only = int(use_custom_reg_data_list[2])
         except:
             self.instance.bind_reg_form_to_conf_only = 0
-        
+
         try:
             reg_form_id = int(use_custom_reg_data_list[1])
         except:
             reg_form_id = 0
-            
+
         if reg_form_id:
             if self.instance.use_custom_reg_form and self.instance.bind_reg_form_to_conf_only:
                 reg_form = CustomRegForm.objects.get(id=reg_form_id)
                 self.instance.reg_form = reg_form
             else:
-                self.instance.reg_form = None 
-            
+                self.instance.reg_form = None
+
         return super(Reg8nEditForm, self).save(*args, **kwargs)
-            
-             
+
+
 
     # def clean(self):
     #     from django.db.models import Sum
@@ -961,7 +974,7 @@ class Reg8nEditForm(BetterModelForm):
     #         raise forms.ValidationError("Please select possible payment methods for your attendees.")
 
     #     return cleaned_data
-            
+
 
 class Reg8nForm(forms.Form):
     """
@@ -972,7 +985,7 @@ class Reg8nForm(forms.Form):
     company_name = forms.CharField(max_length=100, required=False)
     username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
-    email = forms.EmailField()
+    email = EmailVerificationField(label=_("Email"))
     captcha = CaptchaField(label=_('Type the code below'))
 
     def __init__(self, event_id=None, *args, **kwargs):
@@ -982,7 +995,7 @@ class Reg8nForm(forms.Form):
         event = Event.objects.get(pk=event_id)
         payment_method = event.registration_configuration.payment_method.all()
 
-        self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None, 
+        self.fields['payment_method'] = forms.ModelChoiceField(empty_label=None,
             queryset=payment_method, widget=forms.RadioSelect(), initial=1, required=False)
 
         self.fields['price'] = forms.DecimalField(
@@ -1023,7 +1036,7 @@ class RegistrationPreForm(forms.Form):
                     choices=IS_TABLE_CHOICES,
                     initial='0'
                                   )
-    
+
     def __init__(self, table_pricing, *args, **kwargs):
         self.table_only = kwargs.pop('table_only', False)
         super(RegistrationPreForm, self).__init__(*args, **kwargs)
@@ -1032,14 +1045,14 @@ class RegistrationPreForm(forms.Form):
                     widget=forms.RadioSelect(),
                     required=False
                     )
-        
+
         self.fields['pricing'].label_from_instance = _get_price_labels
         self.fields['pricing'].empty_label = None
-        
+
         if self.table_only:
             del self.fields['is_table']
-        
-        
+
+
     def clean_pricing(self):
         if not self.table_only:
             is_table = self.cleaned_data['is_table'] == '1'
@@ -1048,16 +1061,16 @@ class RegistrationPreForm(forms.Form):
         pricing = self.cleaned_data['pricing']
         if is_table and not pricing:
             raise forms.ValidationError('Please choose a price for table registration.')
-        
-        return pricing  
-    
+
+        return pricing
+
 class RegistrationForm(forms.Form):
     """
     Registration form - not include the registrant.
     """
     discount_code = forms.CharField(label=_('Discount Code'), required=False)
     captcha = CaptchaField(label=_('Type the code below'))
-    
+
     def __init__(self, event, *args, **kwargs):
         """
         event: instance of Event model
@@ -1067,13 +1080,13 @@ class RegistrationForm(forms.Form):
         self.user = kwargs.pop('user', None)
         self.count = kwargs.pop('count', 0)
         super(RegistrationForm, self).__init__(*args, **kwargs)
-        
+
         reg_conf =  event.registration_configuration
-        
+
         if not event.free_event and reg_conf.discount_eligible:
             display_discount = True
         else:
-            display_discount = False 
+            display_discount = False
 
         if not event.free_event:
             if reg_conf.can_pay_online:
@@ -1089,10 +1102,10 @@ class RegistrationForm(forms.Form):
 #                self.fields['amount_for_admin'] = forms.DecimalField(decimal_places=2, initial=event_price)
             if event.is_table and not event.free_event:
                 if (not self.user.is_anonymous() and self.user.is_superuser):
-                    self.fields['override_table'] = forms.BooleanField(label="Admin Price Override?", 
+                    self.fields['override_table'] = forms.BooleanField(label="Admin Price Override?",
                                                                  required=False)
                     self.fields['override_price_table'] = forms.DecimalField(label="Override Price",
-                                                                max_digits=10, 
+                                                                max_digits=10,
                                                                 decimal_places=2,
                                                                 required=False)
                     self.fields['override_price_table'].widget.attrs.update({'size': '5'})
@@ -1111,8 +1124,8 @@ class RegistrationForm(forms.Form):
             except:
                 pass
         return None
-    
-    
+
+
     def clean_override_price_table(self):
         override_table = self.cleaned_data['override_table']
         override_price_table = self.cleaned_data['override_price_table']
@@ -1120,8 +1133,8 @@ class RegistrationForm(forms.Form):
         if override_table and override_price_table <0:
             raise forms.ValidationError('Override price must be a positive number.')
         return override_price_table
-    
-    
+
+
 
 class RegistrantForm(forms.Form):
     """
@@ -1132,8 +1145,8 @@ class RegistrantForm(forms.Form):
     company_name = forms.CharField(max_length=100, required=False)
     #username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
-    email = forms.EmailField()
-    comments = forms.CharField(max_length=300, 
+    email = EmailVerificationField(label=_("Email"))
+    comments = forms.CharField(max_length=300,
                                widget=forms.Textarea,
                                required=False)
 
@@ -1144,9 +1157,9 @@ class RegistrantForm(forms.Form):
         self.pricings = kwargs.pop('pricings', None)
         if self.event:
             self.default_pricing = getattr(self.event, 'default_pricing', None)
-        
+
         super(RegistrantForm, self).__init__(*args, **kwargs)
-        
+
         reg_conf=self.event.registration_configuration
 
         # add reminder field if event opted to sending reminders to attendees
@@ -1163,8 +1176,8 @@ class RegistrantForm(forms.Form):
                 self.empty_permitted = False
         else:
             self.empty_permitted = False
-            
-        if self.pricings:   
+
+        if self.pricings:
             # add the price options field
             self.fields['pricing'] = forms.ModelChoiceField(
                     label='Price Options',
@@ -1175,24 +1188,31 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
-            
+            self.fields['pricing'].choices = [(p.pk,
+                mark_safe(
+                '<div>' +
+                unicode(p) +
+                    '<br/>(ends ' + unicode(p.end_dt.date()) + ')' +
+                '</div>'))
+                for p in self.pricings]
+
         # member id
         if hasattr(self.event, 'has_member_price') and \
                  get_setting('module', 'events', 'requiresmemberid') and \
                  self.event.has_member_price:
             self.fields['memberid'] = forms.CharField(label='Member ID', required=False,
                                 help_text='Please enter a member ID if a member price is selected.')
-                        
+
         if not self.event.is_table and not self.event.free_event:
             if (not self.user.is_anonymous() and self.user.is_superuser):
-                self.fields['override'] = forms.BooleanField(label="Admin Price Override?", 
+                self.fields['override'] = forms.BooleanField(label="Admin Price Override?",
                                                              required=False)
                 self.fields['override_price'] = forms.DecimalField(label="Override Price",
-                                                            max_digits=10, 
+                                                            max_digits=10,
                                                             decimal_places=2,
                                                             required=False)
                 self.fields['override_price'].widget.attrs.update({'size': '8'})
-        
+
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
@@ -1211,19 +1231,19 @@ class RegistrantForm(forms.Form):
             raise forms.ValidationError("URL's and Emails are not allowed in the name field")
 
         return data
-    
+
     def clean_email(self):
         # Removed the email check to allow for multiple
         # registrations
         data = self.cleaned_data['email']
         return data
-    
+
     def get_user(self, email=None):
-        user = None 
-        
+        user = None
+
         if not email:
             email = self.cleaned_data.get('email', '')
-            
+
         if email:
             [profile] = Profile.objects.filter(user__email=email,
                                              user__is_active=True,
@@ -1233,16 +1253,16 @@ class RegistrantForm(forms.Form):
                                             )[:1] or [None]
             if profile:
                 user = profile.user
-       
+
         return user or AnonymousUser()
-    
+
     def clean_pricing(self):
         pricing = self.cleaned_data['pricing']
 
         # if pricing allows anonymous, let go.
         if pricing.allow_anonymous:
             return pricing
-        
+
         # The setting anonymousregistration can be set to 'open', 'validated' and 'strict'
         # Both 'validated' and 'strict' require validation.
         if self.event.anony_setting <> 'open':
@@ -1253,18 +1273,18 @@ class RegistrantForm(forms.Form):
             if not registrant_user.is_anonymous():
                 if pricing.allow_user:
                     return pricing
-                                   
+
                 [registrant_profile] = Profile.objects.filter(user=registrant_user)[:1] or [None]
-                
+
                 if pricing.allow_member and registrant_profile and registrant_profile.is_member:
                     return pricing
-                
+
                 if pricing.group and pricing.group.is_member(registrant_user):
                     return pricing
-             
-            
-            currency_symbol = get_setting("site", "global", "currencysymbol") or '$' 
-            err_msg = "" 
+
+
+            currency_symbol = get_setting("site", "global", "currencysymbol") or '$'
+            err_msg = ""
             if not email:
                 err_msg = 'An email address is required for this price %s%s %s. ' % (
                                              currency_symbol, pricing.price, pricing.title
@@ -1279,28 +1299,28 @@ class RegistrantForm(forms.Form):
                         if pricing.group:
                             err_msg = "We do not detect %s as a member of %s." % (email, pricing.group.name)
                 if not err_msg:
-                    
+
                     err_msg = 'Not eligible for the price.%s%s %s.' % (
                                                                 currency_symbol,
                                                                 pricing.price,
                                                                 pricing.title,)
                 err_msg += ' Please choose another price option.'
             raise forms.ValidationError(err_msg)
-                
+
         return pricing
-    
+
     def clean_memberid(self):
         memberid = self.cleaned_data['memberid']
         pricing = self.cleaned_data.get('pricing', None)
         if not pricing:
             return memberid
-        
+
         price_requires_member = False
-        
+
         if pricing.allow_member:
             if not (pricing.allow_anonymous and pricing.allow_user):
                 price_requires_member = True
-                
+
         if price_requires_member:
             if not memberid:
                 raise forms.ValidationError("We don't detect you as a member. " + \
@@ -1312,21 +1332,21 @@ class RegistrantForm(forms.Form):
                                             "require membership." + \
                                             "Please either choose the member option " + \
                                             "or remove your member id.")
-                
-                    
+
+
         return memberid
-    
+
     def clean_override_price(self):
         override = self.cleaned_data['override']
         override_price = self.cleaned_data['override_price']
         if override and override_price <0:
             raise forms.ValidationError('Override price must be a positive number.')
         return override_price
-             
 
 
-# extending the BaseFormSet because i want to pass the event obj 
-# but the BaseFormSet doesn't accept extra parameters 
+
+# extending the BaseFormSet because i want to pass the event obj
+# but the BaseFormSet doesn't accept extra parameters
 class RegistrantBaseFormSet(BaseFormSet):
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  initial=None, error_class=ErrorList, **kwargs):
@@ -1343,13 +1363,13 @@ class RegistrantBaseFormSet(BaseFormSet):
             self.entries = entries
         super(RegistrantBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
-        
+
     def _construct_form(self, i, **kwargs):
         """
         Instantiates and returns the i-th form instance in a formset.
         """
         defaults = {'auto_id': self.auto_id, 'prefix': self.add_prefix(i)}
-        
+
         defaults['event'] = self.event
         defaults['user'] = self.user
         defaults['form_index'] = i
@@ -1359,8 +1379,8 @@ class RegistrantBaseFormSet(BaseFormSet):
             defaults['entry'] = self.entries[i]
         if hasattr(self, 'pricings'):
             defaults['pricings'] = self.pricings
-            
-        
+
+
         if self.data or self.files:
             defaults['data'] = self.data
             defaults['files'] = self.files
@@ -1377,7 +1397,7 @@ class RegistrantBaseFormSet(BaseFormSet):
         self.add_fields(form, i)
         return form
 
-  
+
 class RegConfPricingBaseFormSet(BaseFormSet):
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  initial=None, error_class=ErrorList, **kwargs):
@@ -1390,7 +1410,7 @@ class RegConfPricingBaseFormSet(BaseFormSet):
 
         super(RegConfPricingBaseFormSet, self).__init__(data, files, auto_id, prefix,
                  initial, error_class)
-        
+
     def _construct_form(self, i, **kwargs):
         """
         Instantiates and returns the i-th form instance in a formset.
@@ -1402,7 +1422,7 @@ class RegConfPricingBaseFormSet(BaseFormSet):
             defaults['reg_form_queryset'] = self.reg_form_queryset
         if hasattr(self, 'reg_form_required'):
             defaults['reg_form_required'] = self.reg_form_required
-        
+
         if self.data or self.files:
             defaults['data'] = self.data
             defaults['files'] = self.files
@@ -1419,13 +1439,13 @@ class RegConfPricingBaseFormSet(BaseFormSet):
         self.add_fields(form, i)
         return form
 
- 
+
 class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
     def __init__(self, data=None, files=None, auto_id='id_%s', prefix=None,
                  queryset=None, **kwargs):
-        # This is nasty, but i only need to replace the BaseFormSet so that we 
-        # can pass a parameter to our pricing form. 
+        # This is nasty, but i only need to replace the BaseFormSet so that we
+        # can pass a parameter to our pricing form.
         # Apparently, we don't want to rewrite the entire BaseModelFormSet class.
         # So, here is what we do:
         # 1)  create a class RegConfPricingBaseFormSet - a subclass of BaseFormSet
@@ -1436,11 +1456,11 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
                  queryset, **kwargs)
 
 
-        
-        
+
+
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
-    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.module_name.lower()}),
         label=_('Email Content'))
@@ -1457,13 +1477,13 @@ class MessageAddForm(forms.ModelForm):
     class Meta:
         model = Email
         fields = ('body',)
-    
+
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
-        
+
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
-    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'}, 
+    body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.module_name.lower()}),
         label=_('Message'), help_text=_('Available tokens: <br />' + \
@@ -1475,7 +1495,7 @@ class EmailForm(forms.ModelForm):
                   'sender_display',
                   'subject',
                   'body',)
-    
+
     def __init__(self, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs)
 
@@ -1494,7 +1514,7 @@ class PendingEventForm(EventForm):
             'photo_upload',
             'tags',
             )
-        
+
         fieldsets = [('Event Information', {
                       'fields': ['title',
                                  'description',
@@ -1510,15 +1530,15 @@ class PendingEventForm(EventForm):
                       'legend': ''
                       }),
                     ]
-                    
+
     def __init__(self, *args, **kwargs):
         super(PendingEventForm, self).__init__(*args, **kwargs)
-        
+
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-            
+
         if 'status_detail' in self.fields:
             self.fields.pop('status_detail')
 
@@ -1526,7 +1546,7 @@ class AddonForm(BetterModelForm):
     class Meta:
         model = Addon
         fields = ('title',
-            'price', 
+            'price',
             'group',
             'allow_anonymous',
             'allow_user',
@@ -1552,7 +1572,7 @@ class AddonForm(BetterModelForm):
                 ],'classes': ['admin-only'],
             }),
         ]
-        
+
 class AddonOptionForm(forms.ModelForm):
     class Meta:
         model = AddonOption

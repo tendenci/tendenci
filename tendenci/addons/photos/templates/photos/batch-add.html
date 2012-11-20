@@ -19,13 +19,19 @@
         </div>
 
         <h1>{% trans "Upload photos" %}</h1>
-    
+        {% if image_slot_left > 0 %}
+        <p>{% blocktrans with slots=image_slot_left %}
+            Image slots left: {{ slots }}
+        {% endblocktrans %}</p> 
         <div id="swf-progress-wrap">
             <div id="swf-progress-init"></div>
             <div id="swf-progress"></div>
             <div id="swf-msg-mask"><div>{% trans "Select photos to upload" %}</div></div>
             <div id="swf-object-mask"></div>
         </div>
+        {% else %}
+            <h2>{% trans "Sorry but you have uploaded the max number (50) of images available for this photo set" %}
+        {% endif %}
     </div>
 
 {% endblock %}
@@ -67,6 +73,7 @@
 		file_types : "*.jpg;*.jpeg;*.gif;*.png;*.tif;*.tiff;*.JPG;*.JPEG;",
 		file_types_description : "Photos",
 		file_post_name: "image",
+        file_upload_limit: "{{ image_slot_left }}",
 		
 		// Button settings (opens file-browse dialogue)
 		button_placeholder_id: "swf-object-mask",

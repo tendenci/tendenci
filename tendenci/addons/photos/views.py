@@ -614,12 +614,15 @@ def photos_batch_add(request, photoset_id=0):
         if not photoset_id:
             HttpResponseRedirect(reverse('photoset_latest'))
         photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+        # current limit for photo set images is hard coded to 50
+        image_slot_left = 50 - photo_set.image_set.count()
 
         # show the upload UI
         return render_to_response('photos/batch-add.html', {
             "photoset_id": photoset_id,
             "photo_set": photo_set,
-            "csrf_token": csrf_get_token(request)
+            "csrf_token": csrf_get_token(request),
+            "image_slot_left": image_slot_left,
              },
             context_instance=RequestContext(request))
 

@@ -2,7 +2,8 @@ import uuid
 
 from datetime import timedelta
 from django.db import models
-from django.contrib.auth.models import Group
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
@@ -34,7 +35,6 @@ class BaseJob(TendenciBaseModel):
     level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
     period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
     is_agency = models.BooleanField()  # defines if the job posting is by a third party agency
-    percent_travel = models.IntegerField(null=True, blank=True)  # how much travel is required for the position
 
     contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
     position_reports_to = models.CharField(max_length=200, blank=True)  # manager, CEO, VP, etc
@@ -69,7 +69,7 @@ class BaseJob(TendenciBaseModel):
     contact_website = models.CharField(max_length=300, blank=True)
 
     meta = models.OneToOneField(MetaTags, null=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
@@ -186,7 +186,7 @@ class Job(BaseJob):
 
     @models.permalink
     def get_approve_url(self):
-        return ("job.approve" [self.id])
+        return ("job.approve", [self.id])
 
 
 class JobPricing(models.Model):

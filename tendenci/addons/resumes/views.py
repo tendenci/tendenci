@@ -1,9 +1,10 @@
+import os
 from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
@@ -44,6 +45,32 @@ def index(request, slug=None, template_name="resumes/view.html"):
         EventLog.objects.log(**log_defaults)
         return render_to_response(template_name, {'resume': resume}, 
             context_instance=RequestContext(request))
+    else:
+        raise Http403
+
+
+def resume_file(request, slug=None, template_name="resumes/view.html"):
+    if not slug: return HttpResponseRedirect(reverse('resume.search'))
+    resume = get_object_or_404(Resume, slug=slug)
+
+    if has_view_perm(request.user,'resumes.view_resume',resume):
+        if resume.resume_file:
+            log_defaults = {
+                'event_id' : 355000,
+                'event_data': '%s (%d) viewed by %s' % (resume._meta.object_name, resume.pk, request.user),
+                'description': '%s viewed' % resume._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': resume,
+            }
+        
+            EventLog.objects.log(**log_defaults)
+            response = HttpResponse(resume.resume_file)
+            response['Content-Disposition'] = 'attachment; filename=%s' % (os.path.basename(unicode(resume.resume_file)))
+
+            return response
+        else:
+            return HttpResponseRedirect(reverse('resume.search'))
     else:
         raise Http403
 
@@ -109,7 +136,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
     can_add_active = has_perm(request.user, 'resumes.add_resume')
 
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        form = form_class(request.POST or None, user=request.user)
         if form.is_valid():
             resume = form.save(commit=False)
 
@@ -123,6 +150,11 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
             resume.expiration_dt = now + timedelta(days=resume.requested_duration)
 
             resume = update_perms_and_save(request, form, resume)
+            # we need to save instance first since we need the id for the file path
+            if request.FILES:
+                resume.resume_file = request.FILES['resume_file']
+                resume.resume_file.file.seek(0)
+                resume.save()
 
             log_defaults = {
                 'event_id' : 351000,
@@ -153,19 +185,21 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))
     else:
         form = form_class(user=request.user)
-
     return render_to_response(template_name, {'form':form},
         context_instance=RequestContext(request))
 
 @login_required
 def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
     resume = get_object_or_404(Resume, pk=id)
-
+    print request.FILES
+    form = form_class(request.POST or None, request.FILES or None, instance=resume, user=request.user)
     if has_perm(request.user,'resumes.change_resume',resume):    
         if request.method == "POST":
-            form = form_class(request.POST, instance=resume, user=request.user)
             if form.is_valid():
                 resume = form.save(commit=False)
+
+                if resume.resume_file:
+                    resume.resume_file.file.seek(0)
                 resume = update_perms_and_save(request, form, resume)
 
                 log_defaults = {
@@ -181,8 +215,6 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % resume)
                                                               
                 return HttpResponseRedirect(reverse('resume', args=[resume.slug]))             
-        else:
-            form = form_class(instance=resume, user=request.user)
 
         return render_to_response(template_name, {'resume': resume, 'form':form}, 
             context_instance=RequestContext(request))

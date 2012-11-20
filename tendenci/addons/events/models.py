@@ -22,6 +22,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.files.models import File
@@ -524,7 +525,6 @@ class Registration(models.Model):
         
         return registrant
 
-
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())
@@ -883,7 +883,7 @@ class Event(TendenciBaseModel):
     Calendar Event
     """
     guid = models.CharField(max_length=40, editable=False)
-    type = models.ForeignKey(Type, blank=True, null=True)
+    type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField()
@@ -898,8 +898,9 @@ class Event(TendenciBaseModel):
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
+    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
+    priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the events list. They will be featured with a star icon on the monthly calendar."))
 
     # recurring events
     is_recurring_event = models.BooleanField(_('Is Recurring Event'), default=False)

@@ -28,11 +28,11 @@ class ArticleMeta():
         category = category_set.get('category', '')
         subcategory = category_set.get('sub_category', '')
 
-        creator_name = '%s %s' % (
-            object.creator.first_name,
-            object.creator.last_name
+        contact_name = '%s %s' % (
+            object.first_name,
+            object.last_name
         )
-        creator_name = creator_name.strip()
+        contact_name = contact_name.strip()
 
         ### Build string -----------------------
         value = '%s - %s' % (object.headline, object.release_dt)
@@ -61,8 +61,8 @@ class ArticleMeta():
 
         value = '%s article' % value
 
-        if creator_name:
-            value = '%s contact: %s' % (value, creator_name)
+        if contact_name:
+            value = '%s contact: %s' % (value, contact_name)
 
         value = '%s articles for %s' % (value, site_name)
 
@@ -81,11 +81,11 @@ class ArticleMeta():
         subcategory = category_set.get('sub_category', '')
         site_name = get_setting('site', 'global', 'sitedisplayname')
         geo_location = get_setting('site', 'global', 'sitegeographiclocation')
-        creator_name = '%s %s' % (
-            object.creator.first_name,
-            object.creator.last_name
+        contact_name = '%s %s' % (
+            object.first_name,
+            object.last_name
         )
-        creator_name = creator_name.strip()
+        contact_name = contact_name.strip()
 
         if object.summary:
             content = object.summary
@@ -100,8 +100,8 @@ class ArticleMeta():
         ### Build string -----------------------
         value = object.headline
 
-        if creator_name:
-            value = '%s %s' % (value, creator_name)
+        if contact_name:
+            value = '%s %s' % (value, contact_name)
 
         value = '%s : %s' % (value, content)
 
@@ -132,9 +132,9 @@ class ArticleMeta():
         geo_location = get_setting('site', 'global', 'sitegeographiclocation')
         site_name = get_setting('site', 'global', 'sitedisplayname')
 
-        creator_name = '%s %s' % (
-            object.creator.first_name,
-            object.creator.last_name
+        contact_name = '%s %s' % (
+            object.first_name,
+            object.last_name
         )
 
         ### Build string -----------------------
@@ -150,7 +150,7 @@ class ArticleMeta():
                 geo_location,
                 site_name,
                 'white paper',
-                creator_name,
+                contact_name,
             ]
 
             # remove blank items

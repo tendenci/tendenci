@@ -57,14 +57,6 @@
 		</div>
 {% endif %}
 
-{% if job.percent_travel %}
-		<div class="section-line">
-			{% blocktrans with job.percent_travel as travper %}<div class="label">Travel Required</div>
-			<div class="value">{{ travper }} of the time (approximate)</div>{% endblocktrans %}
-			<div class="clear"></div>
-		</div>
-{% endif %}
-
 {% if job.start_dt %}
 		<div class="section-line">
 			{% blocktrans with job.start_dt as start_date %}<div class="label">Starts On</div>

@@ -1,4 +1,5 @@
 import uuid
+import re
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -12,6 +13,10 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.resumes.module_meta import ResumeMeta
+
+def file_directory(instance, filename):
+    filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
+    return 'resumes/%d/%s' % (instance.id, filename)
 
 class Resume(models.Model):
     guid = models.CharField(max_length=40)
@@ -44,6 +49,8 @@ class Resume(models.Model):
     expiration_dt = models.DateTimeField(null=True, blank=True) #date resume expires based on activation date and duration
 
     resume_url = models.CharField(max_length=300, blank=True) # link to other (fuller) resume posting
+    resume_file = models.FileField(_('Upload your resume here'), max_length=260, 
+                                    upload_to=file_directory, blank=True, default="")
     syndicate = models.BooleanField(_('Include in RSS feed'), blank=True)
            
     #TODO: foreign

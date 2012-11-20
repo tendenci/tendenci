@@ -145,6 +145,7 @@ html {
 #admin-bar li .sub .column, #user-bar li .sub .column {
 	float:left;
 	padding:10px;
+	max-width: 270px;
 }
 
 #admin-bar li .sub .column .column.app-list, #user-bar li .sub .column .column.app-list {

@@ -11,6 +11,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.base.fields import EmailVerificationField
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -26,7 +27,7 @@ FIELD_CHOICES = (
     ("ChoiceField", _("Choose from a list")),
     ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi-select - Checkboxes")),
     ("MultipleChoiceField", _("Multi-select - Select Many")),
-    ("EmailField", _("Email")),
+    ("EmailVerificationField", _("Email")),
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date - Select")),
     ("DateField/django.forms.DateInput", _("Date - Text Input")),

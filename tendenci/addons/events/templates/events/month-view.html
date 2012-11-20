@@ -55,6 +55,9 @@
 						{% for event in events|slice:"2" %}
 							<div class="event-item" title="{{ event.type }}: {{ event }}" 
 								style="color:{{ event.type.fg_color }}; background-color:{{ event.type.bg_color }}">
+                                {% if event.priority %}
+                                <div class="event-priority"></div>
+                                {% endif %}
 								<a href="{{ event.get_absolute_url }}" 
 									class="time-stamp">{{ event.start_dt|date:"f a" }}</a>
 								<a href="{{ event.get_absolute_url }}" 

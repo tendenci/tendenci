@@ -8,6 +8,7 @@ from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 class ProfileIndex(TendenciBaseSearchIndex):
     user = indexes.CharField(model_attr='user', faceted=True)
     user_object = indexes.CharField(model_attr='user', faceted=True)
+    display_name = indexes.CharField(model_attr='display_name')
     company = indexes.CharField(model_attr='company')
     address = indexes.CharField(model_attr='address')
     city = indexes.CharField(model_attr='city')

@@ -32,7 +32,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
-from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm
+from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm
 
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
@@ -497,7 +497,7 @@ def swfupload(request):
 
     if request.method == "POST":
 
-        form = FileForm(request.POST, request.FILES, user=request.user)
+        form = SwfFileForm(request.POST, request.FILES, user=request.user)
 
         if not form.is_valid():
             return HttpResponseServerError(

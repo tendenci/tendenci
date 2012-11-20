@@ -35,6 +35,19 @@
             {{ event.type.name|truncatewords:3 }}
             </div>
         {% endif %}
+
+        {% if event.priority %}
+            <style type="text/css">
+                .event-priority {
+                    margin: 5px;
+                    padding: 3px 5px;
+                    font-size: 11px;
+                }
+            </style>
+            <div class="event-priority">
+            {% trans "Prioritized" %}
+            </div>
+        {% endif %}
     </div>
     <div class="event-info">
         

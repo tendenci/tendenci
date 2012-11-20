@@ -37,7 +37,7 @@
          <td>{{ form.last_name }}</td>
      </tr>
      <tr>
-         <td><label for="id_email" class="required">{% trans 'Email Address:'%}</label></td>
+         <td><label for="id_email" class="required">{% trans 'Email Address (Enter twice to verify):'%}</label></td>
          <td>{{ form.email }}</td>
      </tr>
      <tr>
@@ -59,4 +59,8 @@
 </table>
 </form>
  
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

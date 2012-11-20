@@ -22,6 +22,7 @@ class GroupAdminForm(TendenciBaseForm):
           'type',
           'email_recipient',
           'show_as_option',
+          'sync_newsletters',
           'allow_self_add',
           'allow_self_remove',
           'description',
@@ -59,6 +60,7 @@ class GroupForm(TendenciBaseForm):
                   'type',
                   'email_recipient',
                   'show_as_option',
+                  'sync_newsletters',
                   'allow_self_add',
                   'allow_self_remove',
                   'description',
@@ -79,6 +81,7 @@ class GroupForm(TendenciBaseForm):
                                  # 'entity',
                                  'email_recipient',
                                  'show_as_option',
+                                 'sync_newsletters',
                                  'allow_self_add', 
                                  'allow_self_remove',
                                  'description'

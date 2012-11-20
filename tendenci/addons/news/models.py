@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
 from django.db import models
-from django.contrib.auth.models import Group
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
@@ -36,7 +37,7 @@ class News(TendenciBaseModel):
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     #for podcast feeds

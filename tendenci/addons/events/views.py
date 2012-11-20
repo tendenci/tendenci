@@ -223,7 +223,7 @@ def search(request, redirect=False, template_name="events/search.html"):
         if request.user.is_authenticated():
             events = events.select_related()
 
-    events = events.order_by('start_dt')
+    events = events.order_by('-priority', 'start_dt')
     types = Type.objects.all().order_by('name')
 
     EventLog.objects.log()
@@ -980,9 +980,6 @@ def delete(request, id, template_name="events/delete.html"):
         if request.method == "POST":
 
             eventlog = EventLog.objects.log(instance=event)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
-
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -1009,7 +1006,12 @@ def delete(request, id, template_name="events/delete.html"):
                 #"current transaction is aborted, commands ignored until 
                 # end of transaction block"
                 connection._rollback()
-                event.delete()
+            
+            if event.image:
+                event.image.delete()
+            event.delete()
+
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
             return HttpResponseRedirect(reverse('event.search'))
     
