@@ -54,9 +54,10 @@ class StoryAdmin(TendenciBaseModelAdmin):
         story = form.save(commit=False)
 
         # save photo
-        photo = form.cleaned_data['photo_upload']
-        if photo:
-            story.save(photo=photo)
+        if 'photo_upload' in form.cleaned_data:
+            photo = form.cleaned_data['photo_upload']
+            if photo:
+                story.save(photo=photo)
 
         story = update_perms_and_save(request, form, story)
 
