@@ -10,7 +10,6 @@ class Command(BaseCommand):
         from tendenci.apps.subscribers.models import SubscriberData, GroupSubscription
         from tendenci.apps.user_groups.models import GroupMembership
         from tendenci.apps.profiles.models import Profile
-        from tendenci.apps.forms_builder.forms.models import Field, FieldEntry
 
         if GroupSubscription.objects.exists():
             for sub in GroupSubscription.objects.all():
