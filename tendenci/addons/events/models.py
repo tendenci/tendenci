@@ -880,7 +880,7 @@ class Event(TendenciBaseModel):
         help_text=_('Photo that represents this event.'), null=True, blank=True)
     group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
-    priority = models.BooleanField(default=False)
+    priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the events list. They will be featured with a star icon on the monthly calendar."))
 
     # additional permissions
     display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
