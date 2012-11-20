@@ -39,7 +39,7 @@ class Command(BaseCommand):
                             if SubscriberData.objects.filter(field_label="Last Name").filter(subscription_id=sub.id):
                                 user.last_name = SubscriberData.objects.filter(field_label="Last Name").filter(subscription_id=sub.id)[0].value
                             if SubscriberData.objects.filter(field_label__in=["Phone", "phone", "Phone Number", "phone number", "Home Phone", "Cell Phone"]).filter(subscription_id=sub.id):
-                                phone = ubscriberData.objects.filter(field_label__in=["Phone", "phone", "Phone Number", "phone number", "Home Phone", "Cell Phone"]).filter(subscription_id=sub.id)[0].value
+                                phone = SubscriberData.objects.filter(field_label__in=["Phone", "phone", "Phone Number", "phone number", "Home Phone", "Cell Phone"]).filter(subscription_id=sub.id)[0].value
                             else:
                                 phone = ''
                         
