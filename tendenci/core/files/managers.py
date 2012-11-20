@@ -17,7 +17,7 @@ def save_to_disk(f, instance):
     Returns back relative path of file.
     """
 
-    file_name = re.sub(r'[^a-zA-Z0-9._]+', '-', f.name)
+    file_name = re.sub(r'[^a-z0-9._]+', '_', f.name.lower())
 
     # make dir with app and module name
     relative_directory = os.path.join(
@@ -137,7 +137,7 @@ class FileManager(TendenciBaseManager):
 
             try:
                 file = self.get(file=file_path)
-                file.name = file.name
+                file.name = re.sub(r'[^a-z0-9._]+', '_', file.name.lower())
                 file.owner = request.user
                 file.owner_username = request.user.username
                 file.update_dt = datetime.now()
