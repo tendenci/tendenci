@@ -198,8 +198,20 @@ class StoryAdminForm(TendenciBaseForm):
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo is an invalid image. Try uploading another photo.')
-
         return photo_upload
+
+    def __init__(self, *args, **kwargs):
+        super(StoryAdminForm, self).__init__(*args, **kwargs)
+        if self.instance.image:
+            self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))
+        else:
+            self.fields.pop('remove_photo')
+
+    def save(self, *args, **kwargs):
+        story = super(StoryAdminForm, self).save(*args, **kwargs)
+        if self.cleaned_data.get('remove_photo'):
+            story.image = None
+        return story
 
 
 class UploadStoryImageForm(forms.Form):
