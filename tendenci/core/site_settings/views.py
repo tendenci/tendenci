@@ -6,6 +6,7 @@ from django.contrib import messages
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.forms import build_settings_form
+from tendenci.core.site_settings.utils import delete_settings_cache
 from tendenci.core.perms.utils import has_perm
 
 
@@ -22,6 +23,7 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
         if form.is_valid():
             # this save method is overriden in the forms.py
             form.save()
+            delete_settings_cache(scope, scope_category)
             try:
                 if form.cleaned_data['theme']:
                     from django.core.management import call_command
