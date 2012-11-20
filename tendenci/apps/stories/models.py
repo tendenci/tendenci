@@ -117,7 +117,7 @@ class Story(TendenciBaseModel):
             try:
                 last = Story.objects.all().exclude(pk=self.pk).order_by('-ncsortorder')[0]
                 self.ncsortorder = int(last.ncsortorder) + 1
-            except TypeError:
+            except:
                 #First row
                 self.ncsortorder = 0
 
