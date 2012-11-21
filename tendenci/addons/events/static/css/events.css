@@ -570,7 +570,7 @@ ul.errorlist {;
 	background-color: #FFC;
 	padding: 5px;
 }
-.month-view div.day div.event-item .event-priority {
+div.event-priority {
     display: inline-block;
     background: url('../images/icons/star_icon.png') no-repeat;
     height: 16px;
