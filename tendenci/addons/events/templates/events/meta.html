@@ -68,6 +68,11 @@
                     <a class="delete" href="{% url event.delete event.pk %}">{% trans "Delete" %}</a>
                 </li>               
             {% endif %}
+            {% if can_delete and event.is_recurring_event %}
+                <li>
+                    <a class="delete" href="{% url event.delete_recurring event.pk %}">{% trans "Delete Recurring Events" %}</a>
+                </li>
+            {% endif %}
             {% if request.user.is_superuser and event.status == 0 %}
                 <li><a href="{% url event.approve event.pk %}">{% trans "Approve" %}</a></li>
             {% endif %}

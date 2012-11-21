@@ -1019,6 +1019,59 @@ def delete(request, id, template_name="events/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403# Create your views here.
+
+@login_required
+def delete_recurring(request, id, template_name="events/delete_recurring.html"):
+    event = get_object_or_404(Event, pk=id)
+
+    if not has_perm(request.user,'events.delete_event'):
+        raise Http403
+
+    if not event.is_recurring_event:
+        raise Http404
+
+    event_list = event.recurring_event.event_set.all()
+    if request.method == "POST":
+        recurring_manager = event.recurring_event
+        for event in event_list:
+            eventlog = EventLog.objects.log(instance=event)
+                # send email to admins
+            recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
+            if recipients and notification:
+                notification.send_emails(recipients,'event_deleted', {
+                    'event':event,
+                    'request':request,
+                    'user':request.user,
+                    'registrants_paid':event.registrants(with_balance=False),
+                    'registrants_pending':event.registrants(with_balance=True),
+                    'eventlog_url': reverse('event_log', args=[eventlog.pk]),
+                    'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
+                    'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
+                })
+
+            # The one-to-one relationship is on events which 
+            # doesn't delete the registration_configuration record.
+            # The delete must occur on registration_configuration
+            # for both to be deleted. An honest accident on 
+            # one-to-one fields. 
+            try:
+                event.registration_configuration.delete()
+            except:
+                # roll back the transaction to fix the error for postgresql
+                #"current transaction is aborted, commands ignored until 
+                # end of transaction block"
+                connection._rollback()
+                
+            if event.image:
+                event.image.delete()
+            event.delete()
+        recurring_manager.delete()
+        messages.add_message(request, messages.SUCCESS, 'Successfully deleted the recurring event for "%s"' % event)
+
+        return HttpResponseRedirect(reverse('event.search'))
+    
+    return render_to_response(template_name, {'event': event, 'events': event_list}, 
+            context_instance=RequestContext(request))
     
 def register_pre(request, event_id, template_name="events/reg8n/register_pre2.html"):
     event = get_object_or_404(Event, pk=event_id)
