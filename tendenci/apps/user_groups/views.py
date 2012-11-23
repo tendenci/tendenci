@@ -1,3 +1,4 @@
+import subprocess
 from datetime import datetime
 from datetime import date
 from djcelery.models import TaskMeta
@@ -18,6 +19,10 @@ from django.http import HttpResponse
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from tendenci.core.imports.forms import ImportForm
+from tendenci.core.imports.models import Import
+from tendenci.core.imports.utils import (extract_from_excel,
+                render_excel)
 from tendenci.apps.entities.models import Entity
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.event_logs.utils import request_month_range, day_bars
@@ -27,6 +32,7 @@ from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
 from tendenci.apps.user_groups.importer.forms import UploadForm
 from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
+from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 from tendenci.apps.notifications import models as notification
 
 
@@ -849,3 +855,81 @@ def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_a
     EventLog.objects.log()
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+@login_required
+def import_add(request, form_class=ImportForm,
+                template_name="user_groups/imports/user_groups_add.html"):
+    """Event Import Step 1: Validates and saves import file"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            import_i = form.save(commit=False)
+            import_i.app_label = 'events'
+            import_i.model_name = 'event'
+            import_i.save()
+
+            EventLog.objects.log()
+
+            # reset the password_promt session
+            request.session['password_promt'] = False
+
+            return HttpResponseRedirect(
+                reverse('group.import_preview', args=[import_i.id]))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {'form': form},
+        context_instance=RequestContext(request))
+
+@login_required
+def import_preview(request, import_id,
+                    template_name="user_groups/imports/user_groups_preview.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    import_i = get_object_or_404(Import, id=import_id)
+
+    user_groups_list, invalid_list = user_groups_import_process(import_i,
+                                                        preview=True)
+
+    return render_to_response(template_name, {
+        'total': import_i.total_created + import_i.total_invalid,
+        'user_groups_list': user_groups_list,
+        'import_i': import_i,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def import_process(request, import_id,
+                template_name="user_groups/imports/user_groups_process.html"):
+    """Import Step 3: Import into database"""
+
+    if not request.user.profile.is_superuser:
+        raise Http403   # admin only page
+
+    import_i = get_object_or_404(Import, id=import_id)
+
+    subprocess.Popen(['python', 'manage.py', 'import_groups', str(import_id)])
+
+    return render_to_response(template_name, {
+        'total': import_i.total_created + import_i.total_invalid,
+        "import_i": import_i,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def import_download_template(request, file_ext='.csv'):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if file_ext == '.csv':
+        filename = "import-user-groups.csv"
+    else:
+        filename = "import-user-groups.xls"
+
+    import_field_list = ['name', 'label', 'type',
+                         'email_recipient', 'description', 'auto_respond_template',
+                          'auto_respond_priority', 'notes']
+    data_row_list = []
+
+    return render_excel(filename, import_field_list, data_row_list, file_ext)
