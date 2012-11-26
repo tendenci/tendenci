@@ -91,6 +91,10 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                         row_item_list[i] = row_item_list[i].strftime(
                             '%H:%M:%S'
                             )
+
+                # convert all to string; catches 0 (int)
+                row_item_list[i] = '%s' % row_item_list[i]
+
             str_out += ','.join(row_item_list)
 
         content_type = "application/text"
@@ -111,7 +115,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                     cell_value_is_date = False
                     if isinstance(cell_value, datetime.datetime):
                         cell_value = xlrd.xldate.xldate_from_datetime_tuple((
-                            cell_value.year, cell_value.month, 
+                            cell_value.year, cell_value.month,
                             cell_value.day, cell_value.hour,
                             cell_value.minute,
                             cell_value.second), 0)
