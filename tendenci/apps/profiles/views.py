@@ -907,13 +907,14 @@ def export_check(request, task_id):
     else:
         return HttpResponse("DNE")
 
+
 def export_download(request, task_id):
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     if task and task.status == "SUCCESS":
         return task.result
     else:
-        return Http404
+        raise Http404
