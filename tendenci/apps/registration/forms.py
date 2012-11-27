@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
 from tendenci.apps.registration.models import RegistrationProfile
+from tendenci.core.base.fields import EmailVerificationField
 
 
 # I put this on all required fields, because it's easier to pick up
@@ -36,9 +37,7 @@ class RegistrationForm(forms.Form):
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 label=_(u'username'))
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
-                                                               maxlength=75)),
-                             label=_(u'email address'))
+    email = EmailVerificationField(label=_(u'email address'))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_(u'password'))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),

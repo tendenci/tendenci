@@ -5,6 +5,7 @@ from tendenci.addons.help_files.models import Request, HelpFile, Topic
 from tinymce.widgets import TinyMCE
 from captcha.fields import CaptchaField
 from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.user_groups.models import Group
 
 class RequestForm(forms.ModelForm):
     captcha = CaptchaField()
@@ -19,12 +20,15 @@ class HelpFileAdminForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(choices=(('draft','Draft'),('active','Active')))
     
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
+    
     class Meta:
         model = HelpFile
         fields = (
             'question',
             'slug',
             'answer',
+            'group',
             'level',
             'topics',
             'is_faq',

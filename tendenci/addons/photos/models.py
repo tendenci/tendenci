@@ -23,6 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 from tagging.fields import TagField
 
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import get_query_filters
@@ -553,7 +554,7 @@ class PhotoSet(TendenciBaseModel):
     name = models.CharField(_('name'), max_length=200)
     description = models.TextField(_('description'), blank=True)
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
     author = models.ForeignKey(User)
 
@@ -682,7 +683,9 @@ class Image(ImageModel, TendenciBaseModel):
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
+
+    photoset_position = models.IntegerField(default=0, null=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)

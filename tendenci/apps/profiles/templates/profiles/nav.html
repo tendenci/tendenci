@@ -26,7 +26,7 @@
     </li>
     {% endif %}
     <li class="dropdown active" data-dropdown="dropdown">
-        <a href="#" class="dropdown-toggle">{% firstof MODULE_USERS_LABEL 'Users' %}</a>
+        <a href="#" class="dropdown-toggle">{% firstof MODULE_USERS_LABEL 'People' %}</a>
         {% if nav_object %}
         <div class="dropdown-menu">
         <ul class="first">
@@ -42,6 +42,9 @@
             <li><a href="{% url profile.search %}">{% trans "Search Users" %}</a></li>
             {% if can_add_profile %}
                 <li><a href="{% url profile.add %}">{% trans "Add a User" %}</a></li>
+            {% endif %}
+            {% if user.profile.is_superuser %}
+                <li><a href="{% url membership.application_entries %}">{% trans "Membership Entries" %}</a></li>
             {% endif %}
             {% if user.profile.is_staff %}
                 <li><a href="{% url profile.admins %}">{% trans "Admin List" %}</a></li>

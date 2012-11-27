@@ -19,7 +19,9 @@ class ListMap(models.Model):
     last_sync_dt = models.DateTimeField(null=True)
     
     def __unicode__(self):
-        return self.group.name
+        if self.group:
+            return self.group.name
+        return ''
     
 class GroupQueue(models.Model):
     group = models.ForeignKey(Group)
@@ -154,7 +156,8 @@ if cm_api_key and cm_client_id:
     CreateSend.api_key = cm_api_key
     
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
-        """On Group Add:
+        """Check if sync_newsletters. Do nothing if false.
+            On Group Add:
                 if group name does not exist on C. M,
                     add a list to C. M.
                 add an entry to listmap
@@ -175,7 +178,7 @@ if cm_api_key and cm_client_id:
         list_ids_d = dict(zip(list_names, list_ids))
         list_d = dict(zip(list_ids, lists))
         
-        if created:
+        if created and instance.sync_newsletters:
             if instance.name in list_names:
                 list_id = list_ids_d[instance.name]
                 
@@ -191,7 +194,7 @@ if cm_api_key and cm_client_id:
                 setup_custom_fields(cm_list)
                 
             
-        else: # update
+        elif instance.sync_newsletters: # update
             try:
                 # find the entry in the listmap
                 list_map = ListMap.objects.get(group=instance)
@@ -239,8 +242,12 @@ if cm_api_key and cm_client_id:
             
     def sync_cm_subscriber(sender, instance=None, created=False, **kwargs):
         """Subscribe the subscriber to the campaign monitor list
+           Check if sync_newsletters is True. Do nothing if False.
         """
         from django.core.validators import email_re
+        
+        if instance and instance.group and not instance.group.sync_newsletters:
+            return
 
         (name, email) = get_name_email(instance)
         if email and email_re.match(email):
@@ -385,6 +392,3 @@ if cm_api_key and cm_client_id:
     
     post_save.connect(sync_cm_subscriber, sender=GroupSubscription)   
     pre_delete.connect(delete_cm_subscriber, sender=GroupSubscription)
-    
-    
-    

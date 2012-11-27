@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.addons.corporate_memberships.models import (CorporateMembership,
     AuthorizedDomain)
 from tendenci.apps.user_groups.models import Group
@@ -391,7 +391,7 @@ class NoticeForm(forms.ModelForm):
 class AppCorpPreForm(forms.Form):
     corporate_membership_id = forms.ChoiceField(label=_('Join Under the Corporation:'))
     secret_code = forms.CharField(label=_('Enter the Secret Code'), max_length=50)
-    email = forms.EmailField(label=_('Verify Your Email Address'), max_length=100,
+    email = EmailVerificationField(label=_('Verify Your Email Address'),
                              help_text="""Your email address will help us to identify your corporate.
                                          You will receive an email to the address you entered for us
                                          to verify your email address. 
@@ -576,8 +576,8 @@ class EntryEditForm(TendenciBaseForm):
     work_phone = forms.CharField(required=False)
     home_phone = forms.CharField(required=False)
     mobile_phone = forms.CharField(required=False)
-    email = forms.EmailField(required=False)
-    email2 = forms.EmailField(required=False)
+    email = EmailVerificationField(required=False)
+    email2 = EmailVerificationField(required=False)
     url = forms.CharField(required=False)
     url2 = forms.CharField(required=False)
     spouse = forms.CharField(required=False)

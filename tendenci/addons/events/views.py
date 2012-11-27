@@ -35,6 +35,7 @@ from django.forms.models import modelformset_factory, \
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson as json
 from django.db import connection
+#from django.forms.models import BaseModelFormSet
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
@@ -120,8 +121,7 @@ def event_custom_reg_form_list(request, event_id,
                 custom_reg_form=reg_conf.reg_form)
         else:
             for price in regconfpricings:
-                price.reg_form.form_for_form = FormForCustomRegForm(
-                    custom_reg_form=price.reg_form)
+                price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
 
     context = {'event': event,
                'reg_conf': reg_conf,
@@ -143,13 +143,7 @@ def details(request, id=None, template_name="events/view.html"):
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
 
-    if event.registration_configuration:
-        event.limit = event.registration_configuration.limit
-    else:
-        reg_conf = RegistrationConfiguration()
-        reg_conf.save()
-        event.registration_configuration = reg_conf
-        event.save()
+    event.limit = event.get_limit()
 
     event.spots_taken, event.spots_available = event.get_spots_status()
 
@@ -251,7 +245,7 @@ def search(request, redirect=False, template_name="events/search.html"):
         if request.user.is_authenticated():
             events = events.select_related()
 
-    events = events.order_by('start_dt')
+    events = events.order_by('-priority', 'start_dt')
     types = Type.objects.all().order_by('name')
 
     EventLog.objects.log()
@@ -873,9 +867,6 @@ def delete(request, id, template_name="events/delete.html"):
         if request.method == "POST":
 
             eventlog = EventLog.objects.log(instance=event)
-
-            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
-
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
@@ -899,10 +890,15 @@ def delete(request, id, template_name="events/delete.html"):
                 event.registration_configuration.delete()
             except:
                 # roll back the transaction to fix the error for postgresql
-                #"current transaction is aborted, commands ignored until
+                #"current transaction is aborted, commands ignored until 
                 # end of transaction block"
                 connection._rollback()
-                event.delete()
+            
+            if event.image:
+                event.image.delete()
+            event.delete()
+
+            messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
             return HttpResponseRedirect(reverse('event.search'))
 

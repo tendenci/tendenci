@@ -567,6 +567,7 @@ def photos_batch_add(request, photoset_id=0):
                 photo.member = request.user
                 photo.safetylevel = 3
                 photo.allow_anonymous_view = True
+                photo.photoset_position = 0
 
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, photo_form, photo)
@@ -613,12 +614,15 @@ def photos_batch_add(request, photoset_id=0):
         if not photoset_id:
             HttpResponseRedirect(reverse('photoset_latest'))
         photo_set = get_object_or_404(PhotoSet, id=photoset_id)
+        # current limit for photo set images is hard coded to 50
+        image_slot_left = 50 - photo_set.image_set.count()
 
         # show the upload UI
         return render_to_response('photos/batch-add.html', {
             "photoset_id": photoset_id,
             "photo_set": photo_set,
-            "csrf_token": csrf_get_token(request)
+            "csrf_token": csrf_get_token(request),
+            "image_slot_left": image_slot_left,
              },
             context_instance=RequestContext(request))
 
@@ -655,7 +659,6 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
             # event logging
             for photo, changed in photo_formset.changed_objects:
-
                 EventLog.objects.log(**{
                     'event_id' : 990200,
                     'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
@@ -690,7 +693,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
         # i would like to use the search index here; but it appears that
         # the formset class only accepts a queryset; not a searchqueryset or list
-        photo_qs = Image.objects.filter(photoset=photo_set).order_by("-update_dt")
+        photo_qs = Image.objects.filter(photoset=photo_set).order_by("photoset_position")
         photo_formset = PhotoFormSet(queryset=photo_qs)
 
     cc_licenses = License.objects.all()
@@ -716,11 +719,12 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
         raise Http403
 
     order = get_setting('module', 'photos', 'photoordering')
-    if order == 'descending':
-        photos = photo_set.get_images(user=request.user).order_by('-pk')
-    else:
-        photos = photo_set.get_images(user=request.user).order_by('pk')
-
+    #if order == 'descending':
+    #    photos = photo_set.get_images(user=request.user).order_by('-pk')
+    #else:
+    #    photos = photo_set.get_images(user=request.user).order_by('pk')
+    photos = photo_set.get_images(user=request.user).order_by("photoset_position")
+    
     EventLog.objects.log(**{
         'event_id': 991500,
         'event_data': '%s (%d) viewed by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),

@@ -21,12 +21,14 @@
 		<h1>{% trans "Bulk edit photos" %}</h1>
 
         <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
-    
+            <div class="minimize-wrap-link">
+                <h3><a href="#" class="minimize-all-button" onClick="minimizeAll(); return false;">{% trans "Enable Photo Drag/Drop Reordering" %}</a></h3>
+            </div>
+            <div class="clearfix"></div>
             <div class="side-panel">
 
                 <div class="float-anchor"><!-- ie7 fix --></div>
                 <div class="float-window">
-        
                     <div class="photo-bulk-editor">
                         <div>{% trans "Replace all titles" %}</div>
                         <div><input class="title" type="text" /></div>
@@ -62,6 +64,7 @@
             </div>
     
                 {{ photo_formset.management_form }}
+            <div class="sortable-photos">
                 {% for photo_form in photo_formset.forms %}
 
                 <div class="edit-wrap">
@@ -79,7 +82,6 @@
                         {{ photo_form.photoset }}
                     </div>
                     <div style="clear:both;"><!-- ie7 fix --></div>
-    
                     <div class="title-wrap">
                         <div class="label">{{ photo_form.title.label_tag }}</div>
                         <div class="field">{{ photo_form.title }}</div>
@@ -87,6 +89,10 @@
                     <div class="caption-wrap">
                         <div class="label">{{ photo_form.caption.label_tag }}</div>
                         <div class="field">{{ photo_form.caption }}</div>
+                    </div>
+                    <div class="position-wrap">
+                        <div class="label">{{ photo_form.photoset_position.label_tag }}</div>
+                        <div class="field">{{ photo_form.photoset_position }}</div>
                     </div>
     
                     <div style="position:relative;">
@@ -118,6 +124,7 @@
             {% empty %}
                 <p>{% trans "All photos have been approved, nothing to see here." %}</p>
             {% endfor %}
+            </div>
         </form>
 
 	</div>
@@ -127,6 +134,7 @@
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
 <script type="text/javascript">
 
 	$(".photo-bulk-editor .title").keyup(function(event){
@@ -147,6 +155,46 @@
         $(".group-wrap select").val($(this).val());
     });
 
+    $('.position-wrap').hide();
+
+    $(function() {
+
+        $( ".minimize-link" ).click(function(){
+            $(this).parent().toggleClass('minimize-photo');
+            $(this).parent().find('.title-wrap').toggle();
+            $(this).parent().find('.caption-wrap').toggle();
+            $(this).parent().find('.license-wrap').toggle();
+            $(this).parent().find('.tags-wrap').toggle();
+            $(this).parent().find('.group-wrap').toggle();
+            $(this).parent().find('.cover-wrap').toggle();
+            $(this).parent().find('.delete-wrap').toggle();
+            //var text = $(this).text() == '{% trans "Hide Photo Details" %}' ? '{% trans "Show Photo Details" %}' : '{% trans "Hide Photo Details" %}';
+            //$(this).find('a').text(text);
+            if ($(this).text() == '{% trans "Hide Photo Details" %}') {
+                $(this).find('a').text('{% trans "Show Photo Details" %}');
+                var all_min = true;
+                $('.edit-wrap').each(function(){
+                    if( !$(this).hasClass('minimize-photo') ){
+                        all_min = false;
+                    }
+                });
+                if (all_min){
+                    $('.minimize-all-button').text('{% trans "Show all photo details for editing" %}')
+                }
+            }else {
+                $(this).find('a').text('{% trans "Hide Photo Details" %}');
+                var all_rest = true;
+                $('.edit-wrap').each(function(){
+                    if( $(this).hasClass('minimize-photo') ){
+                        all_rest = false;
+                    }
+                });
+                if (all_rest){
+                    $('.minimize-all-button').text('{% trans "Enable Photo Drag/Drop Reordering" %}')
+                }
+            }
+        }); 
+    });
 
 	$(window).scroll(function(){
 		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
@@ -160,5 +208,48 @@
 		}
 	});
 
+    function minimizeAll() {
+        if ($('.minimize-all-button').text() == '{% trans "Enable Photo Drag/Drop Reordering" %}') {
+            $( ".t" ).css("width", "160%");
+            $( ".side-panel" ).css("display", "none");
+            $( ".sortable-photos" ).sortable({
+                disabled: false,
+                items: 'div.edit-wrap',
+                update: function() {
+                    $(this).find('div.edit-wrap').each(function(i) {
+                            $(this).find('.position-wrap input').val(i+1);
+                    });
+                }
+            });
+            $( ".sortable-photos" ).disableSelection();
+
+            $('.edit-wrap').each(function(){
+                $(this).addClass('minimize-photo');
+                $(this).find('.title-wrap').hide();
+                $(this).find('.caption-wrap').hide();
+                $(this).find('.license-wrap').hide();
+                $(this).find('.tags-wrap').hide();
+                $(this).find('.group-wrap').hide();
+                $(this).find('.cover-wrap').hide();
+                $(this).find('.delete-wrap').hide();
+            });
+            $('.minimize-all-button').text('{% trans "Show all photo details for editing" %}')
+        } else {
+            $( ".t" ).css("width", "105%");
+            $( ".side-panel" ).css("display", "inline");
+            $( ".sortable-photos" ).sortable({ disabled: true});
+            $('.edit-wrap').each(function(){
+                $(this).removeClass('minimize-photo');
+                $(this).find('.title-wrap').show();
+                $(this).find('.caption-wrap').show();
+                $(this).find('.license-wrap').show();
+                $(this).find('.tags-wrap').show();
+                $(this).find('.group-wrap').show();
+                $(this).find('.cover-wrap').show();
+                $(this).find('.delete-wrap').show();
+            });
+            $('.minimize-all-button').text('{% trans "Enable Photo Drag/Drop Reordering" %}')
+        }
+    }
 </script>
 {% endblock %}

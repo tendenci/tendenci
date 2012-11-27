@@ -1,14 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models.loading import get_model
 
-from tendenci.core.exports.models import Export
-
 
 class Command(BaseCommand):
     args = '<export_pk, field, field, field...>'
     help = "Runs an export task for the specified model."
 
     def handle(self, *args, **options):
+        from tendenci.core.exports.models import Export
         from tendenci.core.exports.tasks import TendenciExportTask
         if args:
 

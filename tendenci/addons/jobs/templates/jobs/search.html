@@ -39,3 +39,18 @@
     {% paginate %}
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+
+<script type="text/javascript">
+    $('select#id_categories').change(function(){
+    $('#job-search-form').submit();
+    }
+    )
+    $('select#id_subcategories').change(function(){
+    $('#job-search-form').submit();
+    }
+    )
+</script>
+{% endblock %}

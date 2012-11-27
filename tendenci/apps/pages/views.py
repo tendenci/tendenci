@@ -26,6 +26,7 @@ from tendenci.core.categories.forms import CategoryForm
 from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.notifications import models as notification
 
 from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
@@ -200,8 +201,6 @@ def edit(request, id, form_class=PageForm,
             # update all permissions
             page = update_perms_and_save(request, form, page)
 
-            EventLog.objects.log(instance=page)
-
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully updated %s' % page)
 
@@ -247,8 +246,6 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
     page = get_object_or_404(Page, pk=id)
     if not has_perm(request.user, 'pages.change_page', page):
         raise Http403
-
-    EventLog.objects.log(instance=page)
 
     defaults = {
         'title': page.get_title(),
@@ -341,8 +338,6 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
 
             # add all permissions
             page = update_perms_and_save(request, form, page)
-
-            EventLog.objects.log()
 
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully added %s' % page)

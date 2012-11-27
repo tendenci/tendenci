@@ -14,6 +14,7 @@ from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
+from tendenci.core.base.fields import EmailVerificationField
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -38,6 +39,9 @@ class DirectoryForm(TendenciBaseForm):
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
+
+    email = EmailVerificationField(label=_("Email"), required=False)
+    email2 = EmailVerificationField(label=_("Email 2"), required=False)
     
     pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
                     queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
@@ -267,4 +271,4 @@ class DirectoryRenewForm(TendenciBaseForm):
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory
-    
+

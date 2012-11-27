@@ -16,6 +16,7 @@ class ArticleAdmin(TendenciBaseModelAdmin):
                 'slug',
                 'summary',
                 'body',
+                'group',
                 'tags',
                 'source',
                 'website',

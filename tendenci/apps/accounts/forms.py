@@ -11,6 +11,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.template import Context, loader
 from django.utils.http import int_to_base36
 
+from johnny.cache import invalidate
 from captcha.fields import CaptchaField
 from tendenci.apps.registration.forms import RegistrationForm
 from tendenci.apps.profiles.models import Profile
@@ -43,6 +44,15 @@ class RegistrationCustomForm(RegistrationForm):
     zipcode = forms.CharField(max_length=50, required=False)
     captcha = CaptchaField()
 
+    allow_same_email = None
+    similar_email_found = False
+
+    def __init__(self, *args, **kwargs):
+        self.allow_same_email = kwargs.pop('allow_same_email', False)
+        print 'In Form'
+        print self.allow_same_email
+        super(RegistrationCustomForm, self).__init__(*args, **kwargs)
+
     def clean_password1(self):
         password1 = self.cleaned_data.get('password1')
         password_regex = get_setting('module', 'users', 'password_requirements_regex')
@@ -52,6 +62,17 @@ class RegistrationCustomForm(RegistrationForm):
                 raise forms.ValidationError(mark_safe("The password does not meet the requirements </li><li>%s" % password_requirements))
 
         return password1
+
+    def clean(self):
+        if self._errors:
+            return
+        user = User.objects.filter(email=self.cleaned_data['email'])
+        if user and not self.allow_same_email:
+            self.similar_email_found = True
+            raise forms.ValidationError(_("Similar emails found"))
+
+        return self.cleaned_data
+
 
     def save(self, profile_callback=None, event=None):
         # 
@@ -102,6 +123,7 @@ class LoginForm(forms.Form):
     #remember = forms.BooleanField(label=_("Remember Me"), help_text=_("If checked you will stay logged in for 3 weeks"), required=False)
     remember = forms.BooleanField(label=_("Remember Login"), required=False)
 
+    user_exists = None
     user = None
     
     def __init__(self, *args, **kwargs):
@@ -119,6 +141,7 @@ class LoginForm(forms.Form):
     def clean(self):
         if self._errors:
             return
+        invalidate('auth_user')
         user = authenticate(username=self.cleaned_data["username"], password=self.cleaned_data["password"])
 
         if user:
@@ -132,7 +155,11 @@ class LoginForm(forms.Form):
             else:
                 raise forms.ValidationError(_("This account is currently inactive."))
         else:
-            raise forms.ValidationError(_("The username and/or password you specified are not correct."))
+            try:
+                self.user_exists = User.objects.get(username=self.cleaned_data["username"])
+                raise forms.ValidationError(_("The username and/or password you specified are not correct."))
+            except User.DoesNotExist:
+                raise forms.ValidationError(_("The username and/or password you specified are not correct."))
         return self.cleaned_data
 
     def login(self, request):
@@ -141,15 +168,14 @@ class LoginForm(forms.Form):
 
             messages.add_message(
                 request, messages.SUCCESS,
-                u"Woohoo %s, you've successfully logged in." % \
-                    self.user.first_name or self.user.username
+                u"Woohoo %s %s, you've successfully logged in." % \
+                    (self.user.first_name or self.user.username, self.user.last_name)
             )
 
             if self.cleaned_data['remember']:
                 request.session.set_expiry(60 * 60 * 24 * 7 * 3)
             else:
                 request.session.set_expiry(0)
-
             return True
         return False
     

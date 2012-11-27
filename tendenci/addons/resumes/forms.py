@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from os.path import splitext
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -9,6 +10,14 @@ from tendenci.addons.resumes.models import Resume
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import EmailVerificationField
+
+ALLOWED_FILE_EXT = (
+    '.doc',
+    '.docx',
+    '.pdf',
+    '.rtf' 
+)   
 
 class ResumeForm(TendenciBaseForm):
 
@@ -38,6 +47,8 @@ class ResumeForm(TendenciBaseForm):
 
     captcha = CaptchaField()
 
+    contact_email = EmailVerificationField(label=_("Contact email"), required=False)
+
     activation_dt = SplitDateTimeField(label=_('Activation Date/Time'),
         initial=datetime.now())
 
@@ -54,6 +65,7 @@ class ResumeForm(TendenciBaseForm):
         'slug',
         'description',
         'resume_url',
+        'resume_file',
         'location',
         'skills',
         'experience',
@@ -89,6 +101,7 @@ class ResumeForm(TendenciBaseForm):
                                  'slug',
                                  'description',
                                  'resume_url',
+                                 'resume_file',
                                  'location',
                                  'skills',
                                  'experience',
@@ -177,3 +190,11 @@ class ResumeForm(TendenciBaseForm):
         for f in list(set(fields_to_pop)):
             if f in self.fields: self.fields.pop(f)
         
+    def clean_resume_file(self):
+        resume = self.cleaned_data['resume_file']
+        if resume:
+            extension = splitext(resume.name)[1]
+            # check the extension
+            if extension.lower() not in ALLOWED_FILE_EXT:
+                raise forms.ValidationError('The file must be of doc, docx, pdf, or rtf format.')
+        return resume

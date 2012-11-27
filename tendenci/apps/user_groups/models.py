@@ -1,9 +1,10 @@
 import uuid
-from django.db import models
+from django.db import models, connection
 from django.contrib.auth.models import Group as AuthGroup
 from django.contrib.auth.models import User, Permission
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.db.utils import IntegrityError
 
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
@@ -22,6 +23,7 @@ class Group(TendenciBaseModel):
     show_as_option = models.BooleanField(_('Display Option'), default=1, blank=True)
     allow_self_add = models.BooleanField(_('Allow Self Add'), default=1)
     allow_self_remove = models.BooleanField(_('Allow Self Remove'), default=1)
+    sync_newsletters = models.BooleanField(_('Sync for newsletters'), default=1)
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
     auto_respond_template = models.CharField(_('Auto Responder Template'),
@@ -50,20 +52,28 @@ class Group(TendenciBaseModel):
         return ('group.detail', [self.slug])
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
-        if not self.id:
-            name = self.name
+        if not self.guid:
             self.guid = uuid.uuid1()
-            if not self.slug:
-                self.slug = slugify(name)
+
+        if not self.slug:
+            self.slug = slugify(self.name)
 
         if self.name and not self.group:
-            group = AuthGroup.objects.create(name=self.name)
+            try:
+                group = AuthGroup.objects.create(name=self.name)
+            except IntegrityError:
+                connection._rollback()
+                id = AuthGroup.objects.count()
+                group = AuthGroup.objects.create(name=" ".join([self.name, str(id)]))
             group.save()
             self.group = group
 
-        if self.name and self.group:
+        elif self.name and self.group:
             self.group.name = self.name
-            self.group.save()
+            try:
+                self.group.save()
+            except IntegrityError:
+                connection._rollback()
 
         super(Group, self).save(force_insert, force_update, *args, **kwargs)
      

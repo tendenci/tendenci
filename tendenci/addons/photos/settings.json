@@ -56,7 +56,7 @@
         "label": "Photo Ordering", 
         "input_value": "ascending, descending", 
         "default_value": "descending", 
-        "description": "Ordering used for photos", 
+        "description": "Default ordering used for photos. This setting is not used on photo sets that use custom (drag/drop) ordering.", 
         "data_type": "string",
         "update_dt": "2011-06-01 12:00:00",
         "input_type": "select",

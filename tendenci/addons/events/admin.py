@@ -11,7 +11,8 @@ class EventAdmin(admin.ModelAdmin):
 #    form = EventForm
     list_display=(
         'title',
-        'description', 
+        'description',
+        'group',
         'start_dt',
         'end_dt',
         'timezone',

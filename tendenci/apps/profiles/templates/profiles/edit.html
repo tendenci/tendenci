@@ -163,7 +163,7 @@
                       <tr>
                         <td colspan="6" ><table width="550" border="0">
                             <tr >
-                              <td width="120" class="label"><label for="id_email">{% trans 'Email'%} <span class="body-copy-alerts">*</span></label>
+                              <td width="120" class="label"><label for="id_email">{% trans 'Email (Enter twice to verify)'%} <span class="body-copy-alerts">*</span></label>
                               </td>
                               <td>
                               {% if form.email.errors %}
@@ -175,7 +175,7 @@
                                 </td>
                             </tr>
                             <tr >
-                              <td width="120" class="label"><label for="id_email2">{% trans 'Email2'%}{%if form.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
+                              <td width="120" class="label"><label for="id_email2">{% trans 'Email2 (Enter twice to verify)'%}{%if form.email2.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td>
 								{% if form.email2.errors %}
 									{{ form.email2.errors }}
@@ -495,4 +495,8 @@
 </div>
 </div>
 </div>
+{% endblock %}
+{% block extra_body %}
+    {{ block.super }}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/email-verification.js"></script>
 {% endblock %}

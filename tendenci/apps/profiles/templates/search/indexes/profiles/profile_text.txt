@@ -7,6 +7,7 @@
 {{ object.city }}
 {{ object.state }}
 {{ object.country }}
+{{ object.display_name }}
 
 is:{{ object.status_detail }}
 

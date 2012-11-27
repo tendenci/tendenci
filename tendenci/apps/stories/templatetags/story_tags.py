@@ -156,6 +156,8 @@ class ListStoriesNode(ListNode):
 
         if order:
             items = items.order_by(order)
+        else:
+            items = items.order_by('-ncsortorder', '-start_dt')
 
         # if order is not specified it sorts by relevance
         if randomize:
@@ -183,7 +185,7 @@ def list_stories(parser, token):
         ``limit``
            The number of items that are shown. **Default: 3**
         ``order``
-           The order of the items. **Default: Earliest Start Date**
+           The order of the items. **Default: Order in Admin**
         ``user``
            Specify a user to only show public items to all. **Default: Viewing user**
         ``query``
@@ -213,8 +215,5 @@ def list_stories(parser, token):
         raise TemplateSyntaxError(message)
 
     kwargs = parse_tag_kwargs(bits)
-
-    if 'order' not in kwargs:
-        kwargs['order'] = '-start_dt'
 
     return ListStoriesNode(context_var, *args, **kwargs)

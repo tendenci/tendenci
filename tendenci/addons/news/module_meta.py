@@ -18,11 +18,11 @@ class NewsMeta():
         category = Category.objects.get_for_object(object, 'category')
         subcategory = Category.objects.get_for_object(object, 'subcategory')
 
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
+        contact_name = '%s %s' % (
+            object.first_name, 
+            object.last_name
         )
-        creator_name = creator_name.strip()
+        contact_name = contact_name.strip()
 
         ### Build string -----------------------
         value = '%s - %s' % (object.headline, object.release_dt)
@@ -51,8 +51,8 @@ class NewsMeta():
 
         value = '%s news' % value
 
-        if creator_name:
-            value = '%s contact: %s' % (value, creator_name)
+        if contact_name:
+            value = '%s contact: %s' % (value, contact_name)
 
         value = '%s news for %s' % (value, site_name)
 
@@ -70,11 +70,11 @@ class NewsMeta():
         subcategory = Category.objects.get_for_object(object, 'subcategory')
         site_name = get_setting('site','global','sitedisplayname')
         geo_location = get_setting('site','global','sitegeographiclocation')
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
+        contact_name = '%s %s' % (
+            object.first_name, 
+            object.last_name
         )
-        creator_name = creator_name.strip()
+        contact_name = contact_name.strip()
 
         if object.summary:
             content = object.summary
@@ -89,8 +89,8 @@ class NewsMeta():
         ### Build string -----------------------
         value = object.headline
 
-        if creator_name:
-            value = '%s %s' % (value, creator_name)
+        if contact_name:
+            value = '%s %s' % (value, contact_name)
 
         value = '%s : %s' % (value, content)
 
@@ -121,9 +121,9 @@ class NewsMeta():
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
 
-        creator_name = '%s %s' % (
-            object.creator.first_name, 
-            object.creator.last_name
+        contact_name = '%s %s' % (
+            object.first_name, 
+            object.last_name
         )
 
         ### Build string -----------------------
@@ -139,7 +139,7 @@ class NewsMeta():
                 geo_location,
                 site_name,
                 'white paper',
-                creator_name,
+                contact_name,
             ]
 
             # remove blank items

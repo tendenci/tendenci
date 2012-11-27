@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.db.models import Count, Q, get_app
 from django.contrib.admin.views.decorators import staff_member_required
@@ -148,7 +148,7 @@ def search(request, template_name="profiles/search.html"):
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query))
+        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query))
 
     if members:
         if not request.user.profile.is_superuser:
@@ -409,16 +409,6 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
-
-        log_defaults = {
-            'event_id' : 123000,
-            'event_data': '%s (%d) deleted by %s' % (user._meta.object_name, user.pk, request.user),
-            'description': '%s deleted' % user._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': user,
-        }
-        EventLog.objects.log(**log_defaults)
         
         
         return HttpResponseRedirect(reverse('profile.search'))
@@ -445,6 +435,8 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
+        EventLog.objects.log(instance=profile)
+
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
    
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 
@@ -915,13 +907,14 @@ def export_check(request, task_id):
     else:
         return HttpResponse("DNE")
 
+
 def export_download(request, task_id):
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     if task and task.status == "SUCCESS":
         return task.result
     else:
-        return Http404
+        raise Http404

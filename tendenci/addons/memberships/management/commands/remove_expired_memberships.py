@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 
 class Command(BaseCommand):
@@ -22,8 +23,7 @@ class Command(BaseCommand):
             memberships = Membership.objects.filter(
                 membership_type=membership_type,
                 expire_dt__lt=datetime.now() - relativedelta(days=grace_period),
-                status=True,
-                status_detail='active')
+                status=True).exclude(Q(status_detail='pending') | Q(status_detail='archive'))
 
             for membership in memberships:
                 # update profile

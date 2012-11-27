@@ -25,7 +25,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.jobs.models import Job, JobPricing
-from tendenci.addons.jobs.forms import JobForm, JobPricingForm
+from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
 from tendenci.addons.jobs.utils import job_set_inv_payment, get_job_unique_slug
 
 try:
@@ -61,9 +61,18 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
+            
+    form = JobSearchForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        category = form.cleaned_data.get('categories')
+        subcategory = form.cleaned_data.get('subcategories')
 
-    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
-
+    if category:
+        jobs = jobs.filter(categories__category=category)
+    if subcategory:
+        jobs = jobs.filter(categories__parent=subcategory)
+    
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_pending_jobs.html"
@@ -72,9 +81,11 @@ def search(request, template_name="jobs/search.html"):
             status_detail__contains='pending'
             )
 
+    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'jobs': jobs},
+    return render_to_response(template_name, {'jobs': jobs, 'form': form},
         context_instance=RequestContext(request))
 
 
@@ -597,7 +608,6 @@ def export(request, template_name="jobs/export.html"):
             'level',
             'period',
             'is_agency',
-            'percent_travel',
             'contact_method',
             'position_reports_to',
             'salary_from',
