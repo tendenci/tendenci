@@ -34,7 +34,7 @@
 
 {% block extra_body %}
 {{ block.super }}
-{% if import_i.status != "completed" %}
+{% if import_i.status == "pending" %}
 <script language="javascript" type="text/javascript">
     $(document).ready(function(){
         setInterval("location.reload(true)", 15000);

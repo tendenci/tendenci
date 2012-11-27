@@ -23,10 +23,8 @@ from tendenci.addons.events.models import Event, Place, Payment, \
     CustomRegFieldEntry
 
 from form_utils.forms import BetterModelForm
-from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.core.base.fields import SplitDateTimeField
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.emails.models import Email
