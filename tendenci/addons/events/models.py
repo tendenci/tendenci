@@ -383,8 +383,8 @@ class Registration(models.Model):
                                           default=0)
     canceled = models.BooleanField(_('Canceled'), default=False)
 
-    creator = models.ForeignKey(User, related_name='created_registrations', null=True)
-    owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
+    creator = models.ForeignKey(User, related_name='created_registrations', null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, related_name='owned_registrations', null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
@@ -600,7 +600,7 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration')
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     # this is a field used for dynamic pricing registrations only
     pricing = models.ForeignKey('RegConfPricing', null=True)
@@ -1098,9 +1098,9 @@ class CustomRegForm(models.Model):
     
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True)
+    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True)    
+    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)    
     owner_username = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='active')
     

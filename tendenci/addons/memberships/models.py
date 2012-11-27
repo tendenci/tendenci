@@ -515,7 +515,7 @@ class MembershipImport(models.Model):
     # uniqueness key
     key = models.CharField(max_length=50, choices=KEY_CHOICES, default="email")
 
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
 
     def get_file(self):
@@ -564,9 +564,9 @@ class Notice(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="membership_notice_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True)
+    owner = models.ForeignKey(User, related_name="membership_notice_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(choices=(('active', 'Active'), ('admin_hold', 'Admin Hold')),
                                      default='active', max_length=50)
@@ -957,7 +957,7 @@ class AppEntry(TendenciBaseModel):
     is_renewal = models.BooleanField()
     is_approved = models.NullBooleanField(_('Approved'), null=True)
     decision_dt = models.DateTimeField(null=True)
-    judge = models.ForeignKey(User, null=True, related_name='entries')
+    judge = models.ForeignKey(User, null=True, related_name='entries', on_delete=models.SET_NULL)
     invoice = models.ForeignKey(Invoice, null=True)
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",

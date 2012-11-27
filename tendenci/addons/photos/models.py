@@ -556,7 +556,7 @@ class PhotoSet(TendenciBaseModel):
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -678,7 +678,7 @@ class Image(ImageModel, TendenciBaseModel):
     caption = models.TextField(_('caption'), blank=True)
     date_added = models.DateTimeField(_('date added'), auto_now_add=True, editable=False)
     is_public = models.BooleanField(_('public'), default=True, help_text=_('Public photographs will be displayed in the default views.'))
-    member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True)
+    member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True, on_delete=models.SET_NULL)
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
