@@ -1368,7 +1368,7 @@ msgstr ""
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:7
 #, fuzzy
 msgid "Delete Campaign"
-msgstr "
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:19
 #, fuzzy
@@ -7110,7 +7110,7 @@ msgstr ""
 #: addons/memberships/templates/notification/membership_disapproved_to_admin/full.html:31
 #, python-format
 msgid "Application Created %(objcreate)s (%(objtime)s)"
-msgstr "Application Created %(objcreate)s (%(objtime)s)"msgstr ""
+msgstr ""
 
 #: addons/memberships/templates/notification/membership_disapproved_to_member/short.txt:3
 #, fuzzy
@@ -12240,7 +12240,7 @@ msgstr ""
 
 #: core/emails/templates/emails/delete.html:15
 msgid "Delete an Email Record"
-msgstr ""d"
+msgstr ""
 
 #: core/emails/templates/emails/delete.html:16
 #, python-format
