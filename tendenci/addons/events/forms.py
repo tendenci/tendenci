@@ -434,6 +434,8 @@ class EventForm(TendenciBaseForm):
     repeat_type = forms.ChoiceField(label=_('Repeats'), choices=RecurringEvent.RECURRENCE_CHOICES, initial=RecurringEvent.RECUR_DAILY)
     frequency = forms.ChoiceField(label=_('Repeats Every'), choices=FREQUENCY_CHOICES, initial=1)
     end_recurring = SplitDateTimeField(label=_('Ends On'), initial=datetime.now()+timedelta(days=30,hours=6))
+    recurs_on = forms.ChoiceField(widget=forms.RadioSelect, initial='weekday',
+        choices=(('weekday', 'the same day of the week'),('date','the same date'),))
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -477,6 +479,7 @@ class EventForm(TendenciBaseForm):
                                   'repeat_type',
                                   'frequency',
                                   'end_recurring',
+                                  'recurs_on',
                                  ],
                       'classes': ['recurring'],
                       }),
@@ -537,6 +540,7 @@ class EventForm(TendenciBaseForm):
             self.fields.pop('repeat_type')
             self.fields.pop('frequency')
             self.fields.pop('end_recurring')
+            self.fields.pop('recurs_on')
 
         if edit_mode and recurring_mode:
             self.fields.pop('start_dt')

@@ -3,14 +3,16 @@
 
 import re
 import os.path
+from datetime import datetime, timedelta
+from datetime import date
+from dateutil.relativedelta import relativedelta
+from dateutil.rrule import *
+from decimal import Decimal
+
 from django.core.urlresolvers import reverse
 from django.utils.html import strip_tags
 from django.contrib.auth.models import User
 from django.db import connection
-from datetime import datetime, timedelta
-from datetime import date
-from dateutil.relativedelta import relativedelta
-from decimal import Decimal
 from django.utils import simplejson
 from django.template import Context, Template
 from django.template.loader import render_to_string
@@ -1285,13 +1287,22 @@ def get_custom_registrants_initials(entries, **kwargs):
         initials.append(fields_d)
     return initials
 
-
-def get_recurrence_date(repeat_type, start_dt, delta):
+def get_recurrence_dates(repeat_type, start_dt, end_dt, frequency, recur_every):
+    weeknum = (start_dt.day - 1)/7 + 1
+    if weeknum > 4:
+        weeknum = -1
+    weekday = datetime.weekday(start_dt)
     if repeat_type == RecurringEvent.RECUR_DAILY:
-        return start_dt + relativedelta(days=+delta)
+        return rrule(DAILY, dtstart=start_dt, until=end_dt, interval=frequency)
     elif repeat_type == RecurringEvent.RECUR_WEEKLY:
-        return start_dt + relativedelta(weeks=+delta)
+        return rrule(WEEKLY, dtstart=start_dt, until=end_dt, interval=frequency)
     elif repeat_type == RecurringEvent.RECUR_MONTHLY:
-        return start_dt + relativedelta(months=+delta)
+        if recur_every == 'date':
+            return rrule(MONTHLY, dtstart=start_dt, until=end_dt, interval=frequency)
+        else:
+            return rrule(MONTHLY, dtstart=start_dt, until=end_dt, interval=frequency, bysetpos=weeknum, byweekday=weekday)
     elif repeat_type == RecurringEvent.RECUR_YEARLY:
-        return start_dt + relativedelta(years=+delta)
+        if recur_every == 'date':
+            return rrule(YEARLY, dtstart=start_dt, until=end_dt, interval=frequency)
+        else:
+            return rrule(YEARLY, dtstart=start_dt, until=end_dt, interval=frequency, bymonth=start_dt.month, bysetpos=weeknum, byweekday=weekday)

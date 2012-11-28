@@ -131,4 +131,18 @@ $(document).ready(function() {
             $('fieldset.recurring .form-field:not(fieldset.recurring .form-field:first)').slideUp('fast');
         }
     });
+
+    // Hide Recurs On field when 'Daily' or 'Weekly' types are selected
+    if (($(this).val() == 3) || ($(this).val() == 4)) {
+        $('fieldset.recurring .form-field div.id_recurs_on').show();
+    }else {
+        $('fieldset.recurring .form-field div.id_recurs_on').hide();
+    }
+    $('#id_repeat_type').change(function(){
+        if (($(this).val() == 3) || ($(this).val() == 4)) {
+            $('fieldset.recurring .form-field div.id_recurs_on').slideDown('fast');
+        }else {
+            $('fieldset.recurring .form-field div.id_recurs_on').slideUp('fast');
+        }
+    });
 });

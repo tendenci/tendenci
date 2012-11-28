@@ -57,7 +57,7 @@ from tendenci.addons.events.utils import (email_registrants,
     registration_earliest_time, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
-    get_custom_registrants_initials, render_registrant_excel, get_recurrence_date)
+    get_custom_registrants_initials, render_registrant_excel, get_recurrence_dates)
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
@@ -739,17 +739,18 @@ def add(request, year=None, month=None, day=None, \
                 if form_event.cleaned_data['is_recurring_event']:
                     init_date = datetime.strptime(form_event.cleaned_data['start_dt'], '%Y-%m-%d %H:%M')
                     init_end = datetime.strptime(form_event.cleaned_data['end_dt'], '%Y-%m-%d %H:%M')
+                    event_length = init_end - init_date
                     freq = int(form_event.cleaned_data['frequency'])
                     r_type = int(form_event.cleaned_data['repeat_type'])
                     end_recurring = datetime.strptime(form_event.cleaned_data['end_recurring'], '%Y-%m-%d %H:%M')
+                    recur_every = form_event.cleaned_data['recurs_on']
                     recur_event = RecurringEvent(repeat_type=r_type,
                                                  frequency=freq,
                                                  starts_on=init_date,
                                                  ends_on=end_recurring)
                     recur_event.save()
-                    counter = 0
-                    event_list = []
-                    while get_recurrence_date(r_type, init_date, freq*counter) < end_recurring:
+                    event_list = get_recurrence_dates(r_type, init_date, end_recurring, freq, recur_every)
+                    for counter in range(0, event_list.count()):
                         event = Event(title=form_event.cleaned_data['title'],
                                       description=form_event.cleaned_data['description'],
                                       on_weekend=form_event.cleaned_data['on_weekend'],
@@ -759,8 +760,8 @@ def add(request, year=None, month=None, day=None, \
                                       external_url=form_event.cleaned_data['external_url'],
                                       tags=form_event.cleaned_data['tags'])
                         
-                        event.start_dt = get_recurrence_date(r_type, init_date, freq*counter)
-                        event.end_dt = get_recurrence_date(r_type, init_end, freq*counter)
+                        event.start_dt = event_list[counter]
+                        event.end_dt = event_list[counter] + event_length
                         event.is_recurring_event = True
                         event.recurring_event = recur_event
 
@@ -829,7 +830,6 @@ def add(request, year=None, month=None, day=None, \
                                 'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                                 'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                             })
-                        counter = counter + 1
                     messages.add_message(request, messages.SUCCESS, 'Successfully added the recurring event %s' % event)
                     return HttpResponseRedirect(reverse('event.search'))
 
