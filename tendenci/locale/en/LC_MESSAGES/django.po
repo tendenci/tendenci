@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-27 16:09-0600\n"
+"POT-Creation-Date: 2012-11-28 11:36-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,12 +16,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: addons/articles/forms.py:20 addons/articles/models.py:35
 #: addons/news/forms.py:28 addons/news/models.py:37
 msgid "Release Date/Time"
-msgstr "Publicación de Fecha/Hora"
+msgstr ""
 
 #: addons/articles/forms.py:25 addons/corporate_memberships/models.py:45
 #: addons/directories/forms.py:43 addons/directories/models.py:55
@@ -55,23 +54,23 @@ msgstr "Publicación de Fecha/Hora"
 #: templates/reports/user_activity_table.html:35
 #: templates/reports/user_activity_table.html:37
 msgid "Email"
-msgstr "Correo electronico"
+msgstr ""
 
 #: addons/articles/management.py:9
 msgid "Article Added"
-msgstr "Artículo Añadido"
+msgstr ""
 
 #: addons/articles/management.py:9
 msgid "An article has been added."
-msgstr "Un artículo ha sido añadido."
+msgstr ""
 
 #: addons/articles/management.py:11
 msgid "Article Deleted"
-msgstr "Artículo Eliminado"
+msgstr ""
 
 #: addons/articles/management.py:11
 msgid "An article has been deleted"
-msgstr "Un artículo ha sido eliminado."
+msgstr ""
 
 #: addons/articles/models.py:23 addons/corporate_memberships/models.py:912
 #: addons/directories/models.py:34 addons/help_files/models.py:33
@@ -79,7 +78,7 @@ msgstr "Un artículo ha sido eliminado."
 #: addons/resumes/models.py:24 apps/pages/models.py:26
 #: apps/user_groups/models.py:16
 msgid "URL Path"
-msgstr "Camino URL"
+msgstr ""
 
 #: addons/articles/models.py:24 addons/directories/models.py:35
 #: addons/events/models.py:872 addons/news/models.py:25
@@ -88,7 +87,7 @@ msgstr "Camino URL"
 #: apps/profiles/templates/profiles/edit.html:389
 #: apps/profiles/templates/profiles/edit_notice.txt:618
 msgid "Time Zone"
-msgstr "Zona horaria"
+msgstr ""
 
 #: addons/articles/models.py:29 addons/directories/models.py:44
 #: addons/events/models.py:1108 addons/events/settings.py:22
@@ -111,7 +110,7 @@ msgstr "Zona horaria"
 #: core/newsletters/templates/newsletters/add.html:45
 #: templates/reports/top_spenders.html:14
 msgid "First Name"
-msgstr "Primer Nombre"
+msgstr ""
 
 #: addons/articles/models.py:30 addons/directories/models.py:45
 #: addons/events/models.py:1109 addons/events/settings.py:23
@@ -134,19 +133,19 @@ msgstr "Primer Nombre"
 #: core/newsletters/templates/newsletters/add.html:46
 #: templates/reports/top_spenders.html:13
 msgid "Last Name"
-msgstr "Apellido"
+msgstr ""
 
 #: addons/articles/models.py:36 addons/directories/models.py:68
 #: addons/help_files/models.py:41 addons/jobs/models.py:54
 #: addons/news/models.py:38 addons/resumes/models.py:54
 #: apps/pages/models.py:31 apps/stories/models.py:39
 msgid "Include in RSS feed"
-msgstr "Incluir en RSS"
+msgstr ""
 
 #: addons/articles/models.py:38 addons/directories/models.py:69
 #: addons/news/models.py:39 apps/pages/models.py:30
 msgid "Design Notes"
-msgstr "Notas De Diseño"
+msgstr ""
 
 #: addons/articles/models.py:43 addons/directories/models.py:74
 #: addons/news/models.py:44
@@ -165,7 +164,7 @@ msgstr ""
 
 #: addons/articles/models.py:47
 msgid "Official Content"
-msgstr "Contenido Oficial"
+msgstr ""
 
 #: addons/articles/templates/articles/add.html:7
 #: addons/articles/templates/articles/add.html:22
@@ -205,7 +204,7 @@ msgstr "Contenido Oficial"
 #: core/emails/templates/emails/edit.html:17
 #: core/emails/templates/emails/nav.html:38 templates/admin/index.html:36
 msgid "Add"
-msgstr "Añadir"
+msgstr ""
 
 #: addons/articles/templates/articles/delete.html:5
 #: addons/articles/templates/articles/delete.html:16
@@ -297,7 +296,6 @@ msgstr ""
 #: addons/jobs/templates/jobs/delete.html:25
 #: addons/locations/templates/locations/delete.html:19
 #: addons/memberships/templates/memberships/delete.html:22
-#, fuzzy
 msgid "Are you sure you want to permanently delete this"
 msgstr ""
 
@@ -323,7 +321,6 @@ msgstr ""
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:41
 #: addons/locations/templates/locations/delete.html:27
 #: apps/user_groups/templates/user_groups/import_status.html:23
-#, fuzzy
 msgid "Back to"
 msgstr ""
 
@@ -452,7 +449,7 @@ msgstr ""
 #: core/files/templates/files/reports/most-viewed-result.html:8
 #: templates/theme_includes/setting_edit_form.html:10
 msgid "Edit"
-msgstr "Editar"
+msgstr ""
 
 #: addons/articles/templates/articles/edit.html:27
 msgid "Save Article Changes"
@@ -465,9 +462,8 @@ msgid "Link to delete confirmation page"
 msgstr ""
 
 #: addons/articles/templates/articles/export.html:20
-#, fuzzy
 msgid "Articles Export"
-msgstr "Artículos"
+msgstr ""
 
 #: addons/articles/templates/articles/export.html:24
 #: addons/campaign_monitor/templates/campaign_monitor/templates/view.html:37
@@ -553,7 +549,7 @@ msgstr ""
 #: templates/themes/bulletpoints/templates/footer.html:3
 #: templates/themes/thinksmart/templates/footer.html:5
 msgid "Search"
-msgstr "Buscar"
+msgstr ""
 
 #: addons/articles/templates/articles/index.html:7
 #: addons/articles/templates/articles/nav.html:56
@@ -730,7 +726,6 @@ msgstr ""
 
 #: addons/articles/templates/articles/meta.html:77
 #: apps/pages/templates/pages/meta.html:74
-#, fuzzy
 msgid "Versions"
 msgstr ""
 
@@ -833,7 +828,6 @@ msgstr ""
 #: core/files/templates/files/nav.html:11
 #: core/imports/templates/imports/nav.html:14
 #: core/site_settings/templates/site_settings/nav.html:8
-#, fuzzy
 msgid "Tendenci"
 msgstr ""
 
@@ -905,7 +899,7 @@ msgstr ""
 #: core/imports/templates/imports/nav.html:17
 #: core/site_settings/templates/site_settings/nav.html:11
 msgid "My Profile"
-msgstr "Mi Perfil"
+msgstr ""
 
 #: addons/articles/templates/articles/nav.html:24
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:15
@@ -945,7 +939,7 @@ msgstr "Mi Perfil"
 #: core/imports/templates/imports/nav.html:18
 #: core/site_settings/templates/site_settings/nav.html:12
 msgid "Log Off"
-msgstr "Cerrar Sesión"
+msgstr ""
 
 #: addons/articles/templates/articles/nav.html:33
 #: addons/directories/templates/directories/nav.html:34
@@ -990,7 +984,7 @@ msgstr ""
 #: core/site_settings/templates/site_settings/list.html:15
 #: core/site_settings/templates/site_settings/nav.html:17
 msgid "Settings"
-msgstr "Configuración"
+msgstr ""
 
 #: addons/articles/templates/articles/nav.html:42
 #: addons/articles/templates/articles/search.html:15
@@ -1059,14 +1053,13 @@ msgid "More options "
 msgstr ""
 
 #: addons/articles/templates/articles/print-view.html:23
-#, fuzzy
 msgid "Back to the"
 msgstr ""
 
 #: addons/articles/templates/articles/print-view.html:31
 #, python-format
 msgid "Submitted on %(date)s by %(creator)s"
-msgstr "Submitted on %(date)s by %(creator)s"
+msgstr ""
 
 #: addons/articles/templates/articles/search.html:8
 #: addons/directories/templates/directories/search.html:8
@@ -1108,7 +1101,6 @@ msgstr ""
 #: addons/jobs/templates/jobs/my_jobs.html:33
 #: addons/jobs/templates/jobs/my_pending_jobs.html:33
 #: addons/jobs/templates/jobs/search.html:34
-#, fuzzy
 msgid "Add a new"
 msgstr ""
 
@@ -1135,7 +1127,7 @@ msgid "It needs to be activated"
 msgstr ""
 
 #: addons/articles/templates/notification/article_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New article (%(article)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -1160,7 +1152,7 @@ msgstr ""
 #: apps/notifications/templates/notification/resume_deleted/full.html:12
 #: apps/pages/templates/notification/page_deleted/full.html:13
 msgid "The details are given below:"
-msgstr "The details are given below:"
+msgstr ""
 
 #: addons/articles/templates/notification/article_deleted/full.html:18
 #: addons/directories/templates/notification/directory_added/full.html:20
@@ -1226,7 +1218,7 @@ msgid "Time submitted:"
 msgstr ""
 
 #: addons/articles/templates/notification/article_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Article (%(article)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -1287,7 +1279,6 @@ msgid "Calendar Events"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:47
-#, fuzzy
 msgid "Event Type"
 msgstr ""
 
@@ -1328,7 +1319,7 @@ msgstr ""
 #: core/newsletters/templates/newsletters/jumplinks.txt:15
 #: templates/top_menu/user_top.html:22
 msgid "Articles"
-msgstr "Artículos"
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:82
 #: apps/dashboard/templates/dashboard/index.html:85
@@ -1337,7 +1328,7 @@ msgstr "Artículos"
 #: core/newsletters/templates/newsletters/jumplinks.txt:22
 #: templates/top_menu/user_top.html:40
 msgid "News"
-msgstr "Noticias"
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:91
 #: apps/wp_exporter/forms.py:30
@@ -1345,19 +1336,19 @@ msgstr "Noticias"
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:271 Right Sidebar.html:284 templates/top_menu/user_top.html:34
 msgid "Jobs"
-msgstr "Empleos"
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:98
 #: core/newsletters/templates/newsletters/add.html:113
 msgid "Include links to recently edited pages?"
-msgstr "Include links to recently edited pages?"
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:101
 #: apps/dashboard/templates/dashboard/index.html:118 apps/navs/forms.py:48
 #: apps/wp_exporter/forms.py:32
 #: core/newsletters/templates/newsletters/add.html:116
 msgid "Pages"
-msgstr "Páginas"
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/add.html:112
 #: core/newsletters/templates/newsletters/add.html:133
@@ -1366,12 +1357,10 @@ msgid "Templates for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:7
-#, fuzzy
 msgid "Delete Campaign"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:19
-#, fuzzy
 msgid "Delete a Campaign"
 msgstr ""
 
@@ -1397,12 +1386,10 @@ msgid ""
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:33
-#, fuzzy
 msgid "Are you sure you want to permanently delete this campaign?"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/delete.html:42
-#, fuzzy
 msgid "Back to all campaigns"
 msgstr ""
 
@@ -1442,13 +1429,11 @@ msgid "Campaigns"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:24
-#, fuzzy
 msgid "All Campaigns"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:30
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:61
-#, fuzzy
 msgid "Search Campaigns"
 msgstr ""
 
@@ -1464,7 +1449,6 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:36
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:67
-#, fuzzy
 msgid "Go to Campaign Monitor"
 msgstr ""
 
@@ -1475,7 +1459,6 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:60
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:33
-#, fuzzy
 msgid "Search Templates"
 msgstr ""
 
@@ -1486,7 +1469,6 @@ msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/nav.html:63
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:36
-#, fuzzy
 msgid "Sync Templates"
 msgstr ""
 
@@ -1507,9 +1489,8 @@ msgid "Date Scheduled"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:36
-#, fuzzy
 msgid "Scheduled Time Zone"
-msgstr "Zona horaria"
+msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:37
 #: addons/campaign_monitor/templates/campaign_monitor/campaigns/view.html:40
@@ -1553,7 +1534,6 @@ msgid "0 Templates Found"
 msgstr ""
 
 #: addons/campaign_monitor/templates/campaign_monitor/templates/nav.html:27
-#, fuzzy
 msgid "All Templates"
 msgstr ""
 
@@ -1582,7 +1562,7 @@ msgstr ""
 #: apps/forms_builder/forms/models.py:35
 #: apps/invoices/templates/invoices/detail.html:31
 msgid "Description"
-msgstr "Descripción"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:88
 #: addons/corporate_memberships/models.py:921 addons/events/models.py:1097
@@ -1592,25 +1572,25 @@ msgstr "Descripción"
 #: apps/profiles/templates/profiles/edit.html:372
 #: apps/profiles/templates/profiles/edit_notice.txt:598
 msgid "Notes"
-msgstr "Notas"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:134
 #: addons/corporate_memberships/models.py:975
 msgid "Instruction for User"
-msgstr "Instrucciones para el usuario"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:201
 msgid "Join Date/Time"
-msgstr "Fecha/Hora de Ingreso"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:204 addons/directories/models.py:64
 #: addons/jobs/forms.py:66
 msgid "Expiration Date/Time"
-msgstr "Fecha/Hora de vencimiento"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:273
 msgid "This secret code is already taken. Please use a different one."
-msgstr "Este código secreto ya está en uso. Por favor, use uno diferente."
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:363 addons/events/forms.py:934
 #: addons/events/forms.py:1017 addons/events/registration/forms.py:23
@@ -1620,20 +1600,20 @@ msgstr ""
 
 #: addons/corporate_memberships/forms.py:459
 msgid "This user is already a representative."
-msgstr "Este usuario es ya un representante."
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:536
 #: addons/corporate_memberships/forms.py:642
 msgid "Corp Application"
-msgstr "Aplicación Corp"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:544
 msgid "Select an Option for the Existing Records:"
-msgstr "Seleccione una opción para los registros existentes:"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:547
 msgid "CSV File"
-msgstr "Expediente CSV"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:615
 msgid "File type is not supported. Please upload a CSV File."
@@ -1642,48 +1622,48 @@ msgstr ""
 #: addons/corporate_memberships/forms.py:644 addons/memberships/forms.py:1218
 #: apps/profiles/forms.py:417
 msgid "Type Your Password"
-msgstr "Escriba su contraseña"
+msgstr ""
 
 #: addons/corporate_memberships/forms.py:655 addons/memberships/forms.py:1252
 #: apps/profiles/forms.py:427
 msgid "Invalid password."
-msgstr "Contraseña no es valida"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:38 addons/events/settings.py:8
 #: addons/memberships/models.py:41 apps/forms_builder/forms/models.py:24
 msgid "Text"
-msgstr "Texto"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:39 addons/events/settings.py:10
 #: addons/memberships/models.py:42 apps/forms_builder/forms/models.py:25
 msgid "Paragraph Text"
-msgstr "Texto de párrafo"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:40 addons/events/settings.py:11
 #: addons/memberships/models.py:43 apps/forms_builder/forms/models.py:26
 msgid "Checkbox"
-msgstr "Casilla de verificación"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:41
 msgid "Select One from a list (Drop Down)"
-msgstr "Seleccione uno de una lista (Opciones)"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:42
 msgid "Select One from a list (Radio Buttons)"
-msgstr "Seleccione uno de una lista ( )"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:43
 msgid "Multi select (Drop Down)"
-msgstr "Selccion multiple (Opconies)"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:44
 msgid "Multi select (Checkboxes)"
-msgstr "Selccion multiple (Casillas de verificación)"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:46 addons/memberships/models.py:46
 #: apps/forms_builder/forms/models.py:31
 msgid "File upload"
-msgstr "Carga de archivos"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:47
 #: addons/corporate_memberships/templates/corporate_memberships/invoice_search_result_line.html:13
@@ -1695,26 +1675,26 @@ msgstr "Carga de archivos"
 #: addons/memberships/models.py:47
 #: apps/invoices/templates/invoices/invoice_item.html:18
 msgid "Date"
-msgstr "Fecha"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:48 addons/events/models.py:1192
 #: addons/events/settings.py:16 addons/memberships/models.py:48
 #: apps/forms_builder/forms/models.py:34
 #: apps/forms_builder/forms/models.py:221
 msgid "Date/time"
-msgstr "Fecha/Hora"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:49
 msgid "Section Break"
-msgstr "Salto de Sección"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:50
 msgid "Page Break"
-msgstr "Salto de Página"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:54
 msgid "One Column"
-msgstr "Una Columna"
+msgstr ""
 
 #: addons/corporate_memberships/models.py:55
 msgid "Two Columns"
@@ -1910,27 +1890,22 @@ msgid "Payment Method"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:262
-#, fuzzy
 msgid "Corporate Member"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:263
-#, fuzzy
 msgid "Corporate Members"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:774
-#, fuzzy
 msgid "Contact first name"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:775
-#, fuzzy
 msgid "Contact last name"
 msgstr ""
 
 #: addons/corporate_memberships/models.py:776
-#, fuzzy
 msgid "Contact e-mail address"
 msgstr ""
 
@@ -2052,72 +2027,68 @@ msgstr ""
 #: addons/corporate_memberships/management/__init__.py:11
 #: addons/corporate_memberships/templates/notification/corp_memb_added/full.html:8
 msgid "Corporate Membership Added"
-msgstr "Membresía Corporativa Añadida"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:12
 msgid "A corporate membership has been added."
-msgstr "Una membresía corporativa se ha añadido"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:15
 msgid "Corporate Membership Added User Notice"
-msgstr "Membresía Corporativa aviso de usuario agregado"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:16
-#, fuzzy
 msgid "A corporate membership has been added "
-msgstr "Una membresía corporativa se ha añadido"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:20
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/full.html:8
 msgid "Corporate Membership Edited"
-msgstr "Membresía Corporativa Editada"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:21
 msgid "A corporate membership  has been edited."
-msgstr "Una membresía corporativa ha sido editada."
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:24
 msgid "Corporate Membership Renewed"
-msgstr "Membresía Corporativa renovada"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:25
 msgid "A corporate membership has been renewed."
-msgstr "Membresía Corporativa renovada"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:28
 msgid "Corporate Membership Renewal User Notice"
-msgstr "Renovación de membresía corporativa aviso a usuario"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:29
-#, fuzzy
 msgid "A corporate membership has been renewed "
-msgstr "Membresía Corporativa renovada"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:33
-#, fuzzy
 msgid "Corporate Membership Approved"
-msgstr "Renovación de Membresía Corporativa aprobada"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:34
-#, fuzzy
 msgid "A new corporate membership has been approved."
-msgstr "Una membresía corporativa se ha añadido"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:37
 msgid "Corporate Membership Renewal Approved"
-msgstr "Renovación de Membresía Corporativa aprobada"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:38
 msgid "The corporate membership renewal has been approved."
-msgstr "La renovación de la membresía corporativa ha sido aprobada."
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:41
 msgid "Payment Received for Corporate Membership"
-msgstr "Pago recibido por la Membresía Corporativa"
+msgstr ""
 
 #: addons/corporate_memberships/management/__init__.py:42
 msgid "Payment for a corporate membership has been received."
-msgstr "Pago de membresía corporativa se ha recibido."
+msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/add.html:5
 msgid "Corporate Membership Add"
@@ -2160,7 +2131,6 @@ msgid "Add/Edit Representatives"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/add_pre.html:6
-#, fuzzy
 msgid "Corporate Membership Add - Starting"
 msgstr ""
 
@@ -2169,7 +2139,6 @@ msgid "Corporate Membership Approve / Disapprove"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/approve.html:17
-#, fuzzy
 msgid "Corporate Membership Submission"
 msgstr ""
 
@@ -2294,9 +2263,8 @@ msgid "No representative designated yet."
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/edit_reps.html:92
-#, fuzzy
 msgid "0 Members"
-msgstr "Miembros"
+msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/export.html:7
 msgid "Export Corporate Memberships"
@@ -2389,27 +2357,22 @@ msgid "Roster"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:40
-#, fuzzy
 msgid "All Corp. Members"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:54
-#, fuzzy
 msgid "Search All"
-msgstr "Buscar"
+msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:56
-#, fuzzy
 msgid "Pending Corp. Members"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:58
-#, fuzzy
 msgid "Corp. Membership Applications"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:59
-#, fuzzy
 msgid "Corp. Membership Types"
 msgstr ""
 
@@ -2423,22 +2386,18 @@ msgid "Import"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:68
-#, fuzzy
 msgid "This Corp. Member"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:71
-#, fuzzy
 msgid "View Corp. Member"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:74
-#, fuzzy
 msgid "Edit Corp. Member"
 msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:75
-#, fuzzy
 msgid "View Roster"
 msgstr ""
 
@@ -2452,7 +2411,6 @@ msgstr ""
 
 #: addons/corporate_memberships/templates/corporate_memberships/nav.html:81
 #: addons/corporate_memberships/templates/corporate_memberships/options.html:61
-#, fuzzy
 msgid "Admin: Renew"
 msgstr ""
 
@@ -3044,12 +3002,12 @@ msgid "If you have received this in error, please contact the webmaster below."
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/short.txt:2
-#, fuzzy, python-format
+#, python-format
 msgid "New Corporate Membership (%(objname)s)"
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added/short.txt:2
-#, fuzzy, python-format
+#, python-format
 msgid "Signed Up on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -3101,7 +3059,7 @@ msgid "To view this corporate membership, go to:"
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_added_user/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Corporate Membership - %(bname)s - on  %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -3113,28 +3071,26 @@ msgid ""
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_edited/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Corporate Membership (%(objname)s) Edited on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/full.html:3
-#, fuzzy, python-format
+#, python-format
 msgid "Your corporate membership \"%(objname)s\" has been approved."
-msgstr "La renovación de la membresía corporativa ha sido aprobada."
+msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/full.html:15
-#, fuzzy
 msgid "To add individual memberships under your corporate, go to:"
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/full.html:20
-#, fuzzy
 msgid "<b>secret code</b>:"
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_join_approved/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Corporate Membership Approved on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -3150,9 +3106,9 @@ msgid ""
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_paid/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Payment Received for Corporate Membership Application - (%(objname)s)"
-msgstr "Pago recibido por la Membresía Corporativa"
+msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_renewal_approved/full.html:3
 #, python-format
@@ -3166,10 +3122,10 @@ msgid "Total individual memberships renewed: %(totind)s"
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_renewal_approved/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Corporate Membership Renewal Approved on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
-msgstr "Renovación de Membresía Corporativa aprobada"
+msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/full.html:20
 #, python-format
@@ -3179,7 +3135,7 @@ msgid ""
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Corporate Membership Renewal - %(objname)s"
 msgstr ""
 
@@ -3208,7 +3164,7 @@ msgid ""
 msgstr ""
 
 #: addons/corporate_memberships/templates/notification/corp_memb_renewed_user/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Corporate Membership Renewal Notice on  %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -3235,12 +3191,10 @@ msgid "A directory has been added."
 msgstr ""
 
 #: addons/directories/management.py:10
-#, fuzzy
 msgid "Directory Approved User Notice"
 msgstr ""
 
 #: addons/directories/management.py:10
-#, fuzzy
 msgid "A directory has been approved - user notice."
 msgstr ""
 
@@ -3253,12 +3207,10 @@ msgid "A directory has been deleted"
 msgstr ""
 
 #: addons/directories/management.py:13
-#, fuzzy
 msgid "Directory Renewed"
 msgstr ""
 
 #: addons/directories/management.py:13
-#, fuzzy
 msgid "A directory has been renewed"
 msgstr ""
 
@@ -3268,7 +3220,6 @@ msgid "Directory Eligible for Renewal"
 msgstr ""
 
 #: addons/directories/management.py:14
-#, fuzzy
 msgid "A directory is eligible for renewal"
 msgstr ""
 
@@ -3373,7 +3324,6 @@ msgstr ""
 
 #: addons/directories/templates/directories/approve.html:17
 #: addons/jobs/templates/jobs/approve.html:17
-#, fuzzy
 msgid "Are you sure you want to approve this"
 msgstr ""
 
@@ -3396,9 +3346,8 @@ msgid "Meta Information for"
 msgstr ""
 
 #: addons/directories/templates/directories/export.html:15
-#, fuzzy
 msgid "Directories Export"
-msgstr "Directorios"
+msgstr ""
 
 #: addons/directories/templates/directories/invoice_search_result_line.html:10
 #: apps/invoices/templates/invoices/invoice_item.html:15
@@ -3411,7 +3360,6 @@ msgid "Headline"
 msgstr ""
 
 #: addons/directories/templates/directories/invoice_view_display.html:9
-#, fuzzy
 msgid "information not available"
 msgstr ""
 
@@ -3428,7 +3376,6 @@ msgid "Pending"
 msgstr ""
 
 #: addons/directories/templates/directories/nav.html:65
-#, fuzzy
 msgid "Renew Directory"
 msgstr ""
 
@@ -3444,22 +3391,18 @@ msgid "Pricing"
 msgstr ""
 
 #: addons/directories/templates/directories/payment_thankyou_display.html:9
-#, fuzzy
 msgid "Add "
 msgstr ""
 
 #: addons/directories/templates/directories/payment_thankyou_header.html:3
-#, fuzzy
 msgid "Posting Payment Status"
 msgstr ""
 
 #: addons/directories/templates/directories/pending.html:13
-#, fuzzy
 msgid "Pending Directories"
 msgstr ""
 
 #: addons/directories/templates/directories/pending.html:32
-#, fuzzy
 msgid "There are no pending directories."
 msgstr ""
 
@@ -3488,24 +3431,20 @@ msgid "Edit Price:"
 msgstr ""
 
 #: addons/directories/templates/directories/pricing-edit.html:20
-#, fuzzy
 msgid ""
 "To edit the directory price, complete the fields below and press Submit."
 msgstr ""
 
 #: addons/directories/templates/directories/pricing-nav.html:35
-#, fuzzy
 msgid "All Pricings"
 msgstr ""
 
 #: addons/directories/templates/directories/pricing-nav.html:41
 #: addons/directories/templates/directories/pricing-nav.html:43
-#, fuzzy
 msgid "Pricings"
 msgstr ""
 
 #: addons/directories/templates/directories/pricing-nav.html:49
-#, fuzzy
 msgid "This Price"
 msgstr ""
 
@@ -3557,7 +3496,7 @@ msgid "%(dp_duration)s days"
 msgstr ""
 
 #: addons/directories/templates/directories/pricing-table.html:36
-#, fuzzy, python-format
+#, python-format
 msgid "%(dp_duration)s days Member"
 msgstr ""
 
@@ -3639,7 +3578,6 @@ msgid "Thank you"
 msgstr ""
 
 #: addons/directories/templates/directories/thank-you.html:8
-#, fuzzy
 msgid ""
 "Your directory is is under review and will be approved by an administrator"
 msgstr ""
@@ -3649,7 +3587,6 @@ msgid "Source: "
 msgstr ""
 
 #: addons/directories/templates/notification/directory_added/full.html:8
-#, fuzzy
 msgid "Directory Add Notice"
 msgstr ""
 
@@ -3678,7 +3615,6 @@ msgstr ""
 #: addons/directories/templates/notification/directory_added/full.html:30
 #: addons/directories/templates/notification/directory_renewal_eligible/full.html:28
 #: addons/directories/templates/notification/directory_renewed/full.html:30
-#, fuzzy
 msgid ""
 "\n"
 "    To view the details of this directory, go to:"
@@ -3686,12 +3622,11 @@ msgstr ""
 
 #: addons/directories/templates/notification/directory_added/full.html:36
 #: addons/directories/templates/notification/directory_renewed/full.html:36
-#, fuzzy
 msgid "To activate this directory, go to:"
 msgstr ""
 
 #: addons/directories/templates/notification/directory_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New directory (%(objname)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -3701,7 +3636,6 @@ msgid "Your directory posting \"%(obj_headline)s\" has been approved."
 msgstr ""
 
 #: addons/directories/templates/notification/directory_approved_user_notice/full.html:7
-#, fuzzy
 msgid "To view this directory, go to:"
 msgstr ""
 
@@ -3731,7 +3665,7 @@ msgid ""
 msgstr ""
 
 #: addons/directories/templates/notification/directory_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Directory %(objhead)s deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -3752,21 +3686,19 @@ msgid ""
 msgstr ""
 
 #: addons/directories/templates/notification/directory_renewal_eligible/full.html:32
-#, fuzzy
 msgid ""
 "\n"
 "    To renew this directory, go to:"
 msgstr ""
 
 #: addons/directories/templates/notification/directory_renewal_eligible/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Directory (%(objname)s) available for renewal on "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
 #: addons/directories/templates/notification/directory_renewed/full.html:8
-#, fuzzy
 msgid "Directory Renewed Notice"
 msgstr ""
 
@@ -3787,7 +3719,7 @@ msgid ""
 msgstr ""
 
 #: addons/directories/templates/notification/directory_renewed/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Renewed directory (%(objname)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
@@ -3837,7 +3769,6 @@ msgid ""
 msgstr ""
 
 #: addons/events/forms.py:855
-#, fuzzy
 msgid "Please choose a custom registration form"
 msgstr ""
 
@@ -3884,19 +3815,17 @@ msgid "Guests Pay Registrant Price"
 msgstr ""
 
 #: addons/events/models.py:137
-#, fuzzy
 msgid "Use Custom Registration Form"
 msgstr ""
 
 #: addons/events/models.py:139 addons/events/models.py:213
 #: addons/events/models.py:1124
-#, fuzzy
 msgid "Custom Registration Form"
 msgstr ""
 
 #: addons/events/models.py:143 core/base/utils.py:191 core/meta/utils.py:33
 msgid " "
-msgstr " "
+msgstr ""
 
 #: addons/events/models.py:150
 msgid "Send Email Reminder to attendees"
@@ -3907,12 +3836,10 @@ msgid "Specify when (? days before the event "
 msgstr ""
 
 #: addons/events/models.py:156
-#, fuzzy
 msgid "Registration Email Text"
 msgstr ""
 
 #: addons/events/models.py:205
-#, fuzzy
 msgid "Pricing display name"
 msgstr ""
 
@@ -3929,17 +3856,14 @@ msgid "End Date"
 msgstr ""
 
 #: addons/events/models.py:220
-#, fuzzy
 msgid "Public can use this pricing"
 msgstr ""
 
 #: addons/events/models.py:221
-#, fuzzy
 msgid "Signed in user can use this pricing"
 msgstr ""
 
 #: addons/events/models.py:222
-#, fuzzy
 msgid "All members can use this pricing"
 msgstr ""
 
@@ -3948,7 +3872,6 @@ msgid "Amount Paid"
 msgstr ""
 
 #: addons/events/models.py:369
-#, fuzzy
 msgid "Is table registration"
 msgstr ""
 
@@ -3957,7 +3880,6 @@ msgid "Number of registrants for a table"
 msgstr ""
 
 #: addons/events/models.py:373 addons/events/models.py:633
-#, fuzzy
 msgid "Admin Price Override?"
 msgstr ""
 
@@ -3966,17 +3888,14 @@ msgid "Override Price"
 msgstr ""
 
 #: addons/events/models.py:380 addons/events/models.py:638
-#, fuzzy
 msgid "Discount Amount"
 msgstr ""
 
 #: addons/events/models.py:384
-#, fuzzy
 msgid "Canceled"
 msgstr ""
 
 #: addons/events/models.py:632
-#, fuzzy
 msgid "Is primary registrant"
 msgstr ""
 
@@ -3984,7 +3903,6 @@ msgstr ""
 #: addons/events/templates/events/registration/base_forms.html:79
 #: addons/events/templates/events/registration/multi_register.html:223
 #: addons/events/templates/events/registration/multi_register.html:281
-#, fuzzy
 msgid "Member ID"
 msgstr ""
 
@@ -4001,7 +3919,6 @@ msgid "External URL"
 msgstr ""
 
 #: addons/events/models.py:880
-#, fuzzy
 msgid "Photo that represents this event."
 msgstr ""
 
@@ -4012,17 +3929,14 @@ msgid ""
 msgstr ""
 
 #: addons/events/models.py:886
-#, fuzzy
 msgid "Display Attendees"
 msgstr ""
 
 #: addons/events/models.py:1110
-#, fuzzy
 msgid "Mail Name"
 msgstr ""
 
 #: addons/events/models.py:1114
-#, fuzzy
 msgid "Zip"
 msgstr ""
 
@@ -4066,7 +3980,6 @@ msgid "Company"
 msgstr ""
 
 #: addons/events/models.py:1120 addons/events/settings.py:34
-#, fuzzy
 msgid "Meal Option"
 msgstr ""
 
@@ -4076,7 +3989,6 @@ msgid "Comments"
 msgstr ""
 
 #: addons/events/models.py:1125
-#, fuzzy
 msgid "Custom Registration Forms"
 msgstr ""
 
@@ -4093,7 +4005,6 @@ msgid "Default"
 msgstr ""
 
 #: addons/events/models.py:1170
-#, fuzzy
 msgid "Show on Roster"
 msgstr ""
 
@@ -4124,7 +4035,6 @@ msgid "Multi select"
 msgstr ""
 
 #: addons/events/settings.py:18 apps/forms_builder/forms/models.py:36
-#, fuzzy
 msgid "Section Heading"
 msgstr ""
 
@@ -4154,12 +4064,11 @@ msgid "Addon is invalid for current set of registrants"
 msgstr ""
 
 #: addons/events/addons/forms.py:62
-#, fuzzy, python-format
+#, python-format
 msgid "Option required for %s"
 msgstr ""
 
 #: addons/events/ics/models.py:11 core/exports/models.py:10
-#, fuzzy
 msgid "Completed"
 msgstr ""
 
@@ -4169,7 +4078,6 @@ msgstr ""
 
 #: addons/events/ics/models.py:18 apps/stories/templates/stories/meta.html:32
 #: core/exports/models.py:16
-#, fuzzy
 msgid "status"
 msgstr ""
 
@@ -4229,7 +4137,6 @@ msgid "You must register at least 1 registrant per registration"
 msgstr ""
 
 #: addons/events/registration/formsets.py:123
-#, fuzzy
 msgid "Please enter a valid number of registrants."
 msgstr ""
 
@@ -4245,22 +4152,18 @@ msgid "%s can only be registered once per registration"
 msgstr ""
 
 #: addons/events/registration/views.py:210
-#, fuzzy
 msgid "Registration is closed."
 msgstr ""
 
 #: addons/events/templates/events/approve.html:11
-#, fuzzy
 msgid "Are you sure you want to approve this event?"
 msgstr ""
 
 #: addons/events/templates/events/approve.html:36
-#, fuzzy
 msgid "Confirm Approve"
 msgstr ""
 
 #: addons/events/templates/events/attendees.html:44
-#, fuzzy
 msgid "You are already registered for this event"
 msgstr ""
 
@@ -4276,7 +4179,6 @@ msgid "Registration starts on "
 msgstr ""
 
 #: addons/events/templates/events/attendees.html:55
-#, fuzzy
 msgid "Event registration is currently ongoing"
 msgstr ""
 
@@ -4287,7 +4189,6 @@ msgid "Register"
 msgstr ""
 
 #: addons/events/templates/events/attendees.html:62
-#, fuzzy
 msgid "Total Seats"
 msgstr ""
 
@@ -4296,7 +4197,6 @@ msgid "Reserved"
 msgstr ""
 
 #: addons/events/templates/events/attendees.html:71
-#, fuzzy
 msgid "Attendee"
 msgstr ""
 
@@ -4328,7 +4228,6 @@ msgid "I would like to add one."
 msgstr ""
 
 #: addons/events/templates/events/delete.html:11
-#, fuzzy
 msgid "Are you sure you want to permanently delete this event?"
 msgstr ""
 
@@ -4348,19 +4247,16 @@ msgid " Edit"
 msgstr ""
 
 #: addons/events/templates/events/edit_email.html:7
-#, fuzzy
 msgid "Edit Email for Registration Confirmation and Reminders"
 msgstr ""
 
 #: addons/events/templates/events/edit_email.html:37
-#, fuzzy
 msgid "Edit Email to Event Registrants"
 msgstr ""
 
 #: addons/events/templates/events/edit_email.html:46
-#, fuzzy
 msgid "Event: "
-msgstr "Eventos: "
+msgstr ""
 
 #: addons/events/templates/events/edit_email.html:69
 #: addons/events/templates/events/message/add.html:30
@@ -4368,18 +4264,15 @@ msgid "View all registrant(s)"
 msgstr ""
 
 #: addons/events/templates/events/export.html:19
-#, fuzzy
 msgid "Events Export"
 msgstr ""
 
 #: addons/events/templates/events/ics.html:19
 #: addons/events/templates/events/nav.html:68
-#, fuzzy
 msgid "Events ICS"
-msgstr "Eventos ICS"
+msgstr ""
 
 #: addons/events/templates/events/ics.html:24
-#, fuzzy
 msgid "Create ICS"
 msgstr ""
 
@@ -4416,7 +4309,7 @@ msgstr ""
 #: addons/resumes/templates/resumes/meta.html:32
 #: apps/discounts/templates/discounts/meta.html:15
 #: apps/user_groups/templates/user_groups/meta.html:13
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Created on %(create_date)s\n"
 "            by:"
@@ -4453,7 +4346,6 @@ msgstr ""
 
 #: addons/events/templates/events/minimal_add.html:7
 #: addons/events/templates/events/minimal_add.html:21
-#, fuzzy
 msgid "Minimal Add"
 msgstr ""
 
@@ -4463,33 +4355,27 @@ msgid "+%(events_more)s more"
 msgstr ""
 
 #: addons/events/templates/events/month-view.html:89
-#, fuzzy
 msgid "Filter by Type"
 msgstr ""
 
 #: addons/events/templates/events/month-view.html:91
 #: addons/events/templates/events/nav.html:36
-#, fuzzy
 msgid "All Events"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:45
-#, fuzzy
 msgid "Event List"
-msgstr "Registros De Eventos"
+msgstr ""
 
 #: addons/events/templates/events/nav.html:46
-#, fuzzy
 msgid "Monthly Calendar"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:49
-#, fuzzy
 msgid "My Events"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:52
-#, fuzzy
 msgid "Add an Event"
 msgstr ""
 
@@ -4500,17 +4386,14 @@ msgstr ""
 #: addons/events/templates/events/nav.html:59
 #: addons/events/templates/events/pending.html:9
 #: addons/events/templates/events/pending.html:23
-#, fuzzy
 msgid "Pending Events"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:60
-#, fuzzy
 msgid "Export Events"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:63
-#, fuzzy
 msgid "Event Types"
 msgstr ""
 
@@ -4519,17 +4402,14 @@ msgid "Precreate Event ICS"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:72
-#, fuzzy
 msgid "This Event"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:74
-#, fuzzy
 msgid "View Event"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:76
-#, fuzzy
 msgid "View Attendees"
 msgstr ""
 
@@ -4538,52 +4418,42 @@ msgid "Add Event to my Calendar"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:81
-#, fuzzy
 msgid "Edit Event"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:83
-#, fuzzy
 msgid "Edit Addons"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:84
-#, fuzzy
 msgid "Add Addon"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:86
-#, fuzzy
 msgid "Manage Custom Registration Form"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:89
-#, fuzzy
 msgid "Edit Reminder Email"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:93
-#, fuzzy
 msgid "Clone Event"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:100
-#, fuzzy
 msgid "Search Registrants"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:101
-#, fuzzy
 msgid "E-mail Registrants"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:102
-#, fuzzy
 msgid "Roster Report"
 msgstr ""
 
 #: addons/events/templates/events/nav.html:106
-#, fuzzy
 msgid "Delete Event"
 msgstr ""
 
@@ -4615,7 +4485,6 @@ msgid "Event Registration Payment Status"
 msgstr ""
 
 #: addons/events/templates/events/pending.html:31
-#, fuzzy
 msgid "0 Pending Events"
 msgstr ""
 
@@ -4670,7 +4539,6 @@ msgid "Step %(step)s of %(step_count)s"
 msgstr ""
 
 #: addons/events/templates/events/addons/add.html:21
-#, fuzzy
 msgid "Add Addon for"
 msgstr ""
 
@@ -4679,17 +4547,15 @@ msgid "Choose an addon for your registrants"
 msgstr ""
 
 #: addons/events/templates/events/addons/edit.html:21
-#, fuzzy
 msgid "Addon Edit"
 msgstr ""
 
 #: addons/events/templates/events/admin/tabular.html:16
-#, fuzzy
 msgid "Delete?"
 msgstr ""
 
 #: addons/events/templates/events/admin/tabular.html:116
-#, fuzzy, python-format
+#, python-format
 msgid "Add a %(verbose_name)s"
 msgstr ""
 
@@ -4728,12 +4594,10 @@ msgid ""
 msgstr ""
 
 #: addons/events/templates/events/message/opening-text.txt:29
-#, fuzzy
 msgid "Location: "
 msgstr ""
 
 #: addons/events/templates/events/message/opening-text.txt:37
-#, fuzzy
 msgid "Details: "
 msgstr ""
 
@@ -4742,7 +4606,6 @@ msgid "You are receiving this email from:"
 msgstr ""
 
 #: addons/events/templates/events/message/opening-text.txt:46
-#, fuzzy
 msgid "because you are a registered attendee of the event above."
 msgstr ""
 
@@ -4752,7 +4615,6 @@ msgid "Cancel Event Registration"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/cancel_registrant.html:24
-#, fuzzy
 msgid " Cancelling registration for"
 msgstr ""
 
@@ -4823,14 +4685,12 @@ msgstr ""
 
 #: addons/events/templates/events/reg8n/multi_register.html:90
 #: addons/events/templates/events/registration/multi_register.html:92
-#, fuzzy
 msgid "Admin Override"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/multi_register.html:112
 #: addons/events/templates/events/reg8n/register.html:134
 #: addons/events/templates/events/registration/multi_register.html:113
-#, fuzzy
 msgid "registrant"
 msgstr ""
 
@@ -4843,7 +4703,6 @@ msgstr ""
 #: addons/events/templates/events/reg8n/multi_register.html:138
 #: addons/events/templates/events/reg8n/register.html:161
 #: addons/events/templates/events/registration/multi_register.html:139
-#, fuzzy
 msgid "Discount"
 msgstr ""
 
@@ -4955,7 +4814,6 @@ msgid "Payment Details"
 msgstr ""
 
 #: addons/events/templates/events/reg8n/register-confirm.html:227
-#, fuzzy
 msgid "Payment Method: "
 msgstr ""
 
@@ -5009,7 +4867,6 @@ msgid "Table of "
 msgstr ""
 
 #: addons/events/templates/events/reg8n/register_pre.html:68
-#, fuzzy
 msgid "Please select a price:"
 msgstr ""
 
@@ -5060,12 +4917,10 @@ msgid "Export Non-Paid and Paid Registrants (one file)"
 msgstr ""
 
 #: addons/events/templates/events/registrants/roster.html:56
-#, fuzzy
 msgid "Ascending"
 msgstr ""
 
 #: addons/events/templates/events/registrants/roster.html:58
-#, fuzzy
 msgid "Descending"
 msgstr ""
 
@@ -5115,12 +4970,10 @@ msgid "Not Tendered"
 msgstr ""
 
 #: addons/events/templates/events/registrants/roster.html:197
-#, fuzzy
 msgid "Additional registrants on this invoice:"
 msgstr ""
 
 #: addons/events/templates/events/registrants/roster.html:199
-#, fuzzy
 msgid "Additional registrants:"
 msgstr ""
 
@@ -5166,17 +5019,17 @@ msgstr ""
 
 #: addons/events/templates/events/registrants/search.html:112
 #: addons/events/templates/events/registrants/search.html:116
-#, fuzzy, python-format
+#, python-format
 msgid "%(postitle)s"
 msgstr ""
 
 #: addons/events/templates/events/registrants/search.html:113
-#, fuzzy, python-format
+#, python-format
 msgid " at %(regcomp)s"
 msgstr ""
 
 #: addons/events/templates/events/registrants/search.html:119
-#, fuzzy, python-format
+#, python-format
 msgid "Works at %(regcomp)s"
 msgstr ""
 
@@ -5201,7 +5054,6 @@ msgid ""
 msgstr ""
 
 #: addons/events/templates/events/registration/multi_register.html:39
-#, fuzzy
 msgid "There were some problems in the forms. Please review. Thanks!"
 msgstr ""
 
@@ -5222,7 +5074,6 @@ msgid "and addons"
 msgstr ""
 
 #: addons/events/templates/events/registration/multi_register.html:304
-#, fuzzy
 msgid "Register &amp; Pay"
 msgstr ""
 
@@ -5237,19 +5088,16 @@ msgstr ""
 
 #: addons/events/templates/ics/ics_status.html:17
 #: core/exports/templates/exports/export_status.html:17
-#, fuzzy
 msgid "Please try again."
 msgstr ""
 
 #: addons/events/templates/ics/ics_status.html:20
-#, fuzzy
 msgid "ICS Creation Completed!"
 msgstr ""
 
 #: addons/events/templates/ics/ics_status.html:22
 #: addons/photos/templates/photos/photo-set/zip.html:34
 #: core/exports/templates/exports/export_status.html:22
-#, fuzzy
 msgid "here"
 msgstr ""
 
@@ -5382,13 +5230,12 @@ msgid "Price: Free!"
 msgstr ""
 
 #: addons/events/templates/notification/event_registration_confirmation/full.html:12
-#, fuzzy, python-format
+#, python-format
 msgid "Total Amount: $%(priceflo)s"
 msgstr ""
 
 #: addons/events/templates/notification/event_registration_confirmation/full.html:18
 #: addons/events/templates/notification/event_registration_confirmation/full.html:79
-#, fuzzy
 msgid "Registration Complete."
 msgstr ""
 
@@ -5419,16 +5266,14 @@ msgid "Registration Details"
 msgstr ""
 
 #: addons/events/templates/notification/event_registration_confirmation/full.html:149
-#, fuzzy
 msgid "Event Roster"
-msgstr "Registros De Eventos"
+msgstr ""
 
 #: addons/events/templates/notification/event_registration_confirmation/full.html:151
 msgid "Add this event to your calendar."
 msgstr ""
 
 #: addons/events/templates/notification/event_registration_confirmation/full.html:156
-#, fuzzy
 msgid "Total registrants for this event: "
 msgstr ""
 
@@ -5465,37 +5310,33 @@ msgstr ""
 #: addons/events/templatetags/event_tags.py:245
 #: apps/stories/templatetags/story_tags.py:67 core/base/template_tags.py:51
 msgid "Model attribute must be set"
-msgstr "Atributo de modelo se debe establecer"
+msgstr ""
 
 #: addons/events/templatetags/event_tags.py:247
 #: apps/stories/templatetags/story_tags.py:69 core/base/template_tags.py:53
 msgid "Model attribute must derive from Model"
-msgstr "Atributo de modelo debe proceder del modelo"
+msgstr ""
 
 #: addons/events/templatetags/event_tags.py:249
 #: apps/stories/templatetags/story_tags.py:71 core/base/template_tags.py:55
 msgid "Model.objects does not have a search method"
-msgstr "Model.objects no tiene un método de búsqueda"
+msgstr ""
 
 #: addons/help_files/management/__init__.py:9
-#, fuzzy
 msgid "Help File Requested"
 msgstr ""
 
 #: addons/help_files/management/__init__.py:9
-#, fuzzy
 msgid "A help file has been requested."
 msgstr ""
 
 #: addons/help_files/templates/help_files/index.html:22
 #: addons/help_files/templates/help_files/nav.html:44
-#, fuzzy
 msgid "Topics"
 msgstr ""
 
 #: addons/help_files/templates/help_files/index.html:40
 #: addons/help_files/templates/help_files/request_new.html:16
-#, fuzzy
 msgid "Request"
 msgstr ""
 
@@ -5512,17 +5353,14 @@ msgid "Most viewed"
 msgstr ""
 
 #: addons/help_files/templates/help_files/nav.html:49
-#, fuzzy
 msgid "Admin Add"
 msgstr ""
 
 #: addons/help_files/templates/help_files/nav.html:50
-#, fuzzy
 msgid "Requests List"
 msgstr ""
 
 #: addons/help_files/templates/help_files/nav.html:66
-#, fuzzy
 msgid "Admin Edit"
 msgstr ""
 
@@ -5531,7 +5369,6 @@ msgid "DRAFT"
 msgstr ""
 
 #: addons/help_files/templates/help_files/request_list.html:18
-#, fuzzy
 msgid "Requests"
 msgstr ""
 
@@ -5544,7 +5381,6 @@ msgid "If you would like to, also include your name and email: "
 msgstr ""
 
 #: addons/help_files/templates/notification/help_file_requested/full.html:7
-#, fuzzy
 msgid "New Help File Requested"
 msgstr ""
 
@@ -5556,12 +5392,11 @@ msgid ""
 msgstr ""
 
 #: addons/help_files/templates/notification/help_file_requested/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "A new help file has been requested on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
 #: addons/jobs/forms.py:57
-#, fuzzy
 msgid "Position starts on:"
 msgstr ""
 
@@ -5570,7 +5405,6 @@ msgid "Post Date/Time"
 msgstr ""
 
 #: addons/jobs/forms.py:76 addons/resumes/forms.py:50
-#, fuzzy
 msgid "Contact email"
 msgstr ""
 
@@ -5591,12 +5425,10 @@ msgid "A job has been deleted"
 msgstr ""
 
 #: addons/jobs/management/__init__.py:11
-#, fuzzy
 msgid "Job Approved User Notice"
 msgstr ""
 
 #: addons/jobs/management/__init__.py:11
-#, fuzzy
 msgid "A job has been approved - user notice."
 msgstr ""
 
@@ -5605,13 +5437,11 @@ msgid "Jobs Pricing"
 msgstr ""
 
 #: addons/jobs/templates/jobs/delete.html:5
-#, fuzzy
 msgid "Delete Job"
 msgstr ""
 
 #: addons/jobs/templates/jobs/delete.html:33
 #: addons/memberships/templates/memberships/delete.html:30
-#, fuzzy
 msgid "Back to this"
 msgstr ""
 
@@ -5643,7 +5473,6 @@ msgstr ""
 
 #: addons/jobs/templates/jobs/my_pending_jobs.html:22
 #: addons/jobs/templates/jobs/nav.html:47
-#, fuzzy
 msgid "My Pending"
 msgstr ""
 
@@ -5695,37 +5524,30 @@ msgid "To edit the job price, complete the fields below and press Submit."
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:34
-#, fuzzy
 msgid "All Pricing"
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:40
-#, fuzzy
 msgid "Search Pricings"
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:42
-#, fuzzy
 msgid "Add Pricing"
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:48
-#, fuzzy
 msgid "This Pricing"
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:51
-#, fuzzy
 msgid "View Pricing"
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:54
-#, fuzzy
 msgid "Edit Pricing"
 msgstr ""
 
 #: addons/jobs/templates/jobs/pricing-nav.html:58
-#, fuzzy
 msgid "Delete Pricing"
 msgstr ""
 
@@ -5845,7 +5667,6 @@ msgid "Your job is is under review and will be approved by an administrator"
 msgstr ""
 
 #: addons/jobs/templates/jobs/view.html:25
-#, fuzzy
 msgid "Information"
 msgstr ""
 
@@ -5912,7 +5733,6 @@ msgstr ""
 
 #: addons/jobs/templates/notification/job_added/full.html:20
 #: apps/notifications/templates/notification/resume_added/full.html:18
-#, fuzzy
 msgid "Company Name:"
 msgstr ""
 
@@ -5930,7 +5750,7 @@ msgid "You can activate this job at:"
 msgstr ""
 
 #: addons/jobs/templates/notification/job_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New Job (%(objtitle)s) posting on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -5940,12 +5760,11 @@ msgid "Your job posting \"%(obj_title)s\" has been approved."
 msgstr ""
 
 #: addons/jobs/templates/notification/job_approved_user_notice/full.html:7
-#, fuzzy
 msgid "To view this job, go to:"
 msgstr ""
 
 #: addons/jobs/templates/notification/job_approved_user_notice/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Your Job Posting \"%(obj_title)s\" Approved on "
 "%(SITE_GLOBAL_SITEDISPLAYNAME)s"
@@ -5968,7 +5787,7 @@ msgid ""
 msgstr ""
 
 #: addons/jobs/templates/notification/job_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Job deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -5978,7 +5797,6 @@ msgid "Headquarters"
 msgstr ""
 
 #: addons/locations/templates/locations/import-confirm.html:17
-#, fuzzy
 msgid "Location Import Finished!"
 msgstr ""
 
@@ -5993,12 +5811,10 @@ msgstr ""
 
 #: addons/locations/templates/locations/import-confirm.html:24
 #: addons/locations/templates/locations/import-status.html:28
-#, fuzzy
 msgid "Back to location search page."
 msgstr ""
 
 #: addons/locations/templates/locations/import-map-fields.html:17
-#, fuzzy
 msgid "Locations Import Map Fields"
 msgstr ""
 
@@ -6008,7 +5824,6 @@ msgid "Step 2/4"
 msgstr ""
 
 #: addons/locations/templates/locations/import-preview.html:19
-#, fuzzy
 msgid "Locations Import Preview"
 msgstr ""
 
@@ -6018,7 +5833,6 @@ msgid "Step 3/4"
 msgstr ""
 
 #: addons/locations/templates/locations/import-preview.html:34
-#, fuzzy
 msgid "Location Name"
 msgstr ""
 
@@ -6047,7 +5861,6 @@ msgid "Longitude"
 msgstr ""
 
 #: addons/locations/templates/locations/import-preview.html:50
-#, fuzzy
 msgid "Skipped"
 msgstr ""
 
@@ -6077,9 +5890,8 @@ msgid "Processing Location Import!"
 msgstr ""
 
 #: addons/locations/templates/locations/import-upload-file.html:16
-#, fuzzy
 msgid "Import Locations"
-msgstr "Localidades"
+msgstr ""
 
 #: addons/locations/templates/locations/import-upload-file.html:17
 msgid ""
@@ -6101,7 +5913,6 @@ msgid ".xls Template"
 msgstr ""
 
 #: addons/locations/templates/locations/import-upload-file.html:26
-#, fuzzy
 msgid ".csv Template"
 msgstr ""
 
@@ -6111,7 +5922,6 @@ msgid "Step 1/4"
 msgstr ""
 
 #: addons/locations/templates/locations/nav.html:42
-#, fuzzy
 msgid "List of "
 msgstr ""
 
@@ -6167,7 +5977,6 @@ msgid "Add a Payment Confirmation"
 msgstr ""
 
 #: addons/make_payments/templates/make_payments/email_user.txt:8
-#, fuzzy
 msgid "Email Notification"
 msgstr ""
 
@@ -6183,7 +5992,6 @@ msgid "This e-mail does not confirm payment approval."
 msgstr ""
 
 #: addons/make_payments/templates/make_payments/email_user.txt:25
-#, fuzzy
 msgid "To check the status of your payment, click here:"
 msgstr ""
 
@@ -6194,7 +6002,7 @@ msgid ""
 msgstr ""
 
 #: addons/make_payments/templates/make_payments/email_user_subject.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Thank you for your payment attempt to %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -6257,13 +6065,11 @@ msgstr ""
 
 #: addons/memberships/__init__.py:15 addons/memberships/__init__.py:16
 #: addons/memberships/__init__.py:20 addons/memberships/__init__.py:21
-#, fuzzy
 msgid "Membership Entry Submission"
 msgstr ""
 
 #: addons/memberships/__init__.py:25 addons/memberships/__init__.py:26
 #: addons/memberships/__init__.py:30 addons/memberships/__init__.py:31
-#, fuzzy
 msgid "Membership Entry Renewal"
 msgstr ""
 
@@ -6509,7 +6315,7 @@ msgstr ""
 
 #: addons/memberships/models.py:287
 msgid "Members"
-msgstr "Miembros"
+msgstr ""
 
 #: addons/memberships/models.py:541
 msgid "Notice Time"
@@ -6575,7 +6381,6 @@ msgid "Unique"
 msgstr ""
 
 #: addons/memberships/models.py:907
-#, fuzzy
 msgid "Exportable"
 msgstr ""
 
@@ -6629,19 +6434,17 @@ msgid "Import Memberships from CSV file"
 msgstr ""
 
 #: addons/memberships/templates/memberships/delete.html:5
-#, fuzzy
 msgid "Delete Membership"
 msgstr ""
 
 #: addons/memberships/templates/memberships/delete.html:16
-#, fuzzy
 msgid "Membership Delete Page"
 msgstr ""
 
 #: addons/memberships/templates/memberships/delete.html:31
 #: apps/dashboard/templates/dashboard/index.html:98
 msgid "Memberships"
-msgstr "Membresías"
+msgstr ""
 
 #: addons/memberships/templates/memberships/details.html:7
 #, python-format
@@ -6658,12 +6461,11 @@ msgid "View profile"
 msgstr ""
 
 #: addons/memberships/templates/memberships/details.html:22
-#, fuzzy
 msgid "View Membership App Entry"
 msgstr ""
 
 #: addons/memberships/templates/memberships/details.html:24
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "\n"
 "        Subscribed since %(memjoin)s (%(memtimesince)s)"
@@ -6675,29 +6477,25 @@ msgid "Expires %(membexpdate)s"
 msgstr ""
 
 #: addons/memberships/templates/memberships/details.html:33
-#, fuzzy, python-format
+#, python-format
 msgid "Expiration Grace Period: %(grace_period)s days"
 msgstr ""
 
 #: addons/memberships/templates/memberships/edit.html:6
 #: addons/memberships/templates/memberships/nav.html:71
 #: addons/memberships/templates/memberships/nav.html:75
-#, fuzzy
 msgid "Edit Membership"
 msgstr ""
 
 #: addons/memberships/templates/memberships/edit.html:18
-#, fuzzy
 msgid "Membership Edit"
 msgstr ""
 
 #: addons/memberships/templates/memberships/edit.html:24
-#, fuzzy
 msgid "Save Membership Changes"
 msgstr ""
 
 #: addons/memberships/templates/memberships/export.html:18
-#, fuzzy
 msgid "Membership CSV Export"
 msgstr ""
 
@@ -6723,27 +6521,22 @@ msgid "Expire Date"
 msgstr ""
 
 #: addons/memberships/templates/memberships/import-preview.html:42
-#, fuzzy
 msgid "Action"
 msgstr ""
 
 #: addons/memberships/templates/memberships/import-preview.html:57
-#, fuzzy
 msgid "No Name"
 msgstr ""
 
 #: addons/memberships/templates/memberships/import-status.html:18
-#, fuzzy
 msgid "Membership Import Failed!"
 msgstr ""
 
 #: addons/memberships/templates/memberships/import-status.html:23
-#, fuzzy
 msgid "Processing Membership Import!"
 msgstr ""
 
 #: addons/memberships/templates/memberships/import-upload-file.html:19
-#, fuzzy
 msgid "Import Membership"
 msgstr ""
 
@@ -6773,9 +6566,8 @@ msgid ""
 msgstr ""
 
 #: addons/memberships/templates/memberships/nav.html:34
-#, fuzzy
 msgid "All Members"
-msgstr "Miembros"
+msgstr ""
 
 #: addons/memberships/templates/memberships/nav.html:43
 #: addons/memberships/templates/memberships/entries/nav.html:25
@@ -6793,18 +6585,15 @@ msgid "Notices"
 msgstr ""
 
 #: addons/memberships/templates/memberships/nav.html:63
-#, fuzzy
 msgid "This Member"
 msgstr ""
 
 #: addons/memberships/templates/memberships/nav.html:66
-#, fuzzy
 msgid "View Membership"
 msgstr ""
 
 #: addons/memberships/templates/memberships/nav.html:67
 #: apps/profiles/templates/profiles/nav.html:63
-#, fuzzy
 msgid "View User Profile"
 msgstr ""
 
@@ -6822,12 +6611,10 @@ msgid "Renew from now until %(memdate)s"
 msgstr ""
 
 #: addons/memberships/templates/memberships/renew-button.html:11
-#, fuzzy
 msgid "Renewal available in"
 msgstr ""
 
 #: addons/memberships/templates/memberships/renew-button.html:15
-#, fuzzy
 msgid "Expired: Renewal Period has Passed"
 msgstr ""
 
@@ -6894,7 +6681,6 @@ msgid "Thank you!"
 msgstr ""
 
 #: addons/memberships/templates/memberships/entries/delete.html:8
-#, fuzzy
 msgid "Delete Membership Entry"
 msgstr ""
 
@@ -6916,13 +6702,11 @@ msgid "Edit Entry"
 msgstr ""
 
 #: addons/memberships/templates/memberships/entries/delete.html:49
-#, fuzzy
 msgid "Are you sure you want to permanently delete this entry?"
 msgstr ""
 
 #: addons/memberships/templates/memberships/entries/delete.html:108
 #: addons/memberships/templates/memberships/entries/details.html:107
-#, fuzzy
 msgid "View Profile &amp; Membership"
 msgstr ""
 
@@ -6935,7 +6719,6 @@ msgid "Approve Membership"
 msgstr ""
 
 #: addons/memberships/templates/memberships/entries/print-details.html:8
-#, fuzzy
 msgid "Membership Application Print View for"
 msgstr ""
 
@@ -7032,12 +6815,12 @@ msgid "Membership Approved"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_approved_to_admin/full.html:16
-#, fuzzy, python-format
+#, python-format
 msgid "Membership Type: %(memtype)s $%(memprice)s"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_approved_to_admin/full.html:18
-#, fuzzy, python-format
+#, python-format
 msgid "Membership Type: %(memtype)s (Free)"
 msgstr ""
 
@@ -7052,7 +6835,6 @@ msgid "%(membership_total)s Total Active Membership(s)"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_approved_to_admin/short.txt:3
-#, fuzzy
 msgid "Membership application approved"
 msgstr ""
 
@@ -7081,7 +6863,7 @@ msgid ""
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_corp_indiv_verify_email/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Email Address Verification Request on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -7113,36 +6895,32 @@ msgid "Application Created %(objcreate)s (%(objtime)s)"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_disapproved_to_member/short.txt:3
-#, fuzzy
 msgid "Membership application disapproved"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_joined_to_admin/full.html:8
-#, fuzzy
 msgid "Membership Application Submission"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_joined_to_admin/full.html:13
 #: addons/memberships/templates/notification/membership_renewal_to_admin/full.html:13
-#, fuzzy
 msgid "Membership Submission"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_joined_to_admin/full.html:16
 #: addons/memberships/templates/notification/membership_renewal_to_admin/full.html:16
-#, fuzzy, python-format
+#, python-format
 msgid "Membership Type: %(membership_type)s $%(membership_type_price)s"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_joined_to_admin/full.html:18
 #: addons/memberships/templates/notification/membership_renewal_to_admin/full.html:18
-#, fuzzy, python-format
+#, python-format
 msgid "Membership Type: %(membership_type)s Free"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_joined_to_admin/full.html:24
 #: addons/memberships/templates/notification/membership_renewal_to_admin/full.html:24
-#, fuzzy
 msgid "View Submitted Application"
 msgstr ""
 
@@ -7153,22 +6931,18 @@ msgid "Application Created %(create_date)s (%(time_since)s)"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_joined_to_admin/short.txt:3
-#, fuzzy
 msgid "Membership application submission"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_renewal_to_admin/full.html:8
-#, fuzzy
 msgid "Membership Application Renewal"
 msgstr ""
 
 #: addons/memberships/templates/notification/membership_renewal_to_admin/short.txt:3
-#, fuzzy
 msgid "Membership application renewal"
 msgstr ""
 
 #: addons/news/forms.py:36
-#, fuzzy
 msgid "Thumbnail Image"
 msgstr ""
 
@@ -7205,7 +6979,6 @@ msgid "Auto Timestamp"
 msgstr ""
 
 #: addons/news/templates/news/delete.html:10
-#, fuzzy
 msgid "Are you sure you want to permanently delete this news?"
 msgstr ""
 
@@ -7218,9 +6991,8 @@ msgstr ""
 
 #: addons/news/templates/news/nav.html:33
 #: core/newsletters/templates/newsletters/news_list.txt:11
-#, fuzzy
 msgid "All News"
-msgstr "Noticias"
+msgstr ""
 
 #: addons/news/templates/news/print-view.html:23
 msgid "Back to regular news view"
@@ -7270,7 +7042,7 @@ msgid ""
 msgstr ""
 
 #: addons/news/templates/notification/news_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New news (%(objhead)s) posting on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -7293,7 +7065,7 @@ msgid ""
 msgstr ""
 
 #: addons/news/templates/notification/news_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "News (%(objhead)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -7302,17 +7074,14 @@ msgid "Very Low"
 msgstr ""
 
 #: addons/photos/models.py:63
-#, fuzzy
 msgid "Low"
 msgstr ""
 
 #: addons/photos/models.py:64
-#, fuzzy
 msgid "Medium-Low"
 msgstr ""
 
 #: addons/photos/models.py:66
-#, fuzzy
 msgid "Medium-High"
 msgstr ""
 
@@ -7343,7 +7112,6 @@ msgid "Left"
 msgstr ""
 
 #: addons/photos/models.py:77
-#, fuzzy
 msgid "Center (Default)"
 msgstr ""
 
@@ -7388,7 +7156,6 @@ msgid "image"
 msgstr ""
 
 #: addons/photos/models.py:105
-#, fuzzy
 msgid "date taken"
 msgstr ""
 
@@ -7492,12 +7259,10 @@ msgid ""
 msgstr ""
 
 #: addons/photos/models.py:432 addons/photos/models.py:488
-#, fuzzy
 msgid "photo effect"
 msgstr ""
 
 #: addons/photos/models.py:433
-#, fuzzy
 msgid "photo effects"
 msgstr ""
 
@@ -7506,7 +7271,6 @@ msgid "style"
 msgstr ""
 
 #: addons/photos/models.py:463
-#, fuzzy
 msgid "opacity"
 msgstr ""
 
@@ -7529,7 +7293,6 @@ msgid ""
 msgstr ""
 
 #: addons/photos/models.py:481
-#, fuzzy
 msgid "width"
 msgstr ""
 
@@ -7539,7 +7302,6 @@ msgid ""
 msgstr ""
 
 #: addons/photos/models.py:482
-#, fuzzy
 msgid "height"
 msgstr ""
 
@@ -7599,12 +7361,10 @@ msgid "watermark image"
 msgstr ""
 
 #: addons/photos/models.py:493
-#, fuzzy
 msgid "photo size"
 msgstr ""
 
 #: addons/photos/models.py:494
-#, fuzzy
 msgid "photo sizes"
 msgstr ""
 
@@ -7621,15 +7381,14 @@ msgid "publish_type"
 msgstr ""
 
 #: addons/photos/models.py:566
-#, fuzzy
 msgid "Photo Album"
-msgstr "Álbumes de fotos"
+msgstr ""
 
 #: addons/photos/models.py:567
 #: apps/dashboard/templates/dashboard/index.html:110
 #: templates/top_menu/user_top.html:43
 msgid "Photo Albums"
-msgstr "Álbumes de fotos"
+msgstr ""
 
 #: addons/photos/models.py:672
 msgid "Safe"
@@ -7731,7 +7490,7 @@ msgstr ""
 
 #: addons/photos/templates/photos/batch-add.html:29
 msgid "Select photos to upload"
-msgstr "Select photos to upload"
+msgstr ""
 
 #: addons/photos/templates/photos/batch-add.html:33
 msgid ""
@@ -7775,12 +7534,10 @@ msgid "--- SELECT A LICENSE ---"
 msgstr ""
 
 #: addons/photos/templates/photos/batch-edit.html:51
-#, fuzzy
 msgid "Update all Groups"
 msgstr ""
 
 #: addons/photos/templates/photos/batch-edit.html:53
-#, fuzzy
 msgid "--- SELECT A GROUP ---"
 msgstr ""
 
@@ -7791,13 +7548,11 @@ msgstr ""
 #: addons/photos/templates/photos/batch-edit.html:171
 #: addons/photos/templates/photos/batch-edit.html:173
 #: addons/photos/templates/photos/batch-edit.html:185
-#, fuzzy
 msgid "Hide Photo Details"
 msgstr ""
 
 #: addons/photos/templates/photos/batch-edit.html:171
 #: addons/photos/templates/photos/batch-edit.html:174
-#, fuzzy
 msgid "Show Photo Details"
 msgstr ""
 
@@ -7807,7 +7562,6 @@ msgid "Show all photo details for editing"
 msgstr ""
 
 #: addons/photos/templates/photos/delete.html:10
-#, fuzzy
 msgid "Are you sure you want to permanently delete this photo?"
 msgstr ""
 
@@ -7833,7 +7587,6 @@ msgid "Next"
 msgstr ""
 
 #: addons/photos/templates/photos/details.html:39
-#, fuzzy
 msgid "Go to First"
 msgstr ""
 
@@ -7851,7 +7604,6 @@ msgstr ""
 
 #: addons/photos/templates/photos/nav.html:35
 #: addons/photos/templates/photos/photo-set/nav.html:34
-#, fuzzy
 msgid "All Photos"
 msgstr ""
 
@@ -7867,22 +7619,18 @@ msgid "Add Photo Set"
 msgstr ""
 
 #: addons/photos/templates/photos/nav.html:52
-#, fuzzy
 msgid "This Photo"
 msgstr ""
 
 #: addons/photos/templates/photos/nav.html:55
-#, fuzzy
 msgid "View Photo"
 msgstr ""
 
 #: addons/photos/templates/photos/nav.html:58
-#, fuzzy
 msgid "Edit Photo"
 msgstr ""
 
 #: addons/photos/templates/photos/nav.html:62
-#, fuzzy
 msgid "Delete Photo"
 msgstr ""
 
@@ -7912,7 +7660,7 @@ msgid "License"
 msgstr ""
 
 #: addons/photos/templates/photos/sizes.html:33
-#, fuzzy, python-format
+#, python-format
 msgid "Download the %(size_name_cap_first)s size of this photo"
 msgstr ""
 
@@ -7945,7 +7693,6 @@ msgid "Copy &amp; paste HTML into your webpage"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/delete.html:15
-#, fuzzy
 msgid "Are you sure you want to permanently delete this photo set?"
 msgstr ""
 
@@ -7978,17 +7725,14 @@ msgid "Latest Photo Sets"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/latest.html:28
-#, fuzzy
 msgid "Photo Sets"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/nav.html:51
-#, fuzzy
 msgid "This Photo Set"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/nav.html:54
-#, fuzzy
 msgid "View Photo Set"
 msgstr ""
 
@@ -7998,12 +7742,10 @@ msgid "Add Photos"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/nav.html:60
-#, fuzzy
 msgid "Edit Photos in Set"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/nav.html:64
-#, fuzzy
 msgid "Delete Photo Set"
 msgstr ""
 
@@ -8020,7 +7762,6 @@ msgid "Edit Photos"
 msgstr ""
 
 #: addons/photos/templates/photos/photo-set/options.html:25
-#, fuzzy
 msgid "Download Zip"
 msgstr ""
 
@@ -8033,17 +7774,14 @@ msgid "Zip file ready for download"
 msgstr ""
 
 #: addons/recurring_payments/forms.py:80
-#, fuzzy
 msgid "Billing frequency must be a numeric number."
 msgstr ""
 
 #: addons/recurring_payments/forms.py:92
-#, fuzzy
 msgid "Number day(s) must be a numeric number."
 msgstr ""
 
 #: addons/recurring_payments/forms.py:100
-#, fuzzy
 msgid "Please specify a tax rate."
 msgstr ""
 
@@ -8057,7 +7795,6 @@ msgid "Week(s)"
 msgstr ""
 
 #: addons/recurring_payments/models.py:31
-#, fuzzy
 msgid "Disabled"
 msgstr ""
 
@@ -8068,17 +7805,14 @@ msgstr ""
 
 #: addons/recurring_payments/models.py:36
 #: apps/forms_builder/forms/models.py:57
-#, fuzzy
 msgid "end"
 msgstr ""
 
 #: addons/recurring_payments/models.py:45
-#, fuzzy
 msgid "Customer"
 msgstr ""
 
 #: addons/recurring_payments/models.py:46
-#, fuzzy
 msgid "Website URL"
 msgstr ""
 
@@ -8096,7 +7830,6 @@ msgid "Billing cycle start or end date"
 msgstr ""
 
 #: addons/recurring_payments/models.py:74
-#, fuzzy
 msgid "Trial period start date"
 msgstr ""
 
@@ -8118,7 +7851,6 @@ msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/base-wide.html:4
 #: addons/recurring_payments/templates/recurring_payments/nav.html:25
-#, fuzzy
 msgid "Recurring Payment"
 msgstr ""
 
@@ -8137,7 +7869,6 @@ msgstr ""
 #: addons/recurring_payments/templates/recurring_payments/email_customer_no_payment_profile.html:25
 #: addons/recurring_payments/templates/recurring_payments/email_customer_transaction.html:62
 #: addons/recurring_payments/templates/recurring_payments/email_script_support_transaction.html:66
-#, fuzzy
 msgid "web based membership management software solution"
 msgstr ""
 
@@ -8146,14 +7877,12 @@ msgstr ""
 #: addons/recurring_payments/templates/recurring_payments/email_admins_transaction.html:74
 #: addons/recurring_payments/templates/recurring_payments/email_customer_no_payment_profile.html:26
 #: addons/recurring_payments/templates/recurring_payments/email_script_support_transaction.html:67
-#, fuzzy
 msgid "www.tendenci.com developed by Schipul - The Web Marketing Company"
 msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/email_admins_transaction.html:11
 #: addons/recurring_payments/templates/recurring_payments/email_customer_transaction.html:13
 #: addons/recurring_payments/templates/recurring_payments/email_script_support_transaction.html:10
-#, fuzzy
 msgid "Transaction details:"
 msgstr ""
 
@@ -8164,17 +7893,14 @@ msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/email_customer_no_payment_profile.html:3
 #: addons/recurring_payments/templates/recurring_payments/email_customer_transaction.html:4
-#, fuzzy
 msgid "Greetings"
 msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/email_customer_transaction.html:63
-#, fuzzy
 msgid "tendenci.com developed by Schipul - The Web Marketing Company"
 msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/index.html:65
-#, fuzzy
 msgid "Overview"
 msgstr ""
 
@@ -8184,10 +7910,9 @@ msgstr ""
 #: apps/profiles/templates/profiles/index.html:62
 #: apps/profiles/templates/profiles/meta.html:49
 msgid "Invoices"
-msgstr "Facturas"
+msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/index.html:69
-#, fuzzy
 msgid "Transaction History"
 msgstr ""
 
@@ -8196,7 +7921,6 @@ msgid "All R.P."
 msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/nav.html:38
-#, fuzzy
 msgid "Customers"
 msgstr ""
 
@@ -8205,7 +7929,6 @@ msgid "This R.P."
 msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/nav.html:54
-#, fuzzy
 msgid "Disable Account"
 msgstr ""
 
@@ -8218,13 +7941,11 @@ msgstr ""
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_manage_payment_iframe2.html:40
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_update_payment_info.html:45
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_update_payment_info2.html:31
-#, fuzzy
 msgid "Manage Payment Info for "
 msgstr ""
 
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_update_payment_info.html:4
 #: addons/recurring_payments/templates/recurring_payments/authnet/cim_update_payment_info2.html:5
-#, fuzzy
 msgid "Add / Update Customer Payment Information"
 msgstr ""
 
@@ -8237,7 +7958,6 @@ msgid "Expriation Date/Time"
 msgstr ""
 
 #: addons/resumes/models.py:52
-#, fuzzy
 msgid "Upload your resume here"
 msgstr ""
 
@@ -8297,24 +8017,20 @@ msgid ""
 msgstr ""
 
 #: addons/resumes/templates/resumes/export.html:19
-#, fuzzy
 msgid "Resumes Export"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:34
-#, fuzzy
 msgid "All Resumes"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:43
-#, fuzzy
 msgid "Resume List"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:45
-#, fuzzy
 msgid "Add Resume"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:48
 #: addons/resumes/templates/resumes/pending.html:13
@@ -8322,27 +8038,22 @@ msgid "Pending Resumes"
 msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:49
-#, fuzzy
 msgid "Export Resumes"
 msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:55
-#, fuzzy
 msgid "This Resume"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:58
-#, fuzzy
 msgid "View Resume"
 msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:61
-#, fuzzy
 msgid "Edit Resume"
 msgstr ""
 
 #: addons/resumes/templates/resumes/nav.html:66
-#, fuzzy
 msgid "Delete Resume"
 msgstr ""
 
@@ -8365,17 +8076,14 @@ msgstr ""
 
 #: addons/resumes/templates/resumes/view.html:30
 #: addons/resumes/templates/resumes/view.html:36
-#, fuzzy
 msgid "resume"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/view.html:30
-#, fuzzy
 msgid "this resume's"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: addons/resumes/templates/resumes/view.html:30
-#, fuzzy
 msgid "website"
 msgstr ""
 
@@ -8404,25 +8112,24 @@ msgstr ""
 #: templates/reports/user_activity_table.html:14
 #: templates/reports/user_activity_table.html:16
 msgid "Username"
-msgstr "Nombre De Usuario"
+msgstr ""
 
 #: apps/accounts/forms.py:122 apps/profiles/forms.py:79
 #: apps/profiles/templates/profiles/add.html:331 core/base/forms.py:37
 msgid "Password"
-msgstr "Contraseña"
+msgstr ""
 
 #: apps/accounts/forms.py:124
 msgid "Remember Login"
-msgstr "Recordar Contraseña"
+msgstr ""
 
 #: apps/accounts/forms.py:156
 msgid "This account is currently inactive."
-msgstr "Esta cuenta está inactiva"
+msgstr ""
 
 #: apps/accounts/forms.py:160 apps/accounts/forms.py:162
 msgid "The username and/or password you specified are not correct."
 msgstr ""
-"El nombre de usuario y/o la contraseña que ha especificado no son correctas"
 
 #: apps/accounts/forms.py:183
 msgid "E-mail"
@@ -8433,18 +8140,15 @@ msgid ""
 "That e-mail address doesn't have an associated user account. Are you sure "
 "you've <a href=\"/accounts/register\" >registered</a>?"
 msgstr ""
-"Esta dirección de correo electrónico no tiene una cuenta de usuario "
-"asociada. ¿Está seguro de haberse registrado?"
 
 #: apps/accounts/forms.py:197
 msgid "That e-mail address doesn't have an associated user account."
 msgstr ""
-"Esta dirección de correo electrónico no tiene una cuenta de usuario asociada."
 
 #: apps/accounts/forms.py:235
 #, python-format
 msgid "Password reset on %s"
-msgstr "Restablecimiento de la contraseña en %s"
+msgstr ""
 
 #: apps/accounts/templates/accounts/activate.html:5
 msgid "Account Activation"
@@ -8492,7 +8196,7 @@ msgstr ""
 
 #: apps/accounts/templates/accounts/login.html:13
 msgid "Log In to the Site"
-msgstr "Entrar al Sistema"
+msgstr ""
 
 #: apps/accounts/templates/accounts/login.html:16
 #, python-format
@@ -8501,17 +8205,16 @@ msgstr ""
 
 #: apps/accounts/templates/accounts/login.html:17
 msgid "Logout?"
-msgstr "Cerrar sesión?"
+msgstr ""
 
 #: apps/accounts/templates/accounts/login.html:29
 #: apps/accounts/templates/accounts/password_reset_form.html:12
 msgid "Forgot your password?"
-msgstr "Olvidaste tu contraseña?"
+msgstr ""
 
 #: apps/accounts/templates/accounts/login.html:30
-#, fuzzy
 msgid "Click here to reset your password."
-msgstr "Haga clic aqui para restablecer la contraseña."
+msgstr ""
 
 #: apps/accounts/templates/accounts/login.html:33
 msgid "Don't have an account?"
@@ -8520,20 +8223,19 @@ msgstr ""
 #: apps/accounts/templates/accounts/logout.html:4
 #: templates/top_menu/admin_top.html:237 templates/top_menu/user_top.html:105
 msgid "Logout"
-msgstr "Cerrar sesión"
+msgstr ""
 
 #: apps/accounts/templates/accounts/logout.html:7
 msgid ""
 "You're logged out. Thanks for spending some quality time with the Web site "
 "today."
-msgstr "Ha finalizado la sesión. Gracias por pasar algún tiempo aquí."
+msgstr ""
 
 #: apps/accounts/templates/accounts/logout.html:9
 msgid "Log in again"
-msgstr "Conectarse de nuevo"
+msgstr ""
 
 #: apps/accounts/templates/accounts/password_reset_form.html:4
-#, fuzzy
 msgid "Password Reset"
 msgstr ""
 
@@ -8599,22 +8301,20 @@ msgid "Home"
 msgstr ""
 
 #: apps/boxes/templates/admin/boxes/change_list.html:63
-#, fuzzy, python-format
+#, python-format
 msgid "Export %(name)s"
 msgstr ""
 
 #: apps/boxes/templates/admin/boxes/change_list.html:68
-#, fuzzy, python-format
+#, python-format
 msgid "Add %(name)s"
 msgstr ""
 
 #: apps/boxes/templates/admin/boxes/change_list.html:87
-#, fuzzy
 msgid "Filter"
 msgstr ""
 
 #: apps/boxes/templates/boxes/export.html:14
-#, fuzzy
 msgid "Boxes Export"
 msgstr ""
 
@@ -8654,29 +8354,27 @@ msgid "%(contact)s's Contact Form Submission"
 msgstr ""
 
 #: apps/contacts/templates/contacts/view.html:70
-#, fuzzy, python-format
+#, python-format
 msgid "Submitted %(create_date)s"
 msgstr ""
 
 #: apps/contributions/models.py:12
 msgid "content type"
-msgstr "Tipo de Contenido"
+msgstr ""
 
 #: apps/contributions/models.py:13 core/versions/models.py:23
 msgid "object id"
-msgstr "Identificación de Objeto"
+msgstr ""
 
 #: apps/contributions/templates/contributions/index.html:2
 msgid "Contributions Index Page"
 msgstr ""
 
 #: apps/contributions/templates/contributions/nav.html:21
-#, fuzzy
 msgid "All Contributions"
 msgstr ""
 
 #: apps/contributions/templates/contributions/nav.html:22
-#, fuzzy
 msgid "My Contributions"
 msgstr ""
 
@@ -8690,30 +8388,30 @@ msgstr ""
 #: apps/contributions/templatetags/contribution_tags.py:50
 #, python-format
 msgid "%s tag requires 4 or 5 arguments"
-msgstr "etiqueta de %s requiere cuatro o cinco argumentos"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:73
 msgid "Users"
-msgstr "Usuarios"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:77
 #: apps/dashboard/templates/dashboard/nav.html:41
 #: core/imports/templates/imports/nav.html:41
 msgid "Groups"
-msgstr "Grupos"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:89
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:263 Right Sidebar.html:276 templates/top_menu/user_top.html:25
 msgid "Directories"
-msgstr "Directorios"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:93
 #: apps/wp_exporter/forms.py:33
 #: core/newsletters/templates/newsletters/templates/default/Two Column Left
 #: Sidebar.html:278 Right Sidebar.html:291 templates/top_menu/user_top.html:46
 msgid "Resumes"
-msgstr "Hojas De Vida"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:102
 msgid "Corp. Memb."
@@ -8725,10 +8423,9 @@ msgstr ""
 #: templates/themes/thinksmart/templates/sidebar.html:5
 #: templates/top_menu/user_top.html:28
 msgid "Events"
-msgstr "Eventos"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:114
-#, fuzzy
 msgid "Stories"
 msgstr ""
 
@@ -8742,7 +8439,7 @@ msgstr ""
 #: apps/dashboard/templates/dashboard/index.html:126
 #: templates/top_menu/user_top.html:37
 msgid "Locations"
-msgstr "Localidades"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:130
 #: apps/profiles/templates/profiles/index.html:197
@@ -8752,21 +8449,21 @@ msgstr ""
 #: apps/dashboard/templates/dashboard/index.html:138
 #: apps/forms_builder/forms/models.py:105
 msgid "Forms"
-msgstr "Formas"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:142
 #: apps/redirects/templates/redirects/nav.html:29
 msgid "Redirects"
-msgstr "Redirecciones"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:143
 msgid "Contacts"
-msgstr "Contactos"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:145
 #: templates/top_menu/admin_top.html:171 templates/top_menu/admin_top.html:197
 msgid "Event Logs"
-msgstr "Registros De Eventos"
+msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:156
 msgid "Tendenci Blog"
@@ -8813,7 +8510,6 @@ msgid "Admin Panel"
 msgstr ""
 
 #: apps/dashboard/templates/dashboard/index.html:212
-#, fuzzy
 msgid "Recurring Payments"
 msgstr ""
 
@@ -8835,23 +8531,19 @@ msgid "Discount codes must be unique."
 msgstr ""
 
 #: apps/discounts/models.py:19
-#, fuzzy
 msgid "Check this box to make the discount code never expire."
 msgstr ""
 
 #: apps/discounts/models.py:20
 #: apps/discounts/templates/discounts/detail.html:31
-#, fuzzy
 msgid "Discount Value"
 msgstr ""
 
 #: apps/discounts/models.py:20
-#, fuzzy
 msgid "Enter discount value as a positive number."
 msgstr ""
 
 #: apps/discounts/models.py:21
-#, fuzzy
 msgid "Maximum Uses"
 msgstr ""
 
@@ -8861,33 +8553,27 @@ msgstr ""
 
 #: apps/discounts/templates/discounts/add.html:27
 #: apps/discounts/templates/discounts/nav.html:40
-#, fuzzy
 msgid "Add Discount"
 msgstr ""
 
 #: apps/discounts/templates/discounts/delete.html:5
 #: apps/discounts/templates/discounts/nav.html:59
-#, fuzzy
 msgid "Delete Discount"
 msgstr ""
 
 #: apps/discounts/templates/discounts/delete.html:16
-#, fuzzy
 msgid "Delete a Discount"
 msgstr ""
 
 #: apps/discounts/templates/discounts/delete.html:21
-#, fuzzy
 msgid "Are you sure you want to permanently delete this discount?"
 msgstr ""
 
 #: apps/discounts/templates/discounts/detail.html:35
-#, fuzzy
 msgid "Number of uses"
 msgstr ""
 
 #: apps/discounts/templates/discounts/detail.html:43
-#, fuzzy
 msgid "Still Available"
 msgstr ""
 
@@ -8901,50 +8587,41 @@ msgstr ""
 #: apps/profiles/templates/profiles/edit_notice.txt:561
 #: apps/profiles/templates/profiles/edit_notice.txt:569
 msgid "No"
-msgstr "No"
+msgstr ""
 
 #: apps/discounts/templates/discounts/edit.html:27
-#, fuzzy
 msgid "Update Discount"
 msgstr ""
 
 #: apps/discounts/templates/discounts/export.html:16
-#, fuzzy
 msgid "Discounts Export"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:28
-#, fuzzy
 msgid "Discounts"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:32
-#, fuzzy
 msgid "All Discounts"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:38
-#, fuzzy
 msgid "Search Discounts"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:43
-#, fuzzy
 msgid "Export Discounts"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:49
-#, fuzzy
 msgid "This Discount"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:52
-#, fuzzy
 msgid "View Discount"
 msgstr ""
 
 #: apps/discounts/templates/discounts/nav.html:55
-#, fuzzy
 msgid "Edit Discount"
 msgstr ""
 
@@ -8990,12 +8667,10 @@ msgid ""
 msgstr ""
 
 #: apps/forms_builder/forms/admin.py:78
-#, fuzzy
 msgid "Payment"
 msgstr ""
 
 #: apps/forms_builder/forms/forms.py:264
-#, fuzzy
 msgid "Take Payment"
 msgstr ""
 
@@ -9004,16 +8679,14 @@ msgid "Group Subscription Fields require an Email Field to be present."
 msgstr ""
 
 #: apps/forms_builder/forms/models.py:28
-#, fuzzy
 msgid "Multi-select - Checkboxes"
-msgstr "Selccion multiple (Casillas de verificación)"
+msgstr ""
 
 #: apps/forms_builder/forms/models.py:29
 msgid "Multi-select - Select Many"
 msgstr ""
 
 #: apps/forms_builder/forms/models.py:32
-#, fuzzy
 msgid "Date - Select"
 msgstr ""
 
@@ -9060,17 +8733,14 @@ msgid "Send email"
 msgstr ""
 
 #: apps/forms_builder/forms/models.py:81
-#, fuzzy
 msgid "If checked, the person submitting the form will be sent an email."
 msgstr ""
 
 #: apps/forms_builder/forms/models.py:82
-#, fuzzy
 msgid "Reply-To address"
 msgstr ""
 
 #: apps/forms_builder/forms/models.py:83
-#, fuzzy
 msgid "The address the replies to the email will be sent to"
 msgstr ""
 
@@ -9154,73 +8824,59 @@ msgid "Are you sure you want to delete this entry?"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/export.html:17
-#, fuzzy
 msgid "Forms Export"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/form_payment.html:23
-#, fuzzy
 msgid "Billing Information"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:35
-#, fuzzy
 msgid "All Forms"
-msgstr "Formas"
+msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:44
-#, fuzzy
 msgid "Search Forms"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:46
-#, fuzzy
 msgid "Add Form"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:49
-#, fuzzy
 msgid "Export Forms"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:55
-#, fuzzy
 msgid "This Form"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:58
-#, fuzzy
 msgid "View Form"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:59
-#, fuzzy
 msgid "View Entries"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:60
 #: apps/forms_builder/forms/templates/forms/options.html:19
-#, fuzzy
 msgid "Export Entries"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:63
-#, fuzzy
 msgid "Edit Form"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:64
-#, fuzzy
 msgid "Edit Form Fields"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:67
-#, fuzzy
 msgid "Copy Form"
 msgstr ""
 
 #: apps/forms_builder/forms/templates/forms/nav.html:71
-#, fuzzy
 msgid "Delete Form"
 msgstr ""
 
@@ -9325,22 +8981,18 @@ msgid "View All Account Numbers"
 msgstr ""
 
 #: apps/invoices/templates/invoices/export.html:16
-#, fuzzy
 msgid "Invoices Export"
 msgstr ""
 
 #: apps/invoices/templates/invoices/nav.html:28
-#, fuzzy
 msgid "All Invoices"
-msgstr "Facturas"
+msgstr ""
 
 #: apps/invoices/templates/invoices/nav.html:37
-#, fuzzy
 msgid "Search Invoices"
 msgstr ""
 
 #: apps/invoices/templates/invoices/nav.html:39
-#, fuzzy
 msgid "Export Invoices"
 msgstr ""
 
@@ -9349,12 +9001,10 @@ msgid "Top Spenders Report"
 msgstr ""
 
 #: apps/invoices/templates/invoices/nav.html:46
-#, fuzzy
 msgid "This Invoice"
 msgstr ""
 
 #: apps/invoices/templates/invoices/nav.html:50
-#, fuzzy
 msgid "Print Invoice"
 msgstr ""
 
@@ -9531,12 +9181,10 @@ msgid "create date/time"
 msgstr ""
 
 #: apps/metrics/templates/metrics/index.html:56
-#, fuzzy
 msgid "Tendenci stats"
 msgstr ""
 
 #: apps/navs/models.py:41 apps/navs/templates/navs/nav_items.html:142
-#, fuzzy
 msgid "Title Attribute"
 msgstr ""
 
@@ -9545,27 +9193,22 @@ msgid "Open in a new window"
 msgstr ""
 
 #: apps/navs/templates/navs/add.html:24 apps/navs/templates/navs/nav.html:45
-#, fuzzy
 msgid "Add Nav"
 msgstr ""
 
 #: apps/navs/templates/navs/delete.html:5 apps/navs/templates/navs/nav.html:65
-#, fuzzy
 msgid "Delete Nav"
 msgstr ""
 
 #: apps/navs/templates/navs/delete.html:16
-#, fuzzy
 msgid "Delete a Nav"
 msgstr ""
 
 #: apps/navs/templates/navs/delete.html:21
-#, fuzzy
 msgid "Are you sure you want to permanently delete this nav?"
 msgstr ""
 
 #: apps/navs/templates/navs/edit.html:25
-#, fuzzy
 msgid "Update Nav"
 msgstr ""
 
@@ -9574,12 +9217,10 @@ msgid "All Navs"
 msgstr ""
 
 #: apps/navs/templates/navs/nav.html:43
-#, fuzzy
 msgid "Search Navs"
 msgstr ""
 
 #: apps/navs/templates/navs/nav.html:48
-#, fuzzy
 msgid "Export Navs"
 msgstr ""
 
@@ -9588,18 +9229,15 @@ msgid "This Nav"
 msgstr ""
 
 #: apps/navs/templates/navs/nav.html:57
-#, fuzzy
 msgid "View Nav"
 msgstr ""
 
 #: apps/navs/templates/navs/nav.html:60
-#, fuzzy
 msgid "Edit Nav"
 msgstr ""
 
 #: apps/navs/templates/navs/nav.html:61
 #: apps/navs/templates/navs/options.html:12
-#, fuzzy
 msgid "Edit Nav Items"
 msgstr ""
 
@@ -9621,12 +9259,10 @@ msgid "Use the search box to filter the list of pages"
 msgstr ""
 
 #: apps/navs/templates/navs/nav_items.html:29
-#, fuzzy
 msgid "Add selected pages"
 msgstr ""
 
 #: apps/navs/templates/navs/nav_items.html:32
-#, fuzzy
 msgid "Add a Custom Navigation Item"
 msgstr ""
 
@@ -9636,7 +9272,6 @@ msgid "edit"
 msgstr ""
 
 #: apps/navs/templates/navs/nav_items.html:116
-#, fuzzy
 msgid "Save All Navigation Items"
 msgstr ""
 
@@ -9760,7 +9395,7 @@ msgstr ""
 #: templates/notification/notice.html:1 templates/notification/short.txt:1
 #, python-format
 msgid "%(notice)s"
-msgstr "%(notice)s"
+msgstr ""
 
 #: apps/notifications/templates/notification/notices.html:6
 #: apps/notifications/templates/notification/notices.html:16
@@ -9841,7 +9476,6 @@ msgid "View message online:"
 msgstr ""
 
 #: apps/notifications/templates/notification/contact_submitted/short.txt:15
-#, fuzzy
 msgid "Contact Form"
 msgstr ""
 
@@ -9871,12 +9505,10 @@ msgid "Referred By:"
 msgstr ""
 
 #: apps/notifications/templates/notification/donation_added/full.html:64
-#, fuzzy
 msgid "To view the donation details, go to:"
 msgstr ""
 
 #: apps/notifications/templates/notification/donation_added/full.html:69
-#, fuzzy
 msgid "To view the user details, go to:"
 msgstr ""
 
@@ -9916,7 +9548,7 @@ msgid ""
 msgstr ""
 
 #: apps/notifications/templates/notification/group_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New group (%(objname)s) added on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -9946,7 +9578,7 @@ msgid "Time submitted: "
 msgstr ""
 
 #: apps/notifications/templates/notification/group_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Group (%(objname)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -9998,12 +9630,11 @@ msgid "View invoice to verify payment received:"
 msgstr ""
 
 #: apps/notifications/templates/notification/make_payment_added/full.html:61
-#, fuzzy
 msgid "To view the payment details, go to:"
 msgstr ""
 
 #: apps/notifications/templates/notification/make_payment_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Payment attempt by %(mplast)s, %(mpfirst)s on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
@@ -10028,9 +9659,9 @@ msgid "Time Submitted:"
 msgstr ""
 
 #: apps/notifications/templates/notification/newsletter_recap/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Newsletter %(subject)s submission recap "
-msgstr "Resumen de boletín de noticias enviadas"
+msgstr ""
 
 #: apps/notifications/templates/notification/payment_added/full.html:8
 msgid "Payment Generated Notice"
@@ -10088,7 +9719,7 @@ msgid ""
 msgstr ""
 
 #: apps/notifications/templates/notification/resume_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New resume (%(objtitle)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10097,7 +9728,6 @@ msgid "Resume Delete Notice"
 msgstr ""
 
 #: apps/notifications/templates/notification/resume_deleted/full.html:22
-#, fuzzy
 msgid "Deleted by:"
 msgstr ""
 
@@ -10108,7 +9738,7 @@ msgid ""
 msgstr ""
 
 #: apps/notifications/templates/notification/resume_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Resume ((%(objtitle)s)) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10184,7 +9814,7 @@ msgid ""
 msgstr ""
 
 #: apps/pages/templates/notification/page_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New page (%(page)s) posting for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10207,7 +9837,7 @@ msgid ""
 msgstr ""
 
 #: apps/pages/templates/notification/page_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Page (%(page)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10227,7 +9857,7 @@ msgid "To approve the edited page, go to:"
 msgstr ""
 
 #: apps/pages/templates/notification/page_edited/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Page (%(objtitle)s) edited for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10237,7 +9867,7 @@ msgstr ""
 #: core/files/templates/files/add.html:26
 #: core/files/templates/files/edit.html:26
 msgid "Category"
-msgstr "Categoría"
+msgstr ""
 
 #: apps/pages/templates/pages/add.html:38
 #: apps/pages/templates/pages/edit.html:37
@@ -10245,7 +9875,6 @@ msgid "SEO Meta"
 msgstr ""
 
 #: apps/pages/templates/pages/change-version.html:20
-#, fuzzy
 msgid "Change version"
 msgstr ""
 
@@ -10267,12 +9896,10 @@ msgid "Back to page"
 msgstr ""
 
 #: apps/pages/templates/pages/export.html:18
-#, fuzzy
 msgid "Pages Export"
 msgstr ""
 
 #: apps/pages/templates/pages/inactive-pages.html:21
-#, fuzzy
 msgid "Archive"
 msgstr ""
 
@@ -10282,37 +9909,30 @@ msgstr ""
 
 #: apps/pages/templates/pages/nav.html:34
 #: core/newsletters/templates/newsletters/pages_list.txt:11
-#, fuzzy
 msgid "All Pages"
-msgstr "Páginas"
+msgstr ""
 
 #: apps/pages/templates/pages/nav.html:43
-#, fuzzy
 msgid "Search Pages"
 msgstr ""
 
 #: apps/pages/templates/pages/nav.html:45
-#, fuzzy
 msgid "Add Page"
 msgstr ""
 
 #: apps/pages/templates/pages/nav.html:48
-#, fuzzy
 msgid "Export Pages"
 msgstr ""
 
 #: apps/pages/templates/pages/nav.html:54
-#, fuzzy
 msgid "This Page"
 msgstr ""
 
 #: apps/pages/templates/pages/nav.html:57
-#, fuzzy
 msgid "View Page"
 msgstr ""
 
 #: apps/pages/templates/pages/nav.html:60
-#, fuzzy
 msgid "Edit Page"
 msgstr ""
 
@@ -10387,12 +10007,10 @@ msgid ""
 msgstr ""
 
 #: apps/profiles/forms.py:361
-#, fuzzy
 msgid "Subscribe Date/Time"
 msgstr ""
 
 #: apps/profiles/forms.py:363
-#, fuzzy
 msgid "Expire Date/Time"
 msgstr ""
 
@@ -10529,7 +10147,6 @@ msgid "Successfully updated your avatar."
 msgstr ""
 
 #: apps/profiles/views.py:545
-#, fuzzy
 msgid "Successfully updated your password."
 msgstr ""
 
@@ -10583,7 +10200,7 @@ msgid ""
 msgstr ""
 
 #: apps/profiles/templates/notification/user_added/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "New user (%(objname)s) added on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10614,7 +10231,7 @@ msgid "If you would like to view all recently deleted users, go to:"
 msgstr ""
 
 #: apps/profiles/templates/notification/user_deleted/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "User (%(objname)s) deleted from %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10777,7 +10394,7 @@ msgid "To view this user's record, click here:"
 msgstr ""
 
 #: apps/profiles/templates/notification/user_edited/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "User (%(objname)s) edited on %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -10908,7 +10525,6 @@ msgid "Security Level"
 msgstr ""
 
 #: apps/profiles/templates/profiles/admin_list.html:21
-#, fuzzy
 msgid "Superusers"
 msgstr ""
 
@@ -10971,12 +10587,10 @@ msgid ""
 msgstr ""
 
 #: apps/profiles/templates/profiles/edit_notice.txt:31
-#, fuzzy
 msgid "Old Value"
 msgstr ""
 
 #: apps/profiles/templates/profiles/edit_notice.txt:34
-#, fuzzy
 msgid "New Value"
 msgstr ""
 
@@ -10990,13 +10604,11 @@ msgstr ""
 
 #: apps/profiles/templates/profiles/export.html:6
 #: apps/profiles/templates/profiles/export_status.html:6
-#, fuzzy
 msgid "Profile Export"
 msgstr ""
 
 #: apps/profiles/templates/profiles/export.html:19
 #: apps/profiles/templates/profiles/export_status.html:19
-#, fuzzy
 msgid "Profiles CSV Export"
 msgstr ""
 
@@ -11029,12 +10641,10 @@ msgid "Permissions"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:33
-#, fuzzy
 msgid "All Users"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:44
-#, fuzzy
 msgid "Add a User"
 msgstr ""
 
@@ -11043,33 +10653,27 @@ msgid "Membership Entries"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:50
-#, fuzzy
 msgid "Admin List"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:60
-#, fuzzy
 msgid "This User"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:66
-#, fuzzy
 msgid "Edit User Profile"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:71
 #: apps/user_groups/templates/user_groups/nav.html:62
-#, fuzzy
 msgid "Edit Permissions"
 msgstr ""
 
 #: apps/profiles/templates/profiles/nav.html:76
-#, fuzzy
 msgid "Delete User"
 msgstr ""
 
 #: apps/profiles/templates/profiles/options.html:12
-#, fuzzy
 msgid "Superuser"
 msgstr ""
 
@@ -11078,18 +10682,15 @@ msgid "Impersonate"
 msgstr ""
 
 #: apps/profiles/templates/profiles/search-form.html:7
-#, fuzzy
 msgid "Only Show Members"
 msgstr ""
 
 #: apps/profiles/templates/profiles/search.html:10
 #: apps/profiles/templates/profiles/search.html:22
-#, fuzzy
 msgid "People Search"
 msgstr ""
 
 #: apps/profiles/templates/profiles/search.html:22
-#, fuzzy
 msgid "People List"
 msgstr ""
 
@@ -11103,12 +10704,10 @@ msgstr ""
 
 #: apps/profiles/templates/profiles/users_not_in_groups.html:19
 #: templates/top_menu/admin_top.html:162
-#, fuzzy
 msgid "Users not in Groups"
 msgstr ""
 
 #: apps/profiles/templates/profiles/users_not_in_groups.html:60
-#, fuzzy
 msgid "No users not in groups found."
 msgstr ""
 
@@ -11155,42 +10754,34 @@ msgid "Redirect Edit"
 msgstr ""
 
 #: apps/redirects/templates/redirects/export.html:18
-#, fuzzy
 msgid "Redirects Export"
 msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:33
-#, fuzzy
 msgid "All Redirects"
-msgstr "Redirecciones"
+msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:42
-#, fuzzy
 msgid "Redirect List"
 msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:44
-#, fuzzy
 msgid "Add a Redirect"
 msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:47
-#, fuzzy
 msgid "Export Redirects"
 msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:53
-#, fuzzy
 msgid "This Redirect"
-msgstr "Redirecciones"
+msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:56
-#, fuzzy
 msgid "Edit Redirect"
-msgstr "Redirecciones"
+msgstr ""
 
 #: apps/redirects/templates/redirects/nav.html:60
-#, fuzzy
 msgid "Delete Redirect"
 msgstr ""
 
@@ -11282,7 +10873,7 @@ msgid ""
 msgstr ""
 
 #: apps/registration/templates/registration/activation_email_subject.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Account Activation - %(site_url)s"
 msgstr ""
 
@@ -11388,7 +10979,6 @@ msgid ""
 msgstr ""
 
 #: apps/registration/templates/registration/password_reset_email_user_list.html:5
-#, fuzzy
 msgid ""
 "Please go to the following pages and choose a new password for your account:"
 msgstr ""
@@ -11433,7 +11023,6 @@ msgid "If no items are selected then all content is searched."
 msgstr ""
 
 #: apps/search/templates/search/search.html:39
-#, fuzzy
 msgid "Sort by:"
 msgstr ""
 
@@ -11459,7 +11048,6 @@ msgid "File Path"
 msgstr ""
 
 #: apps/stories/models.py:41
-#, fuzzy
 msgid "Link Title"
 msgstr ""
 
@@ -11485,7 +11073,6 @@ msgid "Save Story Changes"
 msgstr ""
 
 #: apps/stories/templates/stories/export.html:20
-#, fuzzy
 msgid "Stories Export"
 msgstr ""
 
@@ -11498,42 +11085,34 @@ msgid "Owned by you"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:34
-#, fuzzy
 msgid "All Stories"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:43
-#, fuzzy
 msgid "Story List"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:45
-#, fuzzy
 msgid "Add Story"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:48
-#, fuzzy
 msgid "Export Stories"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:54
-#, fuzzy
 msgid "This Story"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:57
-#, fuzzy
 msgid "View Story"
 msgstr ""
 
 #: apps/stories/templates/stories/nav.html:60
-#, fuzzy
 msgid "Edit Story"
 msgstr ""
 
 #: apps/stories/templates/stories/print_details.html:23
-#, fuzzy
 msgid "Back to regular story view"
 msgstr ""
 
@@ -11542,7 +11121,6 @@ msgid "Links to: "
 msgstr ""
 
 #: apps/stories/templates/stories/search-result.html:22
-#, fuzzy
 msgid "Link title: "
 msgstr ""
 
@@ -11566,7 +11144,6 @@ msgstr ""
 
 #: apps/subscribers/templates/subscribers/detail.html:7
 #: apps/user_groups/templates/user_groups/search-result.html:10
-#, fuzzy
 msgid "Subscriber"
 msgstr ""
 
@@ -11592,7 +11169,6 @@ msgid "Back to Theme-Editor"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/app_list.html:21
-#, fuzzy
 msgid "Tendenci Apps"
 msgstr ""
 
@@ -11605,12 +11181,11 @@ msgid "Currently Editing"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:46
-#, fuzzy
 msgid "Previous Versions"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:51
-#, fuzzy, python-format
+#, python-format
 msgid "Load %(archname)s  versioned on %(archdate)s by %(archauth)s"
 msgstr ""
 
@@ -11624,37 +11199,30 @@ msgid ""
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:66
-#, fuzzy
 msgid "Currently editing:"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:71
-#, fuzzy
 msgid "on your site"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:73
-#, fuzzy
 msgid "Active theme:"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:73
-#, fuzzy
 msgid "Change?"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:79
-#, fuzzy
 msgid "Choose a folder or file to edit:"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/index.html:149
-#, fuzzy
 msgid "Customize more templates"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/original_templates.html:18
-#, fuzzy
 msgid "Back to App List"
 msgstr ""
 
@@ -11668,7 +11236,6 @@ msgid "back to %(prev_dir_name)s"
 msgstr ""
 
 #: apps/theme_editor/templates/theme_editor/original_templates.html:44
-#, fuzzy
 msgid "copy to custom templates"
 msgstr ""
 
@@ -11717,7 +11284,6 @@ msgid "Allow Self Remove"
 msgstr ""
 
 #: apps/user_groups/models.py:26
-#, fuzzy
 msgid "Sync for newsletters"
 msgstr ""
 
@@ -11742,7 +11308,6 @@ msgid "Sort Order"
 msgstr ""
 
 #: apps/user_groups/importer/forms.py:13
-#, fuzzy
 msgid "XLS File"
 msgstr ""
 
@@ -11773,22 +11338,18 @@ msgid "You have too many users to use the bulk add for group members. You can:"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/bulk_add_redirect.html:13
-#, fuzzy
 msgid "Search for the user"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/bulk_add_redirect.html:13
-#, fuzzy
 msgid "and add them to specific groups"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/bulk_add_redirect.html:14
-#, fuzzy
 msgid "Bulk import users"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/bulk_add_redirect.html:14
-#, fuzzy
 msgid "into a specific group"
 msgstr ""
 
@@ -11801,12 +11362,10 @@ msgid "Are you sure you want to delete this Group?"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/delete.html:20
-#, fuzzy
 msgid "Clicking Delete User Group will"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/delete.html:22
-#, fuzzy
 msgid "remove all members from the group"
 msgstr ""
 
@@ -11821,7 +11380,6 @@ msgid "Deleted items cannot be recovered!"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/delete.html:29
-#, fuzzy
 msgid "Delete User Group"
 msgstr ""
 
@@ -11848,7 +11406,6 @@ msgid "Export all members and subscribers"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/detail.html:39
-#, fuzzy
 msgid "Import subscribers"
 msgstr ""
 
@@ -11914,7 +11471,6 @@ msgid "Group Permissions"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/import_status.html:16
-#, fuzzy
 msgid "Subscriber Import Failed!"
 msgstr ""
 
@@ -11923,12 +11479,10 @@ msgid "Processing Subscriber Import!"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/import_subscribers.html:18
-#, fuzzy
 msgid "Import Subscribers to"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/import_subscribers_result.html:18
-#, fuzzy
 msgid "Import Results for"
 msgstr ""
 
@@ -11967,37 +11521,30 @@ msgid "Add Myself to Group"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:36
-#, fuzzy
 msgid "All Groups"
-msgstr "Grupos"
+msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:45
-#, fuzzy
 msgid "Group List"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:47
-#, fuzzy
 msgid "Add Group"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:53
-#, fuzzy
 msgid "This Group"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:57
-#, fuzzy
 msgid "View Group"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:67
-#, fuzzy
 msgid "Add Users"
 msgstr ""
 
 #: apps/user_groups/templates/user_groups/nav.html:74
-#, fuzzy
 msgid "Delete Group"
 msgstr ""
 
@@ -12021,7 +11568,7 @@ msgid "Your export file is now ready for download."
 msgstr ""
 
 #: apps/wp_exporter/templates/notification/wp_export/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Blog export success for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -12030,7 +11577,6 @@ msgid "Get your tendenci stuff on wordpress!"
 msgstr ""
 
 #: apps/wp_exporter/templates/wp_exporter/index.html:13
-#, fuzzy
 msgid "Download Export File"
 msgstr ""
 
@@ -12043,7 +11589,6 @@ msgid "Oops, only upload files smaller than 20 MB!"
 msgstr ""
 
 #: apps/wp_importer/views.py:85
-#, fuzzy
 msgid "Your blog has been imported!"
 msgstr ""
 
@@ -12066,7 +11611,7 @@ msgid ""
 msgstr ""
 
 #: apps/wp_importer/templates/notification/wp_import/short.txt:3
-#, fuzzy, python-format
+#, python-format
 msgid "Blog import success for %(SITE_GLOBAL_SITEDISPLAYNAME)s"
 msgstr ""
 
@@ -12089,10 +11634,9 @@ msgstr ""
 #: core/base/fields.py:21
 #, python-format
 msgid "String (up to %(max_length)s)"
-msgstr "Cadena (hasta %(max_length)s)"
+msgstr ""
 
 #: core/base/fields.py:83
-#, fuzzy
 msgid "Verfiy Email Address"
 msgstr ""
 
@@ -12100,19 +11644,14 @@ msgstr ""
 msgid ""
 "Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."
 msgstr ""
-"Ingrese un 'slug' valido que consiste de letras, números, guiones bajos o "
-"guiones."
 
 #: core/base/forms.py:18
 msgid ""
 "Enter a valid 'slug' consisting of letters, numbers, underscores (_), front-"
 "slashes (/) or hyphens."
 msgstr ""
-"Ingrese un 'slug' valido que consiste de letras, números, guiones bajos, "
-"barras, o guiones."
 
 #: core/base/forms.py:47
-#, fuzzy
 msgid "Incorrect Password"
 msgstr ""
 
@@ -12121,7 +11660,7 @@ msgid "Provide Feedback for Tendenci!"
 msgstr ""
 
 #: core/base/templates/base/meta_creator_owner.html:3
-#, fuzzy, python-format
+#, python-format
 msgid "Created on %(create_date)s"
 msgstr ""
 
@@ -12131,7 +11670,7 @@ msgid " by: "
 msgstr ""
 
 #: core/base/templates/base/meta_creator_owner.html:8
-#, fuzzy, python-format
+#, python-format
 msgid "Last updated %(update_date)s"
 msgstr ""
 
@@ -12139,18 +11678,18 @@ msgstr ""
 #: core/base/templatetags/base_tags.py:643
 #, python-format
 msgid "%s tag requires exactly three arguments"
-msgstr "%s etiqueta requiere exactamente tres argumentos"
+msgstr ""
 
 #: core/base/templatetags/base_tags.py:625
 #: core/base/templatetags/base_tags.py:645
 #, python-format
 msgid "second argument to %s tag must be 'as'"
-msgstr "segundo argumento de etiqueta %s debe ser 'as'"
+msgstr ""
 
 #: core/categories/forms.py:22 core/categories/forms.py:82
 #: core/files/forms.py:116
 msgid "Sub Category"
-msgstr "Sub Categoría"
+msgstr ""
 
 #: core/email_blocks/templates/email_blocks/delete.html:15
 msgid "Delete an Email Block Record"
@@ -12416,7 +11955,6 @@ msgid ""
 msgstr ""
 
 #: core/event_logs/templates/event_logs/nav.html:30
-#, fuzzy
 msgid "Info List"
 msgstr ""
 
@@ -12575,12 +12113,10 @@ msgid "Logged on %(evlog)s"
 msgstr ""
 
 #: core/exports/templates/exports/export_status.html:15
-#, fuzzy
 msgid "Export Failed!"
 msgstr ""
 
 #: core/exports/templates/exports/export_status.html:20
-#, fuzzy
 msgid "Export Completed!"
 msgstr ""
 
@@ -12593,12 +12129,10 @@ msgid "Please wait while we finish processing your export file."
 msgstr ""
 
 #: core/files/templates/files/add.html:19
-#, fuzzy
 msgid "Add File"
 msgstr ""
 
 #: core/files/templates/files/bulk-add.html:23
-#, fuzzy
 msgid "Add Files"
 msgstr ""
 
@@ -12628,27 +12162,22 @@ msgid "Files Index Page"
 msgstr ""
 
 #: core/files/templates/files/nav.html:23
-#, fuzzy
 msgid "File List"
 msgstr ""
 
 #: core/files/templates/files/nav.html:25
-#, fuzzy
 msgid "Add a File"
 msgstr ""
 
 #: core/files/templates/files/nav.html:26
-#, fuzzy
 msgid "Add Multiple Files"
 msgstr ""
 
 #: core/files/templates/files/nav.html:30
-#, fuzzy
 msgid "Most Viewed"
 msgstr ""
 
 #: core/files/templates/files/search-result.html:44
-#, fuzzy
 msgid "Updated"
 msgstr ""
 
@@ -12661,12 +12190,10 @@ msgid "No files in here at all."
 msgstr ""
 
 #: core/files/templates/files/search.html:35
-#, fuzzy
 msgid "Add a file."
 msgstr ""
 
 #: core/files/templates/files/reports/most_viewed.html:21
-#, fuzzy
 msgid "Most Viewed Files"
 msgstr ""
 
@@ -12675,12 +12202,10 @@ msgid "Clicks"
 msgstr ""
 
 #: core/files/templates/files/reports/most_viewed.html:47
-#, fuzzy
 msgid "File Name"
 msgstr ""
 
 #: core/files/templates/files/reports/most_viewed.html:48
-#, fuzzy
 msgid "Actions"
 msgstr ""
 
@@ -12689,12 +12214,10 @@ msgid "Upload Media"
 msgstr ""
 
 #: core/files/templates/files/templates/tinymce.html:110
-#, fuzzy
 msgid "Width"
 msgstr ""
 
 #: core/files/templates/files/templates/tinymce.html:113
-#, fuzzy
 msgid "Height"
 msgstr ""
 
@@ -12737,7 +12260,6 @@ msgid ""
 msgstr ""
 
 #: core/imports/templates/imports/users.html:25
-#, fuzzy
 msgid "Download template"
 msgstr ""
 
@@ -12763,7 +12285,6 @@ msgid "Add Users to Group"
 msgstr ""
 
 #: core/imports/templates/imports/users.html:68
-#, fuzzy
 msgid "Delete members in group before importing"
 msgstr ""
 
@@ -12918,29 +12439,25 @@ msgid "Format?"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/articles_list.txt:9
-#, fuzzy, python-format
+#, python-format
 msgid "Articles for %(start_date)s to %(end_date)s"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/articles_list.txt:11
-#, fuzzy
 msgid "All Articles"
-msgstr "Artículos"
+msgstr ""
 
 #: core/newsletters/templates/newsletters/articles_list.txt:36
 #: core/newsletters/templates/newsletters/news_list.txt:36
-#, fuzzy
 msgid "Author:"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/articles_list.txt:39
 #: core/newsletters/templates/newsletters/news_list.txt:39
-#, fuzzy
 msgid "Release Date:"
-msgstr "Publicación de Fecha/Hora"
+msgstr ""
 
 #: core/newsletters/templates/newsletters/articles_list.txt:47
-#, fuzzy
 msgid "More Info"
 msgstr ""
 
@@ -12959,7 +12476,7 @@ msgstr ""
 
 #: core/newsletters/templates/newsletters/footer.html:11
 msgid "Schipul Web Marketing"
-msgstr "Schipul Web Marketing"
+msgstr ""
 
 #: core/newsletters/templates/newsletters/footer.txt:3
 msgid "Powered by Tendenci Software from Schipul"
@@ -12970,7 +12487,7 @@ msgid "To unsubscribe, reply with the subject \"remove\" or click here:"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/footer.txt:9
-#, fuzzy, python-format
+#, python-format
 msgid "RSS syndication available for the %(SITE_GLOBAL_SITEDISPLAYNAME)s:"
 msgstr ""
 
@@ -12980,12 +12497,10 @@ msgid "Jobs for %(startdate)s to %(enddate)s"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/jobs_list.txt:12
-#, fuzzy
 msgid "All Jobs"
-msgstr "Empleos"
+msgstr ""
 
 #: core/newsletters/templates/newsletters/jobs_list.txt:39
-#, fuzzy
 msgid "Date Activated:"
 msgstr ""
 
@@ -12997,12 +12512,10 @@ msgid ""
 msgstr ""
 
 #: core/newsletters/templates/newsletters/jumplinks.txt:29
-#, fuzzy
 msgid "Job Listings"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/jumplinks.txt:36
-#, fuzzy
 msgid "Recent Pages"
 msgstr ""
 
@@ -13016,22 +12529,19 @@ msgid ""
 msgstr ""
 
 #: core/newsletters/templates/newsletters/login.txt:12
-#, fuzzy
 msgid "If you have any questions, please contact the Site Administrator."
 msgstr ""
 
 #: core/newsletters/templates/newsletters/news_list.txt:9
-#, fuzzy, python-format
+#, python-format
 msgid "News for %(startdate)s to %(enddate)s"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/news_list.txt:53
-#, fuzzy
 msgid "Posted by"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/newsletter_generator.html:6
-#, fuzzy
 msgid "3rd Party Newsletter Generator"
 msgstr ""
 
@@ -13040,7 +12550,6 @@ msgid "Third-Party Newsletter Providers"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/opening_text.txt:4
-#, fuzzy
 msgid "Hello [firstname]"
 msgstr ""
 
@@ -13052,12 +12561,11 @@ msgid ""
 msgstr ""
 
 #: core/newsletters/templates/newsletters/pages_list.txt:9
-#, fuzzy, python-format
+#, python-format
 msgid "Pages Updated for %(startdate)s to %(enddate)s"
 msgstr ""
 
 #: core/newsletters/templates/newsletters/pages_list.txt:36
-#, fuzzy
 msgid "Updated:"
 msgstr ""
 
@@ -13170,14 +12678,12 @@ msgid "View my Invoice"
 msgstr ""
 
 #: core/payments/templates/payments/view.html:19
-#, fuzzy
 msgid "Payments are created with "
 msgstr ""
 
 #: core/payments/templates/payments/view.html:20
-#, fuzzy
 msgid "invoices"
-msgstr "Facturas"
+msgstr ""
 
 #: core/payments/templates/payments/view.html:21
 msgid ""
@@ -13327,12 +12833,10 @@ msgid "Ship to Country:"
 msgstr ""
 
 #: core/perms/models.py:22
-#, fuzzy
 msgid "Created On"
 msgstr ""
 
 #: core/perms/models.py:23
-#, fuzzy
 msgid "Last Updated"
 msgstr ""
 
@@ -13341,39 +12845,32 @@ msgid "Registry field packages must be of type tuple"
 msgstr ""
 
 #: core/site_settings/templates/site_settings/nav.html:20
-#, fuzzy
 msgid "Global Site Settings"
 msgstr ""
 
 #: core/site_settings/templates/site_settings/nav.html:21
 #: templates/top_menu/admin_top.html:192
-#, fuzzy
 msgid "Full Settings List"
-msgstr "Configuración"
+msgstr ""
 
 #: core/tags/templates/tags/detail.html:4
 #: core/tags/templates/tags/detail.html:12
-#, fuzzy
 msgid "Tag"
 msgstr ""
 
 #: core/tags/templates/tags/list.html:4 core/tags/templates/tags/list.html:12
-#, fuzzy
 msgid "Tags List"
 msgstr ""
 
 #: core/versions/models.py:20
-#, fuzzy
 msgid "create time"
 msgstr ""
 
 #: core/versions/models.py:24
-#, fuzzy
 msgid "object repr"
-msgstr "Identificación de Objeto"
+msgstr ""
 
 #: core/versions/models.py:25
-#, fuzzy
 msgid "change message"
 msgstr ""
 
@@ -13479,7 +12976,6 @@ msgid ""
 msgstr ""
 
 #: templates/default.html:18
-#, fuzzy
 msgid "Website tagline"
 msgstr ""
 
@@ -13492,14 +12988,12 @@ msgid "What is schipul doing..."
 msgstr ""
 
 #: templates/default.html:62
-#, fuzzy
 msgid "Meta"
 msgstr ""
 
 #: templates/default.html:66
-#, fuzzy
 msgid "Log Out"
-msgstr "Cerrar Sesión"
+msgstr ""
 
 #: templates/footer.html:5 templates/form.html:18
 #: templates/themes/prfirm/templates/footer.html:21
@@ -13519,7 +13013,7 @@ msgstr ""
 #: templates/footer.html:8 templates/themes/prfirm/templates/footer.html:13
 #: templates/themes/salonify/templates/footer.html:7
 msgid "Schipul Web Design"
-msgstr "Schipul Web Design"
+msgstr ""
 
 #: templates/footer.html:9
 msgid "Privacy"
@@ -13530,7 +13024,6 @@ msgid "Success!"
 msgstr ""
 
 #: templates/form-confirmation.html:15
-#, fuzzy
 msgid "Thank you for getting in touch with"
 msgstr ""
 
@@ -13573,7 +13066,7 @@ msgstr ""
 #: templates/admin/index.html:26
 #, python-format
 msgid "%(name)s"
-msgstr "%(name)s"
+msgstr ""
 
 #: templates/admin/index.html:53
 msgid "You don't have permission to edit anything."
@@ -13604,12 +13097,11 @@ msgstr[1] ""
 
 #: templates/notification/email_body.txt:1
 #: templates/notification/email_subject.txt:1
-#, fuzzy, python-format
+#, python-format
 msgid "%(message)s"
 msgstr ""
 
 #: templates/reports/404_report.html:6
-#, fuzzy
 msgid "404 URL Report"
 msgstr ""
 
@@ -13618,12 +13110,10 @@ msgid "There is nothing to report"
 msgstr ""
 
 #: templates/reports/404_report.html:14
-#, fuzzy
 msgid "Count"
 msgstr ""
 
 #: templates/reports/admin_users.html:8
-#, fuzzy
 msgid "Superuser Security Level Report"
 msgstr ""
 
@@ -13640,7 +13130,7 @@ msgstr ""
 #: templates/reports/user_activity_table.html:9
 #: templates/reports/users_added.html:53
 msgid "#"
-msgstr "#"
+msgstr ""
 
 #: templates/reports/admin_users.html:26 templates/reports/admin_users.html:28
 msgid "UserId"
@@ -13683,39 +13173,32 @@ msgid "Created"
 msgstr ""
 
 #: templates/reports/corp_mems_over_time.html:6
-#, fuzzy
 msgid "New and Renewing Corporate Memberships Overtime"
 msgstr ""
 
 #: templates/reports/corp_mems_over_time.html:13
-#, fuzzy
 msgid "New Members"
 msgstr ""
 
 #: templates/reports/corp_mems_over_time.html:16
-#, fuzzy
 msgid "Renewing Members"
 msgstr ""
 
 #: templates/reports/corp_mems_over_time.html:22
-#, fuzzy
 msgid "Total Active Corporate Memberships"
 msgstr ""
 
 #: templates/reports/corp_mems_summary.html:6 templates/reports/index.html:20
 #: templates/top_menu/admin_top.html:160
-#, fuzzy
 msgid "Corporate Membership Report"
 msgstr ""
 
 #: templates/reports/corp_mems_summary.html:10
-#, fuzzy
 msgid "Corp Mem Type"
 msgstr ""
 
 #: templates/reports/corp_mems_summary.html:13
 #: templates/reports/membership_stats.html:13
-#, fuzzy
 msgid "Expired"
 msgstr ""
 
@@ -13723,7 +13206,6 @@ msgstr ""
 #: templates/reports/event_source_summary.html:6
 #: templates/reports/event_summary.html:6
 #: templates/reports/event_summary_historical.html:6
-#, fuzzy
 msgid "Tendenci&reg; Event Log Summary Report"
 msgstr ""
 
@@ -13737,12 +13219,10 @@ msgid "Previous"
 msgstr ""
 
 #: templates/reports/event_application_summary.html:43
-#, fuzzy
 msgid "Back to main Event Logs report"
 msgstr ""
 
 #: templates/reports/index.html:5
-#, fuzzy
 msgid "Available reports"
 msgstr ""
 
@@ -13784,12 +13264,10 @@ msgid "Expired Memberships"
 msgstr ""
 
 #: templates/reports/index.html:18 templates/top_menu/admin_top.html:158
-#, fuzzy
 msgid "Memberships Over Time"
 msgstr ""
 
 #: templates/reports/index.html:19 templates/top_menu/admin_top.html:159
-#, fuzzy
 msgid "Corporate Memberships Over Time"
 msgstr ""
 
@@ -13832,7 +13310,6 @@ msgid "New Members - Last 90 days"
 msgstr ""
 
 #: templates/reports/membership_list.html:8
-#, fuzzy
 msgid "Active Memberships Report"
 msgstr ""
 
@@ -13841,26 +13318,22 @@ msgid "Lists all memberships that are still active."
 msgstr ""
 
 #: templates/reports/membership_list.html:11
-#, fuzzy
 msgid "Expired Memberships Report"
 msgstr ""
 
 #: templates/reports/membership_list.html:12
-#, fuzzy
 msgid ""
 "Lists all memberships that have expired.  Grace periods are not included."
 msgstr ""
 
 #: templates/reports/membership_list.html:15
-#, fuzzy
 msgid "Members listed"
-msgstr "Membresías"
+msgstr ""
 
 #: templates/reports/membership_list.html:39
 #: templates/reports/membership_list.html:41
 #: templates/reports/membership_list.html:97
 #: templates/reports/membership_list.html:99
-#, fuzzy
 msgid "Fullname"
 msgstr ""
 
@@ -13868,7 +13341,6 @@ msgstr ""
 #: templates/reports/membership_list.html:69
 #: templates/reports/membership_list.html:125
 #: templates/reports/membership_list.html:127
-#, fuzzy
 msgid "Subscription"
 msgstr ""
 
@@ -13876,7 +13348,6 @@ msgstr ""
 #: templates/reports/membership_list.html:76
 #: templates/reports/membership_list.html:132
 #: templates/reports/membership_list.html:134
-#, fuzzy
 msgid "Expiration"
 msgstr ""
 
@@ -13885,22 +13356,18 @@ msgid "New and Renewing Members Over Time"
 msgstr ""
 
 #: templates/reports/membership_stats.html:6
-#, fuzzy
 msgid "Membership Statistics Report"
 msgstr ""
 
 #: templates/reports/membership_stats.html:10
-#, fuzzy
 msgid "Mem Type"
 msgstr ""
 
 #: templates/reports/membership_summary.html:6
-#, fuzzy
 msgid "Active Memberships Per Month"
 msgstr ""
 
 #: templates/reports/top_spenders.html:6 templates/top_menu/admin_top.html:161
-#, fuzzy
 msgid "Top Spenders"
 msgstr ""
 
@@ -13909,12 +13376,10 @@ msgid "Lists the top 20 users with the highest expenses."
 msgstr ""
 
 #: templates/reports/top_spenders.html:12
-#, fuzzy
 msgid "UserID"
 msgstr ""
 
 #: templates/reports/top_spenders.html:16
-#, fuzzy
 msgid "Total Expenses"
 msgstr ""
 
@@ -13981,7 +13446,6 @@ msgid "Add your first event"
 msgstr ""
 
 #: templates/theme_includes/events_list_title_date_time.html:12
-#, fuzzy
 msgid "Great Event"
 msgstr ""
 
@@ -13999,17 +13463,14 @@ msgstr ""
 
 #: templates/theme_includes/logo_edit_form.html:5
 #: templates/theme_includes/logo_edit_form.html:18
-#, fuzzy
 msgid "Upload Logo"
 msgstr ""
 
 #: templates/theme_includes/logo_edit_form.html:10
-#, fuzzy
 msgid "Upload a Logo"
 msgstr ""
 
 #: templates/theme_includes/logo_edit_form.html:14
-#, fuzzy
 msgid "Logo"
 msgstr ""
 
@@ -14034,7 +13495,6 @@ msgstr ""
 #: templates/themes/bulletpoints/templates/homepage.html:53
 #: templates/themes/thinksmart/templates/homepage.html:39
 #: templates/themes/thinksmart/templates/sidebar.html:17
-#, fuzzy
 msgid "Read More"
 msgstr ""
 
@@ -14044,7 +13504,6 @@ msgid "Feed"
 msgstr ""
 
 #: templates/themes/prfirm/templates/footer.html:24
-#, fuzzy
 msgid "Phone: "
 msgstr ""
 
@@ -14058,7 +13517,6 @@ msgstr ""
 
 #: templates/themes/thinksmart/templates/homepage.html:98
 #: templates/themes/thinksmart/templates/sidebar.html:66
-#, fuzzy
 msgid "Us"
 msgstr ""
 
@@ -14067,12 +13525,10 @@ msgid "Gallery"
 msgstr ""
 
 #: templates/themes/thinksmart/templates/homepage.html:115
-#, fuzzy
 msgid "See More Photos"
 msgstr ""
 
 #: templates/themes/thinksmart/templates/homepage.html:129
-#, fuzzy
 msgid "Our"
 msgstr ""
 
@@ -14082,7 +13538,6 @@ msgid "People"
 msgstr ""
 
 #: templates/themes/thinksmart/templates/homepage.html:135
-#, fuzzy
 msgid "See More People"
 msgstr ""
 
@@ -14091,7 +13546,6 @@ msgid "Upcoming"
 msgstr ""
 
 #: templates/themes/thinksmart/templates/sidebar.html:58
-#, fuzzy
 msgid "Newsletter"
 msgstr ""
 
@@ -14135,22 +13589,18 @@ msgid "Administrators"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:131
-#, fuzzy
 msgid "Themes"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:135
-#, fuzzy
 msgid "Current Theme: "
 msgstr ""
 
 #: templates/top_menu/admin_top.html:136
-#, fuzzy
 msgid "Theme Settings"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:138
-#, fuzzy
 msgid "Change my Theme"
 msgstr ""
 
@@ -14167,7 +13617,6 @@ msgid "Contacts Report"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:157
-#, fuzzy
 msgid "Membership Statistics"
 msgstr ""
 
@@ -14204,7 +13653,6 @@ msgid "Quick Links"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:191
-#, fuzzy
 msgid "Site Settings"
 msgstr ""
 
@@ -14213,17 +13661,14 @@ msgid "Admin Backend"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:196
-#, fuzzy
 msgid "Newsletter Generator"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:204 templates/top_menu/user_top.html:93
-#, fuzzy
 msgid "Support"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:208
-#, fuzzy
 msgid "Tendenci Guide"
 msgstr ""
 
@@ -14232,17 +13677,14 @@ msgid "Feedback"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:221
-#, fuzzy
 msgid "Using Custom Template"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:225
-#, fuzzy
 msgid "Theme"
 msgstr ""
 
 #: templates/top_menu/admin_top.html:227
-#, fuzzy
 msgid "View using Default Template"
 msgstr ""
 
@@ -14251,7 +13693,6 @@ msgid "View using My Template"
 msgstr ""
 
 #: templates/top_menu/user_top.html:19
-#, fuzzy
 msgid "Search All Content"
 msgstr ""
 
@@ -14264,588 +13705,25 @@ msgid "Users Search"
 msgstr ""
 
 #: templates/top_menu/user_top.html:81
-#, fuzzy
 msgid "My Links"
 msgstr ""
 
 #: templates/top_menu/user_top.html:85
-#, fuzzy
 msgid "My User Profile"
-msgstr "Mi Perfil"
+msgstr ""
 
 #: templates/top_menu/user_top.html:86
-#, fuzzy
 msgid "My Invoices"
 msgstr ""
 
 #: templates/top_menu/user_top.html:87
-#, fuzzy
 msgid "My Memberships"
 msgstr ""
 
 #: templates/top_menu/user_top.html:88
-#, fuzzy
 msgid "My Content"
 msgstr ""
 
 #: templates/top_menu/user_top.html:99
-#, fuzzy
 msgid "Tendenci Help Files"
 msgstr ""
-
-#~ msgid "Successfully logged in as %(username)s."
-#~ msgstr "Registrado en la sesión como %(username)s"
-
-#~ msgid "Software License Agreement"
-#~ msgstr "Acuerdo de licencia del Software"
-
-#~ msgid "A corporate membership has been added - notice to user."
-#~ msgstr "Una membresía corporativa se ha añadido - Aviso al usuario."
-
-#~ msgid "A corporate membership has been renewed - notice to user."
-#~ msgstr "Una membresía corporativa ha sido renovada - Aviso al usuario."
-
-#~ msgid "Parent ID"
-#~ msgstr ""
-
-#~ msgid "From address"
-#~ msgstr ""
-
-#~ msgid "Archived Membership"
-#~ msgstr ""
-
-#~ msgid "Archived Memberships"
-#~ msgstr ""
-
-#~ msgid "Successfully added photo set!"
-#~ msgstr ""
-
-#~ msgid "article"
-#~ msgstr ""
-
-#~ msgid "news"
-#~ msgstr ""
-
-#~ msgid "category"
-#~ msgstr ""
-
-#~ msgid "middle initial"
-#~ msgstr ""
-
-#~ msgid "last name"
-#~ msgstr ""
-
-#~ msgid "address 2"
-#~ msgstr ""
-
-#~ msgid "zip"
-#~ msgstr ""
-
-#~ msgid "bio"
-#~ msgstr ""
-
-#~ msgid "practice area and casework"
-#~ msgstr ""
-
-#~ msgid "admissions"
-#~ msgstr ""
-
-#~ msgid "Tags separated by commas. E.g Tag1, Tag2, Tag3"
-#~ msgstr ""
-
-#~ msgid "Attorney"
-#~ msgstr ""
-
-#~ msgid "Attorneys"
-#~ msgstr ""
-
-#~ msgid "display warning"
-#~ msgstr ""
-
-#~ msgid "Before & After"
-#~ msgstr ""
-
-#~ msgid "Before & Afters"
-#~ msgstr ""
-
-#~ msgid "order"
-#~ msgstr ""
-
-#~ msgid "File type"
-#~ msgstr ""
-
-#~ msgid "Please enter a numeric positive number"
-#~ msgstr ""
-
-#~ msgid "Donation Added"
-#~ msgstr ""
-
-#~ msgid "A donation has been added."
-#~ msgstr ""
-
-#~ msgid "Donate to"
-#~ msgstr ""
-
-#~ msgid "Email Receipt?"
-#~ msgstr ""
-
-#~ msgid "Referred by"
-#~ msgstr ""
-
-#~ msgid "Service URL"
-#~ msgstr ""
-
-#~ msgid "Service Added"
-#~ msgstr ""
-
-#~ msgid "A service has been added."
-#~ msgstr ""
-
-#~ msgid "Service Deleted"
-#~ msgstr ""
-
-#~ msgid "A service has been deleted"
-#~ msgstr ""
-
-#~ msgid "Personal Sites"
-#~ msgstr ""
-
-#~ msgid "140 characters max."
-#~ msgstr ""
-
-#~ msgid "Supports &lt;strong&gt;, &lt;em&gt;, and &lt;a&gt; HTML tags."
-#~ msgstr ""
-
-#~ msgid "How Can We Help You?"
-#~ msgstr ""
-
-#~ msgid "Scope"
-#~ msgstr ""
-
-#~ msgid "Log in with Facebook"
-#~ msgstr ""
-
-#~ msgid "Email Address:"
-#~ msgstr ""
-
-#~ msgid "Tendenci Newsletter Send Confirmation"
-#~ msgstr ""
-
-#~ msgid "Send Marketing Action/Newsletter Confirmation"
-#~ msgstr ""
-
-#~ msgid "Total Attempted to Send = "
-#~ msgstr ""
-
-#~ msgid "Bad Address or E-mail Blocked = "
-#~ msgstr ""
-
-#~ msgid "Total Processed = "
-#~ msgstr ""
-
-#~ msgid "Start time:"
-#~ msgstr ""
-
-#~ msgid "Finish time:"
-#~ msgstr ""
-
-#~ msgid "View Distribution Recap"
-#~ msgstr ""
-
-#~ msgid "View detail of your e-mail."
-#~ msgstr ""
-
-#~ msgid "Click here to edit the related article."
-#~ msgstr ""
-
-#~ msgid "The Schipul Family"
-#~ msgstr ""
-
-#~ msgid "Newsletter Distribution Recap"
-#~ msgstr ""
-
-#~ msgid "Group: "
-#~ msgstr ""
-
-#~ msgid "Date Submitted: "
-#~ msgstr ""
-
-#~ msgid "Bad Address or E-mail blocked = "
-#~ msgstr ""
-
-#~ msgid "Start Time: "
-#~ msgstr ""
-
-#~ msgid "Finish Time: "
-#~ msgstr ""
-
-#~ msgid "Recap not available."
-#~ msgstr ""
-
-#~ msgid "Add Marketing Action Step 4"
-#~ msgstr ""
-
-#~ msgid "Marketing Action Step 4 of 5"
-#~ msgstr ""
-
-#~ msgid "Step1"
-#~ msgstr ""
-
-#~ msgid "Specify Action Name and General Properties."
-#~ msgstr ""
-
-#~ msgid "Include email2: "
-#~ msgstr ""
-
-#~ msgid "E-mail to bind to this Marketing Action."
-#~ msgstr ""
-
-#~ msgid "Sender: "
-#~ msgstr ""
-
-#~ msgid "Step3"
-#~ msgstr ""
-
-#~ msgid "Members Only"
-#~ msgstr ""
-
-#~ msgid "Step4"
-#~ msgstr ""
-
-#~ msgid "Confirm acceptance of site policies and common sense."
-#~ msgstr ""
-
-#~ msgid "I Agree"
-#~ msgstr ""
-
-#~ msgid "Add Marketing Action Step 5"
-#~ msgstr ""
-
-#~ msgid "Marketing Action Step 5 of 5"
-#~ msgstr ""
-
-#~ msgid "Step2"
-#~ msgstr ""
-
-#~ msgid "Send the E-mail!"
-#~ msgstr ""
-
-#~ msgid "Do you want to add this newsletter as an article? "
-#~ msgstr ""
-
-#~ msgid "View Marketing Action"
-#~ msgstr ""
-
-#~ msgid "Creator"
-#~ msgstr ""
-
-#~ msgid "View article"
-#~ msgstr ""
-
-#~ msgid "Step5"
-#~ msgstr ""
-
-#~ msgid "Status of e-mail: "
-#~ msgstr ""
-
-#~ msgid ""
-#~ "The e-mail has completed processing - ALL emails have been distributed."
-#~ msgstr ""
-
-#~ msgid "Emails completed sending at: "
-#~ msgstr ""
-
-#~ msgid "This e-mail has entered the queue for processing."
-#~ msgstr ""
-
-#~ msgid "Date Created: "
-#~ msgstr ""
-
-#~ msgid "Plugins"
-#~ msgstr ""
-
-#~ msgid "Global"
-#~ msgstr ""
-
-#~ msgid "Delete Article"
-#~ msgstr ""
-
-#~ msgid "Delete an Article"
-#~ msgstr ""
-
-#~ msgid "Are you sure you want to permanently delete this article?"
-#~ msgstr ""
-
-#~ msgid "Back to regular article view"
-#~ msgstr ""
-
-#~ msgid " Search"
-#~ msgstr ""
-
-#~ msgid "Campaigns:"
-#~ msgstr ""
-
-#~ msgid "Templates:"
-#~ msgstr ""
-
-#~ msgid "Renewed on %(renew_date)s"
-#~ msgstr ""
-
-#~ msgid "Entities"
-#~ msgstr "Entidades"
-
-#~ msgid "Update Theme"
-#~ msgstr ""
-
-#~ msgid "Update Styles"
-#~ msgstr ""
-
-#~ msgid "Update Template"
-#~ msgstr ""
-
-#~ msgid "Update Footer"
-#~ msgstr ""
-
-#~ msgid " Back to directories search"
-#~ msgstr ""
-
-#~ msgid "Search Directories"
-#~ msgstr ""
-
-#~ msgid "Directory Posting Payment Status"
-#~ msgstr ""
-
-#~ msgid "Directory Pricing"
-#~ msgstr ""
-
-#~ msgid "Pricing:"
-#~ msgstr ""
-
-#~ msgid "Category Threshold: "
-#~ msgstr ""
-
-#~ msgid "Category Threshold:"
-#~ msgstr ""
-
-#~ msgid "Released on %(da_create)s by %(da_creator)s"
-#~ msgstr ""
-
-#~ msgid "Category: "
-#~ msgstr ""
-
-#~ msgid "Sub Category: "
-#~ msgstr ""
-
-#~ msgid "(name not available)"
-#~ msgstr ""
-
-#~ msgid "Month"
-#~ msgstr ""
-
-#~ msgid " Cancelling registration for %(first_name)s"
-#~ msgstr ""
-
-#~ msgid " Cancelling registration for %(last_name)s"
-#~ msgstr ""
-
-#~ msgid "Reg"
-#~ msgstr ""
-
-#~ msgid "Price Type"
-#~ msgstr ""
-
-#~ msgid "Web Developer at %(regcomp)s"
-#~ msgstr ""
-
-#~ msgid "Web Developer"
-#~ msgstr ""
-
-#~ msgid "Files:"
-#~ msgstr ""
-
-#~ msgid "Download this image"
-#~ msgstr ""
-
-#~ msgid "Download this PDF"
-#~ msgstr ""
-
-#~ msgid "Updated %(file_update)s by %(file_creator)s"
-#~ msgstr ""
-
-#~ msgid "All Help Files"
-#~ msgstr ""
-
-#~ msgid "Request Help File"
-#~ msgstr ""
-
-#~ msgid "Redirects:"
-#~ msgstr ""
-
-#~ msgid "Help Files Search"
-#~ msgstr ""
-
-#~ msgid "%(topic)s help files"
-#~ msgstr ""
-
-#~ msgid "%(topic_title)s Help Files"
-#~ msgstr ""
-
-#~ msgid "(existing group members will be deleted)"
-#~ msgstr ""
-
-#~ msgid "Invoices:"
-#~ msgstr ""
-
-#~ msgid "Approve Job"
-#~ msgstr ""
-
-#~ msgid "Back to jobs search"
-#~ msgstr ""
-
-#~ msgid "Released on %(release_date)s by %(job_creator)s"
-#~ msgstr ""
-
-#~ msgid "Released on %(release_date)s by %(location_creator)s"
-#~ msgstr ""
-
-#~ msgid "Submitted on %(location_create)s by %(location.creator)s"
-#~ msgstr ""
-
-#~ msgid "Never expires"
-#~ msgstr ""
-
-#~ msgid "Membership Import Upload File"
-#~ msgstr ""
-
-#~ msgid "Members:"
-#~ msgstr ""
-
-#~ msgid "You will be notified at %(user_email)s. "
-#~ msgstr ""
-
-#~ msgid "edit email"
-#~ msgstr ""
-
-#, fuzzy
-#~ msgid "View Profile &nbsp; Membership"
-#~ msgstr ""
-
-#~ msgid "Submitted %(entry_date)s"
-#~ msgstr ""
-
-#~ msgid "Approved on %(entry_decision)s"
-#~ msgstr ""
-
-#~ msgid "Disapproved on %(entry_decision)s"
-#~ msgstr ""
-
-#~ msgid "Submitted on %(ncreate)s by %(ncreator)s"
-#~ msgstr ""
-
-#~ msgid "Released on %(new_release)s by:"
-#~ msgstr ""
-
-#~ msgid "To view the complete application, go to: "
-#~ msgstr ""
-
-#~ msgid "Payment receipt page"
-#~ msgstr ""
-
-#~ msgid "Home Page"
-#~ msgstr ""
-
-#~ msgid "No photo sets were found."
-#~ msgstr ""
-
-#~ msgid "Entity"
-#~ msgstr ""
-
-#~ msgid "Change Picture"
-#~ msgstr ""
-
-#~ msgid "Contact Info"
-#~ msgstr ""
-
-#~ msgid "Addresses"
-#~ msgstr ""
-
-#~ msgid "Position Assignment:"
-#~ msgstr ""
-
-#~ msgid "Admin Section"
-#~ msgstr ""
-
-#~ msgid "Tools:"
-#~ msgstr ""
-
-#~ msgid "Notes:"
-#~ msgstr ""
-
-#~ msgid "Latest Contributions"
-#~ msgstr ""
-
-#~ msgid "No contributions found."
-#~ msgstr ""
-
-#~ msgid "Role"
-#~ msgstr ""
-
-#~ msgid "Joined:"
-#~ msgstr ""
-
-#~ msgid "Expires:"
-#~ msgstr ""
-
-#~ msgid "Users:"
-#~ msgstr ""
-
-#~ msgid "DEVELOPER"
-#~ msgstr ""
-
-#~ msgid "ADMINISTRATOR"
-#~ msgstr ""
-
-#~ msgid "Added on %(create_date)s by %(profile_creator)s"
-#~ msgstr ""
-
-#~ msgid "Redirect Search"
-#~ msgstr ""
-
-#~ msgid "Your username, in case you've forgotten:"
-#~ msgstr ""
-
-#~ msgid "Back to regular resume view"
-#~ msgstr ""
-
-#~ msgid "Settings:"
-#~ msgstr ""
-
-#~ msgid "Theme in Editor:"
-#~ msgstr ""
-
-#~ msgid "in ...%(pslice)s"
-#~ msgstr ""
-
-#~ msgid "in %(pwd)s"
-#~ msgstr ""
-
-#~ msgid "Created on %(create_date)s by %(group_creator)s"
-#~ msgstr ""
-
-#~ msgid "Submitted on %(d_create)s by %(d_creator)s"
-#~ msgstr ""
-
-#~ msgid "Submitted on %(dc_create)s by: "
-#~ msgstr ""
-
-#~ msgid "Reg Price Override"
-#~ msgstr ""
-
-#~ msgid "Speed Registration"
-#~ msgstr ""
-
-#~ msgid "Event ID:"
-#~ msgstr ""
-
-#~ msgid "Submitted on %(submit_date)s by %(event_creator)s"
-#~ msgstr ""

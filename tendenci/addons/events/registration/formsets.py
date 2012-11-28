@@ -150,10 +150,10 @@ class RegistrantBaseFormSet(BaseFormSet):
                     
                     if shared_pricing:
                         if pricing not in self.enabled_pricings:
-                            errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
+                            errors.append(forms.ValidationError(_("%(user)s is not authorized to use %(pricing)s" % {'user': user, 'pricing': pricing})))
                     else:
                         if not can_use_pricing(self.event, user, pricing):
-                            errors.append(forms.ValidationError(_("%s is not authorized to use %s" % (user, pricing))))
+                            errors.append(forms.ValidationError(_("%(user)s is not authorized to use %(pricing)s" % {'user': user, 'pricing': pricing})))
                     
                     if not user.is_anonymous():
                         # check if this user has already been used before
