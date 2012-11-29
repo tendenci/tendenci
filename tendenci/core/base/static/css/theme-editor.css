@@ -320,3 +320,67 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 
 #right_files_list ul { margin-left: 12px; }
 #right_files_list a.folder { font-weight: bold; }
+
+/* Theme Picker styles */
+
+.theme-info {
+	border: 1px solid #CCC;
+	padding: 10px;
+	margin: 10px 0;
+	background-color: white;
+    position: relative;
+}
+.theme-info.selected {
+    border: 4px solid #01437D;
+}
+.theme-info table {
+	width: 100%;
+    cursor: pointer
+}
+.theme-info table td {
+	vertical-align: top;
+}
+.theme-info table td.screenshot {
+	width: 1%;
+    padding-right: 20px;
+}
+.theme-info table td.screenshot img {
+	padding: 5px;
+	border: 1px solid gray;
+    width: 122px;
+}
+.theme-info table td.info {
+    font-size: 12px;
+    line-height: 16px;
+}
+.theme-info table td.info h2 {
+	margin: 0 0 10px;
+    font-size: 16px;
+}
+.theme-info table td.info .author-info {
+    margin: 10px 0;
+}
+.theme-info table td.info .extra-info {
+    font-size: 12px;
+    height: 35px;
+}
+.theme-info table td.info .version {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+.theme-info table td.info .tags {
+    font-size: 12px;
+    position: absolute;
+    bottom: 10px;
+}
+.theme_picker_form #id_theme_choices {
+    display: none;
+}
+.theme_picker_form .theme_picker_submit {
+    margin: 10px 0;
+	font-size: 1.2em;
+	overflow: visible; /* ie7 and below: remove extra padding on button */
+	*padding: 0 10px; /* ie7 and below: custom padding */
+}

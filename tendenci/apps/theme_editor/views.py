@@ -10,6 +10,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import simplejson as json
 
 from tendenci.core.base.http import Http403
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.site_settings.models import Setting
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.utils import get_theme, theme_choices as theme_choice_list
@@ -18,7 +20,7 @@ from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
 from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
 from tendenci.apps.theme_editor.utils import qstr_is_file, qstr_is_dir, copy
-from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates
+from tendenci.apps.theme_editor.utils import handle_uploaded_file, app_templates, ThemeInfo
 
 DEFAULT_FILE = 'templates/homepage.html'
 
@@ -308,3 +310,29 @@ def upload_file(request):
         form = UploadForm()
 
     return HttpResponseRedirect('/theme-editor/editor/')
+
+
+@login_required
+def theme_picker(request, template_name="theme_editor/theme_picker.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    themes = []
+    for theme in theme_choice_list():
+        theme_info = ThemeInfo(theme)
+        themes.append(theme_info)
+
+    if request.method == "POST":
+        selected_theme = request.POST.get('theme')
+        theme_setting = Setting.objects.get(name='theme')
+        theme_setting.set_value(selected_theme)
+        theme_setting.save()
+
+    current_theme = get_setting('module', 'theme_editor', 'theme')
+
+    return render_to_response(template_name, {
+        'themes': themes,
+        'current_theme': current_theme,
+        'theme_choices': theme_choice_list(),
+    }, context_instance=RequestContext(request))
+>>>>>>> added theme picker view
