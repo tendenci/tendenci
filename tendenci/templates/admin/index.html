@@ -62,7 +62,7 @@
         <h3>{% trans 'My Actions' %}</h3>
             {% load log %}
             {% get_admin_log 10 as admin_log for_user user %}
-            {% if not user.profile.is_superuser_log %}
+            {% if not user.profile.is_superuser %}
             <p>{% trans 'None available' %}</p>
             {% else %}
             <ul class="actionlist">
