@@ -159,8 +159,11 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.subtotal = inv.total
         inv.balance = inv.total
         inv.estimate = 1
-        inv.status_detail = 'tendered'
+        inv.status_detail = 'estimate'
         inv.save(user)
+
+        # tender the invoice
+        inv.tender(user)
 
 
         if user.profile.is_superuser:

@@ -143,7 +143,7 @@ class Payment(models.Model):
             self.invoice = inv
             # hard coded here - same as in T4
             self.method = 'cc'
-            self.status = 1
+            self.status = True
             
             
             # default description
