@@ -130,7 +130,7 @@ def verify_no_fraud(response_d, payment):
         return False
 
     # Is the amount correct?
-    payment_gross = response_d.get('payment_gross', 0)
+    payment_gross = response_d.get('mc_gross', 0)
     try:
         float(payment_gross)
     except ValueError:
