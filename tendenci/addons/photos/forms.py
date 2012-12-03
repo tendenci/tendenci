@@ -63,6 +63,21 @@ class PhotoUploadForm(TendenciBaseForm):
     def __init__(self, *args, **kwargs):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
 
+class PhotoBatchEditForm(TendenciBaseForm):
+    class Meta:
+        model = Image
+        exclude=(
+            'title_slug',
+            'creator_username',
+            'owner_username',
+            'photoset',
+            'is_public',
+            'owner',
+            'safetylevel',
+            'allow_anonymous_view',
+            'status',
+            'status_detail',
+        )
 
 class PhotoEditForm(TendenciBaseForm):
 

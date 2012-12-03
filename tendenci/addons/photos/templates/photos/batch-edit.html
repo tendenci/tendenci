@@ -12,12 +12,13 @@
 {% endblock %}
 
 {% block body %}
-	<div class="t" style="width: 105%;">
+	<div class="t" style="width: 100%;">
 
         <div class="photos-nav">
             {% photo_set_nav request.user photo_set %}
         </div>
 
+        <div id="progress_bar"></div>
 		<h1>{% trans "Bulk edit photos" %}</h1>
 
         <form method="POST" action="" class="batch-edit-form">{% csrf_token %}
@@ -58,7 +59,7 @@
                         </div>
                     </div>
                     <div class="save-wrap">
-                        <input type="submit" value="Save all changes to these photos" />
+                        <input type="submit" value="Save all changes to these photos" onclick="event.preventDefault(); save_changes('{% url photoset_details photo_set.id %}');"/>
                     </div>
                 </div>
             </div>
@@ -133,19 +134,18 @@
 
 {% block extra_body %}
 {{ block.super }}
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.4.2.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.20.custom.min.js"></script>
 <script type="text/javascript">
-
-	$(".photo-bulk-editor .title").keyup(function(event){
-		$('.title-wrap input').val($(this).val())
-	});
-	$(".photo-bulk-editor .caption").keyup(function(event){
-		$('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
-	});
-	$(".photo-bulk-editor .tags").keyup(function(event){
-		$('.tags-wrap input').val($(this).val())
-	});
+    $(".photo-bulk-editor .title").keyup(function(event){
+        $('.title-wrap input').val($(this).val())
+    });
+    $(".photo-bulk-editor .caption").keyup(function(event){
+	    $('.caption-wrap textarea').val($('.photo-bulk-editor .caption').val())
+    });
+    $(".photo-bulk-editor .tags").keyup(function(event){
+	    $('.tags-wrap input').val($(this).val())
+    });
 
     $(".bulk-license select").change(function(event) {
         $(".license-wrap select").val($(this).val());
@@ -158,7 +158,6 @@
     $('.position-wrap').hide();
 
     $(function() {
-
         $( ".minimize-link" ).click(function(){
             $(this).parent().toggleClass('minimize-photo');
             $(this).parent().find('.title-wrap').toggle();
@@ -193,36 +192,73 @@
                     $('.minimize-all-button').text('{% trans "Enable Photo Drag/Drop Reordering" %}')
                 }
             }
-        }); 
+        });
     });
 
-	$(window).scroll(function(){
-		if  ($(window).scrollTop() > $(".float-anchor").offset().top){
-			$(".float-window").css("position", "fixed");
-			$(".float-window").css("top", "40px");
-		}
-		
-		if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
-			$(".float-window").css("position", "relative");
-			$(".float-window").css("top", $(".float-anchor").offset);
-		}
-	});
+    $(window).scroll(function(){
+	    if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+		    $(".float-window").css("position", "fixed");
+		    $(".float-window").css("top", "40px");
+	    }
+	
+	    if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+		    $(".float-window").css("position", "relative");
+		    $(".float-window").css("top", $(".float-anchor").offset);
+	    }
+    });
+
+    function save_changes(path) { 
+        $("#progress_bar").progressbar({
+            max : $("#id_form-TOTAL_FORMS").val(),
+        });
+        var csrfstring = $(".batch-edit-form input[name='csrfmiddlewaretoken']").serialize()
+        var id_regex = new RegExp('(form-\\d+-)');
+        $(".edit-wrap").each(function(i){
+            var current_wrap = $(this)
+            $(this).find('.position-wrap input').val(i+1);
+            // get the POST data for one form
+            var string = csrfstring + '&';
+            $(this).find(".field").each(function(){
+                if ($(this).children().serialize() != ''){
+                    string = string + $(this).children().serialize().replace(id_regex, '') + '&';}
+            });
+            string = string + $(this).children('input:first-child').serialize().replace(id_regex, '');
+            // send an ajax request for an individual form
+            $.ajax({
+                type: 'POST',
+                url: '',
+                async: true,
+                data: string,
+                success: function(xmlRequestObject, successString){
+                    console.log(successString);
+                }
+            }).done(function(data){
+                // hide the current form
+                current_wrap.hide();
+                // update the progress bar
+                var progressSoFar = $( "#progress_bar" ).progressbar( "value" );
+                $( "#progress_bar" ).progressbar( "value", progressSoFar + 1 );
+                // check if progress bar has finished
+                if (progressSoFar + 1 == $("#id_form-TOTAL_FORMS").val()){
+                    window.location=path;}
+            });
+        });
+    }
 
     function minimizeAll() {
         if ($('.minimize-all-button').text() == '{% trans "Enable Photo Drag/Drop Reordering" %}') {
-            $( ".t" ).css("width", "160%");
+            $( ".sortable-photos" ).css("width", "100%");
             $( ".side-panel" ).css("display", "none");
             $( ".sortable-photos" ).sortable({
                 disabled: false,
                 items: 'div.edit-wrap',
                 update: function() {
                     $(this).find('div.edit-wrap').each(function(i) {
-                            $(this).find('.position-wrap input').val(i+1);
+                        $(this).find('.position-wrap input').val(i+1);
                     });
                 }
             });
             $( ".sortable-photos" ).disableSelection();
-
             $('.edit-wrap').each(function(){
                 $(this).addClass('minimize-photo');
                 $(this).find('.title-wrap').hide();
@@ -235,7 +271,7 @@
             });
             $('.minimize-all-button').text('{% trans "Show all photo details for editing" %}')
         } else {
-            $( ".t" ).css("width", "105%");
+            $( ".sortable-photos" ).css("width", "63%");
             $( ".side-panel" ).css("display", "inline");
             $( ".sortable-photos" ).sortable({ disabled: true});
             $('.edit-wrap').each(function(){
