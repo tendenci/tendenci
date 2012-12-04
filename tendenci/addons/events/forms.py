@@ -579,6 +579,16 @@ class TypeForm(forms.ModelForm):
     class Meta:
         model = Type
 
+class ReassignTypeForm(forms.Form):
+    type = forms.ModelChoiceField(empty_label=None, initial=1, queryset=Type.objects.none(), label=_('Reassign To'))
+
+    def __init__(self, *args, **kwargs):
+        type_id = kwargs.pop('type_id')
+        super(ReassignTypeForm, self).__init__(*args, **kwargs)
+
+        event_types = Type.objects.exclude(pk=type_id)
+
+        self.fields['type'].queryset = event_types  
 
 class PlaceForm(forms.ModelForm):
     description = forms.CharField(required=False,

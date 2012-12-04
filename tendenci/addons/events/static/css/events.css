@@ -341,6 +341,18 @@ div.id_regconf-reminder_days label{
 	white-space: normal;
 }
 
+div.type-wrap{
+    margin: 10px 0;
+}
+div.type-wrap .type-item{
+    margin-bottom: 15px;
+}
+div.type-wrap .type-item .associated-events{
+    list-style-type: none
+}
+div.type-wrap .type-item .associated-events li{
+    margin-top: 10px;
+}
 
 .item .field,
 .item .help {

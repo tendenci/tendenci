@@ -50,7 +50,7 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
-    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm)
+    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
 from tendenci.addons.events.utils import (email_registrants, 
     render_event_email, get_default_reminder_template,
     add_registration, registration_has_started, registration_has_ended,
@@ -1987,6 +1987,21 @@ def types(request, template_name='events/types/index.html'):
     formset = TypeFormSet()
 
     return render_to_response(template_name, {'formset': formset}, 
+        context_instance=RequestContext(request))
+
+@login_required
+def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='events/types/reassign.html'):
+    type = get_object_or_404(Type, pk=type_id)
+        
+    form = form_class(request.POST or None, type_id=type.id)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            type.event_set.update(type=form.cleaned_data['type'])
+            messages.add_message(request, messages.SUCCESS, 'Successfully reassigned events from type "%s" to type "%s".' % (type, form.cleaned_data['type']))
+            return redirect('event.search')
+
+    return render_to_response(template_name, {'type': type, 'form': form},
         context_instance=RequestContext(request))
 
 @login_required

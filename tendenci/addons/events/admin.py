@@ -2,9 +2,10 @@ from django.contrib import admin
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
+from django.http import HttpResponseRedirect
 
-from tendenci.addons.events.models import CustomRegForm, CustomRegField, Registrant
-from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField 
+from tendenci.addons.events.models import CustomRegForm, CustomRegField, Registrant, Type
+from tendenci.addons.events.forms import CustomRegFormAdminForm, CustomRegFormForField, TypeForm
 from tendenci.core.event_logs.models import EventLog
 
 class EventAdmin(admin.ModelAdmin):
@@ -26,6 +27,26 @@ class EventAdmin(admin.ModelAdmin):
 # admin.site.register(Event, EventAdmin)
 # admin.site.register(Type)
 # admin.site.register(Registrant)
+
+class EventTypeAdmin(admin.ModelAdmin):
+    form = TypeForm
+    list_display=(
+        'name',
+        'bg_color',
+        'reassign',
+    )
+
+    def reassign(self, obj):
+
+        return """<a href="%s">Reassign all events from this type</a>
+            """ % (reverse('event.reassign_type', args=[obj.id]))
+    reassign.allow_tags = True
+    reassign.short_description = 'Reassign Link'
+
+    class Media:
+        css = {'all': ['%scss/admin/event-types-color-set.css' % settings.STATIC_URL], }
+
+admin.site.register(Type, EventTypeAdmin)
 
 class CustomRegFieldAdminForm(CustomRegFormForField):
     class Meta:

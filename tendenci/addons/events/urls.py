@@ -66,6 +66,7 @@ urlpatterns = patterns('tendenci.addons.events',
         'views.cancel_registration', name='event.cancel_registration'),
 
     url(r'^types/$', 'views.types', name='event.types'),
+    url(r'^reassign_type/(?P<type_id>\d+)$', 'views.reassign_type', name='event.reassign_type'),
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),
