@@ -129,6 +129,7 @@ setup(
     include_package_data=True,
     dependency_links=[
 #         "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14",
+        "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.9",
         "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
@@ -137,7 +138,9 @@ setup(
     ],
     install_requires=[
         "Django==1.4.2",
+        "pisa",
         "Reportlab==2.5",
+        "html5lib",
         "PIL==1.1.7",
         "South==0.7.3",
         "anyjson>=0.2.4",
@@ -181,5 +184,6 @@ setup(
         "django-tastypie",
         "johnny-cache==1.4",
         "docutils==0.9.1",
+        "django-model-report==0.0.9",
     ],
 )
