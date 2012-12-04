@@ -207,6 +207,11 @@ class Invoice(models.Model):
             
             # Make the accounting entries here
             make_acct_entries(user, self, amount)
-        
-        
-        
+
+    def void_payment(self, user, amount):
+        self.balance += amount
+        self.payments_credits -= amount
+        self.save()
+        for payment in self.payment_set.all():
+            payment.status_detail = 'void'
+            payment.save()

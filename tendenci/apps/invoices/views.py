@@ -76,6 +76,19 @@ def mark_as_paid(request, id):
     return redirect(invoice)
 
 
+def void_payment(request, id):
+    
+    invoice = get_object_or_404(Invoice, pk=id)
+    
+    if not (request.user.profile.is_superuser): raise Http403    
+    
+    amount = invoice.payments_credits
+    invoice.void_payment(request.user, amount)
+    
+    messages.add_message(request, messages.SUCCESS, 'Successfully voided payment for Invoice %s.' % invoice.id)
+    return redirect(invoice)
+
+
 @login_required
 def search(request, template_name="invoices/search.html"):
     query = request.GET.get('q', None)
