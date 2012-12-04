@@ -1,0 +1,17 @@
+<div class="video-wrap">
+    <a href="{{ video.get_absolute_url }}">
+
+    {% if video.image %}
+        <img src="{{ video.image.url }}" style="width: 180px; height: 120px;">
+    {% else %}
+        {% if video.thumbnail %}
+        <img src="{{ video.thumbnail }}" style="width: 180px; height: 120px;">
+        {% else %}
+        <img src="{{ STATIC_URL }}images/default-photo.jpg" style="width: 180px; height: 120px;">
+        {%endif%}
+    {%endif%}
+
+    <h3 title="{{ video.title }}">{{ video.title|truncatewords:"6" }}</h3>
+    </a>
+    <div>{{ video.description|safe|truncatewords_html:"20" }}</div>
+</div>

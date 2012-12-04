@@ -1,0 +1,42 @@
+{% comment %}
+PR Firm Theme - header.html
+{% endcomment %}
+
+{% load theme_tags %}
+{% load nav_tags %}
+
+    <section id="header">
+        <div id="header-content">
+            <header>
+                <div id="logo-login" class="clearfix">
+                    <div id="logo">
+                        <a href="/"><img src="{% if MODULE_THEME_LOGO %}/files/{{ MODULE_THEME_LOGO }}/100x100/crop/90/{% else %}http://media.tendenciapp.com/images/logo.jpg{% endif %}" />
+                        <h1>{{ SITE_GLOBAL_SITEDISPLAYNAME }}</h1></a>
+                        {% if not MODULE_THEME_LOGO %}
+                        {% theme_include 'theme_includes/logo_edit_form.html' %}
+                        {% endif %}
+                    </div>
+
+                    <div id="login">
+                        {% if request.user.is_authenticated %}
+                        <span>Logged in as <a href="/profiles/">{{ request.user }}</a> | <a href="/accounts/logout/">Logout</a></span>
+                        {% else %}
+                        <form method="post" action="/accounts/login/" style="margin-bottom: 6px;">{% csrf_token %}
+                            <input title="username" id="id_username" value="Username" onfocus="clearDefault(this)" type="text" name="username" maxlength="30" style="padding: 4px; color:#007799;" />
+                            <input title="password" value="password" onfocus="clearDefault(this)" type="password" name="password" id="id_password" style="padding: 4px; color:#007799;" />
+                            <input name="submit" type="submit" value="LOGIN" />
+                        </form>
+                        <p>Not a Member? Join <a href="#">Here</a></p>
+                        {% endif %}
+                    </div>
+                </div><!-- /#logo-login -->
+            </header>
+        </div><!-- /#header-content -->
+                <div id="nav">
+                    <div id="nav-content">
+                        {% nav 1 %}
+                    </div><!-- /nav-content -->
+                </div><!-- /#nav -->
+                
+                <div class="clear" />
+    </section><!-- /#header -->

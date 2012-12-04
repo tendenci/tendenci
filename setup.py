@@ -13,7 +13,7 @@ def read(*path):
 
 # Provided as an attribute, so you can append to these instead
 # of replicating them:
-standard_exclude = ["*.py", "*.pyc", "*~", ".*", "*.bak"]
+standard_exclude = ["*.pyc", "*~", "*.bak"]
 standard_exclude_directories = [
     ".*", "CVS", "_darcs", "./build",
     "./dist", "EGG-INFO", "*.egg-info"
@@ -126,15 +126,15 @@ setup(
     long_description=LONG_DESCRIPTION,
     platforms=['any'],
     classifiers=CLASSIFIERS,
+    entry_points="""
+            [console_scripts]
+            create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
+        """,
     include_package_data=True,
     dependency_links=[
-#         "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14",
         "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.9",
         "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
-    ],
-    setup_requires=[
-        "Reportlab==2.5",
     ],
     install_requires=[
         "Django==1.4.2",
@@ -142,7 +142,7 @@ setup(
         "Reportlab==2.5",
         "html5lib",
         "PIL==1.1.7",
-        "South==0.7.3",
+        "South==0.7.5",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
         "django-avatar>=1.0.4",
@@ -172,7 +172,7 @@ setup(
         "django-celery==2.3.0",
         "django-kombu>=0.9.4",
         "mimeparse>=0.1.3",
-        "python-dateutil>=1.5",
+        "python-dateutil==1.5",
         "pdfminer==20110515",
         "slate==0.3",
         "stripe==1.7.2",
@@ -180,10 +180,17 @@ setup(
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
-#         "Geraldo==0.4.14",
+        "Geraldo==0.4.16",
         "django-tastypie",
         "johnny-cache==1.4",
         "docutils==0.9.1",
         "django-model-report==0.0.9",
+        "dj-database-url==0.2.1",
+        "psycopg2==2.4.5",
+        "gunicorn==0.16.1",
+        "gevent==0.13.8",
+        "django-s3-folder-storage==0.1",
+        "django-storages==1.1.5",
+        "python-memcached==1.48",
     ],
 )

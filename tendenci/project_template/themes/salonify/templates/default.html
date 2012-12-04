@@ -1,0 +1,51 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
+{% load theme_tags %}
+
+{% theme_extends "base.html" %}
+
+{% block extra_head %}
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+    <link rel="stylesheet/less" href="{{ LOCAL_THEME_URL }}media/css/styles.less" type="text/css" media="screen" />
+    <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,200,300' rel='stylesheet' type='text/css'>
+
+    <script src="{{ THEME_URL }}media/js/less-1.1.3.min.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/libs/modernizr-1.6.min.js" type="text/javascript"></script>
+{% endblock extra_head %}
+
+{% block body_ids %}sub{% endblock body_ids %}
+{% block body_classes %}sub{% endblock body_classes %}
+
+{% block html_body %}
+<div id="wrapper">
+    {% theme_include "header.html" %}
+    <div class="container primary">
+        <section id="body-content" class="clearfix">
+            <div class="content content-middle {% block content_classes %}{% endblock %}"> 
+                {% theme_include "base/messages.html" %}
+                {% block body %}{% endblock %}
+            </div>
+            {% block sidebar %}
+            <section id="sidebar">
+                {% theme_include "sidebar.html" %}
+            </section><!-- /#sidebar-->
+            {% endblock %}
+        </section><!-- /#body-content-->
+    </div>
+    <div class="container">
+        <section id="footer">
+            <footer class="clearfix">{% theme_include "footer.html" %}</footer>
+        </section><!-- /#footer -->
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+    function clearDefault(val) {
+        if (val.defaultValue==val.value) val.value = ""
+    }
+</script>
+{% endblock extra_body %}
