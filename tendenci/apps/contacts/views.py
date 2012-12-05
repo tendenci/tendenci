@@ -1,3 +1,5 @@
+import random, string
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -13,6 +15,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
 from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm
 from tendenci.apps.contacts.utils import listed_in_email_block
+from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
 from tendenci.core.event_logs.models import EventLog
@@ -135,10 +138,41 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
             url = form.cleaned_data.get('url', None)
             message = form.cleaned_data.get('message', None)
 
+            if request.user.is_anonymous():
+                username = first_name.replace(' ', '')
+                if last_name:
+                    username = username + '_' + last_name.replace(' ', '')
+                username = username.lower()
+                try:
+                    User.objects.get(username=username)
+                    x = User.objects.filter(first_name=first_name).count()
+                    username = username + '_' + str(x)
+                except User.DoesNotExist:
+                    pass
+                password = ''
+                for i in range(0, 10):
+                    password += random.choice(string.ascii_lowercase + string.ascii_uppercase)
+                print password
+                
+                contact_user = User(username=username,
+                                    email=email,
+                                    first_name=first_name,
+                                    last_name=last_name,)
+                contact_user.set_password(password)
+                contact_user.is_active = False
+                contact_user.save()
+                profile = Profile(user=contact_user, owner=contact_user, creator=User.objects.get(pk=1),
+                                  address=address, country=country, city=city, state=state,
+                                  url=url, phone=phone, zipcode=zipcode)
+                profile.save()
+            else:
+                contact_user = request.user
+
             contact_kwargs = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'message': message,
+                'user': contact_user,
             } 
             contact = Contact(**contact_kwargs)
             contact.creator_id = 1 # TODO: decide if we should use tendenci base model
