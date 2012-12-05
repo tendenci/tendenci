@@ -608,6 +608,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
     return render_to_response(template_name, {'event': event, 'form':form},
         context_instance=RequestContext(request))
 
+
 @csrf_exempt
 def get_place(request):
     if request.method == 'POST':
@@ -623,22 +624,23 @@ def get_place(request):
                     "description": place.description,
                     "address": place.address,
                     "city": place.city,
+                    "state": place.state,
                     "zip": place.zip,
                     "country": place.country,
                     "url": place.url,
                 }), mimetype="text/plain")
-            except Place.DoesNotExist as e:
-                return HttpResponse(json.dumps(
-                {
+            except Place.DoesNotExist:
+                return HttpResponse(json.dumps({
                     "error": True,
                     "message": "Place does not exist.",
                 }), mimetype="text/plain")
+
         return HttpResponse(json.dumps(
             {
                 "error": True,
                 "message": "No id provided.",
             }), mimetype="text/plain")
-        
+
     return HttpResponse('Requires POST method.')
 
 

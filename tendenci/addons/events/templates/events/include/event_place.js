@@ -15,6 +15,7 @@ $('select#id_place-place').change(function() {
                     $('iframe#id_place-description_ifr').contents().find("body#tinymce").html(json["description"]);
                     $('input#id_place-address').val(json["address"]);
                     $('input#id_place-city').val(json["city"]);
+                    $('input#id_place-state').val(json["state"]);
                     $('input#id_place-zip').val(json["zip"]);
                     $('input#id_place-country').val(json["country"]);
                     $('input#id_place-url').val(json["url"]);

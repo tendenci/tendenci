@@ -590,48 +590,45 @@ class ReassignTypeForm(forms.Form):
 
         event_types = Type.objects.exclude(pk=type_id)
 
-        self.fields['type'].queryset = event_types  
+        self.fields['type'].queryset = event_types
+
 
 class PlaceForm(forms.ModelForm):
     place = forms.ChoiceField(label=_('Place'), required=False, choices=[])
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Place._meta.app_label, 
-        'storme_model':Place._meta.module_name.lower()}))
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': Place._meta.app_label,
+        'storme_model': Place._meta.module_name.lower()}))
     label = 'Location Information'
+
     class Meta:
         model = Place
-        
+
     def __init__(self, *args, **kwargs):
         super(PlaceForm, self).__init__(*args, **kwargs)
         # Populate place
-        places = Place.objects.all().order_by('address', 
-                                              'city', 
-                                              'state', 
-                                              'zip', 
-                                              'country',
-                                              '-pk').distinct('address',
-                                                              'city',
-                                                              'state',
-                                                              'zip',
-                                                              'country')
-        choices = [('','------------------------------')]
+        places = Place.objects.all().order_by(
+            'address', 'city', 'state', 'zip', 'country', '-pk').distinct(
+            'address', 'city', 'state', 'zip', 'country')
+
+        choices = [('', '------------------------------')]
         for p in places:
             choices.append((p.pk, unicode(p)))
         if self.fields.get('place'):
             self.fields.get('place').choices = choices
-            
+
         self.fields.keyOrder = [
             'place',
             'name',
             'description',
             'address',
             'city',
+            'state',
             'zip',
             'country',
             'url',
         ]
-        
+
     def save(self, *args, **kwargs):
         place = super(PlaceForm, self).save(commit=False)
         # Handle case if place is given
@@ -640,16 +637,16 @@ class PlaceForm(forms.ModelForm):
             # Check if there is a change in value.
             # If there is a change in value, create new place
             if place_obj.name != place.name or \
-               place_obj.description != place.description or \
-               place_obj.address != place.address or \
-               place_obj.city != place.city or \
-               place_obj.zip != place.zip or \
-               place_obj.country != place.country or \
-               place_obj.url != place.url:
+                place_obj.description != place.description or \
+                place_obj.address != place.address or \
+                place_obj.city != place.city or \
+                place_obj.zip != place.zip or \
+                place_obj.country != place.country or \
+                place_obj.url != place.url:
                 place.pk = None
                 place.save()
             else:
-               place = place_obj
+                place = place_obj
         else:
             place.save()
         return place
