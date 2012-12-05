@@ -27,7 +27,6 @@ class GroupAdminForm(TendenciBaseForm):
           'allow_self_remove',
           'description',
           'auto_respond',
-          'auto_respond_template',
           'auto_respond_priority',
           'notes',
           'allow_anonymous_view',
@@ -65,7 +64,6 @@ class GroupForm(TendenciBaseForm):
                   'allow_self_remove',
                   'description',
                   'auto_respond',
-                  'auto_respond_template',
                   'auto_respond_priority',
                   'notes',
                   'allow_anonymous_view',
@@ -86,7 +84,6 @@ class GroupForm(TendenciBaseForm):
                                  'allow_self_remove',
                                  'description'
                                  'auto_respond',
-                                 'auto_respond_template',
                                  'auto_respond_priority'
                                  ],
                       'legend': ''
