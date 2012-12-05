@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from datetime import datetime, time
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -19,7 +20,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm
+from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
@@ -91,15 +92,52 @@ def void_payment(request, id):
 
 @login_required
 def search(request, template_name="invoices/search.html"):
-    query = request.GET.get('q', None)
+    query = u''
+    invoice_type = u''
+    start_dt = None
+    end_dt = None
+    event = None
+    event_id = None
+    
+    has_index = get_setting('site', 'global', 'searchindex')
+    form = InvoiceSearchForm(request.GET)
+    
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        invoice_type = form.cleaned_data.get('invoice_type')
+        start_dt = form.cleaned_data.get('start_dt')
+        end_dt = form.cleaned_data.get('end_dt')
+        event = form.cleaned_data.get('event')
+        event_id = form.cleaned_data.get('event_id')
+    
     bill_to_email = request.GET.get('bill_to_email', None)
 
-    if get_setting('site', 'global', 'searchindex') and query:
+    if has_index and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()
         if bill_to_email:
             invoices = invoices.filter(bill_to_email=bill_to_email)
+    
+    if invoice_type:
+        content_type = ContentType.objects.filter(app_label=invoice_type)
+        invoices = invoices.filter(object_type__in=content_type)
+        if invoice_type == 'events':
+            # Set event filters
+            event_set = set()
+            if event:
+                event_set.add(event.pk)
+            if event_id:
+                event_set.add(event_id)
+            if event or event_id:
+                invoices = invoices.filter(registration__event__pk__in=event_set)
+            
+    if start_dt:
+        invoices = invoices.filter(create_dt__gte=datetime.combine(start_dt, time.min))
+     
+    if end_dt:
+        invoices = invoices.filter(create_dt__lte=datetime.combine(end_dt, time.max))
+    
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
@@ -109,7 +147,7 @@ def search(request, template_name="invoices/search.html"):
         else:
             raise Http403
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
+    return render_to_response(template_name, {'invoices': invoices, 'query': query, 'form':form,}, 
         context_instance=RequestContext(request))
 
 

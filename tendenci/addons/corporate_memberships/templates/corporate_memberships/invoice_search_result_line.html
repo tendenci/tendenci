@@ -16,7 +16,7 @@
       </tr>
     {% if obj %}
        <tr>
-       	<td><a href="{% url corporate_memberships.views.view obj.id %}">{{obj.id}}</a></td>
+       	<td><a href="{% url corp_memb.view obj.id %}">{{obj.id}}</a></td>
        	<td>{% if obj.module_name == 'corpmembrenewentry' %}{{obj.corporate_membership.name}}{% else %}{{obj.name}}{% endif %}   </td>
        	<td>{{obj.create_dt|date:'long'}}</td>
        	<td>{{invoice.total|format_currency}}</td>
