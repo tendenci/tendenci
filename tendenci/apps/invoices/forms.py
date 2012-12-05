@@ -51,10 +51,3 @@ class InvoiceSearchForm(forms.Form):
         for entry in invoices:
             invoice_choices.append((entry.object_type.app_label, entry.object_type.app_label))
         self.fields['invoice_type'].choices = invoice_choices
-        
-        # Set event_id choices
-        events = Event.objects.filter(registration__invoice__isnull=False).distinct('pk')
-        choices = [('','All events')]
-        for event_obj in events:
-            choices.append((event_obj.pk, event_obj.pk))
-        self.fields['event_id'].choices = choices
