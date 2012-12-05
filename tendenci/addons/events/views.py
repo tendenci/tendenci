@@ -11,6 +11,7 @@ from haystack.query import SearchQuerySet
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson as json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -44,7 +45,7 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption, EventPhoto)
+    RegAddonOption, EventPhoto, Place)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
@@ -606,6 +607,40 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
     return render_to_response(template_name, {'event': event, 'form':form},
         context_instance=RequestContext(request))
+
+@csrf_exempt
+def get_place(request):
+    if request.method == 'POST':
+        place_id = request.POST.get('id', None)
+        if place_id:
+            try:
+                place = Place.objects.get(pk=place_id)
+                return HttpResponse(json.dumps(
+                {
+                    "error": False,
+                    "message": "Get place success.",
+                    "name": place.name,
+                    "description": place.description,
+                    "address": place.address,
+                    "city": place.city,
+                    "zip": place.zip,
+                    "country": place.country,
+                    "url": place.url,
+                }), mimetype="text/plain")
+            except Place.DoesNotExist as e:
+                return HttpResponse(json.dumps(
+                {
+                    "error": True,
+                    "message": "Place does not exist.",
+                }), mimetype="text/plain")
+        return HttpResponse(json.dumps(
+            {
+                "error": True,
+                "message": "No id provided.",
+            }), mimetype="text/plain")
+        
+    return HttpResponse('Requires POST method.')
+
 
 @login_required
 def add(request, year=None, month=None, day=None, \
