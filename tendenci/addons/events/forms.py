@@ -16,11 +16,12 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
-from tendenci.addons.events.models import Event, Place, RegistrationConfiguration, \
-    Payment, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, RegConfPricing, Addon, \
-    AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
-    CustomRegFieldEntry
+from tendenci.addons.events.models import (
+    Event, Place, RegistrationConfiguration, Payment,
+    Sponsor, Organizer, Speaker, Type, TypeColorSet,
+    RegConfPricing, Addon, AddonOption, CustomRegForm,
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry
+)
 
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -32,10 +33,9 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.addons.memberships.models import Membership
 from tendenci.apps.profiles.models import Profile
 
-from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
+from fields import Reg8nDtField, UseCustomRegField
 from widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
@@ -51,38 +51,40 @@ EMAIL_AVAILABLE_TOKENS = ['event_title',
                           'event_link'
                           ]
 
+
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
-        choices=(('draft','Draft'),('active','Active'),('inactive', 'Inactive'),))
+        choices=(('draft', 'Draft'), ('active', 'Active'), ('inactive', 'Inactive')))
     #used = forms.BooleanField(initial=True, required=False)
 
     class Meta:
         model = CustomRegForm
-        fields = ('name',
-                  'notes',
-                  'status',
-                  #'used',
-                  'first_name', 
-                  'last_name', 
-                  'mail_name',
-                  'address', 
-                  'city', 
-                  'state', 
-                  'zip',
-                  'country', 
-                  'phone', 
-                  'email', 
-                  'position_title',
-                  'company_name', 
-                  'meal_option', 
-                  'comments',
-                 )
-        
+        fields = (
+            'name',
+            'notes',
+            'status',
+            'first_name',
+            'last_name',
+            'mail_name',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'phone',
+            'email',
+            'position_title',
+            'company_name',
+            'meal_option',
+            'comments',
+        )
+
+
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
-        exclude = ["position"] 
-        
+        exclude = ["position"]
+
 class FormForCustomRegForm(forms.ModelForm):
 
     class Meta:
