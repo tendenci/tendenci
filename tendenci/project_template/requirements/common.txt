@@ -1,0 +1,3 @@
+git+https://github.com/tendenci/tendenci#egg=tendenci
+
+git+https://github.com/tendenci/tendenci-videos#egg=tendenci-videos-1.0.2

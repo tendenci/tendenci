@@ -9,5 +9,5 @@ def get_setting(setting):
 INSTALLED_APPS = get_setting('INSTALLED_APPS')
 
 INSTALLED_APPS += (
-#     'new_app'
+    'videos',
 )
