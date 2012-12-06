@@ -1331,13 +1331,13 @@ def event_import_process(import_i, preview=True):
 
     event_obj_list = []
     invalid_list = []
-    
+
     import_i.total_invalid = 0
     import_i.total_created = 0
-    if not preview: #update import status
+    if not preview:  # update import status
         import_i.status = "processing"
         import_i.save()
-    
+
     try:
         # loop through the file's entries and determine valid imports
         start = 0
@@ -1393,7 +1393,7 @@ def event_import_process(import_i, preview=True):
             if preview:
                 event_obj_list.append(event_object_dict)
 
-        if not preview: # save import status
+        if not preview:  # save import status
             import_i.status = "completed"
             import_i.save()
     except Exception, e:
@@ -1412,7 +1412,7 @@ def do_event_import(event_object_dict):
     place = Place()
 
     # assure the correct fields get the right value types
-    color_set = TypeColorSet.objects.all()[0] #default color set
+    color_set = TypeColorSet.objects.all()[0]  # default color set
     for field in EVENT_FIELDS:
         if field in event_object_dict:
             if field == "type":
@@ -1433,7 +1433,7 @@ def do_event_import(event_object_dict):
                         setattr(event, field, False)
                     else:
                         setattr(event, field, True)
-                else: # assume its a string
+                else:  # assume its a string
                     if field_type.max_length:
                         setattr(event, field, unicode(event_object_dict[field])[:field_type.max_length])
                     else:
@@ -1447,7 +1447,7 @@ def do_event_import(event_object_dict):
                 setattr(place, p_field, datetime.strptime(event_object_dict[field], VALID_DATE_FORMAT))
             elif isinstance(field_type, models.BooleanField):
                 setattr(place, p_field, bool(ast.literal_eval(event_object_dict[field])))
-            else: # assume its a string
+            else:  # assume its a string
                 if field_type.max_length:
                     setattr(place, p_field, unicode(event_object_dict[field])[:field_type.max_length])
                 else:
