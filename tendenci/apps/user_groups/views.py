@@ -928,7 +928,7 @@ def import_download_template(request, file_ext='.csv'):
         filename = "import-user-groups.xls"
 
     import_field_list = ['name', 'label', 'type',
-                         'email_recipient', 'description', 'auto_respond_template',
+                         'email_recipient', 'description',
                           'auto_respond_priority', 'notes']
     data_row_list = []
 

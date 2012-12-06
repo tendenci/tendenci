@@ -15,12 +15,12 @@ GROUP_FIELDS = [
     'type',
     'email_recipient',
     'description',
-    'auto_respond_template',
     'auto_respond_priority',
     'notes'
     ]
 
 TYPE_FIELD_CHOICES = [
+    '',
     'distribution',
     'security'
     ]
