@@ -1154,6 +1154,26 @@ def registration_has_ended(event, pricing=None):
         )
     
     return all(reg_ended)
+    
+def registration_has_recently_ended(event, pricing=None):
+    """
+    Check all times and make sure the registration has
+    recently ended
+    """
+    reg_ended = []
+    
+    if not pricing:
+        pricing = RegConfPricing.objects.filter(
+            reg_conf=event.registration_configuration,
+            status=True,
+        )
+    
+    for price in pricing:
+        reg_ended.append(
+            price.registration_has_recently_ended
+        )
+    
+    return all(reg_ended)
 
 def clean_price(price, user):
     """

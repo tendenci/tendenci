@@ -118,11 +118,18 @@ def search(request, template_name="invoices/search.html"):
         invoices = Invoice.objects.all()
         if bill_to_email:
             invoices = invoices.filter(bill_to_email=bill_to_email)
-    
+
     if invoice_type:
         content_type = ContentType.objects.filter(app_label=invoice_type)
         invoices = invoices.filter(object_type__in=content_type)
-        if invoice_type == 'events':
+        if invoice_type == 'memberships':
+            membership_content_type = ContentType.objects.get(app_label='memberships', model='appentry')
+            corporate_membership_content_type = ContentType.objects.get(app_label='corporate_memberships', model='corporatemembership')
+            invoices = invoices.filter(object_type__in=[membership_content_type.id, corporate_membership_content_type.id])
+        elif invoice_type == 'events':
+            event_content_type = ContentType.objects.get(app_label='events', model='registration')
+            invoices = invoices.filter(object_type=event_content_type.id)
+
             # Set event filters
             event_set = set()
             if event:
@@ -131,7 +138,10 @@ def search(request, template_name="invoices/search.html"):
                 event_set.add(event_id)
             if event or event_id:
                 invoices = invoices.filter(registration__event__pk__in=event_set)
-            
+        elif invoice_type == 'jobs':
+            job_content_type = ContentType.objects.get(app_label='jobs', model='job')
+            invoices = invoices.filter(object_type=job_content_type.id)
+
     if start_dt:
         invoices = invoices.filter(create_dt__gte=datetime.combine(start_dt, time.min))
      
