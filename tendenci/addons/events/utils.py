@@ -1349,7 +1349,10 @@ def event_import_process(import_i, preview=True):
             data_dict = data_dict_list[r]
 
             for key in data_dict.keys():
-                event_object_dict[key] = data_dict[key]
+                if isinstance(data_dict[key], basestring):
+                    event_object_dict[key] = data_dict[key].strip()
+                else:
+                    event_object_dict[key] = data_dict[key]
 
             event_object_dict['ROW_NUM'] = data_dict['ROW_NUM']
 
