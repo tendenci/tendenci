@@ -101,7 +101,7 @@ def find_package_data(where=".", package="", exclude=standard_exclude,
 excluded_directories = standard_exclude_directories + ["example", "tests"]
 package_data = find_package_data(exclude_directories=excluded_directories)
 
-DESCRIPTION = "A CMS for Nonprofits"
+DESCRIPTION = "Tendenci - A CMS for Nonprofits"
 
 LONG_DESCRIPTION = None
 try:
