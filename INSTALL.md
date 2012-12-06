@@ -21,7 +21,7 @@ Make a folder for your site and cd into it. Replace 'sitename' with the name of 
     mkdir sitename
     cd sitename
 
-You will need [virtualenv](http://www.virtualenv.org/) installed for the next step. If you don't have it, you can install it with `pip install virtualenv`. Make a virtual environment called 'venv' and activate it.
+It's best practice to make a virtual environment for your site. You will need [virtualenv](http://www.virtualenv.org/) installed for the next step. If you don't have it, you can install it with `pip install virtualenv`. Make a virtual environment called 'venv' and activate it.
 
     virtualenv venv
     source venv/bin/activate
