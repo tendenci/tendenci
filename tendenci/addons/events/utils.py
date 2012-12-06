@@ -1327,7 +1327,7 @@ def event_import_process(import_i, preview=True):
     if preview=False.
     """
     #print "START IMPORT PROCESS"
-    data_dict_list = extract_from_excel(import_i.file.path)
+    data_dict_list = extract_from_excel(unicode(import_i.file))
 
     event_obj_list = []
     invalid_list = []
