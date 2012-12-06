@@ -62,7 +62,7 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption, EventPhoto, Place)
+    RegAddonOption, RegistrationConfiguration, EventPhoto, Place)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
