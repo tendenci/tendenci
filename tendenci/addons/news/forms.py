@@ -19,18 +19,22 @@ ALLOWED_LOGO_EXT = (
     '.png'
 )
 
+ALLOWED_LOGO_EXT = (
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.png'
+)
+
+
 class NewsForm(TendenciBaseForm):
     body = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%;'}, 
-        mce_attrs={'storme_app_label':News._meta.app_label, 
-        'storme_model':News._meta.module_name.lower()}))
-
-    release_dt = SplitDateTimeField(label=_('Release Date/Time'), 
-        initial=datetime.now())
-
+        widget=TinyMCE(attrs={'style': 'width:100%;'},
+        mce_attrs={'storme_app_label': News._meta.app_label,
+        'storme_model': News._meta.module_name.lower()}))
+    release_dt = SplitDateTimeField(label=_('Release Date/Time'), initial=datetime.now())
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-
+        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
     email = EmailVerificationField(label=_("Email"), required=False)
 
     photo_upload = forms.FileField(label=_('Thumbnail Image'), required=False, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. It will not display on the news page.'))
@@ -75,7 +79,7 @@ class NewsForm(TendenciBaseForm):
                                  'group',
                                  'tags',
                                  'photo_upload',
-                                 'source', 
+                                 'source',
                                  'website',
                                  'release_dt',
                                  'timezone',
@@ -102,19 +106,19 @@ class NewsForm(TendenciBaseForm):
                      ('Administrator Only', {
                       'fields': ['syndicate',
                                  'status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
-                    })]     
- 
+                    })]
+
     def clean_photo_upload(self):
         photo_upload = self.cleaned_data['photo_upload']
         if photo_upload:
             extension = splitext(photo_upload.name)[1]
-            
+
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The photo must be of jpg, gif, or png image type.')
-            
+
             # check the image header
             image_type = '.%s' % imghdr.what('', photo_upload.read())
             if image_type not in ALLOWED_LOGO_EXT:
@@ -128,7 +132,7 @@ class NewsForm(TendenciBaseForm):
             news.thumbnail = None
         return news
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(NewsForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk

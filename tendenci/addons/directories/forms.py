@@ -271,4 +271,3 @@ class DirectoryRenewForm(TendenciBaseForm):
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory
-    

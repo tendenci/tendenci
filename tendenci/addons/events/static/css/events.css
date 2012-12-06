@@ -891,3 +891,47 @@ table.pricing-list .price-disabled label {
 
 .message-item{
 	margin-bottom: 2em;
+}
+
+.t .imports .download-csv {
+    margin-bottom: 10px;
+}
+
+.t .imports .download-csv img{
+    float: left;
+    margin-right: 10px;
+    border: 0;
+}
+
+.t .imports .download-csv .item-right{
+    float: left;
+}
+
+.t .imports .download-csv a {
+    font-size: 1.5em;
+}
+
+.t .imports .summary {
+    padding: 5px;
+}
+
+.t .imports .result {
+    padding: 10px 5px;
+    border-top: 1px solid black;
+}
+
+.t .imports .result .error {
+    color: #FF0000;
+}
+
+.t .imports .result .warning {
+    color: #FFFF00;
+}
+
+.t .imports .result .message {
+    color: #00FF00;
+}
+
+.clear-both {
+    clear: both;
+}
