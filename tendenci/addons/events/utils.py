@@ -1328,7 +1328,6 @@ def event_import_process(import_i, preview=True):
     """
     #print "START IMPORT PROCESS"
     data_dict_list = extract_from_excel(import_i.file.path)
-    data_dict_list_len = len(data_dict_list)
 
     event_obj_list = []
     invalid_list = []
@@ -1342,7 +1341,7 @@ def event_import_process(import_i, preview=True):
     try:
         # loop through the file's entries and determine valid imports
         start = 0
-        finish = data_dict_list_len
+        finish = len(data_dict_list)
         for r in range(start, finish):
             invalid = False
             event_object_dict = {}
