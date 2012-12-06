@@ -28,7 +28,7 @@ class GroupQueue(models.Model):
     
 class SubscriberQueue(models.Model):
     group = models.ForeignKey(Group)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     subscriber = models.ForeignKey(FormEntry, null=True)
     
 class Template(models.Model):

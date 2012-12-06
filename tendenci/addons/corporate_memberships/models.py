@@ -238,7 +238,7 @@ class CorporateMembership(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), blank=True, null=True)
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
-    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True)
+    approved_denied_user = models.ForeignKey(User, verbose_name=_("Approved or Denied User"), null=True, on_delete=models.SET_NULL)
     payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True, default=None)
     
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
@@ -817,14 +817,14 @@ class CorporateMembershipArchive(TendenciBaseModel):
     expiration_dt = models.DateTimeField(_("Expiration Date Time"), null=True)
     approved = models.BooleanField(_("Approved"), default=0)
     approved_denied_dt = models.DateTimeField(_("Approved or Denied Date Time"), null=True)
-    approved_denied_user = models.ForeignKey(User, null=True)
+    approved_denied_user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     #payment_method = models.CharField(_("Payment Method"), max_length=50)
     payment_method = models.ForeignKey(PaymentMethod, verbose_name=_("Payment Method"), null=True, default=None)
 
     corp_memb_create_dt = models.DateTimeField()
     corp_memb_update_dt = models.DateTimeField()
     
-    archive_user = models.ForeignKey(User, related_name="corp_memb_archiver", null=True)
+    archive_user = models.ForeignKey(User, related_name="corp_memb_archiver", null=True, on_delete=models.SET_NULL)
     
     
     class Meta:
@@ -847,7 +847,7 @@ class CorpMembRenewEntry(models.Model):
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
     
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, null=True)
+    creator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     status_detail = models.CharField(max_length=50)   # pending, approved and disapproved
 
     @property   
@@ -889,10 +889,10 @@ class IndivMembEmailVeri8n(models.Model):
     verified_email = models.CharField(_('email'), max_length=200)
     verified = models.BooleanField(default=0)
     verified_dt = models.DateTimeField(null=True)
-    creator = models.ForeignKey(User, related_name="ime_veri8n_creator", null=True)  
+    creator = models.ForeignKey(User, related_name="ime_veri8n_creator", null=True, on_delete=models.SET_NULL)  
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(User, related_name="ime_veri8n_updator", null=True) 
+    updated_by = models.ForeignKey(User, related_name="ime_veri8n_updator", null=True, on_delete=models.SET_NULL) 
     
     def save(self, *args, **kwargs):
         if not self.id:

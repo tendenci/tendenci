@@ -23,6 +23,7 @@ class RedirectMiddleware(object):
                 report = Report404.objects.get(url=path)
                 report.count = report.count + 1
             except Report404.DoesNotExist:
-                report = Report404(url=path)
+                # Truncate to only get the first 200 characters
+                report = Report404(url=path[:200])
             report.save()
             return response

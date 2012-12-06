@@ -1,3 +1,5 @@
+import random, string
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -13,6 +15,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
 from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm
 from tendenci.apps.contacts.utils import listed_in_email_block
+from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
 from tendenci.core.event_logs.models import EventLog
@@ -108,41 +111,71 @@ def delete(request, id, template_name="contacts/delete.html"):
     else:
         raise Http403
 
+
 def index(request, form_class=SubmitContactForm, template_name="form.html"):
 
     if request.method == "POST":
         form = form_class(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email', None)
-            first_name = form.cleaned_data.get('first_name', None)
-            last_name = form.cleaned_data.get('last_name', None)
-            
+            email = form.cleaned_data.get('email')
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+
             if listed_in_email_block(email):
                 # listed in the email blocks - it's a spam email we want to block
                 # log the spam
                 EventLog.objects.log()
-                
+
                 # redirect normally so they don't suspect
                 return HttpResponseRedirect(reverse('form.confirmation'))
-            
-            address = form.cleaned_data.get('address', None)
-            city = form.cleaned_data.get('city', None)
-            state = form.cleaned_data.get('state', None)
-            zipcode = form.cleaned_data.get('zipcode', None)
-            country = form.cleaned_data.get('country', None)
-            phone = form.cleaned_data.get('phone', None)
-            
-            url = form.cleaned_data.get('url', None)
-            message = form.cleaned_data.get('message', None)
+
+            address = form.cleaned_data.get('address')
+            city = form.cleaned_data.get('city')
+            state = form.cleaned_data.get('state')
+            zipcode = form.cleaned_data.get('zipcode')
+            country = form.cleaned_data.get('country')
+            phone = form.cleaned_data.get('phone')
+            url = form.cleaned_data.get('url')
+            message = form.cleaned_data.get('message')
+
+            if request.user.is_anonymous():
+                username = first_name.replace(' ', '')
+                if last_name:
+                    username = username + '_' + last_name.replace(' ', '')
+                username = username.lower()
+                try:
+                    User.objects.get(username=username)
+                    x = User.objects.filter(first_name=first_name).count()
+                    username = username + '_' + unicode(x)
+                except User.DoesNotExist:
+                    pass
+
+                contact_user = User(
+                    username=username,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+
+                contact_user.is_active = False
+                contact_user.save()
+                profile = Profile(user=contact_user, owner=contact_user, creator=User.objects.get(pk=1),
+                                  address=address, country=country, city=city, state=state,
+                                  url=url, phone=phone, zipcode=zipcode)
+                profile.save()
+            else:
+                contact_user = request.user
 
             contact_kwargs = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'message': message,
-            } 
+                'user': contact_user,
+            }
+
             contact = Contact(**contact_kwargs)
-            contact.creator_id = 1 # TODO: decide if we should use tendenci base model
-            contact.owner_id = 1 # TODO: decide if we should use tendenci base model
+            contact.creator_id = 1  # TODO: decide if we should use tendenci base model
+            contact.owner_id = 1  # TODO: decide if we should use tendenci base model
             contact.allow_anonymous_view = False
             contact.save()
 
@@ -155,8 +188,8 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                     'country': country,
                 }
                 obj_address = Address(**address_kwargs)
-                obj_address.save() # saves object
-                contact.addresses.add(obj_address) # saves relationship
+                obj_address.save()  # saves object
+                contact.addresses.add(obj_address)  # saves relationship
 
             if phone:
                 obj_phone = Phone(number=phone)

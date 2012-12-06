@@ -19,6 +19,7 @@ from haystack.query import SearchQuerySet
 from django.conf import settings
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils import simplejson as json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -62,14 +63,14 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption, RegistrationConfiguration, EventPhoto)
+    RegAddonOption, EventPhoto, Place)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
-    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm)
-from tendenci.addons.events.utils import (email_registrants,
+    RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
+from tendenci.addons.events.utils import (email_registrants, 
     render_event_email, get_default_reminder_template,
     add_registration, registration_has_started, registration_has_ended,
     registration_earliest_time, get_pricing, clean_price,
@@ -634,6 +635,42 @@ def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.
 
     return render_to_response(template_name, {'event': event, 'form':form},
         context_instance=RequestContext(request))
+
+
+@csrf_exempt
+def get_place(request):
+    if request.method == 'POST':
+        place_id = request.POST.get('id', None)
+        if place_id:
+            try:
+                place = Place.objects.get(pk=place_id)
+                return HttpResponse(json.dumps(
+                {
+                    "error": False,
+                    "message": "Get place success.",
+                    "name": place.name,
+                    "description": place.description,
+                    "address": place.address,
+                    "city": place.city,
+                    "state": place.state,
+                    "zip": place.zip,
+                    "country": place.country,
+                    "url": place.url,
+                }), mimetype="text/plain")
+            except Place.DoesNotExist:
+                return HttpResponse(json.dumps({
+                    "error": True,
+                    "message": "Place does not exist.",
+                }), mimetype="text/plain")
+
+        return HttpResponse(json.dumps(
+            {
+                "error": True,
+                "message": "No id provided.",
+            }), mimetype="text/plain")
+
+    return HttpResponse('Requires POST method.')
+
 
 @login_required
 def add(request, year=None, month=None, day=None, \
@@ -2015,6 +2052,21 @@ def types(request, template_name='events/types/index.html'):
     formset = TypeFormSet()
 
     return render_to_response(template_name, {'formset': formset},
+        context_instance=RequestContext(request))
+
+@login_required
+def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='events/types/reassign.html'):
+    type = get_object_or_404(Type, pk=type_id)
+        
+    form = form_class(request.POST or None, type_id=type.id)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            type.event_set.update(type=form.cleaned_data['type'])
+            messages.add_message(request, messages.SUCCESS, 'Successfully reassigned events from type "%s" to type "%s".' % (type, form.cleaned_data['type']))
+            return redirect('event.search')
+
+    return render_to_response(template_name, {'type': type, 'form': form},
         context_instance=RequestContext(request))
 
 @login_required

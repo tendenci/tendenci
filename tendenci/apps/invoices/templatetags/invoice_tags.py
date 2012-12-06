@@ -34,9 +34,14 @@ def invoices_search_results_line(request, invoice):
 
     return {'request':request, 'invoice':invoice, 'obj':obj, 'search_line_display':search_line_display}
 
-@register.inclusion_tag("invoices/search_line_header.html")
-def invoices_search_line_header(request, invoice, obj_color):
-    return {'request':request, 'invoice':invoice, 'obj_color':obj_color}
+
+@register.inclusion_tag("invoices/search_line_header.html", takes_context=True)
+def invoices_search_line_header(context, request, invoice, obj_color):
+    context.update({'request': request,
+                   'invoice': invoice,
+                   'obj_color': obj_color})
+    return context
+
 
 @register.inclusion_tag("invoices/search-form.html", takes_context=True)
 def invoice_search(context):

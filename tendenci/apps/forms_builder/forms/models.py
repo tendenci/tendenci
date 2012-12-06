@@ -222,7 +222,7 @@ class FormEntry(models.Model):
     entry_path = models.CharField(max_length=200, blank=True, default="")
     payment_method = models.ForeignKey('payments.PaymentMethod', null=True)
     pricing = models.ForeignKey('Pricing', null=True)
-    creator = models.ForeignKey(User, related_name="formentry_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="formentry_creator",  null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 

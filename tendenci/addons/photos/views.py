@@ -33,7 +33,7 @@ from djcelery.models import TaskMeta
 from tendenci.addons.photos.cache import PHOTO_PRE_KEY
 #from tendenci.addons.photos.search_indexes import PhotoSetIndex
 from tendenci.addons.photos.models import Image, Pool, PhotoSet, AlbumCover, License
-from tendenci.addons.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm
+from tendenci.addons.photos.forms import PhotoUploadForm, PhotoEditForm, PhotoSetAddForm, PhotoSetEditForm, PhotoBatchEditForm
 from tendenci.addons.photos.utils import get_privacy_settings
 from tendenci.addons.photos.tasks import ZipPhotoSetTask
 
@@ -653,21 +653,20 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
     )
 
     if request.method == "POST":
-        photo_formset = PhotoFormSet(request.POST)
-        if photo_formset.is_valid():
-            photo_formset.save()
-
-            # event logging
-            for photo, changed in photo_formset.changed_objects:
-                EventLog.objects.log(**{
-                    'event_id' : 990200,
-                    'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
-                    'description': '%s edited' % photo._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': photo,
-                })
+        image_id = request.POST.get('id', None)
+        image_instance = Image.objects.get(pk=image_id)
+        photo_form = PhotoBatchEditForm(request.POST, instance=image_instance)
+        if photo_form.is_valid():
+            photo_form.save()
             
+            EventLog.objects.log(**{
+                'event_id': 991200,
+                'event_data': 'photo (%s) edited by %s' % (image_instance.pk, request.user),
+                'description': '%s edited' % image_instance._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': image_instance,
+            })
             #set album cover if specified
             chosen_cover_id = request.POST.get('album_cover', None)
 
@@ -686,9 +685,9 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     cover.photo = chosen_cover
                     cover.save()
             
-            messages.add_message(request, messages.SUCCESS, 'Photo changes saved')
-            return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
-
+            #messages.add_message(request, messages.SUCCESS, 'Photo changes saved')
+            #return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
+            return HttpResponse('Success')
     else:  # if request.method != POST
 
         # i would like to use the search index here; but it appears that

@@ -15,6 +15,7 @@ urlpatterns = patterns('tendenci.addons.events',
     url(r'^import/download_template/$', 'views.download_template_csv', name='event.download_template_csv'),
     url(r'^create_ics/$', 'views.create_ics', name="event.create_ics"),
     url(r'^myevents/$', 'views.myevents', name="event.myevents"),
+    url(r'^get_place$', 'views.get_place', name="event.get_place"),
 
     url(r'^add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.add', name="event.add"),
 
@@ -69,6 +70,7 @@ urlpatterns = patterns('tendenci.addons.events',
         'views.cancel_registration', name='event.cancel_registration'),
 
     url(r'^types/$', 'views.types', name='event.types'),
+    url(r'^reassign_type/(?P<type_id>\d+)$', 'views.reassign_type', name='event.reassign_type'),
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),

@@ -1,6 +1,9 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
+from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.apps.invoices.models import Invoice
+from tendenci.addons.events.models import Event, Registration
 
 class AdminNotesForm(forms.ModelForm):
     class Meta:
@@ -15,3 +18,36 @@ class AdminAdjustForm(forms.ModelForm):
         fields = ('variance',
                   'variance_notes',
                   )
+
+class InvoiceSearchForm(forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    start_dt = forms.DateField(label=_('From'), 
+                               required=False)
+    end_dt = forms.DateField(label=_('To'), 
+                             required=False)
+    invoice_type = forms.ChoiceField(label=_("Invoice Type"), required=False, choices=[])
+    event = forms.ModelChoiceField(queryset=Event.objects.filter(registration__invoice__isnull=False).distinct('pk'), 
+                                   label=_("Event "), 
+                                   required=False,
+                                   empty_label='All Events')
+    event_id = forms.ChoiceField(label=_('Event ID'), required=False, choices=[])
+                                
+    def __init__(self, *args, **kwargs):
+        super(InvoiceSearchForm, self).__init__(*args, **kwargs)
+
+        # Set start date and end date
+        if self.fields.get('start_dt'):
+            self.fields.get('start_dt').widget.attrs = {
+                'class': 'datepicker',
+            }
+        if self.fields.get('end_dt'):
+            self.fields.get('end_dt').widget.attrs = {
+                'class': 'datepicker',
+            }
+
+        # Set invoice type choices
+        invoices = Invoice.objects.all().distinct('object_type__app_label')
+        invoice_choices = [('', '-----------------')]
+        for entry in invoices:
+            invoice_choices.append((entry.object_type.app_label, entry.object_type.app_label))
+        self.fields['invoice_type'].choices = invoice_choices

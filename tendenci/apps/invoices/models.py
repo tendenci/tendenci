@@ -20,9 +20,9 @@ class Invoice(models.Model):
 
     title = models.CharField(max_length=150, blank=True, null=True)
     #user
-    creator = models.ForeignKey(User, related_name="invoice_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="invoice_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="invoice_owner", null=True)
+    owner = models.ForeignKey(User, related_name="invoice_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     #dates
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -207,6 +207,11 @@ class Invoice(models.Model):
             
             # Make the accounting entries here
             make_acct_entries(user, self, amount)
-        
-        
-        
+
+    def void_payment(self, user, amount):
+        self.balance += amount
+        self.payments_credits -= amount
+        self.save()
+        for payment in self.payment_set.all():
+            payment.status_detail = 'void'
+            payment.save()

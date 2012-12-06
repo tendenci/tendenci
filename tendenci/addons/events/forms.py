@@ -16,11 +16,12 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
-from tendenci.addons.events.models import Event, Place, Payment, \
-    Sponsor, Organizer, Speaker, Type, RegistrationConfiguration, \
-    TypeColorSet, Registrant, RegConfPricing, Addon, \
-    AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
-    CustomRegFieldEntry
+from tendenci.addons.events.models import (
+    Event, Place, RegistrationConfiguration, Payment,
+    Sponsor, Organizer, Speaker, Type, TypeColorSet,
+    RegConfPricing, Addon, AddonOption, CustomRegForm,
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry
+)
 
 from form_utils.forms import BetterModelForm
 from tendenci.core.payments.models import PaymentMethod
@@ -36,9 +37,10 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
-from tendenci.addons.memberships.models import Membership
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.profiles.models import Profile
 
-from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
+from fields import Reg8nDtField, UseCustomRegField
 from widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
@@ -57,30 +59,30 @@ EMAIL_AVAILABLE_TOKENS = ['event_title',
 
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
-        choices=(('draft','Draft'),('active','Active'),('inactive', 'Inactive'),))
+        choices=(('draft', 'Draft'), ('active', 'Active'), ('inactive', 'Inactive')))
     #used = forms.BooleanField(initial=True, required=False)
 
     class Meta:
         model = CustomRegForm
-        fields = ('name',
-                  'notes',
-                  'status',
-                  #'used',
-                  'first_name',
-                  'last_name',
-                  'mail_name',
-                  'address',
-                  'city',
-                  'state',
-                  'zip',
-                  'country',
-                  'phone',
-                  'email',
-                  'position_title',
-                  'company_name',
-                  'meal_option',
-                  'comments',
-                 )
+        fields = (
+            'name',
+            'notes',
+            'status',
+            'first_name',
+            'last_name',
+            'mail_name',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'phone',
+            'email',
+            'position_title',
+            'company_name',
+            'meal_option',
+            'comments',
+        )
 
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
@@ -583,15 +585,76 @@ class TypeForm(forms.ModelForm):
     class Meta:
         model = Type
 
+class ReassignTypeForm(forms.Form):
+    type = forms.ModelChoiceField(empty_label=None, initial=1, queryset=Type.objects.none(), label=_('Reassign To'))
+
+    def __init__(self, *args, **kwargs):
+        type_id = kwargs.pop('type_id')
+        super(ReassignTypeForm, self).__init__(*args, **kwargs)
+
+        event_types = Type.objects.exclude(pk=type_id)
+
+        self.fields['type'].queryset = event_types
+
 
 class PlaceForm(forms.ModelForm):
+    place = forms.ChoiceField(label=_('Place'), required=False, choices=[])
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'},
-        mce_attrs={'storme_app_label':Place._meta.app_label,
-        'storme_model':Place._meta.module_name.lower()}))
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': Place._meta.app_label,
+        'storme_model': Place._meta.module_name.lower()}))
+
     label = 'Location Information'
+
     class Meta:
         model = Place
+
+    def __init__(self, *args, **kwargs):
+        super(PlaceForm, self).__init__(*args, **kwargs)
+        # Populate place
+        places = Place.objects.all().order_by(
+            'address', 'city', 'state', 'zip', 'country', '-pk').distinct(
+            'address', 'city', 'state', 'zip', 'country')
+
+        choices = [('', '------------------------------')]
+        for p in places:
+            choices.append((p.pk, unicode(p)))
+        if self.fields.get('place'):
+            self.fields.get('place').choices = choices
+
+        self.fields.keyOrder = [
+            'place',
+            'name',
+            'description',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'url',
+        ]
+
+    def save(self, *args, **kwargs):
+        place = super(PlaceForm, self).save(commit=False)
+        # Handle case if place is given
+        if self.cleaned_data.get('place'):
+            place_obj = Place.objects.get(pk=self.cleaned_data.get('place'))
+            # Check if there is a change in value.
+            # If there is a change in value, create new place
+            if place_obj.name != place.name or \
+                place_obj.description != place.description or \
+                place_obj.address != place.address or \
+                place_obj.city != place.city or \
+                place_obj.zip != place.zip or \
+                place_obj.country != place.country or \
+                place_obj.url != place.url:
+                place.pk = None
+                place.save()
+            else:
+                place = place_obj
+        else:
+            place.save()
+        return place
 
 
 class SponsorForm(forms.ModelForm):
