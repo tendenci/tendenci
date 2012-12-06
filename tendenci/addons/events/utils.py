@@ -1453,8 +1453,10 @@ def do_event_import(event_object_dict):
                 else:
                     setattr(place, p_field, unicode(event_object_dict[field]))
 
-    # associate event to place
+    event_type.save()
     place.save()
+
+    event.type = event_type
     event.place = place
     event.save()
 
