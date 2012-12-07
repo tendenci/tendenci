@@ -490,6 +490,14 @@ def next_month(month, year):
 
     return (next_month, next_year)
 
+def check_month(month, year, type):
+    current_date = datetime(month=month, day=1, year=year)
+    nextmonth, nextyear = next_month(month, year)
+    next_date = datetime(month=nextmonth, day=1, year=nextyear)
+    latest_event = Event.objects.filter(start_dt__gte=current_date, start_dt__lte=next_date, type=type)
+    if latest_event.count() > 0:
+        return True
+    return False
 
 def prev_month(month, year):
     # TODO: cleaner way to get previous date

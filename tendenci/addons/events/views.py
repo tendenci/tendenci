@@ -1971,10 +1971,9 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
 
 
 def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
-    from datetime import date
-    from tendenci.addons.events.utils import next_month, prev_month
+    from tendenci.addons.events.utils import next_month, prev_month, check_month
 
-    if type: # redirect to /events/month/ if type does not exist
+    if type:  # redirect to /events/month/ if type does not exist
         if not Type.objects.filter(slug=type).exists():
             return HttpResponseRedirect(reverse('event.month'))
 
@@ -1983,6 +1982,21 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         month, year = int(month), int(year)
     else:
         month, year = datetime.now().month, datetime.now().year
+
+    if type:
+        current_type = Type.objects.filter(slug=type)
+        current_date = datetime(month=month, day=1, year=year)
+        latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt')
+        if latest_event.count() > 0:
+            latest_month = latest_event[0].start_dt.month
+            latest_year = latest_event[0].start_dt.year
+            if not check_month(month, year, current_type[0]):
+                current_date = current_date.strftime('%b %Y')
+                latest_date = latest_event[0].start_dt.strftime('%b %Y')
+                messages.add_message(request, messages.INFO, 'No %s Events were found for %s. The next %s event is on %s, shown below.' % (current_type[0], current_date, current_type[0], latest_date))
+                return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month, current_type[0].slug]))
+        else:
+            messages.add_message(request, messages.INFO, 'No more %s Events were found.' % (current_type[0]))
 
     if year <= 1900 or year >= 9999:
         raise Http404
