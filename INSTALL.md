@@ -43,8 +43,9 @@ If you created a database with a name other than 'tendenci', you will need to ed
     AWS_STORAGE_BUCKET_NAME='bucket_name'
     AWS_LOCATION='new-site-name'
 
-Next, we run our deploy script and setup our theme.
+Next, we run our requirements, deploy script, and setup our theme.
 
+    pip install requirements/dev.txt
     python deploy.py
     python manage.py set_theme salonify
 
