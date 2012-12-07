@@ -28,7 +28,7 @@ It's best practice to make a virtual environment for your site. You will need [v
 
 Install Tendenci. This download and install step may take a few minutes.
 
-    pip install git+https://github.com/tendenci/tendenci
+    pip install tendenci
 
 Once this is done, you can setup django project with the following:
 

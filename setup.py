@@ -99,7 +99,7 @@ def find_package_data(where=".", package="", exclude=standard_exclude,
 
 
 excluded_directories = standard_exclude_directories + ["example", "tests"]
-package_data = find_package_data(exclude_directories=excluded_directories)
+package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
 
 DESCRIPTION = "Tendenci - A CMS for Nonprofits"
 
@@ -111,7 +111,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.0',
+    version='5.1.4',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
