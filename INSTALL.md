@@ -36,13 +36,6 @@ Once this is done, you can setup django project with the following:
 
 If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the `.env` file that is created.
 
-**Optional:** You can add additional local environment variables to the `.env` file by defining them as `KEY='value'`. Settings that are sensitive (like passwords) or vary per environment should be added to this file. For example, to use Amazon's S3 service as a file storage backend, set the following key/value pairs in your `.env` file:
-
-    AWS_ACCESS_KEY_ID='MY_ACCESS_KEY'
-    AWS_SECRET_ACCESS_KEY='MY_SECRET_KEY'
-    AWS_STORAGE_BUCKET_NAME='bucket_name'
-    AWS_LOCATION='new-site-name'
-
 Next, we install requirements for the project. We add tendenci videos as an example to use.
 
     pip install -r requirements/dev.txt
@@ -61,6 +54,15 @@ Finally, we can use the runserver command so that we can view the site in our br
     python manage.py runserver
 
 Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
+
+**Optional:** You can add additional local environment variables to the `.env` file by defining them as `KEY='value'`. Settings that are sensitive (like passwords) or vary per environment should be added to this file. For example, to use Amazon's S3 service as a file storage backend, set the following key/value pairs in your `.env` file:
+
+    AWS_ACCESS_KEY_ID='MY_ACCESS_KEY'
+    AWS_SECRET_ACCESS_KEY='MY_SECRET_KEY'
+    AWS_STORAGE_BUCKET_NAME='bucket_name'
+    AWS_LOCATION='new-site-name'
+
+----------
 
 # Deploying on Heroku
 
