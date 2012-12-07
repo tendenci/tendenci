@@ -335,4 +335,3 @@ def theme_picker(request, template_name="theme_editor/theme_picker.html"):
         'current_theme': current_theme,
         'theme_choices': theme_choice_list(),
     }, context_instance=RequestContext(request))
->>>>>>> added theme picker view
