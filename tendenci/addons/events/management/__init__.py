@@ -38,4 +38,4 @@ def create_notice_types(app, **kwargs):
         _('Notify administrators that registration for the event has ended.'))
 
 post_syncdb.connect(create_notice_types, sender=notification)
-post_migrate.connect(create_notice_types)
+post_migrate.connect(create_notice_types, sender=notification)
