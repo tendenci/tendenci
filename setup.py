@@ -109,24 +109,6 @@ try:
 except:
     pass
 
-CLASSIFIERS = [
-    'Development Status :: 5 - Production/Stable',
-    'Environment :: Web Environment',
-    'Framework :: Django',
-    'Intended Audience :: Developers',
-    'Intended Audience :: End Users/Desktop',
-    'Intended Audience :: Information Technology',
-    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
-    'Natural Language :: English',
-    'Operating System :: OS Independent',
-    'Programming Language :: Python',
-    'Programming Language :: Python :: 2.7',
-    'Topic :: Internet :: WWW/HTTP',
-    'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-    'Topic :: Internet :: WWW/HTTP :: WSGI',
-    'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
-],
-
 setup(
     name='tendenci',
     version='5.1.0',
@@ -139,7 +121,23 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     platforms=['any'],
-    classifiers=CLASSIFIERS,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Information Technology',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Internet :: WWW/HTTP :: WSGI',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+    ],
     entry_points="""
             [console_scripts]
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
