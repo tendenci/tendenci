@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
 
+
 class Command(BaseCommand):
     """
     Send recap email once event closes.
-    
+
     An event registration is closed if the registration end date
     is less than current date.
     This command must be handled by asynchronous task queue/job
@@ -28,8 +29,6 @@ class Command(BaseCommand):
                 money_outstanding = event.money_outstanding
                 all_registrants = event.registrants()
                 registrants_with_balance = event.registrants(with_balance=True)
-                registrants_without_balance = event.registrants(with_balance=False)
-                
                 print 'Sending email to admins for event %s.' % (event, )
                 send_email_notification(
                     'event_registration_end_recap',
@@ -45,7 +44,7 @@ class Command(BaseCommand):
                     }
                 )
                 print 'Message sent.'
-                
+
                 # Mark event as ended
                 event.mark_registration_ended = True
                 event.save()
