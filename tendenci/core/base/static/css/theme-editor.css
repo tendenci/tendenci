@@ -351,6 +351,7 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 }
 .lightbox img{
     max-width: 800px;
+    max-height: 600px;
 }
 
 .theme-info table td.info {
