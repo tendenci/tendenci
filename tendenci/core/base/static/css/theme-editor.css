@@ -379,8 +379,6 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
     display: none;
 }
 .theme_picker_form .theme_picker_submit {
-    margin: 10px 0;
-	font-size: 1.2em;
 	overflow: visible; /* ie7 and below: remove extra padding on button */
 	*padding: 0 10px; /* ie7 and below: custom padding */
 }

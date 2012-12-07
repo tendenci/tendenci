@@ -5,6 +5,9 @@
     <td class="screenshot">
         {% if theme.screenshot %}
             <img src="{{ theme.screenshot }}" />
+            <div class="lightbox" data="{{ theme.orig_name }}" style="display:none">
+                <img src="{{ theme.screenshot }}" />
+            </div>
         {% endif %}
     </td>
 
@@ -30,6 +33,11 @@
             {% endif %}
             {% endif %}
         </div>
+
+        <form class="theme_picker_form" method="post" action="">{% csrf_token %}
+            <input type="hidden" id="id_theme_choices" name="theme" value="{{theme.orig_name}}">
+            <input class="theme_picker_submit" type="submit" value="Make this my active theme"/>
+        </form>
 
         <div class="extra-info">
             {% if theme.tags %}

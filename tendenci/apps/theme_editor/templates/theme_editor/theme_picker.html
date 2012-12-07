@@ -18,31 +18,34 @@
 {% for theme in themes %}
     {% theme_detail theme current_theme%}
 {% endfor %}
-<form class="theme_picker_form" method="post" action="">{% csrf_token %}
-    <select id="id_theme_choices" name="theme">
-    {% for choice in theme_choices %}
-        <option value="{{ choice }}">{{ choice }}</option>
-    {% endfor %}
-    </select>
-    <input class="theme_picker_submit" type="submit" value="Make this my active theme"/>
-</form>
+
 {% endif %}
 
 {% endblock %}
 {% block extra_body %}
 {{ block.super }}
+<script type="text/javascript" src="{{ STATIC_URL }}js/lightbox/jquery.lightbox_me.js"></script>
 <script type="text/javascript">
+    $('.screenshot img').click(function(){
+        var data = $(this).parents('.theme-info').attr('data')
+        console.log(data)
+        $('.lightbox').each(function(){
+            if ( $(this).attr('data') == data ){
+                $(this).lightbox_me({
+                    centered: true,
+                    closeClick: true,
+                });
+            }
+        });
+    });
     $(".theme-info").each(function(){
         if ( $(this).attr('data') == "{{ current_theme }}" ){
             $(this).addClass('selected');
-            $("#id_theme_choices option[value={{ current_theme }}]").attr('selected', 'selected');
         }
     });
     $(".theme-info").click(function(){
         $(".theme-info").removeClass('selected');
         $(this).addClass('selected');
-        var theme = $(this).attr('data');
-        $("#id_theme_choices option[value="+theme+"]").attr('selected', 'selected');
     });
 </script>
 {% endblock %}
