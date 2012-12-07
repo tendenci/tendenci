@@ -1,22 +1,19 @@
 # encoding: utf-8
-import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding field 'Event.mark_registration_ended'
         db.add_column('events_event', 'mark_registration_ended', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
 
-
     def backwards(self, orm):
-        
+
         # Deleting field 'Event.mark_registration_ended'
         db.delete_column('events_event', 'mark_registration_ended')
-
 
     models = {
         'auth.group': {
@@ -34,7 +31,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 10, 13, 8, 55, 43, 980660)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 7, 10, 36, 30, 292124)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -42,7 +39,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 10, 13, 8, 55, 43, 980352)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 7, 10, 36, 30, 292032)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -111,7 +108,7 @@ class Migration(SchemaMigration):
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'contact_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_creator'", 'to': "orm['auth.User']"}),
+            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'email': ('django.db.models.fields.CharField', [], {'max_length': '120', 'blank': 'True'}),
             'entity_name': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
@@ -121,7 +118,7 @@ class Migration(SchemaMigration):
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'notes': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_owner'", 'to': "orm['auth.User']"}),
+            'owner': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entity_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'phone': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -221,10 +218,12 @@ class Migration(SchemaMigration):
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'events_event_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 12, 10, 55, 41, 180003)'}),
+            'display_event_registrants': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'display_registrants_to': ('django.db.models.fields.CharField', [], {'default': "'admin'", 'max_length': '6'}),
+            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 6, 12, 36, 29, 655519)'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'events_event_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'external_url': ('django.db.models.fields.URLField', [], {'default': "u''", 'max_length': '200', 'blank': 'True'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.EventPhoto']", 'null': 'True', 'blank': 'True'}),
@@ -235,13 +234,14 @@ class Migration(SchemaMigration):
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'place': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.Place']", 'null': 'True'}),
+            'priority': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'registration_configuration': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['events.RegistrationConfiguration']", 'unique': 'True', 'null': 'True'}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 12, 8, 55, 41, 179917)'}),
+            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 6, 10, 36, 29, 655491)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
             'tags': ('tagging.fields.TagField', [], {}),
-            'timezone': ('timezones.fields.TimeZoneField', [], {'default': "'US/Central'", 'max_length': '100'}),
+            'timezone': ('timezones.fields.TimeZoneField', [], {'default': "'America/Chicago'", 'max_length': '100'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '150', 'blank': 'True'}),
             'type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.Type']", 'null': 'True', 'blank': 'True'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
@@ -301,14 +301,14 @@ class Migration(SchemaMigration):
             'allow_member': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'display_order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 11, 12, 14, 55, 41, 147440)'}),
+            'end_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 6, 16, 36, 29, 648314)'}),
             'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '21', 'decimal_places': '2'}),
             'quantity': ('django.db.models.fields.IntegerField', [], {'default': '1', 'blank': 'True'}),
             'reg_conf': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['events.RegistrationConfiguration']", 'null': 'True', 'blank': 'True'}),
             'reg_form': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'regconfpricings'", 'null': 'True', 'to': "orm['events.CustomRegForm']"}),
-            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 10, 13, 8, 55, 41, 147330)'}),
+            'start_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2012, 12, 7, 10, 36, 29, 648290)'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'})
         },
@@ -432,7 +432,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'files_file_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'file': ('django.db.models.fields.files.FileField', [], {'max_length': '260'}),
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'to': "orm['user_groups.Group']", 'null': 'True'}),
+            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['user_groups.Group']", 'null': 'True'}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_public': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -547,7 +547,7 @@ class Migration(SchemaMigration):
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'})
         },
         'user_groups.group': {
-            'Meta': {'object_name': 'Group'},
+            'Meta': {'ordering': "('name',)", 'object_name': 'Group'},
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -557,7 +557,6 @@ class Migration(SchemaMigration):
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'auto_respond': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'auto_respond_priority': ('django.db.models.fields.FloatField', [], {'default': '0', 'blank': 'True'}),
-            'auto_respond_template': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'create_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'user_groups_group_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
@@ -578,6 +577,7 @@ class Migration(SchemaMigration):
             'slug': ('tendenci.core.base.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
             'status': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'status_detail': ('django.db.models.fields.CharField', [], {'default': "'active'", 'max_length': '50'}),
+            'sync_newsletters': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'type': ('django.db.models.fields.CharField', [], {'default': "'distribution'", 'max_length': '75', 'blank': 'True'}),
             'update_dt': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
