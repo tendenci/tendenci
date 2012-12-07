@@ -19,8 +19,10 @@
         {% if file.type == 'image' %}
         <a class="insert-btn" onclick="ImageDialog.insert_image(this, {{file.id}});" href="javascript:;">{% trans "Insert Image" %}</a>
         {% endif %}
-        <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">{% trans "Insert Attachment" %}</a>  
-        <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">{% trans "Delete" %}</a>												
+        <a class="insert-btn" onclick="ImageDialog.insert(this, {{file.id}});" href="javascript:;">{% trans "Insert Attachment" %}</a>
+        {% if delete %}  
+        <a class="delete-btn" onclick="ImageDialog.delete_image(this, {{file.id}});" href="javascript:;">{% trans "Delete" %}</a>						
+        {% endif %}						
     </div>
 
 </div> <!-- END photo-wrapper -->

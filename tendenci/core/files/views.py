@@ -455,7 +455,7 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
     from django.contrib.contenttypes.models import ContentType
     params = {'app_label': 0, 'model': 0, 'instance_id':0}
     files = File.objects.none() # EmptyQuerySet
-
+    all_files = File.objects.filter(creator=request.user)
     # if all required parameters are in the GET.keys() list
     if not set(params.keys()) - set(request.GET.keys()):        
 
@@ -481,7 +481,8 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
         except ContentType.DoesNotExist: raise Http404
 
     return render_to_response(template_name, {
-        "media": files, 
+        "media": files,
+        "all_media": all_files, 
         'csrf_token':csrf_get_token(request),
         }, context_instance=RequestContext(request))
 
