@@ -349,6 +349,10 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 	border: 1px solid gray;
     width: 122px;
 }
+.lightbox img{
+    max-width: 800px;
+}
+
 .theme-info table td.info {
     font-size: 12px;
     line-height: 16px;
@@ -374,9 +378,6 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
     font-size: 12px;
     position: absolute;
     bottom: 10px;
-}
-.theme_picker_form #id_theme_choices {
-    display: none;
 }
 .theme_picker_form .theme_picker_submit {
 	overflow: visible; /* ie7 and below: remove extra padding on button */
