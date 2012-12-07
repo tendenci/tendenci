@@ -45,7 +45,7 @@ If you created a database with a name other than 'tendenci', you will need to ed
 
 Next, we run our requirements, deploy script, and setup our theme.
 
-    pip install requirements/dev.txt
+    pip install -r requirements/dev.txt
     python deploy.py
     python manage.py set_theme salonify
 
