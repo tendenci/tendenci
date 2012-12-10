@@ -25,6 +25,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)
@@ -36,6 +37,10 @@ from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if not has_perm(request.user,'forms.add_form'):
         raise Http403
 
@@ -68,6 +73,10 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
 
 
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     form_instance = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form_instance):
@@ -109,6 +118,10 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
 
 @login_required
 def update_fields(request, id, template_name="forms/update_fields.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     form_instance = get_object_or_404(Form, id=id)
 
     if not has_perm(request.user,'forms.add_form',form_instance):
@@ -133,6 +146,10 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
 
 @login_required
 def delete(request, id, template_name="forms/delete.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -153,6 +170,10 @@ def copy(request, id):
     """
     Copies a form_instance and all the fields related to it.
     """
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -222,6 +243,10 @@ def copy(request, id):
 
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     form = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form):
@@ -237,6 +262,10 @@ def entries(request, id, template_name="forms/entries.html"):
 
 @login_required
 def entry_delete(request, id, template_name="forms/entry_delete.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -253,6 +282,10 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
 
 @login_required
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -264,6 +297,10 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
 
 
 def entries_export(request, id):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -359,6 +396,10 @@ def entries_export(request, id):
 
 
 def search(request, template_name="forms/search.html"):
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if not has_perm(request.user,'forms.view_form'):
         raise Http403
 
@@ -380,6 +421,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
     """
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     published = Form.objects.published(for_user=request.user)
     form = get_object_or_404(published, slug=slug)
 
@@ -517,6 +562,10 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
     """
     Show billing form, update the invoice then proceed to external payment.
     """
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     invoice = get_object_or_404(Invoice, pk=invoice_id)
 
     if not invoice.allow_view_by(request.user, invoice_guid):
@@ -555,6 +604,9 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
 @login_required
 def export(request, template_name="forms/export.html"):
     """Export forms"""
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     if not request.user.is_superuser:
         raise Http403
@@ -577,6 +629,9 @@ def files(request, id):
         We can get data from remote location, convert to file
         object and return a file response.
     """
+    if not get_setting('module', 'forms', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     import os
     import mimetypes

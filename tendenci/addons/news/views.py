@@ -21,9 +21,14 @@ from tendenci.addons.news.models import News
 from tendenci.addons.news.forms import NewsForm
 from tendenci.apps.notifications import models as notification
 from tendenci.core.perms.utils import assign_files_perms
+from tendenci.apps.redirects.models import Redirect
 
 
 def detail(request, slug=None, template_name="news/view.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if not slug:
         return HttpResponseRedirect(reverse('news.search'))
     news = get_object_or_404(News, slug=slug)
@@ -44,6 +49,10 @@ def detail(request, slug=None, template_name="news/view.html"):
 
 
 def search(request, template_name="news/search.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
         news = News.objects.search(query, user=request.user)
@@ -67,6 +76,10 @@ def search_redirect(request):
 
 
 def print_view(request, slug, template_name="news/print-view.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     news = get_object_or_404(News, slug=slug)
 
     if not has_perm(request.user, 'news.view_news', news):
@@ -80,6 +93,10 @@ def print_view(request, slug, template_name="news/print-view.html"):
 
 @login_required
 def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     news = get_object_or_404(News, pk=id)
 
     # check permission
@@ -112,6 +129,9 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
 
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     # check permission
     news = get_object_or_404(News, pk=id)
@@ -144,6 +164,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
 
 @login_required
 def add(request, form_class=NewsForm, template_name="news/add.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     # check permission
     if not has_perm(request.user, 'news.add_news'):
@@ -185,6 +208,10 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
 
 @login_required
 def delete(request, id, template_name="news/delete.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     news = get_object_or_404(News, pk=id)
 
     # check permission
@@ -213,6 +240,10 @@ def delete(request, id, template_name="news/delete.html"):
 
 @login_required
 def export(request, template_name="news/export.html"):
+    if not get_setting('module', 'news', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='news')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     """Export News"""
 
     if not request.user.is_superuser:

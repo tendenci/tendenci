@@ -32,10 +32,14 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
+from tendenci.apps.redirects.models import Redirect
 from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm
 
 
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
@@ -157,6 +161,10 @@ def search(request, template_name="files/search.html"):
     If a search index is available, this page will also
     have the option to search through files.
     """
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     query = u''
     category = u''
     sub_category = u''
@@ -200,6 +208,10 @@ def search_redirect(request):
 
 
 def print_view(request, id, template_name="files/print-view.html"):
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     file = get_object_or_404(File, pk=id)
 
     # check permission
@@ -212,6 +224,10 @@ def print_view(request, id, template_name="files/print-view.html"):
 
 @login_required
 def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, template_name="files/edit.html"):
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     file = get_object_or_404(File, pk=id)
 
     # check permission
@@ -283,6 +299,9 @@ def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, tem
 
 @login_required
 def bulk_add(request, template_name="files/bulk-add.html"):
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     if not has_perm(request.user, 'files.add_file'):
         raise Http403
@@ -360,6 +379,9 @@ def bulk_add(request, template_name="files/bulk-add.html"):
 
 @login_required
 def add(request, form_class=FileForm, category_form_class=CategoryForm, template_name="files/add.html"):
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     # check permission
     if not has_perm(request.user,'files.add_file'):  
@@ -427,6 +449,10 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
 
 @login_required
 def delete(request, id, template_name="files/delete.html"):
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     file = get_object_or_404(File, pk=id)
 
     # check permission
@@ -547,6 +573,10 @@ def report_most_viewed(request, form_class=MostViewedForm, template_name="files/
     """
     Displays a table of files sorted by views/downloads.
     """
+    if not get_setting('module', 'files', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     from django.db.models import Count
     from datetime import date
     from datetime import timedelta

@@ -27,6 +27,7 @@ from tendenci.core.categories.models import Category
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.notifications import models as notification
+from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
@@ -37,6 +38,9 @@ def index(request, slug=None, id=None, hash=None,
     """
     Return page object, either as an archive, active, or version.
     """
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     if not slug and not id and not hash:
         return HttpResponseRedirect(reverse('page.search'))
@@ -91,6 +95,10 @@ def search(request, template_name="pages/search.html"):
     """
     Search pages.
     """
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
@@ -113,6 +121,10 @@ def search(request, template_name="pages/search.html"):
 
 
 def print_view(request, slug, template_name="pages/print-view.html"):
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     page = get_object_or_404(Page, slug=slug, status_detail='active')
 
     if not has_perm(request.user, 'pages.view_page', page):
@@ -127,6 +139,10 @@ def print_view(request, slug, template_name="pages/print-view.html"):
 def edit(request, id, form_class=PageForm,
          meta_form_class=MetaForm,
          category_form_class=CategoryForm, template_name="pages/edit.html"):
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     page = get_object_or_404(Page, pk=id)
 
     if not has_perm(request.user, 'pages.change_page', page):
@@ -241,6 +257,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
     """
     Return page that allows you to edit meta-html information.
     """
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     # check permission
     page = get_object_or_404(Page, pk=id)
@@ -325,6 +344,9 @@ def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
 def add(request, form_class=PageForm, meta_form_class=MetaForm,
         category_form_class=CategoryForm,
         template_name="pages/add.html"):
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     if not has_perm(request.user, 'pages.add_page'):
         raise Http403
@@ -428,6 +450,10 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
 
 @login_required
 def delete(request, id, template_name="pages/delete.html"):
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     page = get_object_or_404(Page, pk=id)
 
     if not has_perm(request.user, 'pages.delete_page'):
@@ -459,6 +485,10 @@ def delete(request, id, template_name="pages/delete.html"):
 
 
 def display_header_image(request, id):
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     page = get_object_or_404(Page, pk=id)
 
     if not has_view_perm(request.user,
@@ -472,6 +502,9 @@ def display_header_image(request, id):
 @login_required
 def export(request, template_name="pages/export.html"):
     """Export Pages"""
+    if not get_setting('module', 'pages', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='pages')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     if not request.user.is_superuser:
         raise Http403

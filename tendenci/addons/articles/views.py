@@ -20,12 +20,17 @@ from tendenci.core.meta.forms import MetaForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
+from tendenci.apps.redirects.models import Redirect
 from tendenci.addons.articles.models import Article
 from tendenci.addons.articles.forms import ArticleForm
 from tendenci.apps.notifications import models as notification
 
 
 def detail(request, slug=None, hash=None, template_name="articles/view.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if not slug and not hash:
         return HttpResponseRedirect(reverse('articles'))
 
@@ -51,6 +56,10 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
 
 
 def search(request, template_name="articles/search.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     get = dict(request.GET)
     query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
@@ -92,6 +101,10 @@ def search_redirect(request):
 
 
 def print_view(request, slug, template_name="articles/print-view.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     article = get_object_or_404(Article, slug=slug)
 
     if has_perm(request.user, 'articles.view_article', article):
@@ -104,6 +117,10 @@ def print_view(request, slug, template_name="articles/print-view.html"):
 
 @login_required
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     article = get_object_or_404(Article, pk=id)
 
     if has_perm(request.user, 'articles.change_article', article):
@@ -131,6 +148,9 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
 
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-meta.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
 
     # check permission
     article = get_object_or_404(Article, pk=id)
@@ -163,6 +183,10 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
 
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if has_perm(request.user, 'articles.add_article'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
@@ -194,6 +218,10 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
 
 @login_required
 def delete(request, id, template_name="articles/delete.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     article = get_object_or_404(Article, pk=id)
 
     if has_perm(request.user, 'articles.delete_article'):
@@ -223,6 +251,10 @@ def delete(request, id, template_name="articles/delete.html"):
 
 @staff_member_required
 def articles_report(request, template_name='reports/articles.html'):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     article_type = ContentType.objects.get(app_label="articles", model="article")
     stats = EventLog.objects.filter(event_id=435000, content_type=article_type) \
                     .values('content_type', 'object_id', 'headline')\
@@ -263,6 +295,10 @@ def articles_report(request, template_name='reports/articles.html'):
 
 @login_required
 def export(request, template_name="articles/export.html"):
+    if not get_setting('module', 'articles', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='articles')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     """Export Articles"""
 
     if not request.user.is_superuser:

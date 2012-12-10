@@ -20,10 +20,16 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.invoices.models import Invoice
+
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
+from tendenci.apps.redirects.models import Redirect
 
 
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
+    if not get_setting('module', 'invoices', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='invoices')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
 
@@ -92,24 +98,11 @@ def void_payment(request, id):
 
 @login_required
 def search(request, template_name="invoices/search.html"):
-    query = u''
-    invoice_type = u''
-    start_dt = None
-    end_dt = None
-    event = None
-    event_id = None
-    
-    has_index = get_setting('site', 'global', 'searchindex')
-    form = InvoiceSearchForm(request.GET)
-    
-    if form.is_valid():
-        query = form.cleaned_data.get('q')
-        invoice_type = form.cleaned_data.get('invoice_type')
-        start_dt = form.cleaned_data.get('start_dt')
-        end_dt = form.cleaned_data.get('end_dt')
-        event = form.cleaned_data.get('event')
-        event_id = form.cleaned_data.get('event_id')
-    
+    if not get_setting('module', 'invoices', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='invoices')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
+    query = request.GET.get('q', None)
     bill_to_email = request.GET.get('bill_to_email', None)
 
     if has_index and query:
@@ -210,6 +203,10 @@ def search_report(request, template_name="invoices/search.html"):
 
     
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):
+    if not get_setting('module', 'invoices', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='invoices')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
     original_total = invoice.total
@@ -267,6 +264,10 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 
     
 def detail(request, id, template_name="invoices/detail.html"):
+    if not get_setting('module', 'invoices', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='invoices')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     invoice = get_object_or_404(Invoice, pk=id)
 
     if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
@@ -305,6 +306,10 @@ def detail(request, id, template_name="invoices/detail.html"):
 
 @login_required
 def export(request, template_name="invoices/export.html"):
+    if not get_setting('module', 'invoices', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='invoices')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     """Export Invoices"""
     
     if not request.user.is_superuser:

@@ -15,6 +15,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.stories.models import Story
 from tendenci.apps.stories.forms import StoryForm
@@ -22,6 +23,10 @@ from tendenci.core.perms.utils import assign_files_perms
 
 
 def details(request, id=None, template_name="stories/view.html"):
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
     
@@ -42,6 +47,10 @@ def details(request, id=None, template_name="stories/view.html"):
         context_instance=RequestContext(request))
     
 def print_details(request, id, template_name="stories/print_details.html"):
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     story = get_object_or_404(Story, pk=id)
     if not has_view_perm(request.user,'stories.view_story', story):
         raise Http403
@@ -65,6 +74,10 @@ def search(request, template_name="stories/search.html"):
     If a search index is available, this page will also
     have the option to search through stories.
     """
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
 
@@ -94,6 +107,10 @@ def search_redirect(request):
 
 @login_required   
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if has_perm(request.user,'stories.add_story'):    
         if request.method == "POST":
             form = form_class(request.POST, request.FILES, user=request.user)
@@ -139,6 +156,10 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
     
 @login_required
 def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     story = get_object_or_404(Story, pk=id)
 
     if has_perm(request.user,'stories.change_story', story):
@@ -183,6 +204,10 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
 
 @login_required
 def delete(request, id, template_name="stories/delete.html"):
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     story = get_object_or_404(Story, pk=id)
 
     if has_perm(request.user,'stories.delete_story'):
@@ -204,6 +229,9 @@ def delete(request, id, template_name="stories/delete.html"):
 @login_required
 def export(request, template_name="stories/export.html"):
     """Export Stories"""
+    if not get_setting('module', 'stories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='stories')
+        return HttpResponseRedirect('/' + redirect.to_url)
     
     if not request.user.is_superuser:
         raise Http403

@@ -27,9 +27,14 @@ from tendenci.addons.directories.utils import directory_set_inv_payment
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.directories.utils import resize_s3_image
+from tendenci.apps.redirects.models import Redirect
 
 
 def details(request, slug=None, template_name="directories/view.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if not slug: return HttpResponseRedirect(reverse('directories'))
     directory = get_object_or_404(Directory, slug=slug)
 
@@ -42,6 +47,10 @@ def details(request, slug=None, template_name="directories/view.html"):
         raise Http403
 
 def search(request, template_name="directories/search.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     get = dict(request.GET)
     query = get.pop('q', [])
     get.pop('page', None)  # pop page query string out; page ruins pagination
@@ -82,6 +91,10 @@ def search_redirect(request):
 
 
 def print_view(request, slug, template_name="directories/print-view.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory = get_object_or_404(Directory, slug=slug)    
     if has_view_perm(request.user,'directories.view_directory',directory):
         EventLog.objects.log(instance=directory)
@@ -94,6 +107,10 @@ def print_view(request, slug, template_name="directories/print-view.html"):
 
 @login_required
 def add(request, form_class=DirectoryForm, template_name="directories/add.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     can_add_active = has_perm(request.user,'directories.add_directory')
     
     if not any([request.user.profile.is_superuser,
@@ -185,6 +202,10 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
     
 @login_required
 def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory = get_object_or_404(Directory, pk=id)
 
     if not has_perm(request.user,'directories.change_directory', directory):
@@ -236,6 +257,10 @@ def edit(request, id, form_class=DirectoryForm, template_name="directories/edit.
 
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-meta.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
 
     # check permission
     directory = get_object_or_404(Directory, pk=id)
@@ -267,6 +292,10 @@ def edit_meta(request, id, form_class=MetaForm, template_name="directories/edit-
 
 
 def logo_display(request, id):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory = get_object_or_404(Directory, pk=id)
 
     if not has_view_perm(request.user,
@@ -279,6 +308,10 @@ def logo_display(request, id):
 
 @login_required
 def delete(request, id, template_name="directories/delete.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory = get_object_or_404(Directory, pk=id)
 
     if has_perm(request.user,'directories.delete_directory'):   
@@ -308,6 +341,10 @@ def delete(request, id, template_name="directories/delete.html"):
 
 @login_required
 def pricing_add(request, form_class=DirectoryPricingForm, template_name="directories/pricing-add.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     if has_perm(request.user,'directories.add_directorypricing'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
@@ -327,6 +364,10 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
     
 @login_required
 def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="directories/pricing-edit.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
     if not has_perm(request.user,'directories.change_directorypricing',directory_pricing): Http403
     
@@ -346,6 +387,10 @@ def pricing_edit(request, id, form_class=DirectoryPricingForm, template_name="di
 
 @login_required
 def pricing_view(request, id, template_name="directories/pricing-view.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory_pricing = get_object_or_404(DirectoryPricing, id=id)
     
     if has_perm(request.user,'directories.view_directorypricing',directory_pricing):        
@@ -358,6 +403,10 @@ def pricing_view(request, id, template_name="directories/pricing-view.html"):
     
 @login_required
 def pricing_delete(request, id, template_name="directories/pricing-delete.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory_pricing = get_object_or_404(DirectoryPricing, pk=id)
 
     if not has_perm(request.user,'directories.delete_directorypricing'): raise Http403
@@ -376,6 +425,10 @@ def pricing_delete(request, id, template_name="directories/pricing-delete.html")
         context_instance=RequestContext(request))
 
 def pricing_search(request, template_name="directories/pricing-search.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     directory_pricing = DirectoryPricing.objects.filter(status=True).order_by('duration')
     EventLog.objects.log()
 
@@ -384,6 +437,10 @@ def pricing_search(request, template_name="directories/pricing-search.html"):
 
 @login_required
 def pending(request, template_name="directories/pending.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     can_view_directories = has_perm(request.user, 'directories.view_directory')
     can_change_directories = has_perm(request.user, 'directories.change_directory')
     
@@ -398,6 +455,10 @@ def pending(request, template_name="directories/pending.html"):
     
 @login_required
 def approve(request, id, template_name="directories/approve.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     can_view_directories = has_perm(request.user, 'directories.view_directory')
     can_change_directories = has_perm(request.user, 'directories.change_directory')
     
@@ -448,6 +509,10 @@ def thank_you(request, template_name="directories/thank-you.html"):
     
 @login_required
 def export(request, template_name="directories/export.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     """Export Directories"""
 
     if not request.user.is_superuser:
@@ -503,6 +568,10 @@ def export(request, template_name="directories/export.html"):
     }, context_instance=RequestContext(request))
 
 def renew(request, id, form_class=DirectoryRenewForm, template_name="directories/renew.html"):
+    if not get_setting('module', 'directories', 'enabled'):
+        redirect = get_object_or_404(Redirect, from_app='directories')
+        return HttpResponseRedirect('/' + redirect.to_url)
+
     can_add_active = has_perm(request.user,'directories.add_directory')
     require_approval = get_setting('module', 'directories', 'renewalrequiresapproval')
     directory = get_object_or_404(Directory, pk=id)
