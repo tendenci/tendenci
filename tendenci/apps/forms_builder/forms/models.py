@@ -304,6 +304,8 @@ class FormEntry(models.Model):
             field = entry.field
             if field.field_type.lower() == 'emailfield':
                 email = entry.value
+            if field.field_type.lower() == 'emailverificationfield':
+                email = entry.value
             if field.label.lower() in ['name']:
                 name = entry.value
             if field.label.lower() in ['first name']:
