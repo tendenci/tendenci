@@ -7,18 +7,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Removing unique constraint on 'Redirect', fields ['from_url']
         db.delete_unique('redirects_redirect', ['from_url'])
 
-        # Removing unique constraint on 'Redirect', fields ['from_app']
-        db.delete_unique('redirects_redirect', ['from_app'])
-
-
     def backwards(self, orm):
-        
-        # Adding unique constraint on 'Redirect', fields ['from_app']
-        db.create_unique('redirects_redirect', ['from_app'])
 
         # Adding unique constraint on 'Redirect', fields ['from_url']
         db.create_unique('redirects_redirect', ['from_url'])
