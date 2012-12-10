@@ -12,6 +12,9 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.fields import EmailVerificationField
+from tendenci.apps.redirects.models import Redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -131,6 +134,21 @@ class Form(TendenciBaseModel):
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
+
+    def is_enabled(self):
+        """
+        Is module enabled
+        """
+        return get_setting('module', 'forms', 'enabled')
+
+    def redirect(self):
+        """
+        redirect url
+        """
+        r = get_object_or_404(Redirect, from_app='forms')
+        return HttpResponseRedirect('/' + r.to_url)
+
+
 
 class FieldManager(models.Manager):
     """
