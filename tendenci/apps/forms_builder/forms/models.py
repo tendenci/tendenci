@@ -360,7 +360,7 @@ class FormEntry(models.Model):
         return self.get_value_of("EmailPhoneNumber")
 
     def get_email_address(self):
-        return self.get_type_of("emailfield")
+        return self.get_type_of("emailverificationfield")
 
      # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):

@@ -1,4 +1,4 @@
-import datetime
+import datetime, random, string
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -14,6 +14,7 @@ from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
 from django.template.loader import get_template
+from django.contrib.auth.models import User
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
@@ -23,6 +24,7 @@ from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.profiles.models import Profile
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.redirects.models import Redirect
@@ -438,6 +440,31 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid():
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
+            if request.user.is_anonymous():
+                if entry.get_email_address():
+                    emailfield = entry.get_email_address()
+                    firstnamefield = entry.get_first_name()
+                    lastnamefield = entry.get_last_name()
+                    phonefield = entry.get_phone_number()
+                    password = ''
+                    for i in range(0, 10):
+                        password += random.choice(string.ascii_lowercase + string.ascii_uppercase)
+
+                    user_list = User.objects.filter(email=emailfield).order_by('-last_login')
+                    if user_list:
+                        anonymous_creator = user_list[0]
+                    else:
+                        anonymous_creator = User(username=emailfield, email=emailfield, 
+                                                 first_name=firstnamefield, last_name=lastnamefield)
+                        anonymous_creator.set_password(password)
+                        anonymous_creator.is_active = False
+                        anonymous_creator.save()
+                        anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
+                                                    creator=User.objects.get(pk=1), phone=phonefield)
+                        anonymous_profile.save()
+                    entry.creator = anonymous_creator
+            else:
+                entry.creator = request.user
             entry.save()
 
             # Email
