@@ -135,12 +135,14 @@ class Form(TendenciBaseModel):
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
 
+    @classmethod
     def is_enabled(self):
         """
         Is module enabled
         """
         return get_setting('module', 'forms', 'enabled')
 
+    @classmethod
     def redirect(self):
         """
         redirect url
