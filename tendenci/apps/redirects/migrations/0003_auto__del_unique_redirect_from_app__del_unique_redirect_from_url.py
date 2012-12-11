@@ -9,7 +9,10 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
 
         # Removing unique constraint on 'Redirect', fields ['from_url']
-        db.delete_unique('redirects_redirect', ['from_url'])
+        try:
+            db.delete_unique('redirects_redirect', ['from_url'])
+        except ValueError, e:
+            pass
 
     def backwards(self, orm):
 
