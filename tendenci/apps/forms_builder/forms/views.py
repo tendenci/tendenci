@@ -16,6 +16,7 @@ from django.core.files.storage import default_storage
 from django.template.loader import get_template
 from django.contrib.auth.models import User
 
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import check_template, template_exists
@@ -38,11 +39,9 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 
 
+@is_enabled('forms')
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     if not has_perm(request.user,'forms.add_form'):
         raise Http403
 
@@ -74,10 +73,8 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     form_instance = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form_instance):
@@ -117,11 +114,9 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         },context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def update_fields(request, id, template_name="forms/update_fields.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     form_instance = get_object_or_404(Form, id=id)
 
     if not has_perm(request.user,'forms.add_form',form_instance):
@@ -144,11 +139,9 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def delete(request, id, template_name="forms/delete.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -164,14 +157,13 @@ def delete(request, id, template_name="forms/delete.html"):
     return render_to_response(template_name, {'form': form_instance},
         context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def copy(request, id):
     """
     Copies a form_instance and all the fields related to it.
     """
-    if not Form.is_enabled():
-        return Form.redirect()
-
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -239,11 +231,10 @@ def copy(request, id):
     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
     return redirect('form_edit', new_form.pk)
 
+
+@is_enabled('forms')
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     form = get_object_or_404(Form, pk=id)
 
     if not has_perm(request.user,'forms.change_form',form):
@@ -257,11 +248,9 @@ def entries(request, id, template_name="forms/entries.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def entry_delete(request, id, template_name="forms/entry_delete.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -276,11 +265,10 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     entry = get_object_or_404(FormEntry, pk=id)
 
     # check permission
@@ -291,10 +279,8 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def entries_export(request, id):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -389,10 +375,8 @@ def entries_export(request, id):
     return response
 
 
+@is_enabled('forms')
 def search(request, template_name="forms/search.html"):
-    if not Form.is_enabled():
-        return Form.redirect()
-
     if not has_perm(request.user,'forms.view_form'):
         raise Http403
 
@@ -410,13 +394,11 @@ def search(request, template_name="forms/search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def form_detail(request, slug, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
     """
-    if not Form.is_enabled():
-        return Form.redirect()
-
     published = Form.objects.published(for_user=request.user)
     form = get_object_or_404(published, slug=slug)
 
@@ -575,13 +557,12 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     context = {"form": form, "form_template": form.template}
     return render_to_response(template, context, RequestContext(request))
 
+
+@is_enabled('forms')
 def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
     """
     Show billing form, update the invoice then proceed to external payment.
     """
-    if not Form.is_enabled():
-        return Form.redirect()
-
     invoice = get_object_or_404(Invoice, pk=invoice_id)
 
     if not invoice.allow_view_by(request.user, invoice_guid):
@@ -617,12 +598,11 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             'form_template': form_template,
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def export(request, template_name="forms/export.html"):
     """Export forms"""
-    if not Form.is_enabled():
-        return Form.redirect()
-
     if not request.user.is_superuser:
         raise Http403
 
@@ -635,6 +615,7 @@ def export(request, template_name="forms/export.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def files(request, id):
     """
@@ -644,9 +625,6 @@ def files(request, id):
         We can get data from remote location, convert to file
         object and return a file response.
     """
-    if not Form.is_enabled():
-        return Form.redirect()
-
     import os
     import mimetypes
     from django.http import Http404
