@@ -10,18 +10,15 @@ from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.exports.utils import run_export_task
+from tendenci.core.perms.utils import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
 from tendenci.addons.help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from tendenci.addons.help_files.forms import RequestForm, HelpFileForm
 from tendenci.apps.notifications import models as notification
-from tendenci.apps.redirects.models import Redirect
 
 
+@is_enabled('help_files')
 def index(request, template_name="help_files/index.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """List all topics and all links"""
     topic_pks = []
     filters = get_query_filters(request.user, 'help_files.view_helpfile')
@@ -52,11 +49,8 @@ def index(request, template_name="help_files/index.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('help_files')
 def search(request, template_name="help_files/search.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """ Help Files Search """
     query = request.GET.get('q', None)
 
@@ -74,11 +68,8 @@ def search(request, template_name="help_files/search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('help_files')
 def topic(request, id, template_name="help_files/topic.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """ List of topic help files """
     topic = get_object_or_404(Topic, pk=id)
     query = None
@@ -94,11 +85,8 @@ def topic(request, id, template_name="help_files/topic.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('help_files')
 def detail(request, slug, template_name="help_files/details.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """Help file details"""
     help_file = get_object_or_404(HelpFile, slug=slug)
 
@@ -110,12 +98,10 @@ def detail(request, slug, template_name="help_files/details.html"):
     else:
         raise Http403
 
+
+@is_enabled('help_files')
 @login_required
 def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if has_perm(request.user,'help_files.add_helpfile'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
@@ -145,12 +131,10 @@ def add(request, form_class=HelpFileForm, template_name="help_files/add.html"):
     else:
         raise Http403
 
+
+@is_enabled('help_files')
 @login_required
 def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/edit.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     help_file = get_object_or_404(HelpFile, pk=id)
     if has_perm(request.user,'help_files.change_helpfile', help_file):
         if request.method == "POST":
@@ -181,11 +165,9 @@ def edit(request, id=None, form_class=HelpFileForm, template_name="help_files/ed
     else:
         raise Http403
 
-def request_new(request, template_name="help_files/request_new.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
 
+@is_enabled('help_files')
+def request_new(request, template_name="help_files/request_new.html"):
     "Request new file form"
     if request.method == 'POST':
         form = RequestForm(request.POST)
@@ -223,13 +205,10 @@ def redirects(request, id):
             return HttpResponsePermanentRedirect(reverse('help_files'))
     except:
         return HttpResponsePermanentRedirect(reverse('help_files'))
-        
 
+
+@is_enabled('help_files')
 def requests(request, template_name="help_files/request_list.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """
         Display a list of help file requests
     """
@@ -243,12 +222,9 @@ def requests(request, template_name="help_files/request_list.html"):
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('help_files')
 @login_required
 def export(request, template_name="help_files/export.html"):
-    if not get_setting('module', 'help_files', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='help files')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """Export Help Files"""
     
     if not request.user.is_superuser:
