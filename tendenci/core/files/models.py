@@ -249,19 +249,3 @@ class File(TendenciBaseModel):
             else:
                 return "%s%s%s" % (get_setting("site", "global", "siteurl"), settings.MEDIA_URL, self.file)
         return None
-
-    @classmethod
-    def is_enabled(self):
-        """
-        Is module enabled
-        """
-        return get_setting('module', 'files', 'enabled')
-
-    @classmethod
-    def redirect(self):
-        """
-        redirect url
-        """
-        r = get_object_or_404(Redirect, from_app='files')
-        return HttpResponseRedirect('/' + r.to_url)
-
