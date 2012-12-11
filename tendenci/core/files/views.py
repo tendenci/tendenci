@@ -21,7 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.decorators import admin_required
+from tendenci.core.perms.decorators import admin_required, is_enabled
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import (update_perms_and_save, has_perm, has_view_perm,
     get_query_filters)
@@ -32,14 +32,11 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
-from tendenci.apps.redirects.models import Redirect
 from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm
 
 
+@is_enabled('files')
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
-    if not File.is_enabled():
-        return File.is_redirect()
-
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
     if cached_image:
@@ -154,6 +151,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     return response
 
 
+@is_enabled('files')
 @login_required
 def search(request, template_name="files/search.html"):
     """
@@ -161,9 +159,6 @@ def search(request, template_name="files/search.html"):
     If a search index is available, this page will also
     have the option to search through files.
     """
-    if not File.is_enabled():
-        return File.redirect()
-
     query = u''
     category = u''
     sub_category = u''
@@ -206,10 +201,8 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('files'))
 
 
+@is_enabled('files')
 def print_view(request, id, template_name="files/print-view.html"):
-    if not File.is_enabled():
-        return File.redirect()
-
     file = get_object_or_404(File, pk=id)
 
     # check permission
@@ -220,11 +213,9 @@ def print_view(request, id, template_name="files/print-view.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, template_name="files/edit.html"):
-    if not File.is_enabled():
-        return File.redirect()
-
     file = get_object_or_404(File, pk=id)
 
     # check permission
@@ -294,11 +285,9 @@ def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, tem
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def bulk_add(request, template_name="files/bulk-add.html"):
-    if not File.is_enabled():
-        return File.redirect()
-
     if not has_perm(request.user, 'files.add_file'):
         raise Http403
 
@@ -373,11 +362,9 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def add(request, form_class=FileForm, category_form_class=CategoryForm, template_name="files/add.html"):
-    if not File.is_enabled():
-        return File.redirect()
-
     # check permission
     if not has_perm(request.user,'files.add_file'):  
         raise Http403
@@ -442,11 +429,9 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def delete(request, id, template_name="files/delete.html"):
-    if not File.is_enabled():
-        return File.redirect()
-
     file = get_object_or_404(File, pk=id)
 
     # check permission
@@ -561,15 +546,13 @@ def tinymce_upload_template(request, id, template_name="files/templates/tinymce_
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 @admin_required
 def report_most_viewed(request, form_class=MostViewedForm, template_name="files/reports/most_viewed.html"):
     """
     Displays a table of files sorted by views/downloads.
     """
-    if not File.is_enabled():
-        return File.redirect()
-
     from django.db.models import Count
     from datetime import date
     from datetime import timedelta
