@@ -25,6 +25,10 @@ from tendenci.core.files.managers import FileManager
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.categories.models import CategoryItem
 
+from tendenci.apps.redirects.models import Redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+
 
 def file_directory(instance, filename):
     filename = re.sub(r'[^a-zA-Z0-9._]+', '-', filename)
@@ -245,3 +249,19 @@ class File(TendenciBaseModel):
             else:
                 return "%s%s%s" % (get_setting("site", "global", "siteurl"), settings.MEDIA_URL, self.file)
         return None
+
+    @classmethod
+    def is_enabled(self):
+        """
+        Is module enabled
+        """
+        return get_setting('module', 'files', 'enabled')
+
+    @classmethod
+    def redirect(self):
+        """
+        redirect url
+        """
+        r = get_object_or_404(Redirect, from_app='files')
+        return HttpResponseRedirect('/' + r.to_url)
+
