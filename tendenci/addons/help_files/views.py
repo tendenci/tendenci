@@ -10,7 +10,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.exports.utils import run_export_task
-from tendenci.core.perms.utils import is_enabled
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_notice_recipients, has_view_perm, get_query_filters
 from tendenci.addons.help_files.models import HelpFile_Topics, Topic, HelpFile, HelpFileMigration, Request
 from tendenci.addons.help_files.forms import RequestForm, HelpFileForm
