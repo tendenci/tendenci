@@ -12,6 +12,8 @@ from django.conf import settings
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import now_localized
 from tendenci.core.perms.object_perms import ObjectPermission
+
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (update_perms_and_save, get_notice_recipients,
     has_perm, has_view_perm, get_query_filters)
 from tendenci.core.event_logs.models import EventLog
@@ -30,6 +32,8 @@ try:
 except:
     notification = None
 
+
+@is_enabled('resumes')
 def index(request, slug=None, template_name="resumes/view.html"):
     if not get_setting('module', 'resumes', 'enabled'):
         redirect = get_object_or_404(Redirect, from_app='resumes')
@@ -79,16 +83,14 @@ def resume_file(request, slug=None, template_name="resumes/view.html"):
     else:
         raise Http403
 
+
+@is_enabled('resumes')
 def search(request, template_name="resumes/search.html"):
     """
     This page lists out all resumes from newest to oldest.
     If a search index is available, this page will also
     have the option to search through resumes.
     """
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     has_index = get_setting('site', 'global', 'searchindex')
     query = request.GET.get('q', None)
 
@@ -120,11 +122,9 @@ def search_redirect(request):
     """
     return HttpResponseRedirect(reverse('resumes'))
 
-def print_view(request, slug, template_name="resumes/print-view.html"):
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
 
+@is_enabled('resumes')
+def print_view(request, slug, template_name="resumes/print-view.html"):
     resume = get_object_or_404(Resume, slug=slug)    
 
     log_defaults = {
@@ -143,12 +143,10 @@ def print_view(request, slug, template_name="resumes/print-view.html"):
     else:
         raise Http403
 
+
+@is_enabled('resumes')
 @login_required
 def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     can_add_active = has_perm(request.user, 'resumes.add_resume')
 
     if request.method == "POST":
@@ -204,12 +202,10 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
     return render_to_response(template_name, {'form':form},
         context_instance=RequestContext(request))
 
+
+@is_enabled('resumes')
 @login_required
 def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     resume = get_object_or_404(Resume, pk=id)
     print request.FILES
     form = form_class(request.POST or None, request.FILES or None, instance=resume, user=request.user)
@@ -241,12 +237,10 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
     else:
         raise Http403
 
+
+@is_enabled('resumes')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta.html"):
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     # check permission
     resume = get_object_or_404(Resume, pk=id)
     if not has_perm(request.user,'resumes.change_resume',resume):
@@ -276,12 +270,10 @@ def edit_meta(request, id, form_class=MetaForm, template_name="resumes/edit-meta
     return render_to_response(template_name, {'resume': resume, 'form':form}, 
         context_instance=RequestContext(request))
 
+
+@is_enabled('resumes')
 @login_required
 def delete(request, id, template_name="resumes/delete.html"):
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     resume = get_object_or_404(Resume, pk=id)
 
     if has_perm(request.user,'resumes.delete_resume'):   
@@ -317,17 +309,16 @@ def delete(request, id, template_name="resumes/delete.html"):
     else:
         raise Http403
 
+
+@is_enabled('resumes')
 @login_required
 def pending(request, template_name="resumes/pending.html"):
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not request.user.profile.is_superuser:
         raise Http403
     resumes = Resume.objects.filter(status=0, status_detail='pending')
     return render_to_response(template_name, {'resumes': resumes},
             context_instance=RequestContext(request))
+
 
 @login_required
 def approve(request, id, template_name="resumes/approve.html"):
@@ -361,13 +352,11 @@ def approve(request, id, template_name="resumes/approve.html"):
 def thank_you(request, template_name="resumes/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
+
+@is_enabled('resumes')
 @login_required
 def export(request, template_name="resumes/export.html"):
     """Export Resumes"""
-    if not get_setting('module', 'resumes', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='resumes')
-        return HttpResponseRedirect('/' + redirect.to_url)
-    
     if not request.user.is_superuser:
         raise Http403
     

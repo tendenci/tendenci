@@ -17,6 +17,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (get_notice_recipients, update_perms_and_save,
     has_perm, get_query_filters, has_view_perm)
 from tendenci.core.categories.forms import CategoryForm, CategoryForm2
@@ -27,7 +28,6 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.addons.jobs.models import Job, JobPricing
 from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
 from tendenci.addons.jobs.utils import job_set_inv_payment, get_job_unique_slug
-from tendenci.apps.redirects.models import Redirect
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -36,11 +36,8 @@ except:
 from tendenci.core.base.utils import send_email_notification
 
 
+@is_enabled('jobs')
 def detail(request, slug=None, template_name="jobs/view.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not slug:
         return HttpResponseRedirect(reverse('jobs'))
     job = get_object_or_404(Job.objects.select_related(), slug=slug)
@@ -55,11 +52,8 @@ def detail(request, slug=None, template_name="jobs/view.html"):
         raise Http403
 
 
+@is_enabled('jobs')
 def search(request, template_name="jobs/search.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     query = request.GET.get('q', None)
     my_pending_jobs = request.GET.get('my_pending_jobs', False)
 
@@ -102,11 +96,8 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('jobs'))
 
 
+@is_enabled('jobs')
 def my_jobs(request, template_name = "jobs/my_jobs.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     query = request.GET.get('q', None)
     if not request.user.is_anonymous():
         if get_setting('site', 'global', 'searchindex') and query:
@@ -125,11 +116,9 @@ def my_jobs(request, template_name = "jobs/my_jobs.html"):
     else:
         return HttpResponseRedirect(reverse('jobs'))
 
-def print_view(request, slug, template_name="jobs/print-view.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
 
+@is_enabled('jobs')
+def print_view(request, slug, template_name="jobs/print-view.html"):
     job = get_object_or_404(Job, slug=slug)
 
     can_view = has_view_perm(request.user, 'jobs.view_job', job)
@@ -142,12 +131,11 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     else:
         raise Http403
 
+
+@is_enabled('jobs')
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html",
         object_type=Job, success_redirect='job'):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
 
     require_payment = get_setting('module', 'jobs',
                                     'jobsrequirespayment')
@@ -299,12 +287,9 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job'):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     job = get_object_or_404(Job, pk=id)
 
     if not has_perm(request.user, 'jobs.change_job', job):
@@ -387,15 +372,12 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
         'form': form,
         'categoryform': categoryform
         }, context_instance=RequestContext(request))
-    
 
 
+@is_enabled('jobs')
 @login_required
 def edit_meta(request, id, form_class=MetaForm,
                     template_name="jobs/edit-meta.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
 
     # check permission
     job = get_object_or_404(Job, pk=id)
@@ -427,12 +409,9 @@ def edit_meta(request, id, form_class=MetaForm,
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def delete(request, id, template_name="jobs/delete.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     job = get_object_or_404(Job, pk=id)
 
     if has_perm(request.user, 'jobs.delete_job', job):
@@ -461,13 +440,10 @@ def delete(request, id, template_name="jobs/delete.html"):
         raise Http403
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_add(request, form_class=JobPricingForm,
                     template_name="jobs/pricing-add.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if has_perm(request.user, 'jobs.add_jobpricing'):
         if request.method == "POST":
             form = form_class(request.POST)
@@ -489,13 +465,10 @@ def pricing_add(request, form_class=JobPricingForm,
         raise Http403
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_edit(request, id, form_class=JobPricingForm,
                     template_name="jobs/pricing-edit.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     job_pricing = get_object_or_404(JobPricing, pk=id)
     if not has_perm(request.user, 'jobs.change_jobpricing', job_pricing):
         Http403
@@ -519,12 +492,9 @@ def pricing_edit(request, id, form_class=JobPricingForm,
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_view(request, id, template_name="jobs/pricing-view.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     job_pricing = get_object_or_404(JobPricing, id=id)
 
     if has_perm(request.user, 'jobs.view_jobpricing', job_pricing):
@@ -535,12 +505,9 @@ def pricing_view(request, id, template_name="jobs/pricing-view.html"):
         raise Http403
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     job_pricing = get_object_or_404(JobPricing, pk=id)
 
     if not has_perm(request.user, 'jobs.delete_jobpricing'):
@@ -559,11 +526,8 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 def pricing_search(request, template_name="jobs/pricing-search.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     job_pricings = JobPricing.objects.all().order_by('duration')
 
     EventLog.objects.log()
@@ -571,12 +535,9 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def pending(request, template_name="jobs/pending.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     can_view_jobs = has_perm(request.user, 'jobs.view_job')
     can_change_jobs = has_perm(request.user, 'jobs.change_job')
 
@@ -640,12 +601,10 @@ def approve(request, id, template_name="jobs/approve.html"):
 def thank_you(request, template_name="jobs/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
+
+@is_enabled('jobs')
 @login_required
 def export(request, template_name="jobs/export.html"):
-    if not get_setting('module', 'jobs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='jobs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """Export Jobs"""
  
     if not request.user.is_superuser:

@@ -13,6 +13,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
 from tendenci.core.perms.decorators import admin_required
@@ -32,11 +33,9 @@ from tendenci.core.files.models import File
 from tendenci.apps.redirects.models import Redirect
 from djcelery.models import TaskMeta
 
-def detail(request, id=None, template_name="locations/view.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
 
+@is_enabled('locations')
+def detail(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
     location = get_object_or_404(Location, pk=id)
     
@@ -48,11 +47,8 @@ def detail(request, id=None, template_name="locations/view.html"):
         raise Http403
 
 
+@is_enabled('locations')
 def search(request, template_name="locations/search.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     query = request.GET.get('q', None)
 
     if get_setting('site', 'global', 'searchindex') and query:
@@ -75,11 +71,8 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('locations'))
 
 
+@is_enabled('locations')
 def nearest(request, template_name="locations/nearest.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     locations = []
     lat, lng = None, None
     query = request.GET.get('q')
@@ -107,11 +100,8 @@ def nearest(request, template_name="locations/nearest.html"):
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('locations')
 def print_view(request, id, template_name="locations/print-view.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     location = get_object_or_404(Location, pk=id)    
 
     if has_view_perm(request.user,'locations.view_location',location):
@@ -121,13 +111,11 @@ def print_view(request, id, template_name="locations/print-view.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+
+@is_enabled('locations')
 @login_required
 def edit(request, id, form_class=LocationForm, template_name="locations/edit.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     location = get_object_or_404(Location, pk=id)
 
     if has_perm(request.user,'locations.change_location',location):    
@@ -150,12 +138,10 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
     else:
         raise Http403
 
+
+@is_enabled('locations')
 @login_required
 def add(request, form_class=LocationForm, template_name="locations/add.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if has_perm(request.user,'locations.add_location'):
         if request.method == "POST":
             form = form_class(request.POST, user=request.user)
@@ -175,13 +161,11 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+
+@is_enabled('locations')
 @login_required
 def delete(request, id, template_name="locations/delete.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     location = get_object_or_404(Location, pk=id)
 
     if has_perm(request.user,'locations.delete_location'):   
@@ -197,6 +181,7 @@ def delete(request, id, template_name="locations/delete.html"):
         raise Http403
 
 
+@is_enabled('locations')
 @login_required
 @admin_required
 @password_required
@@ -336,12 +321,10 @@ def locations_import_status(request, task_id, template_name='locations/import-co
             'now': datetime.now(),
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('locations')
 @login_required
 def export(request, template_name="locations/export.html"):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """Export Locations"""
 
     if not request.user.is_superuser:
@@ -378,13 +361,11 @@ def export(request, template_name="locations/export.html"):
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
 
+
+@is_enabled('locations')
 @admin_required
 @login_required
 def download_location_upload_template(request, file_ext='.xls'):
-    if not get_setting('module', 'locations', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='locations')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if file_ext == '.csv':
         filename = "import-locations.csv"
     else:

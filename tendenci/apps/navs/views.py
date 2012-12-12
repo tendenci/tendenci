@@ -14,21 +14,19 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from tendenci.apps.pages.models import Page
 from tendenci.core.exports.utils import run_export_task
-from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.navs.models import Nav, NavItem
 from tendenci.apps.navs.forms import NavForm, PageSelectForm, ItemForm
 from tendenci.apps.navs.utils import cache_nav
 
+
+@is_enabled('navs')
 @login_required
 def search(request, template_name="navs/search.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     query = request.GET.get('q', None)
 
     filters = get_query_filters(request.user, 'navs.view_nav')
@@ -44,12 +42,10 @@ def search(request, template_name="navs/search.html"):
         context_instance=RequestContext(request)
     )
 
+
+@is_enabled('navs')
 @login_required
 def detail(request, id, template_name="navs/detail.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     nav = get_object_or_404(Nav, id=id)
     
     if not has_view_perm(request.user, 'navs.view_nav', nav):
@@ -63,12 +59,10 @@ def detail(request, id, template_name="navs/detail.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def add(request, form_class=NavForm, template_name="navs/add.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not has_perm(request.user, 'navs.add_nav'):
         raise Http403
 
@@ -89,12 +83,10 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     nav = get_object_or_404(Nav, id=id)
     if not has_perm(request.user, 'navs.change_nav', nav):
         raise Http403
@@ -117,12 +109,10 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def edit_items(request, id, template_name="navs/nav_items.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     nav = get_object_or_404(Nav, id=id)
     if not has_perm(request.user, 'navs.change_nav', nav):
         raise Http403
@@ -162,12 +152,10 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def delete(request, id, template_name="navs/delete.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     nav = get_object_or_404(Nav, pk=id)
 
     if has_perm(request.user,'navs.delete_nav'):
@@ -182,12 +170,10 @@ def delete(request, id, template_name="navs/delete.html"):
     else:
         raise Http403
 
+
+@is_enabled('navs')
 @login_required
 def page_select(request, form_class=PageSelectForm):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not request.user.profile.is_superuser:
         raise Http403
 
@@ -209,12 +195,10 @@ def page_select(request, form_class=PageSelectForm):
                 "error": True
             }), mimetype="text/plain")
 
+
+@is_enabled('navs')
 @login_required
 def export(request, template_name="navs/export.html"):
-    if not get_setting('module', 'navs', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='navs')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     """Export Navs"""
     if not request.user.is_superuser:
         raise Http403

@@ -28,7 +28,6 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.core.exports.utils import run_export_task
-from tendenci.apps.redirects.models import Redirect
 
 from tendenci.apps.forms_builder.forms.forms import (FormForForm, FormForm, FormForField,
     PricingForm, BillingForm)

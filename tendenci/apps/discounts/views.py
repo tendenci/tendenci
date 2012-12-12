@@ -9,6 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 
 from tendenci.core.base.http import Http403
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -19,12 +20,10 @@ from tendenci.apps.discounts.forms import DiscountForm, DiscountCodeForm, Discou
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.redirects.models import Redirect
 
+
+@is_enabled('discounts')
 @login_required
 def search(request, template_name="discounts/search.html"):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not has_perm(request.user, 'discounts.view_discount'):
         raise Http403
 
@@ -42,12 +41,10 @@ def search(request, template_name="discounts/search.html"):
         context_instance=RequestContext(request)
     )
 
+
+@is_enabled('discounts')
 @login_required    
 def detail(request, id, template_name="discounts/detail.html"):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     discount = get_object_or_404(Discount, id=id)
     
     if not has_perm(request.user, 'discounts.view_discount', discount):
@@ -61,12 +58,10 @@ def detail(request, id, template_name="discounts/detail.html"):
         context_instance=RequestContext(request)
     )
 
+
+@is_enabled('discounts')
 @login_required
 def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not has_perm(request.user, 'discounts.add_discount'):
         raise Http403
     
@@ -87,12 +82,10 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('discounts')
 @login_required
 def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.html"):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     discount = get_object_or_404(Discount, id=id)
     if not has_perm(request.user, 'discounts.change_discount', discount):
         raise Http403
@@ -118,12 +111,9 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
     )
 
 
+@is_enabled('discounts')
 @login_required
 def delete(request, id, template_name="discounts/delete.html"):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     discount = get_object_or_404(Discount, pk=id)
 
     if not has_perm(request.user, 'discounts.delete_discount', discount):
@@ -139,12 +129,9 @@ def delete(request, id, template_name="discounts/delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('discounts')
 @csrf_exempt
 def discounted_price(request, form_class=DiscountCodeForm):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
@@ -167,12 +154,9 @@ def discounted_price(request, form_class=DiscountCodeForm):
         mimetype="text/html")
 
 
+@is_enabled('discounts')
 @csrf_exempt
 def discounted_prices(request, form_class=DiscountHandlingForm):
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
@@ -204,13 +188,10 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
         mimetype="text/html")
 
 
+@is_enabled('discounts')
 @login_required
 def export(request, template_name="discounts/export.html"):
     """Export Discounts"""
-    if not get_setting('module', 'discounts', 'enabled'):
-        redirect = get_object_or_404(Redirect, from_app='discounts')
-        return HttpResponseRedirect('/' + redirect.to_url)
-
     if not request.user.is_superuser:
         raise Http403
 
