@@ -663,27 +663,27 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
     )
 
     if request.method == "POST":
-        photo_formset = PhotoFormSet(request.POST)
-        if photo_formset.is_valid():
-            photo_formset.save()
+        photo = Image.objects.get(pk=request.POST['id'])
 
-            # event logging
-            for photo, changed in photo_formset.changed_objects:
+        form = PhotoBatchEditForm(request.POST, instance=photo)
 
-                EventLog.objects.log(**{
-                    'event_id' : 990200,
-                    'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
-                    'description': '%s edited' % photo._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': photo,
-                })
+        if form.is_valid():
+            photo = form.save()
 
-            #set album cover if specified
-            chosen_cover_id = request.POST.get('album_cover', None)
+            EventLog.objects.log(**{
+                'event_id': 990200,
+                'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
+                'description': '%s edited' % photo._meta.object_name,
+                'user': request.user,
+                'request': request,
+                'instance': photo,
+            })
+
+            # set album cover if specified
+            chosen_cover_id = request.POST.get('album_cover')
 
             if chosen_cover_id:
-                #validate chosen cover
+                # validate chosen cover
                 valid_cover = True
                 try:
                     chosen_cover = photo_set.image_set.get(id=chosen_cover_id)
@@ -697,8 +697,6 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     cover.photo = chosen_cover
                     cover.save()
 
-            #messages.add_message(request, messages.SUCCESS, 'Photo changes saved')
-            #return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
             return HttpResponse('Success')
 
     else:  # if request.method != POST
