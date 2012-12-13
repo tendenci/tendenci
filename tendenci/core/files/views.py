@@ -175,7 +175,7 @@ def search(request, template_name="files/search.html"):
     if has_index and query:
         files = File.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'files.view_file', perms_field=False)
+        filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).distinct()
 
     if category:
