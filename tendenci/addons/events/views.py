@@ -952,8 +952,13 @@ def delete(request, id, template_name="events/delete.html"):
                 connection._rollback()
 
             if event.image:
-                event.image.delete()
-            event.delete()
+
+                try:
+                    event.image.delete()
+                except:
+                    connection._rollback()
+
+                event.delete()
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
