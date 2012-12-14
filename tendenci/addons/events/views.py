@@ -958,7 +958,7 @@ def delete(request, id, template_name="events/delete.html"):
                 except:
                     connection._rollback()
 
-                event.delete()
+            event.delete()
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
