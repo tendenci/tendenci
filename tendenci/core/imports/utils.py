@@ -516,7 +516,7 @@ def extract_from_excel(file_path):
             for key in item.keys():
                 if key in field_type_dict and \
                 field_type_dict[key] == 'DateTimeField':
-                    item[key] = dparser.parser(item[key])
+                    item[key] = dparser.parse(item[key])
             item['ROW_NUM'] = r + 1
             data_list.append(item)
             r += 1
