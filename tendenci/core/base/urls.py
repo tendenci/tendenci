@@ -7,4 +7,5 @@ urlpatterns = patterns('tendenci.core.base.views',
     url(r'^clear-cache/$', 'clear_cache', name='clear_cache'),
     url(r'^password_again/$', 'password_again', name="password_again"),
     url(r'^exception-test/$', 'exception_test', name="exception_test"),
+    url(r'^timeout-test/$', 'timeout_test', name="timeout_test"),
 )
