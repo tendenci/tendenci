@@ -460,7 +460,8 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
     from django.contrib.contenttypes.models import ContentType
     params = {'app_label': 0, 'model': 0, 'instance_id':0}
     files = File.objects.none() # EmptyQuerySet
-    all_files = File.objects.filter(creator=request.user)
+    #all_files = File.objects.filter(creator=request.user)
+    all_files = None
     # if all required parameters are in the GET.keys() list
     if not set(params.keys()) - set(request.GET.keys()):        
 
