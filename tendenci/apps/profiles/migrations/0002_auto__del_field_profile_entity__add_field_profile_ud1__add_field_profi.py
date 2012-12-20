@@ -7,9 +7,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Deleting field 'Profile.entity'
-        db.delete_column('profiles_profile', 'entity_id')
 
         # Adding field 'Profile.ud1'
         db.add_column('profiles_profile', 'ud1', self.gf('django.db.models.fields.TextField')(default='', blank=True), keep_default=False)
@@ -28,9 +25,6 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
-        # Adding field 'Profile.entity'
-        db.add_column('profiles_profile', 'entity', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['entities.Entity'], null=True, blank=True), keep_default=False)
 
         # Deleting field 'Profile.ud1'
         db.delete_column('profiles_profile', 'ud1')
@@ -150,6 +144,7 @@ class Migration(SchemaMigration):
             'dob': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'education': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
             'email2': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
+            'entity': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['entities.Entity']", 'null': 'True', 'blank': 'True'}),
             'exported': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'fax': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'first_responder': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),

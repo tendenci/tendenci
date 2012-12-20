@@ -11,6 +11,7 @@ from django.contrib.contenttypes import generic
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
+from tendenci.apps.entities.models import Entity
 
 from tendenci.libs.abstracts.models import Person, Identity, Address
 
@@ -22,6 +23,7 @@ from tendenci.libs.abstracts.models import Person, Identity, Address
 class Profile(Person):
     # relations
     guid = models.CharField(max_length=40)
+    entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
