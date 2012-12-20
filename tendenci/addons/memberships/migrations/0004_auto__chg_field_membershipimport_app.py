@@ -1,22 +1,25 @@
 # encoding: utf-8
-import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
+
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
+        # Adding field 'MembershipImport.upload_file'
+        db.add_column('memberships_membershipimport', 'upload_file', self.gf('django.db.models.fields.files.FileField')(max_length=260, null=True), keep_default=False)
+
         # Changing field 'MembershipImport.app'
         db.alter_column('memberships_membershipimport', 'app_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['memberships.App'], null=True))
 
-
     def backwards(self, orm):
-        
+
+        # Deleting field 'MembershipImport.upload_file'
+        db.delete_column('memberships_membershipimport', 'upload_file')
+
         # User chose to not deal with backwards NULL issues for 'MembershipImport.app'
         raise RuntimeError("Cannot reverse this migration. 'MembershipImport.app' and its values cannot be restored.")
-
 
     models = {
         'auth.group': {
@@ -391,8 +394,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'interactive': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'key': ('django.db.models.fields.CharField', [], {'default': "'email'", 'max_length': '50'}),
-            'override': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'upload_file': ('django.db.models.fields.files.FileField', [], {'max_length': '260', 'null': 'True'})
+            'override': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         'memberships.membershiptype': {
             'Meta': {'object_name': 'MembershipType'},
