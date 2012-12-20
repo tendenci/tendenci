@@ -114,7 +114,12 @@ def delete(request, id, template_name="contacts/delete.html"):
 
 def index(request, form_class=SubmitContactForm, template_name="form.html"):
 
+    if request.method == "GET":
+        # event-log view
+        EventLog.objects.log(instance=Contact(), action='viewed')
+
     if request.method == "POST":
+        event_log_dict = {}
         form = form_class(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get('email')
@@ -137,6 +142,12 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
             phone = form.cleaned_data.get('phone')
             url = form.cleaned_data.get('url')
             message = form.cleaned_data.get('message')
+
+            exists = User.objects.filter(
+                first_name__iexact=first_name,
+                last_name__iexact=last_name,
+                email__iexact=email,
+            ).exists()
 
             if request.user.is_anonymous():
                 username = first_name.replace(' ', '')
@@ -163,8 +174,28 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                                   address=address, country=country, city=city, state=state,
                                   url=url, phone=phone, zipcode=zipcode)
                 profile.save()
-            else:
+
+                # if exists:
+                #     event_log_dict['description'] = 'logged-out submission as existing user'
+                # else:
+                event_log_dict['description'] = 'logged-out submission as new user'
+
+            else:  # logged in user
+                self_submit = all([
+                    request.user.first_name.lower().strip() == first_name.lower().strip(),
+                    request.user.last_name.lower().strip() == last_name.lower().strip(),
+                    request.user.email.lower().strip() == email.lower().strip(),
+                ])
+
                 contact_user = request.user
+
+                if exists:
+                    if self_submit:
+                        event_log_dict['description'] = 'logged-in submission as self'
+                    else:
+                        event_log_dict['description'] = 'logged-in submission as existing user'
+                else:
+                    event_log_dict['description'] = 'logged-in submission as non-existing user'
 
             contact_kwargs = {
                 'first_name': first_name,
@@ -193,18 +224,18 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
 
             if phone:
                 obj_phone = Phone(number=phone)
-                obj_phone.save() # saves object
-                contact.phones.add(obj_phone) # saves relationship
+                obj_phone.save()  # saves object
+                contact.phones.add(obj_phone)  # saves relationship
 
             if email:
                 obj_email = Email(email=email)
-                obj_email.save() # saves object
-                contact.emails.add(obj_email) # saves relationship
+                obj_email.save()  # saves object
+                contact.emails.add(obj_email)  # saves relationship
 
             if url:
                 obj_url = URL(url=url)
-                obj_url.save() # saves object
-                contact.urls.add(obj_url) # saves relationship
+                obj_url.save()  # saves object
+                contact.urls.add(obj_url)  # saves relationship
 
             site_name = get_setting('site', 'global', 'sitedisplayname')
             message_link = get_setting('site', 'global', 'siteurl')
@@ -216,36 +247,43 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                 if notification:
                     extra_context = {
                     'reply_to': email,
-                    'contact':contact,
-                    'first_name':first_name,
-                    'last_name':last_name,
-                    'address':address,
-                    'city':city,
-                    'state':state,
-                    'zipcode':zipcode,
-                    'country':country,
-                    'phone':phone,
-                    'email':email,
-                    'url':url,
-                    'message':message,
-                    'message_link':message_link,
-                    'site_name':site_name,
+                    'contact': contact,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'address': address,
+                    'city': city,
+                    'state': state,
+                    'zipcode': zipcode,
+                    'country': country,
+                    'phone': phone,
+                    'email': email,
+                    'url': url,
+                    'message': message,
+                    'message_link': message_link,
+                    'site_name': site_name,
                     }
-                    notification.send_emails(recipients,'contact_submitted', extra_context)
+                    notification.send_emails(recipients, 'contact_submitted', extra_context)
 
-            try: user = User.objects.filter(email=email)[0]
-            except: user = None
+            # event-log (logged in)
+            event_log = EventLog.objects.log(
+                instance=contact,
+                user=contact_user,
+                action='submitted',
+                **event_log_dict
+            )
 
-            EventLog.objects.log(instance=contact)
+            event_log.url = contact.get_absolute_url()
+            event_log.save()
 
             return HttpResponseRedirect(reverse('form.confirmation'))
         else:
-            return render_to_response(template_name, {'form': form}, 
+            return render_to_response(template_name, {'form': form},
                 context_instance=RequestContext(request))
 
     form = form_class()
-    return render_to_response(template_name, {'form': form}, 
+    return render_to_response(template_name, {'form': form},
         context_instance=RequestContext(request))
+
 
 def confirmation(request, form_class=SubmitContactForm, template_name="form-confirmation.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))
