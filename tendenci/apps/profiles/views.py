@@ -70,7 +70,7 @@ def index(request, username='', template_name="profiles/index.html"):
     content_counts = {'total': 0, 'invoice': 0}
     from tendenci.apps.invoices.models import Invoice
     inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this), Q(bill_to_email=user_this.email)).count()
-    if request.user.profile.is_superuser:    
+    if request.user.profile.is_superuser:
         inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
@@ -91,10 +91,12 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
-    memberships = user_this.memberships.filter(
-                                    status=True,
-                                    status_detail__in=['active', 'expired']
-                                    )
+    if request.user == user_this or request.user.profile.is_superuser:
+        memberships = user_this.membershipdefault_set.filter(
+            status=True, status_detail__in=['active', 'pending', 'expired'])
+    else:
+        memberships = user_this.membershipdefault_set.filter(
+            status=True, status_detail__in=['active', 'expired'])
 
     log_defaults = {
         'event_id': 125000,
@@ -148,28 +150,32 @@ def search(request, template_name="profiles/search.html"):
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query))
+        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query) | Q(company__icontains=query))
 
+    is_not_member_filter = (Q(member_number="") | Q(user__is_active=False))
     if members:
         if not request.user.profile.is_superuser:
             if membership_view_perms == "private":
-                profiles = profiles.filter(member_number="")
+                profiles = profiles.filter(is_not_member_filter)
             elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
                 if request.user.profile and request.user.profile.is_member:
-                    profiles = profiles.exclude(member_number="")
+                    profiles = profiles.exclude(is_not_member_filter)
                 else:
-                    profiles = profiles.filter(member_number="")
+                    profiles = profiles.filter(is_not_member_filter)
             else:
-                profiles = profiles.exclude(member_number="")
+                profiles = profiles.exclude(is_not_member_filter)
         else:
-            profiles = profiles.exclude(member_number="")
+            profiles = profiles.exclude(is_not_member_filter)
     else:
         if not request.user.profile.is_superuser:
             if membership_view_perms == "private":
-                    profiles = profiles.filter(member_number="")
+                    profiles = profiles.filter(is_not_member_filter)
             elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
                 if not request.user.profile or not request.user.profile.is_member:
-                    profiles = profiles.filter(member_number="")
+                    profiles = profiles.filter(is_not_member_filter)
+
+    if not request.user.profile.is_superuser:
+        profiles = profiles.exclude(hide_in_search=True)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
@@ -336,7 +342,9 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
 
             user_edit.save()
             profile.save()
-            
+
+            # update member-number on profile
+            profile.refresh_member_number()
             
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):

@@ -4,6 +4,9 @@ from south.modelsinspector import add_introspection_rules
 from django.forms import fields, ValidationError
 from django.db.models import CharField
 from django.utils.translation import ugettext_lazy as _
+from django.db import models
+from django.utils import simplejson
+from django.core import exceptions
 
 from tendenci.core.base import forms
 from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWidget
@@ -11,6 +14,7 @@ from tendenci.core.base.widgets import SplitDateTimeWidget, EmailVerificationWid
 
 # introspection rules for south migration for the slugfield
 add_introspection_rules([], ['^tendenci\.core\.base\.fields\.SlugField'])
+add_introspection_rules([], ['^tendenci\.core\.base\.fields\.DictField'])
 
 
 class SlugField(CharField):
@@ -68,6 +72,38 @@ class SplitDateTimeField(fields.MultiValueField):
                 raise ValidationError("Time Format is incorrect. Must be Hour:Minute AM|PM")
             return datetime_string
         return None
+
+
+class DictField(models.TextField):
+    """
+    A dictionary field
+    """
+    __metaclass__ = models.SubfieldBase
+
+    def to_python(self, value):
+        if not value:
+            return {}
+
+        if isinstance(value, basestring):
+            try:
+                return simplejson.loads(value)
+            except (ValueError, TypeError):
+                raise exceptions.ValidationError(
+                        self.error_messages['invalid'])
+
+        if isinstance(value, dict):
+            return value
+
+        return {}
+
+    def get_prep_value(self, value):
+        if isinstance(value, dict):
+            return simplejson.dumps(value)
+
+        if isinstance(value, basestring):
+            return value
+
+        return ''
 
 
 class EmailVerificationField(fields.MultiValueField):

@@ -45,6 +45,7 @@ class Entity(models.Model):
     class Meta:
         permissions = (("view_entity","Can view entity"),)
         verbose_name_plural = "entities"
+        ordering = ("entity_name",)
 
     def __unicode__(self):
         return self.entity_name

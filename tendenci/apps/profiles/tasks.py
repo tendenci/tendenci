@@ -66,12 +66,17 @@ class ExportProfilesTask(Task):
             'first_responder',
             'agreed_to_tos',
             'original_username',
+            'ud1',
+            'ud2',
+            'ud3',
+            'ud4',
+            'ud5',
             '\n',
         ]
-        
+
         data_rows = []
         profiles = Profile.objects.all()
-        
+
         for profile in profiles:
             data_row = [
                 profile.user.username,
@@ -127,6 +132,11 @@ class ExportProfilesTask(Task):
                 profile.first_responder,
                 profile.agreed_to_tos,
                 profile.original_username,
+                profile.ud1,
+                profile.ud2,
+                profile.ud3,
+                profile.ud4,
+                profile.ud5,
                 '\n',
             ]
             data_rows.append(data_row)

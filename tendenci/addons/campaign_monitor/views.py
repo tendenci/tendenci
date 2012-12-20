@@ -318,13 +318,16 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
             
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                html_url = template.html_file.url
+            else:
+                html_url = str("%s%s" % (site_url, template.get_html_url()))
+
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                     zip_url = template.get_zip_url()
-                    html_url = template.html_file.url
                 else:
-                    zip_url = "%s%s"%(site_url, template.get_zip_url())
-                    html_url = str("%s%s"%(site_url, template.get_html_url()))
+                    zip_url = "%s%s" % (site_url, template.get_zip_url())
             else:
                 zip_url = ""
             

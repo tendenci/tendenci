@@ -44,7 +44,7 @@ class ImportMembershipsTask(Task):
         for m in mems:
 
             # membership type required
-            if not m['membershiptype']:
+            if not m.get('membershiptype', u''):
                 continue  # on to the next one
 
             # username or email required
@@ -52,7 +52,7 @@ class ImportMembershipsTask(Task):
                 continue  # on to the next one
 
             if m['status__action'] != 'skip':
-                membership_type = MembershipType.objects.get(name=m['membershiptype'])
+                membership_type = MembershipType.objects.get(name=m.get('membershiptype', ''))
 
                 # initialize dates
                 expire_dt = m['expiredt']

@@ -93,6 +93,7 @@ class Group(TendenciBaseModel):
         return (user, created)
         """
         from django.db import IntegrityError
+        from django.db import transaction, connection
 
         try:
             GroupMembership.objects.create(**{
@@ -107,7 +108,12 @@ class Group(TendenciBaseModel):
             })
             return user, True  # created
         except IntegrityError:
+            connection._rollback()
             return user, False
+        except Exception:
+            transaction.rollback()
+            return user, False
+
 
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)

@@ -1,0 +1,55 @@
+{% extends "reports/base.html" %}
+{% load reports_tags %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "Renewed Members" %}</h1>
+<div class="mems-wrap stat-table">
+<p>
+{% if days = 1826 %}
+    {% trans "Currently showing members who renewed in the last 5 years." %}
+{% else %}
+    {% blocktrans with days=days %}
+    Currently showing members who renewed in the last {{ days }} days.
+    {% endblocktrans %}
+{% endif %}
+<form class="search-form" action="{% url reports-renewed-members %}" method="get">
+<label for="id_days">{% trans "Filter by renew date" %}:</label><select name="days" id="id_days" onchange="this.form.submit();">
+<option value="" selected="selected">-----------</option>
+<option value="30">Last 30 days</option>
+<option value="60">Last 60 days</option>
+<option value="90">Last 90 days</option>
+<option value="180">Last 180 days</option>
+<option value="365">Last 365 days</option>
+<option value="1826">Last 5 years</option>
+</select>
+</form>
+
+{% if members %}
+<p><a href="{% url reports-renewed-members %}?output=csv">
+    Download CSV File</a></p>
+    <table>
+        <tr>
+            <th>{% trans 'Member Number' %}</th>
+            <th>{% trans 'Name' %}</th>
+            <th>{% trans 'City' %}</th>
+            <th>{% trans 'State' %}</th>
+            <th>{% trans 'Country' %}</th>
+            <th>{% trans 'Renew Date' %}</th>
+        </tr>
+        {% for member in members %}
+        <tr class="{% cycle 'even' 'odd' %}">
+            <td>{{ member.member_number }}</td>
+            <td>{{ member.user.last_name }}, {{ member.user.first_name }}</td>
+            <td>{{ member.user.profile.city }}</td>
+            <td>{{ member.user.profile.state }}</td>
+            <td>{{ member.user.profile.country }}</td>
+            <td>{{ member.renew_dt }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    {% trans "No members in this date range." %}
+{% endif %}
+</div>
+{% endblock content %}

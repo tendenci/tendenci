@@ -1,0 +1,102 @@
+{% load i18n %}<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Report - {{ report.get_title }}</title>
+        <style type="text/css">
+            @page {
+                size: {{ pagesize|default:'legal landscape' }};
+                margin: 1.5cm 1cm;
+                @frame header {
+                    -pdf-frame-content: headerContent;
+                    top: 1cm;
+                    margin-left: 1cm;
+                    margin-right: 1cm;
+                    height: 0.5cm;
+                }
+                @frame footer {
+                    -pdf-frame-content: footerContent;
+                    bottom: 0.5cm;
+                    margin-left: 1cm;
+                    margin-right: 1cm;
+                    height: 0.5cm;
+                }
+            }
+            table.object_list_data th {
+                background-color: black;
+                color: white;
+                font-weight: bold;
+                padding: 3px;
+                font-size: 12px;
+                line-height: 12px;
+            }
+            table.object_list_data td {
+                border: 1px solid black;
+                padding: 2px;
+                font-size: 10px;
+            }
+            table.object_list_data .grouper {
+                background-color:#333;
+                color: #FFF;
+                padding: 3px;
+                font-size: 12px;
+                line-height: 12px;
+            }
+            table.object_list_data tr.caption {
+                background-color: #477596;
+                color: white;
+                font-weight: bold;
+            }
+            table.object_list_data tr.total {
+                font-weight: bold;
+            }
+            #report_info {
+                border: 1px solid #BF212E;
+                background-color: #E7E8EA;
+            }
+            #report_info td {
+                padding: 2px;
+                font-size: 15px;
+                line-height: 15px;
+                text-align: center;
+                color: #4D4D4D;
+                vertical-align: center;
+            }
+            #report_info td.title {
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="headerContent">
+            <table>
+                <tr>
+                    <td>{% trans "Report" %} - {{ report.get_title }}</td>
+                    <td width="100px" align="right">
+                        {% trans "Page" %} <pdf:pagenumber>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table id="report_info">
+            <tr>
+                <td width="200px">{% now "m/d/Y f a" %}</td>
+                <td class="title">
+                    {{ report.get_title }}
+                </td>
+            </tr>
+        </table>
+
+        {% include "model_report/includes/report_table.html" %}
+
+        <div id="footerContent">
+            <table>
+                <tr>
+                    <td>{% trans "Report" %} - {{ report.get_title }}</td>
+                    <td width="100px" align="right">
+                        {% trans "Page" %} <pdf:pagenumber>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

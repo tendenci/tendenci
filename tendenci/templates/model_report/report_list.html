@@ -1,0 +1,18 @@
+{% extends "default.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Report list" %}{% endblock %}
+
+{% block body_classes %}reports{% endblock %}
+
+
+{% block body %}
+    <h1>{% trans "Report list" %}</h1>
+    <ul id="report-list">
+        <li>
+            {% include "model_report/includes/report_nav.html" %}
+        </li>
+    </ul>
+{% endblock %}
+
+

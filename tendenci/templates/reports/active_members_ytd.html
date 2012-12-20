@@ -1,0 +1,50 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "Active Members YTD" %}</h1>
+<div class="mems-wrap stat-table">
+{% blocktrans with year=year %}
+    Currently showing data for {{ year }}.
+{% endblocktrans %}
+<form class="search-form" action="{% url reports-active-members-ytd %}" method="get">
+<label for="id_year">{% trans "Year" %}:</label><select name="year" id="id_year" onchange="this.form.submit();">
+<option value="" selected="selected">-----------</option>
+{% for year in years %}
+    <option value="{{ year }}">{{ year }}</option>
+{% endfor %}
+</select>
+</form>
+<table>
+    <tr>
+        <th>{% trans "Members" %}</th>
+        {% for month in months %}
+            <th>{{ month.name }}</th>
+        {% endfor %}
+        <th>{% trans "Total" %}</th>
+    </tr>
+    <tr>
+        <td>{% trans "New" %}</td>
+        {% for month in months %}
+            <td>{{ month.new_mems }}</td>
+        {% endfor %}
+        <td>{{ total_new }}
+    </tr>
+    <tr>
+        <td>{% trans "Renewing" %}</td>
+        {% for month in months %}
+            <td>{{ month.renew_mems }}</td>
+        {% endfor %}
+        <td>{{ total_renew }}
+    </tr>
+    <tr>
+        <td>{% trans "Total Active" %}</td>
+        {% for month in months %}
+            <td>{{ month.total_active }}</td>
+        {% endfor %}
+        <td></td>
+    </tr>        
+</table>
+</div>
+
+{% endblock content %}
