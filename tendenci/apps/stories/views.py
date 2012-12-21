@@ -12,6 +12,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
     get_query_filters, has_view_perm)
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
@@ -21,6 +22,7 @@ from tendenci.apps.stories.forms import StoryForm
 from tendenci.core.perms.utils import assign_files_perms
 
 
+@is_enabled('stories')
 def details(request, id=None, template_name="stories/view.html"):
     if not id: return HttpResponseRedirect(reverse('story.search'))
     story = get_object_or_404(Story, pk=id)
@@ -40,7 +42,9 @@ def details(request, id=None, template_name="stories/view.html"):
     
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
-    
+
+
+@is_enabled('stories')
 def print_details(request, id, template_name="stories/print_details.html"):
     story = get_object_or_404(Story, pk=id)
     if not has_view_perm(request.user,'stories.view_story', story):
@@ -58,7 +62,9 @@ def print_details(request, id, template_name="stories/print_details.html"):
 
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
-    
+
+
+@is_enabled('stories')
 def search(request, template_name="stories/search.html"):
     """
     This page lists out all stories from newest to oldest.
@@ -92,6 +98,8 @@ def search(request, template_name="stories/search.html"):
 def search_redirect(request):
     return HttpResponseRedirect(reverse('stories'))
 
+
+@is_enabled('stories')
 @login_required   
 def add(request, form_class=StoryForm, template_name="stories/add.html"):
     if has_perm(request.user,'stories.add_story'):    
@@ -136,7 +144,9 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
 
     return render_to_response(template_name, {'form':form}, 
         context_instance=RequestContext(request))
-    
+
+
+@is_enabled('stories')
 @login_required
 def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     story = get_object_or_404(Story, pk=id)
@@ -181,6 +191,8 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
     return render_to_response(template_name, {'story': story, 'form':form }, 
         context_instance=RequestContext(request))
 
+
+@is_enabled('stories')
 @login_required
 def delete(request, id, template_name="stories/delete.html"):
     story = get_object_or_404(Story, pk=id)
@@ -199,12 +211,12 @@ def delete(request, id, template_name="stories/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
- 
-    
+
+
+@is_enabled('stories')
 @login_required
 def export(request, template_name="stories/export.html"):
     """Export Stories"""
-    
     if not request.user.is_superuser:
         raise Http403
     

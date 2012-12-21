@@ -99,9 +99,9 @@ def find_package_data(where=".", package="", exclude=standard_exclude,
 
 
 excluded_directories = standard_exclude_directories + ["example", "tests"]
-package_data = find_package_data(exclude_directories=excluded_directories)
+package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
 
-DESCRIPTION = "A CMS for Nonprofits"
+DESCRIPTION = "Tendenci - A CMS for Nonprofits"
 
 LONG_DESCRIPTION = None
 try:
@@ -109,13 +109,9 @@ try:
 except:
     pass
 
-CLASSIFIERS = [
-    'Framework :: Django',
-]
-
 setup(
     name='tendenci',
-    version='5.1.0',
+    version='5.1.4',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -125,14 +121,30 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     platforms=['any'],
-    classifiers=CLASSIFIERS,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Information Technology',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Internet :: WWW/HTTP :: WSGI',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+    ],
     entry_points="""
             [console_scripts]
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
         """,
     include_package_data=True,
     dependency_links=[
-        "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.9",
+        "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.11",
         "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
@@ -184,7 +196,8 @@ setup(
         "django-tastypie",
         "johnny-cache==1.4",
         "docutils==0.9.1",
-        "django-model-report==0.0.9",
+        'chardet==2.1.1',
+        "django-model-report==0.0.11",
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
         "gunicorn==0.16.1",

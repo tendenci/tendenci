@@ -1,0 +1,81 @@
+{% load styled_forms %}
+
+{% if field_obj.field_name == '' %}
+    {% if field_obj.field_name == '' %}
+        <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
+            <h2>{{ field_obj.label  }}</h2>
+        </div>
+    {% endif %}
+{% else %}
+   {% if field %}
+    <div class="form-field{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
+        <div class="{{ field.auto_id }}">
+            {% if field_obj.field_stype == 'checkboxinput' %}
+                <div class="checkbox">
+                    {% if field.errors %}         
+                        <div class="error">
+                            {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}  
+                    <div class="field">
+                        {{ field }}
+                        <span class="label{% if field.field.required %} required{% endif %}">
+                            {{ field.label_tag }}
+                        </span> 
+                    </div> 
+                    
+                    {% if field.help_text %}
+                        <div class="help-text">{{ field.help_text }}</div>   
+                    {% endif %}
+                </div>
+                <div style="clear: both"><!-- IE7 --></div>
+            {% else %}
+                    
+                    
+                    <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
+                        {{ field_obj.label }}
+                    </div>
+                    
+                    <div class="field {{ field_obj.field_div_class }}">
+                        {% if field.errors %}
+                         <div class="error">
+                             {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                             {% endfor %}
+                         </div>
+                        {% endif %}
+                    
+                        {{ field }}
+                        {% if field.help_text %}
+                            <span class="help-text"><small>{{ field.help_text }}</small></span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if field_obj.field_name == 'password' %}
+                    <br />
+                    <div class="label{% if field.field.required %} required{% endif %} {{ field_obj.label_type }}">
+                        {{ field_pwd.label_tag }}
+                    </div>
+                    
+                    <div class="field {{ field_obj.field_div_class }}">
+                        {{ field_pwd }}
+                    </div>
+
+                    {% endif %}
+                    
+                    {% if field_obj.field_stype == 'textarea' %}
+                    <div class="clear"></div>
+                    {% endif %}
+                    
+                    
+                    
+                    {% if field|is_radioselect or field|is_checkboxselectmultiple %}
+                    <div style="clear: both"><!-- IE7 --></div>
+                    {% endif %}
+            {% endif %}
+         </div>       
+    </div>
+    {% endif %}
+{% endif %}

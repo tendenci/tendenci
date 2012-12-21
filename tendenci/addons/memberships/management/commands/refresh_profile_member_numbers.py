@@ -13,5 +13,8 @@ class Command(BaseCommand):
             member_number = profile.refresh_member_number()
 
             if verbosity:
-                print 'profile(%d) has member number %s' % \
-                    (profile.pk, member_number)
+                if member_number:
+                    print 'profile(%d) has member number %s' % \
+                        (profile.pk, member_number)
+                else:
+                    print 'profile(%d) is not a member' % profile.pk

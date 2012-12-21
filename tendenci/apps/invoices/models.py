@@ -11,6 +11,7 @@ from tendenci.core.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
 from tendenci.core.event_logs.models import EventLog
 
+
 class Invoice(models.Model):
     guid = models.CharField(max_length=50)
 
@@ -53,7 +54,7 @@ class Invoice(models.Model):
     other = models.CharField(max_length=120, blank=True, null=True)
     message = models.CharField(max_length=150, blank=True, null=True)
     subtotal = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
-    tax_exempt =models.BooleanField(default=1)
+    tax_exempt = models.BooleanField(default=1)
     tax_exemptid = models.CharField(max_length=50, blank=True, null=True)
     tax_rate = models.FloatField(blank=True, default=0)
     taxable = models.BooleanField(default=0)
@@ -87,26 +88,71 @@ class Invoice(models.Model):
     ship_date = models.DateTimeField()
     ship_via = models.CharField(max_length=50, blank=True)
     shipping = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    shipping_surcharge =models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    shipping_surcharge = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, default=0)
 
     objects = InvoiceManager()
-    
+
     class Meta:
-        permissions = (("view_invoice","Can view invoice"),)
-    
-    def __unicode__(self):
-        return u'%s' % (self.title)
+        permissions = (("view_invoice", "Can view invoice"), )
+
+    # def __unicode__(self):
+    #     return u'%s' % (self.title)
+
+    def set_creator(self, user):
+        self.creator = user
+        self.creator_username = user.username
+
+    def set_owner(self, user):
+        self.owner = user
+        self.owner_username = user.username
+
+    def bill_to_user(self, user):
+        """
+        This method populates all of the ship to fields
+        via info in user and user.profile object.
+        """
+        self.bill_to = '%s %s' % (user.first_name, user.last_name)
+        self.bill_to = self.bill_to.strip()
+
+        self.bill_to_first_name = user.first_name
+        self.bill_to_last_name = user.last_name
+        self.bill_to_company = user.profile.company
+        self.bill_to_address = user.profile.address
+        self.bill_to_city = user.profile.city
+        self.bill_to_state = user.profile.state
+        self.bill_to_zip_code = user.profile.zipcode
+        self.bill_to_country = user.profile.country
+        self.bill_to_phone = user.profile.phone
+        self.bill_to_fax = user.profile.fax
+        self.bill_to_email = user.email
+
+    def ship_to_user(self, user):
+        """
+        This method populates all of the ship to fields
+        via info in user and user.profile object.
+        """
+        self.bill_to = '%s %s' % (user.first_name, user.last_name)
+        self.ship_to = self.ship_to.strip()
+
+        self.ship_to_first_name = user.first_name
+        self.ship_to_last_name = user.last_name
+        self.ship_to_company = user.profile.company
+        self.ship_to_address = user.profile.address
+        self.ship_to_city = user.profile.city
+        self.ship_to_state = user.profile.state
+        self.ship_to_zip_code = user.profile.zipcode
+        self.ship_to_country = user.profile.country
+        self.ship_to_phone = user.profile.phone
+        self.ship_to_fax = user.profile.fax
+        self.ship_to_email = user.email
+        self.ship_to_address_type = user.profile.address_type
 
     def split_title(self):
         if ": " in self.title:
             split_title = ': '.join(self.title.split(': ')[1:])
             return u'%s' % split_title
         return self.title
-
-#    def past_due(self):
-#        if self.object_type == 'registration':
-#            event_date =
 
     @models.permalink
     def get_absolute_url(self):

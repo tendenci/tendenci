@@ -23,6 +23,7 @@ from django.middleware.csrf import get_token as csrf_get_token
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
@@ -38,9 +39,9 @@ from tendenci.addons.photos.utils import get_privacy_settings
 from tendenci.addons.photos.tasks import ZipPhotoSetTask
 
 
+@is_enabled('photos')
 def search(request, template_name="photos/search.html"):
     """ Photos search """
-    
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
         photos = Image.objects.search(query, user=request.user).order_by('-create_dt')
@@ -52,24 +53,28 @@ def search(request, template_name="photos/search.html"):
     photos = photos.order_by('-create_dt')
 
     EventLog.objects.log()
-    
-    return render_to_response(template_name, {"photos": photos}, 
+
+    return render_to_response(template_name, {"photos": photos},
         context_instance=RequestContext(request))
 
+
+@is_enabled('photos')
 def sizes(request, id, size_name='', template_name="photos/sizes.html"):
     """ Show all photo sizes """
+    # security-check on size name
+    if not size_name:
+        return redirect('photo_square', id=id)
+
     photo = get_object_or_404(Image, id=id)
     if not has_view_perm(request.user, 'photos.view_image', photo):
         raise Http403
-    
-    # security-check on size name
-    if not size_name: return redirect('photo_square', id=id)
 
     # get sizes
     if size_name == 'original':
         sizes = (photo.image.width, photo.image.height)
     else:  # use photos size table
-        if not photo.file_exists(): raise Http404
+        if not photo.file_exists():
+            raise Http404
         sizes = getattr(photo, 'get_%s_size' % size_name)()
 
     # get download url
@@ -88,7 +93,7 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         request.user == photo.owner,
         photo.get_license().name != 'All Rights Reserved',
     ]
-    
+
     return render_to_response(template_name, {
         "photo": photo,
         "size_name": size_name.replace("_"," "),
@@ -98,9 +103,10 @@ def sizes(request, id, size_name='', template_name="photos/sizes.html"):
         "can_view_original": any(view_original_requirments),
     }, context_instance=RequestContext(request))
 
+
+@is_enabled('photos')
 def photo(request, id, set_id=0, partial=False, template_name="photos/details.html"):
     """ photo details """
-
     photo = get_object_or_404(Image, id=id)
     if not has_perm(request.user, 'photos.view_image', photo):
         raise Http403
@@ -120,7 +126,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
     if set_id:
         photo_set = get_object_or_404(PhotoSet, id=set_id)
         photo_prev = photo.get_prev(set=set_id)
-        photo_next = photo.get_next(set=set_id)            
+        photo_next = photo.get_next(set=set_id)
         photo_first = photo.get_first(set=set_id)
 
         if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id, set_id])
@@ -138,7 +144,7 @@ def photo(request, id, set_id=0, partial=False, template_name="photos/details.ht
         photo_next = photo.get_next()
 
         if photo_prev: photo_prev_url = reverse("photo", args= [photo_prev.id])
-        if photo_next: photo_next_url = reverse("photo", args= [photo_next.id])  
+        if photo_next: photo_next_url = reverse("photo", args= [photo_next.id])
 
         photo_sets = photo.photoset.all()
         if photo_sets:
@@ -191,8 +197,10 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     if download:
         attachment = 'attachment;'
 
+
     if not photo.image or not default_storage.exists(photo.image.name):
         raise Http404
+
     # gets resized image from cache or rebuild
     image = get_image(photo.image, size, PHOTO_PRE_KEY, crop=crop, quality=quality, unique_key=str(photo.pk), constrain=constrain)
 
@@ -237,16 +245,16 @@ def photo_original(request, id):
         ext = photo.image.file.name.split('.')[-1]
     except IndexError:
         ext = "png"
-    
+
     if ext == "jpg":
         ext = "jpeg"
-    
+
     return HttpResponse(image_data, mimetype="image/%s" % ext)
 
 @login_required
 def memberphotos(request, username, template_name="photos/memberphotos.html", group_slug=None, bridge=None):
     """ Get the members photos and display them """
-    
+
     if bridge:
         try:
             group = bridge.get_group(group_slug)
@@ -254,42 +262,42 @@ def memberphotos(request, username, template_name="photos/memberphotos.html", gr
             raise Http404
     else:
         group = None
-    
+
     user = get_object_or_404(User, username=username)
-    
+
     photos = Image.objects.filter(
         member__username = username,
         is_public = True
     )
-    
+
     if group:
         photos = group.content_objects(photos, join="pool")
     else:
         photos = photos.filter(pool__object_id=None)
-    
+
     photos = photos.order_by("-date_added")
-    
+
     return render_to_response(template_name, {
         "group": group,
         "photos": photos,
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 @login_required
 def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/edit.html"):
     """ edit photo view """
-    
     # get photo
     photo = get_object_or_404(Image, id=id)
     set_id = int(set_id)
-    
+
     # permissions
     if not has_perm(request.user,'photos.change_image',photo):
         raise Http403
-    
+
     # get available photo sets
     photo_sets = PhotoSet.objects.all()
-    
+
     if request.method == "POST":
         if request.POST["action"] == "update":
             form = form_class(request.POST, instance=photo, user=request.user)
@@ -313,18 +321,20 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
             form = form_class(instance=photo, user=request.user)
-    
+
     else:
         form = form_class(instance=photo, user=request.user)
-    
+
     return render_to_response(template_name, {
         "photo_form": form,
         "photo": photo,
         "photo_sets": photo_sets,
-        "id": photo.id, 
+        "id": photo.id,
         "set_id": set_id,
     }, context_instance=RequestContext(request))
 
+
+@is_enabled('photos')
 @login_required
 def delete(request, id, set_id=0):
     """ delete photo """
@@ -349,7 +359,7 @@ def delete(request, id, set_id=0):
         photo.delete()
 
         messages.add_message(request, messages.SUCCESS, 'Photo %s deleted' % id)
-        
+
         try:
             photo_set = PhotoSet.objects.get(id=set_id)
             return HttpResponseRedirect(reverse("photoset_details", args=[set_id]))
@@ -360,10 +370,11 @@ def delete(request, id, set_id=0):
         "photo": photo,
     }, context_instance=RequestContext(request))
 
+
+@is_enabled('photos')
 @login_required
 def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/photo-set/add.html"):
     """ Add a photo set """
-
     # if no permission; permission exception
     if not has_perm(request.user,'photos.add_photoset'):
         raise Http403
@@ -388,8 +399,8 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
                     'request': request,
                     'instance': photo_set,
                 }
-                EventLog.objects.log(**log_defaults) 
-                
+                EventLog.objects.log(**log_defaults)
+
                 messages.add_message(request, messages.SUCCESS, 'Successfully added photo set!')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
     else:
@@ -400,6 +411,7 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 @login_required
 def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photos/photo-set/edit.html"):
     from tendenci.core.perms.object_perms import ObjectPermission
@@ -450,6 +462,7 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 @login_required
 def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
     photo_set = get_object_or_404(PhotoSet, id=id)
@@ -485,9 +498,9 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
     """ View latest photo set """
-
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
         photo_sets = PhotoSet.objects.search(query, user=request.user)
@@ -504,6 +517,7 @@ def photoset_view_latest(request, template_name="photos/photo-set/latest.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 @login_required
 def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     """ View your photo set """
@@ -513,6 +527,7 @@ def photoset_view_yours(request, template_name="photos/photo-set/yours.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 @login_required
 def photos_batch_add(request, photoset_id=0):
     """
@@ -627,6 +642,7 @@ def photos_batch_add(request, photoset_id=0):
             context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 @login_required
 def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.html"):
     """ change multiple photos with one "save button" click """
@@ -653,25 +669,27 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
     )
 
     if request.method == "POST":
-        image_id = request.POST.get('id', None)
-        image_instance = Image.objects.get(pk=image_id)
-        photo_form = PhotoBatchEditForm(request.POST, instance=image_instance)
-        if photo_form.is_valid():
-            photo_form.save()
-            
+        photo = Image.objects.get(pk=request.POST['id'])
+
+        form = PhotoBatchEditForm(request.POST, instance=photo)
+
+        if form.is_valid():
+            photo = form.save()
+
             EventLog.objects.log(**{
-                'event_id': 991200,
-                'event_data': 'photo (%s) edited by %s' % (image_instance.pk, request.user),
-                'description': '%s edited' % image_instance._meta.object_name,
+                'event_id': 990200,
+                'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
+                'description': '%s edited' % photo._meta.object_name,
                 'user': request.user,
                 'request': request,
-                'instance': image_instance,
+                'instance': photo,
             })
-            #set album cover if specified
-            chosen_cover_id = request.POST.get('album_cover', None)
+
+            # set album cover if specified
+            chosen_cover_id = request.POST.get('album_cover')
 
             if chosen_cover_id:
-                #validate chosen cover
+                # validate chosen cover
                 valid_cover = True
                 try:
                     chosen_cover = photo_set.image_set.get(id=chosen_cover_id)
@@ -684,10 +702,9 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                         cover = AlbumCover(photoset=photo_set)
                     cover.photo = chosen_cover
                     cover.save()
-            
-            #messages.add_message(request, messages.SUCCESS, 'Photo changes saved')
-            #return HttpResponseRedirect(reverse('photoset_details', args=(photoset_id,)))  
+
             return HttpResponse('Success')
+
     else:  # if request.method != POST
 
         # i would like to use the search index here; but it appears that
@@ -710,9 +727,9 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('photos')
 def photoset_details(request, id, template_name="photos/photo-set/details.html"):
     """ View photos in photo set """
-
     photo_set = get_object_or_404(PhotoSet, id=id)
     if not has_view_perm(request.user, 'photos.view_photoset', photo_set):
         raise Http403
@@ -743,22 +760,22 @@ def photoset_zip(request, id, template_name="photos/photo-set/zip.html"):
     """ Generate zip file for the entire photo set
     for admins only.
     """
-    
+
     photo_set = get_object_or_404(PhotoSet, id=id)
-    
+
     #admin only
     if not request.user.profile.is_superuser:
         raise Http403
-    
+
     file_path = ""
     task_id = ""
     if not settings.CELERY_IS_ACTIVE:
         task = ZipPhotoSetTask()
-        file_path = task.run(photo_set)        
+        file_path = task.run(photo_set)
     else:
         task = ZipPhotoSetTask.delay(photo_set)
         task_id = task.task_id
-    
+
     return render_to_response(template_name, {
         "photo_set": photo_set,
         "task_id":task_id,
@@ -770,7 +787,7 @@ def photoset_zip_status(request, id, task_id):
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-    
+
     if task and task.status == "SUCCESS":
         file_path = task.result
         return HttpResponse(json.dumps(file_path), mimetype='application/json')

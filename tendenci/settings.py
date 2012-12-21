@@ -213,6 +213,11 @@ INSTALLED_APPS = (
     'tendenci.addons.memberships',
     'tendenci.addons.corporate_memberships',
     'tendenci.addons.locations',
+    'tendenci.addons.industries',
+    'tendenci.addons.regions',
+    'tendenci.addons.educations',
+    'tendenci.addons.careers',
+    'tendenci.core.site_settings',
     'tendenci.addons.make_payments',
     'tendenci.apps.accountings',
     'tendenci.core.emails',
@@ -379,7 +384,7 @@ PAYFLOWLINK_PARTNER = ''
 PAYPAL_MERCHANT_LOGIN = ''
 PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
 
-# PAYPAL 
+# PAYPAL
 PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
 # for test mode
 # PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'

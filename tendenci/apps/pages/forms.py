@@ -67,7 +67,7 @@ class PageForm(TendenciBaseForm):
         'storme_model':Page._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
-        choices=(('active','Active'), ('inactive','Inactive'), ('pending','Pending'), ('archive','Archive')))
+        choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending')))
 
     tags = forms.CharField(required=False, help_text=mark_safe('<a href="/tags/" target="_blank">Open All Tags list in a new window</a>'))
 

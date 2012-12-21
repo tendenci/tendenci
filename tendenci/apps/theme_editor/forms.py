@@ -83,11 +83,12 @@ class FileForm(forms.Form):
 
 
 class ThemeSelectForm(forms.Form):
-    THEME_CHOICES = ((x, x) for x in theme_choices())
-    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=THEME_CHOICES)
+    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[])
 
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
+        THEME_CHOICES = ((x, x) for x in theme_choices())
+        self.fields['theme_edit'].choices = THEME_CHOICES
 
 
 class UploadForm(forms.Form):

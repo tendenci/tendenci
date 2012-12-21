@@ -116,8 +116,8 @@ class BaseJob(TendenciBaseModel):
         """
         Make the accounting entries for the job sale
         """
-        from accountings.models import Acct, AcctEntry, AcctTran
-        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:

@@ -22,3 +22,8 @@ _notes/
 # Ignore docs build files
 docs/build/
 docs/local/
+
+# Ignore build directories and egg
+/build
+/dist
+*.egg-info

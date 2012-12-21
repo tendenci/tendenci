@@ -13,6 +13,13 @@
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
 <link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+    div.forms input[type="button"].previewButton {
+		margin-top: 15px;
+		padding: 5px;
+		cursor: pointer;
+	}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -39,7 +46,9 @@
                     {{ metaform|styled_form }}
                 </div>
             </fieldset>
+            <input type="hidden" id="id_preview_for" name="preview_for"/>
         	<input type="submit" value="{% trans 'Save Page Changes' %}" />
+        	<input class="previewButton" type="button" value="Preview"/>
         	{% if page.status %}
         	<div class="form-delete-link">
         	    <a class="delete" title="{% trans 'Link to delete confirmation page' %}" href="{% url page.delete page.pk %}">
@@ -99,5 +108,18 @@
             availableTags: [{% all_tags_list %}],
             allowSpaces: true
         });
+        
+        //Set preview button
+        $('input.previewButton').click(function() {
+            var form = $('div.page-wrap > form');
+		    var url = form.attr('action');
+            $('form #id_preview_for').val('edit');
+		    form.attr('action', "{% url page.preview page.pk %}");
+		    form.attr('target', '_blank');
+		    form.submit();
+		    
+		    form.attr('action', url);
+		    form.attr('target', '');
+		});
     </script>
 {% endblock %}

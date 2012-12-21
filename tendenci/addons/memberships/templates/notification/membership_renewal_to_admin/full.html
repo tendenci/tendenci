@@ -10,24 +10,24 @@
 </head>
 <body bgcolor="#ffffff" text="#000000">
 
-    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ entry.app.name }} {% trans "Membership Submission" %}</div>
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ app.name }} {% trans "Membership Submission" %}</div>
 
-    {% if entry.membership_type.price %}
-        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type as membership_type and entry.membership_type.price as membership_type_price %}Membership Type: {{ membership_type }} ${{ membership_type_price }}{% endblocktrans %}</div>
+    {% if membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type and membership.membership_type.price as membership_type_price %}Membership Type: {{ membership_type }} ${{ membership_type_price }}{% endblocktrans %}</div>
     {% else %}
-        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type as membership_type %}Membership Type: {{ membership_type }} Free{% endblocktrans %}</div>
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type %}Membership Type: {{ membership_type }} Free{% endblocktrans %}</div>
     {% endif %}
 
-    <div>{{ entry.first_name }} {{ entry.last_name }}</div>
-    <div>{{ entry.email }}</div>
-    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
+    <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
+    <div>{{ membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
         {% trans "View Submitted Application" %}
     </a></div>
 
     <div>========================</div>
 
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.app.get_absolute_url }}">
-        {% blocktrans with entry.app.create_dt|date as create_date and entry.app.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
+    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.app.get_absolute_url }}">
+        {% blocktrans with app.create_dt|date as create_date and app.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
     </a><div>
 
 </body>

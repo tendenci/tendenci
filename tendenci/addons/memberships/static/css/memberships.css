@@ -661,3 +661,19 @@ form.connect-with li {
     background-color: #ffe44b;
     border-color: #fcc500;
 }
+
+/* Member Roster */
+.member-roster-membership {
+    border: 1px #000 solid;
+    margin: 5px;
+    padding: 5px;
+    float: left;
+    height: 200px;
+    width: 350px;
+    line-height: 20px;
+}
+
+/* Members YTD by Type */
+.totals-row {
+    background: #ccc;
+}

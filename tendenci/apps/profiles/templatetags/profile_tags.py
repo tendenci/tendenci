@@ -40,3 +40,10 @@ def users_options(context, user_current, user_this):
 def profile_search(context):
     return context
 
+@register.inclusion_tag("profiles/meta.html", takes_context=True)
+def profile_meta(context, detail_view=None):
+    context.update({
+        "detail_view":detail_view,
+    })
+    return context
+

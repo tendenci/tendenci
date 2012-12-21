@@ -256,6 +256,16 @@ class RegConfPricing(models.Model):
         if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
+        
+    @property
+    def registration_has_recently_ended(self):
+        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            delta = localize_date(datetime.now()) - localize_date(self.end_dt, from_tz=self.timezone)
+            # Only include events that is within the 1-2 days window.
+            if delta > timedelta(days=2):
+                return False
+            return True
+        return False
     
     @property
     def is_open(self):
@@ -872,6 +882,7 @@ class Event(TendenciBaseModel):
     timezone = TimeZoneField(_('Time Zone'))
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
+    mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
@@ -967,7 +978,10 @@ class Event(TendenciBaseModel):
         )['invoice__total__sum']
 
         # total_sum is the amount of money received when all is said and done
-        return total_sum - self.money_outstanding
+        if total_sum and self.money_outstanding:
+            return total_sum - self.money_outstanding
+        else:
+            return 0
 
     @property
     def money_outstanding(self):
@@ -981,7 +995,10 @@ class Event(TendenciBaseModel):
         balance_sum = figures['invoice__balance__sum']
         total_sum = figures['invoice__total__sum']
 
-        return total_sum - balance_sum
+        if total_sum and balance_sum:
+            return total_sum - balance_sum
+        else:
+            return 0
 
     def registrants(self, **kwargs):
         """

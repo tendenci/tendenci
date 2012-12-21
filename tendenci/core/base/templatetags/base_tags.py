@@ -540,9 +540,16 @@ class ImageURL(Node):
 
             args = [file.pk]
             if self.size:
-                args.append(self.size)
+                try:
+                    size = Variable(self.size)
+                    size = size.resolve(context)
+                except:
+                    size = self.size
+                args.append(size)
             if self.crop:
                 args.append("crop")
+            if self.constrain:
+                args.append("constrain")
             if self.quality:
                 args.append(self.quality)
             url = reverse('file', args=args)
@@ -582,6 +589,8 @@ def image_url(parser, token):
             kwargs["size"] = bit.split("=")[1]
         if "crop=" in bit:
             kwargs["crop"] = bool(bit.split("=")[1])
+        if "constrain=" in bit:
+            kwargs["constrain"] = bool(bit.split("=")[1])
         if "quality=" in bit:
             kwargs["quality"] = bit.split("=")[1]
 

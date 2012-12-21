@@ -12,6 +12,9 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.fields import EmailVerificationField
+from tendenci.apps.redirects.models import Redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -131,6 +134,7 @@ class Form(TendenciBaseModel):
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
+
 
 class FieldManager(models.Manager):
     """
@@ -286,6 +290,8 @@ class FormEntry(models.Model):
             field = entry.field
             if field.field_type.lower() == 'emailfield':
                 email = entry.value
+            if field.field_type.lower() == 'emailverificationfield':
+                email = entry.value
             if field.label.lower() in ['name']:
                 name = entry.value
             if field.label.lower() in ['first name']:
@@ -338,7 +344,7 @@ class FormEntry(models.Model):
         return self.get_value_of("EmailPhoneNumber")
 
     def get_email_address(self):
-        return self.get_type_of("emailfield")
+        return self.get_type_of("emailverificationfield")
 
      # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):

@@ -21,14 +21,14 @@ Make a folder for your site and cd into it. Replace 'sitename' with the name of 
     mkdir sitename
     cd sitename
 
-You will need [virtualenv](http://www.virtualenv.org/) installed for the next step. If you don't have it, you can install it with `pip install virtualenv`. Make a virtual environment called 'venv' and activate it.
+It's best practice to make a virtual environment for your site. You will need [virtualenv](http://www.virtualenv.org/) installed for the next step. If you don't have it, you can install it with `pip install virtualenv`. Make a virtual environment called 'venv' and activate it.
 
     virtualenv venv
     source venv/bin/activate
 
 Install Tendenci. This download and install step may take a few minutes.
 
-    pip install git+https://github.com/tendenci/tendenci
+    pip install tendenci
 
 Once this is done, you can setup django project with the following:
 
@@ -36,14 +36,11 @@ Once this is done, you can setup django project with the following:
 
 If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the `.env` file that is created.
 
-**Optional:** You can add additional local environment variables to the `.env` file by defining them as `KEY='value'`. Settings that are sensitive (like passwords) or vary per environment should be added to this file. For example, to use Amazon's S3 service as a file storage backend, set the following key/value pairs in your `.env` file:
+Next, we install requirements for the project. We add tendenci videos as an example to use.
 
-    AWS_ACCESS_KEY_ID='MY_ACCESS_KEY'
-    AWS_SECRET_ACCESS_KEY='MY_SECRET_KEY'
-    AWS_STORAGE_BUCKET_NAME='bucket_name'
-    AWS_LOCATION='new-site-name'
+    pip install -r requirements/dev.txt
 
-Next, we run our deploy script and setup our theme.
+Now we are ready to use our deploy script and setup our theme.
 
     python deploy.py
     python manage.py set_theme salonify
@@ -57,6 +54,15 @@ Finally, we can use the runserver command so that we can view the site in our br
     python manage.py runserver
 
 Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
+
+**Optional:** You can add additional local environment variables to the `.env` file by defining them as `KEY='value'`. Settings that are sensitive (like passwords) or vary per environment should be added to this file. For example, to use Amazon's S3 service as a file storage backend, set the following key/value pairs in your `.env` file:
+
+    AWS_ACCESS_KEY_ID='MY_ACCESS_KEY'
+    AWS_SECRET_ACCESS_KEY='MY_SECRET_KEY'
+    AWS_STORAGE_BUCKET_NAME='bucket_name'
+    AWS_LOCATION='new-site-name'
+
+----------
 
 # Deploying on Heroku
 

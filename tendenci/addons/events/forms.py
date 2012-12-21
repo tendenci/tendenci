@@ -24,6 +24,7 @@ from tendenci.addons.events.models import (
 )
 
 from form_utils.forms import BetterModelForm
+from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
@@ -38,7 +39,7 @@ from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.apps.profiles.models import Profile
+from tendenci.addons.memberships.models import Membership
 
 from fields import Reg8nDtField, UseCustomRegField
 from widgets import UseCustomRegWidget
@@ -88,6 +89,7 @@ class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
         exclude = ["position"]
+
 
 class FormForCustomRegForm(forms.ModelForm):
 
@@ -894,7 +896,7 @@ class Reg8nEditForm(BetterModelForm):
                                           str(self.instance.bind_reg_form_to_conf_only)
                                           )
             reminder_edit_link = '<a href="%s" target="_blank">Edit Reminder Email</a>' % \
-                                reverse('event.edit.email', args=[self.instance.event.id])                            
+                                reverse('event.edit.email', args=[self.instance.event.id])
             self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
                                         (self.fields['reminder_days'].help_text,
                                          reminder_edit_link)
@@ -1158,9 +1160,8 @@ class RegistrantForm(forms.Form):
     #username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = EmailVerificationField(label=_("Email"))
-    comments = forms.CharField(max_length=300, 
-                               widget=forms.Textarea,
-                               required=False)
+    comments = forms.CharField(
+        max_length=300, widget=forms.Textarea, required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -1200,11 +1201,11 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
-            self.fields['pricing'].choices = [(p.pk,  
+            self.fields['pricing'].choices = [(p.pk,
                 mark_safe(
-                '<div>' + 
-                unicode(p) + 
-                    '<br/>(ends ' + unicode(p.end_dt.date()) + ')' + 
+                '<div>' +
+                unicode(p) +
+                    '<br/>(ends ' + unicode(p.end_dt.date()) + ')' +
                 '</div>'))
                 for p in self.pricings]
         # member id

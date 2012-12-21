@@ -14,6 +14,8 @@ from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
+
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
@@ -23,6 +25,7 @@ from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
 
+@is_enabled('invoices')
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -90,6 +93,7 @@ def void_payment(request, id):
     return redirect(invoice)
 
 
+@is_enabled('discounts')
 @login_required
 def search(request, template_name="invoices/search.html"):
     query = u''
@@ -198,7 +202,8 @@ def search_report(request, template_name="invoices/search.html"):
     return render_to_response(template_name, {'invoices': invoices, 'query': query},
         context_instance=RequestContext(request))
 
-    
+
+@is_enabled('discounts')
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -255,7 +260,8 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
                                               'form':form}, 
         context_instance=RequestContext(request))
 
-    
+
+@is_enabled('discounts')
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
 
@@ -293,6 +299,7 @@ def detail(request, id, template_name="invoices/detail.html"):
                                               context_instance=RequestContext(request))
 
 
+@is_enabled('discounts')
 @login_required
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""

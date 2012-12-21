@@ -94,37 +94,6 @@
                 {% endif %}
             </div>
         </li>
-        {% comment %}
-        <!-- <li><a href="#">{% trans "Members" %}</a>
-            <div class="sub">
-                <div class="column">
-                    <ul>
-                        <li><a href="#">{% trans "List" %}</a></li>
-                        <li><a href="#">{% trans "Add" %}</a></li>
-                        <li><a href="#">{% trans "Search" %}</a></li>
-                        <li><a href="#">{% trans "Types" %}</a></li>
-                        <li><a href="#">{% trans "Reports" %}</a></li>
-                    </ul>
-                </div>
-            </div>
-        </li> -->
-        {% endcomment %}
-        {% comment %}
-        <!-- <li><a href="nowhere">{% trans "Language" %}</a>
-            <div class="sub">
-                <div class="column">
-                    <ul>
-                    {% get_language_info_list for available_languages as languages %}
-                    {% for language in languages}
-                        <li>
-                            <a href="{{ something with language.name }}">{{ language.name }}</a>
-                        </li>
-                    {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </li> -->
-        {% endcomment %}
         {% if "Self-Signup" == SITE_DEVELOPER_PARTNER|join:"" %}
         <li><a href="{% url settings %}"><span class="glyph heading">&sup3;</span>&nbsp;&nbsp;{% trans "Themes" %}</a>
             <div class="sub">
@@ -149,11 +118,7 @@
                         <li><a href="{% url reports-user-activity %}">{% trans "User Activity Summary" %}</a></li>
                         <li><a href="{% url reports-user-access %}">{% trans "User Access" %}</a></li>
                         <li><a href="{% url reports-contacts-referral %}">{% trans "Contacts Report" %}</a></li>
-                        <li><a href="{% url reports-active-members %}">{% trans "Active Memberships" %}</a></li>
-                        <li><a href="{% url reports-expired-members %}">{% trans "Expired Memberships" %}</a></li>
-                        <li><a href="{% url reports-members-summary %}">{% trans "Membership Summary" %}</a></li>
-                        <li><a href="{% url reports-members-stats %}">{% trans "Membership Statistics" %}</a></li>
-                        <li><a href="{% url reports-members-over-time %}">{% trans "Memberships Over Time" %}</a></li>
+                        <li><a href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
                         <li><a href="{% url reports-corp-mems-over-time %}">{% trans "Corporate Memberships Over Time" %}</a></li>
                         <li><a href="{% url reports-corp-mems-summary %}">{% trans "Corporate Membership Report" %}</a></li>
                         <li><a href="{% url reports-top-spenders %}">{% trans "Top Spenders" %}</a></li>
@@ -162,25 +127,6 @@
                     </ul>
                 </div>
             </div>
-            <!-- <div class="sub">
-                <div class="column">
-                    <h4>{% trans "Recently Viewed" %}</h4>
-                    <ul>
-                        <li><a href="#">{% trans "Event Logs" %}</a></li>
-                        <li><a href="#">{% trans "Invoice for Event #4554" %}</a></li>
-                        <li><a href="#">{% trans "List" %}</a></li>
-                    </ul>
-                </div>
-                <div class="column">
-                    <h4>{% trans "Find a Report" %}</h4>
-                    <ul>
-                        <li><a href="#">{% trans "All" %}</a></li>
-                        <li><a href="#">{% trans "By App" %}</a></li>
-                        <li><a href="#">{% trans "User Reports" %}</a></li>
-                        <li><a href="#">{% trans "Financial Reports" %}</a></li>
-                    </ul>
-                </div>
-            </div> -->
         </li>
         <li><a href="#"><span class="glyph heading">&#75;</span>&nbsp;&nbsp;{% trans "Quick Links" %}</a>
             <div class="sub">
@@ -235,24 +181,6 @@
 
         <li class="right"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
         <li class="right"><a href="/profiles">{{ user.username }}</a></li>
-        <!-- <li class="right search"><a href="#">Search</a>
-            <div class="sub">
-                <div class="column">
-                    <ul>
-                        <li>
-                            <form action="/search" method="get" name="search">
-                            <table cellspacing="0" cellpadding="0" border="0" class="search-table">
-                                <tbody><tr>
-                                    <td><input type="text" maxlength="255" value="test" name="q" id="admin-search-bar"></td>
-                                    <td><input type="submit" value="Search Site"></td>
-                                </tr>
-                            </tbody></table>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </li> -->
         <li class="right">
             <form action="/search/" method="get" name="search" id="admin-search-box">
                             <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>

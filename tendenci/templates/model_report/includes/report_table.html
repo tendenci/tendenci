@@ -1,0 +1,45 @@
+{% load i18n model_report %}
+
+<table class="report table table-condensed">
+    <thead>
+        <tr>
+            {% for column_label in column_labels %}
+                <th valign="middle">{{ column_label }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for gruper, rows in report_rows %}
+
+            {% if gruper %}
+            <tr>
+                <td valign="middle" class="grouper" colspan="{{ column_labels|length }}" id="{{ gruper|default_if_none:_('Results')|slugify }}" >
+                    <h2 class="groupby">{% if not report.onlytotals and not rows.0.is_report_totals and not report.is_export %}
+                    <span class="result-collapsable expanded" row="row-{{ gruper|default_if_none:_('Results')|slugify }}">-</span>
+                    {% endif %}
+                    {{ gruper|default_if_none:_('Results') }}</h2>
+                    {% if report_anchors and not report.parent_report %}<a style="float: right; color: grey; font-weight: normal; font-size: 12px;" href="#data_container">{% trans "Go up" %}</a>{% endif %}
+                </td>
+            </tr>
+            {% endif %}
+
+            {% for row in rows %}
+            <tr class="{{ row.get_css_class }} {% if row.is_value and not row.is_report_totals %}row-{{ gruper|default_if_none:_('Results')|slugify }}{% endif %}">
+                {% for value in row %}
+                <td valign="middle">
+                {{ value|safe }}
+                </td>
+                {% endfor %}
+            </tr>
+            {% if report_inlines and row.is_value %}
+                {% for inline in report_inlines %}
+                    {% model_report_render_inline inline row %}
+                {% endfor %}
+            {% endif %}
+            {% endfor %}
+
+        {% empty %}
+            <tr><td colspan="{{ column_labels|length }}" align="center">{% trans "This query has no results" %}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>

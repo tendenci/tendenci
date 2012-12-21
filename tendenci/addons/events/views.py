@@ -36,10 +36,10 @@ from django.forms.models import modelformset_factory, \
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import simplejson as json
 from django.db import connection
-#from django.forms.models import BaseModelFormSet
 
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
     get_query_filters, update_perms_and_save, has_view_perm)
 from tendenci.core.event_logs.models import EventLog
@@ -63,24 +63,27 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption, EventPhoto, Place)
+    RegAddonOption, RegistrationConfiguration, EventPhoto, Place)
 from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
     FormForCustomRegForm, RegConfPricingBaseModelFormSet,
     RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
-from tendenci.addons.events.utils import (email_registrants, 
+from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
     add_registration, registration_has_started, registration_has_ended,
     registration_earliest_time, get_pricing, clean_price,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel,
-    event_import_process)
+    event_import_process, check_month)
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
+from tendenci.apps.discounts.models import Discount
+from tendenci.core.base.utils import convert_absolute_urls
+from tendenci.apps.redirects.models import Redirect
 
 
 def custom_reg_form_preview(request, id,
@@ -124,14 +127,17 @@ def event_custom_reg_form_list(request, event_id,
             for price in regconfpricings:
                 price.reg_form.form_for_form = FormForCustomRegForm(custom_reg_form=price.reg_form)
 
-    context = {'event': event,
-               'reg_conf': reg_conf,
-               'regconfpricings': regconfpricings}
+    context = {
+        'event': event,
+        'reg_conf': reg_conf,
+        'regconfpricings': regconfpricings
+    }
+
     return render_to_response(template_name, context, RequestContext(request))
 
 
+@is_enabled('events')
 def details(request, id=None, template_name="events/view.html"):
-
     if not id:
         return HttpResponseRedirect(reverse('event.month'))
 
@@ -144,7 +150,13 @@ def details(request, id=None, template_name="events/view.html"):
     if not has_view_perm(request.user, 'events.view_event', event):
         raise Http403
 
-    event.limit = event.get_limit()
+    if event.registration_configuration:
+        event.limit = event.get_limit()
+    else:
+        reg_conf = RegistrationConfiguration()
+        reg_conf.save()
+        event.registration_configuration = reg_conf
+        event.save()
 
     event.spots_taken, event.spots_available = event.get_spots_status()
 
@@ -167,6 +179,7 @@ def details(request, id=None, template_name="events/view.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 def view_attendees(request, event_id, template_name='events/attendees.html'):
     event = get_object_or_404(Event, pk=event_id)
 
@@ -211,6 +224,7 @@ def month_redirect(request):
     return HttpResponseRedirect(reverse('event.month'))
 
 
+@is_enabled('events')
 def search(request, redirect=False, template_name="events/search.html"):
     """
     This page lists out all the upcoming events starting
@@ -345,6 +359,7 @@ def icalendar_single(request, id):
     return response
 
 
+@is_enabled('events')
 def print_view(request, id, template_name="events/print-view.html"):
     event = get_object_or_404(Event, pk=id)
 
@@ -357,6 +372,7 @@ def print_view(request, id, template_name="events/print-view.html"):
         raise Http403
 
 
+@is_enabled('events')
 @login_required
 def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     event = get_object_or_404(Event, pk=id)
@@ -605,9 +621,10 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
     else:
         raise Http403
 
+
+@is_enabled('events')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="events/edit-meta.html"):
-
     # check permission
     event = get_object_or_404(Event, pk=id)
     if not has_perm(request.user,'events.change_event',event):
@@ -672,6 +689,7 @@ def get_place(request):
     return HttpResponse('Requires POST method.')
 
 
+@is_enabled('events')
 @login_required
 def add(request, year=None, month=None, day=None, \
     form_class=EventForm, template_name="events/add.html"):
@@ -896,44 +914,34 @@ def add(request, year=None, month=None, day=None, \
     else:
         raise Http403
 
+
+@is_enabled('events')
 @login_required
 def delete(request, id, template_name="events/delete.html"):
     event = get_object_or_404(Event, pk=id)
 
-    if has_perm(request.user,'events.delete_event'):
+    if has_perm(request.user, 'events.delete_event'):
         if request.method == "POST":
 
             eventlog = EventLog.objects.log(instance=event)
             # send email to admins
             recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
             if recipients and notification:
-                notification.send_emails(recipients,'event_deleted', {
-                    'event':event,
-                    'request':request,
-                    'user':request.user,
-                    'registrants_paid':event.registrants(with_balance=False),
-                    'registrants_pending':event.registrants(with_balance=True),
+                notification.send_emails(recipients, 'event_deleted', {
+                    'event': event,
+                    'request': request,
+                    'user': request.user,
+                    'registrants_paid': event.registrants(with_balance=False),
+                    'registrants_pending': event.registrants(with_balance=True),
                     'eventlog_url': reverse('event_log', args=[eventlog.pk]),
                     'SITE_GLOBAL_SITEDISPLAYNAME': get_setting('site', 'global', 'sitedisplayname'),
                     'SITE_GLOBAL_SITEURL': get_setting('site', 'global', 'siteurl'),
                 })
 
-            # The one-to-one relationship is on events which
-            # doesn't delete the registration_configuration record.
-            # The delete must occur on registration_configuration
-            # for both to be deleted. An honest accident on
-            # one-to-one fields.
-            try:
-                event.registration_configuration.delete()
-            except:
-                # roll back the transaction to fix the error for postgresql
-                #"current transaction is aborted, commands ignored until 
-                # end of transaction block"
-                connection._rollback()
-            
             if event.image:
                 event.image.delete()
-            event.delete()
+
+            event.delete(log=False)
 
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % event)
 
@@ -942,8 +950,10 @@ def delete(request, id, template_name="events/delete.html"):
         return render_to_response(template_name, {'event': event},
             context_instance=RequestContext(request))
     else:
-        raise Http403# Create your views here.
+        raise Http403
 
+
+@is_enabled('events')
 def register_pre(request, event_id, template_name="events/reg8n/register_pre2.html"):
     event = get_object_or_404(Event, pk=event_id)
 
@@ -986,6 +996,7 @@ def multi_register_redirect(request, event, msg):
     return HttpResponseRedirect(reverse('event', args=(event.pk,),))
 
 
+@is_enabled('events')
 def register(request, event_id=0,
              individual=False,
              is_table=False,
@@ -1337,6 +1348,7 @@ def register(request, event_id=0,
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 def multi_register(request, event_id=0, template_name="events/reg8n/multi_register.html"):
     """
     This view has 2 POST states. Instead of a GET and a POST.
@@ -1655,6 +1667,7 @@ def multi_register(request, event_id=0, template_name="events/reg8n/multi_regist
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/reg8n_edit.html"):
     reg8n = get_object_or_404(Registration, pk=reg8n_id)
 
@@ -1765,6 +1778,7 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
                     context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 def cancel_registration(request, event_id, registration_id, hash='', template_name="events/reg8n/cancel_registration.html"):
     event = get_object_or_404(Event, pk=event_id)
 
@@ -1861,6 +1875,7 @@ def cancel_registration(request, event_id, registration_id, hash='', template_na
         context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_name="events/reg8n/cancel_registrant.html"):
     event = get_object_or_404(Event, pk=event_id)
 
@@ -1962,11 +1977,12 @@ def cancel_registrant(request, event_id=0, registrant_id=0, hash='', template_na
         context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 def month_view(request, year=None, month=None, type=None, template_name='events/month-view.html'):
     from datetime import date
     from tendenci.addons.events.utils import next_month, prev_month
 
-    if type: # redirect to /events/month/ if type does not exist
+    if type:  # redirect to /events/month/ if type does not exist
         if not Type.objects.filter(slug=type).exists():
             return HttpResponseRedirect(reverse('event.month'))
 
@@ -1975,6 +1991,21 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         month, year = int(month), int(year)
     else:
         month, year = datetime.now().month, datetime.now().year
+
+    if type:
+        current_type = Type.objects.filter(slug=type)
+        current_date = datetime(month=month, day=1, year=year)
+        latest_event = Event.objects.filter(start_dt__gte=current_date, type=current_type[0]).order_by('start_dt')
+        if latest_event.count() > 0:
+            latest_month = latest_event[0].start_dt.month
+            latest_year = latest_event[0].start_dt.year
+            if not check_month(month, year, current_type[0]):
+                current_date = current_date.strftime('%b %Y')
+                latest_date = latest_event[0].start_dt.strftime('%b %Y')
+                messages.add_message(request, messages.INFO, 'No %s Events were found for %s. The next %s event is on %s, shown below.' % (current_type[0], current_date, current_type[0], latest_date))
+                return HttpResponseRedirect(reverse('event.month', args=[latest_year, latest_month, current_type[0].slug]))
+        else:
+            messages.add_message(request, messages.INFO, 'No more %s Events were found.' % (current_type[0]))
 
     if year <= 1900 or year >= 9999:
         raise Http404
@@ -2014,6 +2045,8 @@ def month_view(request, year=None, month=None, type=None, template_name='events/
         },
         context_instance=RequestContext(request))
 
+
+@is_enabled('events')
 def day_view(request, year=None, month=None, day=None, template_name='events/day-view.html'):
     year = int(year)
     if year <= 1900:
@@ -2026,6 +2059,7 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
         'now':datetime.now(),
         'type':None,
     }, context_instance=RequestContext(request))
+
 
 @login_required
 def types(request, template_name='events/types/index.html'):
@@ -2054,10 +2088,11 @@ def types(request, template_name='events/types/index.html'):
     return render_to_response(template_name, {'formset': formset},
         context_instance=RequestContext(request))
 
+
 @login_required
 def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='events/types/reassign.html'):
     type = get_object_or_404(Type, pk=type_id)
-        
+
     form = form_class(request.POST or None, type_id=type.id)
 
     if request.method == 'POST':
@@ -2069,6 +2104,8 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
     return render_to_response(template_name, {'type': type, 'form': form},
         context_instance=RequestContext(request))
 
+
+@is_enabled('events')
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):
     query = request.GET.get('q', None)
@@ -2125,7 +2162,8 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         'query': query,
         }, context_instance=RequestContext(request))
 
-# http://127.0.0.1/events/4/registrants/roster/total
+
+@is_enabled('events')
 @login_required
 def registrant_roster(request, event_id=0, roster_view='', template_name='events/registrants/roster.html'):
     # roster_view in ['total', 'paid', 'non-paid']
@@ -2359,6 +2397,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         },
         context_instance=RequestContext(request))
 
+
 @csrf_exempt
 @login_required
 def registrant_check_in(request):
@@ -2389,6 +2428,8 @@ def registrant_check_in(request):
 
     return HttpResponse(json.dumps(response_d), mimetype="text/plain")
 
+
+@is_enabled('events')
 @login_required
 def registrant_details(request, id=0, hash='', template_name='events/registrants/details.html'):
     registrant = get_object_or_404(Registrant, pk=id)
@@ -2402,6 +2443,7 @@ def registrant_details(request, id=0, hash='', template_name='events/registrants
         raise Http403
 
 
+@is_enabled('events')
 def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     template_name='events/reg8n/register-confirm.html'):
     """
@@ -2409,7 +2451,6 @@ def registration_confirmation(request, id=0, reg8n_id=0, hash='',
     Any registrant (belonging to this registration)
     or administrator can see the entire registration.
     """
-
     event = get_object_or_404(Event, pk=id)
     registrants_count = 1
     registrant_hash = hash
@@ -2593,6 +2634,8 @@ def edit_email(request, event_id, form_class=EmailForm, template_name='events/ed
         'form': form
         },context_instance=RequestContext(request))
 
+
+@is_enabled('events')
 def registrant_export(request, event_id, roster_view=''):
     """
     Export all registration for a specific event
@@ -2705,6 +2748,7 @@ def registrant_export(request, event_id, roster_view=''):
     return response
 
 
+@is_enabled('events')
 def registrant_export_with_custom(request, event_id, roster_view=''):
     """
     Export all registration for a specific event with or without custom registration forms
@@ -2885,13 +2929,14 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
     book.save(response)
     return response
 
+
+@is_enabled('events')
 @login_required
 def delete_speaker(request, id):
     """
         This delete is designed based on the add and edit view where
         a speaker is considered to only be a speaker for a single event.
     """
-
     if not has_perm(request.user,'events.delete_speaker'):
         raise Http403
 
@@ -2904,6 +2949,8 @@ def delete_speaker(request, id):
 
     return redirect('event', id=event.id)
 
+
+@is_enabled('events')
 @login_required
 def delete_group_pricing(request, id):
     if not has_perm(request.user,'events.delete_registrationconfiguration'):
@@ -2918,6 +2965,8 @@ def delete_group_pricing(request, id):
 
     return redirect('event', id=event.id)
 
+
+@is_enabled('events')
 @login_required
 def delete_special_pricing(request, id):
     if not has_perm(request.user,'events.delete_registrationconfiguration'):
@@ -2932,6 +2981,8 @@ def delete_special_pricing(request, id):
 
     return redirect('event', id=event.id)
 
+
+@is_enabled('events')
 @login_required
 def copy(request, id):
     if not has_perm(request.user, 'events.add_event'):
@@ -2946,6 +2997,8 @@ def copy(request, id):
 
     return redirect('event.edit', id=new_event.id)
 
+
+@is_enabled('events')
 @login_required
 def minimal_add(request, form_class=PendingEventForm, template_name="events/minimal_add.html"):
     """
@@ -2994,6 +3047,8 @@ def minimal_add(request, form_class=PendingEventForm, template_name="events/mini
         'form_place': form_place,
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('events')
 @login_required
 def pending(request, template_name="events/pending.html"):
     """
@@ -3009,6 +3064,7 @@ def pending(request, template_name="events/pending.html"):
     return render_to_response(template_name, {
         'events': events,
         }, context_instance=RequestContext(request))
+
 
 @login_required
 def approve(request, event_id, template_name="events/approve.html"):
@@ -3034,6 +3090,7 @@ def approve(request, event_id, template_name="events/approve.html"):
         'event': event,
         }, context_instance=RequestContext(request))
 
+
 @login_required
 def list_addons(request, event_id, template_name="events/addons/list.html"):
     """List addons of an event"""
@@ -3047,6 +3104,7 @@ def list_addons(request, event_id, template_name="events/addons/list.html"):
         'event':event,
         'addons':event.addon_set.all(),
     }, context_instance=RequestContext(request))
+
 
 @login_required
 def add_addon(request, event_id, template_name="events/addons/add.html"):
@@ -3084,6 +3142,7 @@ def add_addon(request, event_id, template_name="events/addons/add.html"):
         'formset': formset,
         'event':event,
     }, context_instance=RequestContext(request))
+
 
 @login_required
 def edit_addon(request, event_id, addon_id, template_name="events/addons/edit.html"):
@@ -3155,10 +3214,10 @@ def enable_addon(request, event_id, addon_id):
     return redirect('event.list_addons', event.id)
 
 
+@is_enabled('events')
 @login_required
 def export(request, template_name="events/export.html"):
     """Export Events"""
-
     if not request.user.is_superuser:
         raise Http403
 
@@ -3190,11 +3249,10 @@ def create_ics(request, template_name="events/ics.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('events')
 @login_required
 def myevents(request, template_name='events/myevents.html'):
     """ Logged-in user's registered events"""
-
-
     if 'all' not in request.GET:
         events = Event.objects.filter(registration__registrant__email=request.user.email).exclude(end_dt__lt=datetime.now())
         show = 'True'
@@ -3311,4 +3369,3 @@ def import_process(request, import_id,
         'total': import_i.total_created + import_i.total_invalid,
         "import_i": import_i,
     }, context_instance=RequestContext(request))
-

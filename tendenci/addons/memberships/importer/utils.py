@@ -149,7 +149,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
 
         # check if the membership type is valid
         try:
-            membership_type = MembershipType.objects.get(name=m['membershiptype'])
+            membership_type = MembershipType.objects.get(name=m.get('membershiptype', ''))
         except MembershipType.DoesNotExist:
             # skip if it does not exist
             m['status__action'] = 'skip'

@@ -71,16 +71,16 @@ class GroupForm(TendenciBaseForm):
                   'status',
                   'status_detail',
                   )
-        exclude = ('members','group_perms')
+        exclude = ('members', 'group_perms')
 
         fieldsets = [('Group Information', {
                       'fields': ['name',
                                  'label',
-                                 # 'entity',
+                                 'entity',
                                  'email_recipient',
                                  'show_as_option',
                                  'sync_newsletters',
-                                 'allow_self_add', 
+                                 'allow_self_add',
                                  'allow_self_remove',
                                  'description'
                                  'auto_respond',
@@ -96,19 +96,20 @@ class GroupForm(TendenciBaseForm):
                       }),
                      ('Administrator Only', {
                       'fields': ['status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
                     })]
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
         if not self.user.profile.is_superuser:
-            if 'status' in self.fields: self.fields.pop('status')
-            if 'status_detail' in self.fields: self.fields.pop('status_detail')               
+            if 'status' in self.fields:
+                self.fields.pop('status')
+            if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
 class GroupMembershipForm(forms.ModelForm):
     def __init__(self, group=None, user_id=None, *args, **kwargs):
-        super(GroupMembershipForm, self).__init__(*args, **kwargs)        
+        super(GroupMembershipForm, self).__init__(*args, **kwargs)
         if group:
             # exclude those already joined
             exclude_userid = [user.id for user in group.members.all()]

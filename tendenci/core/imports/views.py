@@ -342,9 +342,10 @@ def download_user_upload_template(request, file_ext='.xls'):
                          'company', 'position_title', 'department',
                          'phone', 'phone2', 'home_phone',
                          'work_phone', 'mobile_phone',
-                         'fax', 'url', 'dob', 'spouse', 'department',
+                         'fax', 'url', 'dob', 'spouse',
                          'direct_mail', 'notes', 'admin_notes',
-                         'username', 'password', 'member_number']
+                         'username', 'password', 'member_number',
+                         'ud1', 'ud2', 'ud3', 'ud4', 'ud5', ]
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)

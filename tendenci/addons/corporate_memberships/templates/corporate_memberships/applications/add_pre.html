@@ -1,0 +1,38 @@
+{% extends "corporate_memberships/base.html" %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% trans "Corporate Membership Add - Starting" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% corpmemb_nav request.user  %} 
+     <h1>{% trans corp_app.name %}</h1>
+     <div class="well">
+     <p class="muted">Let's get started... The contact e-mail address will only be used to
+ 		send you email notifications
+     	once your corporate membership gets approved. Please make sure it's correct.
+     	 Thank you!
+     </p>
+     </div>
+      
+    <div class="corp-memb-wrap">  
+    	<form action="" method="post">{% csrf_token %}
+    	<div class="forms">
+			{{ form|styled_form }}
+        	<input type="submit" value="Continue to add corporate membership" />
+		</div>
+        </form>
+    </div>
+
+    
+    
+    
+</div>
+{% endblock %}
