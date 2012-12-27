@@ -15,6 +15,7 @@ class Command(BaseCommand):
         """
         from tendenci.apps.entities.models import Entity
         from tendenci.addons.memberships.models import AppEntry, MembershipDefault
+        from tendenci.apps.profiles.models import Profile
         verbosity = options['verbosity']
 
         for e in AppEntry.objects.all():
@@ -147,6 +148,10 @@ class Command(BaseCommand):
             m_default.set_renew_dt()
             if not m_default.expire_dt:
                 m_default.set_expire_dt()
+
+            if not m_default.user.profile:
+                Profile.objects.create_profile(m_default.user)
+
             m_default.user.profile.refresh_member_number()
 
             self.set_owner_creator_fields(m_default, e)
