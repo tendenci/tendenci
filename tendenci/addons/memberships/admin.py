@@ -405,6 +405,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
     )
 
     form = MembershipAppForm
+    change_form_template = "memberships/admin/membershipapp/change_form.html"
 
     class Media:
         js = (
