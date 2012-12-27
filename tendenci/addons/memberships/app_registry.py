@@ -65,6 +65,7 @@ class MembershipRegistry(PeopleRegistry):
     }
 
     url = {
+        'add': lazy_reverse('membership_default.add'),
         'list': lazy_reverse('membership.index'),
         'search': lazy_reverse('membership.search'),
     }
