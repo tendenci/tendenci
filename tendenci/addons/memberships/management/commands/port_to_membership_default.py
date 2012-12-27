@@ -97,6 +97,9 @@ class Command(BaseCommand):
                 if hasattr(e.membership, 'user'):
                     m_default.user = e.membership.user
 
+            if not hasattr(m_default, 'user'):
+                continue
+
             if not m_default.user:
                 m_default.user, user_created = m_default.get_or_create_user(
                     email=e.email, first_name=e.first_name, last_name=e.last_name
@@ -171,9 +174,9 @@ class Command(BaseCommand):
         existing
         """
 
-        msg = u'updated'
+        msg = u'insert'
         if created:
-            msg = u'created'
+            msg = u'update'
 
         if skipped:
             msg = 'skipped'
