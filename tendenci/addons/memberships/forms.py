@@ -799,7 +799,7 @@ class MembershipDefault2Form(forms.ModelForm):
         membership.user = user
 
         # adding membership record
-        membership.renewal = membership.user.profile.can_renew()
+        membership.renewal = membership.user.profile.can_renew2()
 
         # assign member number
         membership.set_member_number()
