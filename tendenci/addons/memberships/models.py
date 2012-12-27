@@ -2200,10 +2200,12 @@ class AppEntry(TendenciBaseModel):
         # TODO: don't like this; would prefer object column in field_entry
         # TODO: Prone to error; We're depending on a string membership type name
         try:
-            entry_field = self.fields.get(field__field_type="payment-method")
-            v = entry_field.value.strip()
-            if v:
-                return PaymentMethod.objects.get(human_name__exact=v)
+            [entry_field] = self.fields.filter(
+                                field__field_type="payment-method")[:1] or [None]
+            if entry_field:
+                v = entry_field.value.strip()
+                if v:
+                    return PaymentMethod.objects.get(human_name__exact=v)
         except PaymentMethod.MultipleObjectsReturned:
             return PaymentMethod.objects.filter(
                 human_name__exact=entry_field.value.strip()
