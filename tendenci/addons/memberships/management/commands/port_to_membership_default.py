@@ -149,7 +149,7 @@ class Command(BaseCommand):
             if not m_default.expire_dt:
                 m_default.set_expire_dt()
 
-            if not m_default.user.profile:
+            if not hasattr(m_default.user, 'profile'):
                 Profile.objects.create_profile(m_default.user)
 
             m_default.user.profile.refresh_member_number()
