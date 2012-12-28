@@ -59,6 +59,7 @@ from tendenci.addons.memberships.importer.forms import ImportMapForm, UploadForm
 from tendenci.addons.memberships.importer.utils import parse_mems_from_csv
 from tendenci.addons.memberships.utils import memb_import_parse_csv
 from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
+from tendenci.core.base.forms import CaptchaForm
 
 
 def membership_index(request):
@@ -1333,6 +1334,9 @@ def membership_default_add(request,
         request.POST or None, request_user=request.user, membership_app=app,
         join_under_corporate=join_under_corporate,
         corp_membership=corp_membership)
+    captcha_form = CaptchaForm(request.POST or None)
+    if request.user.is_authenticated():
+        del captcha_form.fields['captcha']
 
     if request.method == 'POST':
 
@@ -1341,6 +1345,7 @@ def membership_default_add(request,
             user_form.is_valid(),
             profile_form.is_valid(),
             membership_form.is_valid(),
+            captcha_form.is_valid()
         )
 
         # form is valid
@@ -1384,7 +1389,8 @@ def membership_default_add(request,
         'app_fields': app_fields,
         'user_form': user_form,
         'profile_form': profile_form,
-        'membership_form': membership_form
+        'membership_form': membership_form,
+        'captcha_form': captcha_form
     }
     return render_to_response(template, context, RequestContext(request))
 

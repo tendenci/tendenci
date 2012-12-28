@@ -65,7 +65,7 @@
 
        <form action="" method="post">{% csrf_token %}
            
-      {% if user_form.errors.values or profile_form.errors.values or membership_form.errors.values %}
+      {% if user_form.errors.values or profile_form.errors.values or membership_form.errors.values or captcha_form.errors.values %}
         <div class="form-errors">
             
             There were some problems in the form. Please review. Thanks!
@@ -110,6 +110,14 @@
                       {% endfor %}
                 {% endif %}
             {% endfor %}
+            
+            {% for field in captcha_form %}
+                {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                      {% endfor %}
+                {% endif %}
+            {% endfor %}
     
         </div>
       {% endif %}
@@ -117,7 +125,9 @@
        {% for field_obj in app_fields %}
             {% render_membership_field request field_obj user_form profile_form membership_form %} 
         {% endfor %}
-        
+
+        {{ captcha_form.as_p }}
+
         <input class="btn" type="submit" name="submit" value="Submit" />
 
     </form>
