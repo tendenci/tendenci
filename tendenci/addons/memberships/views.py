@@ -1343,7 +1343,7 @@ def membership_default_add(request,
         join_under_corporate=join_under_corporate,
         corp_membership=corp_membership)
     captcha_form = CaptchaForm(request.POST or None)
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
     if request.method == 'POST':
