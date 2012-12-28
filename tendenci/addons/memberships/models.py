@@ -425,7 +425,7 @@ class MembershipDefault(TendenciBaseModel):
 
         NOW = datetime.now()
 
-        self.status = True,
+        self.status = True
         self.status_detail = 'active'
 
         # application approved ---------------
