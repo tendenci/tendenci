@@ -774,10 +774,18 @@ class MembershipDefault(TendenciBaseModel):
         the group.
         """
 
-        active = (self.status == True, self.status_detail == 'active')
+        active = (self.status == True, self.status_detail.lower() == 'active')
 
         if all(active):  # should be in group; make sure they're in
             self.membership_type.group.add_user(self.user)
+
+            # add user to groups selected by user
+            groups = self.groups.all()
+            if groups:
+                for group in groups:
+                    if not group.is_member(self.user):
+                        group.add_user(self.user)
+
         else:  # should not be in group; make sure they're out
             GroupMembership.objects.filter(
                 member=self.user,

@@ -809,12 +809,6 @@ class MembershipDefault2Form(forms.ModelForm):
         membership.save()
         # save many-to-many data for the form
         self.save_m2m()
-        # add user to groups
-        groups = membership.groups.all()
-        if groups:
-            for group in groups:
-                if not group.is_member(membership.user):
-                    group.add_user(user)
 
         if membership.approval_required():
             membership.pend()
