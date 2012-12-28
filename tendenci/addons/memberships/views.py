@@ -522,12 +522,22 @@ def application_confirmation_default(request, hash):
     """
     Responds with default confirmation
     """
+    template_name = 'memberships/applications/confirmation_default2.html'
     membership = get_object_or_404(MembershipDefault, guid=hash)
+    if membership.corporate_membership_id:
+        from tendenci.addons.corporate_memberships.models import CorpMembershipApp
+        corp_app = CorpMembershipApp.objects.current_app()
+        if not corp_app:
+            raise Http404
+        app = corp_app.memb_app
+    else:
+        app = MembershipApp.objects.current_app()
 
     return render_to_response(
-        'memberships/applications/confirmation_default.html', {
+        template_name, {
         'is_confirmation': True,
-        'membership': membership
+        'membership': membership,
+        'app': app
         }, context_instance=RequestContext(request))
 
 
@@ -1306,9 +1316,7 @@ def membership_default_add(request,
             return redirect(reverse('membership_default.corp_pre_add'))
 
     else:
-        [app] = MembershipApp.objects.filter(status=True,
-            status_detail__in=['active', 'published']
-                                ).order_by('id')[:1] or [None]
+        app = MembershipApp.objects.current_app()
 
     if not app:
         raise Http404
