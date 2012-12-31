@@ -12,7 +12,7 @@
 
 {% block body %}
 <div class="t">
-
+{% corpmemb_nav request.user corporate_membership %} 
      <h1>{% trans "Corporate Membership Add Confirmation" %}</h1>
     <p>{% if app.confirmation_text %}
     	{{ app.confirmation_text|safe }}
@@ -27,10 +27,10 @@
     {% has_perm request.user corporate_memberships.change_corpemembership as can_edit %}
    	
    	{% if can_view %}
-    <p><a href="{% url corp_memb.view corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
+    <p><a href="{% url corpmembership.view corporate_membership.id %}">{% trans "View this Corporate Membership" %}</a></p>
     {% endif %}
     {% if can_edit %}
-    <p><a href="{% url corp_memb.edit corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
+    <p><a href="{% url corpmembership.edit corporate_membership.id %}">{% trans "Edit this Corporate Membership" %}</a></p>
     <p><a href="{% url corp_memb.edit_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></p>
     {% endif %}
 </div>

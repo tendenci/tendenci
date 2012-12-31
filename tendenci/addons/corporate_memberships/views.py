@@ -233,7 +233,7 @@ def corpmembership_add(request,
             if request.user.is_authenticated():
                 # set the user as representative of the corp. membership
                 CorpMembershipRep.objects.create(
-                    corp_membership=corp_membership,
+                    corp_profile=corp_membership.corp_profile,
                     user=request.user,
                     is_dues_rep=True)
 
@@ -478,16 +478,11 @@ def corpmembership_search(request,
 
     if query == 'is_pending:true' and request.user.profile.is_superuser:
         # pending list only for admins
-        pending_rew_entry_ids = CorpMembRenewEntry.objects.filter(
-                            status_detail__in=['pending',
-                                               'paid - pending approval']
-                            ).values_list('id', flat=True)
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
-        if pending_rew_entry_ids:
-            q_obj = q_obj | Q(renew_entry_id__in=pending_rew_entry_ids)
         corp_members = CorpMembership.objects.filter(q_obj)
     else:
         filter_and, filter_or = CorpMembership.get_search_filter(request.user)
+
         q_obj = None
         if filter_and:
             q_obj = Q(**filter_and)
@@ -504,12 +499,14 @@ def corpmembership_search(request,
                                                          user=request.user)
             if q_obj:
                 corp_members = corp_members.filter(q_obj)
-            corp_members = corp_members.order_by('name_exact')
         else:
             if q_obj:
                 corp_members = CorpMembership.objects.filter(q_obj)
             else:
                 corp_members = CorpMembership.objects.all()
+            if query:
+                corp_members = corp_members.filter(
+                            corp_profile__name__contains=query)
 
     corp_members = corp_members.order_by('corp_profile__name')
 

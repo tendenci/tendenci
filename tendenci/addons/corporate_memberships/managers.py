@@ -3,6 +3,8 @@ from haystack.query import SearchQuerySet
 from django.db.models import Manager
 from django.db.models import Q
 
+from tendenci.core.perms.managers import TendenciBaseManager
+
 
 class CorporateMembershipManager(Manager):
     def search(self, query=None, *args, **kwargs):
@@ -24,7 +26,7 @@ class CorporateMembershipManager(Manager):
         return sqs
 
 
-class CorpMembershipManager(Manager):
+class CorpMembershipManager(TendenciBaseManager):
     def search(self, query=None, *args, **kwargs):
         """
         haystack to query corporate memberships.

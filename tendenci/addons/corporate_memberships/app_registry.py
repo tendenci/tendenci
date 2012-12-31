@@ -2,16 +2,16 @@ from django.conf import settings
 
 from tendenci.core.registry import site
 from tendenci.core.registry.base import PeopleRegistry, lazy_reverse
-from tendenci.addons.corporate_memberships.models import CorporateMembership
+from tendenci.addons.corporate_memberships.models import CorpMembership
 
 
-class CorporateMembershipRegistry(PeopleRegistry):
+class CorpMembershipRegistry(PeopleRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
     description = 'Corporate membership management application.'
     icon = '%simages/icons/corporate-membership-color-64x64.png' % settings.STATIC_URL
-    
+
     event_logs = {
         'corporate_membership':{
             'base':('680000','3300FF'),
@@ -28,8 +28,9 @@ class CorporateMembershipRegistry(PeopleRegistry):
     }
 
     url = {
-        'search': lazy_reverse('corp_memb.search'),
-        'list': lazy_reverse('corp_memb.list')
+        'add': lazy_reverse('corpmembership.add'),
+        'search': lazy_reverse('corpmembership.search'),
+#        'list': lazy_reverse('corpmembership.search')
     }
 
-site.register(CorporateMembership, CorporateMembershipRegistry)
+site.register(CorpMembership, CorpMembershipRegistry)
