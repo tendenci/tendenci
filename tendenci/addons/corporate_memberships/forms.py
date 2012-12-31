@@ -415,6 +415,14 @@ class RosterSearchAdvancedForm(forms.Form):
         super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
 
 
+class CorpMembershipSearchForm(forms.Form):
+    cm_id = forms.ChoiceField(label=_('Company Name'),
+                                  choices=get_corp_memberships_choices(),
+                                  required=False)
+    q = forms.CharField(max_length=100,
+                                 required=False)
+
+
 class CorpMembershipUploadForm(forms.ModelForm):
     KEY_CHOICES = (
         ('company_name', 'Company Name'),

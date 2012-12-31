@@ -58,6 +58,7 @@ from tendenci.addons.corporate_memberships.forms import (
                                          CorpProfileForm,
                                          CorpMembershipRenewForm,
                                          RosterSearchAdvancedForm,
+                                         CorpMembershipSearchForm,
                                          CorpMembershipUploadForm,
                                          CorpExportForm,
                                          CorpMembForm, 
@@ -474,7 +475,17 @@ def corpmembership_search(request,
     if not request.user.is_authenticated() and not allow_anonymous_search:
         raise Http403
 
-    query = request.GET.get('q', None)
+    search_form = CorpMembershipSearchForm(request.GET)
+    if search_form.is_valid():
+        query = search_form.cleaned_data['q']
+        cm_id = search_form.cleaned_data['cm_id']
+        try:
+            cm_id = int(cm_id)
+        except:
+            pass
+    else:
+        query = None
+        cm_id = None
 
     if query == 'is_pending:true' and request.user.profile.is_superuser:
         # pending list only for admins
@@ -508,11 +519,15 @@ def corpmembership_search(request,
                 corp_members = corp_members.filter(
                             corp_profile__name__contains=query)
 
+    if cm_id:
+        corp_members = corp_members.filter(id=cm_id)
     corp_members = corp_members.order_by('corp_profile__name')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'corp_members': corp_members},
+    return render_to_response(template_name, {
+        'corp_members': corp_members,
+        'search_form': search_form},
         context_instance=RequestContext(request))
 
 
