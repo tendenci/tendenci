@@ -111,11 +111,11 @@
                                 {% endfor %}
                                 </table>
                                 <div>&nbsp;</div>
-                                <div><a href="{# url corp_memb.edit_reps corporate_membership.pk #}">{% trans "Add/Edit Representatives" %}</a></div>
+                                <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></div>
                             {% else %}
                                 <div>{% trans "No representatives available" %}</div>
                                 <div>&nbsp;</div>
-                                <div><a href="{# url corp_memb.edit_reps corporate_membership.pk #}">{% trans "Add Representatives" %}</a></div>
+                                <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
                             {% endif %} 
                             
                         {% else %}

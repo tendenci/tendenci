@@ -20,6 +20,7 @@ from tendenci.addons.corporate_memberships.models import (
                     CorpMembership,
                     CorpProfile,
                     CorpMembershipApp,
+                    CorpMembershipRep,
                     CorpMembershipImport,
                     CorpApp,
                     CorpField,
@@ -821,6 +822,40 @@ class CorpApproveForm(forms.Form):
             self.fields['users'].initial = 0
         else:
             self.fields.pop('users')
+
+
+class CorpMembershipRepForm(forms.ModelForm):
+    user_display = forms.CharField(max_length=100,
+                        required=False,
+                        help_text='type name, or username or email')
+
+    class Meta:
+        model = CorpMembershipRep
+        fields = ('user_display',
+                 'user',
+                'is_dues_rep',
+                'is_member_rep',)
+
+    def __init__(self, corp_membership, *args, **kwargs):
+        self.corp_membership = corp_membership
+        super(CorpMembershipRepForm, self).__init__(*args, **kwargs)
+
+        self.fields['user_display'].label = "Add a Representative"
+        self.fields['user'].widget = forms.HiddenInput()
+        self.fields['user'].error_messages['required'
+                                ] = 'Please enter a valid user.'
+
+    def clean_user(self):
+        value = self.cleaned_data['user']
+        try:
+            rep = CorpMembershipRep.objects.get(
+                corp_profile=self.corp_membership.corp_profile,
+                user=value)
+            raise forms.ValidationError(
+                _("This user is already a representative."))
+        except CorpMembershipRep.DoesNotExist:
+            pass
+        return value
 
 
 class CorpMembRepForm(forms.ModelForm):

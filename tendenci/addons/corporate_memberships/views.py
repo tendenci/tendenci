@@ -61,6 +61,7 @@ from tendenci.addons.corporate_memberships.forms import (
                                          CorpMembershipSearchForm,
                                          CorpMembershipUploadForm,
                                          CorpExportForm,
+                                         CorpMembershipRepForm,
                                          CorpMembForm, 
                                          CreatorForm,
                                          CorpApproveForm,
@@ -74,6 +75,7 @@ from tendenci.addons.corporate_memberships.utils import (
                                          get_payment_method_choices,
                                          get_indiv_memberships_choices,
                                          corp_membership_rows,
+                                         corp_membership_update_perms,
                                          corp_memb_inv_add, 
                                          dues_rep_emails_list,
                                          corp_memb_update_perms,
@@ -239,7 +241,7 @@ def corpmembership_add(request,
                     is_dues_rep=True)
 
             # assign object permissions
-            corp_memb_update_perms(corp_membership)
+            corp_membership_update_perms(corp_membership)
 
             # email to user who created the corporate membership
             # include the secret code in the email
@@ -348,7 +350,7 @@ def corpmembership_edit(request, id,
                 corp_membership.save()
 
             # assign object permissions
-            corp_memb_update_perms(corp_membership)
+            corp_membership_update_perms(corp_membership)
 
             # send notification to administrators
             if not is_superuser:
@@ -1270,6 +1272,104 @@ def corpmembership_export(request,
             return response
     context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
+
+
+def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
+                   template_name="corporate_memberships/reps/edit.html"):
+    corp_memb = get_object_or_404(CorpMembership, pk=id)
+
+    if not has_perm(request.user,
+                    'corporate_memberships.change_corpmembership',
+                    corp_memb):
+        raise Http403
+
+    reps = CorpMembershipRep.objects.filter(
+                    corp_profile=corp_memb.corp_profile
+                    ).order_by('user')
+    form = form_class(corp_memb, request.POST or None)
+    print request.POST
+
+    if request.method == "POST":
+        if form.is_valid():
+            rep = form.save(commit=False)
+            rep.corp_profile = corp_memb.corp_profile
+            rep.save()
+
+            corp_membership_update_perms(corp_memb)
+
+            EventLog.objects.log(instance=rep)
+
+            if (request.POST.get('submit', '')).lower() == 'save':
+                return HttpResponseRedirect(reverse('corpmembership.view',
+                                                    args=[corp_memb.id]))
+
+    return render_to_response(template_name, {'corp_memb': corp_memb, 
+                                              'form': form,
+                                              'reps': reps}, 
+        context_instance=RequestContext(request))
+
+
+def corp_reps_lookup(request):
+    q = request.REQUEST['term']
+
+    if use_search_index:
+        profiles = Profile.objects.search(
+                            q,
+                            user=request.user
+                            ).order_by('last_name_exact')
+    else:
+        # they don't have search index, probably just check username only
+        # for the performance sake
+        profiles = Profile.objects.filter(
+                                 Q(user__first_name__istartswith=q) \
+                               | Q(user__last_name__istartswith=q) \
+                               | Q(user__username__istartswith=q) \
+                               | Q(user__email__istartswith=q))
+        profiles = profiles.order_by('user__last_name')
+
+    if profiles and len(profiles) > 10:
+        profiles = profiles[:10]
+
+    if use_search_index:
+        users = [p.object.user for p in profiles]
+    else:
+        users = [p.user for p in profiles]
+
+    results = []
+    for u in users:
+        value = '%s, %s (%s) - %s' % (u.last_name, u.first_name,
+                                      u.username, u.email)
+        u_dict = {'id': u.id, 'label': value, 'value': value}
+        results.append(u_dict)
+    return HttpResponse(simplejson.dumps(results),
+                        mimetype='application/json')
+
+
+@login_required
+def delete_corp_rep(request, id,
+                    template_name="corporate_memberships/reps/delete.html"):
+    rep = get_object_or_404(CorpMembershipRep, pk=id)
+    corp_profile = rep.corp_profile
+    corp_memb = corp_profile.corp_membership
+
+    if corp_memb.allow_edit_by(request.user) or \
+         has_perm(request.user, 'corporate_memberships.change_corpmembership'):
+        if request.method == "POST":
+
+            messages.add_message(request, messages.SUCCESS,
+                                 'Successfully deleted %s' % rep)
+
+            rep.delete()
+            corp_membership_update_perms(corp_memb)
+
+            return HttpResponseRedirect(reverse(
+                                        'corpmembership.edit_corp_reps',
+                                        args=[corp_memb.pk]))
+
+        return render_to_response(template_name, {'corp_memb': corp_memb},
+            context_instance=RequestContext(request))
+    else:
+        raise Http403
 
 
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):

@@ -160,38 +160,6 @@ def update_authorized_domains(corp_profile, domain_names):
             auth_domain.save()
 
 
-def corp_membership_update_perms(corp_memb, **kwargs):
-    """
-    update object permissions to creator, owner and representatives.
-    view and change permissions only - no delete permission assigned 
-    because we don't want them to delete corporate membership records.
-    """
-    from tendenci.core.perms.object_perms import ObjectPermission
-    from tendenci.addons.corporate_memberships.models import CorpMembershipRep
-
-    ObjectPermission.objects.remove_all(corp_memb)
-
-    perms = ['view', 'change']
-
-    # creator and owner
-    if corp_memb.creator:
-        ObjectPermission.objects.assign(corp_memb.creator,
-                                        corp_memb,
-                                        perms=perms)
-
-    if corp_memb.owner:
-        ObjectPermission.objects.assign(corp_memb.owner,
-                                        corp_memb,
-                                        perms=perms)
-
-    # dues and members reps
-    reps = CorpMembershipRep.objects.filter(corp_membership=corp_memb)
-    for rep in reps:
-        ObjectPermission.objects.assign(rep.user, corp_memb, perms=perms)
-
-    return corp_memb
-
-
 def corp_memb_inv_add(user, corp_memb, **kwargs):
     """
     Add an invoice for this corporate membership
@@ -281,6 +249,34 @@ def dues_rep_emails_list(corp_memb):
                 for dues_rep in dues_reps \
                 if dues_rep.user.email]
     return []
+
+
+def corp_membership_update_perms(corp_memb, **kwargs):
+    """
+    update object permissions to creator, owner and representatives.
+    view and change permissions only - no delete permission assigned 
+    because we don't want them to delete corp membership records.
+    """
+    from tendenci.core.perms.object_perms import ObjectPermission
+    from tendenci.addons.corporate_memberships.models import CorpMembershipRep
+
+    ObjectPermission.objects.remove_all(corp_memb)
+
+    perms = ['view', 'change']
+
+    # creator and owner
+    if corp_memb.creator:
+        ObjectPermission.objects.assign(corp_memb.creator, corp_memb, perms=perms)
+
+    if corp_memb.owner:
+        ObjectPermission.objects.assign(corp_memb.owner, corp_memb, perms=perms)
+
+    # dues and members reps
+    reps = CorpMembershipRep.objects.filter(corp_profile=corp_memb.corp_profile)
+    for rep in reps:
+        ObjectPermission.objects.assign(rep.user, corp_memb, perms=perms)
+
+    return corp_memb
 
 
 # get the corpapp default fields list from json

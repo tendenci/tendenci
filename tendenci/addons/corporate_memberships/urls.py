@@ -66,6 +66,13 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         "corpmembership_export",
         name="corpmembership.export"),
 
+    url(r"^edit_corp_reps/(?P<id>\d+)/$", "edit_corp_reps",
+        name="corpmembership.edit_corp_reps"),
+    url(r'^corp_reps_lookup/$', 'corp_reps_lookup',
+        name="corp_membership.reps_lookup"),
+    url(r'^delete_corp_rep/(?P<id>\d+)/$', 'delete_corp_rep',
+        name="corp_membership.delete_rep"),
+
 
     url(r"^(?P<slug>.*)/add_pre/$", "add_pre", name="corp_memb.add_pre"),
     url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),

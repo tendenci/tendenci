@@ -322,6 +322,17 @@ class CorpProfile(TendenciBaseModel):
                                             )[:1] or [None]
         return corp_membership
 
+    @property
+    def corp_membership(self):
+        [corp_membership] = self.corp_memberships.filter(
+                                            status=True
+                                            ).exclude(
+                                            status_detail='archive'
+                                            ).order_by(
+                                            '-expiration_dt'
+                                            )[:1] or [None]
+        return corp_membership
+
 
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -1011,8 +1022,10 @@ class CorpMembershipRep(models.Model):
     corp_profile = models.ForeignKey("CorpProfile",
                                         related_name="reps")
     user = models.ForeignKey(User, verbose_name=_("Representative"),)
-    is_dues_rep = models.BooleanField(_('is dues rep?'), default=0, blank=True)
-    is_member_rep = models.BooleanField(_('is member rep?'), default=0, blank=True)
+    is_dues_rep = models.BooleanField(_('is dues rep?'),
+                                      default=True, blank=True)
+    is_member_rep = models.BooleanField(_('is member rep?'),
+                                    default=True, blank=True)
 
     class Meta:
         unique_together = (("corp_profile", "user"),)
