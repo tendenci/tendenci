@@ -129,6 +129,11 @@
                                 {{ field_obj.value|date:'long' }}
                             {% else %}
                                 {{ field_obj.value }}
+                                {% if field_obj.field_name == 'payment_method' %}
+                                    {% if corporate_membership.invoice %}
+                                     - <a href="{% url invoice.view corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
+                                    {% endif %}
+                                {% endif %}
                             {% endif %}
                             </div>
                     
