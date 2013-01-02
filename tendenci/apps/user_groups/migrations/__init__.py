@@ -9,7 +9,8 @@ from tendenci.core.site_settings.utils import get_setting
 
 def create_default_group(sender, app, **kwargs):
     """
-    Auto-create a default group with id=1 if none exist.
+    Load default groups if none exist
+    or create a group with id=1 if not exist.
     """
     if app == "user_groups":
         if not Group.objects.all():

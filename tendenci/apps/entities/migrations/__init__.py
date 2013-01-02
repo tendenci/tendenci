@@ -9,7 +9,8 @@ from tendenci.core.site_settings.utils import get_setting
 
 def create_default_entity(sender, app, **kwargs):
     """
-    Auto-create an entity with id=1 if none exist.
+    Load default entities if none exist
+    or create an entity with id=1 if not exist.
     """
     if app == "entities":
         if not Entity.objects.all():
