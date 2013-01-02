@@ -1082,7 +1082,10 @@ def register(request, event_id=0,
                                                        spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
 
-        event.has_member_price = pricings.filter(allow_member=True).exists()
+        event.has_member_price = pricings.filter(allow_member=True
+                                                 ).exclude(
+                                        Q(allow_user=True) | Q(allow_anonymous=True)
+                                                ).exists()
 
         pricings = pricings.order_by('display_order', '-price')
 
