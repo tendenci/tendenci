@@ -189,7 +189,7 @@ def register(request, success_url=None,
             messages.add_message(
                 request, messages.INFO,
                 u"An account already exists for the email %s." % \
-                    request.POST['email']
+                    request.POST.get('email_0') or request.POST.get('email_1')
             )
             querystring = 'registration=True'
             return HttpResponseRedirect(reverse('auth_password_reset')+ "?%s" % querystring)
