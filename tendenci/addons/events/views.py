@@ -1093,10 +1093,9 @@ def register(request, event_id=0,
             pricing_id = int(pricing_id)
         except:
             pass
-        if pricing_id:
 
-            if pricing_id:
-                [event.default_pricing] = RegConfPricing.objects.filter(id=pricing_id) or [None]
+        if pricing_id:
+            [event.default_pricing] = RegConfPricing.objects.filter(id=pricing_id) or [None]
 
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
@@ -1300,6 +1299,7 @@ def register(request, event_id=0,
     total_price = Decimal('0')
     event_price = pricing and pricing.price or 0
     individual_price = event_price
+
     if is_table:
 #        individual_price_first, individual_price = split_table_price(
 #                                                event_price, pricing.quantity)

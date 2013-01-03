@@ -372,12 +372,15 @@ def _get_price_labels(pricing):
     else:
         target_display = ''
 
-    return mark_safe('<span data-price="%s">%s%s %s%s</span>' % (
+    end_dt = '<br/>&nbsp;(ends ' + unicode(pricing.end_dt.date()) + ')'
+
+    return mark_safe('&nbsp;<span data-price="%s">%s%s %s%s</span>%s' % (
                                       pricing.price,
                                       currency_symbol,
                                       pricing.price,
                                       pricing.title,
-                                      target_display) )
+                                      target_display,
+                                      end_dt) )
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -1201,13 +1204,6 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
-            self.fields['pricing'].choices = [(p.pk,  
-                mark_safe(
-                '<div>' + 
-                unicode(p) + 
-                    '<br/>(ends ' + unicode(p.end_dt.date()) + ')' + 
-                '</div>'))
-                for p in self.pricings]
 
         # member id
         if hasattr(self.event, 'has_member_price') and \
