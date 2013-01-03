@@ -12,16 +12,26 @@ def create_default_entity(sender, app, **kwargs):
     Load default entities if none exist
     or create an entity with id=1 if not exist.
     """
+    def get_site_display_name():
+        setting_table_exists = Setting._meta.db_table in \
+                    connection.introspection.table_names()
+        if setting_table_exists:
+            return get_setting("site", "global", "sitedisplayname")
+        return ''
+
     if app == "entities":
+        site_name = get_site_display_name().strip()
         if not Entity.objects.all():
             call_command("loaddata", "default_entities.json")
+            if site_name:
+                # update the entity_name of the first default entity
+                entity = Entity.objects.get(pk=1)
+                entity.entity_name = site_name
+                entity.save()
         else:
             if not Entity.objects.filter(pk=1):
-                site_name = "Default"
-                table_exists = Setting._meta.db_table in \
-                    connection.introspection.table_names()
-                if table_exists and get_setting("site", "global", "sitedisplayname"):
-                    site_name = get_setting("site", "global", "sitedisplayname")
+                if not site_name:
+                    site_name = "Default"
 
                 entity = Entity()
                 entity.allow_anonymous_view = False

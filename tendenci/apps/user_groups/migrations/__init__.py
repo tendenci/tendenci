@@ -12,17 +12,28 @@ def create_default_group(sender, app, **kwargs):
     Load default groups if none exist
     or create a group with id=1 if not exist.
     """
+    def get_site_display_name():
+        setting_table_exists = Setting._meta.db_table in \
+                    connection.introspection.table_names()
+        if setting_table_exists:
+            return get_setting("site", "global", "sitedisplayname")
+        return ''
+
     if app == "user_groups":
+        site_name = get_site_display_name().strip()
         if not Group.objects.all():
             call_command("loaddata", "default_groups.json")
+            if site_name:
+                # update the name and label of the first default user group
+                group = Group.objects.get(pk=1)
+                group.name = site_name
+                group.label = site_name
+                group.save()
         else:
             if not Group.objects.filter(pk=1):
-                site_name = "Default"
-                table_exists = Setting._meta.db_table in \
-                    connection.introspection.table_names()
-                if table_exists and get_setting("site", "global", "sitedisplayname"):
-                    site_name = get_setting("site", "global", "sitedisplayname")
-    
+                if not site_name:
+                    site_name = "Default"
+
                 group = Group()
                 group.name = site_name
                 group.label = site_name
@@ -31,7 +42,7 @@ def create_default_group(sender, app, **kwargs):
                 group.allow_self_remove = False
                 group.description = "Initial group auto-generated on site creation."
                 group.id = 1
-    
+
                 group.save()
 
 post_migrate.connect(create_default_group)
