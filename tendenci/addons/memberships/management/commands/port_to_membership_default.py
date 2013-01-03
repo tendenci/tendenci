@@ -119,9 +119,6 @@ class Command(BaseCommand):
 
                 continue  # on to the next one
 
-            if not m_default.payment_method:
-                m_default.payment_method = e.payment_method
-
             m_default.application_complete_dt = e.create_dt
             m_default.entity = Entity.objects.first()
             m_default.organization_entity = m_default.entity
