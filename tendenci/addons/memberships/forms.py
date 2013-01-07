@@ -18,20 +18,30 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.importlib import import_module
 from django.core.files.storage import FileSystemStorage
 
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.addons.corporate_memberships.models import (CorporateMembership,
-    AuthorizedDomain)
+    CorpMembership, CorpMembershipAuthDomain, AuthorizedDomain)
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.addons.memberships.models import (Membership, MembershipType, Notice, App,
-    AppEntry, AppField, AppFieldEntry)
+from tendenci.addons.memberships.models import (Membership, MembershipDefault,
+    MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
+    MembershipImport, MembershipApp)
 from tendenci.addons.memberships.fields import (TypeExpMethodField, PriceInput,
-    NoticeTimeTypeField)
+    NoticeTimeTypeField, AppFieldSelectionField)
 from tendenci.addons.memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
-from tendenci.addons.memberships.utils import csv_to_dict, is_import_valid, NoMembershipTypes
+from tendenci.addons.memberships.utils import csv_to_dict, NoMembershipTypes
+from tendenci.addons.memberships.utils import normalize_field_names
+from tendenci.addons.memberships.utils import (get_membership_type_choices,
+                                               get_corporate_membership_choices)
 from tendenci.addons.memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
-    NoticeTimeTypeWidget)
+    NoticeTimeTypeWidget, AppFieldSelectionWidget)
 from tendenci.addons.memberships.utils import get_notice_token_help_text
+from tendenci.apps.notifications.utils import send_welcome_email
+from tendenci.addons.educations.models import Education
+from tendenci.addons.careers.models import Career
+from tendenci.apps.entities.models import Entity
+
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 
@@ -78,9 +88,9 @@ CLASS_AND_WIDGET = {
     'first-name': ('CharField', None),
     'last-name': ('CharField', None),
     'email': ('EmailField', None),
-    'header': ('CharField', 'memberships.widgets.Header'),
-    'description': ('CharField', 'memberships.widgets.Description'),
-    'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+    'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
+    'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+    'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
 
@@ -335,8 +345,491 @@ class MembershipTypeForm(forms.ModelForm):
     
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
-    
-    
+
+
+class MembershipDefaultUploadForm(forms.ModelForm):
+    KEY_CHOICES = (
+        ('email', 'email'),
+        ('member_number', 'member_number'),
+        ('email/member_number', 'email then member_number'),
+        ('member_number/email', 'member_number then email'),
+        ('email/member_number/fn_ln_phone',
+         'email/member_number/first_name,last_name,phone'),
+        ('member_number/email/fn_ln_phone',
+         'member_number/email/first_name,last_name,phone'),
+        )
+    interactive = forms.HiddenInput()
+    key = forms.ChoiceField(label="Key",
+                            choices=KEY_CHOICES)
+
+    class Meta:
+        model = MembershipImport
+        fields = (
+                'key',
+                'override',
+                'interactive',
+                'upload_file',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(MembershipDefaultUploadForm, self).__init__(*args, **kwargs)
+        self.fields['interactive'].initial = 1
+        self.fields['interactive'].widget = forms.HiddenInput()
+        self.fields['key'].initial = 'email/member_number/fn_ln_phone'
+
+    def clean_upload_file(self):
+        key = self.cleaned_data['key']
+        upload_file = self.cleaned_data['upload_file']
+        if not key:
+            raise forms.ValidationError('Please specify the key to identify duplicates')
+
+        file_content = upload_file.read()
+        upload_file.seek(0)
+        header_line_index = file_content.find('\n')
+        header_list = ((file_content[:header_line_index]
+                            ).strip('\r')).split(',')
+        header_list = normalize_field_names(header_list)
+        key_list = []
+        for key in key.split('/'):
+            if key == 'fn_ln_phone':
+                key_list.extend(['first_name', 'last_name', 'phone'])
+            else:
+                key_list.append(key)
+        missing_columns = []
+        for item in key_list:
+            if not item in header_list:
+                missing_columns.append(item)
+        if missing_columns:
+            raise forms.ValidationError(
+                        """
+                        'Field(s) %s used to identify the duplicates
+                        should be included in the .csv file.'
+                        """ % (', '.join(missing_columns)))
+
+        return upload_file
+
+
+class MembershipAppForm(TendenciBaseForm):
+
+    description = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': MembershipApp._meta.app_label,
+        'storme_model': MembershipApp._meta.module_name.lower()}))
+
+    confirmation_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': MembershipApp._meta.app_label,
+        'storme_model': MembershipApp._meta.module_name.lower()}))
+
+    status_detail = forms.ChoiceField(
+        choices=(
+            ('draft', 'Draft'),
+            ('published', 'Published')
+        ),
+        initial='published'
+    )
+#    app_field_selection = AppFieldSelectionField(label='Select Fields')
+
+    class Meta:
+        model = MembershipApp
+        fields = (
+            'name',
+            'slug',
+            'description',
+            'confirmation_text',
+            'notes',
+            'membership_types',
+            'payment_methods',
+            'use_for_corp',
+            'use_captcha',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+            'status_detail',
+#            'app_field_selection',
+            )
+
+    def __init__(self, *args, **kwargs):
+        super(MembershipAppForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['description'].widget.mce_attrs[
+                            'app_instance_id'] = self.instance.pk
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+        if self.instance.pk:
+            self.fields['confirmation_text'].widget.mce_attrs[
+                            'app_instance_id'] = self.instance.pk
+        else:
+            self.fields['confirmation_text'].widget.mce_attrs[
+                                    'app_instance_id'] = 0
+
+
+field_size_dict = {
+        'initials': 12,
+        'displayname': 36,
+        'company': 36,
+        'department': 20,
+        'city': 24,
+        'state': 12,
+        'country': 14,
+        'zipcode': 24,
+        'phone': 22,
+        'phone2': 22,
+        'work_phone': 22,
+        'fax': 22,
+        'primary_practive': 75,
+        'networking': 30,
+        'government_agency': 50,
+        'company_size': 5,
+        'referral_source_member_name': 40,
+        'referral_source_other': 28,
+        'referral_source_member_number': 20,
+        'member_number': 15,
+        'application_approved_denied_user': 10,
+        'application_complete_user': 10,
+        'license_state': 10,
+        'network_sectors': 35,
+        'website': 36,
+        'affiliation_member_number': 30,
+        'how_long_in_practice': 5,
+        'license_number': 15,
+        'url': 36,
+        'url2': 36,
+        'sex': 20,
+        'username': 20,
+        'home_state': 10,
+        'address2': 15
+                   }
+
+
+def get_field_size(app_field_obj):
+    return field_size_dict.get(app_field_obj.field_name, '') or 28
+
+
+def assign_fields(form, app_field_objs):
+    form_field_keys = form.fields.keys()
+    # a list of names of app fields
+    field_names = [field.field_name for field in app_field_objs \
+                   if field.field_name != '' and \
+                   field.field_name in form_field_keys]
+    for name in form_field_keys:
+        if name not in field_names:
+            del form.fields[name]
+    # update the field attrs - label, required...
+    for obj in app_field_objs:
+        if obj.field_name in field_names:
+            field = form.fields[obj.field_name]
+            field.label = obj.label
+            field.required = obj.required
+            obj.field_stype = field.widget.__class__.__name__.lower()
+
+            if obj.field_stype == 'textinput':
+                size = get_field_size(obj)
+                field.widget.attrs.update({'size': size})
+            elif obj.field_stype == 'datetimeinput':
+                field.widget.attrs.update({'class': 'datepicker'})
+            label_type = []
+            if obj.field_name not in ['payment_method',
+                                      'membership_type',
+                                      'groups']:
+                obj.field_div_class = 'inline-block'
+                label_type.append('inline-block')
+                if len(obj.label) < 16:
+                    label_type.append('short-label')
+                    if obj.field_stype == 'textarea':
+                        label_type.append('float-left')
+                        obj.field_div_class = 'float-left'
+            obj.label_type = ' '.join(label_type)
+
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+
+    def __init__(self, app_field_objs, *args, **kwargs):
+        super(UserForm, self).__init__(*args, **kwargs)
+
+        del self.fields['groups']
+
+        assign_fields(self, app_field_objs)
+        self_fields_keys = self.fields.keys()
+
+        if 'password' in self_fields_keys:
+
+            self.fields['password'] = forms.CharField(
+                initial=u'',
+                widget=forms.PasswordInput,
+                required=False,
+            )
+            self.fields['password'].widget.attrs.update({'size': 28})
+
+            self.fields['confirm_password'] = forms.CharField(
+                initial=u'',
+                widget=forms.PasswordInput,
+                required=False,
+            )
+            self.fields['confirm_password'].widget.attrs.update({'size': 28})
+
+        if 'username' in self_fields_keys:
+            self.fields['username'].help_text = 'Letters, numbers and @/./+/-/_ characters'
+
+        self.field_names = [name for name in self.fields.keys()]
+
+    def clean(self):
+        """
+        Validating username and password fields.
+
+        Neither username or password is required.
+        If the field(s) are submitted, those fields
+        are tested and exceptions are raised if they fail.
+
+        Possible exceptions:
+            Passwords do not match
+            Username and password did not match
+            This username exists. If it's yours,
+                please provide a password.
+        """
+        # super(UserForm, self).clean()
+
+        data = self.cleaned_data
+
+        un = data.get('username', u'').strip()
+        pw = data.get('password', u'').strip()
+        pw_confirm = data.get('confirm_password', u'').strip()
+
+        if un and pw:
+            # assert passwords match
+            if pw != pw_confirm:
+                raise forms.ValidationError(
+                    _('Passwords do not match.')
+                )
+
+            [u] = User.objects.filter(username=un)[:1] or [None]
+
+            if u:
+                # assert password;
+                if not u.check_password(pw):
+                    raise forms.ValidationError(
+                        _('Username and password did not match.')
+                    )
+            else:
+                pass
+                # username does not exist;
+                # create account with username and password
+
+        elif un:
+            [u] = User.objects.filter(username=un)[:1] or [None]
+            # assert username
+            if u:
+                raise forms.ValidationError(
+                    _('This username exists. If it\'s yours, please provide your password.')
+                )
+
+        return data
+
+    def save(self, **kwargs):
+        """
+        Get or create (user and profile) object
+        """
+        kwargs['commit'] = False
+        super(UserForm, self).save(**kwargs)
+
+        user, created = Profile.get_or_create_user(**{
+            'username': self.cleaned_data.get('username'),
+            'password': self.cleaned_data.get('password'),
+            'email': self.cleaned_data.get('email'),
+            'first_name': self.cleaned_data.get('first_name'),
+            'last_name': self.cleaned_data.get('last_name'),
+        })
+
+        if created:
+            send_welcome_email(user)
+
+        return user
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+
+    def __init__(self, app_field_objs, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        assign_fields(self, app_field_objs)
+        self.field_names = [name for name in self.fields.keys()]
+
+    def save(self, *args, **kwargs):
+        """
+        Save the profile record. Populate owner and creator fields.
+        """
+        request_user = kwargs.pop('request_user')
+
+        kwargs['commit'] = False
+        profile = super(ProfileForm, self).save(*args, **kwargs)
+
+        for k, v in self.cleaned_data.items():
+            if v:
+                setattr(profile, k, v)
+        if not request_user.is_anonymous():
+            profile.owner = request_user
+            profile.owner_username = request_user.username
+
+        profile.save()
+
+        return profile
+
+
+class MembershipDefault2Form(forms.ModelForm):
+    STATUS_DETAIL_CHOICES = (
+            ('active', 'Active'),
+            ('pending', 'Pending'),
+            ('admin_hold', 'Admin Hold'),
+            ('inactive', 'Inactive'),
+            ('expired', 'Expired'),
+            ('archive', 'Archive'),
+                             )
+    STATUS_CHOICES = (
+                      (1, 'Active'),
+                      (0, 'Inactive')
+                      )
+
+    class Meta:
+        model = MembershipDefault
+
+    def __init__(self, app_field_objs, *args, **kwargs):
+        request_user = kwargs.pop('request_user')
+        membership_app = kwargs.pop('membership_app')
+        if 'join_under_corporate' in kwargs.keys():
+            self.join_under_corporate = kwargs.pop('join_under_corporate')
+        else:
+            self.join_under_corporate = False
+        if 'corp_membership' in kwargs.keys():
+            self.corp_membership = kwargs.pop('corp_membership')
+        else:
+            self.corp_membership = None
+
+        super(MembershipDefault2Form, self).__init__(*args, **kwargs)
+        self.fields['membership_type'].widget = forms.widgets.RadioSelect(
+                    choices=get_membership_type_choices(request_user,
+                                        membership_app,
+                                        corp_membership=self.corp_membership),
+                    attrs=self.fields['membership_type'].widget.attrs)
+        if self.corp_membership:
+            memb_type = self.corp_membership.corporate_membership_type.membership_type
+            self.fields['membership_type'].initial = memb_type
+            require_payment = (memb_type.price > 0 or memb_type.admin_fee > 0)
+        else:
+            # if all membership types are free, no need to display payment method
+            require_payment = membership_app.membership_types.filter(
+                                    Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
+        if not require_payment:
+            del self.fields['payment_method']
+        else:
+            self.fields['payment_method'].empty_label = None
+            self.fields['payment_method'].widget = forms.widgets.RadioSelect(
+                        choices=self.fields['payment_method'].widget.choices,
+                        attrs=self.fields['payment_method'].widget.attrs)
+        self_fields_keys = self.fields.keys()
+
+        if 'status_detail' in self_fields_keys:
+            self.fields['status_detail'].widget = forms.widgets.Select(
+                        choices=self.STATUS_DETAIL_CHOICES)
+        if 'status' in self_fields_keys:
+            self.fields['status'].widget = forms.widgets.Select(
+                        choices=self.STATUS_CHOICES)
+        if 'groups' in self_fields_keys:
+            self.fields['groups'].widget = forms.widgets.CheckboxSelectMultiple()
+            self.fields['groups'].queryset = Group.objects.filter(
+                                                allow_self_add=True,
+                                                status=True,
+                                                status_detail='active')
+            self.fields['groups'].help_text = ''
+
+        if 'corporate_membership_id' in self_fields_keys:
+            if self.join_under_corporate and self.corp_membership:
+                self.fields['corporate_membership_id'].widget = forms.widgets.Select(
+                                        choices=((self.corp_membership.id, self.corp_membership),))
+            else:
+                self.fields['corporate_membership_id'].widget = forms.widgets.Select(
+                                        choices=get_corporate_membership_choices())
+                self.fields['corporate_membership_id'].queryset = CorpMembership.objects.filter(
+                                                status=True).exclude(
+                                                status_detail__in=['archive', 'inactive'])
+
+        assign_fields(self, app_field_objs)
+        self.field_names = [name for name in self.fields.keys()]
+
+    def save(self, *args, **kwargs):
+        """
+        Create membership record.
+        Handle all objects:
+            Membership
+            Membership.user
+            Membership.user.profile
+            Membership.invoice
+            Membership.user.group_set()
+        """
+        user = kwargs.pop('user')
+        request = kwargs.pop('request')
+
+        request_user = None
+        if hasattr(request, 'user'):
+            if isinstance(request.user, User):
+                request_user = request.user
+
+        kwargs['commit'] = False
+        membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
+
+        # assign corp_profile_id
+        if membership.corporate_membership_id:
+            corp_membership = CorpMembership.objects.get(
+                                    pk=membership.corporate_membership_id)
+            membership.corp_profile_id = corp_membership.corp_profile.id
+
+        # set owner & creator
+        if request_user:
+            membership.creator = request_user
+            membership.creator_username = request_user.username
+            membership.owner = request_user
+            membership.owner_username = request_user.username
+
+        membership.entity = Entity.objects.first()
+        membership.user = user
+
+        # adding membership record
+        membership.renewal = membership.user.profile.can_renew2()
+
+        # assign member number
+        membership.set_member_number()
+
+        # create record in database
+        # helps with associating invoice record
+        membership.save()
+        # save many-to-many data for the form
+        self.save_m2m()
+
+        if membership.approval_required():
+            membership.pend()
+        else:
+            membership.approve(request_user=request_user)
+            membership.send_email(request, 'approve')
+
+        # application complete
+        membership.application_complete_dt = datetime.now()
+        membership.application_complete_user = membership.user
+
+        # save application fields
+        membership.save()
+
+        if membership.application_approved:
+            membership.archive_old_memberships()
+            membership.save_invoice(status_detail='tendered')
+
+        return membership
+
+
 class NoticeForm(forms.ModelForm):
     notice_time_type = NoticeTimeTypeField(label='When to Send',
                                           widget=NoticeTimeTypeWidget)
@@ -386,44 +879,58 @@ class NoticeForm(forms.ModelForm):
         except:
             raise forms.ValidationError(_("Num days must be a numeric number."))
         return value
-            
-    
+
+
 class AppCorpPreForm(forms.Form):
-    corporate_membership_id = forms.ChoiceField(label=_('Join Under the Corporation:'))
-    secret_code = forms.CharField(label=_('Enter the Secret Code'), max_length=50)
-    email = forms.EmailField(label=_('Verify Your Email Address'), max_length=100,
-                             help_text="""Your email address will help us to identify your corporate.
-                                         You will receive an email to the address you entered for us
-                                         to verify your email address. 
-                                         Please follow the instruction
-                                         in the email to continue signing up for the membership.
-                                          """)
-    
+    corporate_membership_id = forms.ChoiceField(
+                            label=_('Join Under the Corporation:'))
+    secret_code = forms.CharField(
+                        label=_('Enter the Secret Code'),
+                        max_length=50)
+    email = EmailVerificationField(
+                    label=_('Verify Your Email Address'),
+                    help_text="""Your email address will help us to identify
+                                 your corporate. You will receive an email to
+                                 the address you entered for us to verify
+                                 your email address. Please follow the
+                                 instruction in the email to continue signing
+                                 up for the membership.
+                                  """)
+
     def __init__(self, *args, **kwargs):
         super(AppCorpPreForm, self).__init__(*args, **kwargs)
         self.auth_method = ''
         self.corporate_membership_id = 0
-    
+
     def clean_secret_code(self):
         secret_code = self.cleaned_data['secret_code']
-        corporate_memberships = CorporateMembership.objects.filter(secret_code=secret_code, 
-                                                                   status=1,
-                                                                   status_detail='active')
-        if not corporate_memberships:
+        [corp_membership] = CorpMembership.objects.filter(
+                                   corp_profile__secret_code=secret_code,
+                                   status=True,
+                                   status_detail='active')[:1] or [None]
+        if not corp_membership:
             raise forms.ValidationError(_("Invalid Secret Code."))
-        
-        self.corporate_membership_id = corporate_memberships[0].id
+
+        self.corporate_membership_id = corp_membership.id
         return secret_code
-        
+
     def clean_email(self):
         email = self.cleaned_data['email']
         if email:
             email_domain = (email.split('@')[1]).strip()
-            auth_domains = AuthorizedDomain.objects.filter(name=email_domain)
-            if not auth_domains:
-                raise forms.ValidationError(_("Sorry but we're not able to find your corporation."))
-            self.corporate_membership_id = auth_domains[0].corporate_membership.id 
-        return email 
+            [auth_domain] = CorpMembershipAuthDomain.objects.filter(
+                                    name=email_domain)[:1] or [None]
+            if auth_domain:
+                corp_membership = auth_domain.corp_profile.active_corp_membership
+            else:
+                corp_membership = None
+
+            if not all([auth_domain, corp_membership]):
+                raise forms.ValidationError(
+                    _("Sorry but we're not able to find your corporation."))
+            self.corporate_membership_id = corp_membership.id
+        return email
+
 
 class AppForm(TendenciBaseForm):
 
@@ -576,8 +1083,8 @@ class EntryEditForm(TendenciBaseForm):
     work_phone = forms.CharField(required=False)
     home_phone = forms.CharField(required=False)
     mobile_phone = forms.CharField(required=False)
-    email = forms.EmailField(required=False)
-    email2 = forms.EmailField(required=False)
+    email = EmailVerificationField(required=False)
+    email2 = EmailVerificationField(required=False)
     url = forms.CharField(required=False)
     url2 = forms.CharField(required=False)
     spouse = forms.CharField(required=False)
@@ -855,6 +1362,7 @@ class AppEntryForm(forms.ModelForm):
             'decision_dt',
             'judge',
             'invoice',
+            'entity',
         )
 
     def __init__(self, app=None, *args, **kwargs):
@@ -899,9 +1407,9 @@ class AppEntryForm(forms.ModelForm):
             'first-name': ('CharField', None),
             'last-name': ('CharField', None),
             'email': ('EmailField', None),
-            'header': ('CharField', 'memberships.widgets.Header'),
-            'description': ('CharField', 'memberships.widgets.Description'),
-            'horizontal-rule': ('CharField', 'memberships.widgets.Description'),
+            'header': ('CharField', 'tendenci.addons.memberships.widgets.Header'),
+            'description': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
+            'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
             'corporate_membership_id': ('ChoiceField', None),
         }
 
@@ -1121,7 +1629,7 @@ class CSVForm(forms.Form):
                         continue  # skip membership type
 
                     self.fields[app_field.label] = ChoiceField(**{
-                        'label':app_field.label,
+                        'label': app_field.label,
                         'choices': choice_tuples,
                         'required': False,
                     })
@@ -1130,7 +1638,6 @@ class CSVForm(forms.Form):
                     # if label matches choice; set initial
                     if app_field.label in choices:
                         self.fields[app_field.label].initial = app_field.label
-   
 
 
     def save(self, *args, **kwargs):
@@ -1261,6 +1768,460 @@ class ReportForm(forms.Form):
     
     membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
     membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
+
+
+class MembershipDefaultForm(TendenciBaseForm):
+    """
+    Bound to the MembershipDefault model
+    """
+
+    salutation = forms.CharField(required=False)
+    first_name = forms.CharField(initial=u'')
+    last_name = forms.CharField(initial=u'')
+    email = forms.CharField(initial=u'')
+    email2 = forms.CharField(initial=u'', required=False)
+    display_name = forms.CharField(initial=u'', required=False)
+    company = forms.CharField(initial=u'', required=False)
+    position_title = forms.CharField(initial=u'', required=False)
+    department = forms.CharField(initial=u'', required=False)
+    address = forms.CharField(initial=u'', required=False)
+    address2 = forms.CharField(initial=u'', required=False)
+    address_type = forms.CharField(initial=u'', required=False)
+    city = forms.CharField(initial=u'', required=False)
+    state = forms.CharField(initial=u'', required=False)
+    zipcode = forms.CharField(initial=u'', required=False)
+    country = forms.CharField(initial=u'', required=False)
+    phone = forms.CharField(initial=u'', required=False)
+    phone2 = forms.CharField(initial=u'', required=False)
+    work_phone = forms.CharField(initial=u'', required=False)
+    home_phone = forms.CharField(initial=u'', required=False)
+    mobile_phone = forms.CharField(initial=u'', required=False)
+    pager = forms.CharField(initial=u'', required=False)
+    fax = forms.CharField(initial=u'', required=False)
+    url = forms.CharField(initial=u'', required=False)
+    url2 = forms.CharField(initial=u'', required=False)
+
+    hide_in_search = forms.BooleanField(required=False)
+    hide_address = forms.BooleanField(required=False)
+    hide_email = forms.BooleanField(required=False)
+    hide_phone = forms.BooleanField(required=False)
+
+    dob = forms.DateTimeField(required=False)
+    education_grad_dt = forms.DateTimeField(required=False)
+    career_start_dt = forms.DateTimeField(required=False)
+    career_end_dt = forms.DateTimeField(required=False)
+
+    sex = forms.CharField(initial=u'', required=False)
+    spouse = forms.CharField(initial=u'', required=False)
+    profession = forms.CharField(initial=u'', required=False)
+    custom1 = forms.CharField(initial=u'', required=False)
+    custom2 = forms.CharField(initial=u'', required=False)
+    custom3 = forms.CharField(initial=u'', required=False)
+    custom4 = forms.CharField(initial=u'', required=False)
+
+    username = forms.CharField(initial=u'', required=False)
+    password = forms.CharField(initial=u'', widget=forms.PasswordInput, required=False)
+    confirm_password = forms.CharField(initial=u'', widget=forms.PasswordInput, required=False)
+
+    same_as_primary = forms.BooleanField(required=False)
+    extra_address = forms.CharField(initial=u'', required=False)
+    extra_address2 = forms.CharField(initial=u'', required=False)
+    extra_city = forms.CharField(initial=u'', required=False)
+    extra_state = forms.CharField(initial=u'', required=False)
+    extra_zip_code = forms.CharField(initial=u'', required=False)
+    extra_country = forms.CharField(initial=u'', required=False)
+    extra_address_type = forms.CharField(initial=u'', required=False)
+
+    class Meta:
+        model = MembershipDefault
+        fields = (
+            'member_number',
+            'membership_type',
+            'renewal',
+            'certifications',
+            'work_experience',
+            'referral_source',
+            'referral_source_other',
+            'referral_source_member_name',
+            'referral_source_member_number',
+            'affiliation_member_number',
+            'primary_practice',
+            'how_long_in_practice',
+            'notes',
+            'admin_notes',
+            'newsletter_type',
+            'directory_type',
+            'application_approved',
+            'payment_method',
+            'chapter',
+            'areas_of_expertise',
+            'corporate_membership_id',
+            'home_state',
+            'year_left_native_country',
+            'network_sectors',
+            'networking',
+            'government_worker',
+            'government_agency',
+            'license_number',
+            'license_state',
+            'region',
+            'industry',
+            'company_size',
+            'promotion_code',
+            'directory',
+            'join_dt',
+            'renew_dt',
+            'expire_dt',
+        )
+        widgets = {
+            'membership_type': forms.RadioSelect,
+            'payment_method': forms.RadioSelect,
+            'bod_dt': forms.DateTimeInput(attrs={'class': 'datepicker'}),
+            'application_approved_denied_dt': forms.DateTimeInput(
+                attrs={'class': 'datepicker'}),
+            'application_complete_dt': forms.DateTimeInput(
+                attrs={'class': 'datepicker'}),
+            'action_taken_dt': forms.DateTimeInput(
+                attrs={'class': 'datepicker'}),
+            'personnel_notified_dt': forms.DateTimeInput(
+                attrs={'class': 'datepicker'}),
+            'payment_received_dt': forms.DateTimeInput(
+                attrs={'class': 'datepicker'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        """
+        Setting foreign key fields with temporary objects.
+        """
+        request = kwargs.pop('request', None)
+
+        request_user = None
+        if hasattr(request, 'user'):
+            if isinstance(request.user, User):
+                request_user = request.user
+
+        super(MembershipDefaultForm, self).__init__(*args, **kwargs)
+
+        # initialize field widgets ---------------------------
+        self.fields['payment_method'].empty_label = None
+        self.fields['industry'].empty_label = 'Select One'
+        self.fields['region'].empty_label = 'Select One'
+
+        if not self.instance.pk:
+            self.fields['dob'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
+            self.fields['education_grad_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
+            self.fields['career_start_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
+            self.fields['career_end_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
+
+        mts = MembershipType.objects.filter(status=True, status_detail='active')
+        mt_values = mts.values_list('pk', 'name', 'price', 'renewal_price', 'admin_fee')
+
+        renew_mode = False
+        if hasattr(request_user, 'profile'):
+            renew_mode = request_user.profile.can_renew()
+
+        # only include admin fee on join
+
+        mt_choices = []
+        for pk, name, price, renewal_price, admin_fee in mt_values:
+            price = price or float()
+            renewal_price = renewal_price or float()
+            admin_fee = admin_fee or float()
+
+            if renew_mode:
+                mt_choices.append((pk, '%s $%s' % (name, renewal_price)))
+            else:
+                if admin_fee:
+                    mt_choices.append((pk, '%s $%s ($%s admin fee)' % (name, price, admin_fee)))
+                else:
+                    mt_choices.append((pk, '%s $%s' % (name, price)))
+
+        self.fields['membership_type'].choices = mt_choices
+        # -----------------------------------------------------
+
+        # change form -----------------------------------------
+        if self.instance.pk:
+
+            user_attrs = [
+                'first_name',
+                'last_name',
+                'email',
+            ]
+
+            profile_attrs = [
+                'email2',
+                'company',
+                'department',
+                'position_title',
+                'address',
+                'address2',
+                'address_type',
+                'city',
+                'state',
+                'zipcode',
+                'country',
+                'phone',
+                'phone2',
+                'work_phone',
+                'home_phone',
+                'mobile_phone',
+                'fax',
+                'url',
+                'url2',
+                'dob',
+                'sex',
+                'spouse',
+                'hide_in_search',
+                'hide_address',
+                'hide_email',
+                'hide_phone',
+            ]
+
+            # initialize user fields
+            for user_attr in user_attrs:
+                self.fields[user_attr].initial = \
+                    getattr(self.instance.user, user_attr)
+
+            # initialize profile fields
+            for profile_attr in profile_attrs:
+                self.fields[profile_attr].initial = \
+                    getattr(self.instance.user.profile, profile_attr)
+        # -----------------------------------------------------
+
+    def clean(self):
+        """
+        Validating username and password fields.
+        """
+        super(MembershipDefaultForm, self).clean()
+
+        data = self.cleaned_data
+
+        un = data.get('username', u'').strip()
+        pw = data.get('password', u'').strip()
+        pw_confirm = data.get('confirm_password', u'').strip()
+
+        if un and pw:
+            # assert passwords match
+            if pw != pw_confirm:
+                raise forms.ValidationError(
+                    _('Passwords do not match.')
+                )
+
+            [u] = User.objects.filter(username=un)[:1] or [None]
+
+            if u:
+                # assert password;
+                if not u.check_password(pw):
+                    raise forms.ValidationError(
+                        _('Username and password did not match.')
+                    )
+            else:
+                pass
+                # username does not exist;
+                # create account with username and password
+
+        elif un:
+            [u] = User.objects.filter(username=un)[:1] or [None]
+            # assert username
+            if u:
+                raise forms.ValidationError(
+                    _('This username exists. If it\'s yours, please provide your password.')
+                )
+
+        return data
+
+    def save(self, *args, **kwargs):
+        """
+        Create membership record.
+        Handle all objects:
+            Membership
+            Membership.user
+            Membership.user.profile
+            Membership.invoice
+            Membership.user.group_set()
+        """
+        request = kwargs.pop('request')
+
+        request_user = None
+        if hasattr(request, 'user'):
+            if isinstance(request.user, User):
+                request_user = request.user
+
+        membership = super(MembershipDefaultForm, self).save(*args, **kwargs)
+
+        if request_user:
+            membership.creator = request_user
+            membership.creator_username = request_user.username
+            membership.owner = request_user
+            membership.owner_username = request_user.username
+
+        membership.entity = Entity.objects.first()
+
+        # get or create user
+        membership.user, created = membership.get_or_create_user(**{
+            'username': self.cleaned_data.get('username'),
+            'password': self.cleaned_data.get('password'),
+            'first_name': self.cleaned_data.get('first_name'),
+            'last_name': self.cleaned_data.get('last_name'),
+            'email': self.cleaned_data.get('email')
+        })
+
+        if membership.pk:
+            # changing membership record
+            membership.set_member_number()
+
+        else:
+            # adding membership record
+            membership.renewal = membership.user.profile.can_renew()
+
+            # create record in database
+            # helps with associating invoice record
+            membership.save()
+
+            NOW = datetime.now()
+
+            if not membership.approval_required():  # approval not required
+
+                # save invoice estimate
+                membership.save_invoice(status_detail='estimate')
+
+                # auto approve -------------------------
+                membership.application_approved = True
+                membership.application_approved_user = \
+                    request_user or membership.user
+                membership.application_approved_dt = NOW
+
+                membership.application_approved_denied_user = \
+                    request_user or membership.user
+
+                membership.set_join_dt()
+                membership.set_renew_dt()
+                membership.set_expire_dt()
+
+                membership.archive_old_memberships()
+                membership.send_email(request, 'approve')
+
+            else:  # approval required
+                # save invoice tendered
+                membership.save_invoice(status_detail='tendered')
+
+            # application complete
+            membership.application_complete_dt = NOW
+            membership.application_complete_user = membership.user
+
+            # save application fields
+            # save join, renew, and expire dt
+            membership.save()
+
+            # save education fields ----------------------------
+            educations = zip(
+                request.POST.getlist('education_school'),
+                request.POST.getlist('education_degree'),
+                request.POST.getlist('education_major'),
+                request.POST.getlist('education_grad_dt'),
+            )
+
+            for education in educations:
+                if any(education):
+                    school, degree, major, grad_dt = education
+                    Education.objects.create(
+                        user=membership.user,
+                        school=school,
+                        degree=degree,
+                        major=major,
+                        graduation_dt=grad_dt,
+                    )
+            # --------------------------------------------------
+
+            # save career fields -------------------------------
+            careers = zip(
+                request.POST.getlist('career_name'),
+                request.POST.getlist('career_description'),
+                request.POST.getlist('position_title'),
+                request.POST.getlist('position_description'),
+                request.POST.getlist('career_start_dt'),
+                request.POST.getlist('career_end_dt'),
+            )
+
+            for career in careers:
+                if any(career) and all(career[4:]):
+                    (career_name, career_description, position_title,
+                        position_description, career_start_dt, career_end_dt) = career
+                    Career.objects.create(
+                        company=career_name,
+                        company_description=career_description,
+                        position_title=position_title,
+                        position_description=position_description,
+                        start_dt=career_start_dt,
+                        end_dt=career_end_dt,
+                    )
+            # --------------------------------------------------
+
+            # send welcome email; if required
+            if created:
+                send_welcome_email(membership.user)
+
+        # [un]subscribe to group
+        membership.group_refresh()
+
+        if membership.application_approved:
+            membership.archive_old_memberships()
+            membership.save_invoice(status_detail='tendered')
+
+        # loop through & set these user attributes
+        # user.first_name = self.cleaned_data.get('first_name', u'')
+        user_attrs = [
+            'first_name',
+            'last_name',
+            'email',
+        ]
+
+        for i in user_attrs:
+            setattr(membership.user, i, self.cleaned_data.get(i, u''))
+        membership.user.save()
+        # -----------------------------------------------------------
+
+        # loop through & set these profile attributes
+        # profile.display_name = self.cleaned_data.get('display_name', u'')
+        profile_attrs = [
+            'display_name',
+            'company',
+            'position_title',
+            # 'functional_title',
+            'department',
+            'address',
+            'address2',
+            'city',
+            'state',
+            'zipcode',
+            'country',
+            'address_type',
+            'phone',
+            'phone2',
+            'work_phone',
+            'home_phone',
+            'mobile_phone',
+            # 'pager',
+            'fax',
+            'email',
+            'email2',
+            'url',
+            'url2',
+            'hide_in_search',
+            'hide_address',
+            'hide_email',
+            'hide_phone',
+            'dob',
+            'sex',
+            'spouse',
+        ]
+
+        for i in profile_attrs:
+            setattr(membership.user.profile, i, self.cleaned_data.get(i, u''))
+        membership.user.profile.save()
+        # -----------------------------------------------------------------
+
+        return membership
 
 
 class MembershipForm(TendenciBaseForm):

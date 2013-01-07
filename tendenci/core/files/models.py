@@ -7,7 +7,7 @@ from slate import PDF
 import urllib
 import cStringIO
 
-from django.db import models
+from django.db import models, connection
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
@@ -19,10 +19,16 @@ from tagging.fields import TagField
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.files.managers import FileManager
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.categories.models import CategoryItem
+
+from tendenci.apps.redirects.models import Redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 
 def file_directory(instance, filename):
@@ -45,9 +51,13 @@ class File(TendenciBaseModel):
     object_id = models.IntegerField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     group = models.ForeignKey(Group, null=True,
-        default=None, on_delete=models.SET_NULL)
+        default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
     categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = FileManager()
 
@@ -99,6 +109,11 @@ class File(TendenciBaseModel):
         for story in stories:
             story.image = None
             story.save()
+
+        # roll back the transaction to fix the error for postgresql
+        #"current transaction is aborted, commands ignored until 
+        # end of transaction block"
+        connection._rollback()
 
         # delete actual file; do not save() self.instance
         self.file.delete(save=False)

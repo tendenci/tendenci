@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% blocktrans with corp_memb.name as memname %}Hello,<br /><br />
+{% blocktrans with corp_memb.corp_profile.name as memname %}Hello,<br /><br />
 
 We have received a requet to verify an email address for signing up the membership under 
 the corporate "{{ memname }}" on 

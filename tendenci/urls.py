@@ -3,8 +3,10 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
+from model_report import report
 
 from tendenci.core.registry import autodiscover as reg_autodiscover
+from tendenci.core.newsletters.views import NewsletterGeneratorView
 
 # load the apps that are in Django Admin
 admin.autodiscover()
@@ -12,10 +14,18 @@ admin.autodiscover()
 # load the app_registry
 reg_autodiscover()
 
+# django model report
+report.autodiscover()
+
 # Admin Patterns
 urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
+)
+
+#report patterns
+urlpatterns += patterns('',
+    (r'^model-report/', include('model_report.urls')),
 )
 
 # Tendenci Patterns
@@ -26,6 +36,7 @@ urlpatterns += patterns('',
     (r'^metrics/', include('tendenci.apps.metrics.urls')),
     url(r'^users/reports/users-activity-top10/$', 'tendenci.apps.profiles.views.user_activity_report', name='reports-user-activity'),
     url(r'^users/reports/active-logins/$', 'tendenci.apps.profiles.views.user_access_report', name='reports-user-access'),
+    url(r'^users/reports/not-in-groups/$', 'tendenci.apps.profiles.views.users_not_in_groups', name='reports-users-not-in-groups'),
     url(r'^users/reports/admin/$', 'tendenci.apps.profiles.views.admin_users_report', name='reports-admin-users'),
     url(r'^users/reports/users-added/$', 'tendenci.apps.user_groups.views.users_added_report', {'kind': 'added'}, name='reports-user-added'),
     url(r'^users/reports/contacts-referral/$', 'tendenci.apps.user_groups.views.users_added_report', {'kind': 'referral'}, name='reports-contacts-referral'),
@@ -50,7 +61,7 @@ urlpatterns += patterns('',
     (r'^invoices/', include('tendenci.apps.invoices.urls')),
     (r'^py/', include('tendenci.addons.make_payments.urls')),
     (r'^payments/', include('tendenci.core.payments.urls')),
-    (r'^recurring_payments/', include('tendenci.addons.recurring_payments.urls')),
+    (r'^rp/', include('tendenci.addons.recurring_payments.urls')),
     (r'^accountings/', include('tendenci.apps.accountings.urls')),
     (r'^emails/', include('tendenci.core.emails.urls')),
     (r'^rss/', include('tendenci.core.rss.urls')),
@@ -64,9 +75,10 @@ urlpatterns += patterns('',
     (r'^contributions/', include('tendenci.apps.contributions.urls')),
     (r'^theme-editor/', include('tendenci.apps.theme_editor.urls')),
     (r'^exports/', include('tendenci.core.exports.urls')),
-    (r'^ics/', include('tendenci.core.ics.urls')),
+    (r'^ics/', include('tendenci.addons.events.ics.urls')),
     (r'^boxes/', include('tendenci.apps.boxes.urls')),
     (r'^sitemap.xml', include('tendenci.core.sitemaps.urls')),
+    (r'^404/', include('tendenci.core.handler404.urls')),
 
     (r'^subscribers/', include('tendenci.apps.subscribers.urls')),
     (r'^redirects/', include('tendenci.apps.redirects.urls')),
@@ -91,6 +103,7 @@ urlpatterns += patterns('',
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),
+    (r'^newsletter_generator/', NewsletterGeneratorView.as_view()),
 
     url(r'^', include('tendenci.apps.contacts.urls')),
     url(r'^', include('tendenci.addons.articles.urls')),
@@ -107,7 +120,7 @@ handler500 = 'tendenci.core.base.views.custom_error'
 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
     urlpatterns += patterns('',
     # serve .less files - this is to resolve the cross domain issue for less js
-    url(r'^(?P<path>.*).less$', 
+    url(r'^(?P<path>.*)\.less$', 
         'tendenci.core.files.views.display_less',  name='less_file'),
     url(r'^static/(?P<path>.*)$',
             'tendenci.core.files.views.redirect_to_s3',

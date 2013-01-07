@@ -18,18 +18,18 @@
 {% endif %}
 
 <p>
-{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
 </p>
-{% if corp_renew_entry.status_detail == "pending" %}
+{% if object.status_detail == "pending" %}
 	<p>
 	{% trans "Note that the dues representative(s) will be notified by email when your corporate membership renewal is approved." %}
 	</p>
 {% endif %}
 
-{% if object.corp_app.authentication_method == 'secret_code' %}
+{% if corpmembership_app.authentication_method == 'secret_code' %}
 <p>
 {% trans "The <b>secret code</b> for individuals to join under your corporate membership:" %}<br />
-<b>{{ object.secret_code }}</b>
+<b>{{ corp_profile.secret_code }}</b>
 </p>
 {% endif %}
 

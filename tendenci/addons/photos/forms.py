@@ -6,6 +6,7 @@ from django.utils.encoding import force_unicode
 from tendenci.apps.user_groups.models import Group
 from tendenci.addons.photos.models import Image, PhotoSet, License
 from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.user_groups.models import Group
 
 class LicenseField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -16,24 +17,26 @@ class LicenseField(forms.ModelChoiceField):
 class PhotoAdminForm(TendenciBaseForm):
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     class Meta:
         model = Image
         fields = (
             'image',
-            'title',
+            #'title',
             'caption',
             'tags',
             'allow_anonymous_view',
             #'syndicate',
+            'group',
             'status',
             'status_detail',
             'license',
         )
         fieldsets = [('Photo Set Information', {
-            'fields': ['title',
-                       'description',
+            'fields': ['description',
                        'tags',
+                       'group',
                        ],
             'legend': ''
         }),
@@ -51,14 +54,40 @@ class PhotoAdminForm(TendenciBaseForm):
                 'classes': ['admin-only'],
                 })]
 
+
 class PhotoUploadForm(TendenciBaseForm):
-    
+
     class Meta:
         model = Image
-        exclude = ('member', 'photoset', 'title_slug', 'effect', 'crop_from', 'group')
+        exclude = (
+          'member',
+          'photoset',
+          'title_slug',
+          'effect',
+          'crop_from',
+          'group',
+          'photoset_position'
+        )
 
     def __init__(self, *args, **kwargs):
         super(PhotoUploadForm, self).__init__(*args, **kwargs)
+
+
+class PhotoBatchEditForm(TendenciBaseForm):
+    class Meta:
+        model = Image
+        exclude = (
+            'title_slug',
+            'creator_username',
+            'owner_username',
+            'photoset',
+            'is_public',
+            'owner',
+            'safetylevel',
+            'allow_anonymous_view',
+            'status',
+            'status_detail',
+        )
 
 
 class PhotoEditForm(TendenciBaseForm):
@@ -68,7 +97,8 @@ class PhotoEditForm(TendenciBaseForm):
                 ('pending','Pending'),))
     license = LicenseField(queryset=License.objects.all(),
                 widget = forms.RadioSelect(), empty_label=None)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=False)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
+
     class Meta:
         model = Image
 
@@ -124,12 +154,14 @@ class PhotoSetAddForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     class Meta:
         model = PhotoSet
         fields = (
             'name',
             'description',
+            'group',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -142,6 +174,7 @@ class PhotoSetAddForm(TendenciBaseForm):
         fieldsets = [('Photo Set Information', {
                       'fields': ['name',
                                  'description',
+                                 'group',
                                  'tags',
                                  ],
                       'legend': ''
@@ -177,12 +210,14 @@ class PhotoSetEditForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     class Meta:
         model = PhotoSet
         fields = (
             'name',
             'description',
+            'group',
             'tags',
             'allow_anonymous_view',
             'user_perms',
@@ -195,6 +230,7 @@ class PhotoSetEditForm(TendenciBaseForm):
         fieldsets = [('Photo Set Information', {
                       'fields': ['name',
                                  'description',
+                                 'group',
                                  'tags',
                                  ],
                       'legend': ''

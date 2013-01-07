@@ -63,10 +63,11 @@ class MembershipRegistry(PeopleRegistry):
             'print_view':('906000','FF2400'),
         }
     }
-        
+
     url = {
+        'add': lazy_reverse('membership_default.add'),
+        'list': lazy_reverse('membership.index'),
         'search': lazy_reverse('membership.search'),
     }
 
 site.register(Membership, MembershipRegistry)
-

@@ -11,7 +11,7 @@ from tendenci.apps.user_groups.models import Group
 
 class FileForm(TendenciBaseForm):
 
-    group = forms.ModelChoiceField(required=False, queryset=Group.objects.filter(status=True, status_detail='active'))
+    group = forms.ModelChoiceField(required=True, queryset=Group.objects.filter(status=True, status_detail='active'), empty_label=None)
 
     class Meta:
         model = File
@@ -60,6 +60,30 @@ class FileForm(TendenciBaseForm):
             self.user = None
 
         super(FileForm, self).__init__(*args, **kwargs)
+
+
+class SwfFileForm(TendenciBaseForm):
+
+    class Meta:
+        model = File
+
+        fields = (
+            'file',
+            'name',
+            'allow_anonymous_view',
+            'user_perms',
+            'member_perms',
+            'group_perms',
+            'status',
+        )
+
+    def __init__(self, *args, **kwargs):
+        if 'user' in kwargs:
+            self.user = kwargs.pop('user', None)
+        else:
+            self.user = None
+
+        super(SwfFileForm, self).__init__(*args, **kwargs)
 
 
 class MostViewedForm(forms.Form):

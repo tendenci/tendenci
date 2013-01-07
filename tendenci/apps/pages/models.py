@@ -105,6 +105,10 @@ class Page(BasePage):
     def get_absolute_url(self):
         return ("page", [self.slug])
 
+    @models.permalink
+    def get_version_url(self, hash):
+        return ("page.version", [hash])
+
 
 class HeaderImage(File):
     pass

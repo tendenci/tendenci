@@ -16,6 +16,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.categories.models import CategoryItem
 from tendenci.apps.invoices.models import Invoice
+from tendenci.core.site_settings.utils import get_setting
 
 from tendenci.addons.directories.module_meta import DirectoryMeta
 from tendenci.addons.directories.managers import DirectoryManager
@@ -54,7 +55,8 @@ class Directory(TendenciBaseModel):
     email = models.CharField(_('Email'), max_length=120, blank=True)
     email2 = models.CharField(_('Email 2'), max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
-     
+    
+    renewal_notice_sent = models.BooleanField(default=False)
     list_type = models.CharField(_('List Type'), max_length=50, blank=True)
     requested_duration = models.IntegerField(_('Requested Duration'), default=0)
     pricing = models.ForeignKey('DirectoryPricing', null=True)
@@ -101,6 +103,10 @@ class Directory(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("directory", [self.slug])
+
+    @models.permalink
+    def get_renew_url(self):
+        return ("directory.renew", [self.id])
 
     def __unicode__(self):
         return self.headline
@@ -187,6 +193,14 @@ class Directory(TendenciBaseModel):
             elif cat.parent:
                 items["sub_category"] = cat.parent
         return items
+    
+    def renew_window(self):
+        days = get_setting('module', 'directories', 'renewaldays')
+        days = int(days)
+        if datetime.now() + timedelta(days) > self.expiration_dt:
+            return True
+        else:
+            return False
 
 class DirectoryPricing(models.Model):
     guid = models.CharField(max_length=40)
@@ -198,15 +212,18 @@ class DirectoryPricing(models.Model):
     show_member_pricing = models.BooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="directory_pricing_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="directory_pricing_owner", null=True)
+    owner = models.ForeignKey(User, related_name="directory_pricing_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
 
     class Meta:
         permissions = (("view_directorypricing", "Can view directory pricing"),)
     
+    def __unicode__(self):
+        return "Directory Pricing %s" % (self.id)
+
     def save(self, user=None, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
@@ -220,4 +237,3 @@ class DirectoryPricing(models.Model):
         if not self.premium_price: self.premium_price = 0
             
         super(DirectoryPricing, self).save(*args, **kwargs)
-

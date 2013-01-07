@@ -15,6 +15,7 @@ class NewsAdmin(TendenciBaseModelAdmin):
                 'slug',
                 'summary',
                 'body',
+                'group',
                 'tags',
                 'source',
                 'website',

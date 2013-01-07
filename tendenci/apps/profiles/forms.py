@@ -9,6 +9,7 @@ from django.forms.extras.widgets import SelectDateWidget
 from django.utils.safestring import mark_safe
 
 from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import EmailVerificationField
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
@@ -33,8 +34,10 @@ class ProfileForm(TendenciBaseForm):
                                  error_messages={'required': 'First Name is a required field.'})
     last_name = forms.CharField(label=_("Last Name"), max_length=100,
                                 error_messages={'required': 'Last Name is a required field.'})
-    email = forms.CharField(label=_("Email"), max_length=100,
-                                 error_messages={'required': 'Email is a required field.'})
+    email = EmailVerificationField(label=_("Email"),
+                                error_messages={'required': 'Email is a required field.'})
+    email2 = EmailVerificationField(label=_("Email 2"), required=False)
+
     initials = forms.CharField(label=_("Initial"), max_length=100, required=False,
                                widget=forms.TextInput(attrs={'size':'10'}))
     display_name = forms.CharField(label=_("Display name"), max_length=100, required=False,
@@ -215,7 +218,7 @@ class ProfileForm(TendenciBaseForm):
         except User.DoesNotExist:
             return self.cleaned_data['username']
         raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
-    
+
     def clean(self):
         """
         Verifiy that the values entered into the two password fields

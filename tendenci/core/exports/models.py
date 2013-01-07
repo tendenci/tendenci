@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from picklefield.fields import PickledObjectField
 from tendenci.core.base.fields import SlugField
+from tendenci.addons.memberships.models import App
 
 class Export(models.Model):
     STATUS_CHOICES = (
@@ -17,6 +18,7 @@ class Export(models.Model):
     result = PickledObjectField(null=True, default=None)
     date_created = models.DateTimeField(auto_now_add=True)
     date_done = models.DateTimeField(auto_now=True)
+    memb_app = models.ForeignKey(App, blank=True, null=True)
     
     @models.permalink
     def get_absolute_url(self):

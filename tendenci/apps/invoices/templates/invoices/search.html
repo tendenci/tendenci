@@ -8,7 +8,15 @@
 
 {% block extra_head %}
     {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/invoices.css">
+    
+    <style type="text/css">
+        #id_start_dt, #id_end_dt {
+		    width: 18%;	
+		}
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -40,4 +48,46 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.time.picker.js"></script>
+    
+    <script type="text/javascript">
+		$(document).ready(function() {
+			//Hide advanced options
+			$("div.advanced").hide();
+			
+		    var event_type = $("select#id_invoice_type").val();
+		    if(event_type != 'events') {
+				$('div.eventFields').hide();
+			}
+		});
+		
+		$("#advancedOptionsLink").toggle(function() {
+            $("div.advanced").show();
+            var event_type = $("select#id_invoice_type").val();
+		    if(event_type != 'events') {
+				$('div.eventFields').hide();
+			}
+		}, function() {
+		    $("div.advanced").hide();
+		});
+		
+        $(".datepicker").live('focus', function() {
+            console.log('this', this);
+            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+        });
+        
+        $("select#id_invoice_type").change(function() {
+			if($(this).val() == 'events') {
+			    $('div.eventFields').show();
+			}
+			else {
+				$('div.eventFields').hide();
+			}
+		});
+    </script>
 {% endblock %}

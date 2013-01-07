@@ -33,9 +33,9 @@ class Entity(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False)
+    creator = models.ForeignKey(User, related_name="%(class)s_creator", editable=False, null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="%(class)s_owner")    
+    owner = models.ForeignKey(User, related_name="%(class)s_owner", null=True, on_delete=models.SET_NULL)    
     owner_username = models.CharField(max_length=50)
     status = models.BooleanField("Active", default=True)
     status_detail = models.CharField(max_length=50, default='active')
@@ -45,14 +45,13 @@ class Entity(models.Model):
     class Meta:
         permissions = (("view_entity","Can view entity"),)
         verbose_name_plural = "entities"
-        
+        ordering = ("entity_name",)
+
     def __unicode__(self):
         return self.entity_name
-    
+
     def save(self, *args, **kwargs):
-        if not self.id:
+        if not self.guid:
             self.guid = str(uuid.uuid1())
-            
+
         super(Entity, self).save(*args, **kwargs)
-
-

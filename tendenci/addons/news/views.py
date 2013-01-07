@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
@@ -10,6 +12,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.meta.forms import MetaForm
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (get_notice_recipients, has_perm,
     update_perms_and_save, get_query_filters)
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -18,8 +21,10 @@ from tendenci.core.exports.utils import run_export_task
 from tendenci.addons.news.models import News
 from tendenci.addons.news.forms import NewsForm
 from tendenci.apps.notifications import models as notification
+from tendenci.core.perms.utils import assign_files_perms
 
 
+@is_enabled('news')
 def detail(request, slug=None, template_name="news/view.html"):
     if not slug:
         return HttpResponseRedirect(reverse('news.search'))
@@ -40,6 +45,7 @@ def detail(request, slug=None, template_name="news/view.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
@@ -47,6 +53,9 @@ def search(request, template_name="news/search.html"):
     else:
         filters = get_query_filters(request.user, 'news.view_news')
         news = News.objects.filter(filters).distinct()
+
+    if not has_perm(request.user, 'news.view_news'):
+        news = news.filter(release_dt__lte=datetime.now())
 
     news = news.order_by('-release_dt')
 
@@ -60,6 +69,7 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('news'))
 
 
+@is_enabled('news')
 def print_view(request, slug, template_name="news/print-view.html"):
     news = get_object_or_404(News, slug=slug)
 
@@ -72,6 +82,7 @@ def print_view(request, slug, template_name="news/print-view.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     news = get_object_or_404(News, pk=id)
@@ -83,12 +94,18 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     form = form_class(instance=news, user=request.user)
 
     if request.method == "POST":
-        form = form_class(request.POST, instance=news, user=request.user)
+        form = form_class(request.POST, request.FILES, instance=news, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
+
+            # save photo
+            photo = form.cleaned_data['photo_upload']
+            if photo:
+                news.save(photo=photo)
+                assign_files_perms(news, files=[news.thumbnail])
 
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % news)
 
@@ -98,9 +115,9 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.html"):
-
     # check permission
     news = get_object_or_404(News, pk=id)
     if not has_perm(request.user, 'news.change_news', news):
@@ -130,20 +147,26 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def add(request, form_class=NewsForm, template_name="news/add.html"):
-
     # check permission
     if not has_perm(request.user, 'news.add_news'):
         raise Http403
 
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        form = form_class(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             news = form.save(commit=False)
 
             # update all permissions and save the model
             news = update_perms_and_save(request, form, news)
+
+            # save photo
+            photo = form.cleaned_data['photo_upload']
+            if photo:
+                news.save(photo=photo)
+                assign_files_perms(news, files=[news.thumbnail])
 
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % news)
 
@@ -165,6 +188,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def delete(request, id, template_name="news/delete.html"):
     news = get_object_or_404(News, pk=id)
@@ -193,6 +217,7 @@ def delete(request, id, template_name="news/delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def export(request, template_name="news/export.html"):
     """Export News"""

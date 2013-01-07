@@ -21,7 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.perms.decorators import admin_required
+from tendenci.core.perms.decorators import admin_required, is_enabled
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import (update_perms_and_save, has_perm, has_view_perm,
     get_query_filters)
@@ -32,11 +32,11 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.files.cache import FILE_IMAGE_PRE_KEY
 from tendenci.core.files.models import File
 from tendenci.core.files.utils import get_image, aspect_ratio, generate_image_cache_key
-from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm
+from tendenci.core.files.forms import FileForm, MostViewedForm, FileSearchForm, SwfFileForm
 
 
+@is_enabled('files')
 def details(request, id, size=None, crop=False, quality=90, download=False, constrain=False, template_name="files/details.html"):
-
     cache_key = generate_image_cache_key(file=id, size=size, pre_key=FILE_IMAGE_PRE_KEY, crop=crop, unique_key=id, quality=quality, constrain=constrain)
     cached_image = cache.get(cache_key)
     if cached_image:
@@ -144,9 +144,14 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         raise Http404
 
     # return response
-    response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
+    if file.get_name().endswith(file.ext()):
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
+    else:
+        response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name_ext())
     return response
 
+
+@is_enabled('files')
 @login_required
 def search(request, template_name="files/search.html"):
     """
@@ -170,7 +175,7 @@ def search(request, template_name="files/search.html"):
     if has_index and query:
         files = File.objects.search(query, user=request.user)
     else:
-        filters = get_query_filters(request.user, 'files.view_file', perms_field=False)
+        filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).distinct()
 
     if category:
@@ -196,6 +201,7 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('files'))
 
 
+@is_enabled('files')
 def print_view(request, id, template_name="files/print-view.html"):
     file = get_object_or_404(File, pk=id)
 
@@ -207,6 +213,7 @@ def print_view(request, id, template_name="files/print-view.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, template_name="files/edit.html"):
     file = get_object_or_404(File, pk=id)
@@ -278,9 +285,9 @@ def edit(request, id, form_class=FileForm, category_form_class=CategoryForm, tem
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def bulk_add(request, template_name="files/bulk-add.html"):
-
     if not has_perm(request.user, 'files.add_file'):
         raise Http403
 
@@ -355,9 +362,9 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def add(request, form_class=FileForm, category_form_class=CategoryForm, template_name="files/add.html"):
-
     # check permission
     if not has_perm(request.user,'files.add_file'):  
         raise Http403
@@ -422,6 +429,7 @@ def add(request, form_class=FileForm, category_form_class=CategoryForm, template
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 def delete(request, id, template_name="files/delete.html"):
     file = get_object_or_404(File, pk=id)
@@ -452,7 +460,8 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
     from django.contrib.contenttypes.models import ContentType
     params = {'app_label': 0, 'model': 0, 'instance_id':0}
     files = File.objects.none() # EmptyQuerySet
-
+    #all_files = File.objects.filter(creator=request.user)
+    all_files = None
     # if all required parameters are in the GET.keys() list
     if not set(params.keys()) - set(request.GET.keys()):        
 
@@ -478,7 +487,8 @@ def tinymce(request, template_name="files/templates/tinymce.html"):
         except ContentType.DoesNotExist: raise Http404
 
     return render_to_response(template_name, {
-        "media": files, 
+        "media": files,
+        "all_media": all_files, 
         'csrf_token':csrf_get_token(request),
         }, context_instance=RequestContext(request))
 
@@ -494,7 +504,7 @@ def swfupload(request):
 
     if request.method == "POST":
 
-        form = FileForm(request.POST, request.FILES, user=request.user)
+        form = SwfFileForm(request.POST, request.FILES, user=request.user)
 
         if not form.is_valid():
             return HttpResponseServerError(
@@ -537,6 +547,7 @@ def tinymce_upload_template(request, id, template_name="files/templates/tinymce_
         context_instance=RequestContext(request))
 
 
+@is_enabled('files')
 @login_required
 @admin_required
 def report_most_viewed(request, form_class=MostViewedForm, template_name="files/reports/most_viewed.html"):

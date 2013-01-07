@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from dateutil.parser import parse as dt_parse
+from django.core.files.storage import default_storage
 from django.contrib.auth.models import User
 from django.conf import settings
 from celery.task import Task
@@ -9,7 +10,6 @@ from tendenci.addons.corporate_memberships.models import CorporateMembership
 from tendenci.addons.memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
 from tendenci.addons.memberships.utils import spawn_username
 from tendenci.addons.memberships.importer.utils import parse_mems_from_csv, clean_field_name
-
 
 class ImportMembershipsTask(Task):
 
@@ -31,7 +31,7 @@ class ImportMembershipsTask(Task):
         }
 
         app = memport.app
-        file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
+        file_path = os.path.join(memport.get_file().file.name)
 
         #get parsed membership dicts
         imported = []
@@ -44,7 +44,7 @@ class ImportMembershipsTask(Task):
         for m in mems:
 
             # membership type required
-            if not m['membershiptype']:
+            if not m.get('membershiptype', u''):
                 continue  # on to the next one
 
             # username or email required
@@ -52,7 +52,7 @@ class ImportMembershipsTask(Task):
                 continue  # on to the next one
 
             if m['status__action'] != 'skip':
-                membership_type = MembershipType.objects.get(name=m['membershiptype'])
+                membership_type = MembershipType.objects.get(name=m.get('membershiptype', ''))
 
                 # initialize dates
                 expire_dt = m['expiredt']

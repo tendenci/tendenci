@@ -1,0 +1,25 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block content %}
+<h1>{% trans "404 URL Report" %}</h1>
+{% if entry_list|length < 1 %}
+    <p>{% trans "There is nothing to report" %}</p>
+{% else %}
+    <table>
+    <tr>
+	    <th>{% trans "URL" %}</th>
+        <th>&nbsp;</th>
+        <th>{% trans "Count" %}</th>
+    </tr>
+    {% for entry in entry_list %}
+    <tr class="{% cycle 'odd' '' %}">
+	    <td>{{ entry.url }}</td>
+        <th>&nbsp;</th>
+	    <td>{{ entry.count }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+{% endblock content %}

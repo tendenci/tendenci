@@ -8,6 +8,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.forms_builder.forms.models import FormEntry
 from tendenci.apps.subscribers.models import GroupSubscription
 from tendenci.core.files.models import file_directory
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class ListMap(models.Model):
     group = models.ForeignKey(Group)
@@ -18,14 +19,16 @@ class ListMap(models.Model):
     last_sync_dt = models.DateTimeField(null=True)
     
     def __unicode__(self):
-        return self.group.name
+        if self.group:
+            return self.group.name
+        return ''
     
 class GroupQueue(models.Model):
     group = models.ForeignKey(Group)
     
 class SubscriberQueue(models.Model):
     group = models.ForeignKey(Group)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     subscriber = models.ForeignKey(FormEntry, null=True)
     
 class Template(models.Model):
@@ -85,6 +88,14 @@ class Template(models.Model):
     def __unicode__(self):
         return self.name
     
+    def save(self, *args, **kwargs):
+        super(Template, self).save(*args, **kwargs)
+        if self.html_file:
+            set_s3_file_permission(self.html_file.file, public=True)
+        if self.zip_file:
+            set_s3_file_permission(self.zip_file.file, public=True)
+        
+    
 class Campaign(models.Model):
     """
     This represents a Campaign. It is considered as a "Draft" if it is 
@@ -143,13 +154,14 @@ cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 if cm_api_key and cm_client_id:
     from createsend import CreateSend, List, Client, Subscriber, BadRequest, Unauthorized
     CreateSend.api_key = cm_api_key
-    
+
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
-        """On Group Add:
+        """Check if sync_newsletters. Do nothing if false.
+            On Group Add:
                 if group name does not exist on C. M,
                     add a list to C. M.
                 add an entry to listmap
-                
+
             On Group Edit:
                 if group exists on C. M.,
                     if list.name <> group.name,
@@ -158,31 +170,30 @@ if cm_api_key and cm_client_id:
                     add a list on C. M.
                     add an entry to listmap
         """
-        
+
         cl = Client(cm_client_id)
         lists = cl.lists()
         list_ids = [list.ListID for list in lists]
         list_names = [list.Name for list in lists]
         list_ids_d = dict(zip(list_names, list_ids))
         list_d = dict(zip(list_ids, lists))
-        
-        if created:
+
+        if created and instance.sync_newsletters:
             if instance.name in list_names:
                 list_id = list_ids_d[instance.name]
-                
+
             else:
                 list_id = get_or_create_cm_list(cm_client_id, instance)
-            
+
             if list_id:
                 # add an entry to the listmap
                 listmap_insert(instance, list_id)
-                
+
                 # custom fields setup
                 cm_list = List(list_id)
                 setup_custom_fields(cm_list)
-                
-            
-        else: # update
+
+        elif instance.sync_newsletters:  # update
             try:
                 # find the entry in the listmap
                 list_map = ListMap.objects.get(group=instance)
@@ -193,11 +204,9 @@ if cm_api_key and cm_client_id:
                 else:
                     # hasn't be created on C. M. yet. create one
                     list_id = get_or_create_cm_list(cm_client_id, instance)
-                        
-                  
-                if list_id:  
+
+                if list_id:
                     listmap_insert(instance, list_id)
-                    
 
             if list_id and list_id in list_ids:
                 list = list_d[list_id]
@@ -230,8 +239,12 @@ if cm_api_key and cm_client_id:
             
     def sync_cm_subscriber(sender, instance=None, created=False, **kwargs):
         """Subscribe the subscriber to the campaign monitor list
+           Check if sync_newsletters is True. Do nothing if False.
         """
         from django.core.validators import email_re
+        
+        if instance and instance.group and not instance.group.sync_newsletters:
+            return
 
         (name, email) = get_name_email(instance)
         if email and email_re.match(email):
@@ -376,6 +389,3 @@ if cm_api_key and cm_client_id:
     
     post_save.connect(sync_cm_subscriber, sender=GroupSubscription)   
     pre_delete.connect(delete_cm_subscriber, sender=GroupSubscription)
-    
-    
-    

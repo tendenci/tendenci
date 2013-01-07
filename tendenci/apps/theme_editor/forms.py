@@ -36,11 +36,25 @@ class FileForm(forms.Form):
                            )
     rf_path = forms.CharField(widget=forms.HiddenInput())
 
-    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT):
+    def save(self, request, file_relative_path, ROOT_DIR=THEME_ROOT, ORIG_ROOT_DIR=THEME_ROOT):
         content = self.cleaned_data["content"]
         file_path = (os.path.join(ROOT_DIR, file_relative_path)).replace("\\", "/")
+
+        if settings.USE_S3_THEME:
+            file_path = (os.path.join(ORIG_ROOT_DIR, file_relative_path)).replace("\\", "/")
+
+        # write the theme file locally in case it was wiped by a restart
+        if settings.USE_S3_THEME and not os.path.isfile(file_path):
+            file_dir = os.path.dirname(file_path)
+            if not os.path.isdir(file_dir):
+                # if directory does not exist, create it
+                os.makedirs(file_dir)
+            new_file = open(file_path, 'w')
+            new_file.write('')
+            new_file.close()
+
         if os.path.isfile(file_path) and content != "":
-            archive_file(request, file_relative_path, ROOT_DIR=ROOT_DIR)
+            archive_file(request, file_relative_path, ROOT_DIR=ORIG_ROOT_DIR)
 
             # Save the file locally no matter the theme location.
             # The save to S3 reads from the local file, so we need to save it first.
@@ -69,11 +83,12 @@ class FileForm(forms.Form):
 
 
 class ThemeSelectForm(forms.Form):
-    THEME_CHOICES = ((x, x) for x in theme_choices())
-    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=THEME_CHOICES)
+    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[])
 
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
+        THEME_CHOICES = ((x, x) for x in theme_choices())
+        self.fields['theme_edit'].choices = THEME_CHOICES
 
 
 class UploadForm(forms.Form):

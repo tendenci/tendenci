@@ -1,6 +1,7 @@
 import os
 import shutil
 import sys
+import boto
 import urllib
 
 from django.conf import settings
@@ -56,7 +57,8 @@ def copy(filename, path_to_file, full_filename, TO_ROOT=THEME_ROOT):
             public = False
         else:
             public = True
-        save_file_to_s3(filecopy, public=public)
+        dest_path = "/themes/%s" % filecopy
+        save_file_to_s3(full_filename, dest_path=dest_path, public=public)
 
 
 def qstr_is_dir(query_string, ROOT_DIR=THEME_ROOT):
@@ -71,6 +73,11 @@ def qstr_is_file(query_string, ROOT_DIR=THEME_ROOT):
     """
     Check to see if the query string is a directory or not
     """
+    if settings.USE_S3_THEME:
+        content = get_file_content(query_string)
+        if content:
+            return True
+
     current_file = os.path.join(ROOT_DIR, query_string)
     return os.path.isfile(current_file)
 
@@ -138,6 +145,64 @@ def get_all_files_list(ROOT_DIR=THEME_ROOT):
         for parent in files_folders:
             subdir['contents'].append({'folder_path': path})
 
+    if settings.USE_S3_THEME:
+        s3_files_folders = {'contents': []}
+        theme_folder = "%s/%s" % (settings.THEME_S3_PATH, get_theme())
+        conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
+                               settings.AWS_SECRET_ACCESS_KEY)
+        bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+
+        for item in bucket.list(prefix=theme_folder):
+
+            editable = False
+            if os.path.splitext(item.name)[1] in ALLOWED_EXTENSIONS:
+                editable = True
+
+            file_path = item.name.replace(theme_folder, '').lstrip('/')
+            path_split = file_path.split('/')
+            splits = len(path_split)
+
+            if splits == 1:
+                s3_files_folders['contents'].append({
+                        'name': path_split[0],
+                        'path': file_path,
+                        'editable': editable})
+            elif splits == 2:
+                if not path_split[0] in s3_files_folders:
+                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+
+                s3_files_folders[path_split[0]]['contents'].append({
+                        'name': path_split[1],
+                        'path': file_path,
+                        'editable': editable})
+            elif splits == 3:
+                if not path_split[0] in s3_files_folders:
+                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+
+                if not path_split[1] in s3_files_folders[path_split[0]]:
+                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+
+                s3_files_folders[path_split[0]][path_split[1]]['contents'].append({
+                        'name': path_split[2],
+                        'path': file_path,
+                        'editable': editable})
+            elif splits == 4:
+                if not path_split[0] in s3_files_folders:
+                    s3_files_folders[path_split[0]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+
+                if not path_split[1] in s3_files_folders[path_split[0]]:
+                    s3_files_folders[path_split[0]][path_split[1]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+
+                if not path_split[2] in s3_files_folders[path_split[0]][path_split[1]]:
+                    s3_files_folders[path_split[0]][path_split[1]][path_split[2]] = {'contents': [{'folder_path': "/".join(path_split[:-1])}]}
+
+                s3_files_folders[path_split[0]][path_split[1]][path_split[2]]['contents'].append({
+                        'name': path_split[3],
+                        'path': file_path,
+                        'editable': editable})
+
+        return {get_theme(): s3_files_folders}
+
     return files_folders
 
 
@@ -182,7 +247,9 @@ def archive_file(request, relative_file_path, ROOT_DIR=THEME_ROOT):
 
 
 def handle_uploaded_file(f, file_dir):
-    file_path = os.path.join(file_dir, f.name)
+    filecopy = os.path.join(THEME_ROOT, file_dir, f.name)
+    file_path = os.path.join(settings.PROJECT_ROOT, "themes", filecopy)
+
     destination = open(file_path, 'wb+')
     for chunk in f.chunks():
         destination.write(chunk)
@@ -194,7 +261,8 @@ def handle_uploaded_file(f, file_dir):
             public = False
         else:
             public = True
-        save_file_to_s3(file_path, public=public)
+        dest_path = "/themes/%s" % filecopy
+        save_file_to_s3(file_path, dest_path=dest_path, public=public)
 
         cache_key = ".".join([settings.SITE_CACHE_KEY, 'theme', file_path[(file_path.find(THEME_ROOT)):]])
         cache.delete(cache_key)

@@ -9,7 +9,12 @@
 <div class="wrap-search-item">
 <div class="profile-wrap">
     <h2>
-        <a href="{{ profile.get_absolute_url }}">{{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}({{ profile.user.username }})</a> 	
+        <a href="{{ profile.get_absolute_url }}">
+        {% if profile.display_name %}
+            {{ profile.display_name }}
+        {% else %}
+            {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
+        {% endif %}({{ profile.user.username }})</a> 	
         {% if profile.is_member %}
         <span style="font-size: 12px;">Member</span> <!-- replace with Icon -->
         {% endif %}
@@ -45,6 +50,6 @@
     <div class="clear"></div>
 
 </div>
-{% include 'profiles/meta.html' %}
+{% profile_meta %}
 </div>
 {% endif %}

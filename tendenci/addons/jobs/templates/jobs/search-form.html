@@ -1,6 +1,16 @@
 {% if SITE_GLOBAL_SEARCHINDEX %}
-<form class="search-form" action="{% url jobs %}" method="get">
-    <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
+<form class="search-form" id="job-search-form" action="{% if my_job %}{% url myjobs %}{% else %}{% url jobs %}{% endif %}" method="get">
+    <div class="fieldWrapper">
+        {{ form.q }}
+    </div>
+    <div id="categoriesWrapper">
+    <div class="fieldWrapper">
+        {{ form.categories }}
+    </div>
+    <div class="fieldWrapper">
+        {{ form.subcategories }}
+    </div>
+    </div>
     <input type="submit" value="Search" />
 </form>
 {% endif %}

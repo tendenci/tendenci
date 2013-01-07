@@ -1,25 +1,31 @@
 from __future__ import unicode_literals
+from datetime import datetime, time
 
 from django.template import RequestContext
+from django.db.models import Sum, Q
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseRedirect
 from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
+
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
-from tendenci.apps.notifications.utils import send_notifications
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.exports.utils import run_export_task
+from tendenci.apps.notifications.utils import send_notifications
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm
+from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
 
-from django.contrib.contenttypes.models import ContentType
-
+@is_enabled('invoices')
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -60,6 +66,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
                                               'merchant_login': merchant_login}, 
         context_instance=RequestContext(request))
 
+
 def mark_as_paid(request, id):
     
     invoice = get_object_or_404(Invoice, pk=id)
@@ -72,17 +79,69 @@ def mark_as_paid(request, id):
     messages.add_message(request, messages.SUCCESS, 'Successfully marked invoice %s as paid.' % invoice.id)
     return redirect(invoice)
 
+
+def void_payment(request, id):
+    
+    invoice = get_object_or_404(Invoice, pk=id)
+    
+    if not (request.user.profile.is_superuser): raise Http403    
+    
+    amount = invoice.payments_credits
+    invoice.void_payment(request.user, amount)
+    
+    messages.add_message(request, messages.SUCCESS, 'Successfully voided payment for Invoice %s.' % invoice.id)
+    return redirect(invoice)
+
+
+@is_enabled('discounts')
 @login_required
 def search(request, template_name="invoices/search.html"):
-    query = request.GET.get('q', None)
+    query = u''
+    invoice_type = u''
+    start_dt = None
+    end_dt = None
+    event = None
+    event_id = None
+    
+    has_index = get_setting('site', 'global', 'searchindex')
+    form = InvoiceSearchForm(request.GET)
+    
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        invoice_type = form.cleaned_data.get('invoice_type')
+        start_dt = form.cleaned_data.get('start_dt')
+        end_dt = form.cleaned_data.get('end_dt')
+        event = form.cleaned_data.get('event')
+        event_id = form.cleaned_data.get('event_id')
+    
     bill_to_email = request.GET.get('bill_to_email', None)
 
-    if get_setting('site', 'global', 'searchindex') and query:
+    if has_index and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()
         if bill_to_email:
             invoices = invoices.filter(bill_to_email=bill_to_email)
+    
+    if invoice_type:
+        content_type = ContentType.objects.filter(app_label=invoice_type)
+        invoices = invoices.filter(object_type__in=content_type)
+        if invoice_type == 'events':
+            # Set event filters
+            event_set = set()
+            if event:
+                event_set.add(event.pk)
+            if event_id:
+                event_set.add(event_id)
+            if event or event_id:
+                invoices = invoices.filter(registration__event__pk__in=event_set)
+            
+    if start_dt:
+        invoices = invoices.filter(create_dt__gte=datetime.combine(start_dt, time.min))
+     
+    if end_dt:
+        invoices = invoices.filter(create_dt__lte=datetime.combine(end_dt, time.max))
+    
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
@@ -92,8 +151,9 @@ def search(request, template_name="invoices/search.html"):
         else:
             raise Http403
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
+    return render_to_response(template_name, {'invoices': invoices, 'query': query, 'form':form,}, 
         context_instance=RequestContext(request))
+
 
 @login_required
 def search_report(request, template_name="invoices/search.html"):
@@ -119,7 +179,6 @@ def search_report(request, template_name="invoices/search.html"):
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('object_type', '-create_dt')
 
-
         for i in invoices: #[0:2]:
             print i.title, i.object_id, i.object_type
 
@@ -134,8 +193,6 @@ def search_report(request, template_name="invoices/search.html"):
 #            else: print 'not'
         print dir(ct)
 
-
-
     else:
         if request.user.is_authenticated():
             invoices = invoices.filter(Q(creator=request.user) | Q(owner=request.user)).order_by('-create_dt')
@@ -144,7 +201,9 @@ def search_report(request, template_name="invoices/search.html"):
     EventLog.objects.log()
     return render_to_response(template_name, {'invoices': invoices, 'query': query},
         context_instance=RequestContext(request))
-    
+
+
+@is_enabled('discounts')
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -200,18 +259,20 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
     return render_to_response(template_name, {'invoice': invoice,
                                               'form':form}, 
         context_instance=RequestContext(request))
-    
+
+
+@is_enabled('discounts')
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
-    
+
     if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
-    
+
     from tendenci.apps.accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)
     # to be calculated in accounts_tags
     total_debit = 0
     total_credit = 0
-    
+
     from django.db import connection
     cursor = connection.cursor()
     cursor.execute("""
@@ -236,7 +297,9 @@ def detail(request, id, template_name="invoices/detail.html"):
                                               'total_debit':total_debit,
                                               'total_credit':total_credit}, 
                                               context_instance=RequestContext(request))
-    
+
+
+@is_enabled('discounts')
 @login_required
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""
@@ -323,4 +386,24 @@ def export(request, template_name="invoices/export.html"):
         return redirect('export.status', export_id)
         
     return render_to_response(template_name, {
+    }, context_instance=RequestContext(request))
+
+
+@staff_member_required
+def report_top_spenders(request, template_name="reports/top_spenders.html"):
+    """Show dollars per user report"""
+    if not request.user.is_superuser:
+        raise Http403
+    
+    entry_list = []
+    users = User.objects.all()
+    for user in users:
+        invoices = Invoice.objects.filter(Q(creator=user) | Q(owner=user) | Q(bill_to_email=user.email)).aggregate(Sum('total'))
+        if invoices['total__sum'] is not None and invoices['total__sum'] > 0:
+            entry_list.append({'user':user, 'invoices':invoices})
+
+    entry_list = sorted(entry_list, key=lambda entry:entry['invoices']['total__sum'], reverse=True)[:20]
+
+    return render_to_response(template_name, {
+        'entry_list': entry_list,
     }, context_instance=RequestContext(request))

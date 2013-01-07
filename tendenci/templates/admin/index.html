@@ -1,33 +1,12 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
+{% load admin_tags %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}admin/css/dashboard.css" />{% endblock %}
 
 {% block extrahead %}
-<script>
-	var custom_reg_form_disabled = true;
-	{% if MODULE_EVENTS_CUSTOMREGFORMENABLED  %}
-	custom_reg_form_disabled = false;
-	{% endif %}
-</script>
-<script>
-    var corp_members_disabled = true;
-   {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
-   corp_members_disabled = false;
-   {% endif %}
-</script>
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.min.js"></script> 
 <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.init.js"></script> 
-<script type="text/javascript" src="{{ STATIC_URL }}js/admin-module-toggle.js"></script>
-
-{% if user.is_superuser %}
-<script type="text/javascript">
-    django.jQuery('document').ready(function() {
-        var content_main = django.jQuery('#content-main');
-        content_main.prepend('<a href="#" class="module-toggle" alt="Toggle Modules" data-show="false">Show Advanced Modules</a>');
-    });
-</script>
-{% endif %}
 
 {% endblock %}
 
@@ -41,6 +20,7 @@
 <div id="content-main">
 {% if app_list %}
     {% for app in app_list %}
+    {% if app.name|check_enabled %}
         <div class="module">
         <table summary="{% blocktrans with app.name as name %}Models available in the {{ name }} application.{% endblocktrans %}">
         <caption><a href="{{ app.app_url }}" class="section">{% blocktrans with app.name as name %}{{ name }}{% endblocktrans %}</a></caption>
@@ -67,6 +47,7 @@
         {% endfor %}
         </table>
         </div>
+    {% endif %}
     {% endfor %}
 {% else %}
     <p>{% trans "You don't have permission to edit anything." %}</p>
@@ -81,7 +62,7 @@
         <h3>{% trans 'My Actions' %}</h3>
             {% load log %}
             {% get_admin_log 10 as admin_log for_user user %}
-            {% if not user.profile.is_superuser_log %}
+            {% if not user.profile.is_superuser %}
             <p>{% trans 'None available' %}</p>
             {% else %}
             <ul class="actionlist">

@@ -4,16 +4,21 @@ import random
 import string
 import zipfile
 import shutil
+import datetime
+from datetime import timedelta
 
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.contrib import messages
+from django.shortcuts import redirect
 
 from createsend import CreateSend, Client, Subscriber
 from createsend.createsend import BadRequest
+from createsend import Template as CST
 
 from tendenci.addons.campaign_monitor.models import Campaign, Template
-
+from tendenci.core.site_settings.utils import get_setting
 
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 api_password = getattr(settings, 'CAMPAIGNMONITOR_API_PASSWORD', None)
@@ -74,14 +79,48 @@ def sync_campaigns():
         campaign.preview_url = c.PreviewURL
         campaign.save()
 
-def sync_templates():
+def sync_templates(request):
     if hasattr(cl,'templates'): templates = cl.templates()
     else: templates = []
     for t in templates:
         try:
             template = Template.objects.get(template_id = t.TemplateID)
         except Template.DoesNotExist:
-            template = Template(template_id = t.TemplateID)
+            template = Template(template_id = t.TemplateID)        
+        #set up urls
+        site_url = get_setting('site', 'global', 'siteurl')
+        html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+        html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
+        try:
+            from tendenci.addons.events.models import Event, Type
+            html_url += "&events=1"
+            html_url += "&events_type="
+            html_url += "&event_start_dt=%s" % datetime.date.today()
+            end_dt = datetime.date.today() + timedelta(days=90)
+            html_url += "&event_end_dt=%s" % end_dt
+        except ImportError:
+            pass
+
+        if template.zip_file:
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                zip_url = unicode(template.get_zip_url())
+            else:
+                zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
+        else:
+            zip_url = unicode()
+        
+        #sync with campaign monitor
+        try:
+            t = CST(template_id = template.template_id)
+            t.update(unicode(template.name), html_url, zip_url)
+        except BadRequest, e:
+            messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+            return redirect('campaign_monitor.template_index')
+        except Exception, e:
+            messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+            return redirect('campaign_monitor.template_index')
+        #get campaign monitor details
+        t = t.details()
         template.name = t.Name
         template.cm_preview_url = t.PreviewURL
         template.cm_screenshot_url = t.ScreenshotURL

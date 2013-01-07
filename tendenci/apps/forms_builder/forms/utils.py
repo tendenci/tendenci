@@ -20,7 +20,7 @@ def generate_admin_email_body(entry, form_for_form):
     template = get_template('forms/admin_email_content.html')
     
     # fields to loop through in the template
-    context['fields'] = entry.fields.all()
+    context['fields'] = entry.entry_fields()
     # media_url necessary for file upload fields
     context['media_url'] = site_url + settings.MEDIA_URL
     # form details to show in the email
@@ -38,7 +38,7 @@ def generate_submitter_email_body(entry, form_for_form):
 
     context['form'] = entry.form
     context['entry'] = entry
-    context['fields'] = entry.fields.all().order_by('field__position')
+    context['fields'] = entry.entry_fields()
     context['custom_price'] = form_for_form.cleaned_data.get('custom_price')
     output = template.render(context)
 
@@ -50,7 +50,7 @@ def generate_email_subject(form, form_entry):
     """
     if form.subject_template:
         subject = form.subject_template
-        field_entries = form_entry.fields.all()
+        field_entries = form_entry.entry_fields()
         for field_entry in field_entries:
             label = field_entry.field.label
             value = field_entry.value
@@ -129,5 +129,6 @@ def update_invoice_for_entry(invoice, form):
     inv.message = 'Thank You.'
     inv.status = True
     inv.estimate = True
-    inv.status_detail = 'tendered'
+    inv.status_detail = 'estimate'
     inv.save()
+

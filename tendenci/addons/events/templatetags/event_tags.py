@@ -34,9 +34,13 @@ def event_options(context, user, event):
 
 @register.inclusion_tag("events/nav.html", takes_context=True)
 def event_nav(context, user, event=None):
+    display_attendees = False
+    if event:
+        display_attendees = event.can_view_registrants(user)
     context.update({
         "nav_object": event,
         "user": user,
+        "can_view_attendees": display_attendees,
         "today": datetime.today()
     })
     return context
@@ -66,7 +70,7 @@ def registrant_search(context, event=None):
 
 @register.inclusion_tag('events/reg8n/registration_pricing.html', takes_context=True)
 def registration_pricing_and_button(context, event, user):
-    limit = event.registration_configuration.limit
+    limit = event.get_limit()
     spots_taken = 0
     spots_left = limit - spots_taken
     registration = event.registration_configuration

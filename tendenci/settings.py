@@ -180,10 +180,13 @@ INSTALLED_APPS = (
     'captcha',
     'south',
     'tastypie',
-    'debug_toolbar',
+    'model_report',
 
     'tendenci.apps.entities',
     'tendenci.core.base',
+    'tendenci.core.site_settings',
+    'tendenci.apps.contributions',
+    'tendenci.apps.search',
     'tendenci.apps.notifications',
     'tendenci.apps.registration',
     'tendenci.core.registry',
@@ -211,6 +214,10 @@ INSTALLED_APPS = (
     'tendenci.addons.memberships',
     'tendenci.addons.corporate_memberships',
     'tendenci.addons.locations',
+    'tendenci.addons.industries',
+    'tendenci.addons.regions',
+    'tendenci.addons.educations',
+    'tendenci.addons.careers',
     'tendenci.core.site_settings',
     'tendenci.addons.make_payments',
     'tendenci.apps.accountings',
@@ -222,7 +229,6 @@ INSTALLED_APPS = (
     'tendenci.core.versions',
     'tendenci.core.event_logs',
     'tendenci.core.categories',
-    'tendenci.apps.contributions',
     'tendenci.apps.theme_editor',
     'tendenci.libs.styled_forms',
     'tendenci.core.newsletters',
@@ -239,12 +245,12 @@ INSTALLED_APPS = (
     'tendenci.core.theme',
     'tendenci.apps.discounts',
     'tendenci.apps.metrics',
-    'tendenci.apps.search',
     'tendenci.apps.navs',
     'tendenci.addons.tendenci_guide',
     'tendenci.core.exports',
-    'tendenci.core.ics',
+    'tendenci.addons.events.ics',
     'tendenci.core.imports',
+    'tendenci.core.handler404',
     # celery task system, must stay at the bottom of installed apps
     'djkombu',
     'djcelery',
@@ -396,7 +402,7 @@ PAYFLOWLINK_PARTNER = ''
 PAYPAL_MERCHANT_LOGIN = ''
 PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
 
-# PAYPAL 
+# PAYPAL
 PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
 # for test mode
 # PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'

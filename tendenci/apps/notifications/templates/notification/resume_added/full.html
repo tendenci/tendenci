@@ -26,7 +26,7 @@
 </table>
 <p>{% trans "To view the details of this resume, go to:" %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ object.get_absolute_url }}</a></b><br>
 
-{% if not request.user.is_superuser %}
+{% if object.status_detail != 'active' %} 
     <br>
 <p>{% blocktrans %}To activate this resume, go 
   to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url resume.approve object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url resume.approve object.pk %}</a></b> 

@@ -5,6 +5,7 @@
 {% has_perm user entities.change_entity opt_object as can_edit %}
 {% has_perm user entities.delete_entity opt_object as can_delete %}
 
+{% if opt_object %}
 <div class="t-iconrow">
 		<a class="option-link print" href="{% url entity.print_view opt_object.pk %}">{% trans "Print" %}</a>
 	{% if can_edit %}
@@ -26,3 +27,4 @@
 	  </div>
   {% endif %}
 </div>
+{% endif %}

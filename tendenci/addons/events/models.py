@@ -22,6 +22,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.events.module_meta import EventMeta
 from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.files.models import File
@@ -255,6 +256,16 @@ class RegConfPricing(models.Model):
         if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
             return True
         return False
+        
+    @property
+    def registration_has_recently_ended(self):
+        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            delta = localize_date(datetime.now()) - localize_date(self.end_dt, from_tz=self.timezone)
+            # Only include events that is within the 1-2 days window.
+            if delta > timedelta(days=2):
+                return False
+            return True
+        return False
     
     @property
     def is_open(self):
@@ -382,8 +393,8 @@ class Registration(models.Model):
                                           default=0)
     canceled = models.BooleanField(_('Canceled'), default=False)
 
-    creator = models.ForeignKey(User, related_name='created_registrations', null=True)
-    owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
+    creator = models.ForeignKey(User, related_name='created_registrations', null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, related_name='owned_registrations', null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
@@ -524,7 +535,6 @@ class Registration(models.Model):
         
         return registrant
 
-
     def save(self, *args, **kwargs):
         if not self.pk:
             self.guid = str(uuid.uuid1())
@@ -600,7 +610,7 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration')
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     # this is a field used for dynamic pricing registrations only
     pricing = models.ForeignKey('RegConfPricing', null=True)
@@ -863,7 +873,7 @@ class Event(TendenciBaseModel):
     Calendar Event
     """
     guid = models.CharField(max_length=40, editable=False)
-    type = models.ForeignKey(Type, blank=True, null=True)
+    type = models.ForeignKey(Type, blank=True, null=True, on_delete=models.SET_NULL)
     title = models.CharField(max_length=150, blank=True)
     description = models.TextField(blank=True)
     all_day = models.BooleanField()
@@ -872,14 +882,24 @@ class Event(TendenciBaseModel):
     timezone = TimeZoneField(_('Time Zone'))
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
+    mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
     external_url = models.URLField(_('External URL'), default=u'', blank=True)
     image = models.ForeignKey('EventPhoto',
         help_text=_('Photo that represents this event.'), null=True, blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL, blank=True)
+    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
+    priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the events list. They will be featured with a star icon on the monthly calendar."))
+
+    # additional permissions
+    display_event_registrants = models.BooleanField(_('Display Attendees'), default=False)
+    DISPLAY_REGISTRANTS_TO_CHOICES=(("public","Everyone"),
+                                    ("user","Users Only"),
+                                    ("member","Members Only"),
+                                    ("admin","Admin Only"),)
+    display_registrants_to = models.CharField(max_length=6, choices=DISPLAY_REGISTRANTS_TO_CHOICES, default="admin")
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, null=True)
@@ -958,7 +978,10 @@ class Event(TendenciBaseModel):
         )['invoice__total__sum']
 
         # total_sum is the amount of money received when all is said and done
-        return total_sum - self.money_outstanding
+        if total_sum and self.money_outstanding:
+            return total_sum - self.money_outstanding
+        else:
+            return 0
 
     @property
     def money_outstanding(self):
@@ -972,7 +995,10 @@ class Event(TendenciBaseModel):
         balance_sum = figures['invoice__balance__sum']
         total_sum = figures['invoice__total__sum']
 
-        return total_sum - balance_sum
+        if total_sum and balance_sum:
+            return total_sum - balance_sum
+        else:
+            return 0
 
     def registrants(self, **kwargs):
         """
@@ -992,7 +1018,20 @@ class Event(TendenciBaseModel):
                 registrants = registrants.filter(registration__invoice__balance__lte=0)
 
         return registrants
-        
+    
+    def can_view_registrants(self, user):
+        if self.display_event_registrants:
+            if self.display_registrants_to == 'public':
+                return True
+            if user.profile.is_superuser and self.display_registrants_to == 'admin':
+                return True
+            if user.profile.is_member and self.display_registrants_to == 'member':
+                return True
+            if not user.profile.is_member and not user.is_anonymous() and self.display_registrants_to == 'user':
+                return True
+            
+        return False
+
     def number_of_days(self):
         delta = self.end_dt - self.start_dt
         return delta.days
@@ -1041,7 +1080,7 @@ class Event(TendenciBaseModel):
         """
         Return a tuple of (spots_taken, spots_available) for this event.
         """
-        limit = self.registration_configuration.limit
+        limit = self.get_limit()
         spots_taken = Registrant.objects.filter(
                                     registration__event=self, 
                                     cancel_dt__isnull=True).count()
@@ -1060,6 +1099,15 @@ class Event(TendenciBaseModel):
                 self.status,
                 self.status_detail in ['active']])
 
+    def get_limit(self):
+        """
+        Return the limit for registration if it exists.
+        """
+        limit = 0
+        if self.registration_configuration:
+            limit = self.registration_configuration.limit
+        return int(limit)
+
 
 class CustomRegForm(models.Model):
     name = models.CharField(_("Name"), max_length=50)
@@ -1067,9 +1115,9 @@ class CustomRegForm(models.Model):
     
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True)
+    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True)    
+    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)    
     owner_username = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='active')
     

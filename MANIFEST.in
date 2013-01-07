@@ -1,0 +1,8 @@
+recursive-include tendenci/addons *
+recursive-include tendenci/apps *
+recursive-include tendenci/bin *
+recursive-include tendenci/core *
+recursive-include tendenci/libs *
+recursive-include tendenci/locale *
+recursive-include tendenci/project_template *
+recursive-include tendenci/templates *

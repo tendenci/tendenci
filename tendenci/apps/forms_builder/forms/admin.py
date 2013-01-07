@@ -88,6 +88,7 @@ class FormAdmin(TendenciBaseModelAdmin):
             'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js',
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
             '%sjs/admin/form-fields-inline-ordering.js' % settings.STATIC_URL,
+            '%sjs/admin/form-field-dynamic-hiding.js' % settings.STATIC_URL,
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
@@ -139,7 +140,8 @@ class FormAdmin(TendenciBaseModelAdmin):
         for entry in entries:
             values = FieldEntry.objects.filter(entry=entry)
             row = [""] * len(columns)
-            row[-4] = entry.entry_time
+            entry_time = entry.entry_time.strftime("%d-%m-%y %H:%M:%S")
+            row[-4] = entry_time
             if entry.pricing:
                 row[-3] = entry.pricing.label
                 row[-2] = entry.pricing.price

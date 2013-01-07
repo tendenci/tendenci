@@ -91,6 +91,10 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                         row_item_list[i] = row_item_list[i].strftime(
                             '%H:%M:%S'
                             )
+
+                # convert all to string; catches 0 (int)
+                row_item_list[i] = '%s' % row_item_list[i]
+
             str_out += ','.join(row_item_list)
 
         content_type = "application/text"
@@ -111,7 +115,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                     cell_value_is_date = False
                     if isinstance(cell_value, datetime.datetime):
                         cell_value = xlrd.xldate.xldate_from_datetime_tuple((
-                            cell_value.year, cell_value.month, 
+                            cell_value.year, cell_value.month,
                             cell_value.day, cell_value.hour,
                             cell_value.minute,
                             cell_value.second), 0)
@@ -342,6 +346,7 @@ def do_user_import(request, user, user_object_dict, setting_dict):
 
     # loop through user properties; truncate at max_length
     for key, value in user.__dict__.items():
+        max_length = 90
         try:
             max_length = User._meta.get_field_by_name(key)[0].max_length
         except FieldDoesNotExist:
@@ -512,7 +517,7 @@ def extract_from_excel(file_path):
             for key in item.keys():
                 if key in field_type_dict and \
                 field_type_dict[key] == 'DateTimeField':
-                    item[key] = dparser.parser(item[key])
+                    item[key] = dparser.parse(item[key])
             item['ROW_NUM'] = r + 1
             data_list.append(item)
             r += 1

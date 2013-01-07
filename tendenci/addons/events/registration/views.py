@@ -306,7 +306,7 @@ def multi_register(request, event_id, template_name="events/registration/multi_r
                     # email the admins as well
                     email_admins(event, reg8n.amount_paid, self_reg8n, reg8n, registrants)
                     # get invoice; redirect to online pay
-                    return redirect('payments.views.pay_online',
+                    return redirect('payment.pay_online',
                         reg8n.invoice.id, reg8n.invoice.guid)
                 else:
                     # offline payment

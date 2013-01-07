@@ -1,9 +1,13 @@
+from functools import wraps
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 from tendenci.core.base.http import Http403
+from tendenci.apps.redirects.models import Redirect
+from tendenci.core.site_settings.utils import get_setting
 
 
 class PageSecurityCheck(object):
@@ -55,6 +59,29 @@ class PageSecurityCheck(object):
                     return HttpResponseRedirect('%s?%s=%s' % tup)
                     #return f(request, *args, **kwargs)
         return check_security
+
+
+def is_enabled(*module_names):
+    """
+    Checks if module is enabled before
+    returning view_method, else redirects to
+    URL specified in "redirect" record.
+    """
+    def inner_render(fn):
+
+        def wrapped(request, *args, **kwargs):
+
+            for module_name in module_names:
+                if not get_setting('module', module_name, 'enabled'):
+                    r = get_object_or_404(Redirect, from_app=module_name)
+                    return HttpResponseRedirect('/' + r.to_url)
+
+            return fn(request, *args, **kwargs)
+
+        return wraps(fn)(wrapped)
+
+    return inner_render
+
 
 def admin_required(view_method):
     """

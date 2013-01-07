@@ -1,0 +1,26 @@
+# Ignore all local development files
+# local_settings.py
+django
+*.db
+
+# Ignore ephemeral directories
+# during local development
+/cache
+/media
+/static
+
+# Ignore all dotfiles...
+.*
+
+# Ignore all pyc file
+*.pyc
+
+# except for .gitignore and .env_example
+!/.gitignore
+!/.env_example
+
+# Ignore the virtual environment
+venv/
+
+/schema.xml
+celeryd.pid

@@ -83,9 +83,12 @@ def job_set_inv_payment(user, job, pricing):
             inv.subtotal = inv.total
             inv.balance = inv.total
             inv.estimate = 1
-            inv.status_detail = 'tendered'
+            inv.status_detail = 'estimate'
             inv.save(user)
-            
+
+            # tender the invoice
+            inv.tender(user)
+
             # update job
             job.invoice = inv
             job.save()

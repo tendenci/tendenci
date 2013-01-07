@@ -47,22 +47,15 @@
 			help: false,
 			limit : 150
 		});
-
-        $(".datepicker").live('focus', function() {
-            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
-        });
-
-        $(".timepicker").live('focus', function() {
-            $(this).timePicker({
-              show24Hours: false,
-              step: 15
-            });
-        });
         
-        $('.regconfpricing_formset .section-description').addClass('well');
-        
-      
+        $(document).ready(function() {
+            $('.regconfpricing_formset .section-description').addClass('well');
+        });
 	</script>
+	
+	<script type="text/javascript">
+        {% include 'events/include/event_place.js' %}
+    </script>
 	
 <script type="text/javascript">
  {% include 'events/include/event_form_custom_reg.js' %}

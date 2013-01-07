@@ -80,7 +80,7 @@ def update_perms_and_save(request, form, instance, **kwargs):
     # save again for indexing purposes
     # TODO: find a better solution, saving twice kinda sux
     instance.save(**kwargs)
-    
+
     # assign the permission to the medial files
     assign_files_perms(instance)
 
@@ -231,8 +231,8 @@ def get_query_filters(user, perm, **kwargs):
         anon_filter = (anon_q & status_q & status_detail_q)
         return anon_filter
     else:
-        if user.profile.is_superuser or super_perm:
-            return Q()
+        if user.profile.is_superuser:
+            return Q(status=True)
         else:
 
             if '.' in perm and perms_field:

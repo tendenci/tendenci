@@ -1,4 +1,4 @@
-import datetime
+import datetime, random, string
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -14,7 +14,9 @@ from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
 from django.template.loader import get_template
+from django.contrib.auth.models import User
 
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import check_template, template_exists
@@ -23,6 +25,7 @@ from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.profiles.models import Profile
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.core.exports.utils import run_export_task
 
@@ -34,6 +37,8 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
 
+
+@is_enabled('forms')
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
     if not has_perm(request.user,'forms.add_form'):
@@ -67,6 +72,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     form_instance = get_object_or_404(Form, pk=id)
 
@@ -107,6 +113,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         },context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def update_fields(request, id, template_name="forms/update_fields.html"):
     form_instance = get_object_or_404(Form, id=id)
@@ -121,7 +128,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         form = form_class(request.POST, instance=form_instance, queryset=form_instance.fields.all().order_by('position'))
         if form.is_valid():
             form.save()
-
+            EventLog.objects.log()
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % form_instance)
             return redirect('form_detail', form_instance.slug)
     else:
@@ -131,6 +138,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def delete(request, id, template_name="forms/delete.html"):
     form_instance = get_object_or_404(Form, pk=id)
@@ -148,6 +156,8 @@ def delete(request, id, template_name="forms/delete.html"):
     return render_to_response(template_name, {'form': form_instance},
         context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def copy(request, id):
     """
@@ -216,9 +226,12 @@ def copy(request, id):
             default = field.default,
             )
 
+    EventLog.objects.log(instance=form_instance)
     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
     return redirect('form_edit', new_form.pk)
 
+
+@is_enabled('forms')
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
     form = get_object_or_404(Form, pk=id)
@@ -234,6 +247,7 @@ def entries(request, id, template_name="forms/entries.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def entry_delete(request, id, template_name="forms/entry_delete.html"):
     entry = get_object_or_404(FormEntry, pk=id)
@@ -250,6 +264,8 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
@@ -262,6 +278,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def entries_export(request, id):
     form_instance = get_object_or_404(Form, pk=id)
 
@@ -357,6 +374,7 @@ def entries_export(request, id):
     return response
 
 
+@is_enabled('forms')
 def search(request, template_name="forms/search.html"):
     if not has_perm(request.user,'forms.view_form'):
         raise Http403
@@ -375,6 +393,7 @@ def search(request, template_name="forms/search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def form_detail(request, slug, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
@@ -384,6 +403,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
 
     if not has_view_perm(request.user,'forms.view_form',form):
         raise Http403
+
+    # If form has a recurring payment, make sure the user is logged in
+    if form.recurring_payment and request.user.is_anonymous():
+        response = redirect('auth_login')
+        response['Location'] += '?next=%s' % form.get_absolute_url()
+        return response
 
     form_for_form = FormForForm(form, request.user, request.POST or None, request.FILES or None)
 
@@ -396,6 +421,31 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid():
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
+            if request.user.is_anonymous():
+                if entry.get_email_address():
+                    emailfield = entry.get_email_address()
+                    firstnamefield = entry.get_first_name()
+                    lastnamefield = entry.get_last_name()
+                    phonefield = entry.get_phone_number()
+                    password = ''
+                    for i in range(0, 10):
+                        password += random.choice(string.ascii_lowercase + string.ascii_uppercase)
+
+                    user_list = User.objects.filter(email=emailfield).order_by('-last_login')
+                    if user_list:
+                        anonymous_creator = user_list[0]
+                    else:
+                        anonymous_creator = User(username=emailfield, email=emailfield, 
+                                                 first_name=firstnamefield, last_name=lastnamefield)
+                        anonymous_creator.set_password(password)
+                        anonymous_creator.is_active = False
+                        anonymous_creator.save()
+                        anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
+                                                    creator=User.objects.get(pk=1), phone=phonefield)
+                        anonymous_profile.save()
+                    entry.creator = anonymous_creator
+            else:
+                entry.creator = request.user
             entry.save()
 
             # Email
@@ -474,15 +524,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     # create the invoice
                     invoice = make_invoice_for_entry(entry, custom_price=price)
                     # log an event for invoice add
-                    log_defaults = {
-                        'event_id' : 311000,
-                        'event_data': '%s (%d) added by %s' % (invoice._meta.object_name, invoice.pk, request.user),
-                        'description': '%s added' % invoice._meta.object_name,
-                        'user': request.user,
-                        'request': request,
-                        'instance': invoice,
-                    }
-                    EventLog.objects.log(**log_defaults)
+
+                    EventLog.objects.log(instance=form)
 
                     # redirect to billing form
                     return redirect('form_entry_payment', invoice.id, invoice.guid)
@@ -513,6 +556,8 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     context = {"form": form, "form_template": form.template}
     return render_to_response(template, context, RequestContext(request))
 
+
+@is_enabled('forms')
 def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
     """
     Show billing form, update the invoice then proceed to external payment.
@@ -530,7 +575,7 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             update_invoice_for_entry(invoice, form)
             # redirect to online payment
             if (entry.payment_method.machine_name).lower() == 'credit-card':
-                return redirect('payments.views.pay_online', invoice.id, invoice.guid)
+                return redirect('payment.pay_online', invoice.id, invoice.guid)
             # redirect to invoice page
             return redirect('invoice.view', invoice.id, invoice.guid)
     else:
@@ -545,16 +590,18 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
     form_template = entry.form.template
     if not form_template or not template_exists(form_template):
         form_template = "default.html"
+    EventLog.objects.log(instance=entry)
     return render_to_response(template, {
             'payment_form':form,
             'form':entry.form,
             'form_template': form_template,
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def export(request, template_name="forms/export.html"):
     """Export forms"""
-
     if not request.user.is_superuser:
         raise Http403
 
@@ -567,6 +614,7 @@ def export(request, template_name="forms/export.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def files(request, id):
     """
@@ -576,7 +624,6 @@ def files(request, id):
         We can get data from remote location, convert to file
         object and return a file response.
     """
-
     import os
     import mimetypes
     from django.http import Http404
@@ -603,6 +650,7 @@ def files(request, id):
     data = default_storage.open(field.value).read()
     f = ContentFile(data)
 
+    EventLog.objects.log()
     response = HttpResponse(f.read(), mimetype=mime_type)
     response['Content-Disposition'] = 'filename=%s' % base_name
     return response

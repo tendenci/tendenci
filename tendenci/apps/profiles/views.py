@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect, Http404
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.db.models import Count, Q, get_app
 from django.contrib.admin.views.decorators import staff_member_required
@@ -70,7 +70,7 @@ def index(request, username='', template_name="profiles/index.html"):
     content_counts = {'total': 0, 'invoice': 0}
     from tendenci.apps.invoices.models import Invoice
     inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this), Q(bill_to_email=user_this.email)).count()
-    if request.user.profile.is_superuser:    
+    if request.user.profile.is_superuser:
         inv_count = Invoice.objects.filter(Q(creator=user_this) | Q(owner=user_this) | Q(bill_to_email=user_this.email)).count()
     content_counts['invoice'] = inv_count
     content_counts['total'] += inv_count
@@ -91,10 +91,12 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
-    memberships = user_this.memberships.filter(
-                                    status=True,
-                                    status_detail__in=['active', 'expired']
-                                    )
+    if request.user == user_this or request.user.profile.is_superuser:
+        memberships = user_this.membershipdefault_set.filter(
+            status=True, status_detail__in=['active', 'pending', 'expired'])
+    else:
+        memberships = user_this.membershipdefault_set.filter(
+            status=True, status_detail__in=['active', 'expired'])
 
     log_defaults = {
         'event_id': 125000,
@@ -132,6 +134,7 @@ def search(request, template_name="profiles/search.html"):
     # check if allow anonymous user search
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
+    membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
 
     if request.user.is_anonymous():
         if not allow_anonymous_search:
@@ -141,26 +144,43 @@ def search(request, template_name="profiles/search.html"):
         if not allow_user_search and not request.user.profile.is_superuser:
             raise Http403
 
+    members = request.GET.get('members', None)
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
-    profiles = Profile.objects.filter(filters).distinct()
+    profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query))
+        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query) | Q(company__icontains=query))
+
+    is_not_member_filter = (Q(member_number="") | Q(user__is_active=False))
+    if members:
+        if not request.user.profile.is_superuser:
+            if membership_view_perms == "private":
+                profiles = profiles.filter(is_not_member_filter)
+            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
+                if request.user.profile and request.user.profile.is_member:
+                    profiles = profiles.exclude(is_not_member_filter)
+                else:
+                    profiles = profiles.filter(is_not_member_filter)
+            else:
+                profiles = profiles.exclude(is_not_member_filter)
+        else:
+            profiles = profiles.exclude(is_not_member_filter)
+    else:
+        if not request.user.profile.is_superuser:
+            if membership_view_perms == "private":
+                    profiles = profiles.filter(is_not_member_filter)
+            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
+                if not request.user.profile or not request.user.profile.is_member:
+                    profiles = profiles.filter(is_not_member_filter)
+
+    if not request.user.profile.is_superuser:
+        profiles = profiles.exclude(hide_in_search=True)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
-    log_defaults = {
-        'event_id' : 124000,
-        'event_data': '%s searched by %s' % ('Profile', request.user),
-        'description': '%s searched' % 'Profile',
-        'user': request.user,
-        'request': request,
-        'source': 'profiles'
-    }
-    EventLog.objects.log(**log_defaults)
-
-    return render_to_response(template_name, {'profiles':profiles, "user_this":None}, 
+    EventLog.objects.log()
+    return render_to_response(template_name, {'profiles': profiles, "user_this": None},
         context_instance=RequestContext(request))
 
 
@@ -322,7 +342,9 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
 
             user_edit.save()
             profile.save()
-            
+
+            # update member-number on profile
+            profile.refresh_member_number()
             
             # notify ADMIN of update to a user's record
             if get_setting('module', 'users', 'userseditnotifyadmin'):
@@ -395,16 +417,6 @@ def delete(request, id, template_name="profiles/delete.html"):
             profile.save()
         user.is_active = False
         user.save()
-
-        log_defaults = {
-            'event_id' : 123000,
-            'event_data': '%s (%d) deleted by %s' % (user._meta.object_name, user.pk, request.user),
-            'description': '%s deleted' % user._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': user,
-        }
-        EventLog.objects.log(**log_defaults)
         
         
         return HttpResponseRedirect(reverse('profile.search'))
@@ -431,6 +443,8 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
+        EventLog.objects.log(instance=profile)
+
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
    
     return render_to_response(template_name, {'user_this':user_edit, 'profile':profile, 'form':form}, 
@@ -755,6 +769,19 @@ def admin_list(request, template_name='profiles/admin_list.html'):
                               context_instance=RequestContext(request))
 
 @login_required
+def users_not_in_groups(request, template_name='profiles/users_not_in_groups.html'):
+    # superuser only
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    users = []
+    for user in User.objects.all():
+        if not user.profile.get_groups():
+            users.append(user)
+    
+    return render_to_response(template_name, {'users': users}, context_instance=RequestContext(request))
+
+@login_required
 def user_groups_edit(request, username, form_class=UserGroupsForm, template_name="profiles/add_delete_groups.html"):
     user = get_object_or_404(User, username=username)
     
@@ -888,13 +915,14 @@ def export_check(request, task_id):
     else:
         return HttpResponse("DNE")
 
+
 def export_download(request, task_id):
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     if task and task.status == "SUCCESS":
         return task.result
     else:
-        return Http404
+        raise Http404

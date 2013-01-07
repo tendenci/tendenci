@@ -1,0 +1,30 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+{% load base_filters %}
+
+{% block content %}
+<h1>{% trans "Top Spenders" %} ({{ SITE_GLOBAL_CURRENCY }})</h1>
+{% trans "Lists the top 20 users with the highest expenses." %}
+<table>
+<tr>
+	<th>{% trans "#" %}</th>
+	<th>{% trans "Username" %}</th>
+    <th>{% trans "UserID" %}</th>
+    <th>{% trans "Last Name" %}</th>
+    <th>{% trans "First Name" %}</th>
+    <th>{% trans "Email" %}</th>
+    <th>{% trans "Total Expenses" %}</th>
+</tr>
+{% for entry in entry_list %}
+<tr class="{% cycle 'odd' '' %}">
+	<td>{{ forloop.counter }}</td>
+	<td><a href="{% url profile entry.user.username %}">{{ entry.user.username }}</a></td>
+	<td>{{ entry.user.pk }}</td>
+	<td>{{ entry.user.last_name }}</td>
+	<td>{{ entry.user.first_name }}</td>
+	<td>{{ entry.user.email|obfuscate_email }}</td>
+    <td>{{ entry.invoices.total__sum|format_currency }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock content %}

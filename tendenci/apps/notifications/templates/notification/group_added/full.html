@@ -29,7 +29,7 @@
 <p>{% blocktrans %}To view the details of this 
   group, go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url group.detail object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url group.detail object.slug %}</a></b><br>
 
-{% if not request.user.is_superuser %} 
+{% if object.status_detail != 'active' %}
   <br>
 <p>{% blocktrans %}To activate this group, 
   go to:{% endblocktrans %} <b><a href="{{ SITE_GLOBAL_SITEURL }}{% url group.edit object.slug %}">{{ SITE_GLOBAL_SITEURL }}{% url group.edit object.slug %}</a></b> </p>

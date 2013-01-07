@@ -10,25 +10,25 @@
 </head>
 <body bgcolor="#ffffff" text="#000000">
 
-    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ entry.app.name }} {% trans "Membership Disapproved" %}</div>
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ app.name }} {% trans "Membership Disapproved" %}</div>
 
-    {% if entry.membership_type.price %}
-        <div style="margin-bottom:20px;">{% trans "Membership Type:" %} {{ entry.membership_type }} ${{ entry.membership_type.price }}</div>
+    {% if membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% trans "Membership Type:" %} {{ membership.membership_type }} ${{ membership.membership_type.price }}</div>
     {% else %}
-        <div style="margin-bottom:20px;">{% trans "Membership Type:" %} {{ entry.membership_type }} {% trans "Free" %}</div>
+        <div style="margin-bottom:20px;">{% trans "Membership Type:" %} {{ membership.membership_type }} {% trans "Free" %}</div>
     {% endif %}
 
-    <div>{{ entry.first_name }} {{ entry.last_name }}</div>
-    <div>{{ entry.email }}</div>
-    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
+    <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
+    <div>{{ membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
         {% trans "View Disapproved Application" %}
     </a></div>
 
     <div>========================</div>
 
     <div>{% blocktrans %}{{ membership_total }} Total Active Membership(s){% endblocktrans %}</div>
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.app.get_absolute_url }}">
-        {% blocktrans with entry.app.create_dt|date as objcreate and entry.app.create_dt|timesince as objtime %}Application Created {{ objcreate }} ({{ objtime }}){% endblocktrans %}
+    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.app.get_absolute_url }}">
+        {% blocktrans with app.create_dt|date as objcreate and app.create_dt|timesince as objtime %}Application Created {{ objcreate }} ({{ objtime }}){% endblocktrans %}
     </a><div>
 
 </body>

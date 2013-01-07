@@ -1,5 +1,6 @@
 # python
 import datetime
+import time
 import re
 import Image as Pil
 import os
@@ -242,7 +243,12 @@ def robots_txt(request):
 
 def exception_test(request):
     raise Exception('Successfully raised the exception test. Boom.')
-    return Http404
+
+
+def timeout_test(request):
+    # Sleep for 60 seconds to simulate a long process time
+    time.sleep(60)
+    raise Http404
 
 
 def file_display(request, file_path):

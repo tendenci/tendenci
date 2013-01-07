@@ -448,25 +448,38 @@ def nowhitespace(parser, token):
     nodelist = parser.parse(('endnowhitespace',))
     parser.delete_first_token()
     return NoWhiteSpaceNode(nodelist)
-    
-    
+
+
 class PhotoImageURL(Node):
     def __init__(self, photo, *args, **kwargs):
         self.size = kwargs.get("size", "100x100")
         self.crop = kwargs.get("crop", False)
+        self.constrain = kwargs.get("constrain", False)
         self.quality = kwargs.get("quality", 90)
         self.photo = Variable(photo)
 
     def render(self, context):
         photo = self.photo.resolve(context)
 
+        # We can't crop and constrain, so we need
+        # to pick one if both are passed
+        if self.crop and self.constrain:
+            self.constrain = False
+
         # return empty unicode string
         if not photo.pk:
             return unicode()
 
+        cache_key = generate_image_cache_key(file=str(photo.pk), size=self.size, pre_key="photo", crop=self.crop, unique_key=str(photo.pk), quality=self.quality, constrain=self.constrain)
+        cached_image_url = cache.get(cache_key)
+        if cached_image_url:
+            return cached_image_url
+
         args = [photo.pk, self.size]
         if self.crop:
             args.append("crop")
+        if self.constrain:
+            args.append("constrain")
         if self.quality:
             args.append(self.quality)
         url = reverse('photo.size', args=args)
@@ -483,7 +496,7 @@ def photo_image_url(parser, token):
 
         {% list_photos as photos user=user limit=3 %}
         {% for photo in photos %}
-            <img src="{% photo_image_url photo size=100x100 crop=True %}" />
+            <img src="{% photo_image_url photo size=100x100 crop=True constrain=True %}" />
         {% endfor %}
     """
     args, kwargs = [], {}
@@ -495,6 +508,8 @@ def photo_image_url(parser, token):
             kwargs["size"] = bit.split("=")[1]
         if "crop=" in bit:
             kwargs["crop"] = bool(bit.split("=")[1])
+        if "constrain=" in bit:
+            kwargs["constrain"] = bool(bit.split("=")[1])
         if "quality=" in bit:
             kwargs["quality"] = bit.split("=")[1]
 
@@ -525,9 +540,16 @@ class ImageURL(Node):
 
             args = [file.pk]
             if self.size:
-                args.append(self.size)
+                try:
+                    size = Variable(self.size)
+                    size = size.resolve(context)
+                except:
+                    size = self.size
+                args.append(size)
             if self.crop:
                 args.append("crop")
+            if self.constrain:
+                args.append("constrain")
             if self.quality:
                 args.append(self.quality)
             url = reverse('file', args=args)
@@ -567,6 +589,8 @@ def image_url(parser, token):
             kwargs["size"] = bit.split("=")[1]
         if "crop=" in bit:
             kwargs["crop"] = bool(bit.split("=")[1])
+        if "constrain=" in bit:
+            kwargs["constrain"] = bool(bit.split("=")[1])
         if "quality=" in bit:
             kwargs["quality"] = bit.split("=")[1]
 

@@ -35,8 +35,6 @@
             <p><a href="{% url group.member_export group.slug %}">{% trans "Export all members" %}</a></p>
             <p><a href="{% url group.subscriber_export group.slug %}">{% trans "Export all subscribers" %}</a></p>
             <p><a href="{% url group.all_export group.slug %}">{% trans "Export all members and subscribers" %}</a></p>
-            <h3>Import</h3>
-            <p><a href="{% url group.subscriber_import group.slug %}">{% trans "Import subscribers" %}</a></p>
         </div>
         {% endif %}
 

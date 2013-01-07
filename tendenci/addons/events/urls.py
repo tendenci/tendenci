@@ -9,8 +9,13 @@ urlpatterns = patterns('tendenci.addons.events',
     url(r'^print-view/(?P<id>\d+)/$', 'views.print_view', name="event.print_view"),
     url(r'^add/$', 'views.add', name="event.add"),
     url(r'^export/$', 'views.export', name="event.export"),
+    url(r'^import/add/$', 'views.import_add', name='event.import_add'),
+    url(r'^import/preview/(?P<import_id>\d+)/$', 'views.import_preview', name='event.import_preview'),
+    url(r'^import/process/(?P<import_id>\d+)/$', 'views.import_process', name='event.import_process'),
+    url(r'^import/download_template/$', 'views.download_template_csv', name='event.download_template_csv'),
     url(r'^create_ics/$', 'views.create_ics', name="event.create_ics"),
     url(r'^myevents/$', 'views.myevents', name="event.myevents"),
+    url(r'^get_place$', 'views.get_place', name="event.get_place"),
 
     url(r'^add/(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})/$', 'views.add', name="event.add"),
 
@@ -22,6 +27,8 @@ urlpatterns = patterns('tendenci.addons.events',
     url(r'^ics/(?P<id>\d+)/$', 'views.icalendar_single', name="event.ics_single"),
     url(r'^feed/$', LatestEntriesFeed(), name='event.feed'),
     url(r'^(?P<id>\d+)/$', 'views.details', name="event"),
+
+    url(r'^(?P<event_id>\d+)/attendees$', 'views.view_attendees', name="event.attendees"),
     
     #delete
     url(r'^speaker/(?P<id>\d+)/delete/$', 'views.delete_speaker', name='event.delete_speaker'),
@@ -57,13 +64,13 @@ urlpatterns = patterns('tendenci.addons.events',
     url(r'^(?P<event_id>\d+)/registrants/cancel/(?P<hash>\w+)/$',
         'views.cancel_registrant', name='event.cancel_registrant'),
 
-    
     url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/$', 
         'views.cancel_registration', name='event.cancel_registration'),
     url(r'^(?P<event_id>\d+)/registrations/cancel/(?P<registration_id>\d+)/(?P<hash>\w+)/$',
         'views.cancel_registration', name='event.cancel_registration'),
 
     url(r'^types/$', 'views.types', name='event.types'),
+    url(r'^reassign_type/(?P<type_id>\d+)$', 'views.reassign_type', name='event.reassign_type'),
 
     # registrants (search/view); admin-only
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),
@@ -138,4 +145,5 @@ urlpatterns = patterns('tendenci.addons.events',
     
     # event types, need to be the last in the urls
     url(r'^(?P<type>[\w\-\/]+)/$', 'views.month_view', name='event.month'),
+    
 )

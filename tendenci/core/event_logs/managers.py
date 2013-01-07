@@ -247,8 +247,10 @@ class EventLogManager(Manager):
             try:
                 event_log.server_ip_address = settings.INTERNAL_IPS[0]
             except:
-                event_log.server_ip_address = gethostbyname(gethostname())
-
+                try:
+                    event_log.server_ip_address = gethostbyname(gethostname())
+                except:
+                    event_log.server_ip_address = '0.0.0.0'
             if hasattr(request, 'path'):
                 event_log.url = request.path or ''
 

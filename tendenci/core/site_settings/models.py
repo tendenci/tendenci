@@ -28,7 +28,7 @@ class Setting(models.Model):
     value = models.TextField(blank=True)
     default_value = models.TextField(blank=True)
     input_type = models.CharField(max_length=25, choices=INPUT_TYPE_CHOICES)
-    input_value = models.CharField(max_length=255, blank=True)
+    input_value = models.CharField(max_length=1000, blank=True)
     client_editable = models.BooleanField(default=True)
     store = models.BooleanField(default=True)
     update_dt = models.DateTimeField(auto_now=True, null=True)

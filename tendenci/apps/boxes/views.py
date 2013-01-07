@@ -4,9 +4,11 @@ from django.template import RequestContext
 
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.exports.utils import run_export_task
 
 
+@is_enabled('boxes')
 @login_required
 def export(request, template_name="boxes/export.html"):
     """Export Boxes"""

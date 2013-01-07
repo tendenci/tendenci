@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.contenttypes.models import ContentType
@@ -9,6 +11,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 
 from tendenci.core.base.http import Http403
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import update_perms_and_save, get_notice_recipients, has_perm, get_query_filters, has_view_perm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
@@ -23,6 +26,7 @@ from tendenci.addons.articles.forms import ArticleForm
 from tendenci.apps.notifications import models as notification
 
 
+@is_enabled('articles')
 def detail(request, slug=None, hash=None, template_name="articles/view.html"):
     if not slug and not hash:
         return HttpResponseRedirect(reverse('articles'))
@@ -48,6 +52,7 @@ def detail(request, slug=None, hash=None, template_name="articles/view.html"):
         raise Http403
 
 
+@is_enabled('articles')
 def search(request, template_name="articles/search.html"):
     get = dict(request.GET)
     query = get.pop('q', [])
@@ -64,6 +69,9 @@ def search(request, template_name="articles/search.html"):
         articles = Article.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             articles = articles.select_related()
+
+    if not has_perm(request.user, 'articles.view_article'):
+        articles = articles.filter(release_dt__lte=datetime.now())
 
     articles = articles.order_by('-release_dt')
 
@@ -86,6 +94,7 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('articles'))
 
 
+@is_enabled('articles')
 def print_view(request, slug, template_name="articles/print-view.html"):
     article = get_object_or_404(Article, slug=slug)
 
@@ -97,6 +106,7 @@ def print_view(request, slug, template_name="articles/print-view.html"):
         raise Http403
 
 
+@is_enabled('articles')
 @login_required
 def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"):
     article = get_object_or_404(Article, pk=id)
@@ -124,9 +134,9 @@ def edit(request, id, form_class=ArticleForm, template_name="articles/edit.html"
         raise Http403
 
 
+@is_enabled('articles')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-meta.html"):
-
     # check permission
     article = get_object_or_404(Article, pk=id)
     if not has_perm(request.user, 'articles.change_article', article):
@@ -156,6 +166,7 @@ def edit_meta(request, id, form_class=MetaForm, template_name="articles/edit-met
         context_instance=RequestContext(request))
 
 
+@is_enabled('articles')
 @login_required
 def add(request, form_class=ArticleForm, template_name="articles/add.html"):
     if has_perm(request.user, 'articles.add_article'):
@@ -187,6 +198,7 @@ def add(request, form_class=ArticleForm, template_name="articles/add.html"):
         raise Http403
 
 
+@is_enabled('articles')
 @login_required
 def delete(request, id, template_name="articles/delete.html"):
     article = get_object_or_404(Article, pk=id)
@@ -216,6 +228,7 @@ def delete(request, id, template_name="articles/delete.html"):
         raise Http403
 
 
+@is_enabled('articles')
 @staff_member_required
 def articles_report(request, template_name='reports/articles.html'):
     article_type = ContentType.objects.get(app_label="articles", model="article")
@@ -256,6 +269,7 @@ def articles_report(request, template_name='reports/articles.html'):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('articles')
 @login_required
 def export(request, template_name="articles/export.html"):
     """Export Articles"""

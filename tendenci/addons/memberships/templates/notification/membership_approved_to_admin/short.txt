@@ -1,3 +1,3 @@
 {% load i18n %}
 
-{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans "Membership application approved" %} {{ entry.first_name }} {{ entry.last_name }}
+{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans "Membership application approved" %} {{ membership.user.first_name }} {{ membership.user.last_name }}

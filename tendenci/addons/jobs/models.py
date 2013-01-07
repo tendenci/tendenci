@@ -2,7 +2,8 @@ import uuid
 
 from datetime import timedelta
 from django.db import models
-from django.contrib.auth.models import Group
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
@@ -34,7 +35,6 @@ class BaseJob(TendenciBaseModel):
     level = models.CharField(max_length=50, blank=True)  # e.g. entry, part-time, permanent, contract
     period = models.CharField(max_length=50, blank=True)  # full time, part time, contract
     is_agency = models.BooleanField()  # defines if the job posting is by a third party agency
-    percent_travel = models.IntegerField(null=True, blank=True)  # how much travel is required for the position
 
     contact_method = models.TextField(blank=True)  # preferred method - email, phone, fax. leave open field for user to define
     position_reports_to = models.CharField(max_length=200, blank=True)  # manager, CEO, VP, etc
@@ -69,7 +69,7 @@ class BaseJob(TendenciBaseModel):
     contact_website = models.CharField(max_length=300, blank=True)
 
     meta = models.OneToOneField(MetaTags, null=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     invoice = models.ForeignKey(Invoice, blank=True, null=True)
@@ -116,8 +116,8 @@ class BaseJob(TendenciBaseModel):
         """
         Make the accounting entries for the job sale
         """
-        from accountings.models import Acct, AcctEntry, AcctTran
-        from accountings.utils import make_acct_entries_initial, make_acct_entries_closing
+        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
 
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
@@ -186,7 +186,7 @@ class Job(BaseJob):
 
     @models.permalink
     def get_approve_url(self):
-        return ("job.approve" [self.id])
+        return ("job.approve", [self.id])
 
 
 class JobPricing(models.Model):
@@ -200,9 +200,9 @@ class JobPricing(models.Model):
     show_member_pricing = models.BooleanField()
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="job_pricing_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="job_pricing_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True)
+    owner = models.ForeignKey(User, related_name="job_pricing_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status = models.BooleanField(default=True)
 

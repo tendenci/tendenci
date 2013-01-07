@@ -1,6 +1,6 @@
 import datetime
 import os
-from djcelery.models import TaskMeta
+from datetime import timedelta
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -19,7 +19,6 @@ from tendenci.addons.campaign_monitor.forms import TemplateForm, CampaignForm
 from tendenci.addons.campaign_monitor.utils import temporary_id, extract_files
 from tendenci.addons.campaign_monitor.utils import sync_campaigns, sync_templates
 from tendenci.addons.campaign_monitor.utils import apply_template_media
-from tendenci.addons.campaign_monitor.tasks import CampaignGenerateTask
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
 from tendenci.core.newsletters.utils import newsletter_articles_list, newsletter_jobs_list, \
@@ -319,13 +318,16 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
             
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                html_url = template.html_file.url
+            else:
+                html_url = str("%s%s" % (site_url, template.get_html_url()))
+
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                     zip_url = template.get_zip_url()
-                    html_url = template.html_file.url
                 else:
-                    zip_url = "%s%s"%(site_url, template.get_zip_url())
-                    html_url = str("%s%s"%(site_url, template.get_html_url()))
+                    zip_url = "%s%s" % (site_url, template.get_zip_url())
             else:
                 zip_url = ""
             
@@ -376,21 +378,30 @@ def template_update(request, template_id):
     
     #set up urls
     site_url = get_setting('site', 'global', 'siteurl')
-    
+    html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+    html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
+    try:
+        from tendenci.addons.events.models import Event, Type
+        html_url += "&events=1"
+        html_url += "&events_type="
+        html_url += "&event_start_dt=%s" % datetime.date.today()
+        end_dt = datetime.date.today() + timedelta(days=90)
+        html_url += "&event_end_dt=%s" % end_dt
+    except ImportError:
+        pass
+
     if template.zip_file:
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            zip_url = template.get_zip_url()
-            html_url = template.html_file.url
+            zip_url = unicode(template.get_zip_url())
         else:
-            zip_url = "%s%s" % (site_url, template.get_zip_url())
-            html_url = str("%s%s" % (site_url, template.get_html_url()))
+            zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
     else:
-        zip_url = ""
+        zip_url = unicode()
     
     #sync with campaign monitor
     try:
         t = CST(template_id = template.template_id)
-        t.update(str(template.name), html_url, zip_url)
+        t.update(unicode(template.name), html_url, zip_url)
     except BadRequest, e:
         messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
         return redirect(template)
@@ -437,7 +448,7 @@ def template_sync(request):
     if not has_perm(request.user,'campaign_monitor.add_template'):
         raise Http403
     
-    sync_templates()
+    sync_templates(request)
     
     messages.add_message(request, messages.SUCCESS, 'Successfully synced with Campaign Monitor')
     return redirect("campaign_monitor.template_index")
@@ -482,12 +493,46 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
         if form.is_valid():
             template = form.cleaned_data['template']
                         
-            if not settings.CELERY_IS_ACTIVE:
-                task = CampaignGenerateTask()
-                return redirect("%s/campaign/create/new" % settings.CAMPAIGNMONITOR_URL)
+            #set up urls
+            site_url = get_setting('site', 'global', 'siteurl')
+            html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+            html_url += "?jump_links=%s" % form.cleaned_data.get('jump_links')
+            try:
+                from tendenci.addons.events.models import Event, Type
+                html_url += "&events=%s" % form.cleaned_data.get('events')
+                html_url += "&events_type=%s" % form.cleaned_data.get('events_type')
+                html_url += "&event_start_dt=%s" % form.cleaned_data.get('event_start_dt', '')
+                html_url += "&event_end_dt=%s" % form.cleaned_data.get('event_end_dt', '')
+            except ImportError:
+                pass
+            html_url += "&articles=%s" % form.cleaned_data.get('articles')
+            html_url += "&articles_days=%s" % form.cleaned_data.get('articles_days')
+            html_url += "&news=%s" % form.cleaned_data.get('news')
+            html_url += "&news_days=%s" % form.cleaned_data.get('news_days')
+            html_url += "&jobs=%s" % form.cleaned_data.get('jobs')
+            html_url += "&jobs_days=%s" % form.cleaned_data.get('jobs_days')
+            html_url += "&pages=%s" % form.cleaned_data.get('pages')
+            html_url += "&pages_days=%s" % form.cleaned_data.get('pages_days')
+            
+            if template.zip_file:
+                if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                    zip_url = unicode(template.get_zip_url())
+                else:
+                    zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
             else:
-               task = CampaignGenerateTask.delay(template=template)
-               return redirect('campaign_generate_status', task.task_id)
+               zip_url = unicode()
+           
+            #sync with campaign monitor
+            try:
+                t = CST(template_id = template.template_id)
+                t.update(unicode(template.name), html_url, zip_url)
+            except BadRequest, e:
+                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                return redirect('campaign_monitor.campaign_generate')
+            except Exception, e:
+                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                return redirect('campaign_monitor.campaign_generate')
+            return redirect("%s/campaign/create/new" % settings.CAMPAIGNMONITOR_URL)
 
     else:
         form = form_class()
@@ -496,25 +541,6 @@ def campaign_generate(request, form_class=CampaignForm, template_name='campaign_
         {'form':form},
         context_instance=RequestContext(request))
 
-@login_required
-def campaign_generate_status(request, task_id, template_name='campaign_monitor/campaigns/campaign_status.html'):
-    """
-    Checks if a campaign generate task is completed.
-    """ 
-    if not has_perm(request.user,'campaign_monitor.add_campaign'):
-        raise Http403
-    
-    try:
-        task = TaskMeta.objects.get(task_id=task_id)
-    except TaskMeta.DoesNotExist:
-        task = None
-    
-    if task and task.status == "SUCCESS":
-        return redirect("%s/campaign/create/new" % settings.CAMPAIGNMONITOR_URL)
-    else:
-        return render_to_response(template_name, {
-            'task':task,
-        }, context_instance=RequestContext(request))
 
 @login_required
 def campaign_delete(request, campaign_id, template_name="campaign_monitor/campaigns/delete.html"):

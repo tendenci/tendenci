@@ -41,3 +41,45 @@ class SplitDateTimeWidget(MultiWidget):
         Returns a Unicode string representing the HTML for the whole lot.
         """
         return "%s&nbsp;%s" % (rendered_widgets[0], rendered_widgets[1])
+
+
+class EmailVerificationWidget(MultiWidget):
+    def __init__(self, attrs={}):
+        if 'email_class_0' in attrs:
+            email_class_0 = attrs['email_class_0']
+            del attrs['email_class_0']
+        else:
+            email_class_0 = 'email-verification-0'
+        
+        if 'email_class_1' in attrs:
+            email_class_1 = attrs['email_class_1'] 
+            del attrs['email_class_1']
+        else:
+            email_class_1 = 'email-verification-1'
+            
+        email0_attrs = attrs.copy()
+        email0_attrs['class'] = email_class_0
+        email1_attrs = attrs.copy()
+        email1_attrs['class'] = email_class_1
+
+        widgets = (TextInput(attrs=email0_attrs),
+                   TextInput(attrs=email1_attrs))
+
+        super(EmailVerificationWidget, self).__init__(widgets, attrs)
+
+    def decompress(self, value):
+        if value:
+            email = value
+            return (email, email)
+        else:
+            return (None, None)
+
+    def format_output(self, rendered_widgets):
+        """
+        Given a list of rendered widgets (as strings), it inserts an HTML
+        linebreak between them.
+
+        Returns a Unicode string representing the HTML for the whole lot.
+        """
+        label = "<label generated='true' style='display:none; color:red; margin-left: 5px;' class='email-verfication-error'>Please enter similar email addresses.</label>"
+        return "%s%s<br>%s" % (rendered_widgets[0], label, rendered_widgets[1])

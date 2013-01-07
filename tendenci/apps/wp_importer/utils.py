@@ -24,6 +24,10 @@ def replace_short_code(body):
     """
     Replaces shortcodes in the body of an article with appropriate HTML structures.
     """
+    # remove CDATA elements
+    body = re.sub("^<!\\[CDATA\\[", "", body)
+    body = re.sub("\\]\\]>$", "", body)
+
     body = re.sub("(.*)(\\[caption.*caption=\")(.*)(\"\\])(.*)(<img.*(\"|/| )>)(.*)(\\[/caption\\])(.*)", "\\1\\6<div class=\"caption\">\\3</div>\\10", body)      
     body = re.sub("(.*)(\\[gallery?.*?\\])(.*)", '', body)
     return body
@@ -34,9 +38,11 @@ def get_posts(item, uri_parser, user):
     If not, create Article object and Redirect object.
     """
     alreadyThere = False
-    link = unicode(item.find('link').contents[0])
-    slug = uri_parser.parse(link).path.strip('/')
-    if not slug:
+
+    if item.find('link'):
+        link = unicode(item.find('link').contents[0])
+        slug = uri_parser.parse(link).path.strip('/')
+    else:
         # if no slug, grab the post id
         slug = unicode(item.find('wp:post_id').contents[0])
 
@@ -44,13 +50,14 @@ def get_posts(item, uri_parser, user):
         if article.slug == slug[:100]:
             alreadyThere = True
             break
-    
+
     if not alreadyThere:
         title = unicode(item.find('title').contents[0])
         post_id = item.find('wp:post_id').string
         post_id = int(post_id)
         body = unicode(item.find('content:encoded').contents[0])
         body = replace_short_code(body)
+
         try:
             # There may not be a file associated with a post.
             # If so, catch that error.
@@ -62,16 +69,17 @@ def get_posts(item, uri_parser, user):
             pass
 
         post_date = unicode(item.find('wp:post_date').contents[0])
-        post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
-        
+        #post_dt = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
+        post_dt = post_date
+
         tags_raw = item.findAll('category', domain="post_tag")
         tags_list = []
     
         if tags_raw:
             for tag in tags_raw:
                 if len(','.join(tags_list)) + len(tag.string) <= 255:
-                    tags_list.append(tag.string[:50])
-    
+                    tags_list.append(tag.string[:50])   
+
         article = {
             'headline': title,
             'guid': str(uuid.uuid1()),
@@ -87,7 +95,6 @@ def get_posts(item, uri_parser, user):
             'allow_anonymous_view': True,
             'allow_user_view': False,
             'allow_member_view': False,
-            'allow_anonymous_edit': False,
             'allow_user_edit': False,
             'allow_member_edit': False,
             'owner': user,
@@ -103,7 +110,6 @@ def get_posts(item, uri_parser, user):
 
         a = Article(**article)
         a.save()
-
         r = Redirect(**redirect)
         r.save()
     
@@ -150,7 +156,6 @@ def get_pages(item, uri_parser, user):
             'allow_anonymous_view': True,
             'allow_user_view': False,
             'allow_member_view': False,
-            'allow_anonymous_edit': False,
             'allow_user_edit': False,
             'allow_member_edit': False,
             'owner': user,

@@ -1,0 +1,9 @@
+{% load i18n %}
+{% if form_config %}
+    {% with form_config as form %}
+        <fieldset class="report-form" id="config-chart">
+            <legend>{% trans "Config chart by" %}</legend>
+            {% include "model_report/includes/form_fields.html" %}
+        </fieldset>
+    {% endwith %}
+{% endif %}

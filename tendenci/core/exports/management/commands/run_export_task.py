@@ -1,14 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models.loading import get_model
 
-from tendenci.core.exports.models import Export
-
 
 class Command(BaseCommand):
     args = '<export_pk, field, field, field...>'
     help = "Runs an export task for the specified model."
 
     def handle(self, *args, **options):
+        from tendenci.core.exports.models import Export
         from tendenci.core.exports.tasks import TendenciExportTask
         if args:
 
@@ -36,6 +35,11 @@ class Command(BaseCommand):
                 from tendenci.apps.pages.tasks import PagesExportTask
                 result = PagesExportTask()
                 response = result.run()
+            elif export.app_label == 'memberships' and export.model_name == 'membership':
+                from tendenci.addons.memberships.tasks import MembershipsExportTask
+                kwargs = {'app': export.memb_app}
+                result = MembershipsExportTask()
+                response = result.run(**kwargs)
             else:
                 model = get_model(export.app_label, export.model_name)
                 result = TendenciExportTask()

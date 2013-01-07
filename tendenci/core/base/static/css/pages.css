@@ -228,3 +228,9 @@
 	height: 10px;
 	width: 100%;
 }
+
+/* Pages Preview
+ ------------------------- */
+ #preview-close {
+     text-align: right;
+ }

@@ -1,0 +1,2 @@
+tendenci>=5.1.0
+tendenci-videos>=1.0.2

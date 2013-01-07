@@ -57,7 +57,7 @@ class GroupSubscription(models.Model):
         if self.subscriber:
             return self.subscriber.get_name_email()[1]
         else:
-            email_data = self.data.filter(field_label__icontains="email")
+            email_data = self.data.filter(field_label__in=["Email", "E-mail", "Email Address", "E-mail Address", "email address", "e-mail address", "e-mail", "email", "member_email", "Email (Required)"])
             if email_data:
                 return email_data[0].value
         return None

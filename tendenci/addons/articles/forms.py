@@ -7,6 +7,8 @@ from tendenci.addons.articles.models import Article
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import EmailVerificationField
+from tendenci.apps.user_groups.models import Group
 
 
 class ArticleForm(TendenciBaseForm):
@@ -20,6 +22,8 @@ class ArticleForm(TendenciBaseForm):
 
     status_detail = forms.ChoiceField(
         choices=(('active', 'Active'), ('inactive', 'Inactive'), ('pending', 'Pending'),))
+    email = EmailVerificationField(label=_("Email"), required=False)
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
     class Meta:
         model = Article
@@ -37,6 +41,7 @@ class ArticleForm(TendenciBaseForm):
             'phone',
             'fax',
             'email',
+            'group',
             'tags',
             'allow_anonymous_view',
             'syndicate',
@@ -52,6 +57,7 @@ class ArticleForm(TendenciBaseForm):
                                  'slug',
                                  'summary',
                                  'body',
+                                 'group',
                                  'tags',
                                  'source',
                                  'website',

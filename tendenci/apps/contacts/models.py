@@ -55,6 +55,7 @@ class Contact(TendenciBaseModel):
     """
     guid = models.CharField(max_length=40)
     timezone = TimeZoneField()
+    user = models.ForeignKey(User, null=True, related_name='contact_user')
 
     first_name = models.CharField(max_length=100, blank=True)
     middle_name= models.CharField(max_length=100, blank=True)

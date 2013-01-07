@@ -34,14 +34,14 @@
         "updated_by": ""
     }, 
     {
-        "default_value": "Tendenci Intranet", 
+        "default_value": "Tendenci", 
         "description": "Enter how you'd like your organization's name displayed on the website. This also is inserted in the title tags and is used for SEO (Search Engine Optimization).", 
         "data_type": "string", 
         "update_dt": "2010-08-12 17:19:13", 
         "input_type": "text", 
         "client_editable": true, 
         "name": "sitedisplayname", 
-        "value": "Schipul", 
+        "value": "Tendenci", 
         "label": "Site Name", 
         "input_value": " ", 
         "parent_id": 0, 

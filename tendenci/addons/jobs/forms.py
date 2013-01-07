@@ -7,12 +7,14 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 
 from captcha.fields import CaptchaField
+from tendenci.core.categories.models import Category
 from tendenci.addons.jobs.models import Job
 from tendenci.core.perms.forms import TendenciBaseForm
 from tinymce.widgets import TinyMCE
-from tendenci.core.base.fields import SplitDateTimeField
+from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.addons.jobs.models import JobPricing
 from tendenci.addons.jobs.utils import get_payment_method_choices, pricing_choices
+from tendenci.apps.user_groups.models import Group
 
 
 request_duration_defaults = {
@@ -71,6 +73,10 @@ class JobForm(TendenciBaseForm):
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
     
+    contact_email = EmailVerificationField(label=_("Contact email"), required=False)
+
+    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
+
     pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
                     queryset=JobPricing.objects.filter(status=True).order_by('duration'))
 
@@ -80,6 +86,7 @@ class JobForm(TendenciBaseForm):
         'title',
         'slug',
         'description',
+        'group',
         'code',
         'location',
         'skills',
@@ -88,7 +95,6 @@ class JobForm(TendenciBaseForm):
         'level',
         'period',
         'is_agency',
-        'percent_travel',
         'contact_method',
         'position_reports_to',
         'salary_from',
@@ -127,6 +133,7 @@ class JobForm(TendenciBaseForm):
                       'fields': ['title',
                                 'slug',
                                 'description',
+                                'group',
                                 'job_url',
                                 'start_dt',
                                 'code',
@@ -137,7 +144,6 @@ class JobForm(TendenciBaseForm):
                                 'education',
                                 'level',
                                 'period',
-                                'percent_travel',
                                 'contact_method',
                                 'position_reports_to',
                                 'salary_from',
@@ -234,6 +240,7 @@ class JobForm(TendenciBaseForm):
             fields_to_pop += [
                 'slug',
                 'entity',
+                'group',
                 'allow_anonymous_view',
                 'user_perms',
                 'member_perms',
@@ -279,3 +286,30 @@ class JobPricingForm(forms.ModelForm):
             'show_member_pricing',
             'status',
          )
+
+class JobSearchForm(forms.Form):
+    q = forms.CharField(label=_("Search"), required=False, max_length=200,)
+    categories = forms.ChoiceField(required=False)
+    subcategories = forms.ChoiceField(required=False)
+    
+    def __init__(self, *args, **kwargs):
+        super(JobSearchForm, self).__init__(*args, **kwargs)
+        
+        #setup categories        
+        (categories, sub_categories) = Category.objects.get_for_model(Job)
+        cat_length = len(categories)
+        cat_choices = [('', 'Categories (%s)' % cat_length)]
+        for category in categories:
+            cat_choices.append((category.pk, category.name))
+
+        query_string = args[0]
+        category = query_string.get('categories', None)
+        if category:
+            sub_categories = Category.objects.get_for_model(Job, category)[1]
+        subcat_length = len(sub_categories)
+        subcat_choices = [('', 'Subcategories (%s)' % subcat_length)]
+        for category in sub_categories:
+            subcat_choices.append((category.pk, category.name))
+
+        self.fields['categories'].choices = cat_choices
+        self.fields['subcategories'].choices = subcat_choices

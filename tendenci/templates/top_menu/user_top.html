@@ -49,10 +49,10 @@
                     </ul>
                 </div>
                 {% comment %}
-                {% if registered_apps.plugins %}
+                {% if registered_apps.addons %}
                 <div class="column app-list">
-                    <h4><a href="{% url admin:pluginmanager_pluginapp_changelist %}">{% trans "Plugins" %}</a></h4>
-                    {% for app in registered_apps.plugins %}
+                    <h4>{% trans "Addons" %}</h4>
+                    {% for app in registered_apps.addons %}
                         <ul>
                             <li>
                                  <a href="{% firstof app.url.list app.url.search %}" title="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}" alt="{{ app|title }}&nbsp;&ndash;&nbsp;{{ app.description }}">

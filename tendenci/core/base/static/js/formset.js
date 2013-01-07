@@ -95,6 +95,8 @@ function clone_form(selector, type) {
 			textarea_id = mytextarea.attr('id');
 		}
 	}
+
+    new_element.find('input.datepicker').removeClass('hasDatepicker')
 	
     new_element = update_form_fields(
         new_element, 
@@ -273,7 +275,23 @@ function get_formset_and_prefix(o) {
     }
 }
 
+function initialize_pickers(){
+    $(".datepicker").off('live');
+    $(".datepicker").live('focus', function() {  
+        console.log($(this));
+        $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+    });
+    $(".timepicker").off('live');
+    $(".timepicker").live('focus', function() {
+        $(this).timePicker({
+          show24Hours: false,
+          step: 15
+        });
+    });
+}
+
 $(document).ready(function(){
+    initialize_pickers();
     var form_set_funcs = $('div.formset-functions')
 
     // hide the delete link if it's an add page
@@ -320,6 +338,7 @@ $(document).ready(function(){
     $('div.formset-add a').click(function(e) { 
         var params = get_formset_and_prefix($(this));
         clone_form('div.' + params.form_set + ':visible:last', params.prefix);
+        initialize_pickers();
         e.preventDefault();
         //return false;
     });

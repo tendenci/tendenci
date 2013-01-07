@@ -46,7 +46,7 @@ def read_theme_file_from_s3(file_path):
     return content
 
 
-def save_file_to_s3(file_path, dirpath=None, public=False):
+def save_file_to_s3(file_path, dirpath=None, public=False, dest_path=None):
     """
     Save the file to S3.
     """
@@ -61,8 +61,10 @@ def save_file_to_s3(file_path, dirpath=None, public=False):
         if not dirpath:
             dirpath = settings.ORIGINAL_THEMES_DIR
 
-        key = '%s%s' % (settings.AWS_LOCATION,
-                            file_path.replace(os.path.dirname(dirpath), ''))
+        if not dest_path:
+            dest_path = file_path.replace(os.path.dirname(dirpath), '')
+
+        key = '%s%s' % (settings.AWS_LOCATION, dest_path)
         k.key = key
         if os.path.splitext(filename)[1] == '.less':
             content_type = 'text/css'
@@ -94,6 +96,8 @@ def set_s3_file_permission(file, public=False):
                 k.set_acl('public-read')
             else:
                 k.set_acl('private')
+        else:
+            print file_path, 'does not exist.'
 
 
 def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=False):

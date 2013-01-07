@@ -1,17 +1,21 @@
-
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
 #from django.contrib.auth.models import User
+from django.contrib.auth.views import password_reset as auth_password_reset
+from django.contrib.auth.models import User
+
 
 from tendenci.apps.registration.forms import RegistrationForm
 from forms import LoginForm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.decorators import ssl_required
+from tendenci.apps.accounts.forms import PasswordResetForm
 
 @ssl_required
 def login(request, form_class=LoginForm, template_name="account/login.html"):
@@ -31,6 +35,13 @@ def login(request, form_class=LoginForm, template_name="account/login.html"):
             EventLog.objects.log(instance=request.user, application="accounts")
 
             return HttpResponseRedirect(redirect_to)
+        elif form.user_exists:
+            messages.add_message(
+                request, messages.INFO,
+                u"The password entered for account %s is invalid." % \
+                    form.user_exists.username
+            )
+            return HttpResponseRedirect(reverse('auth_password_reset'))
     else:
         form = form_class()
     
@@ -114,8 +125,12 @@ def register(request, success_url=None,
     if not allow_self_registration:
         return HttpResponseRedirect(reverse('auth_login'))
     
+    form_params = {}
+    if request.session.get('form_params', None):
+        form_params = request.session.pop('form_params')
+
     if request.method == 'POST':
-        form = form_class(data=request.POST, files=request.FILES)
+        form = form_class(data=request.POST, files=request.FILES, **form_params)
         if form.is_valid():
             # This is for including a link in the reg email back to the event viewed
             event = None
@@ -170,8 +185,19 @@ def register(request, success_url=None,
             EventLog.objects.log(instance=new_user)
 
             return HttpResponseRedirect(success_url or reverse('registration_complete'))
+        elif form.similar_email_found:
+            messages.add_message(
+                request, messages.INFO,
+                u"An account already exists for the email %s." % \
+                    request.POST.get('email_0') or request.POST.get('email_1')
+            )
+            querystring = 'registration=True'
+            return HttpResponseRedirect(reverse('auth_password_reset')+ "?%s" % querystring)
     else:
-        form = form_class()
+        allow_same_email = request.GET.get('registration_approved', False)
+        form_params = {'allow_same_email' : allow_same_email }
+        request.session['form_params'] = form_params
+        form = form_class(**form_params)
     
     if extra_context is None:
         extra_context = {}
@@ -181,3 +207,10 @@ def register(request, success_url=None,
     return render_to_response(template_name,
                               { 'form': form },
                               context_instance=context)
+
+def password_reset(request):
+    from_registration = request.GET.get('registration', False)
+    extra_context = {
+        'from_registration': from_registration,
+    }
+    return auth_password_reset(request, password_reset_form=PasswordResetForm, template_name='accounts/password_reset_form.html', extra_context= extra_context)

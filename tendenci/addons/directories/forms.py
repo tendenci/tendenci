@@ -14,6 +14,7 @@ from tendenci.addons.directories.utils import (get_payment_method_choices,
     get_duration_choices)
 from tendenci.addons.directories.choices import (DURATION_CHOICES, ADMIN_DURATION_CHOICES,
     STATUS_CHOICES)
+from tendenci.core.base.fields import EmailVerificationField
 
 ALLOWED_LOGO_EXT = (
     '.jpg',
@@ -38,6 +39,9 @@ class DirectoryForm(TendenciBaseForm):
 
     activation_dt = SplitDateTimeField(initial=datetime.now())
     expiration_dt = SplitDateTimeField(initial=datetime.now())
+
+    email = EmailVerificationField(label=_("Email"), required=False)
+    email2 = EmailVerificationField(label=_("Email 2"), required=False)
     
     pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
                     queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
@@ -230,3 +234,40 @@ class DirectoryPricingForm(forms.ModelForm):
         else:
             self.fields['duration'] = forms.ChoiceField(initial=14, choices=DURATION_CHOICES)
 
+class DirectoryRenewForm(TendenciBaseForm):
+    list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
+                                                              ('premium', 'Premium'),))
+    payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
+    
+    pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
+                    queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
+    
+    class Meta:
+        model = Directory
+        fields = (
+            'pricing',
+            'list_type',
+            'payment_method',
+        )
+
+        fieldsets = [('Payment', {
+                      'fields': ['list_type',
+                                 'pricing',
+                                 'payment_method'
+                                 ],
+                        'classes': ['payment_method'],
+                    })]
+
+    def __init__(self, *args, **kwargs):
+        super(DirectoryRenewForm, self).__init__(*args, **kwargs)
+
+        if self.fields.has_key('payment_method'):
+            self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
+        if self.fields.has_key('pricing'):
+            self.fields['pricing'].choices = get_duration_choices(self.user)
+
+    def save(self, *args, **kwargs):
+        directory = super(DirectoryRenewForm, self).save(*args, **kwargs)
+        if self.cleaned_data.has_key('pricing'):
+            directory.requested_duration = self.cleaned_data['pricing'].duration
+        return directory

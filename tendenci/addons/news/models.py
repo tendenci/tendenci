@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime
 from django.db import models
-from django.contrib.auth.models import Group
+from tendenci.apps.user_groups.models import Group
+from tendenci.apps.user_groups.utils import get_default_group
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 
@@ -15,6 +16,8 @@ from tendenci.addons.news.managers import NewsManager
 from tinymce import models as tinymce_models
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.news.module_meta import NewsMeta
+from tendenci.core.files.models import File
+from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
 class News(TendenciBaseModel):
     guid = models.CharField(max_length=40)
@@ -30,10 +33,11 @@ class News(TendenciBaseModel):
     fax = models.CharField(max_length=50, blank=True)
     email = models.CharField(max_length=120, blank=True)
     website = models.CharField(max_length=300, blank=True)
+    thumbnail = models.ForeignKey('NewsImage', default=None, null=True, help_text=_('The thumbnail image can be used on your homepage or sidebar if it is setup in your theme. The thumbnail image will not display on the news page.'))
     release_dt = models.DateTimeField(_('Release Date/Time'), null=True, blank=True)
     syndicate = models.BooleanField(_('Include in RSS feed'), default=True)
     design_notes = models.TextField(_('Design Notes'), blank=True)
-    group = models.ForeignKey(Group, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True)
 
     #for podcast feeds
@@ -78,7 +82,32 @@ class News(TendenciBaseModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
+        photo_upload = kwargs.pop('photo', None)
         super(News, self).save(*args, **kwargs)
+
+        if photo_upload and self.pk:
+            image = NewsImage(
+                object_id=self.pk,
+                creator=self.creator,
+                creator_username=self.creator_username,
+                owner=self.owner,
+                owner_username=self.owner_username
+                    )
+            photo_upload.file.seek(0)
+            image.file.save(photo_upload.name, photo_upload)  # save file row
+            image.save()  # save image row
+
+            if self.thumbnail:
+                self.thumbnail.delete()  # delete image and file row
+            self.thumbnail = image  # set image
+
+            self.save()
+
+        if self.thumbnail:
+            if self.is_public():
+                set_s3_file_permission(self.thumbnail.file, public=True)
+            else:
+                set_s3_file_permission(self.thumbnail.file, public=False)
 
     @property
     def category_set(self):
@@ -89,3 +118,13 @@ class News(TendenciBaseModel):
             elif cat.parent:
                 items["sub_category"] = cat.parent
         return items
+
+    def is_public(self):
+        return all([self.allow_anonymous_view,
+                self.status,
+                self.status_detail in ['active']])
+
+class NewsImage(File):
+    @property
+    def content_type(self):
+        return 'news'

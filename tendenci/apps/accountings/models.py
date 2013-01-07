@@ -13,9 +13,9 @@ class AcctEntry(models.Model):
     entry_dt = models.DateTimeField(auto_now_add=True)
     exported = models.BooleanField(default=0)
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, related_name="accentry_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="accentry_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, default='')
-    owner = models.ForeignKey(User, related_name="accentry_owner", null=True)
+    owner = models.ForeignKey(User, related_name="accentry_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
     
@@ -29,8 +29,8 @@ class AcctTran(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     cleared = models.BooleanField(default=False)
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, related_name="accttran_creator",  null=True)
-    owner = models.ForeignKey(User, related_name="accttran_owner", null=True)
+    creator = models.ForeignKey(User, related_name="accttran_creator",  null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, related_name="accttran_owner", null=True, on_delete=models.SET_NULL)
     status = models.BooleanField(default=True)
     
     objects = AcctTranManager()

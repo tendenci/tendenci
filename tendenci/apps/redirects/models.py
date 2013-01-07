@@ -16,7 +16,8 @@ STATUS_CHOICES = (
 uses_regex_helptext = _("Check if the From URL uses a regular expression.")
 
 class Redirect(models.Model):
-    from_url = models.CharField(_('From URL'), max_length=255, unique=True, db_index=True)
+    from_app = models.CharField(_('From App'), max_length=100, db_index=True, blank=True)
+    from_url = models.CharField(_('From URL'), max_length=255, db_index=True, blank=True)
     to_url = models.CharField(_('To URL'), max_length=255, db_index=True,
         help_text=_("You may reference any named regex pattern in From URL with (name). e.g. (?P<slug>[\w\-\/]+) can be mapped to (slug)."))
     http_status = models.SmallIntegerField(_('HTTP Status'),choices=HTTP_STATUS_CHOICES, default=301)
@@ -28,4 +29,7 @@ class Redirect(models.Model):
     objects = RedirectManager()
     
     def __unicode__(self):
-        return "Redirect URL: %s" % self.from_url
+        if self.from_app:
+            return "Redirect from App: %s" % self.from_app
+        else:
+            return "Redirect from URL: %s" % self.from_url

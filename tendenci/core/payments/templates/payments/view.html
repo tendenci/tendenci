@@ -19,9 +19,9 @@
 {% trans "Payments are created with " %}
 <a href="{% url invoice.search%}">{% trans "invoices" %}</a>.
 {% blocktrans %}
-There can be, theoretically, multiple payments for one invoice. 
-Only a TENDERED invoice can have a payment created for it, but if the payment 
-were to not be approved then it is possible for the user to initiate payment 
+There can be, theoretically, multiple payments for one invoice.
+Only a TENDERED invoice can have a payment created for it, but if the payment
+were to not be approved then it is possible for the user to initiate payment
 again resulting in more than one payment per invoice. The real trail is on the accounting side - note the yellow &quot;accounting&quot; link below for more information. <br><br>***Reversing a payment does *NOT* issue a credit or refund.  It will simply reverse
 the payment entries in the general ledger for accounting purposes.
 {% endblocktrans %}<p>
@@ -38,7 +38,7 @@ the payment entries in the general ledger for accounting purposes.
 
 <tr>
 <td width="30%"><div class="label">{% trans "Invoice ID:" %}</div></td>
-<td width="20%"><a href="{% url invoices.views.view payment.invoice.id %}">{{ payment.invoice.id }}</a>
+<td width="20%"><a href="{% url invoice.view payment.invoice.id %}">{{ payment.invoice.id }}</a>
 <span class="body-copy-yellow"><a href="{% url invoices.views.detail payment.invoice.id %}">{% trans "accounting" %}</a></span>
 </td>
 <td class="label" width="30%">{% trans "Payment Status:" %}</td>

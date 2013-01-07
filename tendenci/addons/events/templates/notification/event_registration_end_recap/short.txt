@@ -1,0 +1,4 @@
+{% load i18n %}
+
+{% load base_filters %}
+{% trans "End of registration for event" %}: {{ event }}.

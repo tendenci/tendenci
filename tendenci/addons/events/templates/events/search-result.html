@@ -38,7 +38,12 @@
     </div>
     <div class="event-info">
         
-        <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+        <h3>
+        {% if event.priority %}
+            <div class="event-priority"></div>
+        {% endif %}
+        <a href="{% url event event.pk %}">{{ event.title }}</a>
+        </h3>
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">

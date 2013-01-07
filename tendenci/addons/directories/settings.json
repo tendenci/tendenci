@@ -151,5 +151,39 @@
         "scope_category": "directories", 
         "store": true, 
         "updated_by": ""
+    },
+    {
+        "default_value": "true", 
+        "description": "Directories renewals require approval.", 
+        "data_type": "boolean", 
+        "update_dt": "2010-08-12 17:19:12", 
+        "input_type": "select", 
+        "client_editable": true, 
+        "name": "renewalapproval", 
+        "value": "true", 
+        "label": "Renewals Require Approval", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "directories", 
+        "store": true, 
+        "updated_by": ""
+    },
+    {
+        "default_value": "7", 
+        "description": "Number of days before expiration that the renewal link is shown.", 
+        "data_type": "string", 
+        "update_dt": "2011-06-01 12:00:00", 
+        "input_type": "text", 
+        "client_editable": true, 
+        "name": "renewaldays", 
+        "value": "7", 
+        "label": "Days to show renewal link", 
+        "input_value": "", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "directories", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

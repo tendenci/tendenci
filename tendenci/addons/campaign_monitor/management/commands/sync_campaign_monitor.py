@@ -21,7 +21,7 @@ class Command(BaseCommand):
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']
-            
+
         def subscribe_to_list(subscriber_obj, list_id, name, email, custom_data):
             # check if this user has already subscribed, if not, subscribe it
             try:
@@ -37,30 +37,29 @@ class Command(BaseCommand):
                         print "%s (%s)" % (name, email)
                 except BadRequest as br:
                     print name, email, ' - NOT ADDED: %s' % br
-        
-        
-        api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
+
+        api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
         client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
         CreateSend.api_key = api_key
-        
+
         cl = Client(client_id)
         lists = cl.lists()
         list_ids = [list.ListID for list in lists]
         list_names = [list.Name for list in lists]
         list_ids_d = dict(zip(list_names, list_ids))
-        
-        groups = Group.objects.filter(status=True, status_detail='active')
-        listmaps = ListMap.objects.all()
+
+        groups = Group.objects.filter(status=1, status_detail='active', sync_newsletters=1)
+        listmaps = ListMap.objects.filter(group__sync_newsletters=1)
         syncd_groups = [listmap.group for listmap in listmaps]
         cm_list = List()
-        
+
         print "Starting to sync groups with campaign monitor..."
         print
-        
+
         for group in groups:
             if group not in syncd_groups:
                 # get the list id or create a list if not exists
-                # campaing monitor requires the list title 
+                # campaing monitor requires the list title
                 if group.name in list_names:
                     list_id = list_ids_d[group.name]
                 else:
@@ -68,7 +67,7 @@ class Command(BaseCommand):
                     list_id = cm_list.create(client_id, group.name, "", False, "")
                     print "Added group '%s' to the C.M. list." % group.name
                     print
-                    
+
                 # insert to the listmap
                 list_map = ListMap(group=group,
                            list_id=list_id)
@@ -76,10 +75,10 @@ class Command(BaseCommand):
             else:
                 list_map = ListMap.objects.filter(group=group)[0]
                 list_id = list_map.list_id
-                
+
             # if a previous added list is deleted on campaign monitor, add it back
             # TODO: we might need a setting to decide whether we want to add it back or not.
-            
+
             a_list = List(list_id)
             try:
                 list_stats = a_list.stats()
@@ -100,8 +99,8 @@ class Command(BaseCommand):
                     # update the list_map
                     list_map.list_id = list_id
                     list_map.save()
-                    
-                
+
+
             # sync subscribers in this group
             print "Subscribing users to the C.M. list '%s'..." % group.name
             members = group.members.all()
@@ -135,17 +134,17 @@ class Command(BaseCommand):
                 else:
                     gs_data = SD.objects.filter(subscription=gs)
                     (name, email) = get_subscriber_name_email(gs_data)
-                
+
                 if email:
                     subscriber_obj = Subscriber(list_id, email)
                     subscribe_to_list(subscriber_obj, list_id, name, email, [])
-                    
+
         print 'Done'
-        
+
         print 'Starting to sync campaigns with campaign monitor...'
         sync_campaigns()
         print "Done"
-        
+
         print 'Syncing templates...'
         sync_templates()
         print "Done"

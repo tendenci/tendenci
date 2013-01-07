@@ -18,7 +18,7 @@
         <h2>{{ entity.entity_name }}</h2>
         <div class="content">{{ entity.entity_name|safe }}</div>
         <div class="meta">
-            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" submit_date and entity.creator as entity_creator %} Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</div>
+            <div class="submitted">{% blocktrans with entity.create_dt|date:"long" as submit_date and entity.creator as entity_creator %} Submitted on {{ submit_date }} by {{ entity_creator }}{% endblocktrans %}</div>
         </div>
     </div>
 

@@ -17,6 +17,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (get_notice_recipients, update_perms_and_save,
     has_perm, get_query_filters, has_view_perm)
 from tendenci.core.categories.forms import CategoryForm, CategoryForm2
@@ -25,7 +26,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.jobs.models import Job, JobPricing
-from tendenci.addons.jobs.forms import JobForm, JobPricingForm
+from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
 from tendenci.addons.jobs.utils import job_set_inv_payment, get_job_unique_slug
 
 try:
@@ -35,6 +36,7 @@ except:
 from tendenci.core.base.utils import send_email_notification
 
 
+@is_enabled('jobs')
 def detail(request, slug=None, template_name="jobs/view.html"):
     if not slug:
         return HttpResponseRedirect(reverse('jobs'))
@@ -50,9 +52,9 @@ def detail(request, slug=None, template_name="jobs/view.html"):
         raise Http403
 
 
+@is_enabled('jobs')
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
-    my_jobs = request.GET.get('my_jobs', False)
     my_pending_jobs = request.GET.get('my_pending_jobs', False)
 
     if get_setting('site', 'global', 'searchindex') and query:
@@ -62,14 +64,18 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
+            
+    form = JobSearchForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        category = form.cleaned_data.get('categories')
+        subcategory = form.cleaned_data.get('subcategories')
 
-    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
-
-    # filter for "my jobs"
-    if my_jobs and not request.user.is_anonymous():
-        template_name = "jobs/my_jobs.html"
-        jobs = jobs.filter(creator_username=request.user.username)
-
+    if category:
+        jobs = jobs.filter(categories__category=category)
+    if subcategory:
+        jobs = jobs.filter(categories__parent=subcategory)
+    
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_pending_jobs.html"
@@ -78,9 +84,11 @@ def search(request, template_name="jobs/search.html"):
             status_detail__contains='pending'
             )
 
+    jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'jobs': jobs},
+    return render_to_response(template_name, {'jobs': jobs, 'form': form},
         context_instance=RequestContext(request))
 
 
@@ -88,6 +96,28 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('jobs'))
 
 
+@is_enabled('jobs')
+def my_jobs(request, template_name = "jobs/my_jobs.html"):
+    query = request.GET.get('q', None)
+    if not request.user.is_anonymous():
+        if get_setting('site', 'global', 'searchindex') and query:
+            jobs = Job.objects.search(query, user=request.user)
+        else:
+            filters = get_query_filters(request.user, 'jobs.view_job')
+            jobs = Job.objects.filter(filters).distinct()
+            jobs = jobs.select_related()
+        jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
+        jobs = jobs.filter(creator_username=request.user.username)
+        
+        EventLog.objects.log()
+
+        return render_to_response(template_name, {'jobs': jobs},
+            context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect(reverse('jobs'))
+
+
+@is_enabled('jobs')
 def print_view(request, slug, template_name="jobs/print-view.html"):
     job = get_object_or_404(Job, slug=slug)
 
@@ -101,9 +131,12 @@ def print_view(request, slug, template_name="jobs/print-view.html"):
     else:
         raise Http403
 
+
+@is_enabled('jobs')
 @login_required
 def add(request, form_class=JobForm, template_name="jobs/add.html",
         object_type=Job, success_redirect='job'):
+
     require_payment = get_setting('module', 'jobs',
                                     'jobsrequirespayment')
 
@@ -216,7 +249,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                 if job.payment_method.lower() in ['credit card', 'cc']:
                     if job.invoice and job.invoice.balance > 0:
                         return HttpResponseRedirect(reverse(
-                            'payments.views.pay_online',
+                            'payment.pay_online',
                             args=[job.invoice.id, job.invoice.guid])
                         )
 
@@ -254,6 +287,7 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object_type=Job, success_redirect='job'):
     job = get_object_or_404(Job, pk=id)
@@ -338,9 +372,9 @@ def edit(request, id, form_class=JobForm, template_name="jobs/edit.html", object
         'form': form,
         'categoryform': categoryform
         }, context_instance=RequestContext(request))
-    
 
 
+@is_enabled('jobs')
 @login_required
 def edit_meta(request, id, form_class=MetaForm,
                     template_name="jobs/edit-meta.html"):
@@ -375,6 +409,7 @@ def edit_meta(request, id, form_class=MetaForm,
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def delete(request, id, template_name="jobs/delete.html"):
     job = get_object_or_404(Job, pk=id)
@@ -405,6 +440,7 @@ def delete(request, id, template_name="jobs/delete.html"):
         raise Http403
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_add(request, form_class=JobPricingForm,
                     template_name="jobs/pricing-add.html"):
@@ -429,6 +465,7 @@ def pricing_add(request, form_class=JobPricingForm,
         raise Http403
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_edit(request, id, form_class=JobPricingForm,
                     template_name="jobs/pricing-edit.html"):
@@ -455,6 +492,7 @@ def pricing_edit(request, id, form_class=JobPricingForm,
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_view(request, id, template_name="jobs/pricing-view.html"):
     job_pricing = get_object_or_404(JobPricing, id=id)
@@ -467,6 +505,7 @@ def pricing_view(request, id, template_name="jobs/pricing-view.html"):
         raise Http403
 
 
+@is_enabled('jobs')
 @login_required
 def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
     job_pricing = get_object_or_404(JobPricing, pk=id)
@@ -487,6 +526,7 @@ def pricing_delete(request, id, template_name="jobs/pricing-delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 def pricing_search(request, template_name="jobs/pricing-search.html"):
     job_pricings = JobPricing.objects.all().order_by('duration')
 
@@ -495,6 +535,7 @@ def pricing_search(request, template_name="jobs/pricing-search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('jobs')
 @login_required
 def pending(request, template_name="jobs/pending.html"):
     can_view_jobs = has_perm(request.user, 'jobs.view_job')
@@ -560,6 +601,8 @@ def approve(request, id, template_name="jobs/approve.html"):
 def thank_you(request, template_name="jobs/thank-you.html"):
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
+
+@is_enabled('jobs')
 @login_required
 def export(request, template_name="jobs/export.html"):
     """Export Jobs"""
@@ -584,7 +627,6 @@ def export(request, template_name="jobs/export.html"):
             'level',
             'period',
             'is_agency',
-            'percent_travel',
             'contact_method',
             'position_reports_to',
             'salary_from',

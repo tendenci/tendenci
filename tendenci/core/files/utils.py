@@ -1,11 +1,24 @@
 import Image
 from os.path import exists
 from cStringIO import StringIO
+import os
+import httplib
+import urllib
+import urllib2
+import socket
+from urlparse import urlparse
+from django.db import connection
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
+from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.shortcuts import Http404
 from django.core.cache import cache as django_cache
 from tendenci.core.base.utils import image_rescale
 from tendenci.libs.boto_s3.utils import read_media_file_from_s3
+
+from tendenci.core.files.models import File as TFile
+from tendenci.core.files.models import file_directory
 
 
 def get_image(file, size, pre_key, crop=False, quality=90, cache=False, unique_key=None, constrain=False):
@@ -125,6 +138,15 @@ def aspect_ratio(image_size, new_size, constrain=False):
     w1, h1 = constrain_size(image_size, [w, 0])
     w2, h2 = constrain_size(image_size, [0, h])
 
+    if h1 == 0:
+        h1 = w1
+    if w1 == 0:
+        w1 = h1
+    if h2 == 0:
+        h2 = w2
+    if w2 == 0:
+        w2 = h2
+
     if h1 <= h:
         return w1, h1
 
@@ -184,3 +206,262 @@ def generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, con
     key = key.replace(" ", "_")
 
     return key
+
+
+class AppRetrieveFiles(object):
+    """
+    Retrieve files (images) from src url.
+    """
+    def __init__(self, **kwargs):
+        self.site_url = kwargs.get('site_url')
+        self.site_domain = urllib2.Request(self.site_url).get_host()
+        self.src_url = kwargs.get('src_url')
+        self.src_domain = urllib2.Request(self.src_url).get_host()
+        self.p = kwargs.get('p')
+        self.replace_dict = {}
+        self.total_count = 0
+        self.broken_links = {}
+
+    def process_app(self, app_name, **kwargs):
+        if app_name == 'articles':
+            from tendenci.addons.articles.models import Article
+
+            articles = Article.objects.all()
+            for article in articles:
+                print 'Processing article - ', article.id,  article
+                kwargs['instance'] = article
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  article.get_absolute_url())
+                updated, article.body = self.process_content(
+                                        article.body, **kwargs)
+
+                if updated:
+                    article.save()
+        elif app_name == 'news':
+            from tendenci.addons.news.models import News
+            news = News.objects.all()
+            for n in news:
+                print 'Processing news -', n.id, n
+                kwargs['instance'] = n
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  n.get_absolute_url())
+                updated, n.body = self.process_content(
+                                        n.body, **kwargs)
+                if updated:
+                    n.save()
+        elif app_name == 'pages':
+            from tendenci.apps.pages.models import Page
+            pages = Page.objects.all()
+            for page in pages:
+                print 'Processing page -', page.id, page
+                kwargs['instance'] = page
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  page.get_absolute_url())
+                updated, page.content = self.process_content(
+                                        page.content, **kwargs)
+                if updated:
+                    page.save()
+        elif app_name == 'jobs':
+            from tendenci.addons.jobs.models import Job
+            jobs = Job.objects.all()
+            for job in jobs:
+                print 'Processing job -', job.id, job
+                kwargs['instance'] = job
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  job.get_absolute_url())
+                updated, job.description = self.process_content(
+                                        job.description, **kwargs)
+                if updated:
+                    job.save()
+        elif app_name == 'events':
+            from tendenci.addons.events.models import Event, Speaker
+            events = Event.objects.all()
+            for event in events:
+                print 'Processing event -', event.id, event
+                kwargs['instance'] = event
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  event.get_absolute_url())
+                updated, event.description = self.process_content(
+                                        event.description, **kwargs)
+                if updated:
+                    event.save()
+
+            # speakers
+            speakers = Speaker.objects.all()
+            for speaker in speakers:
+                print 'Processing event speaker -', speaker.id, speaker
+                kwargs['instance'] = speaker
+                [event] = speaker.event.all()[:1] or [None]
+                if event:
+                    kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                      event.get_absolute_url())
+                else:
+                    kwargs['content_url'] = 'event speaker %d' % speaker.id
+                updated, speaker.description = self.process_content(
+                                        speaker.description, **kwargs)
+                if updated:
+                    speaker.save()
+
+        elif app_name == 'files':
+            # we need to dig the info from mig_files_file_t4_to_t5
+            cursor = connection.cursor()
+            mig_file_table = 'mig_files_file_t4_to_t5'
+            cursor.execute("""select count(*) from pg_class
+                            where relname='%s' and relkind='r'
+                            """ % mig_file_table)
+            row = cursor.fetchone()
+            if row[0] == 0:
+                print 'File migration table %s does not exist. Exiting..' % mig_file_table
+                return
+            tfiles = TFile.objects.all()
+            for tfile in tfiles:
+                kwargs['content_url'] = '%s%s' % (self.site_url,
+                                                  tfile.get_absolute_url())
+                self.check_file(tfile, cursor, mig_file_table, **kwargs)
+
+        print "\nTotal links updated for %s: " % app_name, self.total_count
+
+    def process_content(self, content, **kwargs):
+        self.replace_dict = {}
+
+        matches = self.p.findall(content)
+        print '... ', len(matches), 'matches found.'
+
+        for match in matches:
+            link = match[1]
+            self.process_link(link, **kwargs)
+
+        # find and replace urls
+        if self.replace_dict:
+            updated = True
+            for url_find, url_repl in self.replace_dict.iteritems():
+                content = content.replace(url_find, url_repl)
+            count = self.replace_dict.__len__()
+            print '...', count, 'link(s) replaced.'
+            self.total_count += count
+        else:
+            updated = False
+
+        return updated, content
+
+    def check_file(self, tfile, cursor, mig_file_table, **kwargs):
+        """
+        Check and download files from t4 based on the info in the
+        table mig_files_file_t4_to_t5
+        """
+        if tfile.file:
+            file_path = tfile.file.name
+            # if file doesn't exist
+            if not default_storage.exists(file_path):
+                # get t4 url from the mig table
+                file_name = os.path.basename(file_path)
+                sql = """select t4_object_id, t4_object_type
+                        from %s
+                        where t5_id=%d
+                     """ % (mig_file_table, tfile.id)
+                cursor.execute(sql)
+                row = cursor.fetchone()
+                if row:
+                    (t4_object_id, t4_object_type) = row
+                    t4_relative_url = '/attachments/%s/%s/%s' % (
+                                t4_object_type,
+                                t4_object_id,
+                                file_name)
+                    t4_url = '%s%s' % (self.src_url, t4_relative_url)
+                    # if link exists on the t4 site, go get it
+                    if self.link_exists(t4_relative_url, self.src_domain):
+                        tfile.file.save(file_path,
+                                        ContentFile(
+                                    urllib2.urlopen(t4_url).read()))
+                        print tfile.get_absolute_url(), 'file downloaded.'
+                    else:
+                        # t4_url not exist
+                        self.add_broken_link(t4_url, **kwargs)
+                else:
+                    # cannot retrieve the info from the mig table
+                    self.add_broken_link('No entry in mig table', **kwargs)
+
+    def process_link(self, link, **kwargs):
+        # check if this is a broken link
+        # the link can from three different sources:
+        # this site:
+        #    absolute url
+        #    relative url
+        # the src site:
+        #    absolute url
+        # the other sites:
+        #    absolute url
+
+        # handle absolute url
+        cleaned_link = link.replace('&amp;', '&')
+        o = urlparse(cleaned_link)
+        relative_url = urllib.quote(urllib.unquote(o.path))
+        hostname = o.hostname
+
+        # skip if link is external other than the src site.
+        if hostname and hostname not in (self.site_domain,
+                                         self.site_domain.lstrip('www.'),
+                                         self.src_domain,
+                                         self.src_domain.lstrip('www.')):
+            if not self.link_exists(relative_url, hostname):
+                print '-- External broken link: ', link
+                self.add_broken_link(link, **kwargs)
+            return
+
+        # if link doesn't exist on the site but on the src
+        if not self.link_exists(relative_url, self.site_domain):
+            if self.link_exists(relative_url, self.src_domain):
+                url = '%s%s' % (self.src_url, relative_url)
+                # go get from the src site
+                tfile = self.save_file_from_url(url, kwargs.get('instance'))
+                self.replace_dict[link] = tfile.get_absolute_url()
+            else:
+                print '** Broken link - ', link, "doesn't exist on both sites."
+                self.add_broken_link(link, **kwargs)
+
+    def link_exists(self, relative_link, domain):
+        """
+        Check if this link exists for the given domain.
+
+        example of a relative_link:
+        /images/newsletter/young.gif
+        """
+        conn = httplib.HTTPConnection(domain)
+        try:
+            conn.request('HEAD', relative_link)
+            res = conn.getresponse()
+            conn.close()
+        except socket.gaierror:
+            return False
+
+        return res.status in (200, 304)
+
+    def add_broken_link(self, broken_link, **kwargs):
+        """
+        Append the broken link to the list.
+        """
+        key = kwargs['content_url']
+        if not key in self.broken_links.keys():
+            self.broken_links[key] = [broken_link]
+        else:
+            self.broken_links[key].append(broken_link)
+
+    def save_file_from_url(self, url, instance):
+        file_name = os.path.basename(urllib.unquote(url).replace(' ', '_'))
+        tfile = TFile()
+        tfile.name = file_name
+        tfile.content_type = ContentType.objects.get_for_model(instance)
+        tfile.object_id = instance.id
+        if hasattr(instance, 'creator'):
+            tfile.creator = instance.creator
+        if hasattr(instance, 'creator_username'):
+            tfile.creator_username = instance.creator_username
+        if hasattr(instance, 'owner'):
+            tfile.owner = instance.owner
+        if hasattr(instance, 'owner_username'):
+            tfile.owner_username = instance.owner_username
+
+        file_path = file_directory(tfile, tfile.name)
+        tfile.file.save(file_path, ContentFile(urllib2.urlopen(url).read()))
+        tfile.save()
+        return tfile

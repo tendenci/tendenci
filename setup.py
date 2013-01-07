@@ -13,7 +13,7 @@ def read(*path):
 
 # Provided as an attribute, so you can append to these instead
 # of replicating them:
-standard_exclude = ["*.py", "*.pyc", "*~", ".*", "*.bak"]
+standard_exclude = ["*.pyc", "*~", "*.bak"]
 standard_exclude_directories = [
     ".*", "CVS", "_darcs", "./build",
     "./dist", "EGG-INFO", "*.egg-info"
@@ -99,9 +99,9 @@ def find_package_data(where=".", package="", exclude=standard_exclude,
 
 
 excluded_directories = standard_exclude_directories + ["example", "tests"]
-package_data = find_package_data(exclude_directories=excluded_directories)
+package_data = find_package_data(exclude_directories=excluded_directories, only_in_packages=False)
 
-DESCRIPTION = "A CMS for Nonprofits"
+DESCRIPTION = "Tendenci - A CMS for Nonprofits"
 
 LONG_DESCRIPTION = None
 try:
@@ -109,13 +109,9 @@ try:
 except:
     pass
 
-CLASSIFIERS = [
-    'Framework :: Django',
-]
-
 setup(
     name='tendenci',
-    version='5.1.0',
+    version='5.1.4',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -125,21 +121,40 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     platforms=['any'],
-    classifiers=CLASSIFIERS,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Web Environment',
+        'Framework :: Django',
+        'Intended Audience :: Developers',
+        'Intended Audience :: End Users/Desktop',
+        'Intended Audience :: Information Technology',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+        'Topic :: Internet :: WWW/HTTP :: WSGI',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+    ],
+    entry_points="""
+            [console_scripts]
+            create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
+        """,
     include_package_data=True,
     dependency_links=[
-#         "http://github.com/tendenci/geraldo/tarball/master#egg=Geraldo-0.4.14",
+        "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.11",
         "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
-    setup_requires=[
-        "Reportlab==2.5",
-    ],
     install_requires=[
-        "Django==1.4.1",
+        "Django==1.4.2",
+        "pisa",
         "Reportlab==2.5",
+        "html5lib",
         "PIL==1.1.7",
-        "South==0.7.3",
+        "South==0.7.5",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
         "django-avatar>=1.0.4",
@@ -164,12 +179,12 @@ setup(
         "oauth2>=1.5.167",
         "python_openid>=2.2",
         "ordereddict==1.1",
-        "createsend>=0.3.2",
-        "celery==3.0.1",
-        "django-celery==3.0.1",
+        "createsend>=2.3.0",
+        "celery==2.4.6",
+        "django-celery==2.3.0",
         "django-kombu>=0.9.4",
         "mimeparse>=0.1.3",
-        "python-dateutil>=1.5",
+        "python-dateutil==1.5",
         "pdfminer==20110515",
         "slate==0.3",
         "stripe==1.7.2",
@@ -177,9 +192,18 @@ setup(
         "boto==2.5.2",
         "django-timezones==0.2",
         "django-ses==0.4.1",
-#         "Geraldo==0.4.14",
+        "Geraldo==0.4.16",
         "django-tastypie",
         "johnny-cache==1.4",
-        "django-debug-toolbar"
+        "docutils==0.9.1",
+        'chardet==2.1.1',
+        "django-model-report==0.0.11",
+        "dj-database-url==0.2.1",
+        "psycopg2==2.4.5",
+        "gunicorn==0.16.1",
+        "gevent==0.13.8",
+        "django-s3-folder-storage==0.1",
+        "django-storages==1.1.5",
+        "python-memcached==1.48",
     ],
 )
