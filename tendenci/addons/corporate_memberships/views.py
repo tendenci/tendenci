@@ -1358,7 +1358,7 @@ def delete_corp_rep(request, id,
 
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully deleted %s' % rep)
-
+            EventLog.objects.log()
             rep.delete()
             corp_membership_update_perms(corp_memb)
 
@@ -1372,6 +1372,16 @@ def delete_corp_rep(request, id,
         raise Http403
 
 
+def index(request,
+          template_name="corporate_memberships/applications/index.html"):
+    corp_app = CorpMembershipApp.objects.current_app()
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {'corp_app': corp_app},
+        context_instance=RequestContext(request))
+
+
+# TO BE DELETED
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
     corp_app = get_object_or_404(CorpApp, slug=slug)
     form = CreatorForm(request.POST or None)
@@ -2025,14 +2035,6 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
-    
-def index(request, template_name="corporate_memberships/index.html"):
-    corp_apps = CorpApp.objects.filter(status=1, status_detail='active').order_by('name')
-    #cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
-    EventLog.objects.log()
-    return render_to_response(template_name, {'corp_apps': corp_apps}, 
-        context_instance=RequestContext(request))
     
     
 def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_memberships/edit_reps.html"):

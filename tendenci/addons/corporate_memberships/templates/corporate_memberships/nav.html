@@ -47,7 +47,7 @@
             <li><a href="{% url settings.index "module" "corporate_memberships" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             {% if user.profile.is_superuser %}
-            <li><a href="{# url corp_memb.index #}">{% trans 'Index Page' %}</a></li>
+            <li><a href="{% url corpmembership.index %}">{% trans 'Index Page' %}</a></li>
             {% endif %}
            <li><a href="{% url corpmembership.add %}">{% trans "Add Corp. Member" %}</a></li>
 
