@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<p>{% blocktrans with object.name as objname %}Your corporate membership "{{ objname }}" has been renewed and approved.{% endblocktrans %}
+<p>{% blocktrans with object.corp_profile.name as objname %}Your corporate membership "{{ objname }}" has been renewed and approved.{% endblocktrans %}
 </p>
 
 <p>
