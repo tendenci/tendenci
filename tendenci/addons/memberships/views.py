@@ -25,6 +25,7 @@ from django.core.management import call_command
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
+from django.contrib.contenttypes.models import ContentType
 
 from johnny.cache import invalidate
 from djcelery.models import TaskMeta
@@ -37,6 +38,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
+from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
                                                           IndivEmailVerification,
                                                           CorporateMembership,
@@ -1336,60 +1338,100 @@ def membership_default_add(request,
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
+
+
     user_form = UserForm(app_fields, request.POST or None)
     profile_form = ProfileForm(app_fields, request.POST or None)
     membership_form = MembershipDefault2Form(app_fields,
-        request.POST or None, request_user=request.user, membership_app=app,
+        request_user=request.user, membership_app=app,
         join_under_corporate=join_under_corporate,
-        corp_membership=corp_membership)
+        corp_membership=corp_membership,
+        multiple_membership=app.allow_mutilple_membership)
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
     if request.method == 'POST':
+        membership_types = request.POST.getlist('membership_type')
+        post_values = request.POST.copy()
+        memberships = []
+        for type in membership_types:
+            post_values['membership_type'] = type
+            membership_form2 = MembershipDefault2Form(app_fields,
+                post_values, request_user=request.user, membership_app=app,
+                join_under_corporate=join_under_corporate,
+                corp_membership=corp_membership)
 
-        # tuple with boolean items
-        good = (
-            user_form.is_valid(),
-            profile_form.is_valid(),
-            membership_form.is_valid(),
-            captcha_form.is_valid()
-        )
-
-        # form is valid
-        if all(good):
-
-            user = user_form.save()
-
-            profile_form.instance = user.profile
-            profile_form.save(
-                request_user=request.user
+            # tuple with boolean items
+            good = (
+                user_form.is_valid(),
+                profile_form.is_valid(),
+                membership_form2.is_valid(),
+                captcha_form.is_valid()
             )
 
-            membership = membership_form.save(
-                request=request,
-                user=user,
-            )
+            # form is valid
+            if all(good):
+
+                user = user_form.save()
+
+                profile_form.instance = user.profile
+                profile_form.save(
+                    request_user=request.user
+                )
+
+                membership = membership_form2.save(
+                    request=request,
+                    user=user,
+                )
+                memberships.append(membership)
+
+        if memberships:
+            invoice = Invoice()
+
+            invoice.object_type = ContentType.objects.get(
+                        app_label=MembershipDefault._meta.app_label,
+                        model=MembershipDefault._meta.module_name)
+            invoice.estimate = True
+            invoice.status_detail = "estimate"
+
+            invoice.bill_to_user(memberships[0].user)
+            invoice.ship_to_user(memberships[0].user)
+            invoice.set_creator(memberships[0].user)
+            invoice.set_owner(memberships[0].user)
+
+            # price information ----------
+            price = 0
+            for membership in memberships:
+                price += membership.get_price()
+
+            invoice.subtotal = price
+            invoice.total = price
+            invoice.balance = price
+
+            invoice.due_date = datetime.now()
+            invoice.ship_date = datetime.now()
+
+            invoice.save()
 
             # redirect: payment gateway
-            if membership.is_paid_online():
+            if memberships[0].is_paid_online():
                 return HttpResponseRedirect(reverse(
                     'payment.pay_online',
-                    args=[membership.get_invoice().pk,
-                        membership.get_invoice().guid]
+                    args=[invoice.pk, invoice.guid]
                 ))
 
             # redirect: membership edit page
             if is_superuser:
                 return HttpResponseRedirect(reverse(
                     'admin:memberships_membershipdefault_change',
-                    args=[membership.pk],
+                    args=[memberships[0].pk],
                 ))
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
                 'membership.application_confirmation_default',
-                args=[membership.guid]
+                args=[memberships[0].guid]
             ))
 
     context = {

@@ -1809,6 +1809,8 @@ class MembershipApp(TendenciBaseModel):
     confirmation_text = tinymce_models.HTMLField()
     notes = models.TextField(blank=True, default='')
     use_captcha = models.BooleanField(_("Use Captcha"), default=True)
+    allow_mutilple_membership = models.BooleanField(_("Allow Multiple Membership Types"),
+                            default=False)
     membership_types = models.ManyToManyField(MembershipType,
                                               verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod,
