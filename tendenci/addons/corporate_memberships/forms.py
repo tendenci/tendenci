@@ -326,6 +326,7 @@ class CorpMembershipForm(forms.ModelForm):
             if not creator_owner.is_anonymous():
                 self.instance.creator = creator_owner
                 self.instance.creator_username = creator_owner.username
+            self.allow_anonymous_view = False
         if not creator_owner.is_anonymous():
             self.instance.owner = creator_owner
             self.instance.owner_username = creator_owner.username
