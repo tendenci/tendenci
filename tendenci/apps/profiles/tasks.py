@@ -1,4 +1,5 @@
 from celery.task import Task
+from celery.registry import tasks
 from tendenci.core.imports.utils import render_excel
 from tendenci.apps.profiles.models import Profile
 
@@ -142,3 +143,5 @@ class ExportProfilesTask(Task):
             data_rows.append(data_row)
 
         return render_excel(filename, field_list, data_rows, '.csv')
+
+tasks.register(ExportProfilesTask)
