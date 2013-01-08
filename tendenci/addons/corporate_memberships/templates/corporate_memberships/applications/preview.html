@@ -50,6 +50,17 @@
 <div class="t">
 <div class="application-form-wrap">
  {% corpmemb_nav request.user %}
+        <div class="alert-message" data-alert="alert">
+            <a class="close" href="#">×</a>
+            <p>
+                This is the preview{% if current_app.id == app.id%}
+                of the <a href="{% url corpmembership.add %}">current application</a>.
+                {% else %}
+                - Not the current application.
+                {% endif %}
+            </p>
+        </div>
+    
         <h1>{{ app.name }}</h1>
         {{ app.description|safe }}
 

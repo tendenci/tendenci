@@ -112,6 +112,7 @@ def get_app_fields_json(request):
     return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
 
 
+@login_required
 def app_preview(request, app_id,
                     template='corporate_memberships/applications/preview.html'):
     """
@@ -130,7 +131,9 @@ def app_preview(request, app_id,
     corpmembership_form = CorpMembershipForm(app_fields,
                                      request_user=request.user,
                                      corpmembership_app=app)
+    current_app = CorpMembershipApp.objects.current_app()
     context = {'app': app,
+               'current_app': current_app,
                "app_fields": app_fields,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
