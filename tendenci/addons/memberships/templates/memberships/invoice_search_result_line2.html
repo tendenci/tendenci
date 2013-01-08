@@ -1,0 +1,24 @@
+{% load base_filters %}
+{% load invoice_tags %}
+{% load i18n %}
+
+<table style="width:100%;">
+    {% invoices_search_line_header request invoice '#ff6600' %}
+
+    <tr>
+    	<td>{% trans "Memb. App. Set" %}</td>
+    	<td colspan="2">{% trans "First Name" %}</td>
+    	<td>{% trans "Last Name" %}</td>
+    	<td>{% trans "Price" %}</td>
+    	<td>{% trans "Balance" %}</td>
+    </tr>
+    {% if obj %}
+      <tr>
+     	<td>{{ obj.pk }}</td>
+     	<td colspan="2">{{ obj.first_name }}</td>
+     	<td>{{ obj.last_name }}</td>
+     	<td>{{ obj.invoice.total }}</td>
+     	<td class="body-copy-yellow">{{ obj.invoice.balance }}</td>
+     </tr>
+     {% endif %}
+</table>

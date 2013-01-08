@@ -49,7 +49,7 @@ from tendenci.core.exports.utils import render_csv, run_export_task
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
-    MembershipType, Notice, MembershipImport, MembershipDefault,
+    MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
     MembershipImportData, MembershipApp)
 from tendenci.addons.memberships.forms import (AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
@@ -1387,32 +1387,13 @@ def membership_default_add(request,
                 memberships.append(membership)
 
         if memberships:
-            invoice = Invoice()
+            membership_set = MembershipSet()
+            invoice = membership_set.save_invoice(memberships)
+            print "INV %s" % membership_set.invoice
 
-            invoice.object_type = ContentType.objects.get(
-                        app_label=MembershipDefault._meta.app_label,
-                        model=MembershipDefault._meta.module_name)
-            invoice.estimate = True
-            invoice.status_detail = "estimate"
-
-            invoice.bill_to_user(memberships[0].user)
-            invoice.ship_to_user(memberships[0].user)
-            invoice.set_creator(memberships[0].user)
-            invoice.set_owner(memberships[0].user)
-
-            # price information ----------
-            price = 0
             for membership in memberships:
-                price += membership.get_price()
-
-            invoice.subtotal = price
-            invoice.total = price
-            invoice.balance = price
-
-            invoice.due_date = datetime.now()
-            invoice.ship_date = datetime.now()
-
-            invoice.save()
+                membership.membership_set = membership_set
+                membership.save()
 
             # redirect: payment gateway
             if memberships[0].is_paid_online():

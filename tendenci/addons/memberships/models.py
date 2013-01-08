@@ -267,6 +267,42 @@ class MembershipType(TendenciBaseModel):
 
                 return expiration_dt
 
+class MembershipSet(models.Model):
+    invoice = models.ForeignKey(Invoice)
+
+    def save_invoice(self, memberships):
+        invoice = Invoice()
+        invoice.estimate = True
+        invoice.status_detail = "estimate"
+
+        invoice.bill_to_user(memberships[0].user)
+        invoice.ship_to_user(memberships[0].user)
+        invoice.set_creator(memberships[0].user)
+        invoice.set_owner(memberships[0].user)
+
+        # price information ----------
+        price = 0
+        for membership in memberships:
+            price += membership.get_price()
+
+        invoice.subtotal = price
+        invoice.total = price
+        invoice.balance = price
+
+        invoice.due_date = datetime.now()
+        invoice.ship_date = datetime.now()
+
+        invoice.save()
+        self.invoice = invoice
+        self.save()
+
+        self.invoice.object_type = ContentType.objects.get(
+                        app_label=self._meta.app_label,
+                        model=self._meta.module_name)
+        self.invoice.object_id = self.pk
+        self.invoice.save()
+
+        return self.invoice
 
 class MembershipDefault(TendenciBaseModel):
     """
@@ -355,6 +391,7 @@ class MembershipDefault(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True)
     groups = models.ManyToManyField(Group, null=True)
 
+    membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)
     objects = MembershipDefaultManager()
 
     class Meta:

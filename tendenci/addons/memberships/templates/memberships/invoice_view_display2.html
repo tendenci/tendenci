@@ -1,0 +1,25 @@
+{% load base_filters %}
+{% load i18n %}
+
+{% with obj.membershipdefault_set.all as memberships %}
+    {% if memberships %}
+        {% for membership in memberships %}
+    <tr>
+        <td>
+		    {% if membership %}
+			    {% trans "Membership #" %}<a href="{% url membership.application_entries membership.pk %}" title="Membership Application">{{ membership.pk }}</a>&nbsp;
+			    {{ membership.membership_type.name|truncatewords:30 }}
+			    {% if membership.first_name or membership.last_name or membership.email %}
+				    &nbsp;&ndash;&nbsp;{{ membership.first_name }} {{ membership.last_name }} {{ membership.email }}
+			    {% endif %}
+		    {% else %}
+			    {% trans "Membership information not available" %}
+		    {% endif %}
+	    </td>
+	    <td class="td-right">
+	        {{ membership.get_price|format_currency }}
+	    </td>
+    </td>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
