@@ -16,6 +16,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_protect
 
 from djcelery.models import TaskMeta
+from johnny.cache import invalidate
 
 from tendenci.core.base.decorators import ssl_required
 
@@ -892,24 +893,28 @@ def export(request, template_name="profiles/export.html"):
         'user_this':None,
     }, context_instance=RequestContext(request))
 
+
 def export_status(request, task_id, template_name="profiles/export_status.html"):
+    invalidate('celery_taskmeta')
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     return render_to_response(template_name, {
         'task':task,
         'task_id':task_id,
         'user_this':None,
     }, context_instance=RequestContext(request))
-    
+
+
 def export_check(request, task_id):
+    invalidate('celery_taskmeta')
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     if task and task.status == "SUCCESS":
         return HttpResponse("OK")
     else:
@@ -917,6 +922,7 @@ def export_check(request, task_id):
 
 
 def export_download(request, task_id):
+    invalidate('celery_taskmeta')
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
