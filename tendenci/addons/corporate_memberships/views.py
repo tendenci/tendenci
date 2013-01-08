@@ -139,10 +139,7 @@ def app_preview(request, app_id,
 
 def corpmembership_add_pre(request,
                 template='corporate_memberships/applications/add_pre.html'):
-    [app] = CorpMembershipApp.objects.filter(
-                               status=True,
-                               status_detail__in=['active', 'published']
-                               ).order_by('id')[:1] or [None]
+    app = CorpMembershipApp.objects.current_app()
     if not app:
         raise Http404
     form = CreatorForm(request.POST or None)
@@ -646,6 +643,9 @@ def corpmembership_approve(request, id,
                             """ % corporate_membership
             if msg:
                 messages.add_message(request, messages.SUCCESS, msg)
+
+            # assign object permissions
+            corp_membership_update_perms(corporate_membership)
 
             EventLog.objects.log(instance=corporate_membership)
 
