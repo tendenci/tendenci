@@ -154,6 +154,8 @@ def corpmembership_add_pre(request,
                        ).hexdigest()
             creator.hash = hash
             creator.save()
+            # log an event
+            EventLog.objects.log(instance=creator)
 
             # redirect to add
             return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add'),
@@ -271,7 +273,8 @@ def corpmembership_add(request,
             }
             send_email_notification('corp_memb_added', recipients,
                                     extra_context)
-
+            # log an event
+            EventLog.objects.log(instance=corp_membership)
             # handle online payment
             if corp_membership.payment_method.is_online:
                 if corp_membership.invoice and \
@@ -302,7 +305,6 @@ def corpmembership_add_conf(request, id,
     if not app:
         raise Http404
 
-    EventLog.objects.log(instance=corp_membership)
     context = {"corporate_membership": corp_membership,
                'app': app}
     return render_to_response(template, context, RequestContext(request))
@@ -364,7 +366,8 @@ def corpmembership_edit(request, id,
                 send_email_notification('corp_memb_edited',
                                         recipients,
                                         extra_context)
-
+            # log an event
+            EventLog.objects.log(instance=corp_membership)
             # redirect to view 
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corp_membership.id]))
@@ -724,6 +727,8 @@ def corp_renew(request, id,
                 new_corp_membership.invoice = inv
                 new_corp_membership.save()
 
+                EventLog.objects.log(instance=corp_membership)
+
                 # save the individual members
                 for member in members:
                     [membership] = MembershipDefault.objects.filter(id=member
@@ -920,8 +925,9 @@ def roster_search(request,
 
     if corp_membership:
         form.fields['cm_id'].initial = corp_membership.id
-    if corp_membership:
         EventLog.objects.log(instance=corp_membership)
+    else:
+        EventLog.objects.log()
     corp_profile = corp_membership and corp_membership.corp_profile
 
     return render_to_response(template_name, {
@@ -1268,6 +1274,8 @@ def corpmembership_export(request,
                             row_item_list[i] = row_item_list[i].encode("utf-8")
                 csv_writer.writerow(row_item_list)
 
+            # log an event
+            EventLog.objects.log()
             # switch to StreamingHttpResponse once we're on 1.5
             return response
     context = {"form": form}
@@ -1287,7 +1295,6 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                     corp_profile=corp_memb.corp_profile
                     ).order_by('user')
     form = form_class(corp_memb, request.POST or None)
-    print request.POST
 
     if request.method == "POST":
         if form.is_valid():
