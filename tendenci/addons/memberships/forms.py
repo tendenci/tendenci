@@ -724,13 +724,16 @@ class MembershipDefault2Form(forms.ModelForm):
             # if all membership types are free, no need to display payment method
             require_payment = membership_app.membership_types.filter(
                                     Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
+
         if not require_payment:
             del self.fields['payment_method']
         else:
+            payment_method_choices = [(p.pk, p.human_name) for p in membership_app.payment_methods.all()]
             self.fields['payment_method'].empty_label = None
             self.fields['payment_method'].widget = forms.widgets.RadioSelect(
-                        choices=self.fields['payment_method'].widget.choices,
+                        choices=payment_method_choices,
                         attrs=self.fields['payment_method'].widget.attrs)
+
         self_fields_keys = self.fields.keys()
 
         if 'status_detail' in self_fields_keys:
