@@ -124,8 +124,9 @@ class CustomRegFormAdmin(admin.ModelAdmin):
     for_event.allow_tags = True
     for_event.short_description = 'For Event'
 
-    def change_view(self, request, object_id, extra_context=None):
-        result = super(CustomRegFormAdmin, self).change_view(request, object_id, extra_context)
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        result = super(CustomRegFormAdmin, self).change_view(request,
+                        object_id, form_url=form_url, extra_context=extra_context)
 
         if not '_addanother' in request.POST and not '_continue' in request.POST and 'next' in request.GET:
             result['Location'] = iri_to_uri("%s") % request.GET.get('next')
