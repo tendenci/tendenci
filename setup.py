@@ -187,7 +187,7 @@ setup(
         "python-dateutil==1.5",
         "pdfminer==20110515",
         "slate==0.3",
-        "stripe==1.7.2",
+        "stripe==1.7.7",
         "pycrypto==2.6",
         "boto==2.5.2",
         "django-timezones==0.2",
