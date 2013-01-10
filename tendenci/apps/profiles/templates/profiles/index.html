@@ -126,7 +126,7 @@
 
 		<h2>Memberships 
 		{% if request.user == user_this or admin %}
-		<a title="Join membership" href="{% url membership.application_detail_default %}" class="glyph plus">+</a>
+		<a title="Join membership" href="{% url membership_default.add %}" class="glyph plus">+</a>
 		{% endif %}
 		</h2>
 
