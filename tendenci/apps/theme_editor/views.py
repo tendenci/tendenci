@@ -13,6 +13,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.utils import get_theme, theme_choices as theme_choice_list
+from tendenci.libs.boto_s3.utils import delete_file_from_s3
 from tendenci.apps.theme_editor.models import ThemeFileVersion
 from tendenci.apps.theme_editor.forms import FileForm, ThemeSelectForm, UploadForm
 from tendenci.apps.theme_editor.utils import get_dir_list, get_file_list, get_file_content, get_all_files_list
@@ -273,6 +274,9 @@ def delete_file(request):
         raise Http404
 
     os.remove(full_filename)
+
+    if settings.USE_S3_STORAGE:
+        delete_file_from_s3(file=settings.AWS_LOCATION + '/' + 'themes/' + get_theme() + '/' + current_dir + chosen_file)
 
     messages.add_message(request, messages.SUCCESS, ('Successfully deleted %s/%s.' % (current_dir, chosen_file)))
 
