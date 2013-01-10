@@ -326,7 +326,6 @@ class CorpMembershipForm(forms.ModelForm):
             if not creator_owner.is_anonymous():
                 self.instance.creator = creator_owner
                 self.instance.creator_username = creator_owner.username
-            self.allow_anonymous_view = False
         if not creator_owner.is_anonymous():
             self.instance.owner = creator_owner
             self.instance.owner_username = creator_owner.username
@@ -780,6 +779,7 @@ class CorpApproveForm(forms.Form):
 
         qAnd = []
         query = None
+        exact_match = 0
 
         if email:
             query = Q(email=email)
@@ -802,25 +802,31 @@ class CorpApproveForm(forms.Form):
                                                    u.last_name,
                                                    u.username,
                                                    u.email)
+                if u.first_name and u.last_name and u.username:
+                    if u.first_name == first_name and \
+                       u.last_name == last_name and \
+                       u.email == email:
+                        exact_match = u.id
 
-        return user_set.items()
+        return user_set.items(), exact_match
 
     def __init__(self, *args, **kwargs):
         corp_memb = kwargs.pop('corporate_membership')
         super(CorpApproveForm, self).__init__(*args, **kwargs)
 
         if corp_memb.is_join_pending and corp_memb.anonymous_creator:
-            suggested_users = self.suggested_users(
+            suggested_users, exact_match = self.suggested_users(
                            first_name=corp_memb.anonymous_creator.first_name,
                            last_name=corp_memb.anonymous_creator.last_name,
                            email=corp_memb.anonymous_creator.email)
-            suggested_users.append((0, 'Create new user for %s %s %s' % (
-                                  corp_memb.anonymous_creator.first_name,
-                                  corp_memb.anonymous_creator.last_name,
-                                  corp_memb.anonymous_creator.email
-                                                         )))
+            if not exact_match:
+                suggested_users.append((0, 'Create new user for %s %s %s' % (
+                                      corp_memb.anonymous_creator.first_name,
+                                      corp_memb.anonymous_creator.last_name,
+                                      corp_memb.anonymous_creator.email
+                                                             )))
             self.fields['users'].choices = suggested_users
-            self.fields['users'].initial = 0
+            self.fields['users'].initial = exact_match
         else:
             self.fields.pop('users')
 
