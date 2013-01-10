@@ -92,12 +92,18 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
+    active_qs = Q(status_detail__iexact='active')
+    pending_qs = Q(status_detail__iexact='pending')
+    expired_qs = Q(status_detail__iexact='expired')
+
     if request.user == user_this or request.user.profile.is_superuser:
         memberships = user_this.membershipdefault_set.filter(
-            status=True, status_detail__in=['active', 'pending', 'expired'])
+            status=True) & user_this.membershipdefault_set.filter(
+                active_qs | pending_qs | expired_qs)
     else:
         memberships = user_this.membershipdefault_set.filter(
-            status=True, status_detail__in=['active', 'expired'])
+            status=True) & user_this.membershipdefault_set.filter(
+                active_qs | expired_qs)
 
     log_defaults = {
         'event_id': 125000,
