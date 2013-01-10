@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load pagination_tags %}
+{% load bootstrap_pagination_tags %}
 {% load avatar_tags %}
 {% load base_filters %}
 {% load corporate_memberships_tags %}
@@ -34,6 +35,7 @@
     .roster-search-form .form-field{
         margin: 3px 0;
     }
+
 </style>
 {% endblock %}
    
@@ -42,7 +44,13 @@
 <div class="t-search">
  {% corpmemb_nav request.user corp_membership %}
  
-<h1>{% blocktrans with corp_profile.name as member %}Roster - {{ member }}{% endblocktrans %}</h1>
+<h1>Roster - 
+    {% if corp_membership %}
+    <a href="{% url corpmembership.view corp_membership.id %}">{{ corp_profile.name }}</a>
+    {% else %}
+    ALL
+    {% endif %}
+    </h1>
 
 {% if corp_membership %}
 <div id="corp-info">
