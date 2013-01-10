@@ -1279,6 +1279,13 @@ class Membership(TendenciBaseModel):
         self.guid = self.guid or unicode(uuid.uuid1())
         super(Membership, self).save(*args, **kwargs)
 
+    def is_forever(self):
+        """
+        status=True, status_detail='active' and has
+        not expire_dt (within database is NULL).
+        """
+        return self.is_active() and not self.expire_dt
+
     def is_active(self):
         """
         status = True, status_detail = 'active', and has not expired
