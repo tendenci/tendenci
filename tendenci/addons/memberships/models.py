@@ -377,14 +377,14 @@ class MembershipDefault(TendenciBaseModel):
         """
         Returns memberships of status_detail='active'
         """
-        return MembershipDefault.objects.filter(status_detail='active')
+        return MembershipDefault.objects.filter(status_detail__iexact='active')
 
     @classmethod
     def QS_PENDING(cls):
         """
         Returns memberships of status_detail='pending'
         """
-        return MembershipDefault.objects.filter(status_detail='pending')
+        return MembershipDefault.objects.filter(status_detail__iexact='pending')
 
     def send_email(self, request, notice_type):
         """
