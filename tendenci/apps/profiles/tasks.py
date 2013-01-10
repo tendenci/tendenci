@@ -72,6 +72,11 @@ class ExportProfilesTask(Task):
             'ud3',
             'ud4',
             'ud5',
+            'ud6', 'ud7', 'ud8', 'ud9', 'ud10',
+            'ud11', 'ud12', 'ud13', 'ud14', 'ud15',
+            'ud16', 'ud17', 'ud18', 'ud19', 'ud20',
+            'ud21', 'ud22', 'ud23', 'ud24', 'ud25',
+            'ud26', 'ud27', 'ud28', 'ud29', 'ud30',
             '\n',
         ]
 

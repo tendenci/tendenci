@@ -345,7 +345,12 @@ def download_user_upload_template(request, file_ext='.xls'):
                          'fax', 'url', 'dob', 'spouse',
                          'direct_mail', 'notes', 'admin_notes',
                          'username', 'password', 'member_number',
-                         'ud1', 'ud2', 'ud3', 'ud4', 'ud5', ]
+                         'ud1', 'ud2', 'ud3', 'ud4', 'ud5',
+                         'ud6', 'ud7', 'ud8', 'ud9', 'ud10',
+                         'ud11', 'ud12', 'ud13', 'ud14', 'ud15',
+                         'ud16', 'ud17', 'ud18', 'ud19', 'ud20',
+                         'ud21', 'ud22', 'ud23', 'ud24', 'ud25',
+                         'ud26', 'ud27', 'ud28', 'ud29', 'ud30', ]
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)
