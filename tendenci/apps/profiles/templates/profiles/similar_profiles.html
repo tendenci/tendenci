@@ -1,0 +1,41 @@
+{% extends "profiles/base.html" %}
+{% load i18n %}
+{% load profile_tags %}
+
+{% block title %}{% trans 'Similar Users'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+{% endblock %}
+
+{% block body %}
+{{ block.super }}
+<div class="t">
+{% users_nav request.user user_this %}
+    {% if similar_name %}
+    <div class="similar_group">
+    <h3>{% trans "Users with Similar Names" %}</h3>
+    {% for users in similar_name %}
+        {% similar_profile_items users %}
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if similar_email %}
+    <div class="similar_group">
+    <h3>{% trans "Users with Similar Email" %}</h3>
+    {% for users in similar_email %}
+        {% similar_profile_items users %}
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not similar_email and not similar_name %}
+    <h3>{% trans "No similar users found" %}
+    {% endif %}
+
+</div>
+{% endblock %}
