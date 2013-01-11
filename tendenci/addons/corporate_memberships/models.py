@@ -30,7 +30,7 @@ from tendenci.addons.corporate_memberships.managers import (
                                                 CorpMembershipAppManager)
 #from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership
-from tendenci.core.payments.models import PaymentMethod
+from tendenci.core.payments.models import PaymentMethod, Payment
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.base.fields import DictField
@@ -390,6 +390,7 @@ class CorpMembership(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         if not self.entity:
                 self.entity_id = 1
+        self.allow_anonymous_view = False
         super(CorpMembership, self).save(*args, **kwargs)
 
     @property
@@ -413,6 +414,13 @@ class CorpMembership(TendenciBaseModel):
                 auth_domains = self.corp_profile.authorized_domains.all()
                 return ', '.join([domain.name for domain in auth_domains])
         return ''
+
+    def get_labels(self):
+        corp_app = CorpMembershipApp.objects.current_app()
+        return dict(CorpMembershipAppField.objects.filter(
+                corp_app=corp_app
+                ).values_list('field_name', 'label'
+                ).exclude(field_name=''))
 
     @staticmethod
     def get_search_filter(user):
@@ -573,14 +581,31 @@ class CorpMembership(TendenciBaseModel):
             corp_memb.status_detail = 'archive'
             corp_memb.save()
 
+    def mark_invoice_as_paid(self, user):
+        if self.invoice and not self.invoice.is_tendered:
+            self.invoice.tender(user)  # tendered the invoice for admin if offline
+
+            # mark payment as made
+            payment = Payment()
+            payment.payments_pop_by_invoice_user(user,
+                        self.invoice, self.invoice.guid)
+            payment.mark_as_paid()
+            payment.method = self.get_payment_method()
+            payment.save(user)
+
+            # this will make accounting entry
+            self.invoice.make_payment(user, payment.amount)
+
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
         if not request.user.is_anonymous():
             self.approved_denied_user = request.user
-        self.status = 1
+        self.status = True
         self.status_detail = 'active'
         self.save()
+        # mark invoice as paid
+        self.mark_invoice_as_paid(request.user)
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
 
@@ -602,8 +627,13 @@ class CorpMembership(TendenciBaseModel):
         self.approved = False
         self.approved_denied_dt = datetime.now()
         self.approved_denied_user = request.user
-        self.status = 1
-        self.status_detail = 'disapproved'
+        self.status = True
+        self.status_detail = 'inactive'
+        self.admin_notes = 'Disapproved by %s on %s. %s' % (
+                                    request.user,
+                                    self.approved_denied_dt,
+                                    self.admin_notes
+                                    )
         self.save()
 
     def approve_renewal(self, request, **kwargs):
@@ -687,6 +717,8 @@ class CorpMembership(TendenciBaseModel):
                 memb_entry.status_detail = 'approved'
                 memb_entry.save()
 
+            # mark invoice as paid
+            self.mark_invoice_as_paid(request.user)
             # email dues reps that corporate membership has been approved
             recipients = dues_rep_emails_list(self)
             if not recipients and self.creator:

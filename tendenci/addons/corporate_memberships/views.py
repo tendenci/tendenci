@@ -654,8 +654,9 @@ def corpmembership_approve(request, id,
 
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corporate_membership.id]))
-
+    field_labels = corporate_membership.get_labels()
     context = {"corporate_membership": corporate_membership,
+               'field_labels': field_labels,
                'indiv_renew_entries': indiv_renew_entries,
                'new_expiration_dt': new_expiration_dt,
                'approve_form': approve_form,
@@ -847,6 +848,7 @@ def roster_search(request,
                   template_name='corporate_memberships/roster_search.html'):
     form = RosterSearchAdvancedForm(request.GET or None)
     if form.is_valid():
+        # cm_id - CorpMembership id
         cm_id = form.cleaned_data['cm_id']
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
