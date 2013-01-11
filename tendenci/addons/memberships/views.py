@@ -1313,7 +1313,7 @@ def membership_default_add(request,
             except IndivEmailVerification.DoesNotExist:
                 pass
         elif authentication_method == 'secret_code':
-            tmp_secret_hash = md5('%s%s' % (corp_membership.secret_code,
+            tmp_secret_hash = md5('%s%s' % (corp_membership.corp_profile.secret_code,
                         request.session.get('corp_hash_random_string', ''))
                                   ).hexdigest()
             if secret_hash == tmp_secret_hash:
@@ -1347,9 +1347,11 @@ def membership_default_add(request,
     user_form = UserForm(app_fields, request.POST or None)
     profile_form = ProfileForm(app_fields, request.POST or None)
     membership_form = MembershipDefault2Form(app_fields,
-        request.POST or None, request_user=request.user, membership_app=app,
+        request.POST or None,
+        request_user=request.user, membership_app=app,
         join_under_corporate=join_under_corporate,
-        corp_membership=corp_membership)
+        corp_membership=corp_membership,
+        authentication_method=authentication_method)
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']

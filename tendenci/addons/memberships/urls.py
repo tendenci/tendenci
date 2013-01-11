@@ -46,6 +46,7 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^applications/(?P<app_id>\d+)/preview/$",
         "membership_default_preview",
         name="membership_default.preview"),
+    # corp individual add pre
     url(r"^applications/corp-pre-add/(?P<cm_id>\d+)?/?$",
         "membership_default_corp_pre_add",
         name="membership_default.corp_pre_add"),

@@ -740,6 +740,10 @@ class MembershipDefault2Form(forms.ModelForm):
             self.corp_membership = kwargs.pop('corp_membership')
         else:
             self.corp_membership = None
+        if 'authentication_method' in kwargs.keys():
+            self.corp_app_authentication_method = kwargs.pop('authentication_method')
+        else:
+            self.corp_app_authentication_method = ''
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
         self.fields['membership_type'].widget = forms.widgets.RadioSelect(
@@ -844,7 +848,8 @@ class MembershipDefault2Form(forms.ModelForm):
         # save many-to-many data for the form
         self.save_m2m()
 
-        if membership.approval_required():
+        if membership.approval_required() or \
+                self.corp_app_authentication_method == 'admin':
             membership.pend()
         else:
             membership.approve(request_user=request_user)
