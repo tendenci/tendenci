@@ -38,6 +38,7 @@ from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
+                                                          CorpMembershipApp,
                                                           IndivEmailVerification,
                                                           CorporateMembership,
                                                           IndivMembEmailVeri8n)
@@ -1286,7 +1287,8 @@ def membership_default_add(request,
         corp_app = CorpMembershipApp.objects.current_app()
         if not corp_app:
             raise Http404
-        app = corp_app.memb_app
+        #app = corp_app.memb_app
+        app = MembershipApp.objects.current_app()
 
         cm_id = kwargs.get('cm_id')
         if not cm_id:
@@ -1318,7 +1320,8 @@ def membership_default_add(request,
                 is_verified = True
 
         if not is_verified:
-            return redirect(reverse('membership_default.corp_pre_add'))
+            return redirect(reverse('membership_default.corp_pre_add',
+                                    args=[cm_id]))
 
     else:
         app = MembershipApp.objects.current_app()
@@ -1411,21 +1414,25 @@ def membership_default_add(request,
 def membership_default_corp_pre_add(request, cm_id=None,
                     template_name="memberships/applications/corp_pre_add.html"):
 
-    [app] = MembershipApp.objects.filter(status=True,
-        status_detail__in=['active', 'published']).order_by('id')[:1] or [None]
-
+#    [app] = MembershipApp.objects.filter(status=True,
+#        status_detail__in=['active', 'published']).order_by('id')[:1] or [None]
+#
+#    if not app:
+#        raise Http404
+#
+#    if not hasattr(app, 'corp_app'):
+#        raise Http404
+#
+#    if not app.corp_app:
+#        raise Http404
+    corp_app = CorpMembershipApp.objects.current_app()
+    app = MembershipApp.objects.current_app()
     if not app:
-        raise Http404
-
-    if not hasattr(app, 'corp_app'):
-        raise Http404
-
-    if not app.corp_app:
         raise Http404
 
     form = AppCorpPreForm(request.POST or None)
     if request.user.profile.is_superuser or \
-        app.corp_app.authentication_method == 'admin':
+        corp_app.authentication_method == 'admin':
         del form.fields['secret_code']
         del form.fields['email']
 
@@ -1436,7 +1443,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
             form.fields['corporate_membership_id'].initial = cm_id
         form.auth_method = 'corporate_membership_id'
 
-    elif app.corp_app.authentication_method == 'email':
+    elif corp_app.authentication_method == 'email':
         del form.fields['corporate_membership_id']
         del form.fields['secret_code']
         form.auth_method = 'email'
@@ -1496,7 +1503,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
                         # the email address is verified
                         return redirect(reverse('membership_default.add_via_corp_domain',
                                                 args=[
-                                                indiv_veri.corp_membership.id,
+                                                corp_memb.id,
                                                 indiv_veri.pk,
                                                 indiv_veri.guid]))
                 if form.auth_method == 'secret_code':
