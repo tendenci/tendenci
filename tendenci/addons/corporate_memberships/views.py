@@ -877,7 +877,7 @@ def roster_search(request,
                     corp_profile_id=corp_membership.corp_profile.id)
 
     if request.user.profile.is_superuser or \
-        (corp_membership.allow_edit_by(request.user)):
+        (corp_membership and corp_membership.allow_edit_by(request.user)):
         pass
     else:
         filter_and, filter_or = CorpMembership.get_membership_search_filter(

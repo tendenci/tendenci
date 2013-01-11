@@ -37,7 +37,10 @@ from tendenci.core.base.fields import DictField
 
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.corporate_memberships.settings import use_search_index
-from tendenci.addons.corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
+from tendenci.addons.corporate_memberships.utils import (
+                                            corp_membership_update_perms,
+                                            dues_rep_emails_list,
+                                            corp_memb_update_perms)
 from tendenci.core.imports.utils import get_unique_username
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
@@ -530,7 +533,22 @@ class CorpMembership(TendenciBaseModel):
 #        if self.renew_entry_id:
 #            self.approve_renewal(request)
 #        else:
-        self.approve_join(request)
+        if not self.renewal:
+            params = {'create_new': False,
+                      'assign_to_user': None}
+            if self.anonymous_creator:
+                [assign_to_user] = User.objects.filter(
+                            first_name=self.anonymous_creator.first_name,
+                            last_name=self.anonymous_creator.last_name,
+                            email=self.anonymous_creator.email
+                                )[:1] or [None]
+                if assign_to_user:
+                    params['assign_to_user'] = assign_to_user
+                    params['create_new'] = False
+                else:
+                    params['create_new'] = True
+
+            self.approve_join(request, **params)
 
         # send notification to administrators
         recipients = get_notice_recipients('module',
@@ -794,6 +812,7 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
+            corp_membership_update_perms(self)
 
             # TODO:
             # assign object permissions
