@@ -81,6 +81,9 @@ class Type(models.Model):
     def __unicode__(self):
         return self.name
 
+    def event_count(self):
+        return self.event_set.count()
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Type, self).save(*args, **kwargs)
