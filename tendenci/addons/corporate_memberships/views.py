@@ -510,19 +510,13 @@ def corpmembership_search(request,
             else:
                 q_obj = q_obj_or
 
-        if get_setting('site', 'global', 'searchindex') and query:
-            corp_members = CorpMembership.objects.search(query,
-                                                         user=request.user)
-            if q_obj:
-                corp_members = corp_members.filter(q_obj)
+        if query:
+            corp_members = CorpMembership.objects.filter(
+                                corp_profile__name__icontains=query)
         else:
-            if q_obj:
-                corp_members = CorpMembership.objects.filter(q_obj)
-            else:
-                corp_members = CorpMembership.objects.all()
-            if query:
-                corp_members = corp_members.filter(
-                            corp_profile__name__contains=query)
+            corp_members = CorpMembership.objects.all()
+        if q_obj:
+            corp_members = corp_members.filter(q_obj)
 
     if cm_id:
         corp_members = corp_members.filter(id=cm_id)

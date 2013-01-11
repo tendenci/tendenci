@@ -173,4 +173,13 @@ div.forms div.form-field input.timepicker{
 }
 .disapproved .meta, .disapproved{
 	background-color: #ccc !important;
+}
+
+/* search */
+.field-label{
+    font-weight: bold;
+    margin-right: 3px;
+}
+.indiv-join-link{
+    font-size: 1.2em;
 }	

@@ -7,39 +7,38 @@
     <div class="corpmember-box">
         <div class="corpmember-box-header"><a href="{% url corpmembership.view corporate_membership.pk %}">{{ corp_profile.name }}</a></div>
         <div class="corpmember-box-body">
-            <div class="float-left label">{% trans "Address: " %}</div>
+            <div class="float-left field-label">{% trans "Address: " %}</div>
             <div class="float-left">
                 {% if corp_profile.address or corp_profile.address2 %}
                     {{ corp_profile.address }} {{ corp_profile.address2 }} <br />
                 {% endif %}
                 
                 {% if corp_profile.city %}{{ corp_profile.city }}{% endif %} {% if corp_profile.state %}{{ corp_profile.state }}{% endif %} 
-                {% if corp_profile.zip %}{{ corp_profile.zip }}{% endif %} {% if corp_profile.country %}{{ corp_profile.country }}{% endif %}
-                
-                
+                {% if corp_profile.zip %}{{ corp_profile.zip }}{% endif %} {% if corp_profile.country %}{{ corp_profile.country }}{% endif %}            
             </div>
             <div class="clear-left"></div>
             
             <div class="corpmember-left float-left">
                 {% if corp_profile.phone %}
-                <div><span class="label">{% trans "Phone:" %}</span> {{ corp_profile.phone }}</div>
+                <div><span class="field-label">{% trans "Phone:" %}</span> {{ corp_profile.phone }}</div>
                 {% endif %}
                 {% if corp_profile.url %}
-                <div><span class="label">{% trans "Website:" %}</span> {{ corp_profile.url|safe|urlize }}</div>
+                <div><span class="field-label">{% trans "Website:" %}</span> {{ corp_profile.url|safe|urlize }}</div>
                 {% endif %}
-                <div><span class="label">{% trans "Member Type:" %}</span> {{ corporate_membership.corporate_membership_type.name }}
+                <div><span class="field-label">{% trans "Member Type:" %}</span> {{ corporate_membership.corporate_membership_type.name }}
                 {% if corporate_membership.invoice %}
                     - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total }}
                 {% endif %}
                 </div>
                 {% if corporate_membership.status and corporate_membership.status_detail == "active" %}
-                <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
+                <div class="indiv-join-link">
+                    <a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
                 {% endif %}
             </div>
             
             <div class="corpmember-right float-left">
-                <div><span class="label">{% trans "Join Date:" %}</span> {{ corporate_membership.join_dt|date:'Y-n-j' }}</div>
-                <div><span class="label">{% trans "Expiration Date:" %}</span> {% if corporate_membership.expiration_dt %}
+                <div><span class="field-label">{% trans "Join Date:" %}</span> {{ corporate_membership.join_dt|date:'Y-n-j' }}</div>
+                <div><span class="field-label">{% trans "Expiration Date:" %}</span> {% if corporate_membership.expiration_dt %}
                                     {{ corporate_membership.expiration_dt|date:'Y-n-j' }}
                                     {% else %}
                                     {% trans "Never Expire" %}
