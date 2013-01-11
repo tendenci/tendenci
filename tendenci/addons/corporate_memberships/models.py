@@ -529,11 +529,9 @@ class CorpMembership(TendenciBaseModel):
         from tendenci.core.perms.utils import get_notice_recipients
 
         # approve it
-        # TODO: renewal
-#        if self.renew_entry_id:
-#            self.approve_renewal(request)
-#        else:
-        if not self.renewal:
+        if self.renewal:
+            self.approve_renewal(request)
+        else:
             params = {'create_new': False,
                       'assign_to_user': None}
             if self.anonymous_creator:
@@ -902,6 +900,8 @@ class CorpMembership(TendenciBaseModel):
         return (start_dt, end_dt)
 
     def can_renew(self):
+        if self.status_detail == 'archive':
+            return False
         if not self.expiration_dt or not isinstance(self.expiration_dt,
                                                     datetime):
             return False
@@ -932,10 +932,16 @@ class CorpMembership(TendenciBaseModel):
 
     @property
     def is_expired(self):
-        if not self.expiration_dt or not isinstance(self.expiration_dt,
-                                                    datetime):
-            return False
-        return datetime.now() >= self.expiration_dt
+        if self.status_detail.lower() in ('active', 'expired'):
+            if not self.expiration_dt or not isinstance(self.expiration_dt,
+                                                        datetime):
+                return False
+            return datetime.now() >= self.expiration_dt
+        return False
+
+    @property
+    def is_archive(self):
+        return self.status_detail.lower() in ('archive',)
 
     @property
     def is_in_grace_period(self):

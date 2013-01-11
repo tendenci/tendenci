@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<p>{% blocktrans with object.name as objname and request.user.get_full_name as requser %}The corporate membership "{{ objname }}" has been renewed by {{ requser }}.{% endblocktrans %}
+<p>{% blocktrans with object.corp_profile.name as objname and request.user.username as requser %}The corporate membership "{{ objname }}" has been renewed by {{ requser }}.{% endblocktrans %}
 </p>
 
 {% if invoice.balance <= 0 %}

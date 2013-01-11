@@ -50,6 +50,14 @@
                         <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve corporate_membership.pk %}">{% trans "Approve / Disapprove" %}</a>
                         </div>
                  {% endif %}
+                 {% if corporate_membership.can_renew %}
+                    <a href="{% url corpmembership.renew corporate_membership.id %}" style="background-color:yellow;" title="Renew">{% trans "Renew" %}</a>
+                {% else %}
+                    {% if corporate_membership.is_expired and request.user.is_superuser %}
+                     <a href="{% url corpmembership.renew corporate_membership.id %}" style="background-color:yellow;" title="Admin: Renew">{% trans "Admin: Renew" %}</a>
+            
+                    {% endif %}
+                {% endif %}
                 
             </div>
             <div class="clear-left"></div>

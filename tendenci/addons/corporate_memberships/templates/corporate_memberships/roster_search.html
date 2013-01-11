@@ -77,7 +77,7 @@
 			<td width="20%">{% trans "Member Type:" %}</td>
 			<td width="40%">{{ corp_membership.corporate_membership_type.name }}</td>
 			<td width="20%">{% trans "Expiration Date:" %}</td>
-			<td width="40%">{% if corp_memb.expiration_dt %}
+			<td width="40%">{% if corp_membership.expiration_dt %}
 			    							{{ corp_membership.expiration_dt|date:'Y-n-j' }}
 			    							{% else %}
 			    							{% trans "Never Expire" %}
