@@ -32,7 +32,7 @@
         <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
         {% endif %}
         {% if profile.phone %}
-        <b>{% trans "Phone:" %}</b> {{ profile.phone }}<br />
+        <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
         {% endif %}
         {% if profile.company %}
         <b>{% trans "Company:" %}</b> {{ profile.company }}<br />

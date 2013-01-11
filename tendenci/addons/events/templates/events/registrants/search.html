@@ -97,10 +97,10 @@
 		            	<h2>{% firstof registrant.name registrant.email %}</h2>
 		
 						{% if registrant.phone and registrant.email %}
-						<div>{{ registrant.phone }} &middot; {{ registrant.email }}</div>
+						<div>{{ registrant.phone|phonenumber }} &middot; {{ registrant.email }}</div>
 						{% else %}
 							{% if registrant.phone %}
-							<div>{{ registrant.phone }}</div>	
+							<div>{{ registrant.phone|phonenumber }}</div>	
 							{% else %}
 								{% if registrant.email %}
 								<div>{{ registrant.email }}</div>

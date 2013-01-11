@@ -29,7 +29,7 @@
 
 		<div class="row phone-row">
 			<div class="label">{% trans "Phone" %}</div>
-			<div class="value">{{ contact.phones.all.0.number }} &nbsp;</div>
+			<div class="value">{{ contact.phones.all.0.number|phonenumber }} &nbsp;</div>
 			<div style="clear:both;"></div>
 		</div>
 

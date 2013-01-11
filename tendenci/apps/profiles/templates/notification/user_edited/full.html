@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load base_filters %}
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd"> 
@@ -149,14 +150,14 @@
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.phone %}
-					{{ old_profile.phone }}</font></div></td>
+					{{ old_profile.phone|phonenumber }}</font></div></td>
 				{% else %}
 					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				{{ profile.phone}}</font></div></td>
+				{{ profile.phone|phonenumber}}</font></div></td>
 				</tr>
 	{% endif %}
 				
@@ -169,14 +170,14 @@
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.phone2 %}
-					{{ old_profile.phone2 }}</font></div></td>
+					{{ old_profile.phone2|phonenumber }}</font></div></td>
 				{% else %}
 					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				{{ profile.phone2}}</font></div></td>
+				{{ profile.phone2|phonenumber}}</font></div></td>
 				</tr>
 	{% endif %}
 				
@@ -189,14 +190,14 @@
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.home_phone %}
-					{{ old_profile.home_phone }}</font></div></td>
+					{{ old_profile.home_phone|phonenumber }}</font></div></td>
 				{% else %}
 					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				{{ profile.home_phone}}</font></div></td>
+				{{ profile.home_phone|phonenumber}}</font></div></td>
 				</tr>
 	{% endif %}
 				
@@ -209,14 +210,14 @@
 					 <font face="Arial, Helvetica, sans-serif" size="2">
 				
 				{% if old_profile.work_phone %}
-					{{ old_profile.work_phone }}</font></div></td>
+					{{ old_profile.work_phone|phonenumber }}</font></div></td>
 				{% else %}
 					{% trans "BLANK" %}</font></div></td>
 				{% endif %}
 				
 				  <td valign="top"><div align="left">
 					 <font face="Arial, Helvetica, sans-serif" size="2">
-				{{ profile.work_phone}}</font></div></td>
+				{{ profile.work_phone|phonenumber}}</font></div></td>
 				</tr>
 	{% endif %}
 				

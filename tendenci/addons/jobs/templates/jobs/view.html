@@ -140,7 +140,7 @@
 		<h2>{% trans "Contact Information" %}</h2>
 		<div class="contact-wrap">
 			<div>{{ job.contact_name }}</div>
-			<div>{% trans "Phone:" %} {{ job.contact_phone }}</div>
+			<div>{% trans "Phone:" %} {{ job.contact_phone|phonenumber }}</div>
 			<div>{% trans "Fax:" %} {{ job.contact_fax }}</div>
 			<div>{{ job.contact_email|obfuscate_email }}</div>
 			<div>{{ job.contact_website|urlize }}</div>

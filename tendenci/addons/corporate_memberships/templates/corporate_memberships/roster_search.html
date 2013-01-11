@@ -69,7 +69,7 @@
 		{% endif %}
 		<tr>
 			<td width="20%">{% trans "Phone:" %}</td>
-			<td width="40%">{{ corp_profile.phone }}</td>
+			<td width="40%">{{ corp_profile.phone|phonenumber }}</td>
 			<td width="20%">{% trans "Join Date:" %}</td>
 			<td width="40%">{{ corp_membership.join_dt|date:'Y-n-j' }}</td>
 		</tr>

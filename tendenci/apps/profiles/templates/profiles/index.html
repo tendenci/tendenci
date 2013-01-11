@@ -85,7 +85,7 @@
             {% if not profile.hide_phone %}
 			<tr>
 				<td>Phone</td>
-				<td>{% firstof profile.phone profile.phone2 %}</td>
+				<td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
 			</tr>
             {% endif %}
             {% endif %}

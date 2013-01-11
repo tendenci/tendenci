@@ -13,7 +13,7 @@
                 <div><strong>{% trans "Contact:" %}</strong> {{ article.first_name }} {{ article.last_name }}</div>
             {% endif %}	
             {% if article.phone %}
-                <div><strong>{% trans "Phone:" %}</strong> {{ article.phone }}</div>	
+                <div><strong>{% trans "Phone:" %}</strong> {{ article.phone|phonenumber }}</div>	
             {% endif %}	
             {% if article.fax %}
                 <div><strong>{% trans "Fax:" %}</strong> {{ article.fax }}</div>	
