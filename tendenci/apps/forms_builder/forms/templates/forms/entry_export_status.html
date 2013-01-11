@@ -1,0 +1,49 @@
+{% extends "forms/base.html" %}
+{% load i18n %}
+{% load forms_tags %}
+
+{% block title %}{{ block.super }}{% trans "Entries Export" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+ {% forms_nav request.user %}
+    <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} {% trans "Entries Export" %}</h1>
+    
+    <div id="wait">
+        <p>{% trans "Please wait." %}. <img src="{{ STATIC_URL }}images/ajax-loader.gif"></p>
+    </div>
+    
+    <div id="done" style="display:none;">
+        <p>{% trans "Your file is being downloaded." %}</p>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+<script type="text/javascript">
+function refresh(){
+    $.ajax({
+        url: "{% url form_entries_export_check task_id %}",
+        success: function(data){
+            if (data != "DNE"){
+                $("#done").show();
+                $("#wait").hide();
+                window.location = "{% url form_entries_export_download task_id %}"
+            } else {
+                setTimeout(refresh, 2000);
+            }
+        }
+    });
+}
+$(document).ready(function(){
+    refresh();
+});
+</script>
+{% endblock %}
