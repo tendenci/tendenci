@@ -28,6 +28,9 @@
                 <div><span class="field-label">{% trans "Member Type:" %}</span> {{ corporate_membership.corporate_membership_type.name }}
                 {% if corporate_membership.invoice %}
                     - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total }}
+                    {% if request.user.is_superuser %}
+                    <a href="{% url invoice.view corporate_membership.id %}">View Invoice</a>
+                    {% endif %}
                 {% endif %}
                 </div>
                 {% if corporate_membership.status and corporate_membership.status_detail == "active" %}
@@ -44,7 +47,11 @@
                                     {% trans "Never Expire" %}
                                     {% endif %}
                 </div>
-                
+                {% if request.user.is_superuser and not corporate_membership.is_archive %}
+                    {% with corporate_membership.members_count as mcount %}
+                    {{ mcount }} Member{{ mcount|pluralize }}
+                    {% endwith %}
+                {% endif %}
                  {% if request.user.is_superuser and corporate_membership.is_join_pending %}
                         <div class="pending-info-box">
                         <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve corporate_membership.pk %}">{% trans "Approve / Disapprove" %}</a>

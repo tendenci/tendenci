@@ -975,6 +975,17 @@ class CorpMembership(TendenciBaseModel):
 
         return mark_safe(value)
 
+    @property
+    def members_count(self):
+        """
+        Count of the individual members.
+        """
+        return MembershipDefault.objects.filter(
+                        corp_profile_id=self.corp_profile.id,
+                        status=True
+                            ).exclude(
+                        status_detail='archive').count()
+
 
 class CorpMembershipApp(TendenciBaseModel):
     guid = models.CharField(max_length=50)
