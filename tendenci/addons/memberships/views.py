@@ -1346,12 +1346,15 @@ def membership_default_add(request,
 
     user_form = UserForm(app_fields, request.POST or None)
     profile_form = ProfileForm(app_fields, request.POST or None)
+    params = {'request_user': request.user,
+              'membership_app': app,
+              'join_under_corporate': join_under_corporate,
+              'corp_membership': corp_membership
+              }
+    if join_under_corporate:
+        params['authentication_method'] = authentication_method
     membership_form = MembershipDefault2Form(app_fields,
-        request.POST or None,
-        request_user=request.user, membership_app=app,
-        join_under_corporate=join_under_corporate,
-        corp_membership=corp_membership,
-        authentication_method=authentication_method)
+        request.POST or None, **params)
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
