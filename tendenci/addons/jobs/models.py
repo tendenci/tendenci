@@ -218,9 +218,8 @@ class JobPricing(models.Model):
         permissions = (("view_jobpricing", "Can view job pricing"),)
 
     def __unicode__(self):
-        if self.title:
-            return self.title
-        return "Untitled: %s Days" % self.duration
+        price = "%s/%s" % (self.regular_price, self.premium_price)
+        return "%s: %s Days for %s" % (self.get_title(), self.duration, price)
 
     def get_title(self):
         if self.title:

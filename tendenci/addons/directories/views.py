@@ -11,6 +11,7 @@ from django.template.defaultfilters import slugify
 from django.conf import settings
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import escape
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
@@ -377,6 +378,9 @@ def pricing_add(request, form_class=DirectoryPricingForm, template_name="directo
                 directory_pricing.status = 1
                 directory_pricing.save(request.user)
                 
+                if "_popup" in request.REQUEST:
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(directory_pricing.pk), escape(directory_pricing)))
+
                 return HttpResponseRedirect(reverse('directory_pricing.view', args=[directory_pricing.id]))
         else:
             form = form_class(user=request.user)

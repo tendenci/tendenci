@@ -223,7 +223,9 @@ class DirectoryPricing(models.Model):
         permissions = (("view_directorypricing", "Can view directory pricing"),)
     
     def __unicode__(self):
-        return "Directory Pricing %s" % (self.id)
+        currency_symbol = get_setting('site', 'global', 'currencysymbol')
+        price = "%s%s(R)/%s(P)" % (currency_symbol, self.regular_price, self.premium_price)
+        return "%d days for %s" % (self.duration, price)
 
     def save(self, user=None, *args, **kwargs):
         if not self.id:

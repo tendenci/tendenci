@@ -17,7 +17,8 @@ from tendenci.apps.user_groups.models import Group
 
 
 request_duration_defaults = {
-    'help_text': mark_safe('<a href="%s">Add pricing options</a>' % '/jobs/pricing/add/')
+    'label': _('Requested Duration'),
+    'help_text': mark_safe('<a href="%s" id="add_id_pricing">Add Pricing Options</a>' % '/jobs/pricing/add/'),
 }
 
 DURATION_CHOICES = (
@@ -42,7 +43,6 @@ STATUS_CHOICES = (
     (1, 'Active'),
     (0, 'Inactive'),
 )
-
 
 class JobForm(TendenciBaseForm):
 
@@ -84,9 +84,8 @@ class JobForm(TendenciBaseForm):
 
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
-    pricing = forms.ModelChoiceField(
-        label=_('Requested Duration'),
-        queryset=JobPricing.objects.filter(status=True).order_by('duration'))
+    pricing = forms.ModelChoiceField(queryset=JobPricing.objects.filter(status=True).order_by('duration'),
+                **request_duration_defaults)
 
     class Meta:
         model = Job

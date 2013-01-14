@@ -34,7 +34,7 @@
 	{% endif %}
 
     <div class="jobpricing-wrap">
-    <form action="." method="post">{% csrf_token %}
+    <form action="" method="post">{% csrf_token %}
     	<div class="forms">
 			<div class="pricing-item">
 				<div class="errs">{{ form.duration.errors }}</div>
@@ -98,4 +98,11 @@
  
 
 </div>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript" src="/admin/jsi18n/"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
 {% endblock %}

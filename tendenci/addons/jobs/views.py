@@ -12,6 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import escape
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import now_localized
@@ -474,6 +475,7 @@ def delete(request, id, template_name="jobs/delete.html"):
 @login_required
 def pricing_add(request, form_class=JobPricingForm,
                     template_name="jobs/pricing-add.html"):
+
     if has_perm(request.user, 'jobs.add_jobpricing'):
         if request.method == "POST":
             form = form_class(request.POST)
@@ -483,6 +485,9 @@ def pricing_add(request, form_class=JobPricingForm,
                 job_pricing.save(request.user)
 
                 EventLog.objects.log(instance=job_pricing)
+
+                if "_popup" in request.REQUEST:
+                    return HttpResponse('<script type="text/javascript">opener.dismissAddAnotherPopup(window, "%s", "%s");</script>' % (escape(job_pricing.pk), escape(job_pricing)))
 
                 return HttpResponseRedirect(
                     reverse('job_pricing.view', args=[job_pricing.id]))
