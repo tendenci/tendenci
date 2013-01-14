@@ -2722,6 +2722,41 @@ class AppFieldEntry(models.Model):
         return None
 
 
+class MembershipDemographic(models.Model):
+    user = models.OneToOneField(User, related_name="demographics", verbose_name=_('user'))
+
+    ud1 = models.TextField(blank=True, default=u'')
+    ud2 = models.TextField(blank=True, default=u'')
+    ud3 = models.TextField(blank=True, default=u'')
+    ud4 = models.TextField(blank=True, default=u'')
+    ud5 = models.TextField(blank=True, default=u'')
+    ud6 = models.TextField(blank=True, default=u'')
+    ud7 = models.TextField(blank=True, default=u'')
+    ud8 = models.TextField(blank=True, default=u'')
+    ud9 = models.TextField(blank=True, default=u'')
+    ud10 = models.TextField(blank=True, default=u'')
+    ud11 = models.TextField(blank=True, default=u'')
+    ud12 = models.TextField(blank=True, default=u'')
+    ud13 = models.TextField(blank=True, default=u'')
+    ud14 = models.TextField(blank=True, default=u'')
+    ud15 = models.TextField(blank=True, default=u'')
+    ud16 = models.TextField(blank=True, default=u'')
+    ud17 = models.TextField(blank=True, default=u'')
+    ud18 = models.TextField(blank=True, default=u'')
+    ud19 = models.TextField(blank=True, default=u'')
+    ud20 = models.TextField(blank=True, default=u'')
+    ud21 = models.TextField(blank=True, default=u'')
+    ud22 = models.TextField(blank=True, default=u'')
+    ud23 = models.TextField(blank=True, default=u'')
+    ud24 = models.TextField(blank=True, default=u'')
+    ud25 = models.TextField(blank=True, default=u'')
+    ud26 = models.TextField(blank=True, default=u'')
+    ud27 = models.TextField(blank=True, default=u'')
+    ud28 = models.TextField(blank=True, default=u'')
+    ud29 = models.TextField(blank=True, default=u'')
+    ud30 = models.TextField(blank=True, default=u'')
+
+
 # Moved from management/__init__.py to here because it breaks
 # the management commands due to the ImportError.
 # assign models permissions to the admin auth group
