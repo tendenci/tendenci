@@ -1,4 +1,3 @@
-Running `python manage.py dumpdata news --indent 4` attached to terminal... up, run.8757
 [
     {
         "pk": 1,
