@@ -133,8 +133,12 @@
         {% for membership in memberships %}
         		<tr>
         			<td>
+                        {% if request.user.profile.is_superuser %}
         				<a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.member_number }} {{ membership.membership_type }}
         				</a>
+                        {% else %}
+                        {{ membership.member_number }} {{ membership.membership_type }}
+                        {% endif %}
         			</td>
         			<td>
 
