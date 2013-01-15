@@ -121,13 +121,11 @@
 	</div>
     {% endif %} 
 
-    {% if request.user.profile.is_superuser %}
+    {% if request.user == user_this or request.user.profile.is_superuser %}
     <div class="membership info">
 
 		<h2>Memberships 
-		{% if request.user == user_this or admin %}
 		<a title="Join membership" href="{% url membership_default.add %}" class="glyph plus">+</a>
-		{% endif %}
 		</h2>
 
 		{% if memberships %}
@@ -140,6 +138,7 @@
         			</td>
         			<td>
 
+
                         {{ membership.join_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
                         (grace period: 
@@ -148,7 +147,7 @@
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
                         {% if membership.can_renew %}
-                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">Renew</a>
+                        <a href="{% url membership_default.add %}">Renew</a>
                         {% endif %}
 
 	        		</td>
