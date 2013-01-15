@@ -714,16 +714,8 @@ class MembershipDefault(TendenciBaseModel):
     def get_status(self):
         """
         Returns status of membership
-        'expired', 'approved', 'pending', 'disapproved', archive'
+        'pending', 'active', 'disapproved', 'expired', 'archived'
         """
-
-        if self.is_active():
-
-            if self.is_approved():
-                return 'active'
-            else:
-                return 'expired'
-
         return self.status_detail.lower()
 
     def copy(self):
