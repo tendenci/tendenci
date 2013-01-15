@@ -866,17 +866,17 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
 
     similar_name = []
     similar_email = []
-    user_distinct_name = User.objects.distinct("first_name", "last_name")
-    user_distinct_email = User.objects.distinct("email")
+    user_distinct_name = Profile.objects.distinct("user__first_name", "user__last_name")
+    user_distinct_email = Profile.objects.distinct("user__email")
 
-    for user in user_distinct_name:
-        if len(User.objects.filter(first_name=user.first_name).filter(last_name=user.last_name)) > 1:
-            similar_name.append(User.objects.filter(first_name=user.first_name)
-                    .filter(last_name=user.last_name))
+    for profile in user_distinct_name:
+        if len(Profile.objects.filter(user__first_name=profile.user.first_name).filter(user__last_name=profile.user.last_name)) > 1:
+            similar_name.append(Profile.objects.filter(user__first_name=profile.user.first_name)
+                    .filter(user__last_name=profile.user.last_name))
 
-    for user in user_distinct_email:
-        if len(User.objects.filter(email=user.email)) > 1:
-            similar_email.append(User.objects.filter(email=user.email))
+    for profile in user_distinct_email:
+        if len(Profile.objects.filter(user__email=profile.user.email)) > 1:
+            similar_email.append(Profile.objects.filter(user__email=profile.user.email))
             
     return render_to_response(template_name, {
         'similar_name':similar_name,
