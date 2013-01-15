@@ -2329,7 +2329,7 @@ class AppEntry(TendenciBaseModel):
         user.memberships.filter(
             membership_type=self.membership_type,
             status=True,
-            status_detail='active'
+            status_detail__in=['pending', 'active', 'expired']
         ).update(status_detail='archive')
 
         # look for previous member number
