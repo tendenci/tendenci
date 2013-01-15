@@ -699,7 +699,7 @@ class MembershipDefault(TendenciBaseModel):
         self.is_active()
         self.application_approved
         """
-        if self.is_active() and self.application_approved:
+        if self.is_active():
 
             # membership does not expire
             if self.is_forever():
