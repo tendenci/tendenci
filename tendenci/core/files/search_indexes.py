@@ -11,6 +11,7 @@ from tendenci.core.categories.models import Category
 class FileIndex(TendenciBaseSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     file = indexes.CharField(model_attr='file')
+    group_id = indexes.CharField(model_attr='group')
     description = indexes.CharField(model_attr='description')
 
     type = indexes.CharField()
