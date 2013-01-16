@@ -197,7 +197,7 @@ setup(
         "johnny-cache==1.4",
         "docutils==0.9.1",
         'chardet==2.1.1',
-        "django-model-report==0.0.9",
+        "django-model-report==0.0.11",
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
         "gunicorn==0.16.1",
