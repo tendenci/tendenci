@@ -145,7 +145,7 @@ setup(
     include_package_data=True,
     dependency_links=[
         "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.11",
-        "http://a.pypi.python.org/",
+        "http://b.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
     install_requires=[
