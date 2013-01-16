@@ -12,6 +12,7 @@ from tendenci.core.categories.models import Category
 class ArticleIndex(TendenciBaseSearchIndex):
     headline = indexes.CharField(model_attr='headline')
     body = indexes.CharField(model_attr='body')
+    group_id = indexes.CharField(model_attr='group')
     release_dt = indexes.DateTimeField(model_attr='release_dt', null=True)
     syndicate = indexes.BooleanField(model_attr='syndicate')
 
