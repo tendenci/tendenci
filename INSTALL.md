@@ -43,7 +43,7 @@ Next, we install requirements for the project. We add tendenci videos as an exam
 Now we are ready to use our deploy script and setup our theme.
 
     python deploy.py
-    python manage.py set_theme salonify
+    python manage.py set_theme twenty-thirteen
 
 To create your login, run the following command and fill in the prompts:
 
@@ -103,10 +103,10 @@ To create and configure the database, run the following commands:
 
 ## Setting up the database
 
-Next, we can run the deploy script to populate the database. The theme `salonify` is used below by default, but you may create a custom theme and set your theme to that themes.
+Next, we can run the deploy script to populate the database. The theme `twenty-thirteen` is used below by default, but you may create a custom theme and set your theme to that themes.
 
     heroku run python deploy.py
-    heroku run python manage.py set_theme salonify
+    heroku run python manage.py set_theme twenty-thirteen
     heroku run python manage.py createsuperuser
 
 ## Configuring static assets

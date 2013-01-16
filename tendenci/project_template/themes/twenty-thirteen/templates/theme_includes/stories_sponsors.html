@@ -1,0 +1,23 @@
+{% load theme_tags %}
+{% load story_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% list_stories as sponsor_stories random=true limit=1 tags="featured-sponsor" %}
+<section id="stories-sponsors">
+    <h3>Sponsors</h3>
+    <div id="sponsor-items">
+    {% if sponsor_stories %}
+    {% for story in sponsor_stories %}
+        {% if story.image %}
+        <a href="{{ story.full_story_link }}"><img alt="{{ story.title }}" src="{% image_url story.image size=160x150 crop=true quality=94 %}" /></a>
+        {% endif %}
+    {% endfor %}
+    {% else %}
+    {% for item in sponsor_stories random="true" limit=1 %}
+        <img alt="Twenty-Thirteen Theme Sponsor" src="{% stock_image_url size=160x150 crop=true %}" />
+    {% endfor %}
+        {% if user.is_authenticated %}<p><a href="/stories/add/?tags=featured-sponsor">Add a story</a> and tag it <strong>featured-sponsor</strong> to have it appear as an image above.</p>{% endif %}
+    {% endif %}
+    </div>
+</section>
+{% theme_setting setting_name %}
