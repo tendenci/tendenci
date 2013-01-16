@@ -1135,7 +1135,8 @@ class RegistrationForm(forms.Form):
         if self.is_valid() and hasattr(self.cleaned_data, 'discount_code') and \
                 self.cleaned_data['discount_code']:
             try:
-                discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'])
+                discount = Discount.objects.get(discount_code=self.cleaned_data['discount_code'],
+                                                apps__model=RegistrationConfiguration._meta.module_name)
                 if discount.available_for(self.count):
                     return discount
             except:

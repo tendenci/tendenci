@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes import generic
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
@@ -16,6 +17,7 @@ class Discount(TendenciBaseModel):
     discount_code = models.CharField(max_length=100, unique=True, help_text=_('Discount codes must be unique.'))
     start_dt = models.DateTimeField(_('Start Date/Time'))
     end_dt = models.DateTimeField(_('Start Date/Time'))
+    apps = models.ManyToManyField(ContentType, verbose_name=_('Applications'), help_text=_('Select the applications that can use this discount.'))
     never_expires = models.BooleanField(_('Never Expires'), help_text=_('Check this box to make the discount code never expire.'))
     value = models.DecimalField(_('Discount Value'), max_digits=10, decimal_places=2, help_text=_('Enter discount value as a positive number.'))
     cap = models.IntegerField(_('Maximum Uses'), help_text=_('Enter 0 for unlimited discount code uses.'))
@@ -60,11 +62,12 @@ class Discount(TendenciBaseModel):
     @staticmethod
     def has_valid_discount(**kwargs):
         now = datetime.now()
+        model = kwargs.pop('model', None)
         discount_exists = Discount.objects.filter(
                             Q(never_expires=True) |
                             Q(start_dt__lt=now,
                             end_dt__gte=now)
-                            ).exists()
+                            ).filter(apps__model=model).exists()
         return discount_exists
     
 class DiscountUse(models.Model):

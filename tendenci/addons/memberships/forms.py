@@ -1,6 +1,7 @@
 import sys
 from uuid import uuid4
 from captcha.fields import CaptchaField
+from decimal import Decimal
 from os.path import join
 from datetime import datetime
 from hashlib import md5
@@ -41,6 +42,8 @@ from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.addons.educations.models import Education
 from tendenci.addons.careers.models import Career
 from tendenci.apps.entities.models import Entity
+from tendenci.apps.discounts.models import Discount
+from tendenci.apps.discounts.utils import assign_discount
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -515,8 +518,9 @@ def assign_fields(form, app_field_objs):
     field_names = [field.field_name for field in app_field_objs \
                    if field.field_name != '' and \
                    field.field_name in form_field_keys]
+    
     for name in form_field_keys:
-        if name not in field_names:
+        if name not in field_names and name != 'discount_code':
             del form.fields[name]
     # update the field attrs - label, required...
     for obj in app_field_objs:
@@ -726,6 +730,7 @@ class MembershipDefault2Form(forms.ModelForm):
     ud29 = forms.CharField(widget=forms.TextInput)
     ud30 = forms.CharField(widget=forms.TextInput)
 
+    discount_code = forms.CharField(label=_('Discount Code'), required=False)
     class Meta:
         model = MembershipDefault
 
@@ -819,6 +824,18 @@ class MembershipDefault2Form(forms.ModelForm):
 
         kwargs['commit'] = False
         membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
+
+        # apply discount if any
+        amount_list = [membership.membership_type.price]
+        discount_code = self.cleaned_data.get('discount_code', None)
+        discount_amount = Decimal(0)
+        discount_list = [Decimal(0) for i in range(len(amount_list))]
+        if discount_code:
+            [discount] = Discount.objects.filter(discount_code=discount_code,
+                            apps__model=MembershipDefault._meta.module_name)[:1] or [None]
+            if discount and discount.available_for(1):
+                amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
+        membership.discount_amount = discount_amount
 
         # assign corp_profile_id
         if membership.corporate_membership_id:

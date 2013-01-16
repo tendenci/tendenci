@@ -81,7 +81,6 @@ from tendenci.addons.events.utils import (email_registrants,
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
 from tendenci.addons.events.addons.utils import get_available_addons
-from tendenci.apps.discounts.models import Discount
 from tendenci.core.base.utils import convert_absolute_urls
 from tendenci.apps.redirects.models import Redirect
 
@@ -1183,7 +1182,7 @@ def register(request, event_id=0,
     # check if we have any valid discount code for the event.
     # if not, we don't have to display the discount code box.
     if reg_conf.discount_eligible:
-        reg_conf.discount_eligible = Discount.has_valid_discount()
+        reg_conf.discount_eligible = Discount.has_valid_discount(model=reg_conf._meta.module_name)
 
     # Setting up the formset
     registrant = RegistrantFormSet(post_data or None, **params)

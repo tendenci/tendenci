@@ -70,7 +70,7 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
         if form.is_valid():
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
-
+            form.save_m2m()
             messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
@@ -95,7 +95,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
         if form.is_valid():
             discount = form.save(commit=False)
             discount = update_perms_and_save(request, form, discount)
-
+            form.save_m2m()
             messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % discount)
             return redirect('discount.detail', id=discount.id)
     else:
@@ -175,6 +175,29 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
                     "total": unicode(total),
                     "message": "%sYour discount of $%s %s has been added." % (unicode(msg), unicode(discount_total), 
                                                                                discount_detail),
+                }), mimetype="text/plain")
+        return HttpResponse(json.dumps(
+            {
+                "error": True,
+                "message": "This is not a valid discount code.",
+            }), mimetype="text/plain")
+    else:
+        form = form_class()
+    return HttpResponse(
+        "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
+        mimetype="text/html")
+
+
+@is_enabled('discounts')
+@csrf_exempt
+def check_discount(request, form_class=DiscountHandlingForm):
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            return HttpResponse(json.dumps(
+                {
+                    "error": False,
+                    "message": "A discount of $%s has been added." % (form.discount.value),
                 }), mimetype="text/plain")
         return HttpResponse(json.dumps(
             {

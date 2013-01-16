@@ -331,6 +331,10 @@ class MembershipDefault(TendenciBaseModel):
     payment_method = models.ForeignKey(PaymentMethod, null=True)
     override = models.BooleanField(default=False)
     override_price = models.FloatField(null=True)
+    discount_amount = models.DecimalField(_('Discount Amount'), 
+                                          max_digits=10, 
+                                          decimal_places=2,
+                                          default=0)
     exported = models.BooleanField()
     chapter = models.CharField(max_length=150, blank=True)
     areas_of_expertise = models.CharField(max_length=1000, blank=True)
@@ -993,7 +997,7 @@ class MembershipDefault(TendenciBaseModel):
         if self.user.profile.can_renew2():
             return self.membership_type.renewal_price or 0
         else:
-            return self.membership_type.price + (self.membership_type.admin_fee or 0)
+            return self.membership_type.price + (self.membership_type.admin_fee or 0) - self.discount_amount
 
     def qs_memberships(self, **kwargs):
         """
@@ -1812,7 +1816,7 @@ class MembershipApp(TendenciBaseModel):
                                               verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
-
+    discount_eligible = models.BooleanField(default=True)
     use_for_corp = models.BooleanField(_("Use for Corporate Individuals"),
                                        default=True)
     objects = MembershipAppManager()

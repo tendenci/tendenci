@@ -46,6 +46,7 @@ from reports import ReportNewMems
 from tendenci.core.files.models import File
 from tendenci.core.exports.utils import render_csv, run_export_task
 
+from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, MembershipImport, MembershipDefault,
@@ -1358,6 +1359,10 @@ def membership_default_add(request,
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
+
+    if (not app.discount_eligible or 
+        not Discount.has_valid_discount(model=MembershipDefault._meta.module_name)):
+        del membership_form.fields['discount_code']
 
     if request.method == 'POST':
 
