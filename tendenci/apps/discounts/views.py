@@ -156,10 +156,17 @@ def discounted_price(request, form_class=DiscountCodeForm):
 
 @is_enabled('discounts')
 @csrf_exempt
-def discounted_prices(request, form_class=DiscountHandlingForm):
+def discounted_prices(request, check=False, form_class=DiscountHandlingForm):
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
+            if check:
+                return HttpResponse(json.dumps(
+                {
+                    "error": False,
+                    "message": "A discount of $%s has been added." % (form.discount.value),
+                }), mimetype="text/plain")
+
             price_list, discount_total, discount_list, msg = form.get_discounted_prices()
             total = sum(price_list)
             new_prices = ';'.join([str(price) for price in price_list])
@@ -186,30 +193,6 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
     return HttpResponse(
         "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
         mimetype="text/html")
-
-
-@is_enabled('discounts')
-@csrf_exempt
-def check_discount(request, form_class=DiscountHandlingForm):
-    if request.method == 'POST':
-        form = form_class(request.POST)
-        if form.is_valid():
-            return HttpResponse(json.dumps(
-                {
-                    "error": False,
-                    "message": "A discount of $%s has been added." % (form.discount.value),
-                }), mimetype="text/plain")
-        return HttpResponse(json.dumps(
-            {
-                "error": True,
-                "message": "This is not a valid discount code.",
-            }), mimetype="text/plain")
-    else:
-        form = form_class()
-    return HttpResponse(
-        "<form action='' method='post'>" + form.as_p() + "<input type='submit' value='check'> </form>",
-        mimetype="text/html")
-
 
 @is_enabled('discounts')
 @login_required
