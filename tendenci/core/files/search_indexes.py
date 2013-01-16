@@ -11,11 +11,11 @@ from tendenci.core.categories.models import Category
 class FileIndex(TendenciBaseSearchIndex):
     text = indexes.CharField(document=True, use_template=True)
     file = indexes.CharField(model_attr='file')
-    group_id = indexes.CharField(model_attr='group')
     description = indexes.CharField(model_attr='description')
 
     type = indexes.CharField()
     clicks = indexes.IntegerField()
+    group_id = indexes.IntegerField()
 
     # categories
     category = indexes.CharField()
@@ -30,6 +30,11 @@ class FileIndex(TendenciBaseSearchIndex):
     def prepare_type(self, obj):
         return obj.type()
     
+    def prepare_group_id(self, obj):
+        if obj.group_id:
+            return int(obj.group_id)
+        return int()
+
     def prepare_clicks(self, obj):
         """
         Return integer of views/downloads per file
