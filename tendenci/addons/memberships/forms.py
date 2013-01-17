@@ -865,6 +865,8 @@ class MembershipDefault2Form(forms.ModelForm):
         if membership.application_approved:
             membership.archive_old_memberships()
             membership.save_invoice(status_detail='tendered')
+        else:
+            membership.save_invoice(status_detail='estimate')
 
         return membership
 
