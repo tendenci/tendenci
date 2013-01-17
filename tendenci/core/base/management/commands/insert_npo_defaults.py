@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Inserts default non-profit data"
+    help = "Insert non-profit-organization default data"
 
     def handle(self, **options):
 
@@ -29,5 +29,4 @@ class Command(BaseCommand):
             filename = 'npo_default_%s.json' % suffix
 
             print filename
-
             call_command('loaddata', filename)
