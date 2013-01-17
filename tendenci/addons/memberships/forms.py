@@ -24,7 +24,8 @@ from tendenci.addons.corporate_memberships.models import (CorporateMembership,
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.addons.memberships.models import (Membership, MembershipDefault,
+from tendenci.addons.memberships.models import (Membership,
+    MembershipDefault, MembershipDemographic,
     MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
     MembershipImport, MembershipApp)
 from tendenci.addons.memberships.fields import (TypeExpMethodField, PriceInput,
@@ -681,6 +682,16 @@ class ProfileForm(forms.ModelForm):
         return profile
 
 
+class DemographicsForm(forms.ModelForm):
+    class Meta:
+        model = MembershipDemographic
+
+    def __init__(self, app_field_objs, *args, **kwargs):
+        super(DemographicsForm, self).__init__(*args, **kwargs)
+        assign_fields(self, app_field_objs)
+        self.field_names = [name for name in self.fields.keys()]
+
+
 class MembershipDefault2Form(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', 'Active'),
@@ -695,36 +706,36 @@ class MembershipDefault2Form(forms.ModelForm):
                       (0, 'Inactive')
                       )
 
-    ud1 = forms.CharField(widget=forms.TextInput)
-    ud2 = forms.CharField(widget=forms.TextInput)
-    ud3 = forms.CharField(widget=forms.TextInput)
-    ud4 = forms.CharField(widget=forms.TextInput)
-    ud5 = forms.CharField(widget=forms.TextInput)
-    ud6 = forms.CharField(widget=forms.TextInput)
-    ud7 = forms.CharField(widget=forms.TextInput)
-    ud8 = forms.CharField(widget=forms.TextInput)
-    ud9 = forms.CharField(widget=forms.TextInput)
-    ud10 = forms.CharField(widget=forms.TextInput)
-    ud11 = forms.CharField(widget=forms.TextInput)
-    ud12 = forms.CharField(widget=forms.TextInput)
-    ud13 = forms.CharField(widget=forms.TextInput)
-    ud14 = forms.CharField(widget=forms.TextInput)
-    ud15 = forms.CharField(widget=forms.TextInput)
-    ud16 = forms.CharField(widget=forms.TextInput)
-    ud17 = forms.CharField(widget=forms.TextInput)
-    ud18 = forms.CharField(widget=forms.TextInput)
-    ud19 = forms.CharField(widget=forms.TextInput)
-    ud20 = forms.CharField(widget=forms.TextInput)
-    ud21 = forms.CharField(widget=forms.TextInput)
-    ud22 = forms.CharField(widget=forms.TextInput)
-    ud23 = forms.CharField(widget=forms.TextInput)
-    ud24 = forms.CharField(widget=forms.TextInput)
-    ud25 = forms.CharField(widget=forms.TextInput)
-    ud26 = forms.CharField(widget=forms.TextInput)
-    ud27 = forms.CharField(widget=forms.TextInput)
-    ud28 = forms.CharField(widget=forms.TextInput)
-    ud29 = forms.CharField(widget=forms.TextInput)
-    ud30 = forms.CharField(widget=forms.TextInput)
+#    ud1 = forms.CharField(widget=forms.TextInput)
+#    ud2 = forms.CharField(widget=forms.TextInput)
+#    ud3 = forms.CharField(widget=forms.TextInput)
+#    ud4 = forms.CharField(widget=forms.TextInput)
+#    ud5 = forms.CharField(widget=forms.TextInput)
+#    ud6 = forms.CharField(widget=forms.TextInput)
+#    ud7 = forms.CharField(widget=forms.TextInput)
+#    ud8 = forms.CharField(widget=forms.TextInput)
+#    ud9 = forms.CharField(widget=forms.TextInput)
+#    ud10 = forms.CharField(widget=forms.TextInput)
+#    ud11 = forms.CharField(widget=forms.TextInput)
+#    ud12 = forms.CharField(widget=forms.TextInput)
+#    ud13 = forms.CharField(widget=forms.TextInput)
+#    ud14 = forms.CharField(widget=forms.TextInput)
+#    ud15 = forms.CharField(widget=forms.TextInput)
+#    ud16 = forms.CharField(widget=forms.TextInput)
+#    ud17 = forms.CharField(widget=forms.TextInput)
+#    ud18 = forms.CharField(widget=forms.TextInput)
+#    ud19 = forms.CharField(widget=forms.TextInput)
+#    ud20 = forms.CharField(widget=forms.TextInput)
+#    ud21 = forms.CharField(widget=forms.TextInput)
+#    ud22 = forms.CharField(widget=forms.TextInput)
+#    ud23 = forms.CharField(widget=forms.TextInput)
+#    ud24 = forms.CharField(widget=forms.TextInput)
+#    ud25 = forms.CharField(widget=forms.TextInput)
+#    ud26 = forms.CharField(widget=forms.TextInput)
+#    ud27 = forms.CharField(widget=forms.TextInput)
+#    ud28 = forms.CharField(widget=forms.TextInput)
+#    ud29 = forms.CharField(widget=forms.TextInput)
+#    ud30 = forms.CharField(widget=forms.TextInput)
 
     class Meta:
         model = MembershipDefault
