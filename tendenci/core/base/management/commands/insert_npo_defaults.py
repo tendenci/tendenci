@@ -1,16 +1,33 @@
-from haystack.management.commands.clear_index import Command as ClearCommand
-
-from django.conf import settings
 from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-
-from update_index import Command as UpdateCommand
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    help = "Completely rebuilds the search index by removing the old data and then updating."
-    option_list = BaseCommand.option_list + (ClearCommand.base_options[0],) + UpdateCommand.base_options
-    
+    help = "Inserts default non-profit data"
+
     def handle(self, **options):
-        call_command('loaddata', 'npo_default_auth_user.json')
-        call_command('loaddata', 'npo_default_profile.json')
+
+        suffix_list = [
+            'auth_user',
+            'profiles_profile',
+            'user_groups',
+            'events',
+            'jobs',
+            'memberships',
+            'memberships_membershipdefault',
+            'news',
+            'photos',
+            'boxes',
+            'entities',
+            'navs',
+            'pages',
+            'stories',
+        ]
+
+        # call loaddata on fixtures
+        for suffix in suffix_list:
+            filename = 'npo_default_%s.json' % suffix
+
+            print filename
+
+            call_command('loaddata', filename)
