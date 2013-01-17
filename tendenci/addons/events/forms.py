@@ -827,6 +827,10 @@ class Reg8nEditForm(BetterModelForm):
         initial=[1,2,3]) # first three items (inserted via fixture)
     use_custom_reg = UseCustomRegField(label="Custom Registration Form")
 
+    registration_email_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':RegistrationConfiguration._meta.app_label,
+        'storme_model':RegistrationConfiguration._meta.module_name.lower()}))
 
     class Meta:
         model = RegistrationConfiguration
