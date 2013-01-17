@@ -80,6 +80,30 @@
         }
     },
     {
+        "pk": 11,
+        "model": "auth.group",
+        "fields": {
+            "name": "Membership: Student",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 12,
+        "model": "auth.group",
+        "fields": {
+            "name": "Membership: Regular",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 13,
+        "model": "auth.group",
+        "fields": {
+            "name": "Membership: Individual Corporate Member",
+            "permissions": []
+        }
+    },
+    {
         "pk": 5,
         "model": "user_groups.group",
         "fields": {
@@ -453,7 +477,7 @@
             "guid": "a79b64b4-5376-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T12:19:45.790",
             "auto_respond_priority": 0.0,
-            "group": 3,
+            "group": 11,
             "update_dt": "2012-12-31T13:23:31.507",
             "label": "Membership: Student",
             "type": "membership",
@@ -489,7 +513,7 @@
             "guid": "d8cdd5bc-5376-11e2-b379-22000a1e8c2c",
             "create_dt": "2012-12-31T12:21:08.335",
             "auto_respond_priority": 0.0,
-            "group": 4,
+            "group": 12,
             "update_dt": "2012-12-31T13:22:51.933",
             "label": "Membership: Regular",
             "type": "membership",
@@ -525,7 +549,7 @@
             "guid": "19180980-5377-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T12:22:56.188",
             "auto_respond_priority": 0.0,
-            "group": 5,
+            "group": 13,
             "update_dt": "2012-12-31T13:19:35.297",
             "label": "Membership: Individual Corporate Member",
             "type": "membership",
