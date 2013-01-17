@@ -25,7 +25,7 @@ urlpatterns = patterns('',
 
 #report patterns
 urlpatterns += patterns('',
-    (r'^model-report/', include('model_report.urls')),
+    (r'^model-report/', include('tendenci.libs.model_report.urls')),
 )
 
 # Tendenci Patterns
