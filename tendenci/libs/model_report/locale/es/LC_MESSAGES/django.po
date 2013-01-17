@@ -1,0 +1,394 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: django-model-report\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-07-29 23:07-0300\n"
+"PO-Revision-Date: 2012-07-29 23:38-0300\n"
+"Last-Translator: Juan Pablo Martínez <jpma55@gmail.com>\n"
+"Language-Team: juanpex <jpma55@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Poedit-Language: Spanish\n"
+
+#: report.py:85
+#: templates/model_report/includes/report_table.html:15
+#: templates/model_report/includes/report_table.html:17
+#: templates/model_report/includes/report_table.html:19
+#: templates/model_report/includes/report_table.html:26
+msgid "Results"
+msgstr "Resultados"
+
+#: report.py:87
+msgid "Nothing"
+msgstr "Nada"
+
+#: report.py:161
+msgid "Unnamed report"
+msgstr "Reporte sin nombre"
+
+#: report.py:279
+msgid "Area"
+msgstr "Área"
+
+#: report.py:280
+msgid "Line"
+msgstr "Línea"
+
+#: report.py:281
+msgid "Columns"
+msgstr "Columnas"
+
+#: report.py:282
+msgid "Pie"
+msgstr "Torta"
+
+#: report.py:286
+msgid "Sum"
+msgstr "Suma"
+
+#: report.py:287
+#: utils.py:28
+msgid "Count"
+msgstr "Contar"
+
+#: report.py:288
+#: utils.py:23
+msgid "Average"
+msgstr "Promedio"
+
+#: report.py:289
+msgid "Min"
+msgstr "Min"
+
+#: report.py:290
+msgid "Max"
+msgstr "Máx"
+
+#: report.py:295
+msgid "Chart type"
+msgstr "Tipo de gráfico"
+
+#: report.py:296
+msgid "Serie field"
+msgstr "Campo de serie"
+
+#: report.py:297
+msgid "Serie operator"
+msgstr "Operador de la serie"
+
+#: report.py:353
+msgid "Group by field:"
+msgstr "Agrupar por el campo:"
+
+#: report.py:354
+msgid "Show only totals"
+msgstr "Mostrar sólo los totales"
+
+#: report.py:403
+#: utils.py:40
+msgid "Yes"
+msgstr "Sí"
+
+#: report.py:404
+#: utils.py:40
+msgid "No"
+msgstr "No"
+
+#: report.py:628
+msgid "Totals"
+msgstr "Totales"
+
+#: utils.py:18
+msgid "Total"
+msgstr "Total"
+
+#: widgets.py:23
+msgid "Enter a valid start value."
+msgstr "Introduzca un valor inicial válido."
+
+#: widgets.py:24
+msgid "Enter a valid end value."
+msgstr "Introduzca un valor final válido."
+
+#: highcharts/base.py:42
+msgid " "
+msgstr " "
+
+#: highcharts/options.py:322
+msgid "Download PNG image"
+msgstr "Descargar imagen PNG"
+
+#: highcharts/options.py:323
+msgid "Download JPEG image"
+msgstr "Descargar imagen JPEG"
+
+#: highcharts/options.py:324
+msgid "Download PDF document"
+msgstr "Descargar documento PDF"
+
+#: highcharts/options.py:325
+msgid "Download SVG vector image"
+msgstr "Descargar imagen vectorial SVG"
+
+#: highcharts/options.py:326
+msgid "Export to raster or vector image"
+msgstr "Exportar a imagen raster o vector"
+
+#: highcharts/options.py:327
+msgid "Loading..."
+msgstr "Cargando..."
+
+#: highcharts/options.py:328
+msgid "January"
+msgstr "Enero"
+
+#: highcharts/options.py:328
+msgid "February"
+msgstr "Febrero"
+
+#: highcharts/options.py:328
+msgid "March"
+msgstr "Marzo"
+
+#: highcharts/options.py:328
+msgid "April"
+msgstr "Abril"
+
+#: highcharts/options.py:328
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "May"
+msgstr "Mayo"
+
+#: highcharts/options.py:328
+msgid "June"
+msgstr "Junio"
+
+#: highcharts/options.py:328
+msgid "July"
+msgstr "Julio"
+
+#: highcharts/options.py:328
+msgid "August"
+msgstr "Agosto"
+
+#: highcharts/options.py:328
+msgid "September"
+msgstr "Setiembre"
+
+#: highcharts/options.py:328
+msgid "October"
+msgstr "Octubre"
+
+#: highcharts/options.py:328
+msgid "November"
+msgstr "Noviembre"
+
+#: highcharts/options.py:328
+msgid "December"
+msgstr "Diciembre"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Jan"
+msgstr "Ene"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Feb"
+msgstr "Feb"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Mar"
+msgstr "Mar"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Apr"
+msgstr "Abr"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Jun"
+msgstr "Jun"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Jul"
+msgstr "Jul"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Aug"
+msgstr "Ago"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Sep"
+msgstr "Sep"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Oct"
+msgstr "Oct"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Nov"
+msgstr "Nov"
+
+#: highcharts/options.py:329
+#: templates/model_report/includes/datepicker_options.html:2
+msgid "Dec"
+msgstr "Dic"
+
+#: highcharts/options.py:330
+msgid "Print the chart"
+msgstr "Imprimir gráfica"
+
+#: highcharts/options.py:331
+msgid "Reset zoom"
+msgstr "Restablecer zoom"
+
+#: highcharts/options.py:332
+msgid "Reset zoom level 1:1"
+msgstr "Restablecer zoom nivel 1:1"
+
+#: highcharts/options.py:334
+msgid "Sunday"
+msgstr "Domingo"
+
+#: highcharts/options.py:334
+msgid "Monday"
+msgstr "Lunes"
+
+#: highcharts/options.py:334
+msgid "Tuesday"
+msgstr "Martes"
+
+#: highcharts/options.py:334
+msgid "Wednesday"
+msgstr "Miércoles"
+
+#: highcharts/options.py:334
+msgid "Thursday"
+msgstr "Jueves"
+
+#: highcharts/options.py:334
+msgid "Friday"
+msgstr "Viernes"
+
+#: highcharts/options.py:334
+msgid "Saturday"
+msgstr "Sábado"
+
+#: templates/model_report/export_pdf.html:73
+#: templates/model_report/export_pdf.html:94
+#: templates/model_report/report.html:4
+msgid "Report"
+msgstr "Reporte"
+
+#: templates/model_report/export_pdf.html:75
+#: templates/model_report/export_pdf.html:96
+msgid "Page"
+msgstr "Página"
+
+#: templates/model_report/report.html:18
+msgid "Click and drag in the plot area to zoom in"
+msgstr "Haga clic y arrastre en el área de dibujo para ampliar"
+
+#: templates/model_report/report.html:19
+msgid "Drag your finger over the plot to zoom in"
+msgstr "Arrastre el dedo sobre el gráfico para ampliar"
+
+#: templates/model_report/report.html:99
+msgid "Go to..."
+msgstr "Ir a..."
+
+#: templates/model_report/report_list.html:4
+#: templates/model_report/report_list.html:10
+#: templates/model_report/includes/report_title.html:1
+msgid "Report list"
+msgstr "Lista de reportes"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Sun"
+msgstr "Dom"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Mon"
+msgstr "Lun"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Tue"
+msgstr "Mar"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Wed"
+msgstr "Mie"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Thu"
+msgstr "Jue"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Fri"
+msgstr "Vie"
+
+#: templates/model_report/includes/datepicker_options.html:3
+msgid "Sat"
+msgstr "Sab"
+
+#: templates/model_report/includes/form_buttons.html:3
+msgid "Send"
+msgstr "Enviar"
+
+#: templates/model_report/includes/form_config.html:5
+msgid "Config chart by"
+msgstr "Configurar gráfico de"
+
+#: templates/model_report/includes/form_filter.html:5
+msgid "Filter results"
+msgstr "Filtrar resultados"
+
+#: templates/model_report/includes/form_groupby.html:5
+msgid "Group by"
+msgstr "Agrupar por"
+
+#: templates/model_report/includes/form_report.html:8
+msgid "Get results"
+msgstr "Consultar"
+
+#: templates/model_report/includes/form_report.html:13
+msgid "Print"
+msgstr "Imprimir"
+
+#: templates/model_report/includes/report_nav.html:5
+msgid "Empty report list."
+msgstr "Lista de reportes vacía."
+
+#: templates/model_report/includes/report_table.html:20
+msgid "Go up"
+msgstr "Subir"
+
+#: templates/model_report/includes/report_table.html:36
+msgid "This query has no results"
+msgstr "Esta consulta no tiene resultados"
+
+#: templates/model_report/widgets/range_widget.html:5
+msgid "Start date"
+msgstr "Comienzo"
+
+#: templates/model_report/widgets/range_widget.html:14
+msgid "End date"
+msgstr "Fin"
+

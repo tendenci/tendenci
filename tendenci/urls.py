@@ -3,7 +3,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
-from model_report import report
+from tendenci.libs.model_report import report
 
 from tendenci.core.registry import autodiscover as reg_autodiscover
 from tendenci.core.newsletters.views import NewsletterGeneratorView
