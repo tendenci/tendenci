@@ -76,6 +76,7 @@ from tendenci.addons.corporate_memberships.utils import (
                                          get_indiv_memberships_choices,
                                          corp_membership_rows,
                                          corp_membership_update_perms,
+                                         get_corp_memb_summary,
                                          corp_memb_inv_add, 
                                          dues_rep_emails_list,
                                          corp_memb_update_perms,
@@ -1393,6 +1394,22 @@ def index(request,
 
     return render_to_response(template_name, {'corp_app': corp_app},
         context_instance=RequestContext(request))
+
+
+@staff_member_required
+def summary_report(request,
+                template_name='corporate_memberships/reports/summary.html'):
+    """
+    Shows a report of corporate memberships per corporate membership type.
+    """
+    summary, total = get_corp_memb_summary()
+
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {
+        'summary': summary,
+        'total': total,
+        }, context_instance=RequestContext(request))
 
 
 # TO BE DELETED

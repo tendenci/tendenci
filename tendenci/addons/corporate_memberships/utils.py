@@ -279,6 +279,41 @@ def corp_membership_update_perms(corp_memb, **kwargs):
     return corp_memb
 
 
+def get_corp_memb_summary():
+    from tendenci.addons.corporate_memberships.models import (
+                                        CorporateMembershipType,
+                                        CorpMembership)
+    summary = []
+    corp_memb_types = CorporateMembershipType.objects.all()
+    total_active = 0
+    total_pending = 0
+    total_expired = 0
+    total_total = 0
+    for corp_memb_type in corp_memb_types:
+        mems = CorpMembership.objects.filter(
+                    corporate_membership_type=corp_memb_type)
+        active = mems.filter(status=True, status_detail='active')
+        expired = mems.filter(status=True, status_detail='expired')
+        pending = mems.filter(status=True, status_detail__contains='ending')
+        total_active += active.count()
+        total_pending += pending.count()
+        total_expired += expired.count()
+        total_total += mems.count()
+        summary.append({
+            'type': corp_memb_type,
+            'active': active.count(),
+            'pending': pending.count(),
+            'expired': expired.count(),
+            'total': mems.count(),
+        })
+
+    return (sorted(summary, key=lambda x: x['type'].name),
+        {'total_active': total_active,
+         'total_pending': total_pending,
+         'total_expired': total_expired,
+         'total_total': total_total})
+
+
 # get the corpapp default fields list from json
 def get_corpapp_default_fields_list():
 #    json_fields_path = os.path.join(settings.PROJECT_ROOT, 
