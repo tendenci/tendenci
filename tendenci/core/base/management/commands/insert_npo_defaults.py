@@ -10,6 +10,7 @@ class Command(BaseCommand):
         suffix_list = [
             'auth_user',
             'profiles_profile',
+            'entities',
             'user_groups',
             'events',
             'jobs',
@@ -18,7 +19,6 @@ class Command(BaseCommand):
             'news',
             'photos',
             'boxes',
-            'entities',
             'navs',
             'pages',
             'stories',
