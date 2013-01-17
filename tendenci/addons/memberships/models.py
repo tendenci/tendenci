@@ -1383,7 +1383,7 @@ class Membership(TendenciBaseModel):
             return False
 
         # can only renew from approved state
-        if self.get_status() != 'active':
+        if self.status_detail.lower() != 'active':
             return False
 
         # assert that we're within the renewal period
