@@ -372,6 +372,12 @@ class MembershipDefault(TendenciBaseModel):
         self.guid = self.guid or uuid.uuid1().get_hex()
         super(MembershipDefault, self).save(*args, **kwargs)
 
+    @property
+    def demographics(self):
+        if hasattr(self, 'user') and self.user:
+            return self.user.demographics
+        return None
+
     @classmethod
     def QS_ACTIVE(cls):
         """
