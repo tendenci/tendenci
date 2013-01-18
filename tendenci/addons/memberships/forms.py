@@ -690,6 +690,9 @@ class DemographicsForm(forms.ModelForm):
         super(DemographicsForm, self).__init__(*args, **kwargs)
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
+        # change the default widget to TextInput instead of TextArea
+        for field in self.fields.values():
+            field.widget = forms.widgets.TextInput({'size': 30})
 
 
 class MembershipDefault2Form(forms.ModelForm):
