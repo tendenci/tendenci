@@ -148,13 +148,19 @@
             
             if (display == "true"){
                 $(row_added).find('.field-display input[type="checkbox"]').attr('checked', 'checked');
+            }else{
+                $(row_added).find('.field-display input[type="checkbox"]').removeAttr('checked');
             }
             if (required == "true"){
                 $(row_added).find('.field-required input[type="checkbox"]').attr('checked', 'checked');
+            }else{
+                $(row_added).find('.field-required input[type="checkbox"]').removeAttr('checked');
             }
             if (admin_only == "true"){
                 $(row_added).find('.field-admin_only input[type="checkbox"]').attr('checked', 'checked');
-            }      
+            }else{
+                $(row_added).find('.field-admin_only input[type="checkbox"]').removeAttr('checked');
+            }    
         }
         
         var required_fields = ['first_name', 'last_name', 'email', 'membership_type', 'payment_method'];

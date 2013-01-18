@@ -725,83 +725,83 @@
     "field_name": "",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Admin Notes",
     "field_name": "admin_notes",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Member Number",
     "field_name": "member_number",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Status",
     "field_name": "status",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Status Detail",
     "field_name": "status_detail",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Join Date",
     "field_name": "join_dt",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Expiration Date",
     "field_name": "expire_dt",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Renew Date",
     "field_name": "renew_dt",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "application_approved",
     "field_name": "application_approved",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Application Approved Date",
     "field_name": "application_approved_dt",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Application Denied",
     "field_name": "application_denied",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     },
     {
     "label": "Application Approved Denied Date",
     "field_name": "application_approved_denied_dt",
     "display": "false",
     "required": "false",
-    "admin_only": "false"
+    "admin_only": "true"
     }
 ]

@@ -24,7 +24,8 @@ from tendenci.addons.corporate_memberships.models import (CorporateMembership,
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
-from tendenci.addons.memberships.models import (Membership, MembershipDefault,
+from tendenci.addons.memberships.models import (Membership,
+    MembershipDefault, MembershipDemographic,
     MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
     MembershipImport, MembershipApp)
 from tendenci.addons.memberships.fields import (TypeExpMethodField, PriceInput,
@@ -33,7 +34,8 @@ from tendenci.addons.memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from tendenci.addons.memberships.utils import csv_to_dict, NoMembershipTypes
 from tendenci.addons.memberships.utils import normalize_field_names
 from tendenci.addons.memberships.utils import (get_membership_type_choices,
-                                               get_corporate_membership_choices)
+                                               get_corporate_membership_choices,
+                                               get_selected_demographic_fields)
 from tendenci.addons.memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
     NoticeTimeTypeWidget, AppFieldSelectionWidget)
 from tendenci.addons.memberships.utils import get_notice_token_help_text
@@ -681,6 +683,19 @@ class ProfileForm(forms.ModelForm):
         return profile
 
 
+class DemographicsForm(forms.ModelForm):
+    class Meta:
+        model = MembershipDemographic
+
+    def __init__(self, app_field_objs, *args, **kwargs):
+        super(DemographicsForm, self).__init__(*args, **kwargs)
+        assign_fields(self, app_field_objs)
+        self.field_names = [name for name in self.fields.keys()]
+        # change the default widget to TextInput instead of TextArea
+        for field in self.fields.values():
+            field.widget = forms.widgets.TextInput({'size': 30})
+
+
 class MembershipDefault2Form(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', 'Active'),
@@ -694,37 +709,6 @@ class MembershipDefault2Form(forms.ModelForm):
                       (1, 'Active'),
                       (0, 'Inactive')
                       )
-
-    ud1 = forms.CharField(widget=forms.TextInput)
-    ud2 = forms.CharField(widget=forms.TextInput)
-    ud3 = forms.CharField(widget=forms.TextInput)
-    ud4 = forms.CharField(widget=forms.TextInput)
-    ud5 = forms.CharField(widget=forms.TextInput)
-    ud6 = forms.CharField(widget=forms.TextInput)
-    ud7 = forms.CharField(widget=forms.TextInput)
-    ud8 = forms.CharField(widget=forms.TextInput)
-    ud9 = forms.CharField(widget=forms.TextInput)
-    ud10 = forms.CharField(widget=forms.TextInput)
-    ud11 = forms.CharField(widget=forms.TextInput)
-    ud12 = forms.CharField(widget=forms.TextInput)
-    ud13 = forms.CharField(widget=forms.TextInput)
-    ud14 = forms.CharField(widget=forms.TextInput)
-    ud15 = forms.CharField(widget=forms.TextInput)
-    ud16 = forms.CharField(widget=forms.TextInput)
-    ud17 = forms.CharField(widget=forms.TextInput)
-    ud18 = forms.CharField(widget=forms.TextInput)
-    ud19 = forms.CharField(widget=forms.TextInput)
-    ud20 = forms.CharField(widget=forms.TextInput)
-    ud21 = forms.CharField(widget=forms.TextInput)
-    ud22 = forms.CharField(widget=forms.TextInput)
-    ud23 = forms.CharField(widget=forms.TextInput)
-    ud24 = forms.CharField(widget=forms.TextInput)
-    ud25 = forms.CharField(widget=forms.TextInput)
-    ud26 = forms.CharField(widget=forms.TextInput)
-    ud27 = forms.CharField(widget=forms.TextInput)
-    ud28 = forms.CharField(widget=forms.TextInput)
-    ud29 = forms.CharField(widget=forms.TextInput)
-    ud30 = forms.CharField(widget=forms.TextInput)
 
     class Meta:
         model = MembershipDefault
@@ -1872,6 +1856,38 @@ class MembershipDefaultForm(TendenciBaseForm):
     extra_country = forms.CharField(initial=u'', required=False)
     extra_address_type = forms.CharField(initial=u'', required=False)
 
+    # manually add ud fields here because admin.site.register requires it
+    ud1 = forms.CharField(widget=forms.TextInput, required=False)
+    ud2 = forms.CharField(widget=forms.TextInput, required=False)
+    ud3 = forms.CharField(widget=forms.TextInput, required=False)
+    ud4 = forms.CharField(widget=forms.TextInput, required=False)
+    ud5 = forms.CharField(widget=forms.TextInput, required=False)
+    ud6 = forms.CharField(widget=forms.TextInput, required=False)
+    ud7 = forms.CharField(widget=forms.TextInput, required=False)
+    ud8 = forms.CharField(widget=forms.TextInput, required=False)
+    ud9 = forms.CharField(widget=forms.TextInput, required=False)
+    ud10 = forms.CharField(widget=forms.TextInput, required=False)
+    ud11 = forms.CharField(widget=forms.TextInput, required=False)
+    ud12 = forms.CharField(widget=forms.TextInput, required=False)
+    ud13 = forms.CharField(widget=forms.TextInput, required=False)
+    ud14 = forms.CharField(widget=forms.TextInput, required=False)
+    ud15 = forms.CharField(widget=forms.TextInput, required=False)
+    ud16 = forms.CharField(widget=forms.TextInput, required=False)
+    ud17 = forms.CharField(widget=forms.TextInput, required=False)
+    ud18 = forms.CharField(widget=forms.TextInput, required=False)
+    ud19 = forms.CharField(widget=forms.TextInput, required=False)
+    ud20 = forms.CharField(widget=forms.TextInput, required=False)
+    ud21 = forms.CharField(widget=forms.TextInput, required=False)
+    ud22 = forms.CharField(widget=forms.TextInput, required=False)
+    ud23 = forms.CharField(widget=forms.TextInput, required=False)
+    ud24 = forms.CharField(widget=forms.TextInput, required=False)
+    ud25 = forms.CharField(widget=forms.TextInput, required=False)
+    ud26 = forms.CharField(widget=forms.TextInput, required=False)
+    ud27 = forms.CharField(widget=forms.TextInput, required=False)
+    ud28 = forms.CharField(widget=forms.TextInput, required=False)
+    ud29 = forms.CharField(widget=forms.TextInput, required=False)
+    ud30 = forms.CharField(widget=forms.TextInput, required=False)
+
     class Meta:
         model = MembershipDefault
         fields = (
@@ -2027,6 +2043,26 @@ class MembershipDefaultForm(TendenciBaseForm):
                 self.fields[profile_attr].initial = \
                     getattr(self.instance.user.profile, profile_attr)
         # -----------------------------------------------------
+
+        # demographic fields - include only those selected on app
+        demographic_field_names = [field.name \
+                        for field in MembershipDemographic._meta.fields \
+                        if field.get_internal_type() != 'AutoField']
+        for field_name in demographic_field_names:
+            if hasattr(self.fields, field_name):
+                del self.fields[field_name]
+
+        demographics = self.instance.demographics
+        app = MembershipApp.objects.current_app()
+        demographic_fields = get_selected_demographic_fields(app, forms)
+        self.demographic_field_names = [field_item[0] for field_item in demographic_fields]
+        for field_name, field in demographic_fields:
+            self.fields[field_name] = field
+            # set initial value
+            if demographics:
+                self.fields[field_name].initial = \
+                    getattr(demographics, field_name)
+        # end demographic
 
     def clean(self):
         """
@@ -2260,6 +2296,16 @@ class MembershipDefaultForm(TendenciBaseForm):
             setattr(membership.user.profile, i, self.cleaned_data.get(i, u''))
         membership.user.profile.save()
         # -----------------------------------------------------------------
+
+        # ***** demographics *****
+        if self.demographic_field_names:
+            demographics, created = MembershipDemographic.objects.get_or_create(
+                                            user=membership.user)
+            for field_name in self.demographic_field_names:
+                setattr(demographics, field_name,
+                        self.cleaned_data.get(field_name, ''))
+            demographics.save()
+        # ***** end demographics *****
 
         return membership
 

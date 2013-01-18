@@ -50,9 +50,12 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, MembershipImport, MembershipDefault,
     MembershipImportData, MembershipApp)
-from tendenci.addons.memberships.forms import (AppCorpPreForm, MembershipForm, MembershipDefaultForm,
+from tendenci.addons.memberships.forms import (
+    AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
-    AppEntryForm, MembershipDefaultUploadForm, UserForm, ProfileForm, MembershipDefault2Form)
+    AppEntryForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
+    DemographicsForm,
+    MembershipDefault2Form)
 from tendenci.addons.memberships.utils import (is_import_valid, prepare_chart_data,
     get_days, get_over_time_stats, get_status_filter,
     get_membership_stats, NoMembershipTypes, ImportMembDefault)
@@ -1260,6 +1263,7 @@ def membership_default_preview(request, app_id,
 
     user_form = UserForm(app_fields)
     profile_form = ProfileForm(app_fields)
+    demographics_form = DemographicsForm(app_fields)
     membership_form = MembershipDefault2Form(app_fields,
                                              request_user=request.user,
                                              membership_app=app)
@@ -1269,6 +1273,7 @@ def membership_default_preview(request, app_id,
                "app_fields": app_fields,
                'user_form': user_form,
                'profile_form': profile_form,
+               'demographics_form': demographics_form,
                'membership_form': membership_form}
     return render_to_response(template, context, RequestContext(request))
 
@@ -1353,6 +1358,9 @@ def membership_default_add(request,
               }
     if join_under_corporate:
         params['authentication_method'] = authentication_method
+
+    demographics_form = DemographicsForm(app_fields, request.POST or None)
+
     membership_form = MembershipDefault2Form(app_fields,
         request.POST or None, **params)
     captcha_form = CaptchaForm(request.POST or None)
@@ -1365,6 +1373,7 @@ def membership_default_add(request,
         good = (
             user_form.is_valid(),
             profile_form.is_valid(),
+            demographics_form.is_valid(),
             membership_form.is_valid(),
             captcha_form.is_valid()
         )
@@ -1378,6 +1387,10 @@ def membership_default_add(request,
             profile_form.save(
                 request_user=request.user
             )
+            # save demographics
+            demographics = demographics_form.save(commit=False)
+            demographics.user = user
+            demographics.save()
 
             membership = membership_form.save(
                 request=request,
@@ -1410,6 +1423,7 @@ def membership_default_add(request,
         'app_fields': app_fields,
         'user_form': user_form,
         'profile_form': profile_form,
+        'demographics_form': demographics_form,
         'membership_form': membership_form,
         'captcha_form': captcha_form
     }
