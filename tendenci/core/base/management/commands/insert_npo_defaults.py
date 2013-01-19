@@ -33,6 +33,8 @@ class Command(BaseCommand):
                 target_key_name = source_key.name.replace('npo_defaults/', '')
                 target_key_name = os.path.join(settings.MEDIA_ROOT, target_key_name)
 
+                # TODO: Check if exists before copying over
+
                 print settings.AWS_STORAGE_BUCKET_NAME, target_key_name
                 source_key.copy(settings.AWS_STORAGE_BUCKET_NAME, target_key_name)
 
@@ -46,6 +48,10 @@ class Command(BaseCommand):
 
         print 'npo_default_auth_user.json'
         call_command('loaddata', 'npo_default_auth_user.json')
+        print 'npo_default_entities.json'
+        call_command('loaddata', 'npo_default_entities.json')
+        print 'npo_default_user_groups.json'
+        call_command('loaddata', 'npo_default_user_groups.json')
         print 'npo_default_files.json'
         call_command('loaddata', 'npo_default_files.json')
 
@@ -71,9 +77,7 @@ class Command(BaseCommand):
             f.save()
 
         suffix_list = [
-            'profiles_profile',
-            'entities',
-            'user_groups',
+            'profiles_profile'
             'events',
             'jobs',
             'memberships',
