@@ -137,16 +137,6 @@
         "fields": {}
     },
     {
-        "pk": 2,
-        "model": "stories.storyphoto",
-        "fields": {}
-    },
-    {
-        "pk": 3,
-        "model": "stories.storyphoto",
-        "fields": {}
-    },
-    {
         "pk": 4,
         "model": "stories.storyphoto",
         "fields": {}
