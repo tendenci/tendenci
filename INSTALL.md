@@ -40,9 +40,16 @@ Next, we install requirements for the project. We add tendenci videos as an exam
 
     pip install -r requirements/dev.txt
 
-Now we are ready to use our deploy script and setup our theme.
+Now we are ready to use our deploy script.
 
     python deploy.py
+
+At this point, we can load some default content into our site with the following command:
+
+    python manage.py insert_npo_defaults
+
+Next, we load our theme:
+
     python manage.py set_theme twenty-thirteen
 
 To create your login, run the following command and fill in the prompts:
