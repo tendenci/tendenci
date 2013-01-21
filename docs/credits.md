@@ -1,3 +1,5 @@
+# Tendenci Credits
+
 We want to recognize some of the developers of the core of Tendenci, from it's beginnings in Microsoft ASP to this current version written in python.
 
 - Ed Schipul
