@@ -53,27 +53,19 @@
 {% corpmemb_nav request.user corporate_membership %} 
    <h1>{% trans "View Corporate Membership Information" %}</h1>
    
-   <div class="options" align="right">
+   <div class="options float-right">
          <div class="quick-options">
             {% corpmemb_options request.user corporate_membership %}        
          </div>
+         {% if corporate_membership.status and corporate_membership.status_detail == "active" %}
+        <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
+        {% endif %}
     </div>
    
-   <div class="float-right">
-    {% if corporate_membership.status and corporate_membership.status_detail == "active" %}
-    <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
-    {% endif %}
-     {% if request.user.is_superuser and corporate_membership.is_pending %}
-        <div class="pending-info-box">
-        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve corporate_membership.pk %}">{% trans "Approve / Disapprove" %}</a>
-        </div>
-    {% endif %}
-    </div>
-    <div class="clear"></div>
+    
+    
                     
    {% for field_obj in app_fields %}
-        {% load styled_forms %}
-
         {% if field_obj.field_name == '' %}
             {% if field_obj.field_name == '' %}
                 <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
@@ -145,11 +137,10 @@
                      </div>       
         {% endif %}
 
-    {% endfor %}
-        
-       
+    {% endfor %}      
     
 </div>
+<div class="clear"></div>
 </div>
 {% endblock %}
 

@@ -221,21 +221,7 @@ def user_upload_subprocess(request, sid,
 
     if import_dict['is_completed']:
         # log an event
-        log_defaults = {
-            'event_id': 129005,
-            'event_data': """User import: %s<br>INSERTS:%d<br>
-                        UPDATES:%d<br>INVALID:%d<br>TOTAL:%d""" % \
-                                    (import_dict['file_name'],
-                                   import_dict['count_insert'],
-                                   import_dict['count_update'],
-                                   import_dict['count_invalid'],
-                                   import_dict['total']),
-            'description': 'user import',
-            'user': request.user,
-            'request': request,
-            'source': 'auth',
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log()
 
         # clear up the session
         del request.session[sid]
@@ -344,8 +330,7 @@ def download_user_upload_template(request, file_ext='.xls'):
                          'work_phone', 'mobile_phone',
                          'fax', 'url', 'dob', 'spouse',
                          'direct_mail', 'notes', 'admin_notes',
-                         'username', 'password', 'member_number',
-                         'ud1', 'ud2', 'ud3', 'ud4', 'ud5', ]
+                         'username', 'password', 'member_number', ]
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)

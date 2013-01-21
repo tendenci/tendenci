@@ -65,7 +65,7 @@
 
        <form action="" method="post">{% csrf_token %}
            
-      {% if user_form.errors.values or profile_form.errors.values or membership_form.errors.values or captcha_form.errors.values %}
+      {% if user_form.errors.values or profile_form.errors.values or demographics_form.errors.values or membership_form.errors.values or captcha_form.errors.values %}
         <div class="form-errors">
             
             There were some problems in the form. Please review. Thanks!
@@ -77,6 +77,12 @@
             
             {% if profile_form.errors.values %}
             {% for error in profile_form.non_field_errors %}
+                <p><a href="#">{{ error }}</a></p>
+            {% endfor %}
+            {% endif %}
+            
+            {% if demographics_form.errors.values %}
+            {% for error in demographics_form.non_field_errors %}
                 <p><a href="#">{{ error }}</a></p>
             {% endfor %}
             {% endif %}
@@ -96,6 +102,14 @@
             {% endfor %}
             
             {% for field in profile_form %}
+                {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                      {% endfor %}
+                {% endif %}
+            {% endfor %}
+            
+            {% for field in demographics_form %}
                 {% if field.errors %}
                       {% for error in field.errors %}
                         <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
@@ -123,7 +137,7 @@
       {% endif %}
            
        {% for field_obj in app_fields %}
-            {% render_membership_field request field_obj user_form profile_form membership_form %} 
+            {% render_membership_field request field_obj user_form profile_form demographics_form membership_form %} 
         {% endfor %}
 
         {{ captcha_form.as_p }}

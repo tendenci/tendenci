@@ -1,0 +1,9 @@
+{% load base_tags %}
+{% load theme_tags %}
+{% load photo_tags %}
+<section id="photos" class="clearfix">
+  <h3>Photos</h3>
+{% list_photos as photos_list limit=6 random=True tags="featured" %}
+<ul>{% for photo in photos_list %}<li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=85x80 crop=True %}" /></a></li>{% endfor %}</ul>
+</section>
+{% theme_setting setting_name %}

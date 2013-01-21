@@ -16,6 +16,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_protect
 
 from djcelery.models import TaskMeta
+from johnny.cache import invalidate
 
 from tendenci.core.base.decorators import ssl_required
 
@@ -91,22 +92,20 @@ def index(request, username='', template_name="profiles/index.html"):
     # group list
     group_memberships = user_this.group_member.all()
 
+    active_qs = Q(status_detail__iexact='active')
+    pending_qs = Q(status_detail__iexact='pending')
+    expired_qs = Q(status_detail__iexact='expired')
+
     if request.user == user_this or request.user.profile.is_superuser:
         memberships = user_this.membershipdefault_set.filter(
-            status=True, status_detail__in=['active', 'pending', 'expired'])
+            status=True) & user_this.membershipdefault_set.filter(
+                active_qs | pending_qs | expired_qs)
     else:
         memberships = user_this.membershipdefault_set.filter(
-            status=True, status_detail__in=['active', 'expired'])
+            status=True) & user_this.membershipdefault_set.filter(
+                active_qs | expired_qs)
 
-    log_defaults = {
-        'event_id': 125000,
-        'event_data': '%s (%d) viewed by %s' % (profile._meta.object_name, profile.pk, request.user),
-        'description': '%s viewed' % profile._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': profile,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=profile)
 
     state_zip = ' '.join([s for s in (profile.state, profile.zipcode) if s])
     city_state = ', '.join([s for s in (profile.city, profile.state) if s])
@@ -239,17 +238,7 @@ def add(request, form_class=ProfileForm, template_name="profiles/add.html"):
             new_user.save()
 
             ObjectPermission.objects.assign(new_user, profile)
-
-            log_defaults = {
-                'event_id' : 121000,
-                'event_data': '%s (%d) added by %s' % (new_user._meta.object_name, new_user.pk, request.user),
-                'description': '%s added' % new_user._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': new_user,
-            }
-            EventLog.objects.log(**log_defaults)
-            
+          
             # send notification to administrators
             recipients = get_notice_recipients('module', 'users', 'userrecipients')
             if recipients:
@@ -361,16 +350,6 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                         }
                         notification.send_emails(recipients,'user_edited', extra_context)
             
-
-            log_defaults = {
-                'event_id' : 122000,
-                'event_data': '%s (%d) edited by %s' % (user_edit._meta.object_name, user_edit.pk, request.user),
-                'description': '%s edited' % user_edit._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': user_edit,
-            }
-            EventLog.objects.log(**log_defaults)
             return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
     else:
         if profile:
@@ -443,6 +422,7 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
         user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
+
         EventLog.objects.log(instance=profile)
 
         return HttpResponseRedirect(reverse('profile', args=[user_edit.username]))
@@ -892,24 +872,28 @@ def export(request, template_name="profiles/export.html"):
         'user_this':None,
     }, context_instance=RequestContext(request))
 
+
 def export_status(request, task_id, template_name="profiles/export_status.html"):
+    invalidate('celery_taskmeta')
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     return render_to_response(template_name, {
         'task':task,
         'task_id':task_id,
         'user_this':None,
     }, context_instance=RequestContext(request))
-    
+
+
 def export_check(request, task_id):
+    invalidate('celery_taskmeta')
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         task = None
-        
+
     if task and task.status == "SUCCESS":
         return HttpResponse("OK")
     else:
@@ -917,6 +901,7 @@ def export_check(request, task_id):
 
 
 def export_download(request, task_id):
+    invalidate('celery_taskmeta')
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:

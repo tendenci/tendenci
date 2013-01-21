@@ -8,6 +8,7 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^(?P<id>\d+)/$", "membership_details", name="membership.details"),
     url(r"^(?P<id>\d+)/delete/$", "membership_delete", name="membership.delete"),
     url(r"^(?P<id>\d+)/edit/$", "membership_edit", name="membership.edit"),
+    url(r"^entries-export/$", "membership_export"),
 
     # import
     url(r"^import/$", "membership_import_upload", name="membership_import"),
@@ -45,6 +46,7 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^applications/(?P<app_id>\d+)/preview/$",
         "membership_default_preview",
         name="membership_default.preview"),
+    # corp individual add pre
     url(r"^applications/corp-pre-add/(?P<cm_id>\d+)?/?$",
         "membership_default_corp_pre_add",
         name="membership_default.corp_pre_add"),

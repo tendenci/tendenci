@@ -35,10 +35,10 @@ class ImportLocationsTask(Task):
                 obj_dict['owner'] = user
                 obj_dict['owner_username'] = user.username
 
-                # TODO: Set permissions properly
+                # Import Locations as publicly viewable
+                obj_dict['allow_anonymous_view'] = True
                 obj_dict['allow_user_view'] = False
                 obj_dict['allow_member_view'] = False
-                obj_dict['allow_anonymous_edit'] = False
                 obj_dict['allow_user_edit'] = False
                 obj_dict['allow_member_edit'] = False
 

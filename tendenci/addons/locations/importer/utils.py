@@ -20,7 +20,7 @@ def is_import_valid(file_path):
     ext = os.path.splitext(file_path)[1]
 
     if ext != '.csv':
-        errs.append("Pleaes make sure you're importing a .csv file.")
+        errs.append("Please make sure you're importing a .csv file.")
         return False, errs
 
     if has_null_byte(file_path):

@@ -111,7 +111,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.4',
+    version='5.1.8',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -144,8 +144,7 @@ setup(
         """,
     include_package_data=True,
     dependency_links=[
-        "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.11",
-        "http://a.pypi.python.org/",
+        "http://b.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
     install_requires=[
@@ -187,7 +186,7 @@ setup(
         "python-dateutil==1.5",
         "pdfminer==20110515",
         "slate==0.3",
-        "stripe==1.7.2",
+        "stripe==1.7.7",
         "pycrypto==2.6",
         "boto==2.5.2",
         "django-timezones==0.2",
@@ -197,7 +196,6 @@ setup(
         "johnny-cache==1.4",
         "docutils==0.9.1",
         'chardet==2.1.1',
-        "django-model-report==0.0.11",
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
         "gunicorn==0.16.1",

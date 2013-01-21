@@ -16,7 +16,10 @@
  {% forms_nav request.user form %}
     <h1>{% firstof MODULE_FORMS_LABEL 'Form' %} Entries</h1>
     <h2>{{ form.title }}</h2>
- 	<p><a href="{% url form_entries_export form.pk %}">Export All Entries</a></p>
+ 	<p><a href="{% url admin:forms_form_export form.pk %}">{% trans "Export All Entries" %}</a></p>
+    {% if form.has_files %}
+    <p><a href="{% url form_entries_export_full form.pk %}">{% trans "Export All Entries (Including uploaded files)" %}</a></p>
+    {% endif %}
     {% autopaginate entries 10 %}
 	
 	<div class="forms-builder-wrap">
@@ -56,7 +59,7 @@
 		$(document).ready(function(){
 			// delete confirmation
 			$('.delete').click(function(){
-				var delete_form = confirm('Permenantly delete entry?');	// confirm
+				var delete_form = confirm('Permanently delete entry?');	// confirm
 				if(delete_form) $(this).parents('.form-builder-wrap').find('form[name="entry-delete"]').submit() // delete: if OK
 				return false;	// cancel
 			});

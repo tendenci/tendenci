@@ -9,7 +9,7 @@ class EventRegistry(CoreRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
-    description = 'Create directories to list businesses'
+    description = 'Manage Your Events Calendar and Event Registrations'
     icon = '%simages/icons/events-color-64x64.png' % settings.STATIC_URL
     
     # events

@@ -58,6 +58,8 @@ class JobMeta():
 
         value = '%s - employment opportunity %s' % (value, site_name)
 
+        value = strip_tags(value)
+
         return value
     
     def get_keywords(self):

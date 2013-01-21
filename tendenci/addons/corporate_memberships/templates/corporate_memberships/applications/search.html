@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load pagination_tags %}
+{% load bootstrap_pagination_tags %}
 {% load base_filters %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
@@ -9,6 +10,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 {% endblock %}
 
@@ -29,7 +31,7 @@
 </p>
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <p>
-{{ search.form.q }}
+{{ search_form.q }}
 <input type="submit" name="search" value="Search" />
 </p>
 {% endif %}
