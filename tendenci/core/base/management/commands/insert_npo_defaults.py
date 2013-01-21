@@ -19,11 +19,25 @@ class Command(BaseCommand):
 
     def copy_files(self):
         """
-        Copy files from default s3 location
-        into websites s3 location.
+        Copy files from default S3 location
+        into websites S3 or local directory.
+        """
+        if settings.USE_S3_STORAGE:
+            self.copy_to_s3()
+        else:
+            self.copy_to_local()
+
+    def copy_to_local(self):
+        """
+        Copy media files to a local directory.
+        """
+        pass
+
+    def copy_to_s3(self):
+        """
+        Copy media files to this sites' S3 location.
         """
         conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-
         bucket = conn.get_bucket('tendenci-static')
         bucket_list = bucket.list('npo_defaults')
 
@@ -34,7 +48,6 @@ class Command(BaseCommand):
                 target_key_name = os.path.join(settings.MEDIA_ROOT, target_key_name)
 
                 # TODO: Check if exists before copying over
-
                 print settings.AWS_STORAGE_BUCKET_NAME, target_key_name
                 source_key.copy(settings.AWS_STORAGE_BUCKET_NAME, target_key_name)
 
