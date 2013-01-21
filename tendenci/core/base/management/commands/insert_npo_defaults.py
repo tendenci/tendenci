@@ -82,11 +82,14 @@ class Command(BaseCommand):
             'jobs',
             'memberships',
             'memberships_membershipdefault',
+            'directories',
             'news',
             'photos',
             'boxes',
             'pages',
             'navs',
+            'videos',
+            'stories',
         ]
 
         # call loaddata on fixtures
@@ -95,5 +98,3 @@ class Command(BaseCommand):
 
             print filename
             call_command('loaddata', filename)
-
-        call_command('loaddata', 'npo_default_stories.json')
