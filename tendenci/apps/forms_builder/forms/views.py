@@ -15,6 +15,7 @@ from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
 from django.template.loader import get_template
 from django.contrib.auth.models import User
+from djcelery.models import TaskMeta
 
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -36,6 +37,7 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     generate_submitter_email_body, generate_email_subject,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
+from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
 
 
 @is_enabled('forms')
@@ -279,7 +281,7 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
 
 
 @is_enabled('forms')
-def entries_export(request, id):
+def entries_export(request, id, include_files=False):
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -291,80 +293,14 @@ def entries_export(request, id):
     entries = form_instance.entries.all()
 
     if entries:
-        import csv
-        import zipfile
-        from os.path import join
-        from os import unlink
-        from time import time
-        from tempfile import NamedTemporaryFile
-
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=export_entries_%d.csv' % time()
-        headers = []
-        has_files = False
-
-        # check for a field field
-        for entry in entries:
-            for field in entry.fields.all():
-                if field.field.field_type == 'FileField':
-                    has_files = True
-
-        # if the object hase file store the csv elsewhere
-        # so that we can zip the files
-        if has_files:
-            temp_csv = NamedTemporaryFile(mode='w', delete=False)
-            temp_zip = NamedTemporaryFile(mode='wb', delete=False)
-            writer = csv.writer(temp_csv, delimiter=',')
-            zip = zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED)
+        if not settings.CELERY_IS_ACTIVE:
+            task = FormEntriesExportTask()
+            response = task.run(form_instance, entries, include_files)
+            return response
         else:
-            writer = csv.writer(response, delimiter=',')
-
-        # get the header for headers for the csv
-        headers.append('submitted on')
-        for field in entries[0].fields.all():
-            headers.append(smart_str(field.field.label))
-        writer.writerow(headers)
-
-        # write out the values
-        for entry in entries:
-            values = []
-            values.append(entry.entry_time)
-            for field in entry.fields.all():
-                if has_files and field.field.field_type == 'FileField':
-                    archive_name = join('files',field.value)
-                    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                        file_path = field.value
-                        try:
-                            # TODO: for large files, we may need to copy down
-                            # the files before adding them to the zip file.
-                            zip.writestr(archive_name, default_storage.open(file_path).read())
-                        except IOError:
-                            pass
-                    else:
-                        file_path = join(settings.MEDIA_ROOT,field.value)
-                        zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
-
-                if field.field.field_type == 'BooleanField':
-                    values.append(yesno(smart_str(field.value)))
-                else:
-                    values.append(smart_str(field.value))
-            writer.writerow(values)
-
-        # add the csv file to the zip, close it, and set the response
-        if has_files:
-            # add the csv file and close it all out
-            temp_csv.close()
-            zip.write(temp_csv.name, 'entries.csv', zipfile.ZIP_DEFLATED)
-            zip.close()
-            temp_zip.close()
-
-            # set the response for the zip files
-            response = HttpResponse(open(temp_zip.name,'rb'), mimetype='application/zip')
-            response['Content-Disposition'] = 'attachment; filename=export_entries_%d.zip' % time()
-
-            # remove the temporary files
-            unlink(temp_zip.name)
-            unlink(temp_csv.name)
+            task = FormEntriesExportTask.delay(form_instance, entries, include_files)
+            task_id = task.task_id
+            return redirect('form_entries_export_status', task_id)
     else:
         # blank csv document
         response = HttpResponse(mimetype='text/csv')
@@ -372,6 +308,40 @@ def entries_export(request, id):
         writer = csv.writer(response, delimiter=',')
 
     return response
+
+def entries_export_status(request, task_id, template_name="forms/entry_export_status.html"):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    return render_to_response(template_name, {
+        'task':task,
+        'task_id':task_id,
+        'user_this':None,
+    }, context_instance=RequestContext(request))
+    
+def entries_export_check(request, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    if task and task.status == "SUCCESS":
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("DNE")
+
+def entries_export_download(request, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+
+    if task and task.status == "SUCCESS":
+        return task.result
+    else:
+        raise Http404
 
 
 @is_enabled('forms')

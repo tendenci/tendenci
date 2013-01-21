@@ -10,10 +10,10 @@
 <div class="t-iconrow">
 
 	{% if can_edit or allow_edit %}
-		{% if opt_object.real_time_status_detail in 'expired - in grace period' %}
+		{% if opt_object.real_time_status_detail == 'expired - in grace period' %}
 			<span class="status-expired">{{ opt_object.real_time_status_detail|capfirst }}</span>
 		{% else %}
-			{% if opt_object.status_detail in 'paid - pending approval'%}
+			{% if opt_object.status_detail == 'paid - pending approval'%}
 				<span class="status-pending">{{ opt_object.real_time_status_detail|capfirst }}</span>
 			{% else %}
 				<span class="status-{{ opt_object.status_detail }}">{{ opt_object.real_time_status_detail|capfirst }}</span>
@@ -43,7 +43,7 @@
     <div><span class="pending-info-box">
     {% blocktrans with opt_object.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
     {% trans "Status of Renewal: " %}<span class="status-pending">{{ opt_object.status_detail }}</span><br />
-    {% if request.user.is_superuser and opt_object.is_renewal_pending %}
+    {% if request.user.is_superuser %}
         <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
     {% endif %}
     </span>

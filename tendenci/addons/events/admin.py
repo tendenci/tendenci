@@ -30,6 +30,7 @@ class EventTypeAdmin(admin.ModelAdmin):
     list_display = (
         'name',
         'bg_color',
+        'event_count',
         'reassign',
     )
 

@@ -8,7 +8,7 @@ The name 'Tendenci' was originally created by Randy Sarinas. The original logo, 
 
 ## Installation
 
-For information on how to install Tendenci, follow the instructions in `INSTALL.md`, or [online at Github](https://github.com/tendenci/blob/master/INSTALL.md).
+For information on how to install Tendenci, follow the instructions in `INSTALL.md`, or [online at Github](https://github.com/tendenci/tendenci/blob/master/INSTALL.md).
 
 ## Core Developers
 

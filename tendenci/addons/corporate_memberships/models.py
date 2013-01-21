@@ -37,7 +37,10 @@ from tendenci.core.base.fields import DictField
 
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.corporate_memberships.settings import use_search_index
-from tendenci.addons.corporate_memberships.utils import dues_rep_emails_list, corp_memb_update_perms
+from tendenci.addons.corporate_memberships.utils import (
+                                            corp_membership_update_perms,
+                                            dues_rep_emails_list,
+                                            corp_memb_update_perms)
 from tendenci.core.imports.utils import get_unique_username
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
@@ -445,9 +448,9 @@ class CorpMembership(TendenciBaseModel):
                 filter_or = {'creator': user,
                              'owner': user}
                 if use_search_index:
-                    filter_or.update({'reps': user})
+                    filter_or.update({'corp_profile__reps': user})
                 else:
-                    filter_or.update({'reps__user': user})
+                    filter_or.update({'corp_profile__reps__user': user})
             else:
                 filter_and = {'allow_anonymous_view': True}
 
@@ -526,11 +529,24 @@ class CorpMembership(TendenciBaseModel):
         from tendenci.core.perms.utils import get_notice_recipients
 
         # approve it
-        # TODO: renewal
-#        if self.renew_entry_id:
-#            self.approve_renewal(request)
-#        else:
-        self.approve_join(request)
+        if self.renewal:
+            self.approve_renewal(request)
+        else:
+            params = {'create_new': False,
+                      'assign_to_user': None}
+            if self.anonymous_creator:
+                [assign_to_user] = User.objects.filter(
+                            first_name=self.anonymous_creator.first_name,
+                            last_name=self.anonymous_creator.last_name,
+                            email=self.anonymous_creator.email
+                                )[:1] or [None]
+                if assign_to_user:
+                    params['assign_to_user'] = assign_to_user
+                    params['create_new'] = False
+                else:
+                    params['create_new'] = True
+
+            self.approve_join(request, **params)
 
         # send notification to administrators
         recipients = get_notice_recipients('module',
@@ -794,6 +810,7 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
+            corp_membership_update_perms(self)
 
             # TODO:
             # assign object permissions
@@ -883,6 +900,8 @@ class CorpMembership(TendenciBaseModel):
         return (start_dt, end_dt)
 
     def can_renew(self):
+        if self.status_detail == 'archive':
+            return False
         if not self.expiration_dt or not isinstance(self.expiration_dt,
                                                     datetime):
             return False
@@ -913,10 +932,16 @@ class CorpMembership(TendenciBaseModel):
 
     @property
     def is_expired(self):
-        if not self.expiration_dt or not isinstance(self.expiration_dt,
-                                                    datetime):
-            return False
-        return datetime.now() >= self.expiration_dt
+        if self.status_detail.lower() in ('active', 'expired'):
+            if not self.expiration_dt or not isinstance(self.expiration_dt,
+                                                        datetime):
+                return False
+            return datetime.now() >= self.expiration_dt
+        return False
+
+    @property
+    def is_archive(self):
+        return self.status_detail.lower() in ('archive',)
 
     @property
     def is_in_grace_period(self):
@@ -949,6 +974,17 @@ class CorpMembership(TendenciBaseModel):
             value = t % ('private', 'Private')
 
         return mark_safe(value)
+
+    @property
+    def members_count(self):
+        """
+        Count of the individual members.
+        """
+        return MembershipDefault.objects.filter(
+                        corp_profile_id=self.corp_profile.id,
+                        status=True
+                            ).exclude(
+                        status_detail='archive').count()
 
 
 class CorpMembershipApp(TendenciBaseModel):

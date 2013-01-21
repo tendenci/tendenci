@@ -365,11 +365,9 @@ def export(request, template_name="locations/export.html"):
 @is_enabled('locations')
 @admin_required
 @login_required
-def download_location_upload_template(request, file_ext='.xls'):
-    if file_ext == '.csv':
-        filename = "import-locations.csv"
-    else:
-        filename = "import-locations.xls"
+def download_location_upload_template(request):
+    file_ext = '.csv'
+    filename = "import-locations.csv"
 
     import_field_list = [
         'Location Name',

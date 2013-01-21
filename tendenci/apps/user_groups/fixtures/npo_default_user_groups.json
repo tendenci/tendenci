@@ -1,5 +1,109 @@
 [
     {
+        "pk": 1,
+        "model": "auth.group",
+        "fields": {
+            "name": "Committees",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.group",
+        "fields": {
+            "name": "Technical Interest Groups",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.group",
+        "fields": {
+            "name": "Study Groups",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 4,
+        "model": "auth.group",
+        "fields": {
+            "name": "The Association",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 5,
+        "model": "auth.group",
+        "fields": {
+            "name": "Art History",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 6,
+        "model": "auth.group",
+        "fields": {
+            "name": "Board of Directors",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 7,
+        "model": "auth.group",
+        "fields": {
+            "name": "Digital Photography",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 8,
+        "model": "auth.group",
+        "fields": {
+            "name": "Global Climate Change",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 9,
+        "model": "auth.group",
+        "fields": {
+            "name": "Open Source Programming",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 10,
+        "model": "auth.group",
+        "fields": {
+            "name": "Welcome Committee",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 11,
+        "model": "auth.group",
+        "fields": {
+            "name": "Membership: Student",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 12,
+        "model": "auth.group",
+        "fields": {
+            "name": "Membership: Regular",
+            "permissions": []
+        }
+    },
+    {
+        "pk": 13,
+        "model": "auth.group",
+        "fields": {
+            "name": "Membership: Individual Corporate Member",
+            "permissions": []
+        }
+    },
+    {
         "pk": 5,
         "model": "user_groups.group",
         "fields": {
@@ -13,7 +117,7 @@
             "guid": "be7f2a6a-5382-11e2-a2e2-22000a1e8c2c",
             "create_dt": "2012-12-31T13:46:18.217",
             "auto_respond_priority": 0.0,
-            "group": 6,
+            "group": 5,
             "update_dt": "2012-12-31T13:46:19.146",
             "label": "Art History",
             "type": "distribution",
@@ -49,7 +153,7 @@
             "guid": "e5bf6f9a-5382-11e2-b379-22000a1e8c2c",
             "create_dt": "2012-12-31T13:47:24.007",
             "auto_respond_priority": 0.0,
-            "group": 7,
+            "group": 6,
             "update_dt": "2012-12-31T13:47:24.177",
             "label": "Board of Directors",
             "type": "distribution",
@@ -121,7 +225,7 @@
             "guid": "09a980f8-5383-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T13:48:24.260",
             "auto_respond_priority": 0.0,
-            "group": 8,
+            "group": 7,
             "update_dt": "2012-12-31T13:48:24.441",
             "label": "Digital Photography",
             "type": "distribution",
@@ -157,7 +261,7 @@
             "guid": "20fef54e-5383-11e2-a2e2-22000a1e8c2c",
             "create_dt": "2012-12-31T13:49:03.405",
             "auto_respond_priority": 0.0,
-            "group": 9,
+            "group": 8,
             "update_dt": "2012-12-31T13:49:03.532",
             "label": "Global Climate Change",
             "type": "distribution",
@@ -193,7 +297,7 @@
             "guid": "3185807c-5383-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T13:49:31.144",
             "auto_respond_priority": 0.0,
-            "group": 10,
+            "group": 9,
             "update_dt": "2012-12-31T13:49:31.255",
             "label": "Open Source Programming",
             "type": "distribution",
@@ -229,24 +333,24 @@
             "guid": "d8cdd5bc-5376-11e2-b379-22000a1e8c2c",
             "create_dt": "2012-12-31T12:21:08.335",
             "auto_respond_priority": 0.0,
-            "group": 4,
+            "group": 3,
             "update_dt": "2012-12-31T13:22:51.933",
             "label": "Study Goups",
-            "type": "membership",
+            "type": "distribution",
             "owner_username": "",
             "allow_anonymous_view": false,
             "status": true,
             "show_as_option": false,
-            "description": "Auto-generated with the membership type. Used for membership only",
+            "description": "",
             "status_detail": "active",
             "email_recipient": "supportteam@schipul.com",
             "allow_self_remove": false,
             "creator_username": "",
-            "slug": "membership-regular",
+            "slug": "study-groups",
             "permissions": [],
             "name": "Study Groups",
             "allow_user_edit": false,
-            "notes": "Auto-generated with the membership type. Used for membership only",
+            "notes": "",
             "allow_member_view": false,
             "allow_member_edit": false
         }
@@ -265,24 +369,24 @@
             "guid": "a79b64b4-5376-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T12:19:45.790",
             "auto_respond_priority": 0.0,
-            "group": 3,
+            "group": 2,
             "update_dt": "2012-12-31T13:23:31.507",
             "label": "Technical Interest Groups",
-            "type": "membership",
+            "type": "distribution",
             "owner_username": "",
             "allow_anonymous_view": false,
             "status": true,
             "show_as_option": false,
-            "description": "Auto-generated with the membership type. Used for membership only",
+            "description": "",
             "status_detail": "active",
             "email_recipient": "supportteam@schipul.com",
             "allow_self_remove": false,
             "creator_username": "",
-            "slug": "membership-student",
+            "slug": "technical-interest-groups",
             "permissions": [],
             "name": "Technical Interest Groups",
             "allow_user_edit": false,
-            "notes": "Auto-generated with the membership type. Used for membership only",
+            "notes": "",
             "allow_member_view": false,
             "allow_member_edit": false
         }
@@ -301,24 +405,24 @@
             "guid": "19180980-5377-11e2-9cfb-22000a1e8c2c",
             "create_dt": "2012-12-31T12:22:56.188",
             "auto_respond_priority": 0.0,
-            "group": 5,
+            "group": 4,
             "update_dt": "2012-12-31T13:19:35.297",
             "label": "The Association",
-            "type": "membership",
+            "type": "distribution",
             "owner_username": "",
             "allow_anonymous_view": true,
             "status": true,
             "show_as_option": true,
-            "description": "Auto-generated with the membership type. Used for membership only",
+            "description": "",
             "status_detail": "active",
             "email_recipient": "sales@schipul.com",
             "allow_self_remove": true,
             "creator_username": "",
-            "slug": "membership-individual-corporate-member",
+            "slug": "the-association",
             "permissions": [],
             "name": "The Association",
             "allow_user_edit": true,
-            "notes": "Auto-generated with the membership type. Used for membership only",
+            "notes": "",
             "allow_member_view": false,
             "allow_member_edit": false
         }
@@ -337,7 +441,7 @@
             "guid": "43b06636-5383-11e2-b379-22000a1e8c2c",
             "create_dt": "2012-12-31T13:50:01.610",
             "auto_respond_priority": 0.0,
-            "group": 11,
+            "group": 10,
             "update_dt": "2012-12-31T13:50:01.737",
             "label": "Welcome Committee",
             "type": "distribution",
@@ -360,129 +464,111 @@
         }
     },
     {
-        "pk": 1,
-        "model": "user_groups.groupmembership",
+        "pk": 11,
+        "model": "user_groups.group",
         "fields": {
-            "status": true,
-            "create_dt": "2012-12-31T15:19:33.283",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.283",
-            "status_detail": "active",
-            "member": 15,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
-            "creator_username": "",
+            "auto_respond": false,
+            "allow_self_add": false,
+            "creator": null,
+            "allow_user_view": false,
+            "sync_newsletters": false,
+            "entity": 4,
+            "owner": null,
+            "guid": "a79b64b4-5376-11e2-9cfb-22000a1e8c2c",
+            "create_dt": "2012-12-31T12:19:45.790",
+            "auto_respond_priority": 0.0,
+            "group": 11,
+            "update_dt": "2012-12-31T13:23:31.507",
+            "label": "Membership: Student",
+            "type": "membership",
             "owner_username": "",
-            "owner_id": 4
+            "allow_anonymous_view": false,
+            "status": true,
+            "show_as_option": false,
+            "description": "Auto-generated with the membership type. Used for membership only",
+            "status_detail": "active",
+            "email_recipient": "supportteam@schipul.com",
+            "allow_self_remove": false,
+            "creator_username": "",
+            "slug": "membership-student",
+            "permissions": [],
+            "name": "Membership: Student",
+            "allow_user_edit": false,
+            "notes": "Auto-generated with the membership type. Used for membership only",
+            "allow_member_view": false,
+            "allow_member_edit": false
         }
     },
-    {
-        "pk": 2,
-        "model": "user_groups.groupmembership",
+        {
+        "pk": 12,
+        "model": "user_groups.group",
         "fields": {
-            "status": true,
-            "create_dt": "2012-12-31T15:19:33.358",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.359",
-            "status_detail": "active",
-            "member": 16,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
-            "creator_username": "",
+            "auto_respond": false,
+            "allow_self_add": false,
+            "creator": null,
+            "allow_user_view": false,
+            "sync_newsletters": false,
+            "entity": 2,
+            "owner": null,
+            "guid": "d8cdd5bc-5376-11e2-b379-22000a1e8c2c",
+            "create_dt": "2012-12-31T12:21:08.335",
+            "auto_respond_priority": 0.0,
+            "group": 12,
+            "update_dt": "2012-12-31T13:22:51.933",
+            "label": "Membership: Regular",
+            "type": "membership",
             "owner_username": "",
-            "owner_id": 4
+            "allow_anonymous_view": false,
+            "status": true,
+            "show_as_option": false,
+            "description": "Auto-generated with the membership type. Used for membership only",
+            "status_detail": "active",
+            "email_recipient": "supportteam@schipul.com",
+            "allow_self_remove": false,
+            "creator_username": "",
+            "slug": "membership-regular",
+            "permissions": [],
+            "name": "Membership: Regular",
+            "allow_user_edit": false,
+            "notes": "Auto-generated with the membership type. Used for membership only",
+            "allow_member_view": false,
+            "allow_member_edit": false
         }
     },
-    {
-        "pk": 3,
-        "model": "user_groups.groupmembership",
+        {
+        "pk": 13,
+        "model": "user_groups.group",
         "fields": {
-            "status": true,
-            "create_dt": "2012-12-31T15:19:33.408",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.408",
-            "status_detail": "active",
-            "member": 17,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
-            "creator_username": "",
+            "auto_respond": false,
+            "allow_self_add": true,
+            "creator": null,
+            "allow_user_view": true,
+            "sync_newsletters": true,
+            "entity": 1,
+            "owner": null,
+            "guid": "19180980-5377-11e2-9cfb-22000a1e8c2c",
+            "create_dt": "2012-12-31T12:22:56.188",
+            "auto_respond_priority": 0.0,
+            "group": 13,
+            "update_dt": "2012-12-31T13:19:35.297",
+            "label": "Membership: Individual Corporate Member",
+            "type": "membership",
             "owner_username": "",
-            "owner_id": 4
-        }
-    },
-    {
-        "pk": 4,
-        "model": "user_groups.groupmembership",
-        "fields": {
+            "allow_anonymous_view": true,
             "status": true,
-            "create_dt": "2012-12-31T15:19:33.446",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.446",
+            "show_as_option": true,
+            "description": "Auto-generated with the membership type. Used for membership only",
             "status_detail": "active",
-            "member": 18,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
+            "email_recipient": "sales@schipul.com",
+            "allow_self_remove": true,
             "creator_username": "",
-            "owner_username": "",
-            "owner_id": 4
-        }
-    },
-    {
-        "pk": 5,
-        "model": "user_groups.groupmembership",
-        "fields": {
-            "status": true,
-            "create_dt": "2012-12-31T15:19:33.488",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.488",
-            "status_detail": "active",
-            "member": 19,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
-            "creator_username": "",
-            "owner_username": "",
-            "owner_id": 4
-        }
-    },
-    {
-        "pk": 6,
-        "model": "user_groups.groupmembership",
-        "fields": {
-            "status": true,
-            "create_dt": "2012-12-31T15:19:33.545",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.545",
-            "status_detail": "active",
-            "member": 20,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
-            "creator_username": "",
-            "owner_username": "",
-            "owner_id": 4
-        }
-    },
-    {
-        "pk": 7,
-        "model": "user_groups.groupmembership",
-        "fields": {
-            "status": true,
-            "create_dt": "2012-12-31T15:19:33.583",
-            "group": 6,
-            "update_dt": "2012-12-31T15:19:33.583",
-            "status_detail": "active",
-            "member": 14,
-            "creator_id": 4,
-            "sort_order": 0,
-            "role": "Officer",
-            "creator_username": "",
-            "owner_username": "",
-            "owner_id": 4
+            "slug": "membership-individual-corporate-member",
+            "permissions": [],
+            "name": "Membership: Individual Corporate Member",
+            "allow_user_edit": true,
+            "notes": "Auto-generated with the membership type. Used for membership only",
+            "allow_member_view": false,
+            "allow_member_edit": false
         }
     }
 ]

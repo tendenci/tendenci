@@ -33,7 +33,7 @@
 <div class="label">{% trans "Address:" %}</div><div>{{ mp.address }} {{ mp.address2 }} 
 		{{ mp.city }} {{ mp.state }} {{ mp.zip_code }} {{ mp.country }}</div>
 <div class="clear-left"></div>
-<div class="label">{% trans "Phone:" %}</div><div>{{ mp.phone }}</div>
+<div class="label">{% trans "Phone:" %}</div><div>{{ mp.phone|phonenumber }}</div>
 <div class="clear-left"></div>
 <div class="label">{% trans "Email:" %}</div><div>{{ mp.email|obfuscate_email }}</div>
 <div class="clear-left"></div>

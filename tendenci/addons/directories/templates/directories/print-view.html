@@ -52,10 +52,10 @@
 				<div>{{ directory.country }}</div>
 			{% endif %}
 			{% if directory.phone %}
-				<div>{{ directory.phone }}</div>
+				<div>{{ directory.phone|phonenumber }}</div>
 			{% endif %}
 			{% if directory.phone2 %}
-				<div>{{ directory.phone2 }}</div>
+				<div>{{ directory.phone2|phonenumber }}</div>
 			{% endif %}
 			{% if directory.fax %}
 				<div>{{ directory.fax }} fax.</div>

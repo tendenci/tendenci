@@ -9,6 +9,7 @@ class Migration(SchemaMigration):
     depends_on = (
         ('industries', '0001_initial'),
         ('regions', '0001_initial'),
+        ('directories', '0001_initial'),
     )
 
     def forwards(self, orm):

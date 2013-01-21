@@ -372,6 +372,12 @@ class MembershipDefault(TendenciBaseModel):
         self.guid = self.guid or uuid.uuid1().get_hex()
         super(MembershipDefault, self).save(*args, **kwargs)
 
+    @property
+    def demographics(self):
+        if hasattr(self, 'user') and self.user:
+            return self.user.demographics
+        return None
+
     @classmethod
     def QS_ACTIVE(cls):
         """
@@ -699,7 +705,7 @@ class MembershipDefault(TendenciBaseModel):
         self.is_active()
         self.application_approved
         """
-        if self.is_active() and self.application_approved:
+        if self.is_active():
 
             # membership does not expire
             if self.is_forever():
@@ -714,16 +720,8 @@ class MembershipDefault(TendenciBaseModel):
     def get_status(self):
         """
         Returns status of membership
-        'expired', 'approved', 'pending', 'disapproved', archive'
+        'pending', 'active', 'disapproved', 'expired', 'archived'
         """
-
-        if self.is_active():
-
-            if self.is_approved():
-                return 'active'
-            else:
-                return 'expired'
-
         return self.status_detail.lower()
 
     def copy(self):
@@ -1391,7 +1389,7 @@ class Membership(TendenciBaseModel):
             return False
 
         # can only renew from approved state
-        if self.get_status() != 'active':
+        if self.status_detail.lower() != 'active':
             return False
 
         # assert that we're within the renewal period
@@ -2329,7 +2327,7 @@ class AppEntry(TendenciBaseModel):
         user.memberships.filter(
             membership_type=self.membership_type,
             status=True,
-            status_detail='active'
+            status_detail__in=['pending', 'active', 'expired']
         ).update(status_detail='archive')
 
         # look for previous member number
@@ -2720,6 +2718,41 @@ class AppFieldEntry(models.Model):
                 pass
 
         return None
+
+
+class MembershipDemographic(models.Model):
+    user = models.OneToOneField(User, related_name="demographics", verbose_name=_('user'))
+
+    ud1 = models.TextField(blank=True, default=u'')
+    ud2 = models.TextField(blank=True, default=u'')
+    ud3 = models.TextField(blank=True, default=u'')
+    ud4 = models.TextField(blank=True, default=u'')
+    ud5 = models.TextField(blank=True, default=u'')
+    ud6 = models.TextField(blank=True, default=u'')
+    ud7 = models.TextField(blank=True, default=u'')
+    ud8 = models.TextField(blank=True, default=u'')
+    ud9 = models.TextField(blank=True, default=u'')
+    ud10 = models.TextField(blank=True, default=u'')
+    ud11 = models.TextField(blank=True, default=u'')
+    ud12 = models.TextField(blank=True, default=u'')
+    ud13 = models.TextField(blank=True, default=u'')
+    ud14 = models.TextField(blank=True, default=u'')
+    ud15 = models.TextField(blank=True, default=u'')
+    ud16 = models.TextField(blank=True, default=u'')
+    ud17 = models.TextField(blank=True, default=u'')
+    ud18 = models.TextField(blank=True, default=u'')
+    ud19 = models.TextField(blank=True, default=u'')
+    ud20 = models.TextField(blank=True, default=u'')
+    ud21 = models.TextField(blank=True, default=u'')
+    ud22 = models.TextField(blank=True, default=u'')
+    ud23 = models.TextField(blank=True, default=u'')
+    ud24 = models.TextField(blank=True, default=u'')
+    ud25 = models.TextField(blank=True, default=u'')
+    ud26 = models.TextField(blank=True, default=u'')
+    ud27 = models.TextField(blank=True, default=u'')
+    ud28 = models.TextField(blank=True, default=u'')
+    ud29 = models.TextField(blank=True, default=u'')
+    ud30 = models.TextField(blank=True, default=u'')
 
 
 # Moved from management/__init__.py to here because it breaks

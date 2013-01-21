@@ -81,6 +81,9 @@ class Type(models.Model):
     def __unicode__(self):
         return self.name
 
+    def event_count(self):
+        return self.event_set.count()
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Type, self).save(*args, **kwargs)
@@ -692,6 +695,10 @@ class Registrant(models.Model):
         else:
             if self.first_name or self.last_name:
                 return self.first_name + ' ' + self.last_name
+
+        if self.name:
+            return self.name
+
         return None
 
     @classmethod

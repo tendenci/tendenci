@@ -2,6 +2,7 @@
 {% load news_tags %}
 {% load tagging_tags %}
 {% load base_tags %}
+{% load base_filters %}
 {% load category_tags %}
 {% load i18n %}
 
@@ -36,7 +37,7 @@
 		         	<div>{{ news.first_name }} {{ news.last_name }}</div>
 		         {% endif %}	
 		         {% if news.phone %}    
-		         <div>{% trans "Phone" %}: {{ news.phone }}</div>
+		         <div>{% trans "Phone" %}: {{ news.phone|phonenumber }}</div>
 		         {% endif %}	
 		         {% if news.fax %} 
 		         <div>{% trans "Fax" %}: {{ news.fax }}</div>	

@@ -36,7 +36,7 @@
                     <div>{{ article.first_name }} {{ article.last_name }}</div>
                 {% endif %} 
                 {% if article.phone %}
-                    <div>{{ article.phone }}</div>  
+                    <div>{{ article.phone|phonenumber }}</div>  
                 {% endif %} 
                 {% if article.fax %}
                     <div>{{ article.fax }}</div>    

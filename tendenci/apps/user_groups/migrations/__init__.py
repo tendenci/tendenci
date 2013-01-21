@@ -45,4 +45,4 @@ def create_default_group(sender, app, **kwargs):
 
                 group.save()
 
-post_migrate.connect(create_default_group)
+# post_migrate.connect(create_default_group)

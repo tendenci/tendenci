@@ -1,3 +1,4 @@
+{% load base_filters %}
 {% load corporate_memberships_tags %}
 {% load i18n %}
 <div class="wrap-search-item{% if corporate_membership.status_detail == 'disapproved' %} disapproved{% endif %}">
@@ -19,7 +20,7 @@
             <div class="clear-left"></div>
             
             <div class="corpmember-left float-left">
-                <div><span class="label">{% trans "Corporate Phone:" %}</span> {% if corporate_membership.phone %}{{ corporate_membership.phone }}{% endif %}</div>
+                <div><span class="label">{% trans "Corporate Phone:" %}</span> {% if corporate_membership.phone %}{{ corporate_membership.phone|phonenumber }}{% endif %}</div>
                 <div><span class="label">{% trans "Website:" %}</span> {% if corporate_membership.url %}{{ corporate_membership.url|safe|urlize }}{% endif %}</div>
                 <div><span class="label">{% trans "Member Type:" %}</span> {{ corporate_membership.corporate_membership_type.name }}
                 {% if corporate_membership.invoice %}

@@ -311,6 +311,7 @@ def export(request, template_name="invoices/export.html"):
         # initilize initial values
         file_name = "invoices.csv"
         fields = [
+            'id',
             'guid',
             'object_type',
             'title',

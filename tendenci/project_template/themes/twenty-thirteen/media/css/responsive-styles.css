@@ -1,0 +1,53 @@
+/* Smartphones (portrait) ----------- */
+@media only screen 
+and (max-width : 320px) {
+
+.container {width: 100%; }
+#header {width: auto; position: static; }
+#header-container { width: 100%; background: #76c4cc; text-align: center; padding-bottom: 40px; }
+#header-left-container { width: 100%; position:relative; }
+#header-right-container { width: 100%; position:relative; }
+#header-cta { margin: 0 auto; }
+#search { margin: 10px auto 5px; }
+.nav-mask { display: none; }
+#nav { background: none !important; width: auto; }
+nav { width: 100%; text-align: center; }
+nav ul li { float: none; text-align: center; width: 100%; background: #15aebb; padding: 10px; margin: 4px auto; border-radius: 5px; box-shadow: 1px 1px 3px #666; }
+nav ul li a { float: none; }
+nav ul li ul { display: none; }
+#rotator-container { display: none; }
+#home-content { width: 100%; margin: 405px auto 0;  padding: 0; }
+#home-body { width: 100%; margin: 0 auto; box-shadow: none; }
+.row { height: inherit; }
+.row .col { float: none; margin: 0 auto; width: auto; }
+.row .col p img { width: 95%; height: auto; margin: 0 auto; }
+#home-sidebar { display: none; }
+#carousel-container { display: none; }
+#home-body-shadow{ display: none; }
+#home-feed-content { display: none; }
+#footer { display: none; }
+
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen 
+and (min-width : 321px) {
+}
+
+/* Tablets (portrait) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) {
+/* Styles */
+}
+
+/* Tablets (landscape) ----------- */
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : landscape) {
+/* Styles */
+}
+
+

@@ -1,4 +1,5 @@
 {% extends "corporate_memberships/base.html" %}
+{% load base_filters %}
 {% load corporate_memberships_tags %}
 {% load i18n %}
 
@@ -53,7 +54,7 @@
   		{% if corporate_membership.phone %}
   		<tr>
   			<td>Phone:</td>
-  			<td>{{ corporate_membership.phone }}</td>
+  			<td>{{ corporate_membership.phone|phonenumber }}</td>
   		</tr>
   		{% endif %}
      	{% if corporate_membership.email %}

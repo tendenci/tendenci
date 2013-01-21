@@ -24,7 +24,7 @@
 
             <div class="details">
                 <p>{{ location.address }} <br />{{ location.city }}, {{ location.state }} {{ location.zipcode }}</p>
-                <p>{{ location.phone }}</p>
+                <p>{{ location.phone|phonenumber }}</p>
                 <p>{{ location.email }}</p>
             </div>
 

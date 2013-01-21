@@ -69,7 +69,7 @@
                 {% if can_view_corpmemb or allow_view %}
                 <li><a href="{% url corpmembership.view nav_object.pk %}">{% trans "View Corp. Member" %}</a></li>
                 {% endif %}
-                {% if can_edit_corpmemb %}
+                {% if can_edit_corpmemb and not nav_object.is_archive %}
                 <li><a href="{% url corpmembership.edit nav_object.pk %}">{% trans "Edit Corp. Member" %}</a></li>
                 <li><a class="option-link roster" href="{% url corpmembership.roster_search %}?name={{ nav_object|urlencode }}">{% trans "View Roster" %}</a></li>
                 {% endif %}
