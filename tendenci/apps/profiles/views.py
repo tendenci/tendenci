@@ -853,6 +853,8 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
 
 @login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
 
     if request.method == 'POST':
         # generate a unique id for this import
