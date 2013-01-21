@@ -9,7 +9,7 @@
             <th>{% trans "Last Name" %}</th>
             <th>{% trans "Email" %}</th>
         </tr>
-        {% for profile in users %}
+        {% for profile in profiles %}
         <tr>
             <td>{{ profile.user.id }}</td>
             <td><a href="{% url profile profile.user.username %}">{{ profile.user.username }}</a></td>

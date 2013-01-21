@@ -858,29 +858,40 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
         # generate a unique id for this import
         sid = str(int(time.time()))
 
-        # store the infor in the session to pass to the next page
+        # store the info in the session to pass to the next page
         request.session[sid] = {'users': request.POST.getlist('id_users')}
         return HttpResponseRedirect(reverse(
                                     'profile.merge_view',
                                     args=[sid]))
 
-    similar_name = []
-    similar_email = []
-    user_distinct_name = Profile.objects.distinct("user__first_name", "user__last_name")
-    user_distinct_email = Profile.objects.distinct("user__email")
+    profiles_with_duplicate_name = []
+    profiles_with_duplicate_email = []
 
-    for profile in user_distinct_name:
-        if len(Profile.objects.filter(user__first_name=profile.user.first_name).filter(user__last_name=profile.user.last_name)) > 1:
-            similar_name.append(Profile.objects.filter(user__first_name=profile.user.first_name)
-                    .filter(user__last_name=profile.user.last_name))
+    duplicate_names = User.objects.values_list('first_name', 'last_name'
+                                          ).annotate(
+                                        num_last=Count('last_name')
+                                        ).annotate(
+                                        num_first=Count('first_name')
+                                        ).filter(num_last__gt=1
+                                        ).filter(num_first__gt=1)
+    duplicate_emails = User.objects.values_list('email', flat=True
+                                    ).annotate(
+                                    num_emails=Count('email')
+                                    ).filter(num_emails__gt=1)
+    for first_name, last_name in duplicate_names:
+        profiles = Profile.objects.filter(
+                    user__first_name=first_name,
+                    user__last_name=last_name)
+        if profiles.count() > 1:
+            profiles_with_duplicate_name.append(profiles)
+    for email in duplicate_emails:
+        profiles = Profile.objects.filter(
+                    user__email=email)
+        profiles_with_duplicate_email.append(profiles)
 
-    for profile in user_distinct_email:
-        if len(Profile.objects.filter(user__email=profile.user.email)) > 1:
-            similar_email.append(Profile.objects.filter(user__email=profile.user.email))
-            
     return render_to_response(template_name, {
-        'similar_name':similar_name,
-        'similar_email':similar_email,
+        'profiles_with_duplicate_name': profiles_with_duplicate_name,
+        'profiles_with_duplicate_email': profiles_with_duplicate_email,
         'user_this': None,
     }, context_instance=RequestContext(request))
 
