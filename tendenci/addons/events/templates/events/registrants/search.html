@@ -74,7 +74,7 @@
 			<div style="color: #828282; font-size:0.9em; font-style: italic;">{{ INDEX_UPDATE_NOTE }}</div>
 			{% endif %}
 		
-		    {% autopaginate registrants 10 %}
+		    {% autopaginate all_registrants 10 %}
 			
 			<div class="events-wrap">
 		    {% for registrant in registrants %}
@@ -94,7 +94,7 @@
 					</div>
 					
 					<div class="registrant-info">
-		            	<h2>{% firstof registrant.name registrant.email %}</h2>
+		            	<h2>{% firstof registrant.get_name registrant.email %}</h2>
 		
 						{% if registrant.phone and registrant.email %}
 						<div>{{ registrant.phone|phonenumber }} &middot; {{ registrant.email }}</div>

@@ -45,6 +45,7 @@ from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
@@ -2112,6 +2113,7 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):
     query = request.GET.get('q', None)
+    page = request.GET.get('page', 1)
 
     event = get_object_or_404(Event, pk=event_id)
 
@@ -2131,23 +2133,20 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         active_registrants = Registrant.objects.filter(registration__event=event).filter(cancel_dt=None).order_by("-update_dt")
         canceled_registrants = Registrant.objects.filter(registration__event=event).exclude(cancel_dt=None).order_by("-update_dt")
 
+    all_registrants = registrants
 
+    if page:
+        registrants_paginator = Paginator(registrants, 10)
+        try:
+            registrants = registrants_paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            registrants = registrants_paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            registrants = registrants_paginator.page(registrants_paginator.num_pages)
 
     for reg in registrants:
-        if hasattr(reg, 'object'): reg = reg.object
-        if reg.custom_reg_form_entry:
-            reg.assign_mapped_fields()
-            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
-            if not reg.name:
-                reg.name = reg.custom_reg_form_entry.__unicode__()
-    for reg in active_registrants:
-        if hasattr(reg, 'object'): reg = reg.object
-        if reg.custom_reg_form_entry:
-            reg.assign_mapped_fields()
-            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
-            if not reg.name:
-                reg.name = reg.custom_reg_form_entry.__unicode__()
-    for reg in canceled_registrants:
         if hasattr(reg, 'object'): reg = reg.object
         if reg.custom_reg_form_entry:
             reg.assign_mapped_fields()
@@ -2160,6 +2159,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     return render_to_response(template_name, {
         'event':event,
         'registrants':registrants,
+        'all_registrants': all_registrants,
         'active_registrants':active_registrants,
         'canceled_registrants':canceled_registrants,
         'query': query,
