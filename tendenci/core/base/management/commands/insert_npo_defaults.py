@@ -31,18 +31,39 @@ class Command(BaseCommand):
         """
         Copy media files to a local directory.
         """
-        pass
+        conn = S3Connection(anon=True)
+        bucket = conn.get_bucket('tendenci-static')
+        bucket_list = bucket.list('npo_defaults')
+
+        for source_key in bucket_list:
+            if not source_key.name.endswith('/'):  # if file
+
+                filename = os.path.basename(source_key.name)
+                source_key.get_contents_to_filename(filename)
+
+                dst = source_key.name.replace('npo_defaults/', '')
+                dst = os.path.join(settings.MEDIA_ROOT, dst)
+
+                basename = os.path.basename(dst)
+                dir_path = dst.replace(basename, '')
+
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+
+                print dst
+                with open(dst, 'wb') as f:
+                    f.write(source_key.read())
 
     def copy_to_s3(self):
         """
         Copy media files to this sites' S3 location.
         """
-        conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+        conn = S3Connection(anon=True)
         bucket = conn.get_bucket('tendenci-static')
         bucket_list = bucket.list('npo_defaults')
 
         for source_key in bucket_list:
-            if not source_key.name.endswith('/'):  # if not directory
+            if not source_key.name.endswith('/'):  # if file
 
                 target_key_name = source_key.name.replace('npo_defaults/', '')
                 target_key_name = os.path.join(settings.MEDIA_ROOT, target_key_name)
