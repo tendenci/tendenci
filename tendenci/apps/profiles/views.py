@@ -880,10 +880,10 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                                     ).annotate(
                                     num_emails=Count('email')
                                     ).filter(num_emails__gt=1)
-    for first_name, last_name in duplicate_names:
+    for dup_name in duplicate_names:
         profiles = Profile.objects.filter(
-                    user__first_name=first_name,
-                    user__last_name=last_name)
+                    user__first_name=dup_name[0],
+                    user__last_name=dup_name[1])
         if profiles.count() > 1:
             profiles_with_duplicate_name.append(profiles)
     for email in duplicate_emails:
@@ -936,7 +936,16 @@ def merge_process(request, sid):
     users = (request.session[sid]).get('users', '')
 
     if master and users:
-        
+        # get description for event log before users get deleted
+        description = 'Master user: %s, merged user(s): %s.' % (
+                        '%s(id=%d)' % (master.user.username, master.user.id),
+                        ', '.join(['%s %s (%s)(id=%d)' % (
+                        profile.user.first_name,
+                        profile.user.last_name,
+                        profile.user.username,
+                        profile.user.id
+                        ) for profile in users]))
+
         related = master.user._meta.get_all_related_objects()
         field_names = master._meta.get_all_field_names()
 
@@ -957,6 +966,9 @@ def merge_process(request, sid):
                 master.save()
                 profile.user.delete()
                 profile.delete()
+
+        # log an event
+        EventLog.objects.log(description=description)
 
         request.session['password_promt'] = False
         return redirect("profile.search")
