@@ -375,7 +375,8 @@ class MembershipDefault(TendenciBaseModel):
     @property
     def demographics(self):
         if hasattr(self, 'user') and self.user:
-            return self.user.demographics
+            if hasattr(self.user, 'demographics'):
+                return self.user.demographics
         return None
 
     @classmethod
