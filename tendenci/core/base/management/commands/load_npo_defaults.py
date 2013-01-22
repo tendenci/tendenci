@@ -117,6 +117,7 @@ class Command(BaseCommand):
             'memberships',
             'memberships_membershipdefault',
             'directories',
+            'articles',
             'news',
             'photos',
             'boxes',
