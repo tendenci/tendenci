@@ -13,6 +13,7 @@ from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
+from tendenci.core.base.http import Http403
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.perms.utils import update_perms_and_save
@@ -343,6 +344,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         Approve membership and redirect to
         membershipdefault change page.
         """
+        if not has_perm(request.user, 'memberships.approve_membershipdefault'):
+            raise Http403
+
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.approve(request_user=request.user)
         m.send_email(request, 'approve')
