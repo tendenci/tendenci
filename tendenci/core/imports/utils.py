@@ -1,6 +1,7 @@
 import os
 import datetime
 import re
+import csv
 from django.contrib.auth.models import User
 from django.db import models
 from django.http import HttpResponse
@@ -74,7 +75,11 @@ def get_user_import_settings(request, id):
 
 def render_excel(filename, title_list, data_list, file_extension='.xls'):
     if file_extension == '.csv':
-        str_out = ','.join(title_list)
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=' + filename
+        csv_writer = csv.writer(response)
+
+        csv_writer.writerow(title_list)
 
         for row_item_list in data_list:
             for i in range(0, len(row_item_list)):
@@ -91,13 +96,10 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
                         row_item_list[i] = row_item_list[i].strftime(
                             '%H:%M:%S'
                             )
+                if isinstance(row_item_list[i], basestring):
+                    row_item_list[i] = row_item_list[i].encode("utf-8")
 
-                # convert all to string; catches 0 (int)
-                row_item_list[i] = '%s' % row_item_list[i]
-
-            str_out += ','.join(row_item_list)
-
-        content_type = "application/text"
+            csv_writer.writerow(row_item_list)
     else:
         import StringIO
         output = StringIO.StringIO()
@@ -145,11 +147,10 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
         export_wb.save(output)
         output.seek(0)
         str_out = output.getvalue()
-        content_type = 'application/vnd.ms-excel'
+        response = HttpResponse(str_out)
+        response['Content-Type']  = 'application/vnd.ms-excel'
+        response['Content-Disposition'] = 'attachment; filename=' + filename
 
-    response = HttpResponse(str_out)
-    response['Content-Type'] = content_type
-    response['Content-Disposition'] = 'attachment; filename=' + filename
     return response
 
 

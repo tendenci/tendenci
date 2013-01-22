@@ -85,7 +85,7 @@
             {% if not profile.hide_phone %}
 			<tr>
 				<td>Phone</td>
-				<td>{% firstof profile.phone profile.phone2 %}</td>
+				<td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
 			</tr>
             {% endif %}
             {% endif %}
@@ -121,13 +121,11 @@
 	</div>
     {% endif %} 
 
-    {% if request.user.profile.is_superuser %}
+    {% if request.user == user_this or request.user.profile.is_superuser %}
     <div class="membership info">
 
 		<h2>Memberships 
-		{% if request.user == user_this or admin %}
-		<a title="Join membership" href="{% url membership.application_detail_default %}" class="glyph plus">+</a>
-		{% endif %}
+		<a title="Join membership" href="{% url membership_default.add %}" class="glyph plus">+</a>
 		</h2>
 
 		{% if memberships %}
@@ -135,10 +133,15 @@
         {% for membership in memberships %}
         		<tr>
         			<td>
+                        {% if request.user.profile.is_superuser %}
         				<a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.member_number }} {{ membership.membership_type }}
         				</a>
+                        {% else %}
+                        {{ membership.member_number }} {{ membership.membership_type }}
+                        {% endif %}
         			</td>
         			<td>
+
 
                         {{ membership.join_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
@@ -148,7 +151,7 @@
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
                         {% if membership.can_renew %}
-                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">Renew</a>
+                        <a href="{% url membership_default.add %}">Renew</a>
                         {% endif %}
 
 	        		</td>

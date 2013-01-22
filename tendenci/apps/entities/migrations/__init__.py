@@ -40,4 +40,4 @@ def create_default_entity(sender, app, **kwargs):
 
                 entity.save()
 
-post_migrate.connect(create_default_entity)
+# post_migrate.connect(create_default_entity)

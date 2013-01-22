@@ -76,6 +76,7 @@ from tendenci.addons.corporate_memberships.utils import (
                                          get_indiv_memberships_choices,
                                          corp_membership_rows,
                                          corp_membership_update_perms,
+                                         get_corp_memb_summary,
                                          corp_memb_inv_add, 
                                          dues_rep_emails_list,
                                          corp_memb_update_perms,
@@ -112,6 +113,7 @@ def get_app_fields_json(request):
     return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
 
 
+@login_required
 def app_preview(request, app_id,
                     template='corporate_memberships/applications/preview.html'):
     """
@@ -130,7 +132,9 @@ def app_preview(request, app_id,
     corpmembership_form = CorpMembershipForm(app_fields,
                                      request_user=request.user,
                                      corpmembership_app=app)
+    current_app = CorpMembershipApp.objects.current_app()
     context = {'app': app,
+               'current_app': current_app,
                "app_fields": app_fields,
                'corpprofile_form': corpprofile_form,
                'corpmembership_form': corpmembership_form}
@@ -139,10 +143,7 @@ def app_preview(request, app_id,
 
 def corpmembership_add_pre(request,
                 template='corporate_memberships/applications/add_pre.html'):
-    [app] = CorpMembershipApp.objects.filter(
-                               status=True,
-                               status_detail__in=['active', 'published']
-                               ).order_by('id')[:1] or [None]
+    app = CorpMembershipApp.objects.current_app()
     if not app:
         raise Http404
     form = CreatorForm(request.POST or None)
@@ -154,6 +155,8 @@ def corpmembership_add_pre(request,
                        ).hexdigest()
             creator.hash = hash
             creator.save()
+            # log an event
+            EventLog.objects.log(instance=creator)
 
             # redirect to add
             return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add'),
@@ -271,7 +274,8 @@ def corpmembership_add(request,
             }
             send_email_notification('corp_memb_added', recipients,
                                     extra_context)
-
+            # log an event
+            EventLog.objects.log(instance=corp_membership)
             # handle online payment
             if corp_membership.payment_method.is_online:
                 if corp_membership.invoice and \
@@ -302,7 +306,6 @@ def corpmembership_add_conf(request, id,
     if not app:
         raise Http404
 
-    EventLog.objects.log(instance=corp_membership)
     context = {"corporate_membership": corp_membership,
                'app': app}
     return render_to_response(template, context, RequestContext(request))
@@ -364,7 +367,8 @@ def corpmembership_edit(request, id,
                 send_email_notification('corp_memb_edited',
                                         recipients,
                                         extra_context)
-
+            # log an event
+            EventLog.objects.log(instance=corp_membership)
             # redirect to view 
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corp_membership.id]))
@@ -429,6 +433,14 @@ def corpmembership_view(request, id,
     app_fields = list(app_fields.order_by('order'))
 
     if can_edit:
+        app_field = CorpMembershipAppField(label='Join Date',
+                                            field_name='join_dt',
+                                            required=True)
+        app_fields.append(app_field)
+        app_field = CorpMembershipAppField(label='Expiration Date',
+                                            field_name='expiration_dt',
+                                            required=True)
+        app_fields.append(app_field)
         app_field = CorpMembershipAppField(label='Representatives',
                                     field_type='section_break',
                                     admin_only=False)
@@ -507,19 +519,13 @@ def corpmembership_search(request,
             else:
                 q_obj = q_obj_or
 
-        if get_setting('site', 'global', 'searchindex') and query:
-            corp_members = CorpMembership.objects.search(query,
-                                                         user=request.user)
-            if q_obj:
-                corp_members = corp_members.filter(q_obj)
+        if query:
+            corp_members = CorpMembership.objects.filter(
+                                corp_profile__name__icontains=query)
         else:
-            if q_obj:
-                corp_members = CorpMembership.objects.filter(q_obj)
-            else:
-                corp_members = CorpMembership.objects.all()
-            if query:
-                corp_members = corp_members.filter(
-                            corp_profile__name__contains=query)
+            corp_members = CorpMembership.objects.all()
+        if q_obj:
+            corp_members = corp_members.filter(q_obj)
 
     if cm_id:
         corp_members = corp_members.filter(id=cm_id)
@@ -644,12 +650,16 @@ def corpmembership_approve(request, id,
             if msg:
                 messages.add_message(request, messages.SUCCESS, msg)
 
+            # assign object permissions
+            corp_membership_update_perms(corporate_membership)
+
             EventLog.objects.log(instance=corporate_membership)
 
             return HttpResponseRedirect(reverse('corpmembership.view',
                                                 args=[corporate_membership.id]))
-
+    field_labels = corporate_membership.get_labels()
     context = {"corporate_membership": corporate_membership,
+               'field_labels': field_labels,
                'indiv_renew_entries': indiv_renew_entries,
                'new_expiration_dt': new_expiration_dt,
                'approve_form': approve_form,
@@ -723,6 +733,8 @@ def corp_renew(request, id,
                                         **opt_d)
                 new_corp_membership.invoice = inv
                 new_corp_membership.save()
+
+                EventLog.objects.log(instance=corp_membership)
 
                 # save the individual members
                 for member in members:
@@ -839,6 +851,7 @@ def roster_search(request,
                   template_name='corporate_memberships/roster_search.html'):
     form = RosterSearchAdvancedForm(request.GET or None)
     if form.is_valid():
+        # cm_id - CorpMembership id
         cm_id = form.cleaned_data['cm_id']
         first_name = form.cleaned_data['first_name']
         last_name = form.cleaned_data['last_name']
@@ -873,7 +886,7 @@ def roster_search(request,
                     corp_profile_id=corp_membership.corp_profile.id)
 
     if request.user.profile.is_superuser or \
-        (corp_membership.allow_edit_by(request.user)):
+        (corp_membership and corp_membership.allow_edit_by(request.user)):
         pass
     else:
         filter_and, filter_or = CorpMembership.get_membership_search_filter(
@@ -920,8 +933,9 @@ def roster_search(request,
 
     if corp_membership:
         form.fields['cm_id'].initial = corp_membership.id
-    if corp_membership:
         EventLog.objects.log(instance=corp_membership)
+    else:
+        EventLog.objects.log()
     corp_profile = corp_membership and corp_membership.corp_profile
 
     return render_to_response(template_name, {
@@ -1268,6 +1282,8 @@ def corpmembership_export(request,
                             row_item_list[i] = row_item_list[i].encode("utf-8")
                 csv_writer.writerow(row_item_list)
 
+            # log an event
+            EventLog.objects.log()
             # switch to StreamingHttpResponse once we're on 1.5
             return response
     context = {"form": form}
@@ -1287,7 +1303,6 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
                     corp_profile=corp_memb.corp_profile
                     ).order_by('user')
     form = form_class(corp_memb, request.POST or None)
-    print request.POST
 
     if request.method == "POST":
         if form.is_valid():
@@ -1358,7 +1373,7 @@ def delete_corp_rep(request, id,
 
             messages.add_message(request, messages.SUCCESS,
                                  'Successfully deleted %s' % rep)
-
+            EventLog.objects.log()
             rep.delete()
             corp_membership_update_perms(corp_memb)
 
@@ -1372,6 +1387,32 @@ def delete_corp_rep(request, id,
         raise Http403
 
 
+def index(request,
+          template_name="corporate_memberships/applications/index.html"):
+    corp_app = CorpMembershipApp.objects.current_app()
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {'corp_app': corp_app},
+        context_instance=RequestContext(request))
+
+
+@staff_member_required
+def summary_report(request,
+                template_name='corporate_memberships/reports/summary.html'):
+    """
+    Shows a report of corporate memberships per corporate membership type.
+    """
+    summary, total = get_corp_memb_summary()
+
+    EventLog.objects.log()
+
+    return render_to_response(template_name, {
+        'summary': summary,
+        'total': total,
+        }, context_instance=RequestContext(request))
+
+
+# TO BE DELETED
 def add_pre(request, slug, template='corporate_memberships/add_pre.html'):
     corp_app = get_object_or_404(CorpApp, slug=slug)
     form = CreatorForm(request.POST or None)
@@ -2025,14 +2066,6 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
-    
-def index(request, template_name="corporate_memberships/index.html"):
-    corp_apps = CorpApp.objects.filter(status=1, status_detail='active').order_by('name')
-    #cm_types = CorporateMembershipType.objects.filter(status=1, status_detail='active').order_by('-price')
-    EventLog.objects.log()
-    return render_to_response(template_name, {'corp_apps': corp_apps}, 
-        context_instance=RequestContext(request))
     
     
 def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_memberships/edit_reps.html"):

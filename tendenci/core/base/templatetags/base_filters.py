@@ -394,3 +394,30 @@ def md5_gs(value, arg=None):
 @register.filter
 def multiply(value, arg):
     return Decimal(str(value)) * Decimal(str(arg))
+
+@register.filter
+def phonenumber(value):
+    if value:
+        # split number from extension or any text
+        x = re.split(r'([a-zA-Z]+)', value)
+        # clean number
+        y = ''.join(i for i in x[0] if i.isdigit())
+
+        if len(y) > 10:    # has country code
+            code = y[:len(y)-10]
+            number = y[len(y)-10:]
+            if code == '1':
+                number = "(%s) %s-%s" %(number[:3], number[3:6], number[6:])
+            else:
+                number = "+%s %s %s %s" %(code, number[:3], number[3:6], number[6:])
+        else:    # no country code
+            number = "(%s) %s-%s" %(y[:3], y[3:6], y[6:])
+
+        # attach additional text extension
+        ext = ''
+        for i in range(1, len(x)):
+            ext = ''.join((ext, x[i]))
+        if ext:
+            return ' '.join((number, ext))
+        else:
+            return number

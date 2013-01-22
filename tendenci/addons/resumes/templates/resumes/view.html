@@ -79,8 +79,8 @@
         {% if resume.contact_name %}
                 <div class="contact-wrap">
                     <div>{{ resume.contact_name }}</div>
-                    <div>{{ resume.contact_phone }}</div>
-                    <div>{{ resume.contact_phone2 }}</div>
+                    <div>{{ resume.contact_phone|phonenumber }}</div>
+                    <div>{{ resume.contact_phone2|phonenumber }}</div>
                     <div>{{ resume.contact_fax }}</div>
                     <div><a href="">{{ resume.contact_email|obfuscate_email }}</a></div>
                 </div>

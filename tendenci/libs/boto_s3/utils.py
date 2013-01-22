@@ -174,3 +174,11 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
             else:
                 item.get_contents_to_filename(copy_to_fullpath)
                 print 'Downloaded %s' % s3_file_relative_path
+
+def delete_file_from_s3(file):
+    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
+                           settings.AWS_SECRET_ACCESS_KEY)
+    b = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    k = Key(b)
+    k.key = file
+    b.delete_key(k)

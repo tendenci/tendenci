@@ -10,7 +10,7 @@ class JobRegistry(CoreRegistry):
     version = '1.0'
     author = 'Schipul - The Web Marketing Company'
     author_email = 'programmers@schipul.com'
-    description = 'Create %s listings for hiring' %  get_setting('module', 'jobs', 'label')
+    description = 'Create and Manage a %s Bank to offer free and paid postings' % get_setting('module', 'jobs', 'label')
     icon = '%simages/icons/jobs-color-64x64.png' % settings.STATIC_URL
     
     # jobs - GREEN base - complement is DEEP RED

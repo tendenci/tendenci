@@ -51,6 +51,7 @@ def renew_button(context):
 def render_membership_field(request, field_obj,
                             user_form,
                             profile_form,
+                            demographics_form,
                             membership_form):
     field_pwd = None
     if field_obj.field_type == "section_break":
@@ -61,6 +62,8 @@ def render_membership_field(request, field_obj,
             field = membership_form[field_name]
         elif field_name in profile_form.field_names:
             field = profile_form[field_name]
+        elif field_name in demographics_form.field_names:
+            field = demographics_form[field_name]
         elif field_name in user_form.field_names:
             field = user_form[field_name]
             if field_obj.field_name == 'password':

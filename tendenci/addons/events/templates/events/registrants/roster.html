@@ -142,7 +142,7 @@
 {% endif %}
     <td>&nbsp;</td>
     <td>
-   {% if registrant.phone %}{{ registrant.phone }}{% endif %}
+   {% if registrant.phone %}{{ registrant.phone|phonenumber }}{% endif %}
    
      {% if registrant.roster_field_list %}
 	{% for field in registrant.roster_field_list %}

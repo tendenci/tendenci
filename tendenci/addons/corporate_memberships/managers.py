@@ -32,19 +32,7 @@ class CorpMembershipManager(TendenciBaseManager):
         haystack to query corporate memberships.
         Returns a SearchQuerySet
         """
-        from tendenci.addons.corporate_memberships.models import CorpMembership
-
-        sqs = SearchQuerySet().models(CorpMembership)
-
-        if query:
-            sqs = sqs.filter(content=sqs.query.clean(query))
-        else:
-            sqs = sqs.all()
-
-        # the filter logic for the permission is handled in the search view
-
-        return sqs
-
+        return super(CorpMembershipManager, self).search(query=query, *args, **kwargs)
 
 class CorpMembershipAppManager(Manager):
     def current_app(self, **kwargs):

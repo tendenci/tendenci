@@ -1,0 +1,35 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load photo_tags %}
+{% load box_tags %}
+{% load news_tags %}
+
+
+<div id="editable-box">
+  {% box 11 %}
+</div><!--/#box-11-->
+
+<div id="photos" class="clearfix">
+  <h3>Our Photos</h3>
+  {% list_photos as photos_list limit=12 random=True %}
+  <ul>
+    {% for photo in photos_list %}
+    <li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=62x56 crop=True %}" /></a></li>
+    {% endfor %}
+  </ul>
+  <p style="text-align: center; margin: 15px 0;"><a  class="readmorelarge" href="/photos/">View More Photos &raquo;</a></p>
+</div><!--/#photos-->
+
+<div id="news-list" class="omega">
+  <h3>Latest News</h3>
+  {% list_news as news_list limit=2 %}
+  {% for news_item in news_list %}
+  <h4><a href="{{ news_item.get_absolute_url }}">{{ news_item.headline }}</a></h4>
+  <p>{{ news_item.summary|striptags|safe|truncatewords:"10" }}</p>
+  {% endfor %}
+  <p style="text-align: center; margin: 15px 0;"><a  class="readmorelarge" href="/news/">View More News &raquo;</a></p>
+</div><!--/#news-list-->
+
+
+

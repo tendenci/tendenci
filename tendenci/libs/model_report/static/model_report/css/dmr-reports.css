@@ -1,0 +1,63 @@
+.table {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.table th,
+.table td {
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #dddddd;
+}
+
+.table th {
+  font-weight: bold;
+}
+
+.table thead th {
+  vertical-align: bottom;
+}
+
+.table caption + thead tr:first-child th,
+.table caption + thead tr:first-child td,
+.table colgroup + thead tr:first-child th,
+.table colgroup + thead tr:first-child td,
+.table thead:first-child tr:first-child th,
+.table thead:first-child tr:first-child td {
+  border-top: 0;
+}
+
+.table tbody + tbody {
+  border-top: 2px solid #dddddd;
+}
+
+.table-condensed th,
+.table-condensed td {
+  padding: 4px 5px;
+}
+
+fieldset.report-form {
+    padding: 5px;
+    margin: 0 10px 10px 0;
+    border: 1px solid #ddd;
+}
+
+h2.groupby, fieldset.report-form legend {
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 14px;
+  text-rendering: optimizelegibility;
+  line-height: 1;
+  color: #000;
+  text-transform: uppercase;
+  margin: 10px 0 0 0;
+}
+
+tr.caption, tr.total {
+    font-weight: bold;
+}
+
+.row-hidden {
+  display: none;
+}
