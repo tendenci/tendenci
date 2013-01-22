@@ -993,6 +993,7 @@ def merge_process(request, sid):
 
         # log an event
         EventLog.objects.log(description=description)
+        invalidate('profiles_profile')
 
         request.session['password_promt'] = False
         return redirect("profile.search")
