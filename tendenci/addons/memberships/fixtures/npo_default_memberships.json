@@ -146,7 +146,7 @@
             "renewal_period_start": 30,
             "period_unit": "years",
             "fixed_option2_month": 1,
-            "name": "Individual Corporate Member",
+            "name": "Educator",
             "never_expires": false,
             "allow_user_edit": false,
             "renewal": false,
