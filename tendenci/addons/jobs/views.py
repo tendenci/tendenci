@@ -494,6 +494,9 @@ def pricing_add(request, form_class=JobPricingForm,
         else:
             form = form_class()
 
+        if "_popup" in request.REQUEST:
+            template_name="jobs/pricing-add-popup.html"
+
         return render_to_response(template_name, {'form': form},
             context_instance=RequestContext(request))
     else:

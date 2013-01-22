@@ -1,19 +1,17 @@
-{% extends "directories/base.html" %}
-{% load directory_tags %}
+<!DOCTYPE html>
 {% load perm_tags %}
 {% load i18n %}
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml" dir="ltr" lang="en-US"> 
 
-{% block title %}{% trans "Add a New Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}{% endblock %}
+<head profile="http://gmpg.org/xfn/11">{{ NEW_RELIC_HEADER|safe }}
+    <title>{% trans "Add a New Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %} {{ SITE_GLOBAL_SITEDISPLAYNAME }}</title>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
+</head> 
 
-{% block extra_head %}
-{{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/directories.css">
-{% endblock %}
 
-{% block body %}
+<body>
+{% block html_body %}
 <div class="t">
-
-    {% directory_pricing_nav request.user %}
 
     <h1>{% trans "Add a New Price:" %} {% firstof MODULE_DIRECTORIES_LABEL trans 'Directory' %}</h1>
     <p>{% trans "To add a new directory price, complete the fields below and press Submit." %}</p>
@@ -34,7 +32,7 @@
 	{% endif %}
 
     <div class="directory-pricing-wrap">
-    <form action="." method="post">{% csrf_token %}
+    <form action="" method="post">{% csrf_token %}
     	<div class="forms">
 			<div class="pricing-item">
 				<div class="errs">{{ form.duration.errors }}</div>
@@ -100,3 +98,12 @@
 
 </div>
 {% endblock %}
+</body>
+
+{% block extra_body %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/admin/jsi18n/"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/core.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}admin/js/admin/RelatedObjectLookups.js"> </script>
+{% endblock %}
+</html>
