@@ -122,8 +122,8 @@ class Command(BaseCommand):
             'boxes',
             'pages',
             'navs',
-            'videos',
             'stories',
+            'videos',
         ]
 
         # call loaddata on fixtures
