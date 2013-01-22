@@ -48,17 +48,14 @@
         </tbody>
     </table>
 </div>
-<table style="display: none;" class="highchart"  data-graph-yaxis-1-title-text="count"
-data-graph-container=".. .. .highchart-container" data-graph-type="column"
-data-graph-datalabels-enabled="1" data-graph-datalabels-color="white"
->
+<table style="display: none;" class="" >
         <caption>Corporate Membership Count by Type</caption>
         <thead>
             <tr>
                 <th></th>
-                <th data-graph-stack-group="1">{% trans 'Active' %}</th>
-                <th data-graph-stack-group="1" data-graph-datalabels-color="blue">{% trans 'Pending' %}</th>
-                <th data-graph-stack-group="1" data-graph-datalabels-color="green">{% trans 'Expired' %}</th>
+                <th>{% trans 'Active' %}</th>
+                <th>{% trans 'Pending' %}</th>
+                <th>{% trans 'Expired' %}</th>
             </tr>
         </thead>
         <tbody>
@@ -79,10 +76,8 @@ data-graph-datalabels-enabled="1" data-graph-datalabels-color="white"
         </tbody>
     </table>
 
-<div class="summary-graph">
-    <div class="highchart-container">
-    </div>
-</div>
+
+
 
 </div>
 
@@ -90,11 +85,10 @@ data-graph-datalabels-enabled="1" data-graph-datalabels-color="white"
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/highcharts.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.highchartTable.js"></script>
+
 <script>
    $(document).ready(function() {
-  $('table.highchart').highchartTable();
+
 });
 </script>
 {% endblock extra_body %}
