@@ -951,7 +951,8 @@ def merge_process(request, sid):
 
         valnames = dict()
         for r in related:
-            valnames.setdefault(r.model, []).append(r.field)
+            if not r.model is Profile:
+                valnames.setdefault(r.model, []).append(r.field)
 
         for profile in users:
             if profile != master:
@@ -962,7 +963,30 @@ def merge_process(request, sid):
                 for model, fields in valnames.iteritems():
                     for field in fields:
                         if not isinstance(field, models.OneToOneField):
-                            model.objects.filter(**{field.name: profile.user}).update(**{field.name: master.user})
+                            model.objects.filter(**{field.name: profile.user}
+                                                 ).update(**{field.name: master.user})
+                        else: # OneToOne
+                            [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
+                            if obj:
+                                [master_obj] = model.objects.filter(**{field.name: master.user})[:1] or [None]
+                                if not master_obj:
+                                    setattr(obj, field.name, master.user)
+                                    obj.save()
+                                else:
+                                    obj_fields = master_obj._meta.get_all_field_names()
+                                    updated = False
+                                    for fld in obj_fields:
+                                        master_val = getattr(master_obj, fld)
+                                        if master_val == '' or master_val is None:
+                                            val = getattr(obj, fld)
+                                            if val != '' and not val is None:
+                                                setattr(master_obj, fld, val)
+                                                updated = True
+                                    if updated:
+                                        master_obj.save()
+                                    # delete obj
+                                    obj.delete()
+
                 master.save()
                 profile.user.delete()
                 profile.delete()
