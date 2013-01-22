@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-
+{% load perm_tags %}
 {% load i18n %}
   
 {% block object-tools %}
@@ -18,8 +18,11 @@
     <li><a href="{% url admin:membership.admin_renew original.pk %}" >
         {% trans "Renew" %}</a></li>
     {% else %}
+        {% has_perm user memberships.approve_membershipdefault as can_approve %}
+        {% if can_approve %}
         <li><a href="{% url admin:membership.admin_approve original.pk %}" >
             {% trans "Approve" %}</a></li>
+        {% endif %}
     {% endif %}
 
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>

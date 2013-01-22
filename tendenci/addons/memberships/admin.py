@@ -30,6 +30,7 @@ from tendenci.addons.memberships.utils import (get_default_membership_fields,
 from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import has_perm
 
 
 class MembershipAdmin(admin.ModelAdmin):
@@ -266,6 +267,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     def get_actions(self, request):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
         actions['delete_selected'][0].short_description = "Delete Selected"
+        if not has_perm(request.user, 'memberships.approve_membershipdefault'):
+            del actions['approve_selected']
         return actions
 
     list_display = [
@@ -306,6 +309,10 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     def queryset(self, request):
         qs = super(MembershipDefaultAdmin, self).queryset(request)
         return qs.order_by('-application_approved_dt')
+
+    def has_change_permission(self, request, obj=None):
+        return (has_perm(request.user, 'memberships.approve_membershipdefault') or
+                has_perm(request.user, 'memberships.change_membershipdefault'))
 
     def get_urls(self):
         """

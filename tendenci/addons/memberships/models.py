@@ -360,6 +360,7 @@ class MembershipDefault(TendenciBaseModel):
     class Meta:
         verbose_name = u'Membership'
         verbose_name_plural = u'Memberships'
+        permissions = (("approve_membershipdefault", "Can approve memberships"),)
 
     @models.permalink
     def get_absolute_url(self):
@@ -1260,8 +1261,7 @@ class Membership(TendenciBaseModel):
     class Meta:
         verbose_name = _("Member")
         verbose_name_plural = _("Members")
-        permissions = (("view_membership", "Can view membership"),
-            ("approve_membership", "Can approve membership"),)
+        permissions = (("view_membership", "Can view membership"),)
 
     def __unicode__(self):
         label = u''
