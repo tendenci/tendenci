@@ -46,7 +46,7 @@ Now we are ready to use our deploy script.
 
 At this point, we can load some default content into our site with the following command:
 
-    python manage.py insert_npo_defaults
+    python manage.py load_npo_defaults
 
 Next, we load our theme:
 
