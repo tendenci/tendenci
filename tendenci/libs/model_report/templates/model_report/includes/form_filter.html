@@ -1,0 +1,11 @@
+{% load i18n %}
+{% if form_filter %}
+    {% with form_filter as form %}
+        <fieldset class="report-form" id="filter">
+            {% if not form.filter_report_is_all %}
+            <legend>{% trans "Filter results" %}</legend>
+            {% endif %}
+            {% include "model_report/includes/form_fields.html" %}
+        </fieldset>
+    {% endwith %}
+{% endif %}

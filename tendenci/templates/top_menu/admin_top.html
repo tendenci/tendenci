@@ -119,8 +119,8 @@
                         <li><a href="{% url reports-user-access %}">{% trans "User Access" %}</a></li>
                         <li><a href="{% url reports-contacts-referral %}">{% trans "Contacts Report" %}</a></li>
                         <li><a href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
-                        <li><a href="{% url reports-corp-mems-over-time %}">{% trans "Corporate Memberships Over Time" %}</a></li>
-                        <li><a href="{% url reports-corp-mems-summary %}">{% trans "Corporate Membership Report" %}</a></li>
+                        <!--<li><a href="{# url reports-corp-mems-over-time #}">{% trans "Corporate Memberships Over Time" %}</a></li> -->
+                        <li><a href="{% url corp_membership.summary_report %}">{% trans "Corporate Membership Summary" %}</a></li>
                         <li><a href="{% url reports-top-spenders %}">{% trans "Top Spenders" %}</a></li>
                         <li><a href="{% url reports-users-not-in-groups %}">{% trans "Users not in Groups" %}</a></li>
                         <li><a href="{% url reports-404-count %}">{% trans "404 Tracker" %}</a></li>
@@ -152,11 +152,10 @@
                         <li><a href="{% url tendenci_guide.guide_page "getting-started-with-tendenci" %}">{% trans 'Tendenci Guide' %}</a></li>
                         <li><a href="http://tendenci.com/help-files/" target="_blank">{% trans "Search Helpfiles" %}</a></li>
                         <li><a id="feedback" href="{% url tendenci_feedback %}">{% trans "Feedback" %}</a></li>
-                        <li><a href="mailto:support@schipul.com">{% trans "E-mail Support" %}</a></li>
+                        <li><a href="http://support.schipul.com" target="_blank">{% trans "Contact Schipul Support" %}</a></li>
                         {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
                         <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
-                        <li><a href="#">{% trans "Call Schipul: " %}<br />281-497-6567 ext. 411</a></li>
-                        <li><a href="https://github.com/tendenci/tendenci" target="_blank">Version: 5.1.0</a></li>
+                        <li><a href="https://github.com/tendenci/tendenci" target="_blank">Version: 5.1.8</a></li>
                         {% endif %}
                     </ul>
                 </div>

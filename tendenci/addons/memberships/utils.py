@@ -24,7 +24,10 @@ from tendenci.addons.memberships.models import (App,
                                                 AppEntry,
                                                 Membership,
                                                 MembershipType,
-                                                MembershipDefault)
+                                                MembershipDefault,
+                                                MembershipDemographic,
+                                                MembershipApp,
+                                                MembershipAppField)
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.imports.utils import get_unique_username
@@ -148,6 +151,50 @@ def get_membership_type_choices(user, membership_app, renew=False,
         mt_list.append((mt.id, price_display))
 
     return mt_list
+
+
+def get_selected_demographic_fields(membership_app, forms):
+    """
+    Get the selected demographic fields for the app.
+    """
+    demographic_field_dict = dict([(field.name, field) \
+                        for field in MembershipDemographic._meta.fields \
+                        if field.get_internal_type() != 'AutoField'])
+    demographic_field_names = demographic_field_dict.keys()
+    app_fields = MembershipAppField.objects.filter(
+                                membership_app=membership_app,
+                                display=True
+                                ).values(
+                        'label', 'field_name', 'required')
+    selected_fields = []
+    for app_field in app_fields:
+        if app_field['field_name'] in demographic_field_names:
+            field = forms.CharField(
+                    widget=forms.TextInput({'size': 30}),
+                    label=app_field['label'],
+                    required=app_field['required'])
+            selected_fields.append((app_field['field_name'], field))
+    return selected_fields
+
+
+def get_selected_demographic_field_names(membership_app=None):
+    """
+    Get the selected demographic field names.
+    """
+    if not membership_app:
+        membership_app = MembershipApp.objects.current_app()
+    demographic_field_names = [field.name \
+                        for field in MembershipDemographic._meta.fields \
+                        if field.get_internal_type() != 'AutoField']
+    app_field_names = MembershipAppField.objects.filter(
+                                membership_app=membership_app,
+                                display=True
+                                ).values_list('field_name', flat=True)
+    selected_field_names = []
+    for field_name in app_field_names:
+        if field_name in demographic_field_names:
+            selected_field_names.append(field_name)
+    return selected_field_names
 
 
 def has_null_byte(file_path):

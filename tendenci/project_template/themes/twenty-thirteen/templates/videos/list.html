@@ -1,0 +1,15 @@
+{% extends "videos/base.html" %}
+{% load search_tags %}
+
+{% block title %}{% if category %}{{category|title}} {% endif %}Videos{% endblock %}
+
+{% block body %}
+<div class="t">
+<h1>{% if category %}{{category|title}} {% endif %}Videos</h1>
+{% for video in videos %}
+    {% search_result video %}
+{% endfor %}
+</div>
+<div class="clear"></div>
+{% endblock body %}
+

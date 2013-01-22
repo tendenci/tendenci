@@ -24,7 +24,9 @@ from tendenci.addons.memberships.models import (Membership, MembershipDefault,
 from tendenci.addons.memberships.forms import (MembershipDefaultForm, AppForm,
                             NoticeForm, AppFieldForm, AppEntryForm,
                             MembershipAppForm)
-from tendenci.addons.memberships.utils import get_default_membership_fields, edit_app_update_corp_fields
+from tendenci.addons.memberships.utils import (get_default_membership_fields,
+                                               edit_app_update_corp_fields,
+                                               get_selected_demographic_field_names)
 from tendenci.addons.memberships.middleware import ExceededMaxTypes
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.site_settings.utils import get_setting
@@ -207,11 +209,32 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
-        profile,
-        membership,
-        money,
-        status,
-    )
+            profile,
+            membership,
+            money,
+            status)
+
+    def get_fieldsets(self, request, instance=None):
+        demographics_fields = get_selected_demographic_field_names()
+
+        if demographics_fields:
+            demographics = (
+                    'Demographics',
+                    {'fields': tuple(demographics_fields)
+                     }
+                           )
+        fieldsets = (
+                self.profile,
+                self.membership,)
+        if demographics_fields:
+            fieldsets += (
+                demographics,
+            )
+        fieldsets += (
+                self.money,
+                self.status)
+
+        return fieldsets
 
     def name(self, instance):
         name = '%s %s' % (

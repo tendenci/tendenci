@@ -695,6 +695,10 @@ class Registrant(models.Model):
         else:
             if self.first_name or self.last_name:
                 return self.first_name + ' ' + self.last_name
+
+        if self.name:
+            return self.name
+
         return None
 
     @classmethod
