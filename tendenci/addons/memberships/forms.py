@@ -448,6 +448,7 @@ class MembershipAppForm(TendenciBaseForm):
             'group_perms',
             'status',
             'status_detail',
+            'allow_mutilple_membership',
 #            'app_field_selection',
             )
 
