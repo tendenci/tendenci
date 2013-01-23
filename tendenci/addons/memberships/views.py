@@ -1,8 +1,9 @@
 import math
 import os
+import csv
 import hashlib
 from hashlib import md5
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 import subprocess
 from sets import Set
 import chardet
@@ -49,8 +50,9 @@ from tendenci.core.exports.utils import render_csv, run_export_task
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, MembershipImport, MembershipDefault,
+    MembershipDemographic,
     MembershipImportData, MembershipApp)
-from tendenci.addons.memberships.forms import (
+from tendenci.addons.memberships.forms import (MembershipExportForm,
     AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
     AppEntryForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
@@ -61,7 +63,7 @@ from tendenci.addons.memberships.utils import (is_import_valid, prepare_chart_da
     get_membership_stats, NoMembershipTypes, ImportMembDefault)
 from tendenci.addons.memberships.importer.forms import ImportMapForm, UploadForm
 from tendenci.addons.memberships.importer.utils import parse_mems_from_csv
-from tendenci.addons.memberships.utils import memb_import_parse_csv
+from tendenci.addons.memberships.utils import membership_rows, memb_import_parse_csv
 from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
 from tendenci.core.base.forms import CaptchaForm
 
@@ -1232,6 +1234,99 @@ def download_default_template(request):
 
     return render_csv(filename, title_list,
                         data_row_list)
+
+
+@login_required
+@password_required
+def membership_default_export(request,
+                           template='memberships/default_export.html'):
+    """
+    Export memberships as .csv
+    """
+    from tendenci.core.perms.models import TendenciBaseModel
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    form = MembershipExportForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            base_field_list = [smart_str(field.name) for field \
+                               in TendenciBaseModel._meta.fields \
+                             if not field.__class__ == AutoField]
+            user_field_list = [smart_str(field.name) for field \
+                               in User._meta.fields \
+                             if not field.__class__ == AutoField]
+            # remove password
+            user_field_list.remove('password')
+            profile_field_list = [smart_str(field.name) for field \
+                               in Profile._meta.fields \
+                             if not field.__class__ == AutoField]
+            profile_field_list = [name for name in profile_field_list \
+                                       if not name in base_field_list]
+            profile_field_list.remove('guid')
+            profile_field_list.remove('user')
+            demographic_field_list = [smart_str(field.name) for field \
+                               in MembershipDemographic._meta.fields \
+                             if not field.__class__ == AutoField]
+            demographic_field_list.remove('user')
+            membership_field_list = [smart_str(field.name) for field \
+                               in MembershipDefault._meta.fields \
+                             if not field.__class__ == AutoField]
+            membership_field_list.remove('user')
+
+            title_list = user_field_list + profile_field_list + \
+                membership_field_list + demographic_field_list + \
+                base_field_list
+
+            # list of foreignkey fields
+            user_fks = [field.name for field in User._meta.fields \
+                           if isinstance(field, (ForeignKey, OneToOneField))]
+            profile_fks = [field.name for field in Profile._meta.fields \
+                           if isinstance(field, (ForeignKey, OneToOneField))]
+            demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
+                           if isinstance(field, (ForeignKey, OneToOneField))]
+            membership_fks = [field.name for field in MembershipDefault._meta.fields \
+                        if isinstance(field, (ForeignKey, OneToOneField))]
+
+            fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
+            #fks = [field for field in fks]
+
+            filename = 'memberships_export.csv'
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=' + filename
+
+            csv_writer = csv.writer(response)
+
+            csv_writer.writerow(title_list)
+            # corp_membership_rows is a generator - for better performance
+            for row_dict in membership_rows(user_field_list,
+                                            profile_field_list,
+                                            demographic_field_list,
+                                            membership_field_list,
+                                            fks):
+                items_list = []
+                for field_name in title_list:
+                    item = row_dict.get(field_name)
+                    if item is None:
+                        item = ''
+                    if item:
+                        if isinstance(item, datetime):
+                            item = item.strftime('%Y-%m-%d %H:%M:%S')
+                        elif isinstance(item, date):
+                            item = item.strftime('%Y-%m-%d')
+                        elif isinstance(item, time):
+                            item = item.strftime('%H:%M:%S')
+                        elif isinstance(item, basestring):
+                            item = item.encode("utf-8")
+                    items_list.append(item)
+                csv_writer.writerow(items_list)
+
+            # log an event
+            EventLog.objects.log()
+            # switch to StreamingHttpResponse once we're on 1.5
+            return response
+    context = {"form": form}
+    return render_to_response(template, context, RequestContext(request))
 
 
 @csrf_exempt

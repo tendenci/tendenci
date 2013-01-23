@@ -197,6 +197,51 @@ def get_selected_demographic_field_names(membership_app=None):
     return selected_field_names
 
 
+def membership_rows(user_field_list,
+                    profile_field_list,
+                    demographic_field_list,
+                    membership_field_list,
+                    foreign_keys):
+    # grab all except the archived
+    memberships = MembershipDefault.objects.filter(
+                                status=True
+                                ).exclude(
+                                status_detail='archive'
+                                )
+
+    for membership in memberships:
+        row_dict = {}
+        user = membership.user
+        [profile] = Profile.objects.filter(user=user)[:1] or [None]
+        [demographic] = MembershipDemographic.objects.filter(user=user)[:1] or [None]
+
+        for field_name in user_field_list:
+            row_dict[field_name] = get_obj_field_value(field_name, user)
+        if profile:
+            for field_name in profile_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                                                field_name, profile,
+                                                field_name in foreign_keys)
+        if demographic:
+            for field_name in demographic_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                                                field_name, demographic,
+                                                field_name in foreign_keys)
+        for field_name in membership_field_list:
+            row_dict[field_name] = get_obj_field_value(
+                                            field_name, membership,
+                                            field_name in foreign_keys)
+
+        yield row_dict
+
+
+def get_obj_field_value(field_name, obj, is_foreign_key=False):
+    value = getattr(obj, field_name)
+    if value and is_foreign_key:
+        value = value.id
+    return value
+
+
 def has_null_byte(file_path):
     f = default_storage.open(file_path, 'r')
     data = f.read()

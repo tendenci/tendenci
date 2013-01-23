@@ -855,6 +855,12 @@ class MembershipDefault2Form(forms.ModelForm):
         return membership
 
 
+class MembershipExportForm(forms.Form):
+    export_format = forms.ChoiceField(
+                label=_('Export Format'),
+                choices=(('csv', 'csv (Export)'),))
+
+
 class NoticeForm(forms.ModelForm):
     notice_time_type = NoticeTimeTypeField(label='When to Send',
                                           widget=NoticeTimeTypeWidget)
