@@ -1284,15 +1284,34 @@ def membership_default_add(request,
     """
     Default membership application form.
     """
-    is_super_user = request.user.profile.is_superuser
+
+    user = None
+    membership = None
+    username = request.GET.get('username', u'')
+    membership_type_id = request.GET.get('membership_type_id', 0)
+
+    if membership_type_id.isdigit():
+        membership_type_id = int(membership_type_id)
+    else:
+        membership_type_id = 0
+
+    good = (
+        request.user.profile.is_superuser,
+        username == request.user.username,
+    )
+
+    if any(good):
+        [user] = User.objects.filter(username=username)[:1] or [None]
+
     join_under_corporate = kwargs.get('join_under_corporate', False)
     corp_membership = None
+
     if join_under_corporate:
         from tendenci.addons.corporate_memberships.models import CorpMembershipApp
         corp_app = CorpMembershipApp.objects.current_app()
         if not corp_app:
             raise Http404
-        #app = corp_app.memb_app
+
         app = MembershipApp.objects.current_app()
 
         cm_id = kwargs.get('cm_id')
@@ -1307,7 +1326,7 @@ def membership_default_add(request,
 
         is_verified = False
         authentication_method = corp_app.authentication_method
-        if is_super_user or authentication_method == 'admin':
+        if request.user.profile.is_superuser or authentication_method == 'admin':
             is_verified = True
         elif authentication_method == 'email':
             try:
@@ -1334,14 +1353,13 @@ def membership_default_add(request,
     if not app:
         raise Http404
 
-    is_superuser = request.user.profile.is_superuser
     if join_under_corporate:
         app_fields = app.fields.filter(Q(display=True) | Q(
                             field_name='corporate_membership_id'))
     else:
         app_fields = app.fields.filter(display=True)
 
-    if not is_superuser:
+    if not request.user.profile.is_superuser:
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('order')
@@ -1349,20 +1367,96 @@ def membership_default_add(request,
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
-    user_form = UserForm(app_fields, request.POST or None)
-    profile_form = ProfileForm(app_fields, request.POST or None)
+    user_initial = {}
+    if user:
+        user_initial = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+        }
+
+    user_form = UserForm(app_fields, request.POST or None,
+        initial=user_initial
+    )
+
+    profile_initial = {}
+    if user:
+        profile_initial = {
+            'salutation': user.profile.salutation,
+            'phone': user.profile.phone,
+            'phone2': user.profile.phone2,
+            'address': user.profile.address,
+            'address2': user.profile.address2,
+            'city': user.profile.city,
+            'state': user.profile.state,
+            'zipcode': user.profile.zipcode,
+            'county': user.profile.county,
+            'country': user.profile.country,
+            'address_type': user.profile.address_type,
+            'url': user.profile.url,
+            'display_name': user.profile.display_name,
+            'mailing_name': user.profile.mailing_name,
+            'company': user.profile.company,
+            'position_title': user.profile.position_title,
+            'position_assignment': user.profile.position_assignment,
+            'fax': user.profile.fax,
+            'work_phone': user.profile.work_phone,
+            'home_phone': user.profile.home_phone,
+            'mobile_phone': user.profile.mobile_phone,
+            'email2': user.profile.email2,
+            'dob': user.profile.dob,
+            'spouse': user.profile.spouse,
+            'department': user.profile.department,
+        }
+
+    profile_form = ProfileForm(app_fields, request.POST or None,
+        initial=profile_initial
+    )
+
     params = {'request_user': request.user,
-              'membership_app': app,
-              'join_under_corporate': join_under_corporate,
-              'corp_membership': corp_membership
-              }
+        'membership_app': app,
+        'join_under_corporate': join_under_corporate,
+        'corp_membership': corp_membership,
+    }
+
     if join_under_corporate:
         params['authentication_method'] = authentication_method
 
     demographics_form = DemographicsForm(app_fields, request.POST or None)
 
+    if user:
+        [membership] = user.membershipdefault_set.filter(
+            membership_type=membership_type_id).order_by('-pk')[:1] or [None]
+
+    membership_initial = {}
+    if membership:
+        membership_initial = {
+            'membership_type': membership.membership_type,
+            'payment_method': membership.payment_method,
+            'certifications': membership.certifications,
+            'work_experience': membership.work_experience,
+            'referral_source': membership.referral_source,
+            'referral_source_other': membership.referral_source_other,
+            'referral_source_member_number': membership.referral_source_member_number,
+            'affiliation_member_number': membership.affiliation_member_number,
+            'primary_practice': membership.primary_practice,
+            'how_long_in_practice': membership.how_long_in_practice,
+            'bod_dt': membership.bod_dt,
+            'chapter': membership.chapter,
+            'areas_of_expertise': membership.areas_of_expertise,
+            'home_state': membership.home_state,
+            'year_left_native_country': membership.year_left_native_country,
+            'network_sectors': membership.network_sectors,
+            'networking': membership.networking,
+            'government_worker': membership.government_worker,
+            'government_agency': membership.government_agency,
+            'license_number': membership.license_number,
+            'license_state': membership.license_state,
+        }
+
     membership_form = MembershipDefault2Form(app_fields,
-        request.POST or None, **params)
+        request.POST or None, initial=membership_initial, **params)
+
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
@@ -1409,7 +1503,7 @@ def membership_default_add(request,
                 ))
 
             # redirect: membership edit page
-            if is_superuser:
+            if request.user.profile.is_superuser:
                 return HttpResponseRedirect(reverse(
                     'admin:memberships_membershipdefault_change',
                     args=[membership.pk],
