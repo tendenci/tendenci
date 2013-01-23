@@ -172,7 +172,8 @@
     	{% endif %}
 
     </div>
-    {% endif %}
+        
+{% endif %}
 
     <div class="group info">
 
@@ -207,6 +208,35 @@
 		{% endif %}
 
     </div>
+    
+{% if request.user == user_this or request.user.profile.is_superuser %}
+    <div class="events info">
+    <h2>{% trans "Upcoming Event Registrations" %}</h2>
+    {% if registrations %}
+    <table>
+    {% for reg in registrations %}
+        <tr>
+            <td>
+            <a href="{{ reg.get_absolute_url }}">{% trans "Registrant" %} #{{ reg.pk }}</a>
+            </td>
+            <td>
+            {{ reg.reg8n_status }}
+            </td>
+            <td>
+            <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event }}</a>
+            </td>
+            <td>
+            {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+    {% trans "No upcoming event registrations." %}
+    {% endif %}
+    </div>
+{% endif %}
+    
 
 	{% latest_contributions user_this as contributions %}
 	{% if  contributions %}

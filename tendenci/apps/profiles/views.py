@@ -38,6 +38,7 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm, UserPermissionForm, 
 UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
 from tendenci.apps.profiles.tasks import ExportProfilesTask
+from tendenci.addons.events.models import Registrant
 
 try:
     notification = get_app('notifications')
@@ -104,6 +105,8 @@ def index(request, username='', template_name="profiles/index.html"):
         memberships = user_this.membershipdefault_set.filter(
             status=True) & user_this.membershipdefault_set.filter(
                 active_qs | expired_qs)
+    
+    registrations = Registrant.objects.filter(user=user_this)
 
     EventLog.objects.log(instance=profile)
 
@@ -126,6 +129,7 @@ def index(request, username='', template_name="profiles/index.html"):
         'additional_owners': additional_owners,
         'group_memberships': group_memberships,
         'memberships': memberships,
+        'registrations': registrations,
         }, context_instance=RequestContext(request))
 
 
