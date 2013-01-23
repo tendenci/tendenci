@@ -561,11 +561,11 @@ class ImageURL(Node):
 @register.tag
 def image_url(parser, token):
     """
-    Creates a url for a photo that can be resized, cropped, and have quality reduced.
+    Creates a url for a photo that can be resized, cropped, constrianed, and have quality reduced.
     
     Usage::
 
-        {% image_url file [options][size=100x100] [crop=True] [quality=90] %}
+        {% image_url file [options][size=100x100] [crop=True] [constrain=True] [quality=90] %}
 
     Options include:
     
@@ -574,7 +574,9 @@ def image_url(parser, token):
         ``crop``
            Whether or not to crop the image. **Default: False**
         ``quality``
-           The quality of the rendered image. Use smaller for faster loading. **Default: 90**
+           The quality of the rendered image. Use smaller for faster loading. Must be used with ``size`` **Default: 90**
+        ``constrain``
+            The size of the image will be constrained instead of cropped
 
     Example::
 
