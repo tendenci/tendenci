@@ -114,7 +114,7 @@ class Command(BaseCommand):
             f.save()
 
         suffix_list = [
-            'profiles_profile'
+            'profiles_profile',
             'events',
             'jobs',
             'memberships',
