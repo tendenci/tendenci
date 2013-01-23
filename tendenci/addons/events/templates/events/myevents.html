@@ -19,9 +19,11 @@
     {% event_nav request.user %}
     
     <div class="header" style="margin-bottom: 20px;">
-        <h1> My Upcoming Events </h1>
+        <h1>{% trans "My Upcoming Events" %}</h1>
         {% if show %}
-            <a class="show-all-link" href="/events/myevents/?all=true"> Show all my registered and attended events. </a>
+            <a class="show-all-link" href="{% url event.myevents %}?all=true">{% trans "Show all my registered and attended events." %}</a>
+        {% else %}
+            <a class="show-all-link" href="{% url event.myevents %}">{% trans "Show upcoming events only." %}</a>
         {% endif %}
     </div>
     
@@ -31,7 +33,7 @@
         {% for event in events %}
             {% search_result event %}
         {% empty %}
-            You don't have upcoming events to attend. <a href="/events/">View our upcoming events!</a>            
+            {% trans "You're not registered for any upcoming events." %}<a href="{% url events %}">{% trans "View our upcoming events!" %}</a>            
         {% endfor %}
     </div>
 
