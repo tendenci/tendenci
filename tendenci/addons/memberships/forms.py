@@ -856,6 +856,16 @@ class MembershipDefault2Form(forms.ModelForm):
 
 
 class MembershipExportForm(forms.Form):
+    STATUS_DETAIL_CHOICES = (
+            ('', 'ALL'),
+            ('active', 'Active'),
+            ('pending', 'Pending'),
+            ('expired', 'Expired'),
+                             )
+    export_status_detail = forms.ChoiceField(
+                label=_('Export Status Detail'),
+                choices=STATUS_DETAIL_CHOICES
+                )
     export_format = forms.ChoiceField(
                 label=_('Export Format'),
                 choices=(('csv', 'csv (Export)'),))

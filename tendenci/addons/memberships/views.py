@@ -1250,6 +1250,7 @@ def membership_default_export(request,
     form = MembershipExportForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
+            export_status_detail = form.cleaned_data['export_status_detail']
             base_field_list = [smart_str(field.name) for field \
                                in TendenciBaseModel._meta.fields \
                              if not field.__class__ == AutoField]
@@ -1303,7 +1304,8 @@ def membership_default_export(request,
                                             profile_field_list,
                                             demographic_field_list,
                                             membership_field_list,
-                                            fks):
+                                            fks,
+                                            export_status_detail):
                 items_list = []
                 for field_name in title_list:
                     item = row_dict.get(field_name)

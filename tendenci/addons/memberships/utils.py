@@ -201,13 +201,22 @@ def membership_rows(user_field_list,
                     profile_field_list,
                     demographic_field_list,
                     membership_field_list,
-                    foreign_keys):
+                    foreign_keys,
+                    export_status_detail=''):
     # grab all except the archived
     memberships = MembershipDefault.objects.filter(
                                 status=True
                                 ).exclude(
                                 status_detail='archive'
                                 )
+    if export_status_detail:
+        if export_status_detail == 'pending':
+            memberships = memberships.filter(
+                        status_detail__icontains='pending'
+                                )
+        else:
+            memberships = memberships.filter(
+                        status_detail=export_status_detail)
 
     for membership in memberships:
         row_dict = {}
