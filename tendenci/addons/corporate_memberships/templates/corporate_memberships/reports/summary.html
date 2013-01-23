@@ -48,47 +48,37 @@
         </tbody>
     </table>
 </div>
-<table style="display: none;" class="" >
-        <caption>Corporate Membership Count by Type</caption>
-        <thead>
-            <tr>
-                <th></th>
-                <th>{% trans 'Active' %}</th>
-                <th>{% trans 'Pending' %}</th>
-                <th>{% trans 'Expired' %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for type in summary %}
-            <tr>
-                <td>{{ type.type.name }}</td>
-                <td>{{ type.active }}</td>
-                <td>{{ type.pending }}</td>
-                <td>{{ type.expired }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td>Total</td>
-                <td>{{ total.total_active }}</td>
-                <td>{{ total.total_pending }}</td>
-                <td>{{ total.total_expired }}</td>
-            </tr>
-        </tbody>
-    </table>
 
 
-
-
+<div id="chart_div" style="width: 550px; height: 500px;">
+    
 </div>
 
 {% endblock %}
 
 {% block extra_body %}
     {{ block.super }}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+       
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['{% trans 'Corp. Membership Type' %}', '{% trans 'Active' %}', '{% trans 'Pending' %}', '{% trans 'Expired' %}'],
+          {% for type in summary %}
+          ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }}, {{ type.expired }}],
+          {% endfor %}
+        ]);
 
-<script>
-   $(document).ready(function() {
+        var options = {
+          title: 'Summary By Type',
+          hAxis: {title: '{% trans 'Corp. Membership Type' %}', titleTextStyle: {color: 'black'}}
+        };
 
-});
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
 </script>
 {% endblock extra_body %}
