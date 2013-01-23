@@ -1248,49 +1248,76 @@ def membership_default_export(request,
         raise Http403
 
     form = MembershipExportForm(request.POST or None)
+    print request.POST.items()
     if request.method == "POST":
         if form.is_valid():
             export_status_detail = form.cleaned_data['export_status_detail']
-            base_field_list = [smart_str(field.name) for field \
-                               in TendenciBaseModel._meta.fields \
-                             if not field.__class__ == AutoField]
-            user_field_list = [smart_str(field.name) for field \
-                               in User._meta.fields \
-                             if not field.__class__ == AutoField]
-            # remove password
-            user_field_list.remove('password')
-            profile_field_list = [smart_str(field.name) for field \
-                               in Profile._meta.fields \
-                             if not field.__class__ == AutoField]
-            profile_field_list = [name for name in profile_field_list \
-                                       if not name in base_field_list]
-            profile_field_list.remove('guid')
-            profile_field_list.remove('user')
-            demographic_field_list = [smart_str(field.name) for field \
-                               in MembershipDemographic._meta.fields \
-                             if not field.__class__ == AutoField]
-            demographic_field_list.remove('user')
-            membership_field_list = [smart_str(field.name) for field \
-                               in MembershipDefault._meta.fields \
-                             if not field.__class__ == AutoField]
-            membership_field_list.remove('user')
+            export_status_detail = export_status_detail.strip()
+            export_type = form.cleaned_data['export_type']
+            if export_type == 'main_fields':
+                base_field_list = []
+                user_field_list = ['first_name', 'last_name', 'username',
+                                   'email', 'is_active', 'is_staff',
+                                   'is_superuser']
+                profile_field_list = ['member_number', 'company',
+                                      'phone', 'address',
+                                      'address2', 'city',
+                                      'state', 'zipcode',
+                                      'country']
+                demographic_field_list = []
+                membership_field_list = ['membership_type',
+                                         'corp_profile_id',
+                                         'corporate_membership_id',
+                                         'join_dt',
+                                         'expire_dt',
+                                         'renewal',
+                                         'renew_dt',
+                                         'status',
+                                         'status_detail'
+                                         ]
+            else:
+                base_field_list = [smart_str(field.name) for field \
+                                   in TendenciBaseModel._meta.fields \
+                                 if not field.__class__ == AutoField]
+                user_field_list = [smart_str(field.name) for field \
+                                   in User._meta.fields \
+                                 if not field.__class__ == AutoField]
+                # remove password
+                user_field_list.remove('password')
+                profile_field_list = [smart_str(field.name) for field \
+                                   in Profile._meta.fields \
+                                 if not field.__class__ == AutoField]
+                profile_field_list = [name for name in profile_field_list \
+                                           if not name in base_field_list]
+                profile_field_list.remove('guid')
+                profile_field_list.remove('user')
+                demographic_field_list = [smart_str(field.name) for field \
+                                   in MembershipDemographic._meta.fields \
+                                 if not field.__class__ == AutoField]
+                demographic_field_list.remove('user')
+                membership_field_list = [smart_str(field.name) for field \
+                                   in MembershipDefault._meta.fields \
+                                 if not field.__class__ == AutoField]
+                membership_field_list.remove('user')
 
             title_list = user_field_list + profile_field_list + \
                 membership_field_list + demographic_field_list + \
                 base_field_list
 
             # list of foreignkey fields
-            user_fks = [field.name for field in User._meta.fields \
-                           if isinstance(field, (ForeignKey, OneToOneField))]
-            profile_fks = [field.name for field in Profile._meta.fields \
-                           if isinstance(field, (ForeignKey, OneToOneField))]
-            demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
-                           if isinstance(field, (ForeignKey, OneToOneField))]
-            membership_fks = [field.name for field in MembershipDefault._meta.fields \
-                        if isinstance(field, (ForeignKey, OneToOneField))]
+            if export_type == 'main_fields':
+                fks = ['membership_type']
+            else:
+                user_fks = [field.name for field in User._meta.fields \
+                               if isinstance(field, (ForeignKey, OneToOneField))]
+                profile_fks = [field.name for field in Profile._meta.fields \
+                               if isinstance(field, (ForeignKey, OneToOneField))]
+                demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
+                               if isinstance(field, (ForeignKey, OneToOneField))]
+                membership_fks = [field.name for field in MembershipDefault._meta.fields \
+                            if isinstance(field, (ForeignKey, OneToOneField))]
 
-            fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
-            #fks = [field for field in fks]
+                fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
 
             filename = 'memberships_export.csv'
             response = HttpResponse(mimetype='text/csv')

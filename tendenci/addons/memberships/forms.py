@@ -857,18 +857,28 @@ class MembershipDefault2Form(forms.ModelForm):
 
 class MembershipExportForm(forms.Form):
     STATUS_DETAIL_CHOICES = (
-            ('', 'ALL'),
+            (' ', 'ALL'),
             ('active', 'Active'),
             ('pending', 'Pending'),
             ('expired', 'Expired'),
                              )
-    export_status_detail = forms.ChoiceField(
-                label=_('Export Status Detail'),
-                choices=STATUS_DETAIL_CHOICES
-                )
+    EXPORT_TYPE_CHOICES = (
+            ('main_fields', 'Main Fields Only (for faster download)'),
+            ('all_fields', 'ALL Fields')
+                           )
     export_format = forms.ChoiceField(
                 label=_('Export Format'),
                 choices=(('csv', 'csv (Export)'),))
+    export_status_detail = forms.ChoiceField(
+                label=_('Export Status Detail'),
+                choices=STATUS_DETAIL_CHOICES,
+                initial=''
+                )
+    export_type = forms.ChoiceField(
+                label=_('Export Type'),
+                choices=EXPORT_TYPE_CHOICES,
+                widget=forms.widgets.RadioSelect
+                )
 
 
 class NoticeForm(forms.ModelForm):
