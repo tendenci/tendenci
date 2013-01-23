@@ -1288,7 +1288,7 @@ def membership_default_add(request,
     user = None
     membership = None
     username = request.GET.get('username', u'')
-    membership_type_id = request.GET.get('membership_type_id', 0)
+    membership_type_id = request.GET.get('membership_type_id', u'')
 
     if membership_type_id.isdigit():
         membership_type_id = int(membership_type_id)
