@@ -101,6 +101,10 @@
             </div>
         </li>
 
+        {% if request.user.is_staff %}
+        <li><a href="/admin/"><span class="glyph heading">&#83;</span>&nbsp;&nbsp;{% trans "Admin Area" %}</a></li>
+        {% endif %}
+
         <li class="right"><a href="/accounts/logout/"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
         <li class="right"><a href="/profiles/">{{ user.username }}</a></li>
 

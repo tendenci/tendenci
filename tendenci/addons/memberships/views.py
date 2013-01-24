@@ -1,8 +1,9 @@
 import math
 import os
+import csv
 import hashlib
 from hashlib import md5
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 import subprocess
 from sets import Set
 import chardet
@@ -50,9 +51,10 @@ from tendenci.core.exports.utils import render_csv, run_export_task
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
-    MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
+    MembershipType, Notice, MembershipImport, MembershipDefault,
+    MembershipDemographic,
     MembershipImportData, MembershipApp)
-from tendenci.addons.memberships.forms import (
+from tendenci.addons.memberships.forms import (MembershipExportForm,
     AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
     AppEntryForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
@@ -63,7 +65,7 @@ from tendenci.addons.memberships.utils import (is_import_valid, prepare_chart_da
     get_membership_stats, NoMembershipTypes, ImportMembDefault)
 from tendenci.addons.memberships.importer.forms import ImportMapForm, UploadForm
 from tendenci.addons.memberships.importer.utils import parse_mems_from_csv
-from tendenci.addons.memberships.utils import memb_import_parse_csv
+from tendenci.addons.memberships.utils import membership_rows, memb_import_parse_csv
 from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
 from tendenci.core.base.forms import CaptchaForm
 
@@ -1236,6 +1238,128 @@ def download_default_template(request):
                         data_row_list)
 
 
+@login_required
+@password_required
+def membership_default_export(request,
+                           template='memberships/default_export.html'):
+    """
+    Export memberships as .csv
+    """
+    from tendenci.core.perms.models import TendenciBaseModel
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    form = MembershipExportForm(request.POST or None)
+    print request.POST.items()
+    if request.method == "POST":
+        if form.is_valid():
+            export_status_detail = form.cleaned_data['export_status_detail']
+            export_status_detail = export_status_detail.strip()
+            export_type = form.cleaned_data['export_type']
+            if export_type == 'main_fields':
+                base_field_list = []
+                user_field_list = ['first_name', 'last_name', 'username',
+                                   'email', 'is_active', 'is_staff',
+                                   'is_superuser']
+                profile_field_list = ['member_number', 'company',
+                                      'phone', 'address',
+                                      'address2', 'city',
+                                      'state', 'zipcode',
+                                      'country']
+                demographic_field_list = []
+                membership_field_list = ['membership_type',
+                                         'corp_profile_id',
+                                         'corporate_membership_id',
+                                         'join_dt',
+                                         'expire_dt',
+                                         'renewal',
+                                         'renew_dt',
+                                         'status',
+                                         'status_detail'
+                                         ]
+            else:
+                base_field_list = [smart_str(field.name) for field \
+                                   in TendenciBaseModel._meta.fields \
+                                 if not field.__class__ == AutoField]
+                user_field_list = [smart_str(field.name) for field \
+                                   in User._meta.fields \
+                                 if not field.__class__ == AutoField]
+                # remove password
+                user_field_list.remove('password')
+                profile_field_list = [smart_str(field.name) for field \
+                                   in Profile._meta.fields \
+                                 if not field.__class__ == AutoField]
+                profile_field_list = [name for name in profile_field_list \
+                                           if not name in base_field_list]
+                profile_field_list.remove('guid')
+                profile_field_list.remove('user')
+                demographic_field_list = [smart_str(field.name) for field \
+                                   in MembershipDemographic._meta.fields \
+                                 if not field.__class__ == AutoField]
+                demographic_field_list.remove('user')
+                membership_field_list = [smart_str(field.name) for field \
+                                   in MembershipDefault._meta.fields \
+                                 if not field.__class__ == AutoField]
+                membership_field_list.remove('user')
+
+            title_list = user_field_list + profile_field_list + \
+                membership_field_list + demographic_field_list + \
+                base_field_list
+
+            # list of foreignkey fields
+            if export_type == 'main_fields':
+                fks = ['membership_type']
+            else:
+                user_fks = [field.name for field in User._meta.fields \
+                               if isinstance(field, (ForeignKey, OneToOneField))]
+                profile_fks = [field.name for field in Profile._meta.fields \
+                               if isinstance(field, (ForeignKey, OneToOneField))]
+                demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
+                               if isinstance(field, (ForeignKey, OneToOneField))]
+                membership_fks = [field.name for field in MembershipDefault._meta.fields \
+                            if isinstance(field, (ForeignKey, OneToOneField))]
+
+                fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
+
+            filename = 'memberships_export.csv'
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=' + filename
+
+            csv_writer = csv.writer(response)
+
+            csv_writer.writerow(title_list)
+            # corp_membership_rows is a generator - for better performance
+            for row_dict in membership_rows(user_field_list,
+                                            profile_field_list,
+                                            demographic_field_list,
+                                            membership_field_list,
+                                            fks,
+                                            export_status_detail):
+                items_list = []
+                for field_name in title_list:
+                    item = row_dict.get(field_name)
+                    if item is None:
+                        item = ''
+                    if item:
+                        if isinstance(item, datetime):
+                            item = item.strftime('%Y-%m-%d %H:%M:%S')
+                        elif isinstance(item, date):
+                            item = item.strftime('%Y-%m-%d')
+                        elif isinstance(item, time):
+                            item = item.strftime('%H:%M:%S')
+                        elif isinstance(item, basestring):
+                            item = item.encode("utf-8")
+                    items_list.append(item)
+                csv_writer.writerow(items_list)
+
+            # log an event
+            EventLog.objects.log()
+            # switch to StreamingHttpResponse once we're on 1.5
+            return response
+    context = {"form": form}
+    return render_to_response(template, context, RequestContext(request))
+
+
 @csrf_exempt
 @login_required
 def get_app_fields_json(request):
@@ -1286,15 +1410,34 @@ def membership_default_add(request,
     """
     Default membership application form.
     """
-    is_super_user = request.user.profile.is_superuser
+
+    user = None
+    membership = None
+    username = request.GET.get('username', u'')
+    membership_type_id = request.GET.get('membership_type_id', u'')
+
+    if membership_type_id.isdigit():
+        membership_type_id = int(membership_type_id)
+    else:
+        membership_type_id = 0
+
+    good = (
+        request.user.profile.is_superuser,
+        username == request.user.username,
+    )
+
+    if any(good):
+        [user] = User.objects.filter(username=username)[:1] or [None]
+
     join_under_corporate = kwargs.get('join_under_corporate', False)
     corp_membership = None
+
     if join_under_corporate:
         from tendenci.addons.corporate_memberships.models import CorpMembershipApp
         corp_app = CorpMembershipApp.objects.current_app()
         if not corp_app:
             raise Http404
-        #app = corp_app.memb_app
+
         app = MembershipApp.objects.current_app()
 
         cm_id = kwargs.get('cm_id')
@@ -1309,7 +1452,7 @@ def membership_default_add(request,
 
         is_verified = False
         authentication_method = corp_app.authentication_method
-        if is_super_user or authentication_method == 'admin':
+        if request.user.profile.is_superuser or authentication_method == 'admin':
             is_verified = True
         elif authentication_method == 'email':
             try:
@@ -1336,14 +1479,13 @@ def membership_default_add(request,
     if not app:
         raise Http404
 
-    is_superuser = request.user.profile.is_superuser
     if join_under_corporate:
         app_fields = app.fields.filter(Q(display=True) | Q(
                             field_name='corporate_membership_id'))
     else:
         app_fields = app.fields.filter(display=True)
 
-    if not is_superuser:
+    if not request.user.profile.is_superuser:
         app_fields = app_fields.filter(admin_only=False)
 
     app_fields = app_fields.order_by('order')
@@ -1355,15 +1497,92 @@ def membership_default_add(request,
 
     user_form = UserForm(app_fields, request.POST or None)
     profile_form = ProfileForm(app_fields, request.POST or None)
+    user_initial = {}
+    if user:
+        user_initial = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+        }
+
+    user_form = UserForm(app_fields, request.POST or None,
+        initial=user_initial
+    )
+
+    profile_initial = {}
+    if user:
+        profile_initial = {
+            'salutation': user.profile.salutation,
+            'phone': user.profile.phone,
+            'phone2': user.profile.phone2,
+            'address': user.profile.address,
+            'address2': user.profile.address2,
+            'city': user.profile.city,
+            'state': user.profile.state,
+            'zipcode': user.profile.zipcode,
+            'county': user.profile.county,
+            'country': user.profile.country,
+            'address_type': user.profile.address_type,
+            'url': user.profile.url,
+            'display_name': user.profile.display_name,
+            'mailing_name': user.profile.mailing_name,
+            'company': user.profile.company,
+            'position_title': user.profile.position_title,
+            'position_assignment': user.profile.position_assignment,
+            'fax': user.profile.fax,
+            'work_phone': user.profile.work_phone,
+            'home_phone': user.profile.home_phone,
+            'mobile_phone': user.profile.mobile_phone,
+            'email2': user.profile.email2,
+            'dob': user.profile.dob,
+            'spouse': user.profile.spouse,
+            'department': user.profile.department,
+        }
+
+    profile_form = ProfileForm(app_fields, request.POST or None,
+        initial=profile_initial
+    )
+
     params = {'request_user': request.user,
-              'membership_app': app,
-              'join_under_corporate': join_under_corporate,
-              'corp_membership': corp_membership
-              }
+        'membership_app': app,
+        'join_under_corporate': join_under_corporate,
+        'corp_membership': corp_membership,
+    }
+
     if join_under_corporate:
         params['authentication_method'] = authentication_method
 
     demographics_form = DemographicsForm(app_fields, request.POST or None)
+
+    if user:
+        [membership] = user.membershipdefault_set.filter(
+            membership_type=membership_type_id).order_by('-pk')[:1] or [None]
+
+    membership_initial = {}
+    if membership:
+        membership_initial = {
+            'membership_type': membership.membership_type,
+            'payment_method': membership.payment_method,
+            'certifications': membership.certifications,
+            'work_experience': membership.work_experience,
+            'referral_source': membership.referral_source,
+            'referral_source_other': membership.referral_source_other,
+            'referral_source_member_number': membership.referral_source_member_number,
+            'affiliation_member_number': membership.affiliation_member_number,
+            'primary_practice': membership.primary_practice,
+            'how_long_in_practice': membership.how_long_in_practice,
+            'bod_dt': membership.bod_dt,
+            'chapter': membership.chapter,
+            'areas_of_expertise': membership.areas_of_expertise,
+            'home_state': membership.home_state,
+            'year_left_native_country': membership.year_left_native_country,
+            'network_sectors': membership.network_sectors,
+            'networking': membership.networking,
+            'government_worker': membership.government_worker,
+            'government_agency': membership.government_agency,
+            'license_number': membership.license_number,
+            'license_state': membership.license_state,
+        }
 
     membership_form = MembershipDefault2Form(app_fields,
         multiple_membership=app.allow_mutilple_membership, **params)
@@ -1407,6 +1626,17 @@ def membership_default_add(request,
                     user=user,
                 )
                 memberships.append(membership)
+            profile_form.instance = user.profile
+            profile_form.save(
+                request_user=request.user
+            )
+            # save demographics
+            demographics = demographics_form.save(commit=False)
+            if hasattr(user, 'demographics'):
+                demographics.pk = user.demographics.pk
+            else:
+                demographics.user = user
+            demographics.save()
 
                 # save demographics
                 demographics = demographics_form.save(commit=False)
@@ -1430,7 +1660,7 @@ def membership_default_add(request,
                 ))
 
             # redirect: membership edit page
-            if is_superuser:
+            if request.user.profile.is_superuser:
                 return HttpResponseRedirect(reverse(
                     'admin:memberships_membershipdefault_change',
                     args=[memberships[0].pk],
@@ -1681,9 +1911,9 @@ def membership_join_report_pdf(request):
 def report_list(request, template_name='reports/membership_report_list.html'):
     """ List of all available membership reports.
     """
-    
+
     EventLog.objects.log()
-    
+
     return render_to_response(template_name, context_instance=RequestContext(request))
 
 @staff_member_required
@@ -1978,7 +2208,7 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
     """ Shows membership roster. Extends base-print for easy printing.
     """
     members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
-    
+
     EventLog.objects.log()
 
     return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
@@ -1988,7 +2218,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
     """ Table view of current members fname, lname and company only.
     """
     members = MembershipDefault.objects.filter(status=1, status_detail="active").order_by('user__last_name')
-    
+
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
@@ -2025,13 +2255,13 @@ def report_members_by_company(request, template_name='reports/members_by_company
     """
     active_mems = MembershipDefault.objects.filter(status=1, status_detail="active")
     company_list = []
-    
+
     # get list of distinct companies
     for member in active_mems:
         if member.user.profile.company:
             if member.user.profile.company not in company_list:
                 company_list.append(member.user.profile.company)
-    
+
     # get total number of active members for each company
     companies = []
     for company in company_list:
@@ -2041,9 +2271,9 @@ def report_members_by_company(request, template_name='reports/members_by_company
             'total_members': total_members
         }
         companies.append(company_dict)
-    
+
     companies = sorted(companies, key=lambda k: k['total_members'], reverse=True)
-    
+
     EventLog.objects.log()
 
     return render_to_response(template_name, {'companies': companies}, context_instance=RequestContext(request))
@@ -2058,11 +2288,11 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
         days = 30
     compare_dt = datetime.now() - timedelta(days=days)
     members = MembershipDefault.objects.filter(renewal=1, renew_dt__gte=compare_dt).order_by('renew_dt')
-    
+
     # returns csv response ---------------
     ouput = request.GET.get('output', '')
     if ouput == 'csv':
-    
+
         table_header = [
             'member number',
             'last name',
@@ -2073,10 +2303,10 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
             'country',
             'renew date'
         ]
-    
+
         table_data = []
         for mem in members:
-    
+
             table_data.append([
                 mem.member_number,
                 mem.user.last_name,
@@ -2087,7 +2317,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
                 mem.user.profile.country,
                 mem.renew_dt
             ])
-    
+
         return render_csv(
             'renewed-members.csv',
             table_header,
@@ -2153,12 +2383,12 @@ def report_grace_period_members(request, template_name='reports/grace_period_mem
 def report_active_members_ytd(request, template_name='reports/active_members_ytd.html'):
     import datetime
     from datetime import timedelta
-    
+
     year = datetime.datetime.now().year
     years = [year, year-1, year-2, year-3, year-4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))
-    
+
     active_mems = MembershipDefault.objects.filter(status=True, status_detail="active")
 
     total_new = active_mems.filter(join_dt__year=year).count()
@@ -2191,14 +2421,14 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
         months.append(month_dict)
 
     EventLog.objects.log()
-    
+
     return render_to_response(template_name, {'months': months, 'total_new': total_new, 'total_renew': total_renew, 'years': years, 'year': year}, context_instance=RequestContext(request))
 
 @staff_member_required
 def report_members_ytd_type(request, template_name='reports/members_ytd_type.html'):
     import datetime
     from datetime import timedelta
-    
+
     year = datetime.datetime.now().year
     years = [year, year-1, year-2, year-3, year-4]
     if request.GET.get('year'):
@@ -2233,7 +2463,7 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
                 'expired_mems': expired_mems,
             }
             types_expired.append(expired_dict)
-    
+
     totals_new = []
     totals_renew = []
     totals_expired = []
@@ -2247,8 +2477,8 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
         totals_new.append(new)
         totals_renew.append(renew)
         totals_expired.append(expired)
-        
+
 
     EventLog.objects.log()
-    
+
     return render_to_response(template_name, {'months': months, 'years': years, 'year': year, 'types_new': types_new, 'types_renew': types_renew, 'types_expired': types_expired, 'totals_new': totals_new, 'totals_renew': totals_renew, 'totals_expired': totals_expired}, context_instance=RequestContext(request))

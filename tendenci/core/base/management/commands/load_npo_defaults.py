@@ -80,6 +80,8 @@ class Command(BaseCommand):
         """
         from tendenci.core.files.models import File
 
+        staff_installed = "addons.staff" in settings.INSTALLED_APPS
+
         print 'npo_default_auth_user.json'
         call_command('loaddata', 'npo_default_auth_user.json')
         print 'npo_default_entities.json'
@@ -92,7 +94,8 @@ class Command(BaseCommand):
         box_ct = ContentType.objects.get(app_label='boxes', model='box')
         story_ct = ContentType.objects.get(app_label='stories', model='story')
         setting_ct = ContentType.objects.get(app_label='site_settings', model='setting')
-        staff_ct = ContentType.objects.get(app_label='staff', model='staff')
+        if staff_installed:
+            staff_ct = ContentType.objects.get(app_label='staff', model='staff')
 
         files = File.objects.all()
 
@@ -105,25 +108,26 @@ class Command(BaseCommand):
                 f.content_type = story_ct
             if 'setting' in unicode(f.file):
                 f.content_type = setting_ct
-            if 'staff' in unicode(f.file):
+            if 'staff' in unicode(f.file) and staff_installed:
                 f.content_type = staff_ct
 
             f.save()
 
         suffix_list = [
-            'profiles_profile'
+            'profiles_profile',
             'events',
             'jobs',
             'memberships',
             'memberships_membershipdefault',
             'directories',
+            'articles',
             'news',
             'photos',
             'boxes',
             'pages',
             'navs',
-            'videos',
             'stories',
+            'videos',
         ]
 
         # call loaddata on fixtures
@@ -132,3 +136,5 @@ class Command(BaseCommand):
 
             print filename
             call_command('loaddata', filename)
+
+        call_command('set_theme', 'twenty-thirteen')
