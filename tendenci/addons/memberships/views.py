@@ -242,6 +242,9 @@ def application_details(request, template_name="memberships/applications/details
     """
     Display a built membership application and handle submission.
     """
+    # only allow super users to view this [old] membership form
+    if not request.user.profile.is_superuser:
+        raise Http404
 
     slug = kwargs.get('slug')
     cmb_id = kwargs.get('cmb_id')
