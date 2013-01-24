@@ -212,7 +212,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             profile,
             membership,
             money,
-            status)
+            status
+    )
 
     def get_fieldsets(self, request, instance=None):
         demographics_fields = get_selected_demographic_field_names()
@@ -267,6 +268,13 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         actions = super(MembershipDefaultAdmin, self).get_actions(request)
         actions['delete_selected'][0].short_description = "Delete Selected"
         return actions
+
+    search_fields = [
+        'user__first_name',
+        'user__last_name',
+        'user__email',
+        'member_number',
+    ]
 
     list_display = [
         'name',
