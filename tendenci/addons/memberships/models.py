@@ -1822,7 +1822,7 @@ class MembershipApp(TendenciBaseModel):
                                               verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
-    discount_eligible = models.BooleanField(default=True)
+    discount_eligible = models.BooleanField(default=False)
     use_for_corp = models.BooleanField(_("Use for Corporate Individuals"),
                                        default=True)
     objects = MembershipAppManager()
