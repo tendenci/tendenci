@@ -1,0 +1,78 @@
+{% extends "memberships/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Export Memberships - Status" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <style>
+        .display-hide{
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div id="membership-export-wrap">
+    
+    <h1>{% trans "Membership CSV Export - Status" %}</h1>
+   
+    <div id="membership-export">
+       
+       <div id="display-content"{% if not download_ready %} class="display-hide"{% endif %}>
+       <p>The export file is ready, click the link below to download.</p>
+       <div>
+           <a href="{% url memberships.default_export_download identifier %}">Download Now</a>  
+       </div>
+       </div>
+       {% if not download_ready %}
+       <div id="display-loading" style="margin: 5em;">
+            <img src="{{ STATIC_URL }}images/loadingicon.gif" alt="loading">
+            <div style="color: #0D4C83;"><small>Please wait while we're processing...</small></div>
+        </div>
+       {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+<script type="text/javascript">
+{% if not download_ready  %}
+
+  $(document).ready(function() {
+    var value;
+    var status_check_intval;
+    
+    var status_check = function(){
+        $.ajax({
+           type: "POST",
+           url: "{% url memberships.default_export_check_status identifier %}",
+           success: function(status_data){
+               if (status_data == 'done'){
+                   clearInterval(status_check_intval);
+                   $('#display-loading').hide();
+                   $('#display-content').show();
+               }
+             },
+             error: function(data){
+               clearInterval(status_check_intval);
+             }
+         });
+     }
+    
+    status_check();
+    status_check_intval = setInterval(function() {
+        status_check();  // check every 60 seconds
+    }, 60000);
+    
+  });
+  
+{% endif %}
+</script>
+
+{% endblock %}
+
