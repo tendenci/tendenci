@@ -26,7 +26,9 @@ class ImportLocationsTask(Task):
                 obj_dict = {}
                 for key in m.keys():
                     if key in location_fields:
-                        obj_dict[key] = m[key].strip()
+                        if isinstance(m[key], basestring):
+                            m[key] = m[key].strip()
+                        obj_dict[key] = m[key]
 
                 # Add other fields
                 obj_dict['location_name'] = m['locationname']
