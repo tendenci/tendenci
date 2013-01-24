@@ -274,7 +274,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
 
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            file_path = str(locport.get_file().file.name)
 
             if not settings.CELERY_IS_ACTIVE:
                 # if celery server is not present 
