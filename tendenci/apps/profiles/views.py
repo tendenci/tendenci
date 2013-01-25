@@ -914,6 +914,8 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
             sid = str(int(time.time()))
             request.session[sid] = {'master': form.cleaned_data["master_record"],
                                     'users': form.cleaned_data['user_list']}
+            # let them re-enter password on the real merge
+            request.session['password_promt'] = False
             return HttpResponseRedirect(reverse(
                                     'profile.merge_process',
                                     args=[sid]))            
@@ -938,13 +940,16 @@ def merge_process(request, sid):
     if master and users:
         # get description for event log before users get deleted
         description = 'Master user: %s, merged user(s): %s.' % (
-                        '%s(id=%d)' % (master.user.username, master.user.id),
+                        '%s %s (%s)(id=%d)' % (master.user.first_name,
+                                       master.user.last_name,
+                                       master.user.username,
+                                       master.user.id),
                         ', '.join(['%s %s (%s)(id=%d)' % (
                         profile.user.first_name,
                         profile.user.last_name,
                         profile.user.username,
                         profile.user.id
-                        ) for profile in users]))
+                        ) for profile in users if profile != master]))
 
         related = master.user._meta.get_all_related_objects()
         field_names = master._meta.get_all_field_names()
@@ -994,9 +999,10 @@ def merge_process(request, sid):
         # log an event
         EventLog.objects.log(description=description)
         invalidate('profiles_profile')
+        messages.add_message(request, messages.SUCCESS, 'Successfully merged users. %s' % description)
 
-        request.session['password_promt'] = False
-        return redirect("profile.search")
+    request.session['password_promt'] = False
+    return redirect("profile.search")
 
 
 @login_required
