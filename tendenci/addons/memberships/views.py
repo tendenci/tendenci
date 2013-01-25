@@ -4,6 +4,7 @@ import csv
 import hashlib
 from hashlib import md5
 from datetime import datetime, timedelta, date, time
+import time as ttime
 import subprocess
 from sets import Set
 import chardet
@@ -26,6 +27,8 @@ from django.core.management import call_command
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from johnny.cache import invalidate
 from djcelery.models import TaskMeta
@@ -1246,119 +1249,90 @@ def membership_default_export(request,
     """
     Export memberships as .csv
     """
-    from tendenci.core.perms.models import TendenciBaseModel
     if not request.user.profile.is_superuser:
         raise Http403
 
     form = MembershipExportForm(request.POST or None)
-    print request.POST.items()
+
     if request.method == "POST":
         if form.is_valid():
             export_status_detail = form.cleaned_data['export_status_detail']
             export_status_detail = export_status_detail.strip()
             export_type = form.cleaned_data['export_type']
-            if export_type == 'main_fields':
-                base_field_list = []
-                user_field_list = ['first_name', 'last_name', 'username',
-                                   'email', 'is_active', 'is_staff',
-                                   'is_superuser']
-                profile_field_list = ['member_number', 'company',
-                                      'phone', 'address',
-                                      'address2', 'city',
-                                      'state', 'zipcode',
-                                      'country']
-                demographic_field_list = []
-                membership_field_list = ['membership_type',
-                                         'corp_profile_id',
-                                         'corporate_membership_id',
-                                         'join_dt',
-                                         'expire_dt',
-                                         'renewal',
-                                         'renew_dt',
-                                         'status',
-                                         'status_detail'
-                                         ]
-            else:
-                base_field_list = [smart_str(field.name) for field \
-                                   in TendenciBaseModel._meta.fields \
-                                 if not field.__class__ == AutoField]
-                user_field_list = [smart_str(field.name) for field \
-                                   in User._meta.fields \
-                                 if not field.__class__ == AutoField]
-                # remove password
-                user_field_list.remove('password')
-                profile_field_list = [smart_str(field.name) for field \
-                                   in Profile._meta.fields \
-                                 if not field.__class__ == AutoField]
-                profile_field_list = [name for name in profile_field_list \
-                                           if not name in base_field_list]
-                profile_field_list.remove('guid')
-                profile_field_list.remove('user')
-                demographic_field_list = [smart_str(field.name) for field \
-                                   in MembershipDemographic._meta.fields \
-                                 if not field.__class__ == AutoField]
-                demographic_field_list.remove('user')
-                membership_field_list = [smart_str(field.name) for field \
-                                   in MembershipDefault._meta.fields \
-                                 if not field.__class__ == AutoField]
-                membership_field_list.remove('user')
+            identifier = int(ttime.time())
+            temp_file_path = 'export/memberships/%s_temp.csv' % identifier
+            default_storage.save(temp_file_path, ContentFile(''))
 
-            title_list = user_field_list + profile_field_list + \
-                membership_field_list + demographic_field_list + \
-                base_field_list
-
-            # list of foreignkey fields
-            if export_type == 'main_fields':
-                fks = ['membership_type']
-            else:
-                user_fks = [field.name for field in User._meta.fields \
-                               if isinstance(field, (ForeignKey, OneToOneField))]
-                profile_fks = [field.name for field in Profile._meta.fields \
-                               if isinstance(field, (ForeignKey, OneToOneField))]
-                demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
-                               if isinstance(field, (ForeignKey, OneToOneField))]
-                membership_fks = [field.name for field in MembershipDefault._meta.fields \
-                            if isinstance(field, (ForeignKey, OneToOneField))]
-
-                fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
-
-            filename = 'memberships_export.csv'
-            response = HttpResponse(mimetype='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=' + filename
-
-            csv_writer = csv.writer(response)
-
-            csv_writer.writerow(title_list)
-            # corp_membership_rows is a generator - for better performance
-            for row_dict in membership_rows(user_field_list,
-                                            profile_field_list,
-                                            demographic_field_list,
-                                            membership_field_list,
-                                            fks,
-                                            export_status_detail):
-                items_list = []
-                for field_name in title_list:
-                    item = row_dict.get(field_name)
-                    if item is None:
-                        item = ''
-                    if item:
-                        if isinstance(item, datetime):
-                            item = item.strftime('%Y-%m-%d %H:%M:%S')
-                        elif isinstance(item, date):
-                            item = item.strftime('%Y-%m-%d')
-                        elif isinstance(item, time):
-                            item = item.strftime('%H:%M:%S')
-                        elif isinstance(item, basestring):
-                            item = item.encode("utf-8")
-                    items_list.append(item)
-                csv_writer.writerow(items_list)
-
+            # start the process
+            subprocess.Popen(["python", "manage.py",
+                          "membership_export_process",
+                          '--export_type=%s' % export_type,
+                          '--export_status_detail=%s' % export_status_detail,
+                          '--identifier=%s' % identifier,
+                          '--user=%s' % request.user.id])
             # log an event
             EventLog.objects.log()
-            # switch to StreamingHttpResponse once we're on 1.5
-            return response
+            return redirect(reverse('memberships.default_export_status',
+                                     args=[identifier]))
+
     context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+@password_required
+def membership_default_export_status(request, identifier,
+                        template='memberships/default_export_status.html'):
+    """
+    Display export status.
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    export_path = 'export/memberships/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/memberships/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template, context, RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def membership_default_export_check_status(request, identifier):
+    """
+    Check and get the export status.
+    """
+    status = ''
+    if not request.user.profile.is_superuser:
+        raise Http403
+    export_path = 'export/memberships/%s.csv' % identifier
+    if default_storage.exists(export_path):
+        status = 'done'
+    return HttpResponse(status)
+
+
+@login_required
+@password_required
+def membership_default_export_download(request, identifier):
+    if not request.user.profile.is_superuser:
+        raise Http403
+    file_name = '%s.csv' % identifier
+    file_path = 'export/memberships/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response
 
 
 @csrf_exempt
