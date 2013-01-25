@@ -1,9 +1,9 @@
-from datetime import datetime
 import time
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+#from django.contrib.auth.models import User
 
 
 class Command(BaseCommand):
@@ -44,6 +44,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from tendenci.addons.memberships.utils import process_export
+        from tendenci.core.site_settings.utils import get_setting
         export_type = options['export_type']
         export_status_detail = options['export_status_detail']
         identifier = options['identifier']
@@ -54,3 +55,6 @@ class Command(BaseCommand):
                        export_status_detail=export_status_detail,
                        identifier=identifier)
         print 'Membership export done %s.' % identifier
+#        print 'URL to download: ', '%s%s' % (get_setting('site', 'global',
+#                                                         'siteurl'),
+#            reverse('memberships.default_export_download', args=[identifier]))
