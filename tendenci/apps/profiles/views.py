@@ -881,11 +881,12 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                                     num_emails=Count('email')
                                     ).filter(num_emails__gt=1)
     for dup_name in duplicate_names:
-        profiles = Profile.objects.filter(
-                    user__first_name=dup_name[0],
-                    user__last_name=dup_name[1])
-        if profiles.count() > 1:
-            profiles_with_duplicate_name.append(profiles)
+        if dup_name[0] and dup_name[1]:
+            profiles = Profile.objects.filter(
+                        user__first_name=dup_name[0],
+                        user__last_name=dup_name[1])
+            if profiles.count() > 1:
+                profiles_with_duplicate_name.append(profiles)
     for email in duplicate_emails:
         profiles = Profile.objects.filter(
                     user__email=email)
@@ -968,8 +969,9 @@ def merge_process(request, sid):
                 for model, fields in valnames.iteritems():
                     for field in fields:
                         if not isinstance(field, models.OneToOneField):
-                            model.objects.filter(**{field.name: profile.user}
-                                                 ).update(**{field.name: master.user})
+                            objs = model.objects.filter(**{field.name: profile.user})
+                            if objs.exists():
+                                objs.update(**{field.name: master.user})
                         else: # OneToOne
                             [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
                             if obj:
@@ -997,7 +999,7 @@ def merge_process(request, sid):
                 profile.delete()
 
         # log an event
-        EventLog.objects.log(description=description)
+        EventLog.objects.log(description=description[:120])
         invalidate('profiles_profile')
         messages.add_message(request, messages.SUCCESS, 'Successfully merged users. %s' % description)
 
