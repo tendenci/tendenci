@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         from datetime import datetime
         from dateutil.relativedelta import relativedelta
-        from tendenci.addons.memberships.models import Membership, MembershipType
+        from tendenci.addons.memberships.models import MembershipDefault, MembershipType
         from tendenci.apps.user_groups.models import GroupMembership
 
         for membership_type in MembershipType.objects.all():
@@ -20,7 +20,7 @@ class Command(BaseCommand):
             # get expired memberships out of grace period
             # we can't move the expiration date, but we can
             # move todays day back.
-            memberships = Membership.objects.filter(
+            memberships = MembershipDefault.objects.filter(
                 membership_type=membership_type,
                 expire_dt__lt=datetime.now() - relativedelta(days=grace_period),
                 status=True).exclude(Q(status_detail='pending') | Q(status_detail='archive'))
