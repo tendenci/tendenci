@@ -888,9 +888,10 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
             if profiles.count() > 1:
                 profiles_with_duplicate_name.append(profiles)
     for email in duplicate_emails:
-        profiles = Profile.objects.filter(
-                    user__email=email)
-        profiles_with_duplicate_email.append(profiles)
+        if email:
+            profiles = Profile.objects.filter(
+                        user__email=email)
+            profiles_with_duplicate_email.append(profiles)
 
     return render_to_response(template_name, {
         'profiles_with_duplicate_name': profiles_with_duplicate_name,
