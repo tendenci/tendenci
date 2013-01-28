@@ -422,7 +422,6 @@ class MembershipDefault(TendenciBaseModel):
         """
 
         good = (
-            not self.is_approved(),
             not self.is_expired(),
             self.status_detail != 'archive',
         )
