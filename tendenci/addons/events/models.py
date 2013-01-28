@@ -543,6 +543,20 @@ class Registration(models.Model):
             self.guid = str(uuid.uuid1())
         super(Registration, self).save(*args, **kwargs)
 
+    def get_invoice(self):
+        object_type = ContentType.objects.get(app_label=self._meta.app_label,
+            model=self._meta.module_name)
+
+        try:
+            invoice = Invoice.objects.get(
+                object_type=object_type,
+                object_id=self.pk,
+            )
+        except ObjectDoesNotExist:
+            invoice = self.invoice
+
+        return invoice
+
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'tendered')
         admin_notes = kwargs.get('admin_notes', None)
@@ -746,7 +760,11 @@ class Registrant(models.Model):
         """
         config = self.registration.event.registration_configuration
 
-        balance = self.registration.invoice.balance
+        invoice = self.registration.get_invoice()
+        if invoice:
+            balance = invoice.balance
+        else:
+            balance = 0
         payment_required = config.payment_required
 
         if self.cancel_dt:
