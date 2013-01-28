@@ -7,7 +7,7 @@ from tendenci.core.perms.admin import TendenciBaseModelAdmin
 
 class GroupAdmin(TendenciBaseModelAdmin):
     list_display = ['id', 'name', 'label', 'entity', 'show_as_option', 'allow_self_add', 'allow_self_remove', 'admin_status']
-    search_fields = ['name', 'label', 'entity']
+    search_fields = ['name', 'label', 'entity__entity_name']
     list_filter = ['status', 'entity', 'show_as_option', 'allow_self_add']
     list_editable = ['name', 'label', 'entity']
     fieldsets = (
