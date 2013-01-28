@@ -126,13 +126,6 @@
     "admin_only": "false"
     },
     {
-    "label": "Notes",
-    "field_name": "notes",
-    "display": "true",
-    "required": "false",
-    "admin_only": "false"
-    },
-    {
     "label": "Section 2. Membership Details",
     "field_name": "",
     "display": "true",
