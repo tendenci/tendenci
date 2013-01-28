@@ -2202,7 +2202,7 @@ class MembershipDefaultForm(TendenciBaseForm):
         if membership.pk:
             # changing membership record
             membership.set_member_number()
-
+            membership.user.profile.refresh_member_number()
         else:
             # adding membership record
             membership.renewal = membership.user.profile.can_renew()

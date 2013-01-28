@@ -1124,6 +1124,10 @@ class MembershipDefault(TendenciBaseModel):
         Sets membership number via previous
         membership record.
         """
+        # if member_number; get out
+        if self.member_number:
+            return None
+
         memberships = self.qs_memberships().exclude(
             member_number__exact=u'').order_by('-pk')
 
