@@ -94,7 +94,7 @@ from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.files.models import File
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.corporate_memberships.settings import use_search_index
+#from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.core.site_settings.utils import get_setting
 
 
@@ -1326,6 +1326,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
 def corp_reps_lookup(request):
     q = request.REQUEST['term']
+    use_search_index = get_setting('site', 'global', 'searchindex')
 
     if use_search_index:
         profiles = Profile.objects.search(
@@ -2070,6 +2071,7 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
     
 def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_memberships/edit_reps.html"):
     corp_memb = get_object_or_404(CorporateMembership, pk=id)
+    use_search_index = get_setting('site', 'global', 'searchindex')
     
     if not has_perm(request.user,'corporate_memberships.change_corporatemembership',corp_memb):
         raise Http403
@@ -2114,6 +2116,7 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
     
 def reps_lookup(request):
     q = request.REQUEST['term']
+    use_search_index = get_setting('site', 'global', 'searchindex')
     
     if use_search_index:
         profiles = Profile.objects.search(
@@ -2147,6 +2150,7 @@ def reps_lookup(request):
 def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html"):
     rep = get_object_or_404(CorporateMembershipRep, pk=id)
     corp_memb = rep.corporate_membership
+    use_search_index = get_setting('site', 'global', 'searchindex')
 
     if corp_memb.allow_edit_by(request.user) or \
          has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   

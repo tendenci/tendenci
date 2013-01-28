@@ -140,6 +140,7 @@ def search(request, template_name="profiles/search.html"):
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
+    members = request.GET.get('members', None)
 
     if request.user.is_anonymous():
         if not allow_anonymous_search:
@@ -147,9 +148,9 @@ def search(request, template_name="profiles/search.html"):
 
     if request.user.is_authenticated():
         if not allow_user_search and not request.user.profile.is_superuser:
-            raise Http403
+            if not request.user.profile.is_member or not members:
+                raise Http403
 
-    members = request.GET.get('members', None)
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
@@ -161,12 +162,12 @@ def search(request, template_name="profiles/search.html"):
     if members:
         if not request.user.profile.is_superuser:
             if membership_view_perms == "private":
-                profiles = profiles.filter(is_not_member_filter)
+                profiles = Profile.objects.none()
             elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
                 if request.user.profile and request.user.profile.is_member:
                     profiles = profiles.exclude(is_not_member_filter)
                 else:
-                    profiles = profiles.filter(is_not_member_filter)
+                    profiles = Profile.objects.none()
             else:
                 profiles = profiles.exclude(is_not_member_filter)
         else:
