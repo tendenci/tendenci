@@ -93,7 +93,7 @@ def user_upload_preview(request, sid,
 
     if not default_storage.exists(os.path.join(import_dict['folder_name'],
                                                import_dict['file_name'])):
-        return HttpResponseRedirect(reverse('iimport.user_upload_add'))
+        return HttpResponseRedirect(reverse('import.user_upload_add'))
 
     users_list = user_import_process(request,
                                             import_dict,
