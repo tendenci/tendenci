@@ -58,6 +58,7 @@
             <li><a href="{% url admin:corporate_memberships_corpmembershipapp_changelist %}">{% trans "Corp. Membership Application" %}</a></li>
             <li><a href="{% url admin:corporate_memberships_corporatemembershiptype_changelist %}">{% trans "Corp. Membership Types" %}</a></li>
             <li class="divider"></li>
+            <li><a href="{% url corp_membership.summary_report %}">{% trans "Summary Report" %}</a></li>
             <li><a href="{% url corpmembership.import %}">{% trans "Import" %}</a></li>
             <li><a href="{% url corpmembership.export %}">{% trans "Export" %}</a></li>
             {% endif %}
