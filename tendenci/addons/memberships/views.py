@@ -1583,12 +1583,13 @@ def membership_default_add(request,
             profile_form.save(
                 request_user=request.user
             )
+
             # save demographics
             demographics = demographics_form.save(commit=False)
             if hasattr(user, 'demographics'):
                 demographics.pk = user.demographics.pk
-            else:
-                demographics.user = user
+
+            demographics.user = user
             demographics.save()
 
             membership = membership_form.save(
