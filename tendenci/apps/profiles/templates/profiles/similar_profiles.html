@@ -1,0 +1,49 @@
+{% extends "profiles/base.html" %}
+{% load i18n %}
+{% load profile_tags %}
+
+{% block title %}{% trans 'Similar Users'%}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
+<style>
+    div.similar_group{
+        margin: 2em 0;
+    }
+     div.group{
+        margin: 1em 0;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{{ block.super }}
+<div class="t">
+{% users_nav request.user user_this %}
+    {% if profiles_with_duplicate_name %}
+    <div class="similar_group">
+    <h3>{% trans "Users with Same Names" %}</h3>
+    {% for profiles in profiles_with_duplicate_name %}
+        {% similar_profile_items profiles %}
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if profiles_with_duplicate_email %}
+    <div class="similar_group">
+    <h3>{% trans "Users with Same Email" %}</h3>
+    {% for profiles in profiles_with_duplicate_email %}
+        {% similar_profile_items profiles %}
+    {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not profiles_with_duplicate_name and not profiles_with_duplicate_email %}
+    <h3>{% trans "No similar users found" %}
+    {% endif %}
+
+</div>
+{% endblock %}

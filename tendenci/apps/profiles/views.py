@@ -1,5 +1,7 @@
 # django
+import time
 from datetime import datetime, timedelta
+from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404, redirect, Http404
 from django.template import RequestContext
@@ -18,7 +20,7 @@ from django.views.decorators.csrf import csrf_protect
 from djcelery.models import TaskMeta
 from johnny.cache import invalidate
 
-from tendenci.core.base.decorators import ssl_required
+from tendenci.core.base.decorators import ssl_required, password_required
 
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import (has_perm, update_perms_and_save, get_notice_recipients, get_query_filters)
@@ -36,7 +38,7 @@ from tendenci.apps.user_groups.forms import GroupMembershipEditForm
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import (ProfileForm, ExportForm, UserPermissionForm, 
-UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm)
+UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm, ProfileMergeForm)
 from tendenci.apps.profiles.tasks import ExportProfilesTask
 from tendenci.addons.events.models import Registrant
 
@@ -105,7 +107,7 @@ def index(request, username='', template_name="profiles/index.html"):
         memberships = user_this.membershipdefault_set.filter(
             status=True) & user_this.membershipdefault_set.filter(
                 active_qs | expired_qs)
-    
+
     registrations = Registrant.objects.filter(user=user_this)
 
     EventLog.objects.log(instance=profile)
@@ -848,6 +850,163 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
                             'form': form,
                             'user_this': user,
                             }, context_instance=RequestContext(request))
+
+@login_required
+def similar_profiles(request, template_name="profiles/similar_profiles.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        # generate a unique id for this import
+        sid = str(int(time.time()))
+
+        # store the info in the session to pass to the next page
+        request.session[sid] = {'users': request.POST.getlist('id_users')}
+        return HttpResponseRedirect(reverse(
+                                    'profile.merge_view',
+                                    args=[sid]))
+
+    profiles_with_duplicate_name = []
+    profiles_with_duplicate_email = []
+
+    duplicate_names = User.objects.values_list('first_name', 'last_name'
+                                          ).annotate(
+                                        num_last=Count('last_name')
+                                        ).annotate(
+                                        num_first=Count('first_name')
+                                        ).filter(num_last__gt=1
+                                        ).filter(num_first__gt=1)
+    duplicate_emails = User.objects.values_list('email', flat=True
+                                    ).annotate(
+                                    num_emails=Count('email')
+                                    ).filter(num_emails__gt=1)
+    for dup_name in duplicate_names:
+        if dup_name[0] and dup_name[1]:
+            profiles = Profile.objects.filter(
+                        user__first_name=dup_name[0],
+                        user__last_name=dup_name[1])
+            if profiles.count() > 1:
+                profiles_with_duplicate_name.append(profiles)
+    for email in duplicate_emails:
+        if email:
+            profiles = Profile.objects.filter(
+                        user__email=email)
+            profiles_with_duplicate_email.append(profiles)
+
+    return render_to_response(template_name, {
+        'profiles_with_duplicate_name': profiles_with_duplicate_name,
+        'profiles_with_duplicate_email': profiles_with_duplicate_email,
+        'user_this': None,
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    sid = str(sid)
+    form = ProfileMergeForm(request.POST or None,
+                            list=(request.session[sid]).get('users', []))
+    profiles = Profile.objects.filter(user__in=(request.session[sid]).get('users', []))
+
+    if request.method == 'POST':
+        if form.is_valid():
+            sid = str(int(time.time()))
+            request.session[sid] = {'master': form.cleaned_data["master_record"],
+                                    'users': form.cleaned_data['user_list']}
+            # let them re-enter password on the real merge
+            request.session['password_promt'] = False
+            return HttpResponseRedirect(reverse(
+                                    'profile.merge_process',
+                                    args=[sid]))            
+
+    return render_to_response(template_name, {
+        'form':form,
+        'profiles':profiles,
+    }, context_instance=RequestContext(request))
+
+
+@login_required
+@password_required
+def merge_process(request, sid):
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    sid = str(sid)
+    master = (request.session[sid]).get('master', '')
+    users = (request.session[sid]).get('users', '')
+
+    if master and users:
+        # get description for event log before users get deleted
+        description = 'Master user: %s, merged user(s): %s.' % (
+                        '%s %s (%s)(id=%d)' % (master.user.first_name,
+                                       master.user.last_name,
+                                       master.user.username,
+                                       master.user.id),
+                        ', '.join(['%s %s (%s)(id=%d)' % (
+                        profile.user.first_name,
+                        profile.user.last_name,
+                        profile.user.username,
+                        profile.user.id
+                        ) for profile in users if profile != master]))
+
+        related = master.user._meta.get_all_related_objects()
+        field_names = master._meta.get_all_field_names()
+
+        valnames = dict()
+        for r in related:
+            if not r.model is Profile:
+                valnames.setdefault(r.model, []).append(r.field)
+
+        for profile in users:
+            if profile != master:
+                for field in field_names:
+                    if getattr(master, field) == '':
+                        setattr(master, field, getattr(profile, field))
+
+                for model, fields in valnames.iteritems():
+                    for field in fields:
+                        if not isinstance(field, models.OneToOneField):
+                            objs = model.objects.filter(**{field.name: profile.user})
+                            if objs.exists():
+                                objs.update(**{field.name: master.user})
+                        else: # OneToOne
+                            [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
+                            if obj:
+                                [master_obj] = model.objects.filter(**{field.name: master.user})[:1] or [None]
+                                if not master_obj:
+                                    setattr(obj, field.name, master.user)
+                                    obj.save()
+                                else:
+                                    obj_fields = master_obj._meta.get_all_field_names()
+                                    updated = False
+                                    for fld in obj_fields:
+                                        master_val = getattr(master_obj, fld)
+                                        if master_val == '' or master_val is None:
+                                            val = getattr(obj, fld)
+                                            if val != '' and not val is None:
+                                                setattr(master_obj, fld, val)
+                                                updated = True
+                                    if updated:
+                                        master_obj.save()
+                                    # delete obj
+                                    obj.delete()
+
+                master.save()
+                profile.user.delete()
+                profile.delete()
+
+        # log an event
+        EventLog.objects.log(description=description[:120])
+        invalidate('profiles_profile')
+        messages.add_message(request, messages.SUCCESS, 'Successfully merged users. %s' % description)
+
+    request.session['password_promt'] = False
+    return redirect("profile.search")
+
 
 @login_required
 def export(request, template_name="profiles/export.html"):

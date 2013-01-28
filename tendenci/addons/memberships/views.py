@@ -1413,6 +1413,7 @@ def membership_default_add(request,
         if not corp_app:
             raise Http404
 
+        #app = corp_app.memb_app
         app = MembershipApp.objects.current_app()
 
         cm_id = kwargs.get('cm_id')

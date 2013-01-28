@@ -1,0 +1,58 @@
+{% load avatar_tags %}
+{% load profile_tags %}
+{% load profile_filters %}
+{% load perm_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% if profile.user_id %}
+<div class="wrap-search-item">
+<div class="profile-wrap">
+    <h2>
+        <a href="{{ profile.get_absolute_url }}">
+        {% if profile.display_name %}
+            {{ profile.display_name }}
+        {% else %}
+            {{ profile.user.last_name }}{% if profile.user.first_name %}, {{ profile.user.first_name }} {% endif %}
+        {% endif %}({{ profile.user.username }})</a> 	
+        {% if profile.is_member %}
+        <span style="font-size: 12px;">Member</span> <!-- replace with Icon -->
+        {% endif %}
+    </h2>
+    
+    <div class="clear-right"></div>
+
+    <div class="profile-avatar-left" style="float: left; padding-right:1em;">
+        {% avatar profile.user 56 %}
+    </div>
+
+
+    <div class="content" style="float: left; margin-left:5px;">
+        {% if profile.user.email %}
+        <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
+        {% endif %}
+        {% if profile.phone %}
+        <b>{% trans "Phone:" %}</b> {{ profile.phone }}<br />
+        {% endif %}
+        {% if profile.company %}
+        <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
+        {% endif %}
+        <b>{% trans "Create Date:" %}</b> {{ profile.create_dt }}<br />
+        <b>{% trans "Last Login:" %}</b> {{ profile.user.last_login }}<br />
+        <b>{% trans "Number of Contributions:" %}</b> {{ profile.user.contributions_contribution_owner.count }}<br />
+        <b>{% trans "Number of Group Memberships:" %}</b> {{ profile.get_groups|length }}<br />
+    </div>
+		{% if profile.is_member %}
+        	{% if profile|allow_edit_by:user %}
+            	<div style="float: right;">
+            	<span class="member-icon">Member ID: {{ profile.member_number }}</span>
+            	</div>
+        	{% endif %}
+            
+    	{% endif %}
+    	
+    <div class="clear"></div>
+
+</div>
+</div>
+{% endif %}
