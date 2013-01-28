@@ -849,10 +849,9 @@ class MembershipDefault(TendenciBaseModel):
         if not self.get_expire_dt():
             return False
 
-        if self.expire_dt < datetime.now() and self.status_detail == "active":
-            return True
-        else:
-            return False
+        return all([self.expire_dt < datetime.now(),
+            self.get_expire_dt() > datetime.now(),
+            self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
         """
