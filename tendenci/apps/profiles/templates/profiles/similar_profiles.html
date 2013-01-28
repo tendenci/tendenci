@@ -16,25 +16,25 @@
 {{ block.super }}
 <div class="t">
 {% users_nav request.user user_this %}
-    {% if profiles_with_duplicate_name %}
+    {% if users_with_duplicate_name %}
     <div class="similar_group">
     <h3>{% trans "Users with Same Names" %}</h3>
-    {% for profiles in profiles_with_duplicate_name %}
-        {% similar_profile_items profiles %}
+    {% for users in users_with_duplicate_name %}
+        {% similar_profile_items users %}
     {% endfor %}
     </div>
     {% endif %}
 
-    {% if profiles_with_duplicate_email %}
+    {% if users_with_duplicate_email %}
     <div class="similar_group">
     <h3>{% trans "Users with Same Email" %}</h3>
-    {% for profiles in profiles_with_duplicate_email %}
-        {% similar_profile_items profiles %}
+    {% for users in users_with_duplicate_email %}
+        {% similar_profile_items users %}
     {% endfor %}
     </div>
     {% endif %}
 
-    {% if not profiles_with_duplicate_name and not profiles_with_duplicate_email %}
+    {% if not users_with_duplicate_name and not users_with_duplicate_email %}
     <h3>{% trans "No similar users found" %}
     {% endif %}
 

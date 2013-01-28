@@ -852,6 +852,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
                             'user_this': user,
                             }, context_instance=RequestContext(request))
 
+
 @login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     if not request.user.profile.is_superuser:
@@ -867,8 +868,8 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                                     'profile.merge_view',
                                     args=[sid]))
 
-    profiles_with_duplicate_name = []
-    profiles_with_duplicate_email = []
+    users_with_duplicate_name = []
+    users_with_duplicate_email = []
 
     duplicate_names = User.objects.values_list('first_name', 'last_name'
                                           ).annotate(
@@ -876,27 +877,28 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                                         ).annotate(
                                         num_first=Count('first_name')
                                         ).filter(num_last__gt=1
-                                        ).filter(num_first__gt=1)
+                                        ).filter(num_first__gt=1
+                                                 ).order_by('last_name')
     duplicate_emails = User.objects.values_list('email', flat=True
                                     ).annotate(
                                     num_emails=Count('email')
-                                    ).filter(num_emails__gt=1)
+                                    ).filter(num_emails__gt=1
+                                             ).order_by('email')
     for dup_name in duplicate_names:
         if dup_name[0] and dup_name[1]:
-            profiles = Profile.objects.filter(
-                        user__first_name=dup_name[0],
-                        user__last_name=dup_name[1])
-            if profiles.count() > 1:
-                profiles_with_duplicate_name.append(profiles)
+            users = User.objects.filter(
+                        first_name=dup_name[0],
+                        last_name=dup_name[1])
+            users_with_duplicate_name.append(users)
     for email in duplicate_emails:
         if email:
-            profiles = Profile.objects.filter(
-                        user__email=email)
-            profiles_with_duplicate_email.append(profiles)
+            users = User.objects.filter(
+                        email=email)
+            users_with_duplicate_email.append(users)
 
     return render_to_response(template_name, {
-        'profiles_with_duplicate_name': profiles_with_duplicate_name,
-        'profiles_with_duplicate_email': profiles_with_duplicate_email,
+        'users_with_duplicate_name': users_with_duplicate_name,
+        'users_with_duplicate_email': users_with_duplicate_email,
         'user_this': None,
     }, context_instance=RequestContext(request))
 
@@ -908,10 +910,19 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
         raise Http403
 
     sid = str(sid)
+    users_ids = (request.session[sid]).get('users', [])
+    profiles = []
+    for user_id in users_ids:
+        profile = Profile.objects.get_or_create(user_id=user_id,
+                                    defaults={
+                                    'creator_id': request.user.id,
+                                    'creator_username': request.user.username,
+                                    'owner_id': request.user.id,
+                                    'owner_username': request.user.username
+                                    })[0]
+        profiles.append(profile)
     form = ProfileMergeForm(request.POST or None,
                             list=(request.session[sid]).get('users', []))
-    profiles = Profile.objects.filter(user__in=(request.session[sid]).get('users', []))
-
     if request.method == 'POST':
         if form.is_valid():
             sid = str(int(time.time()))
@@ -921,11 +932,11 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
             request.session['password_promt'] = False
             return HttpResponseRedirect(reverse(
                                     'profile.merge_process',
-                                    args=[sid]))            
+                                    args=[sid]))
 
     return render_to_response(template_name, {
-        'form':form,
-        'profiles':profiles,
+        'form': form,
+        'profiles': profiles,
     }, context_instance=RequestContext(request))
 
 
