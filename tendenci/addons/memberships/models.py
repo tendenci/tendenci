@@ -361,6 +361,9 @@ class MembershipDefault(TendenciBaseModel):
         verbose_name = u'Membership'
         verbose_name_plural = u'Memberships'
 
+    def __unicode__(self):
+        return "Membership %s for %s" % (self.pk, self.user.get_full_name())
+
     @models.permalink
     def get_absolute_url(self):
         """
@@ -842,10 +845,13 @@ class MembershipDefault(TendenciBaseModel):
     def in_grace_period(self):
         """ Returns True if a member's expiration date has passed but status detail is still active.
         """
-        if self.expire_dt < datetime.now() and self.status_detail == "active":
-            return True
-        else:
+        # if can't expire, membership is not in the grace period
+        if not self.get_expire_dt():
             return False
+
+        return all([self.expire_dt < datetime.now(),
+            self.get_expire_dt() > datetime.now(),
+            self.status_detail == "active"])
 
     def get_renewal_period_dt(self):
         """
