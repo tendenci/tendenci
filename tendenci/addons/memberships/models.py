@@ -845,6 +845,10 @@ class MembershipDefault(TendenciBaseModel):
     def in_grace_period(self):
         """ Returns True if a member's expiration date has passed but status detail is still active.
         """
+        # if can't expire, membership is not in the grace period
+        if not self.get_expire_dt():
+            return False
+
         if self.expire_dt < datetime.now() and self.status_detail == "active":
             return True
         else:
