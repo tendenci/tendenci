@@ -19,10 +19,11 @@ class RedirectMiddleware(object):
         except Exception, e:
             # No redirect was found. Return the response.
             # Log the 404
-            try:
-                report = Report404.objects.get(url=path)
+            report_list = Report404.objects.filter(url=path)[:1]
+            if report_list:
+                report = report_list[0]
                 report.count = report.count + 1
-            except Report404.DoesNotExist:
+            else:
                 # Truncate to only get the first 200 characters
                 report = Report404(url=path[:200])
             report.save()
