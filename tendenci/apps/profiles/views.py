@@ -152,7 +152,8 @@ def search(request, template_name="profiles/search.html"):
     # special occasion when box does nothing
     show_checkbox = not all((
         not allow_user_search,
-        membership_view_perms in ['all-members', 'member-type']
+        membership_view_perms in ['all-members', 'member-type'],
+        not request.user.profile.is_superuser,
     ))
 
     # block anon
