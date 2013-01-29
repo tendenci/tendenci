@@ -2117,7 +2117,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     event = get_object_or_404(Event, pk=event_id)
 
-    if not has_perm(request.user,'events.change_event', event):
+    if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
         raise Http403
 
     if not query:
@@ -2174,6 +2174,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     event = get_object_or_404(Event, pk=event_id)
     query = ''
     has_addons = event.has_addons
+
+    if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
+        raise Http403
 
     sort_order = request.GET.get('sort_order', 'last_name')
     sort_type = request.GET.get('sort_type', 'asc')
