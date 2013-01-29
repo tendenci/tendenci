@@ -1,4 +1,5 @@
 # django
+import math
 import time
 from datetime import datetime, timedelta
 from django.db import models
@@ -21,9 +22,13 @@ from djcelery.models import TaskMeta
 from johnny.cache import invalidate
 
 from tendenci.core.base.decorators import ssl_required, password_required
+from tendenci.core.base.utils import get_pagination_page_range
 
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import (has_perm, update_perms_and_save, get_notice_recipients, get_query_filters)
+from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
+                                       get_notice_recipients,
+                                       get_query_filters
+                                       )
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
@@ -878,12 +883,59 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                                         num_first=Count('first_name')
                                         ).filter(num_last__gt=1
                                         ).filter(num_first__gt=1
-                                                 ).order_by('last_name')
+                                        ).exclude(
+                                        first_name='',
+                                        last_name=''
+                                                  ).order_by('last_name')
     duplicate_emails = User.objects.values_list('email', flat=True
                                     ).annotate(
                                     num_emails=Count('email')
                                     ).filter(num_emails__gt=1
-                                             ).order_by('email')
+                                             ).exclude(email=''
+                                            ).order_by('email')
+    len_duplicate_names = len(duplicate_names)
+    len_duplicate_emails = len(duplicate_emails)
+    # total groups of duplicates
+    total_groups = len_duplicate_names + len_duplicate_emails
+
+    num_groups_per_page = 20
+    num_pages = int(math.ceil(total_groups * 1.0 / num_groups_per_page))
+    try:
+        curr_page = int(request.GET.get('page', 1))
+    except:
+        curr_page = 1
+    if curr_page <= 0 or curr_page > num_pages:
+        curr_page = 1
+    page_range = get_pagination_page_range(num_pages,
+                                           curr_page=curr_page)
+    # slice the duplicate_names and duplicate_emails
+    start_index = (curr_page - 1) * num_groups_per_page
+    end_index = curr_page * num_groups_per_page
+    if len_duplicate_names > 1:
+        if start_index <= len_duplicate_names - 1:
+            if end_index < len_duplicate_names:
+                duplicate_names = duplicate_names[start_index:end_index]
+            else:
+                duplicate_names = duplicate_names[start_index:]
+        else:
+            duplicate_names = []
+    if len_duplicate_emails > 1:
+        if end_index < len_duplicate_names:
+            duplicate_emails = []
+        else:
+            start_index = start_index - len_duplicate_names
+            end_index = end_index - len_duplicate_names
+            if start_index < 0:
+                start_index = 0
+
+            if end_index > len_duplicate_emails:
+                end_index = len_duplicate_emails
+
+            if start_index < end_index:
+                duplicate_emails = duplicate_emails[start_index:end_index]
+            else:
+                duplicate_emails = []
+
     for dup_name in duplicate_names:
         if dup_name[0] and dup_name[1]:
             users = User.objects.filter(
@@ -899,6 +951,11 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     return render_to_response(template_name, {
         'users_with_duplicate_name': users_with_duplicate_name,
         'users_with_duplicate_email': users_with_duplicate_email,
+        'curr_page': curr_page,
+        'prev': curr_page - 1,
+        'next': curr_page + 1,
+        'num_pages': num_pages,
+        'page_range': page_range,
         'user_this': None,
     }, context_instance=RequestContext(request))
 
