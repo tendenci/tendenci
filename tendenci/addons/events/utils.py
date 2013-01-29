@@ -153,8 +153,8 @@ def get_ACRF_queryset(event=None):
         initial = {"status": "active", 
                    "name": "Default Custom Registration Form", 
                    "notes": "This is a default custom registration form.", 
-                   "creator_id": 1, 
-                   "owner_id": 1, 
+                   "creator_id": None, 
+                   "owner_id": None, 
                    "creator_username": "default", 
                    "owner_username": "default"}
 
