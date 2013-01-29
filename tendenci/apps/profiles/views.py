@@ -15,6 +15,7 @@ from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib import messages
 from django.conf import settings
+from django.db import connection
 # for password change
 from django.views.decorators.csrf import csrf_protect
 
@@ -904,17 +905,30 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     users_with_duplicate_name = []
     users_with_duplicate_email = []
 
-    duplicate_names = User.objects.values_list('first_name', 'last_name'
-                                          ).annotate(
-                                        num_last=Count('last_name')
-                                        ).annotate(
-                                        num_first=Count('first_name')
-                                        ).filter(num_last__gt=1
-                                        ).filter(num_first__gt=1
-                                        ).exclude(
-                                        first_name='',
-                                        last_name=''
-                                                  ).order_by('last_name')
+#    duplicate_names = User.objects.values_list('first_name', 'last_name'
+#                                          ).annotate(
+#                                        num_last=Count('last_name')
+#                                        ).annotate(
+#                                        num_first=Count('first_name')
+#                                        ).filter(num_last__gt=1,
+#                                                num_first__gt=1
+#                                        ).exclude(
+#                                        first_name='',
+#                                        last_name=''
+#                                        ).order_by('last_name', 'first_name')
+    # use raw sql to get the accurate number of duplicate names
+    sql = """
+            SELECT first_name , last_name
+            FROM auth_user
+            WHERE first_name <> '' and last_name <> ''
+            GROUP BY first_name , last_name
+            HAVING count(*) > 1
+            ORDER BY last_name, first_name
+        """
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    duplicate_names = cursor.fetchall()
+
     duplicate_emails = User.objects.values_list('email', flat=True
                                     ).annotate(
                                     num_emails=Count('email')
