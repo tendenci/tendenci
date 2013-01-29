@@ -145,53 +145,81 @@ def search(request, template_name="profiles/search.html"):
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
-    members = request.GET.get('members', None)
+    only_members = request.GET.get('members', None)
 
+    # hide "only members" checkbox
+    # special occasion when box does nothing
+    show_checkbox = not all((
+        not allow_user_search,
+        membership_view_perms in ['all-members', 'member-type']
+    ))
+
+    # block anon
     if request.user.is_anonymous():
         if not allow_anonymous_search:
             raise Http403
+        if not allow_user_search:
+            raise Http403
 
+    # block member or user
     if request.user.is_authenticated():
-        if not allow_user_search and not request.user.profile.is_superuser:
-            if not request.user.profile.is_member or not members:
+        if request.user.profile.is_member:  # if member
+            if membership_view_perms == 'private':
+                if not allow_user_search:
+                    raise Http403
+        else:  # if just user
+            if not allow_user_search:
                 raise Http403
 
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
+
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query) | Q(company__icontains=query))
+        profiles = profiles.filter(
+            Q(user__first_name__icontains=query) | \
+            Q(user__last_name__icontains=query) | \
+            Q(user__email__icontains=query) | \
+            Q(user__username__icontains=query) | \
+            Q(display_name__icontains=query) | \
+            Q(company__icontains=query)
+        )
 
-    is_not_member_filter = (Q(member_number="") | Q(user__is_active=False))
-    if members:
-        if not request.user.profile.is_superuser:
-            if membership_view_perms == "private":
-                profiles = Profile.objects.none()
-            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
-                if request.user.profile and request.user.profile.is_member:
-                    profiles = profiles.exclude(is_not_member_filter)
-                else:
-                    profiles = Profile.objects.none()
-            else:
-                profiles = profiles.exclude(is_not_member_filter)
-        else:
-            profiles = profiles.exclude(is_not_member_filter)
-    else:
-        if not request.user.profile.is_superuser:
-            if membership_view_perms == "private":
-                    profiles = profiles.filter(is_not_member_filter)
-            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
-                if not request.user.profile or not request.user.profile.is_member:
-                    profiles = profiles.filter(is_not_member_filter)
+    # if non-superuser
+        # if is member
+        # if is user
+        # if only_members
+            # exclude non-members
 
     if not request.user.profile.is_superuser:
+        if request.user.profile.is_member:
+
+            if membership_view_perms == 'private':
+                profiles = profiles.exclude(~Q(member_number=''))  # exclude all members
+            elif membership_view_perms == 'member-type':
+                profiles = profiles.exclude(  # exclude specific members
+                    ~Q(user__membershipdefault__membership_type__in=request.user.membershipdefault_set.values_list('membership_type', flat=True))
+                )
+            elif membership_view_perms == 'all-members':
+                pass  # exclude nothing
+
+            if not allow_user_search:
+                profiles = profiles.exclude(member_number='')  # exclude non-members
+
+        else:
+            if membership_view_perms != 'public':
+                profiles = profiles.exclude(~Q(member_number=''))  # exclude all members
+
         profiles = profiles.exclude(hide_in_search=True)
+
+    if only_members:
+        profiles = profiles.exclude(member_number='')  # exclude non-members
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     EventLog.objects.log()
-    return render_to_response(template_name, {'profiles': profiles, "user_this": None},
+    return render_to_response(template_name, {'profiles': profiles, 'show_checkbox': show_checkbox, 'user_this': None},
         context_instance=RequestContext(request))
 
 
