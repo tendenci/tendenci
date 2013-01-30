@@ -44,6 +44,9 @@
                 <li><a href="{% url settings.index "module" "events" %}">{% trans "Settings" %}</a></li>
             {% endif %}
             <li><a href="{% url event.search %}">{% trans "Event List" %}</a></li>
+            {% if request.user.is_superuser %}
+            <li><a href="{% url event.global.registrant.search %}">{% trans "Registrant List" %}</a></li>
+            {% endif %}
             <li><a href="{% url event.month %}">{% trans "Monthly Calendar" %}</a></li>
             <li class="divider"></li>
             {% if request.user.is_authenticated %}

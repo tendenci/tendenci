@@ -20,7 +20,8 @@ from tendenci.addons.events.models import (
     Event, Place, RegistrationConfiguration, Payment,
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
-    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
+    Registrant
 )
 
 from form_utils.forms import BetterModelForm
@@ -1590,3 +1591,30 @@ class AddonOptionForm(forms.ModelForm):
 
 class EventICSForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all())
+
+
+class RegistrantSearchForm(forms.Form):
+    event = forms.ModelChoiceField(queryset=Event.objects.filter(registration__isnull=False).distinct('pk'),
+                                   label=_("Event"),
+                                   required=False,
+                                   empty_label='All Events')
+    start_dt = forms.DateField(label=_('Start Date'), required=False)
+    end_dt = forms.DateField(label=_('End Date'), required=False)
+
+    user_id = forms.CharField(label=_('User ID'), required=False)
+    first_name = forms.CharField(label=('First Name'), required=False)
+    last_name = forms.CharField(label=('Last Name'), required=False)
+    email = forms.CharField(label=('Email'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrantSearchForm, self).__init__(*args, **kwargs)
+
+        # Set start date and end date
+        if self.fields.get('start_dt'):
+            self.fields.get('start_dt').widget.attrs = {
+                'class': 'datepicker',
+            }
+        if self.fields.get('end_dt'):
+            self.fields.get('end_dt').widget.attrs = {
+                'class': 'datepicker',
+            }

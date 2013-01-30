@@ -69,7 +69,7 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm, RegConfPricingBaseModelFormSet,
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet, RegistrantSearchForm,
     RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
 from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
@@ -2108,6 +2108,42 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
     return render_to_response(template_name, {'type': type, 'form': form},
         context_instance=RequestContext(request))
 
+@is_enabled('events')
+def global_registrant_search(request, template_name='events/registrants/global-search.html'):
+
+    form = RegistrantSearchForm(request.GET)
+
+    if form.is_valid():
+        event = form.cleaned_data.get('event')
+        start_dt = form.cleaned_data.get('start_dt')
+        end_dt = form.cleaned_data.get('end_dt')
+
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+        email = form.cleaned_data.get('email')
+        user_id = form.cleaned_data.get('user_id')
+
+    registrants = Registrant.objects.order_by("-update_dt")
+
+    if event:
+        registrants = registrants.filter(registration__event=event)
+    if start_dt:
+        registrants = registrants.filter(registration__event__start_dt__gte=start_dt)
+    if end_dt:
+        registrants = registrants.filter(registration__event__end_dt__lte=end_dt)
+    try:
+        registrants = registrants.filter(user=user_id)
+    except ValueError:
+        pass
+
+    registrants = (registrants.filter(first_name__contains=first_name)
+                              .filter(last_name__contains=last_name)
+                              .filter(email__contains=email))
+
+    return render_to_response(template_name, {
+        'registrants':registrants,
+        'form': form,
+        }, context_instance=RequestContext(request))
 
 @is_enabled('events')
 @login_required

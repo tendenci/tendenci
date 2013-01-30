@@ -68,6 +68,11 @@ def registrant_search(context, event=None):
     return context
 
 
+@register.inclusion_tag("events/registrants/global-search-form.html", takes_context=True)
+def global_registrant_search(context):
+    return context
+
+
 @register.inclusion_tag('events/reg8n/registration_pricing.html', takes_context=True)
 def registration_pricing_and_button(context, event, user):
     limit = event.get_limit()
