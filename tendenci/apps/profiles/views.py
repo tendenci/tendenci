@@ -156,22 +156,24 @@ def search(request, template_name="profiles/search.html"):
         not request.user.profile.is_superuser,
     ))
 
-    # block anon
-    if request.user.is_anonymous():
-        if not allow_anonymous_search:
-            raise Http403
-        if not allow_user_search:
-            raise Http403
 
-    # block member or user
-    if request.user.is_authenticated():
-        if request.user.profile.is_member:  # if member
-            if membership_view_perms == 'private':
-                if not allow_user_search:
-                    raise Http403
-        else:  # if just user
+    if not request.user.profile.is_superuser:
+        # block anon
+        if request.user.is_anonymous():
+            if not allow_anonymous_search:
+                raise Http403
             if not allow_user_search:
                 raise Http403
+
+        # block member or user
+        if request.user.is_authenticated():
+            if request.user.profile.is_member:  # if member
+                if membership_view_perms == 'private':
+                    if not allow_user_search:
+                        raise Http403
+            else:  # if just user
+                if not allow_user_search:
+                    raise Http403
 
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
