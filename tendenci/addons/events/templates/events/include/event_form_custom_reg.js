@@ -17,8 +17,8 @@ $(document).ready(function() {
 	{% else %}
 	
 	var disable_separate_forms = function(){
-		one_or_separate_input_radios[1].disabled=true;
-	    $(one_or_saparate_input_radio_labels[1]).css({'color': '#aaa'});
+		//one_or_separate_input_radios[1].disabled=true;
+	   // $(one_or_saparate_input_radio_labels[1]).css({'color': '#aaa'});
 	}
     
     {# disable the separate custom reg form option per pricing if not already selected #}
