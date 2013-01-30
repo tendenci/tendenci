@@ -50,7 +50,12 @@
 
         <div class="registrant-details">
             {% if reg.get_name %}
-                <div><h2>{{ reg.get_name }}</h2></div>
+                {% if reg.user %}
+                <div><h2><a href="{% url profile reg.user.username %}">
+                    {{ reg.get_name }}</a></h2></div>
+                {% else %}
+                <div><h2>{{ reg.get_name }} {{ reg.user.pk }}</h2></div>
+                {% endif %}
             {% else %}
                 <div>{% trans "Anonymous Guest" %}</div>
             {% endif %}
