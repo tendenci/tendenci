@@ -2108,6 +2108,7 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
     return render_to_response(template_name, {'type': type, 'form': form},
         context_instance=RequestContext(request))
 
+
 @is_enabled('events')
 def global_registrant_search(request, template_name='events/registrants/global-search.html'):
 
@@ -2136,14 +2137,15 @@ def global_registrant_search(request, template_name='events/registrants/global-s
     except ValueError:
         pass
 
-    registrants = (registrants.filter(first_name__contains=first_name)
-                              .filter(last_name__contains=last_name)
-                              .filter(email__contains=email))
+    registrants = (registrants.filter(first_name__icontains=first_name)
+                              .filter(last_name__icontains=last_name)
+                              .filter(email__icontains=email))
 
     return render_to_response(template_name, {
-        'registrants':registrants,
+        'registrants': registrants,
         'form': form,
         }, context_instance=RequestContext(request))
+
 
 @is_enabled('events')
 @login_required
