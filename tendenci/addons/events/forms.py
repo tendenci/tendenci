@@ -1470,6 +1470,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.module_name.lower()}),
@@ -1486,7 +1487,7 @@ class MessageAddForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('body',)
+        fields = ('subject', 'body',)
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)

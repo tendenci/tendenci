@@ -2579,7 +2579,6 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             email.reply_to = request.user.email
             email.recipient = request.user.email
             email.content_type = "text/html"
-            email.subject = '%s notice from %s' % (event.title, get_setting('site', 'global', 'sitedisplayname'))
             email.save(request.user)
             subject = email.subject
 
@@ -2614,9 +2613,11 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             return HttpResponseRedirect(reverse('event', args=([event_id])))
 
     else:
+        defaultsubject = render_to_string('events/message/subject-text.txt', {'event': event},
+            context_instance=RequestContext(request))
         openingtext = render_to_string('events/message/opening-text.txt', {'event': event},
             context_instance=RequestContext(request))
-        form = form_class(event.id, initial={'body': openingtext})
+        form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext})
 
     return render_to_response(template_name, {
         'event':event,
