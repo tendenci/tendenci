@@ -1085,8 +1085,23 @@ def merge_process(request, sid):
                     for field in fields:
                         if not isinstance(field, models.OneToOneField):
                             objs = model.objects.filter(**{field.name: profile.user})
-                            if objs.exists():
-                                objs.update(**{field.name: master.user})
+                            # handle unique_together fields. for example, GroupMembership
+                            # unique_together = ('group', 'member',)
+                            [unique_together] = model._meta.unique_together[:1] or [None]
+                            if unique_together and field.name in unique_together:
+                                for obj in objs:
+                                    field_values = [getattr(obj, field_name) for field_name in unique_together]
+                                    field_dict = dict(zip(unique_together, field_values))
+                                    # switch to master user
+                                    field_dict[field.name] = master.user
+                                    # check if the master record exists
+                                    if model.objects.filter(**field_dict).exists():
+                                        obj.delete()
+                                    else:
+                                        obj.update(**{field.name: master.user}) 
+                            else:
+                                if objs.exists():
+                                    objs.update(**{field.name: master.user})
                         else: # OneToOne
                             [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
                             if obj:
