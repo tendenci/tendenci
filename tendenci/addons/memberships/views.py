@@ -1401,7 +1401,7 @@ def membership_default_add(request,
         username == request.user.username,
     )
 
-    if any(good):
+    if any(good) and username:
         [user] = User.objects.filter(username=username)[:1] or [None]
 
     join_under_corporate = kwargs.get('join_under_corporate', False)

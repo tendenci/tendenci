@@ -156,22 +156,24 @@ def search(request, template_name="profiles/search.html"):
         not request.user.profile.is_superuser,
     ))
 
-    # block anon
-    if request.user.is_anonymous():
-        if not allow_anonymous_search:
-            raise Http403
-        if not allow_user_search:
-            raise Http403
 
-    # block member or user
-    if request.user.is_authenticated():
-        if request.user.profile.is_member:  # if member
-            if membership_view_perms == 'private':
-                if not allow_user_search:
-                    raise Http403
-        else:  # if just user
+    if not request.user.profile.is_superuser:
+        # block anon
+        if request.user.is_anonymous():
+            if not allow_anonymous_search:
+                raise Http403
             if not allow_user_search:
                 raise Http403
+
+        # block member or user
+        if request.user.is_authenticated():
+            if request.user.profile.is_member:  # if member
+                if membership_view_perms == 'private':
+                    if not allow_user_search:
+                        raise Http403
+            else:  # if just user
+                if not allow_user_search:
+                    raise Http403
 
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
@@ -1083,8 +1085,23 @@ def merge_process(request, sid):
                     for field in fields:
                         if not isinstance(field, models.OneToOneField):
                             objs = model.objects.filter(**{field.name: profile.user})
-                            if objs.exists():
-                                objs.update(**{field.name: master.user})
+                            # handle unique_together fields. for example, GroupMembership
+                            # unique_together = ('group', 'member',)
+                            [unique_together] = model._meta.unique_together[:1] or [None]
+                            if unique_together and field.name in unique_together:
+                                for obj in objs:
+                                    field_values = [getattr(obj, field_name) for field_name in unique_together]
+                                    field_dict = dict(zip(unique_together, field_values))
+                                    # switch to master user
+                                    field_dict[field.name] = master.user
+                                    # check if the master record exists
+                                    if model.objects.filter(**field_dict).exists():
+                                        obj.delete()
+                                    else:
+                                        obj.update(**{field.name: master.user}) 
+                            else:
+                                if objs.exists():
+                                    objs.update(**{field.name: master.user})
                         else: # OneToOne
                             [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
                             if obj:
