@@ -586,7 +586,7 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
         j = i + max_num_in_group
         if j > num_pages - max_num_in_group:
             j = num_pages - max_num_in_group
-        page_range.extend(range(i, j + 1))
+        page_range.extend(range(i, j))
         if j < num_pages - max_num_in_group:
             page_range.extend(['...'])
         # last group
