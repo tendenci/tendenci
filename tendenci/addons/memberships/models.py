@@ -402,7 +402,7 @@ class MembershipDefault(TendenciBaseModel):
 
                 status_details = list(status_details)
                 if status_details.count('active') > 1:
-                    memberships = MembershipDefault.filter(
+                    memberships = MembershipDefault.objects.filter(
                         user=user,
                         membership_type=membership_type,
                         status=True,
