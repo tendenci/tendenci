@@ -391,7 +391,7 @@ class MembershipDefault(TendenciBaseModel):
         for membership_type in MembershipType.objects.all():
             for user in User.objects.all():
 
-                memberships = MembershipDefault.objects.filter(
+                status_details = MembershipDefault.objects.filter(
                     user=user,
                     membership_type=membership_type,
                     status=True,
@@ -400,7 +400,20 @@ class MembershipDefault(TendenciBaseModel):
 
                 print user.username, membership_type.name,
 
-                if 'active' in memberships:
+                status_details = list(status_details)
+                if status_details.count('active') > 1:
+                    memberships = MembershipDefault.filter(
+                        user=user,
+                        membership_type=membership_type,
+                        status=True,
+                        status_detail='active'
+                    ).order_by('-pk')[1:]
+
+                    for membership in memberships:
+                        membership.status_detail = 'archive'
+                        membership.save()
+
+                if 'active' in status_details:
 
                     print 'in'
 
