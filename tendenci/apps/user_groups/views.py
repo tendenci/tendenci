@@ -30,8 +30,8 @@ from tendenci.core.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
-from tendenci.apps.user_groups.importer.forms import UploadForm
-from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
+#from tendenci.apps.user_groups.importer.forms import UploadForm
+#from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
 from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 from tendenci.apps.notifications import models as notification
 
