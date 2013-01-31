@@ -6,6 +6,7 @@ from django.contrib.auth.models import Permission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.utils import member_choices
 from tendenci.core.perms.forms import TendenciBaseForm
+from tendenci.apps.entities.models import Entity
 
 
 class GroupAdminForm(TendenciBaseForm):
@@ -41,7 +42,11 @@ class GroupAdminForm(TendenciBaseForm):
         super(GroupAdminForm, self).__init__(*args, **kwargs)   
         # filter out the unwanted permissions,
         content_types = ContentType.objects.exclude(app_label='auth') 
-        self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)  
+        self.fields['permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
+        entity = Entity.objects.first()
+        self.fields['entity'].initial = entity
+        self.fields['entity'].required = True
+        self.fields['entity'].empty_label = None
        
 class GroupForm(TendenciBaseForm):
     STATUS_CHOICES = (('active','Active'),('inactive','Inactive'),)
@@ -106,6 +111,10 @@ class GroupForm(TendenciBaseForm):
             if 'status' in self.fields:
                 self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+        entity = Entity.objects.first()
+        self.fields['entity'].initial = entity
+        self.fields['entity'].required = True
+        self.fields['entity'].empty_label = None
 
 class GroupMembershipForm(forms.ModelForm):
     def __init__(self, group=None, user_id=None, *args, **kwargs):
