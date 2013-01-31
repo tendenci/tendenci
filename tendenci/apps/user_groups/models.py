@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.user_groups.managers import GroupManager
+from tendenci.apps.entities.models import Entity
 
 
 class Group(TendenciBaseModel):
@@ -72,6 +73,10 @@ class Group(TendenciBaseModel):
                 self.group.save()
             except IntegrityError:
                 connection._rollback()
+
+        # add the default entity
+        if not self.entity:
+            self.entity = Entity.objects.first()
 
         super(Group, self).save(force_insert, force_update, *args, **kwargs)
 

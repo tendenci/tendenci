@@ -38,9 +38,6 @@ class Command(BaseCommand):
         for source_key in bucket_list:
             if not source_key.name.endswith('/'):  # if file
 
-                filename = os.path.basename(source_key.name)
-                source_key.get_contents_to_filename(filename)
-
                 dst = source_key.name.replace('npo_defaults/', '')
                 dst = os.path.join(settings.MEDIA_ROOT, dst)
 
