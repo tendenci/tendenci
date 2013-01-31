@@ -1,4 +1,5 @@
 {% extends "corporate_memberships/base-wide.html" %}
+{% load base_filters %}
 {% load corporate_memberships_tags %}
 {% load styled_forms %}
 {% load i18n %}
@@ -117,7 +118,7 @@
   		{% endif %}
   		<br />
   		{% if corporate_membership.phone %}
-  			{{ corporate_membership.phone }} <br />
+  			{{ corporate_membership.phone|phonenumber }} <br />
   		{% endif %}
      	{% if corporate_membership.email %}
      		{{ corporate_membership.email }} <br />

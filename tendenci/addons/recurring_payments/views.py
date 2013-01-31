@@ -309,15 +309,7 @@ def disable_account(request, rp_id,
             
             
             # log an event
-            log_defaults = {
-                        'event_id' : 1120500,
-                        'event_data': '%s (%d) disabled by %s' % (rp._meta.object_name, rp.pk, request.user),
-                        'description': log_description,
-                        'user': request.user,
-                        'request': request,
-                        'instance': rp,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=rp)
             
             messages.add_message(request, messages.SUCCESS, 'Successfully disabled %s' % rp)
                                                                          

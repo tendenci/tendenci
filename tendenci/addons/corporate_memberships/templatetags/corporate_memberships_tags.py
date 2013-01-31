@@ -62,6 +62,12 @@ def corpmemb_options(context, user, corp_memb):
     })
     return context
 
+
+@register.inclusion_tag("corporate_memberships/applications/search_form.html", takes_context=True)
+def corpmembership_search(context):
+    return context
+
+
 @register.inclusion_tag("corporate_memberships/search_form.html", takes_context=True)
 def corp_memb_search(context):
     return context

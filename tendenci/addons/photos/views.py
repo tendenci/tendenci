@@ -307,16 +307,6 @@ def edit(request, id, set_id=0, form_class=PhotoEditForm, template_name="photos/
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, form, photo)
 
-                log_defaults = {
-                    'event_id' : 990200,
-                    'event_data': '%s (%d) edited by %s' % (photo._meta.object_name, photo.pk, request.user),
-                    'description': '%s edited' % photo._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': photo,
-                }
-                EventLog.objects.log(**log_defaults)
-
                 messages.add_message(request, messages.SUCCESS, _("Successfully updated photo '%s'") % photo.title)
                 return HttpResponseRedirect(reverse("photo", kwargs={"id": photo.id, "set_id": set_id}))
         else:
@@ -346,15 +336,6 @@ def delete(request, id, set_id=0):
 
     if request.method == "POST":
         messages.add_message(request, messages.SUCCESS, _("Successfully deleted photo '%s'") % photo.title)
-        log_defaults = {
-            'event_id' : 990300,
-            'event_data': '%s (%d) deleted by %s' % (photo._meta.object_name, photo.pk, request.user),
-            'description': '%s deleted' % photo._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': photo,
-        }
-        EventLog.objects.log(**log_defaults)
 
         photo.delete()
 
@@ -390,16 +371,6 @@ def photoset_add(request, form_class=PhotoSetAddForm, template_name="photos/phot
 
                 # update all permissions and save the model
                 photo_set = update_perms_and_save(request, form, photo_set)
-
-                log_defaults = {
-                    'event_id' : 991100,
-                    'event_data': '%s (%d) added by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
-                    'description': '%s added' % photo_set._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': photo_set,
-                }
-                EventLog.objects.log(**log_defaults)
 
                 messages.add_message(request, messages.SUCCESS, 'Successfully added photo set!')
                 return HttpResponseRedirect(reverse('photos_batch_add', kwargs={'photoset_id':photo_set.id}))
@@ -443,14 +414,6 @@ def photoset_edit(request, id, form_class=PhotoSetEditForm, template_name="photo
                     ObjectPermission.objects.assign_group(group_perms, photo)
 
                 messages.add_message(request, messages.SUCCESS, _("Successfully updated photo set! "))
-                EventLog.objects.log(**{
-                    'event_id': 991200,
-                    'event_data': '%s (%d) edited by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
-                    'description': '%s edited' % photo_set._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': photo_set,
-                })
 
                 return HttpResponseRedirect(reverse('photoset_details', args=[photo_set.id]))
     else:
@@ -472,14 +435,6 @@ def photoset_delete(request, id, template_name="photos/photo-set/delete.html"):
         raise Http403
 
     if request.method == "POST":
-        EventLog.objects.log(**{
-            'event_id': 991300,
-            'event_data': '%s (%d) deleted by %s' % (photo_set._meta.object_name, photo_set.pk, request.user),
-            'description': '%s deleted' % photo_set._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': photo_set,
-        })
         photo_set.delete()
 
         # soft delete all images in photo set
@@ -675,16 +630,7 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
         if form.is_valid():
             photo = form.save()
-
-            EventLog.objects.log(**{
-                'event_id': 990200,
-                'event_data': 'photo (%s) edited by %s' % (photo.pk, request.user),
-                'description': '%s edited' % photo._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': photo,
-            })
-
+            EventLog.objects.log(instance=photo)
             # set album cover if specified
             chosen_cover_id = request.POST.get('album_cover')
 

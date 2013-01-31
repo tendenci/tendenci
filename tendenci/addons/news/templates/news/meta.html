@@ -18,7 +18,7 @@
                 <div><strong>{% trans "Contact:" %}</strong> {{ news.first_name }} {{ news.last_name }}</div>
             {% endif %}	
             {% if news.phone %}
-                <div><strong>{% trans "Phone:" %}</strong> {{ news.phone }}</div>	
+                <div><strong>{% trans "Phone:" %}</strong> {{ news.phone|phonenumber }}</div>	
             {% endif %}	
             {% if news.fax %}
                 <div><strong>{% trans "Fax:" %}</strong> {{ news.fax }}</div>	

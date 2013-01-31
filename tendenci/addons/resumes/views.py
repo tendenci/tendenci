@@ -43,15 +43,8 @@ def index(request, slug=None, template_name="resumes/view.html"):
     resume = get_object_or_404(Resume, slug=slug)
     
     if has_view_perm(request.user,'resumes.view_resume',resume):
-        log_defaults = {
-            'event_id' : 355000,
-            'event_data': '%s (%d) viewed by %s' % (resume._meta.object_name, resume.pk, request.user),
-            'description': '%s viewed' % resume._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': resume,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log()
         return render_to_response(template_name, {'resume': resume}, 
             context_instance=RequestContext(request))
     else:
@@ -64,16 +57,8 @@ def resume_file(request, slug=None, template_name="resumes/view.html"):
 
     if has_view_perm(request.user,'resumes.view_resume',resume):
         if resume.resume_file:
-            log_defaults = {
-                'event_id' : 355000,
-                'event_data': '%s (%d) viewed by %s' % (resume._meta.object_name, resume.pk, request.user),
-                'description': '%s viewed' % resume._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': resume,
-            }
         
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=resume)
             response = HttpResponse(resume.resume_file)
             response['Content-Disposition'] = 'attachment; filename=%s' % (os.path.basename(unicode(resume.resume_file)))
 
@@ -127,15 +112,7 @@ def search_redirect(request):
 def print_view(request, slug, template_name="resumes/print-view.html"):
     resume = get_object_or_404(Resume, slug=slug)    
 
-    log_defaults = {
-        'event_id' : 355001,
-        'event_data': '%s (%d) viewed by %s' % (resume._meta.object_name, resume.pk, request.user),
-        'description': '%s viewed - print view' % resume._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': resume,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=resume)
        
     if has_view_perm(request.user,'resumes.view_resume',resume):
         return render_to_response(template_name, {'resume': resume}, 
@@ -170,15 +147,7 @@ def add(request, form_class=ResumeForm, template_name="resumes/add.html"):
                 resume.resume_file.file.seek(0)
                 resume.save()
 
-            log_defaults = {
-                'event_id' : 351000,
-                'event_data': '%s (%d) added by %s' % (resume._meta.object_name, resume.pk, request.user),
-                'description': '%s added' % resume._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': resume,
-            }
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=resume)
 
             if request.user.is_authenticated():
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % resume)
@@ -218,15 +187,7 @@ def edit(request, id, form_class=ResumeForm, template_name="resumes/edit.html"):
                     resume.resume_file.file.seek(0)
                 resume = update_perms_and_save(request, form, resume)
 
-                log_defaults = {
-                    'event_id' : 352000,
-                    'event_data': '%s (%d) edited by %s' % (resume._meta.object_name, resume.pk, request.user),
-                    'description': '%s edited' % resume._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': resume,
-                }
-                EventLog.objects.log(**log_defaults) 
+                EventLog.objects.log(instance=resume) 
                 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % resume)
                                                               
@@ -278,16 +239,8 @@ def delete(request, id, template_name="resumes/delete.html"):
 
     if has_perm(request.user,'resumes.delete_resume'):   
         if request.method == "POST":
-            log_defaults = {
-                'event_id' : 433000,
-                'event_data': '%s (%d) deleted by %s' % (resume._meta.object_name, resume.pk, request.user),
-                'description': '%s deleted' % resume._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': resume,
-            }
             
-            EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=resume)
             messages.add_message(request, messages.SUCCESS, 'Successfully deleted %s' % resume)
             
             # send notification to administrators

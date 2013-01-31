@@ -135,6 +135,13 @@ class Form(TendenciBaseModel):
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
 
+    def has_files(self):
+        for entry in self.entries.all():
+            for field in entry.fields.all():
+                if field.field.field_type == 'FileField':
+                    return True
+        return False
+
 
 class FieldManager(models.Manager):
     """

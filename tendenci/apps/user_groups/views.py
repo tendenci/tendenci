@@ -54,15 +54,7 @@ def search(request, template_name="user_groups/search.html"):
             groups = groups.select_related()
         groups = groups.order_by('slug')
 
-    log_defaults = {
-        'event_id' : 164000,
-        'event_data': '%s searched by %s' % ('Group', request.user),
-        'description': '%s searched' % 'Group',
-        'user': request.user,
-        'request': request,
-        'source': 'user_groups'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
     return render_to_response(template_name, {'groups':groups},
         context_instance=RequestContext(request))
@@ -79,18 +71,10 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
 
     if not has_view_perm(request.user,'user_groups.view_group',group): raise Http403
 
-    log_defaults = {
-        'event_id' : 165000,
-        'event_data': '%s (%d) viewed by %s' % (group._meta.object_name, group.pk, request.user),
-        'description': '%s viewed' % group._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': group,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=group)
 
-    groupmemberships = GroupMembership.objects.filter(group=group,
-                                                      status=True,
+    groupmemberships = GroupMembership.objects.filter(group=group, 
+                                                      status=True, 
                                                       status_detail='active'
                                                       ).order_by('member__last_name')
     #members = group.members.all()
@@ -145,25 +129,7 @@ def group_add_edit(request, group_slug=None,
                         }
                         notification.send_emails(recipients,'group_added', extra_context)
 
-                log_defaults = {
-                    'event_id' : 161000,
-                    'event_data': '%s (%d) added by %s' % (group._meta.object_name, group.pk, request.user),
-                    'description': '%s added' % group._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group,
-                }
-                EventLog.objects.log(**log_defaults)
-            if edit:
-                log_defaults = {
-                    'event_id' : 162000,
-                    'event_data': '%s (%d) edited by %s' % (group._meta.object_name, group.pk, request.user),
-                    'description': '%s edited' % group._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group,
-                }
-                EventLog.objects.log(**log_defaults)
+            EventLog.objects.log(instance=group)
 
             return HttpResponseRedirect(group.get_absolute_url())
     else:
@@ -208,14 +174,6 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
                 }
                 notification.send_emails(recipients,'group_deleted', extra_context)
 
-        log_defaults = {
-            'event_id' : 163000,
-            'event_data': '%s (%d) deleted by %s' % (group._meta.object_name, group.pk, request.user),
-            'description': '%s deleted' % group._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': group,
-        }
         EventLog.objects.log(**log_defaults)
 
         group.delete()
@@ -245,15 +203,7 @@ def group_membership_self_add(request, slug, user_id):
 
         group_membership.save()
 
-        log_defaults = {
-            'event_id' : 221000,
-            'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-            'description': '%s added' % group_membership._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': group_membership,
-        }
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=group_membership)     
 
         messages.add_message(request, messages.SUCCESS, 'Successfully added yourself to group %s' % group)
     else:
@@ -274,15 +224,8 @@ def group_membership_self_remove(request, slug, user_id):
     if group_membership:
         group_membership = group_membership[0]
         if group_membership.member == user:
-            log_defaults = {
-                'event_id' : 223000,
-                'event_data': '%s (%d) deleted by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                'description': '%s deleted' % group_membership._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': group_membership,
-            }
-            EventLog.objects.log(**log_defaults)
+
+            EventLog.objects.log(instance=group_membership)
             group_membership.delete()
             messages.add_message(request, messages.SUCCESS, 'Successfully removed yourself from group %s' % group)
     else:
@@ -312,27 +255,11 @@ def groupmembership_bulk_add(request, group_slug,
                     try:
                         members.get(pk=old_m.member.pk)
                     except User.DoesNotExist:
-                        log_defaults = {
-                            'event_id' : 223000,
-                            'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, request.user),
-                            'description': '%s deleted' % old_m._meta.object_name,
-                            'user': request.user,
-                            'request': request,
-                            'instance': old_m,
-                        }
-                        EventLog.objects.log(**log_defaults)
+                        EventLog.objects.log(instance=old_m)
                         old_m.delete()
             else: #when members is None
                 for old_m in old_members:
-                    log_defaults = {
-                        'event_id' : 223000,
-                        'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, request.user),
-                        'description': '%s deleted' % old_m._meta.object_name,
-                        'user': request.user,
-                        'request': request,
-                        'instance': old_m,
-                    }
-                    EventLog.objects.log(**log_defaults)
+                    EventLog.objects.log(instance=old_m)
                     old_m.delete()
 
             for m in members:
@@ -351,15 +278,7 @@ def groupmembership_bulk_add(request, group_slug,
 
                 group_membership.save()
 
-                log_defaults = {
-                    'event_id' : 221000,
-                    'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                    'description': '%s added' % group_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group_membership,
-                }
-                EventLog.objects.log(**log_defaults)
+                EventLog.objects.log(instance=group_membership)
             return HttpResponseRedirect(group.get_absolute_url())
     else:
         member_label = request.GET.get('member_label', 'username')
@@ -397,28 +316,9 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
             group_membership.owner_username = request.user.username
 
             group_membership.save()
-            if add:
-                log_defaults = {
-                    'event_id' : 221000,
-                    'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                    'description': '%s added' % group_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group_membership,
-                }
-                EventLog.objects.log(**log_defaults)
-            if edit:
-                log_defaults = {
-                    'event_id' : 222000,
-                    'event_data': '%s (%d) edited by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                    'description': '%s edited' % group_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group_membership,
-                }
-                EventLog.objects.log(**log_defaults)
 
-
+            EventLog.objects.log(instance=group_membership)       
+            
             return HttpResponseRedirect(group.get_absolute_url())
     else:
         form = form_class(group, user_id, instance=group_membership)
@@ -434,15 +334,8 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
         raise Http403
 
     if request.method == 'POST':
-        log_defaults = {
-            'event_id' : 223000,
-            'event_data': '%s (%d) deleted by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-            'description': '%s deleted' % group_membership._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': group_membership,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log(instance=group_membership)
         group_membership.delete()
         messages.add_message(request, messages.SUCCESS, 'Successfully removed %s from group %s' % (user.get_full_name(), group))
         return HttpResponseRedirect(group.get_absolute_url())
@@ -859,6 +752,7 @@ def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_a
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
 
+
 @login_required
 def import_add(request, form_class=ImportForm,
                 template_name="user_groups/imports/user_groups_add.html"):
@@ -936,3 +830,4 @@ def import_download_template(request, file_ext='.csv'):
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)
+

@@ -67,12 +67,6 @@ class Profile(Person):
     agreed_to_tos = models.BooleanField(_('agrees to tos'), default=False)
     original_username = models.CharField(max_length=50)
 
-    ud1 = models.TextField(blank=True, default=u'')
-    ud2 = models.TextField(blank=True, default=u'')
-    ud3 = models.TextField(blank=True, default=u'')
-    ud4 = models.TextField(blank=True, default=u'')
-    ud5 = models.TextField(blank=True, default=u'')
-
     objects = ProfileManager()
     actives = ProfileActiveManager()
 

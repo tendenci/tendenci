@@ -230,7 +230,7 @@ def get_query_filters(user, perm, **kwargs):
         return anon_filter
     else:
         if user.profile.is_superuser:
-            return Q()
+            return Q(status=True)
         else:
 
             if '.' in perm and perms_field:

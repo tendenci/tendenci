@@ -15,6 +15,7 @@ class Command(BaseCommand):
         """
         from tendenci.apps.entities.models import Entity
         from tendenci.addons.memberships.models import AppEntry, MembershipDefault
+        from tendenci.apps.profiles.models import Profile
         verbosity = options['verbosity']
 
         for e in AppEntry.objects.all():
@@ -97,6 +98,9 @@ class Command(BaseCommand):
                 if hasattr(e.membership, 'user'):
                     m_default.user = e.membership.user
 
+            if not hasattr(m_default, 'user'):
+                continue
+
             if not m_default.user:
                 m_default.user, user_created = m_default.get_or_create_user(
                     email=e.email, first_name=e.first_name, last_name=e.last_name
@@ -114,9 +118,6 @@ class Command(BaseCommand):
                     )
 
                 continue  # on to the next one
-
-            if not m_default.payment_method:
-                m_default.payment_method = e.payment_method
 
             m_default.application_complete_dt = e.create_dt
             m_default.entity = Entity.objects.first()
@@ -144,6 +145,10 @@ class Command(BaseCommand):
             m_default.set_renew_dt()
             if not m_default.expire_dt:
                 m_default.set_expire_dt()
+
+            if not hasattr(m_default.user, 'profile'):
+                Profile.objects.create_profile(m_default.user)
+
             m_default.user.profile.refresh_member_number()
 
             self.set_owner_creator_fields(m_default, e)
@@ -171,9 +176,9 @@ class Command(BaseCommand):
         existing
         """
 
-        msg = u'updated'
+        msg = u'insert'
         if created:
-            msg = u'created'
+            msg = u'update'
 
         if skipped:
             msg = 'skipped'

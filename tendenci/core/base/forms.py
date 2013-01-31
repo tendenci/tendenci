@@ -4,6 +4,7 @@ from django import forms
 from django.core.validators import RegexValidator
 from django.forms.fields import CharField
 from django.utils.translation import ugettext_lazy as _
+from captcha.fields import CaptchaField
 
 
 slug_re = compile(r'^[-\w\/]+$')
@@ -46,3 +47,7 @@ class PasswordForm(forms.Form):
         if not self.user.check_password(password):
             raise forms.ValidationError(_("Incorrect Password"))
         return self.cleaned_data
+
+
+class CaptchaForm(forms.Form):
+    captcha = CaptchaField(label=_('Type the code below'))

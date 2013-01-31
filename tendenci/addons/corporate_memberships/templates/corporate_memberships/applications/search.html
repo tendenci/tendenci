@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load pagination_tags %}
+{% load bootstrap_pagination_tags %}
 {% load base_filters %}
 {% load perm_tags %}
 {% load corporate_memberships_tags %}
@@ -9,6 +10,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 {% endblock %}
 
@@ -18,7 +20,25 @@
  {% corpmemb_nav request.user %}
  
 <h1>{% trans "Corporate Membership Search" %}</h1>
-{% corp_memb_search %}
+
+
+<form class="search-form" action="{% url corpmembership.search %}" method="get">
+<p>
+    {% trans "Company Name" %}: {{ search_form.cm_id }}
+    {% if not SITE_GLOBAL_SEARCHINDEX %}
+    <input type="submit" name="search" value="Submit" />
+    {% endif %}
+</p>
+{% if SITE_GLOBAL_SEARCHINDEX %}
+<p>
+{{ search_form.q }}
+<input type="submit" name="search" value="Search" />
+</p>
+{% endif %}
+</form>
+
+
+
 {% autopaginate corp_members 10 %}
 <div class="corpmembers-wrap">
     {% for corp_memb in corp_members %}

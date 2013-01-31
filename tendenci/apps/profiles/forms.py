@@ -426,3 +426,21 @@ class ExportForm(forms.Form):
         if not self.user.check_password(value):
             raise forms.ValidationError(_("Invalid password."))
         return value
+
+
+class ProfileMergeForm(forms.Form):
+    master_record = forms.ModelChoiceField(queryset=Profile.objects.none(),
+                        empty_label=None,
+                        label=_("Choose the master record"),
+                        widget=forms.RadioSelect())
+
+    user_list = forms.ModelMultipleChoiceField(queryset=Profile.objects.none(),
+                    label=_("Choose the users to merge"),
+                    widget=forms.CheckboxSelectMultiple())
+
+    def __init__(self, *args, **kwargs):
+        choices = kwargs.pop('list', None)
+        super(ProfileMergeForm, self).__init__(*args, **kwargs)
+
+        self.fields["master_record"].queryset = Profile.objects.filter(user__in=choices)
+        self.fields["user_list"].queryset = Profile.objects.filter(user__in=choices)

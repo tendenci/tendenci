@@ -8,30 +8,12 @@ The name 'Tendenci' was originally created by Randy Sarinas. The original logo, 
 
 ## Installation
 
-For information on how to install Tendenci, follow the instructions in `INSTALL.md`, or [online at Github](https://github.com/tendenci/blob/master/INSTALL.md).
+For information on how to install Tendenci, follow the instructions in `INSTALL.md`, or [online at Github](https://github.com/tendenci/tendenci/blob/master/INSTALL.md).
+
+## License
+
+The License information can be found at [https://github.com/tendenci/tendenci/blob/master/LICENSE.md](https://github.com/tendenci/tendenci/blob/master/LICENSE.md)
 
 ## Core Developers
 
-We want to recognize some of the developers of the core of Tendenci, from it's beginnings in Microsoft ASP to this current version written in python.
-
-- Ed Schipul
-- Jennifer Ulmer
-- Donnell Smith
-- Nse (Charles) Ekpenyong
-- Kathryn Ciaralli
-- Adil Ahmed (project manager)
-- Jenny Qian
-- Eloy Zuniga, Jr.
-- Glen Zangirolami
-- John-Michael Oswalt (JMO)
-- Sam Lee
-
-Tendenci would not exist without them.
-
-Addition thanks to the following people who have contributed to the product as a whole:
-
-- Tim Newton
-- David Stagg
-- Loren Lugosch
-- Nabil Bani
-- Sarah Worthy
+Our core developers and other contributors can be found at The License information can be found at [https://github.com/tendenci/tendenci/blob/master/docs/credits.md](https://github.com/tendenci/tendenci/blob/master/docs/credits.md)

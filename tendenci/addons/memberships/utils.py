@@ -2,9 +2,11 @@ import os
 import csv
 import re
 from decimal import Decimal
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 import pytz
+from sets import Set
+import time as ttime
 
 from django.http import Http404, HttpResponseServerError
 from django.conf import settings
@@ -16,6 +18,9 @@ from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.core import exceptions
 from django.utils.safestring import mark_safe
+from django.utils.encoding import smart_str
+from django.db.models.fields import AutoField
+from django.db.models import ForeignKey, OneToOneField
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
@@ -24,7 +29,10 @@ from tendenci.addons.memberships.models import (App,
                                                 AppEntry,
                                                 Membership,
                                                 MembershipType,
-                                                MembershipDefault)
+                                                MembershipDefault,
+                                                MembershipDemographic,
+                                                MembershipApp,
+                                                MembershipAppField)
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.imports.utils import get_unique_username
@@ -148,6 +156,209 @@ def get_membership_type_choices(user, membership_app, renew=False,
         mt_list.append((mt.id, price_display))
 
     return mt_list
+
+
+def get_selected_demographic_fields(membership_app, forms):
+    """
+    Get the selected demographic fields for the app.
+    """
+    demographic_field_dict = dict([(field.name, field) \
+                        for field in MembershipDemographic._meta.fields \
+                        if field.get_internal_type() != 'AutoField'])
+    demographic_field_names = demographic_field_dict.keys()
+    app_fields = MembershipAppField.objects.filter(
+                                membership_app=membership_app,
+                                display=True
+                                ).values(
+                        'label', 'field_name', 'required')
+    selected_fields = []
+    for app_field in app_fields:
+        if app_field['field_name'] in demographic_field_names:
+            field = forms.CharField(
+                    widget=forms.TextInput({'size': 30}),
+                    label=app_field['label'],
+                    required=app_field['required'])
+            selected_fields.append((app_field['field_name'], field))
+    return selected_fields
+
+
+def get_selected_demographic_field_names(membership_app=None):
+    """
+    Get the selected demographic field names.
+    """
+    if not membership_app:
+        membership_app = MembershipApp.objects.current_app()
+    demographic_field_names = [field.name \
+                        for field in MembershipDemographic._meta.fields \
+                        if field.get_internal_type() != 'AutoField']
+    app_field_names = MembershipAppField.objects.filter(
+                                membership_app=membership_app,
+                                display=True
+                                ).values_list('field_name', flat=True)
+    selected_field_names = []
+    for field_name in app_field_names:
+        if field_name in demographic_field_names:
+            selected_field_names.append(field_name)
+    return selected_field_names
+
+
+def membership_rows(user_field_list,
+                    profile_field_list,
+                    demographic_field_list,
+                    membership_field_list,
+                    foreign_keys,
+                    export_status_detail=''):
+    # grab all except the archived
+    memberships = MembershipDefault.objects.filter(
+                                status=True
+                                ).exclude(
+                                status_detail='archive'
+                                )
+    if export_status_detail:
+        if export_status_detail == 'pending':
+            memberships = memberships.filter(
+                        status_detail__icontains='pending'
+                                )
+        else:
+            memberships = memberships.filter(
+                        status_detail=export_status_detail)
+
+    for membership in memberships:
+        row_dict = {}
+        user = membership.user
+        [profile] = Profile.objects.filter(user=user)[:1] or [None]
+        [demographic] = MembershipDemographic.objects.filter(user=user)[:1] or [None]
+
+        for field_name in user_field_list:
+            row_dict[field_name] = get_obj_field_value(field_name, user)
+        if profile:
+            for field_name in profile_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                                                field_name, profile,
+                                                field_name in foreign_keys)
+        if demographic:
+            for field_name in demographic_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                                                field_name, demographic,
+                                                field_name in foreign_keys)
+        for field_name in membership_field_list:
+            row_dict[field_name] = get_obj_field_value(
+                                            field_name, membership,
+                                            field_name in foreign_keys)
+
+        yield row_dict
+
+
+def get_obj_field_value(field_name, obj, is_foreign_key=False):
+    value = getattr(obj, field_name)
+    if value and is_foreign_key:
+        value = value.id
+    return value
+
+
+def process_export(export_type='all_fields',
+                   export_status_detail='active',
+                   identifier=''):
+    from tendenci.core.perms.models import TendenciBaseModel
+    if export_type == 'main_fields':
+        base_field_list = []
+        user_field_list = ['first_name', 'last_name', 'username',
+                           'email', 'is_active', 'is_staff',
+                           'is_superuser']
+        profile_field_list = ['member_number', 'company',
+                              'phone', 'address',
+                              'address2', 'city',
+                              'state', 'zipcode',
+                              'country']
+        demographic_field_list = []
+        membership_field_list = ['membership_type',
+                                 'corp_profile_id',
+                                 'corporate_membership_id',
+                                 'join_dt',
+                                 'expire_dt',
+                                 'renewal',
+                                 'renew_dt',
+                                 'status',
+                                 'status_detail'
+                                 ]
+    else:
+        base_field_list = [smart_str(field.name) for field \
+                           in TendenciBaseModel._meta.fields \
+                         if not field.__class__ == AutoField]
+        user_field_list = [smart_str(field.name) for field \
+                           in User._meta.fields \
+                         if not field.__class__ == AutoField]
+        # remove password
+        user_field_list.remove('password')
+        profile_field_list = [smart_str(field.name) for field \
+                           in Profile._meta.fields \
+                         if not field.__class__ == AutoField]
+        profile_field_list = [name for name in profile_field_list \
+                                   if not name in base_field_list]
+        profile_field_list.remove('guid')
+        profile_field_list.remove('user')
+        demographic_field_list = [smart_str(field.name) for field \
+                           in MembershipDemographic._meta.fields \
+                         if not field.__class__ == AutoField]
+        demographic_field_list.remove('user')
+        membership_field_list = [smart_str(field.name) for field \
+                           in MembershipDefault._meta.fields \
+                         if not field.__class__ == AutoField]
+        membership_field_list.remove('user')
+
+    title_list = user_field_list + profile_field_list + \
+        membership_field_list + demographic_field_list + \
+        base_field_list
+
+    # list of foreignkey fields
+    if export_type == 'main_fields':
+        fks = ['membership_type']
+    else:
+        user_fks = [field.name for field in User._meta.fields \
+                       if isinstance(field, (ForeignKey, OneToOneField))]
+        profile_fks = [field.name for field in Profile._meta.fields \
+                       if isinstance(field, (ForeignKey, OneToOneField))]
+        demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
+                       if isinstance(field, (ForeignKey, OneToOneField))]
+        membership_fks = [field.name for field in MembershipDefault._meta.fields \
+                    if isinstance(field, (ForeignKey, OneToOneField))]
+
+        fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
+
+    if not identifier:
+        identifier = int(ttime.time())
+    file_name_temp = 'export/memberships/%s_temp.csv' % identifier
+    with default_storage.open(file_name_temp, 'wb') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(title_list)
+        # corp_membership_rows is a generator - for better performance
+        for row_dict in membership_rows(user_field_list,
+                                        profile_field_list,
+                                        demographic_field_list,
+                                        membership_field_list,
+                                        fks,
+                                        export_status_detail):
+            items_list = []
+            for field_name in title_list:
+                item = row_dict.get(field_name)
+                if item is None:
+                    item = ''
+                if item:
+                    if isinstance(item, datetime):
+                        item = item.strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(item, date):
+                        item = item.strftime('%Y-%m-%d')
+                    elif isinstance(item, time):
+                        item = item.strftime('%H:%M:%S')
+                    elif isinstance(item, basestring):
+                        item = item.encode("utf-8")
+                items_list.append(item)
+            csv_writer.writerow(items_list)
+    # rename the file name
+    file_name = 'export/memberships/%s.csv' % identifier
+    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+    # delete the temp file
+    default_storage.delete(file_name_temp)
 
 
 def has_null_byte(file_path):

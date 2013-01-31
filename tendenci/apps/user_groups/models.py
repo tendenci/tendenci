@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.user_groups.managers import GroupManager
+from tendenci.apps.entities.models import Entity
 
 
 class Group(TendenciBaseModel):
@@ -73,8 +74,12 @@ class Group(TendenciBaseModel):
             except IntegrityError:
                 connection._rollback()
 
+        # add the default entity
+        if not self.entity:
+            self.entity = Entity.objects.first()
+
         super(Group, self).save(force_insert, force_update, *args, **kwargs)
-     
+
     @property    
     def active_members(self):
         return GroupMembership.objects.filter(
@@ -145,7 +150,7 @@ class GroupMembership(models.Model):
         verbose_name_plural = "Group Memberships"
 
     @classmethod
-    def add_to_group(cls, *kwargs):
+    def add_to_group(cls, **kwargs):
         """
         Easily add someone to a group, we're setting basic defaults
         e.g. GroupMembership.add_to_group(member=member, group=group)
@@ -159,9 +164,9 @@ class GroupMembership(models.Model):
         return cls.objects.create(
             group=group,
             member=member,
-            creator=editor,
+            creator_id=editor.pk,
             creator_username=editor.username,
-            owner=editor,
+            owner_id=editor.pk,
             owner_username=editor.username,
             status=status,
             status_detail=status_detail

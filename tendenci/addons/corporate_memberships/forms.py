@@ -20,6 +20,7 @@ from tendenci.addons.corporate_memberships.models import (
                     CorpMembership,
                     CorpProfile,
                     CorpMembershipApp,
+                    CorpMembershipRep,
                     CorpMembershipImport,
                     CorpApp,
                     CorpField,
@@ -415,6 +416,14 @@ class RosterSearchAdvancedForm(forms.Form):
         super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
 
 
+class CorpMembershipSearchForm(forms.Form):
+    cm_id = forms.ChoiceField(label=_('Company Name'),
+                                  choices=get_corp_memberships_choices(),
+                                  required=False)
+    q = forms.CharField(max_length=100,
+                                 required=False)
+
+
 class CorpMembershipUploadForm(forms.ModelForm):
     KEY_CHOICES = (
         ('company_name', 'Company Name'),
@@ -770,6 +779,7 @@ class CorpApproveForm(forms.Form):
 
         qAnd = []
         query = None
+        exact_match = 0
 
         if email:
             query = Q(email=email)
@@ -792,27 +802,67 @@ class CorpApproveForm(forms.Form):
                                                    u.last_name,
                                                    u.username,
                                                    u.email)
+                if u.first_name and u.last_name and u.username:
+                    if u.first_name == first_name and \
+                       u.last_name == last_name and \
+                       u.email == email:
+                        exact_match = u.id
 
-        return user_set.items()
+        return user_set.items(), exact_match
 
     def __init__(self, *args, **kwargs):
         corp_memb = kwargs.pop('corporate_membership')
         super(CorpApproveForm, self).__init__(*args, **kwargs)
 
         if corp_memb.is_join_pending and corp_memb.anonymous_creator:
-            suggested_users = self.suggested_users(
+            suggested_users, exact_match = self.suggested_users(
                            first_name=corp_memb.anonymous_creator.first_name,
                            last_name=corp_memb.anonymous_creator.last_name,
                            email=corp_memb.anonymous_creator.email)
-            suggested_users.append((0, 'Create new user for %s %s %s' % (
-                                  corp_memb.anonymous_creator.first_name,
-                                  corp_memb.anonymous_creator.last_name,
-                                  corp_memb.anonymous_creator.email
-                                                         )))
+            if not exact_match:
+                suggested_users.append((0, 'Create new user for %s %s %s' % (
+                                      corp_memb.anonymous_creator.first_name,
+                                      corp_memb.anonymous_creator.last_name,
+                                      corp_memb.anonymous_creator.email
+                                                             )))
             self.fields['users'].choices = suggested_users
-            self.fields['users'].initial = 0
+            self.fields['users'].initial = exact_match
         else:
             self.fields.pop('users')
+
+
+class CorpMembershipRepForm(forms.ModelForm):
+    user_display = forms.CharField(max_length=100,
+                        required=False,
+                        help_text='type name, or username or email')
+
+    class Meta:
+        model = CorpMembershipRep
+        fields = ('user_display',
+                 'user',
+                'is_dues_rep',
+                'is_member_rep',)
+
+    def __init__(self, corp_membership, *args, **kwargs):
+        self.corp_membership = corp_membership
+        super(CorpMembershipRepForm, self).__init__(*args, **kwargs)
+
+        self.fields['user_display'].label = "Add a Representative"
+        self.fields['user'].widget = forms.HiddenInput()
+        self.fields['user'].error_messages['required'
+                                ] = 'Please enter a valid user.'
+
+    def clean_user(self):
+        value = self.cleaned_data['user']
+        try:
+            rep = CorpMembershipRep.objects.get(
+                corp_profile=self.corp_membership.corp_profile,
+                user=value)
+            raise forms.ValidationError(
+                _("This user is already a representative."))
+        except CorpMembershipRep.DoesNotExist:
+            pass
+        return value
 
 
 class CorpMembRepForm(forms.ModelForm):

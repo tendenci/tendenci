@@ -1,0 +1,362 @@
+[
+    {
+        "pk": 20,
+        "model": "auth.user",
+        "fields": {
+            "username": "ssprout",
+            "first_name": "Steven",
+            "last_name": "Sprout",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:14:42.995",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$2RUrufq89j2J$gVd6DCHGtopPPFEz9LbfYCuj/O/OCl5b5j9BCRIFBMs=",
+            "email": "ssprout@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:14:42.995"
+        }
+    },
+    {
+        "pk": 18,
+        "model": "auth.user",
+        "fields": {
+            "username": "ggarbanzo",
+            "first_name": "Greg",
+            "last_name": "Garbanzo",
+            "is_active": true,
+            "is_superuser": true,
+            "is_staff": true,
+            "last_login": "2012-12-31T15:13:01.369",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$bspQiS1I4nte$trq1lhoIOfpXhtcy7QEOtcN0di9JXUhM8HiY1/xIFX8=",
+            "email": "ggarbanzo@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:13:01.369"
+        }
+    },
+    {
+        "pk": 26,
+        "model": "auth.user",
+        "fields": {
+            "username": "jjuniper",
+            "first_name": "Jillian",
+            "last_name": "Juniper",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:10:11.178",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$f9EiTxMWDUyT$moYBYMe14JNmgFRzOWh5r9STl6UZstWoLiEg7MY5vfI=",
+            "email": "jjuniper@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:10:11.178"
+        }
+    },
+    {
+        "pk": 27,
+        "model": "auth.user",
+        "fields": {
+            "username": "ookra",
+            "first_name": "Oren",
+            "last_name": "Okra",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:13:50.456",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$vlThF2nOGdoV$j3bf1lqbFmTnK/gqHenCSrxHQGHgRUykAygKc9aIKog=",
+            "email": "ookra@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:13:50.456"
+        }
+    },
+    {
+        "pk": 14,
+        "model": "auth.user",
+        "fields": {
+            "username": "eeggplant",
+            "first_name": "Edgar",
+            "last_name": "Eggplant",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:09:02.515",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$eSFO5kfhDZZS$b58TMORDKvsT8stCCBZaluiJeUCzsUuiWmhxtKfKSwQ=",
+            "email": "eeggplant@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:09:02.515"
+        }
+    },
+    {
+        "pk": 12,
+        "model": "auth.user",
+        "fields": {
+            "username": "bbellpepper",
+            "first_name": "Bianca",
+            "last_name": "Bellpepper",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:04:31.112",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$bQqjv6TWJWYy$VyOcIPnc4WPUNPg1dqRY1m4jtPytnmifTD13+Jte1cM=",
+            "email": "bbellpepper@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:04:31.112"
+        }
+    },
+    {
+        "pk": 19,
+        "model": "auth.user",
+        "fields": {
+            "username": "sscallion",
+            "first_name": "Sylvia",
+            "last_name": "Scallion",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:13:54.229",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$VgZIWvb0LXyI$Q20V65896ofXRseLosAOavIHuvojcqgnVHpMqmJUXBg=",
+            "email": "sscallion@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:13:54.229"
+        }
+    },
+    {
+        "pk": 17,
+        "model": "auth.user",
+        "fields": {
+            "username": "hhuckleberry",
+            "first_name": "Hector",
+            "last_name": "Huckleberry",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:12:15.100",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$kE3av65EfeYK$YczLH+roHcAGy3J1li4GTAAVxbuElA89Xgb9G5BAvCc=",
+            "email": "hhuckleberry@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:12:15.100"
+        }
+    },
+    {
+        "pk": 24,
+        "model": "auth.user",
+        "fields": {
+            "username": "wwatercress",
+            "first_name": "Will",
+            "last_name": "Watercress",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T19:59:02.527",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$9BoQqalAVGeg$/14znV90xzstQddzf0FTw1me9JEXjnHvc1CdR/Eye0g=",
+            "email": "wwatercress@thegreenerthumb.com",
+            "date_joined": "2013-01-16T19:59:02.527"
+        }
+    },
+    {
+        "pk": 13,
+        "model": "auth.user",
+        "fields": {
+            "username": "mmelon",
+            "first_name": "Marta",
+            "last_name": "Melon",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:07:13.535",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$pNUkl8RoFv9d$ZGpPSTnOA3tAo5iS5m5FHAXoz7KuC9EjiDEZfSfMO1o=",
+            "email": "mmelon@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:07:13.535"
+        }
+    },
+    {
+        "pk": 31,
+        "model": "auth.user",
+        "fields": {
+            "username": "cchickpea",
+            "first_name": "Chelsea",
+            "last_name": "Chickpea",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:40:31.825",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$Xh0ANDe7Zw3H$eAh7kDwr23b9Ypa0rHv+yfogpTBVMxRvxNFOD4kSQoQ=",
+            "email": "cchickpea@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:40:31.825"
+        }
+    },
+    {
+        "pk": 28,
+        "model": "auth.user",
+        "fields": {
+            "username": "llentil",
+            "first_name": "Louis",
+            "last_name": "Lentil",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:22:52.521",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$slCK4ufUBXX3$c4Lx9RKFsTwhsKWP10Y738hTfUaNxapffGM1ho8QZq8=",
+            "email": "llentil@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:22:52.521"
+        }
+    },
+    {
+        "pk": 25,
+        "model": "auth.user",
+        "fields": {
+            "username": "hhorseradish",
+            "first_name": "Harriet",
+            "last_name": "Horseradish",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:04:41.982",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$MfkiE9asqvIl$zUkYxPPf1BmJKCJHjyMouz8oPP49J+XzzCNIThg9A2I=",
+            "email": "hhorseradish@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:04:41.982"
+        }
+    },
+    {
+        "pk": 16,
+        "model": "auth.user",
+        "fields": {
+            "username": "jjicama",
+            "first_name": "Jamie",
+            "last_name": "Jícama",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:11:35.807",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$FVViKvLCFvoc$eUBgIAbZ+CupkNc4RmZt79CFONSIV3EIV8jUPPl1JIg=",
+            "email": "jjicama@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:11:35.807"
+        }
+    },
+    {
+        "pk": 29,
+        "model": "auth.user",
+        "fields": {
+            "username": "ddandelion",
+            "first_name": "Deidre",
+            "last_name": "Dandelion",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:28:13.882",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$J4xRYlK8fAqu$5iPI3oY8DbUwS0b8OlBVXBEywAFjovju+tRiJ//REgw=",
+            "email": "ddandelion@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:28:13.882"
+        }
+    },
+    {
+        "pk": 15,
+        "model": "auth.user",
+        "fields": {
+            "username": "tturnip",
+            "first_name": "Tallulah",
+            "last_name": "Turnip",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:10:17.634",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$y6MlXQic0yyU$346/tmRimAR2y+QkaMANAGMnfivMwocuD4HVD4Lu4Dw=",
+            "email": "tturnip@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:10:17.634"
+        }
+    },
+    {
+        "pk": 11,
+        "model": "auth.user",
+        "fields": {
+            "username": "rrutabaga",
+            "first_name": "Raul",
+            "last_name": "Rutabaga",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2012-12-31T15:02:44.829",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$opYQrXnF6EK7$n56Yn8F+QZRWimv0SLTWoym+iW3ZDo+g4rcx6dexg28=",
+            "email": "rrutabaga@thegreenerthumb.com",
+            "date_joined": "2012-12-31T15:02:44.829"
+        }
+    },
+    {
+        "pk": 30,
+        "model": "auth.user",
+        "fields": {
+            "username": "ppumpkin",
+            "first_name": "Penny",
+            "last_name": "Pumpkin",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:33:05.093",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$RYljAT02vDvr$gORSJVwlzAAS1vcjogrYAtpKSFnmamMv75ckOGBJMtk=",
+            "email": "ppumpkin@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:33:05.093"
+        }
+    },
+    {
+        "pk": 32,
+        "model": "auth.user",
+        "fields": {
+            "username": "ttomato",
+            "first_name": "Tina",
+            "last_name": "Tomato",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:43:57.829",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$78BYyCuIjzYy$3h9RARuJyBoz6Dcy7H6qdXkkAaNk6qTvKP5rtUY28tk=",
+            "email": "ttomato@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:43:57.829"
+        }
+    },
+    {
+        "pk": 33,
+        "model": "auth.user",
+        "fields": {
+            "username": "aarugula",
+            "first_name": "Ashley",
+            "last_name": "Arugula",
+            "is_active": true,
+            "is_superuser": false,
+            "is_staff": false,
+            "last_login": "2013-01-16T20:46:04.127",
+            "groups": [],
+            "user_permissions": [],
+            "password": "pbkdf2_sha256$10000$EYK3xrIwABFu$J5d6C05A0s8owWPWmt5ULwkiCqvx3smji8TL3Q8u8MQ=",
+            "email": "aarugula@thegreenerthumb.com",
+            "date_joined": "2013-01-16T20:46:04.127"
+        }
+    }
+]

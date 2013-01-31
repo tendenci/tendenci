@@ -110,7 +110,11 @@
 				 					<a href="{{ MEDIA_URL }}{{ field_obj.value }}">{{ field_obj.value|basename }}</a>
 				 				{% else %}
 				 					{% if field_obj.value %}
+                                        {% if field_obj.field_name  == 'phone' %}
+                                        {{ field_obj.value|phonenumber }}
+                                        {% else %}
 				 						{{ field_obj.value|safe|urlize }}
+                                        {% endif %}
 				 					{% endif %}
 				 				{% endif %}
 				 			{% endif %}

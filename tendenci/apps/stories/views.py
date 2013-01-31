@@ -30,15 +30,7 @@ def details(request, id=None, template_name="stories/view.html"):
     if not has_view_perm(request.user,'stories.view_story', story):
         raise Http403
 
-    log_defaults = {
-        'event_id' : 1060500,
-        'event_data': '%s (%d) viewed by %s' % (story._meta.object_name, story.pk, request.user),
-        'description': '%s viewed' % story._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': story,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=story)
     
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
@@ -50,15 +42,7 @@ def print_details(request, id, template_name="stories/print_details.html"):
     if not has_view_perm(request.user,'stories.view_story', story):
         raise Http403
 
-    log_defaults = {
-        'event_id' : 1060501,
-        'event_data': '%s (%d) print viewed by %s' % (story._meta.object_name, story.pk, request.user),
-        'description': '%s print viewed' % story._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': story,
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log(instance=story)
 
     return render_to_response(template_name, {'story': story}, 
         context_instance=RequestContext(request))
@@ -116,16 +100,6 @@ def add(request, form_class=StoryForm, template_name="stories/add.html"):
                     story.save(photo=photo)
                     assign_files_perms(story, files=[story.image])
 
-                log_defaults = {
-                    'event_id' : 1060100,
-                    'event_data': '%s (%d) added by %s' % (story._meta.object_name, story.pk, request.user),
-                    'description': '%s added' % story._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': story,
-                }
-                EventLog.objects.log(**log_defaults)
-
                 messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % story) 
 
                 return HttpResponseRedirect(reverse('story', args=[story.pk]))
@@ -164,16 +138,6 @@ def edit(request, id, form_class=StoryForm, template_name="stories/edit.html"):
                     story.save(photo=photo)
 
                 story = update_perms_and_save(request, form, story)
-
-                log_defaults = {
-                    'event_id' : 1060200,
-                    'event_data': '%s (%d) edited by %s' % (story._meta.object_name, story.pk, request.user),
-                    'description': '%s edited' % story._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': story,
-                }
-                EventLog.objects.log(**log_defaults)
                 
                 messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % story)
                 

@@ -30,3 +30,5 @@ is:non-paid
 hash:{{ object.hash }}
 hash:{{ object.old_hash1 }}
 hash:{{ object.old_hash2 }}
+
+is:registrant

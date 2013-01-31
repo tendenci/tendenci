@@ -179,7 +179,7 @@ INSTALLED_APPS = (
     'captcha',
     'south',
     'tastypie',
-    'model_report',
+    'tendenci.libs.model_report',
 
     'tendenci.apps.entities',
     'tendenci.core.base',
@@ -347,7 +347,7 @@ BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
-CELERY_IS_ACTIVE = True
+CELERY_IS_ACTIVE = False
 
 # --------------------------------------#
 # Hackstack Search

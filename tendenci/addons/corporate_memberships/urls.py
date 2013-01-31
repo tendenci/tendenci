@@ -27,6 +27,9 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
     url(r"^applications/search/$",
         "corpmembership_search",
         name="corpmembership.search"),
+    url(r"^applications/index/$",
+        "index",
+        name="corpmembership.index"),
     url(r"^applications/delete/(?P<id>\d+)/$",
         "corpmembership_delete",
         name="corpmembership.delete"),
@@ -66,7 +69,19 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         "corpmembership_export",
         name="corpmembership.export"),
 
+    # edit corp reps
+    url(r"^edit_corp_reps/(?P<id>\d+)/$", "edit_corp_reps",
+        name="corpmembership.edit_corp_reps"),
+    url(r'^corp_reps_lookup/$', 'corp_reps_lookup',
+        name="corp_membership.reps_lookup"),
+    url(r'^delete_corp_rep/(?P<id>\d+)/$', 'delete_corp_rep',
+        name="corp_membership.delete_rep"),
 
+    # report
+    url(r"^reports/summary/$", "summary_report",
+        name="corp_membership.summary_report"),
+
+# To Be Deleted
     url(r"^(?P<slug>.*)/add_pre/$", "add_pre", name="corp_memb.add_pre"),
     url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),
     url(r"^(?P<slug>.*)/add/(?P<hash>[\d\w]+)$", "add",

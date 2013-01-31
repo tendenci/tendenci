@@ -274,7 +274,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
 
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            file_path = str(locport.get_file().file.name)
 
             if not settings.CELERY_IS_ACTIVE:
                 # if celery server is not present 
@@ -365,11 +365,9 @@ def export(request, template_name="locations/export.html"):
 @is_enabled('locations')
 @admin_required
 @login_required
-def download_location_upload_template(request, file_ext='.xls'):
-    if file_ext == '.csv':
-        filename = "import-locations.csv"
-    else:
-        filename = "import-locations.xls"
+def download_location_upload_template(request):
+    file_ext = '.csv'
+    filename = "import-locations.csv"
 
     import_field_list = [
         'Location Name',

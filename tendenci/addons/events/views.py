@@ -45,6 +45,7 @@ from tendenci.core.perms.utils import (has_perm, get_notice_recipients,
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from tendenci.core.files.models import File
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.exports.utils import run_export_task
@@ -68,7 +69,7 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm, RegConfPricingBaseModelFormSet,
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet, RegistrantSearchForm,
     RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
 from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
@@ -1082,7 +1083,10 @@ def register(request, event_id=0,
                                                        spots_available=spots_available)
         pricings = pricings.filter(quantity=1)
 
-        event.has_member_price = pricings.filter(allow_member=True).exists()
+        event.has_member_price = pricings.filter(allow_member=True
+                                                 ).exclude(
+                                        Q(allow_user=True) | Q(allow_anonymous=True)
+                                                ).exists()
 
         pricings = pricings.order_by('display_order', '-price')
 
@@ -1090,10 +1094,9 @@ def register(request, event_id=0,
             pricing_id = int(pricing_id)
         except:
             pass
-        if pricing_id:
 
-            if pricing_id:
-                [event.default_pricing] = RegConfPricing.objects.filter(id=pricing_id) or [None]
+        if pricing_id:
+            [event.default_pricing] = RegConfPricing.objects.filter(id=pricing_id) or [None]
 
         event.free_event = not bool([p for p in pricings if p.price > 0])
         pricing = None
@@ -1297,6 +1300,7 @@ def register(request, event_id=0,
     total_price = Decimal('0')
     event_price = pricing and pricing.price or 0
     individual_price = event_price
+
     if is_table:
 #        individual_price_first, individual_price = split_table_price(
 #                                                event_price, pricing.quantity)
@@ -2106,13 +2110,52 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
 
 
 @is_enabled('events')
+def global_registrant_search(request, template_name='events/registrants/global-search.html'):
+
+    form = RegistrantSearchForm(request.GET)
+
+    if form.is_valid():
+        event = form.cleaned_data.get('event')
+        start_dt = form.cleaned_data.get('start_dt')
+        end_dt = form.cleaned_data.get('end_dt')
+
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+        email = form.cleaned_data.get('email')
+        user_id = form.cleaned_data.get('user_id')
+
+    registrants = Registrant.objects.order_by("-update_dt")
+
+    if event:
+        registrants = registrants.filter(registration__event=event)
+    if start_dt:
+        registrants = registrants.filter(registration__event__start_dt__gte=start_dt)
+    if end_dt:
+        registrants = registrants.filter(registration__event__end_dt__lte=end_dt)
+    try:
+        registrants = registrants.filter(user=user_id)
+    except ValueError:
+        pass
+
+    registrants = (registrants.filter(first_name__icontains=first_name)
+                              .filter(last_name__icontains=last_name)
+                              .filter(email__icontains=email))
+
+    return render_to_response(template_name, {
+        'registrants': registrants,
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+
+@is_enabled('events')
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):
     query = request.GET.get('q', None)
+    page = request.GET.get('page', 1)
 
     event = get_object_or_404(Event, pk=event_id)
 
-    if not has_perm(request.user,'events.change_event', event):
+    if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
         raise Http403
 
     if not query:
@@ -2128,23 +2171,20 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
         active_registrants = Registrant.objects.filter(registration__event=event).filter(cancel_dt=None).order_by("-update_dt")
         canceled_registrants = Registrant.objects.filter(registration__event=event).exclude(cancel_dt=None).order_by("-update_dt")
 
+    all_registrants = registrants
 
+    if page:
+        registrants_paginator = Paginator(registrants, 10)
+        try:
+            registrants = registrants_paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            registrants = registrants_paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            registrants = registrants_paginator.page(registrants_paginator.num_pages)
 
     for reg in registrants:
-        if hasattr(reg, 'object'): reg = reg.object
-        if reg.custom_reg_form_entry:
-            reg.assign_mapped_fields()
-            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
-            if not reg.name:
-                reg.name = reg.custom_reg_form_entry.__unicode__()
-    for reg in active_registrants:
-        if hasattr(reg, 'object'): reg = reg.object
-        if reg.custom_reg_form_entry:
-            reg.assign_mapped_fields()
-            reg.non_mapped_field_entries = reg.custom_reg_form_entry.get_non_mapped_field_entry_list()
-            if not reg.name:
-                reg.name = reg.custom_reg_form_entry.__unicode__()
-    for reg in canceled_registrants:
         if hasattr(reg, 'object'): reg = reg.object
         if reg.custom_reg_form_entry:
             reg.assign_mapped_fields()
@@ -2157,6 +2197,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
     return render_to_response(template_name, {
         'event':event,
         'registrants':registrants,
+        'all_registrants': all_registrants,
         'active_registrants':active_registrants,
         'canceled_registrants':canceled_registrants,
         'query': query,
@@ -2171,6 +2212,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     event = get_object_or_404(Event, pk=event_id)
     query = ''
     has_addons = event.has_addons
+
+    if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
+        raise Http403
 
     sort_order = request.GET.get('sort_order', 'last_name')
     sort_type = request.GET.get('sort_type', 'asc')
@@ -2535,7 +2579,6 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             email.reply_to = request.user.email
             email.recipient = request.user.email
             email.content_type = "text/html"
-            email.subject = '%s notice from %s' % (event.title, get_setting('site', 'global', 'sitedisplayname'))
             email.save(request.user)
             subject = email.subject
 
@@ -2570,9 +2613,11 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             return HttpResponseRedirect(reverse('event', args=([event_id])))
 
     else:
+        defaultsubject = render_to_string('events/message/subject-text.txt', {'event': event},
+            context_instance=RequestContext(request))
         openingtext = render_to_string('events/message/opening-text.txt', {'event': event},
             context_instance=RequestContext(request))
-        form = form_class(event.id, initial={'body': openingtext})
+        form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext})
 
     return render_to_response(template_name, {
         'event':event,
