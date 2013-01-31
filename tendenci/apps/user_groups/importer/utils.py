@@ -117,7 +117,7 @@ def user_groups_import_process(import_i, preview=True):
     if preview=False.
     """
     #print "START IMPORT PROCESS"
-    data_dict_list = extract_from_excel(import_i.file.path)
+    data_dict_list = extract_from_excel(import_i.file.name)
     data_dict_list_len = len(data_dict_list)
 
     group_obj_list = []
