@@ -74,13 +74,11 @@ class Group(TendenciBaseModel):
                 connection._rollback()
 
         super(Group, self).save(force_insert, force_update, *args, **kwargs)
-     
-    @property    
+
+    @property
     def active_members(self):
         return GroupMembership.objects.filter(
-                                            group=self,
-                                            status=True, 
-                                            status_detail='active')
+            group=self, status=True, status_detail='active')
 
     def is_member(self, user):
         # impersonation
@@ -118,7 +116,7 @@ class Group(TendenciBaseModel):
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
     member = models.ForeignKey(User, related_name='group_member')
-    
+
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
 

@@ -15,3 +15,4 @@ class Command(BaseCommand):
         call_command('send_event_reminders')
         call_command('send_membership_notices')
         call_command('clean_memberships')
+        call_command('refresh_membership_groups')
