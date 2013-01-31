@@ -111,7 +111,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.12',
+    version='5.1.13',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -148,7 +148,7 @@ setup(
         "http://g.pypi.python.org/",
     ],
     install_requires=[
-        "Django==1.4.2",
+        "Django==1.4.3",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
