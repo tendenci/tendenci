@@ -17,7 +17,9 @@
 {% user_group_nav request.user %}
 <h1>{% trans "Import Groups Process" %}</h1>
 <div class="imports">
+{% if import_i.status == "pending" %}
 {% trans "We're not done yet! This page will be updated as your groups are imported." %}
+{% endif %}
     <p><strong>{% trans "Import ID" %}:</strong> {{ import_i.id }}</p>
     <p><strong>{% trans "File" %}:</strong> {{ import_i.file.name }}</p>
     <p><strong>{% trans "Status" %}:</strong> {{ import_i.status }}</p>
