@@ -217,7 +217,9 @@ def do_group_import(group_object_dict):
                     setattr(group, field, unicode(group_object_dict[field])[:field_type.max_length])
                 else:
                     setattr(group, field, unicode(group_object_dict[field]))
-
+    # Since the allow_anonymous_view is not included in the GROUP_FIELDS,
+    # set it to False
+    group.allow_anonymous_view = False
     group.save()
 
     return group
