@@ -273,14 +273,14 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions')
-        
+
+
 class UserPermissionForm(forms.ModelForm):
-    is_superuser = forms.BooleanField(required=False, label=_("Is Admin"), 
-                                      help_text = _("If selected, admin has all permissions without explicitly assigning them."))
+
     class Meta:
         model = User
-        fields= ('is_superuser', 'user_permissions',)
-        
+        fields = ('user_permissions',)
+
     def __init__(self, *args, **kwargs):
         super(UserPermissionForm, self).__init__(*args, **kwargs)
         # filter out the unwanted permissions,
@@ -288,9 +288,10 @@ class UserPermissionForm(forms.ModelForm):
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
         content_types = ContentType.objects.exclude(app_label='auth')
-        
+
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
-    
+
+
 class UserGroupsForm(forms.Form):
     groups = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required=False)
     

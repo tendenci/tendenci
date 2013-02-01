@@ -471,11 +471,6 @@ def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="p
     else:
         form = form_class(instance=user_edit)
     if form.is_valid():
-        if request.user == user_edit:
-            user_edit.is_superuser = True
-            messages.add_message(request, messages.INFO, _("You cannot remove your admin role."))
-        else:
-            user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
 
