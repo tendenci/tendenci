@@ -234,12 +234,29 @@ class CorpProfileForm(forms.ModelForm):
                 self.fields['authorized_domain'].initial = auth_domains
         if not self.corpmembership_app.authentication_method == 'secret_code':
             del self.fields['secret_code']
+        else:
+            self.fields['secret_code'].help_text = 'This is the code that ' + \
+                'your members will need to enter to join under your corporate'
 
         del self.fields['status']
         del self.fields['status_detail']
 
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
+
+    def clean_secret_code(self):
+        secret_code = self.cleaned_data['secret_code']
+        if secret_code:
+            # check if this secret_code is available to ensure the uniqueness
+            corp_profiles = CorpProfile.objects.filter(
+                                secret_code=secret_code)
+            if self.instance:
+                corp_profiles = corp_profiles.exclude(id=self.instance.id)
+            if corp_profiles:
+                raise forms.ValidationError(
+            _("This secret code is already taken. Please use a different one.")
+            )
+        return self.cleaned_data['secret_code']
 
     def save(self, *args, **kwargs):
         if not self.instance.id:
