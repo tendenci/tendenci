@@ -1101,7 +1101,8 @@ def merge_process(request, sid):
                                     if model.objects.filter(**field_dict).exists():
                                         obj.delete()
                                     else:
-                                        obj.update(**{field.name: master.user}) 
+                                        setattr(obj, field.name, master.user)
+                                        obj.save()
                             else:
                                 if objs.exists():
                                     objs.update(**{field.name: master.user})
