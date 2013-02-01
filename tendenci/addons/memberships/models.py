@@ -383,6 +383,61 @@ class MembershipDefault(TendenciBaseModel):
         return None
 
     @classmethod
+    def refresh_groups(cls):
+        """
+        Adds or Removes users from groups
+        depending on their membership status_detail.
+        """
+        for membership_type in MembershipType.objects.all():
+            for user in User.objects.all():
+
+                status_details = MembershipDefault.objects.filter(
+                    user=user,
+                    membership_type=membership_type,
+                    status=True,
+                    status_detail__in=['active', 'pending', 'expired'],
+                ).values_list('status_detail', flat=True)
+
+                print user.username, membership_type.name,
+
+                status_details = list(status_details)
+                if status_details.count('active') > 1:
+                    memberships = MembershipDefault.objects.filter(
+                        user=user,
+                        membership_type=membership_type,
+                        status=True,
+                        status_detail='active'
+                    ).order_by('-pk')[1:]
+
+                    for membership in memberships:
+                        membership.status_detail = 'archive'
+                        membership.save()
+
+                if 'active' in status_details:
+
+                    print 'in'
+
+                    exists = GroupMembership.objects.filter(
+                        member=user,
+                        group=membership_type.group,
+                    ).exists()
+
+                    if not exists:
+                        GroupMembership.add_to_group(
+                            member=user,
+                            group=membership_type.group,
+                        )
+                else:
+
+                    print 'out'
+
+                    # remove from group
+                    GroupMembership.objects.filter(
+                        member=user,
+                        group=membership_type.group,
+                    ).delete()
+
+    @classmethod
     def QS_ACTIVE(cls):
         """
         Returns memberships of status_detail='active'
