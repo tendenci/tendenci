@@ -446,18 +446,21 @@ def delete(request, id, template_name="profiles/delete.html"):
 
     return render_to_response(template_name, {'user_this':user, 'profile': profile}, 
         context_instance=RequestContext(request))
-    
+
+
 @login_required
 def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="profiles/edit_perms.html"):
     user_edit = get_object_or_404(User, pk=id)
+
     try:
         profile = Profile.objects.get(user=user_edit)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
-   
+
     # for now, only admin can grant/remove permissions
-    if not request.user.profile.is_superuser: raise Http403
-    
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
     else:
