@@ -17,6 +17,7 @@ class MyUserAdmin(UserAdmin):
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
         # Removing the permission part
         # (_('Permissions'), {'fields': ('is_staff', 'is_active', 'is_superuser', 'user_permissions')}),
+        (_('Permissions'), {'fields': ('user_permissions',)}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
 
