@@ -191,6 +191,9 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['status']
                 del self.fields['status_detail']
 
+            if self.user_current.profile.is_superuser and self.user_current == self.user_this:
+                self.fields['security_level'].choices = (('superuser','Superuser'),)
+
         if not self.user_current.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
