@@ -2096,7 +2096,7 @@ def types(request, template_name='events/types/index.html'):
 @login_required
 def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='events/types/reassign.html'):
     type = get_object_or_404(Type, pk=type_id)
-        
+
     form = form_class(request.POST or None, type_id=type.id)
 
     if request.method == 'POST':
@@ -2998,7 +2998,7 @@ def delete_speaker(request, id):
 @is_enabled('events')
 @login_required
 def delete_group_pricing(request, id):
-    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+    if not has_perm(request.user,'events.delete_registrationconfiguration'):
         raise Http403
 
     gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
@@ -3014,7 +3014,7 @@ def delete_group_pricing(request, id):
 @is_enabled('events')
 @login_required
 def delete_special_pricing(request, id):
-    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+    if not has_perm(request.user,'events.delete_registrationconfiguration'):
         raise Http403
 
     s = get_object_or_404(SpecialPricing, id = id)
