@@ -1015,7 +1015,8 @@ class CorpMembershipApp(TendenciBaseModel):
     memb_app = models.OneToOneField(MembershipApp,
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
-                            verbose_name=_("Membership Application"))
+                            verbose_name=_("Membership Application"),
+                            null=True)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
 
