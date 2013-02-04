@@ -752,7 +752,7 @@ class Registrant(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
+        return ('event.registration_confirmation', [self.registration.event.pk, self.registration.pk])
 
     def reg8n_status(self):
         """
