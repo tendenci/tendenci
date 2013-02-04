@@ -111,7 +111,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.13',
+    version='5.1.14',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -203,5 +203,6 @@ setup(
         "django-s3-folder-storage==0.1",
         "django-storages==1.1.5",
         "python-memcached==1.48",
+        "Whoosh==2.4.1",
     ],
 )
