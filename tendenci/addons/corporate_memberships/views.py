@@ -189,6 +189,7 @@ def corpmembership_add(request,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
+    app_fields = app_fields.exclude(field_name='expiration_dt')
     app_fields = app_fields.order_by('order')
 
     corpprofile_form = CorpProfileForm(app_fields,
@@ -284,6 +285,10 @@ def corpmembership_add(request,
                                     reverse('payment.pay_online',
                                     args=[corp_membership.invoice.id,
                                           corp_membership.invoice.guid]))
+            else:
+                if is_superuser and corp_membership.status \
+                    and corp_membership.status_detail == 'active':
+                    corp_membership.approve_join(request)
 
             return HttpResponseRedirect(reverse('corpmembership.add_conf',
                                                 args=[corp_membership.id]))
