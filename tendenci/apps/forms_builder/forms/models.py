@@ -1,6 +1,5 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
@@ -11,10 +10,6 @@ from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.base.fields import EmailVerificationField
-from tendenci.apps.redirects.models import Redirect
-from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -60,6 +55,7 @@ DUE_SORE_CHOICES = (
     ('end', _('end')),
 )
 
+
 class Form(TendenciBaseModel):
     """
     A user-built form.
@@ -69,10 +65,8 @@ class Form(TendenciBaseModel):
     slug = models.SlugField(max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000, blank=True)
     response = models.TextField(_("Confirmation Text"), max_length=2000, blank=True)
-    email_text = models.TextField(_("Email Text to Submitter"), default='', blank=True, help_text=
-        _("If Send email is checked, this is the text that will be sent in an email to the person submitting the form."), max_length=2000)
-#    status = models.IntegerField(_("Status"), choices=STATUS_CHOICES,
-#        default=STATUS_PUBLISHED)
+    email_text = models.TextField(_("Email Text to Submitter"), default='', blank=True,
+        help_text=_("If Send email is checked, this is the text that will be sent in an email to the person submitting the form."), max_length=2000)
     subject_template = models.CharField(_("Template for email subject "),
         help_text=_("""Options include [title] for form title, and
                         name of form fields inside brackets [ ]. E.x. [first name] or
@@ -80,8 +74,8 @@ class Form(TendenciBaseModel):
         default="[title] - [first name]  [last name] - [phone]",
         max_length=200,
         blank=True, null=True)
-    send_email = models.BooleanField(_("Send email"), default=False, help_text=
-        _("If checked, the person submitting the form will be sent an email."))
+    send_email = models.BooleanField(_("Send email"), default=False,
+        help_text=_("If checked, the person submitting the form will be sent an email."))
     email_from = models.EmailField(_("Reply-To address"), blank=True,
         help_text=_("The address the replies to the email will be sent to"))
     email_copies = models.CharField(_("Send copies to"), blank=True,
@@ -106,7 +100,7 @@ class Form(TendenciBaseModel):
     class Meta:
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
-        permissions = (("view_form","Can view form"),)
+        permissions = (("view_form", "Can view form"),)
 
     def __unicode__(self):
         return self.title
@@ -149,6 +143,7 @@ class FieldManager(models.Manager):
     """
     def visible(self):
         return self.filter(visible=True)
+
 
 class Field(models.Model):
     """
@@ -216,12 +211,13 @@ class Field(models.Model):
                             group_membership = GroupMembership(group=group, member=user)
                             group_membership.creator_id = user.id
                             group_membership.creator_username = user.username
-                            group_membership.role='subscriber'
-                            group_membership.owner_id =  user.id
+                            group_membership.role = 'subscriber'
+                            group_membership.owner_id = user.id
                             group_membership.owner_username = user.username
                             group_membership.save()
                     else:
                         entry.subscribe(group)  # subscribe form-entry to a group
+
 
 class FormEntry(models.Model):
     """
@@ -245,7 +241,7 @@ class FormEntry(models.Model):
         u = ''
         for f in self.fields.all()[0:5]:
             u = u + str(f) + ' '
-        return u[0:len(u)-1]
+        return u[0:len(u) - 1]
 
     @models.permalink
     def get_absolute_url(self):
@@ -311,7 +307,7 @@ class FormEntry(models.Model):
         if not name:
             # pick the name from email
             if email:
-                if  '@' in email:
+                if '@' in email:
                     name, domain = email.split('@')
                 else:
                     name = email
@@ -437,5 +433,6 @@ class Pricing(models.Model):
 
     def __unicode__(self):
         currency_symbol = get_setting("site", "global", "currencysymbol")
-        if not currency_symbol: currency_symbol = '$'
+        if not currency_symbol:
+            currency_symbol = '$'
         return "%s - %s%s" % (self.label, currency_symbol, self.price, )
