@@ -23,6 +23,10 @@
 			     {% endif %}
 			{% endif %}
 		{% endif %}
+	{% else %}
+         {% if opt_object.status_detail == 'archive'%}
+         <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
+         {% endif %}
 	{% endif %}
 
     {% if opt_object.status and opt_object.status_detail != 'archive' %}

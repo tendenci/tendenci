@@ -486,14 +486,15 @@ def corpmembership_view(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
-def corpmembership_search(request,
+def corpmembership_search(request, my_corps_only=True,
             template_name="corporate_memberships/applications/search.html"):
     allow_anonymous_search = get_setting('module',
                                      'corporate_memberships',
                                      'anonymoussearchcorporatemembers')
 
-    if not request.user.is_authenticated() and not allow_anonymous_search:
-        raise Http403
+    if not request.user.is_authenticated():
+        if my_corps_only or not allow_anonymous_search:
+            raise Http403
 
     search_form = CorpMembershipSearchForm(request.GET)
     if search_form.is_valid():
@@ -512,7 +513,8 @@ def corpmembership_search(request,
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
     else:
-        corp_members = CorpMembership.get_my_corporate_memberships(request.user)
+        corp_members = CorpMembership.get_my_corporate_memberships(request.user,
+                                                my_corps_only=my_corps_only)
 
         if query:
             corp_members = corp_members.filter(

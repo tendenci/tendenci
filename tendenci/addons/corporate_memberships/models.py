@@ -431,33 +431,40 @@ class CorpMembership(TendenciBaseModel):
                 ).exclude(field_name=''))
 
     @staticmethod
-    def get_search_filter(user):
-        if user.profile.is_superuser:
-            return None, None
-
+    def get_search_filter(user, my_corps_only=False):
         filter_and, filter_or = None, None
-
-        allow_anonymous_search = get_setting('module',
-                                     'corporate_memberships',
-                                     'anonymoussearchcorporatemembers')
-        allow_member_search = get_setting('module',
-                                  'corporate_memberships',
-                                  'membersearchcorporatemembers')
-
-        if allow_anonymous_search or \
-            (allow_member_search and user.profile.is_member):
-            filter_and = {'status': True,
+        if my_corps_only:
+            filter_or = ({'creator': user,
+                         'owner': user,
+                         'corp_profile__reps__user': user})
+            if user.profile.is_superuser:
+                filter_and = {'status': True,
                           'status_detail': 'active'}
         else:
-            if user.is_authenticated():
-                filter_or = {'creator': user,
-                             'owner': user}
-                if use_search_index:
-                    filter_or.update({'corp_profile__reps': user})
-                else:
-                    filter_or.update({'corp_profile__reps__user': user})
+            if user.profile.is_superuser:
+                return None, None
+
+            allow_anonymous_search = get_setting('module',
+                                         'corporate_memberships',
+                                         'anonymoussearchcorporatemembers')
+            allow_member_search = get_setting('module',
+                                      'corporate_memberships',
+                                      'membersearchcorporatemembers')
+
+            if allow_anonymous_search or \
+                (allow_member_search and user.profile.is_member):
+                filter_and = {'status': True,
+                              'status_detail': 'active'}
             else:
-                filter_and = {'allow_anonymous_view': True}
+                if user.is_authenticated():
+                    filter_or = {'creator': user,
+                                 'owner': user}
+                    if use_search_index:
+                        filter_or.update({'corp_profile__reps': user})
+                    else:
+                        filter_or.update({'corp_profile__reps__user': user})
+                else:
+                    filter_and = {'allow_anonymous_view': True}
 
         return filter_and, filter_or
 
@@ -485,7 +492,7 @@ class CorpMembership(TendenciBaseModel):
         return filter_and, filter_or
 
     @staticmethod
-    def get_my_corporate_memberships(user):
+    def get_my_corporate_memberships(user, my_corps_only=False):
         """Get the corporate memberships owned or has the permission
             by this user.
             Returns a query set.
@@ -493,7 +500,8 @@ class CorpMembership(TendenciBaseModel):
         if user.profile.is_superuser:
             return CorpMembership.objects.all()
 
-        filter_and, filter_or = CorpMembership.get_search_filter(user)
+        filter_and, filter_or = CorpMembership.get_search_filter(user,
+                                            my_corps_only=my_corps_only)
         q_obj = None
         if filter_and:
             q_obj = Q(**filter_and)

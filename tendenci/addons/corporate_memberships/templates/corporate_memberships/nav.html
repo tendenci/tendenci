@@ -52,6 +52,7 @@
            <li><a href="{% url corpmembership.add %}">{% trans "Add Corp. Member" %}</a></li>
 
             <li><a href="{% url corpmembership.search %}">{% trans "Search All" %}</a></li> 
+            <li><a href="{% url corpmembership.mycorps %}">{% trans "My Corp. Members" %}</a></li> 
             {% if user.profile.is_superuser %}
             <li><a href="{% url corpmembership.search %}?q=is_pending:true">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
