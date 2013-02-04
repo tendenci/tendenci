@@ -257,7 +257,7 @@ class CorpMembershipAdmin(admin.ModelAdmin):
     list_display = ['corp_profile', 'join_dt',
                     'renewal', 'renew_dt',
                     'expiration_dt',
-                    'status', 'status_detail']
+                    'approved', 'status_detail']
     list_filter = ['status_detail', 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
 
