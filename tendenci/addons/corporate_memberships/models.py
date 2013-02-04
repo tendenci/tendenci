@@ -1,3 +1,4 @@
+import operator
 import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -10,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
+from django.db.models import Q
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
@@ -481,6 +483,48 @@ class CorpMembership(TendenciBaseModel):
             filter_and = {'allow_anonymous_view': True}
 
         return filter_and, filter_or
+
+    @staticmethod
+    def get_my_corporate_memberships(user):
+        """Get the corporate memberships owned or has the permission
+            by this user.
+            Returns a query set.
+        """
+        if user.profile.is_superuser:
+            return CorpMembership.objects.all()
+
+        filter_and, filter_or = CorpMembership.get_search_filter(user)
+        q_obj = None
+        if filter_and:
+            q_obj = Q(**filter_and)
+        if filter_or:
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}
+                        ) for key, value in filter_or.items()])
+            if q_obj:
+                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+            else:
+                q_obj = q_obj_or
+        if q_obj:
+            return CorpMembership.objects.filter(q_obj)
+        else:
+            return CorpMembership.objects.all()
+
+    @staticmethod
+    def get_my_corporate_profiles_choices(user):
+        corp_members = CorpMembership.get_my_corporate_memberships(user)
+        corp_members = corp_members.exclude(status_detail='archive')
+        if not user.profile.is_superuser:
+            corp_members = corp_members.filter(status_detail__in=['active',
+                                                                  'expired'])
+        corp_members = corp_members.values_list(
+                        'id', 'corp_profile__name'
+                                ).order_by('corp_profile__name')
+        choices = [(0, _('Select One'))]
+        choices.extend([
+                        (value[0], value[1]) for value in corp_members
+                                              ])
+        return choices
+
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):

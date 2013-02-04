@@ -412,7 +412,6 @@ class RosterSearchAdvancedForm(forms.Form):
                              ('exact', _('Exact')),
                              )
     cm_id = forms.ChoiceField(label=_('Company Name'),
-                                  choices=get_corp_memberships_choices(),
                                   required=False)
     first_name = forms.CharField(label=_('First Name'),
                                  max_length=100,
@@ -428,7 +427,10 @@ class RosterSearchAdvancedForm(forms.Form):
                                         required=False)
 
     def __init__(self, *args, **kwargs):
+        request_user = kwargs.pop('request_user')
         super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
+        choices = CorpMembership.get_my_corporate_profiles_choices(request_user)
+        self.fields['cm_id'].choices = choices
 
 
 class CorpMembershipSearchForm(forms.Form):
