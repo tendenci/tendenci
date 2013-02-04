@@ -238,6 +238,13 @@
     "admin_only": "true"
     },
     {
+    "label": "Expiration Date",
+    "field_name": "expiration_dt",
+    "display": "true",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
     "label": "Status",
     "field_name": "status",
     "display": "true",
