@@ -73,6 +73,9 @@ div.forms div.form-field input.timepicker{
     background-color: #000;
     color: #fff;
 }
+.status-disapproved{
+    color:#C09853;
+}
 .pending-info-box{
 	background-color: #F7FFAF;
 }

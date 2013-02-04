@@ -44,6 +44,7 @@
         float: right;
         margin-right: 1em;
     }
+
 </style>
 {% endblock %}
 
@@ -57,13 +58,11 @@
          <div class="quick-options">
             {% corpmemb_options request.user corporate_membership %}        
          </div>
-         {% if corporate_membership.status and corporate_membership.status_detail == "active" %}
+         {% if corporate_membership.is_active %}
         <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
         {% endif %}
     </div>
-   
-    
-    
+     
                     
    {% for field_obj in app_fields %}
         {% if field_obj.field_name == '' %}
@@ -103,11 +102,15 @@
                                 {% endfor %}
                                 </table>
                                 <div>&nbsp;</div>
+                                 {% if corporate_membership.status_detail != 'archive' %}
                                 <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></div>
+                                {% endif %}
                             {% else %}
                                 <div>{% trans "No representatives available" %}</div>
                                 <div>&nbsp;</div>
+                                {% if corporate_membership.status_detail != 'archive' %}
                                 <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
+                                {% endif %}
                             {% endif %} 
                             
                         {% else %}

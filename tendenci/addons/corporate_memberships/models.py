@@ -615,6 +615,26 @@ class CorpMembership(TendenciBaseModel):
             # this will make accounting entry
             self.invoice.make_payment(user, payment.amount)
 
+    def expire(self, request_user):
+        """
+        Expire this corporate memberships and its associated
+        individual memberships.
+        """
+        if self.status and \
+            self.status_detail == 'active' and \
+            self.approved:
+            self.status_detail = 'expired'
+            self.expiration_dt = datetime.now()
+            self.save()
+
+            memberships = MembershipDefault.objects.filter(
+                        corporate_membership_id=self.id
+                            )
+            for membership in memberships:
+                membership.expire(request_user)
+            return True
+        return False
+
     def approve_join(self, request, **kwargs):
         self.approved = True
         self.approved_denied_dt = datetime.now()
@@ -867,23 +887,20 @@ class CorpMembership(TendenciBaseModel):
         return False
 
     def allow_edit_by(self, this_user):
-        if this_user.profile.is_superuser:
-            return True
+        if self.is_active or self.is_expired:
+            if this_user.profile.is_superuser:
+                return True
 
-        if not this_user.is_anonymous():
-            if self.status and (self.status_detail not in [
-                                               'inactive',
-                                               'archive',
-                                               'archived',
-                                               'admin hold']):
-                if self.is_rep(this_user):
-                    return True
-                if self.creator:
-                    if this_user.id == self.creator.id:
+            if not this_user.is_anonymous():
+                if self.is_active:
+                    if self.is_rep(this_user):
                         return True
-                if self.owner:
-                    if this_user.id == self.owner.id:
-                        return True
+                    if self.creator:
+                        if this_user.id == self.creator.id:
+                            return True
+                    if self.owner:
+                        if this_user.id == self.owner.id:
+                            return True
 
         return False
 
@@ -964,6 +981,10 @@ class CorpMembership(TendenciBaseModel):
                 return "expired"
         else:
             return self.status_detail
+
+    @property
+    def is_active(self):
+        return self.status_detail.lower() in ('active',)
 
     @property
     def obj_perms(self):
