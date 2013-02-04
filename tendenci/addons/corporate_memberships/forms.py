@@ -282,10 +282,8 @@ class CorpMembershipForm(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', 'Active'),
             ('pending', 'Pending'),
-            ('admin_hold', 'Admin Hold'),
-            ('inactive', 'Inactive'),
+            ('paid - pending approval', 'Paid - Pending Approval'),
             ('expired', 'Expired'),
-            ('archive', 'Archive'),
                              )
     STATUS_CHOICES = (
                       (1, 'Active'),
