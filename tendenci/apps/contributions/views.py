@@ -29,7 +29,6 @@ def search(request, template_name="contributions/search.html"):
         contributions = Contribution.objects.filter(Q(creator=request.user) | Q(owner=request.user))
 
     if query:
-        print query
         contributions = contributions.filter(Q(creator__username=query) | Q(owner__username=query) | Q(title__icontains=query))
 
     contributions = contributions.order_by('-create_dt')
