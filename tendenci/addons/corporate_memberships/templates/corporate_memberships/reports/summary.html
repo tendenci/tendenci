@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <style>
     .summary-graph, .corp-stat-table{
-        width: 500px;
+        width: 600px;
     }
 </style>
 {% endblock %}
@@ -25,6 +25,7 @@
                 <th>{% trans 'Active' %}</th>
                 <th>{% trans 'Pending' %}</th>
                 <th>{% trans 'Expired' %}</th>
+                <th>{% trans 'Expired - in grace period' %}</th>
                 <th>{% trans 'Total' %}</th>
             </tr>
         </thead>
@@ -35,6 +36,7 @@
                 <td>{{ type.active }}</td>
                 <td>{{ type.pending }}</td>
                 <td>{{ type.expired }}</td>
+                 <td>{{ type.in_grace_period }}</td>
                 <td>{{ type.total }}</td>
             </tr>
             {% endfor %}
@@ -43,6 +45,7 @@
                 <td>{{ total.total_active }}</td>
                 <td>{{ total.total_pending }}</td>
                 <td>{{ total.total_expired }}</td>
+                <td>{{ total.total_in_grace_period }}</td>
                 <td>{{ total.total_total }}</td>
             </tr>
         </tbody>
@@ -50,7 +53,7 @@
 </div>
 
 
-<div id="chart_div" style="width: 550px; height: 500px;">
+<div id="chart_div" style="width: 850px; height: 500px;">
     
 </div>
 
@@ -65,9 +68,12 @@
       google.setOnLoadCallback(drawChart);
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
-          ['{% trans 'Corp. Membership Type' %}', '{% trans 'Active' %}', '{% trans 'Pending' %}', '{% trans 'Expired' %}'],
+          ['{% trans 'Corp. Membership Type' %}',
+          '{% trans 'Active' %}', '{% trans 'Pending' %}',
+          '{% trans 'Expired' %}', '{% trans 'Expired - in grace period' %}'],
           {% for type in summary %}
-          ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }}, {{ type.expired }}],
+          ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
+          {{ type.expired }}, {{ type.in_grace_period }}],
           {% endfor %}
         ]);
 
