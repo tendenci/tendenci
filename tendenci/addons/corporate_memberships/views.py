@@ -333,6 +333,10 @@ def corpmembership_edit(request, id,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
+    if corp_membership.is_expired:
+        # if it is expired, remove the expiration_dt field so they can
+        # renew this corporate membership
+        app_fields = app_fields.exclude(field_name='expiration_dt')
     app_fields = app_fields.order_by('order')
 
     corpprofile_form = CorpProfileForm(app_fields,
