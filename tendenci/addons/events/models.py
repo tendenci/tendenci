@@ -1145,7 +1145,7 @@ class CustomRegForm(models.Model):
     owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)    
     owner_username = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='active')
-    
+
     # registrant fields to be selected
     first_name = models.BooleanField(_('First Name'), default=False)
     last_name = models.BooleanField(_('Last Name'), default=False)
@@ -1161,7 +1161,7 @@ class CustomRegForm(models.Model):
     company_name = models.BooleanField(_('Company'), default=False)
     meal_option = models.BooleanField(_('Meal Option'), default=False)
     comments = models.BooleanField(_('Comments'), default=False)
-    
+
     class Meta:
         verbose_name = _("Custom Registration Form")
         verbose_name_plural = _("Custom Registration Forms")
