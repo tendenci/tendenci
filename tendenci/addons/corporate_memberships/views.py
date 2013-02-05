@@ -1407,6 +1407,9 @@ def summary_report(request,
     """
     Shows a report of corporate memberships per corporate membership type.
     """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     summary, total = get_corp_memb_summary()
 
     EventLog.objects.log()
