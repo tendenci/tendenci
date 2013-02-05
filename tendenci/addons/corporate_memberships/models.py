@@ -497,7 +497,7 @@ class CorpMembership(TendenciBaseModel):
             by this user.
             Returns a query set.
         """
-        if user.profile.is_superuser:
+        if not my_corps_only and user.profile.is_superuser:
             return CorpMembership.objects.all()
 
         filter_and, filter_or = CorpMembership.get_search_filter(user,

@@ -486,7 +486,7 @@ def corpmembership_view(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
-def corpmembership_search(request, my_corps_only=True,
+def corpmembership_search(request, my_corps_only=False,
             template_name="corporate_memberships/applications/search.html"):
     allow_anonymous_search = get_setting('module',
                                      'corporate_memberships',
