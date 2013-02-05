@@ -32,7 +32,7 @@
         <tbody>
             {% for type in summary %}
             <tr>
-                <td>{{ type.type.name }}</td>
+                <td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change type.type.id %}">{{ type.type.name }}</a></td>
                 <td>{{ type.active }}</td>
                 <td>{{ type.pending }}</td>
                 <td>{{ type.expired }}</td>
