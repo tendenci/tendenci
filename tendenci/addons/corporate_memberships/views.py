@@ -333,6 +333,10 @@ def corpmembership_edit(request, id,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
+    if corp_membership.is_expired:
+        # if it is expired, remove the expiration_dt field so they can
+        # renew this corporate membership
+        app_fields = app_fields.exclude(field_name='expiration_dt')
     app_fields = app_fields.order_by('order')
 
     corpprofile_form = CorpProfileForm(app_fields,
@@ -495,6 +499,7 @@ def corpmembership_search(request, my_corps_only=False,
     if not request.user.is_authenticated():
         if my_corps_only or not allow_anonymous_search:
             raise Http403
+    is_superuser = request.user.profile.is_superuser
 
     search_form = CorpMembershipSearchForm(request.GET)
     if search_form.is_valid():
@@ -508,7 +513,7 @@ def corpmembership_search(request, my_corps_only=False,
         query = None
         cm_id = None
 
-    if query == 'is_pending:true' and request.user.profile.is_superuser:
+    if query == 'is_pending:true' and is_superuser:
         # pending list only for admins
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
@@ -527,6 +532,15 @@ def corpmembership_search(request, my_corps_only=False,
     search_form.fields['cm_id'].choices.extend([(corp_memb.id,
                                             corp_memb.corp_profile.name
                                             ) for corp_memb in corp_members])
+    if not my_corps_only and is_superuser:
+        # add cm_type_id for the links in the summary report
+        try:
+            cm_type_id = int(request.GET.get('cm_type_id'))
+        except:
+            cm_type_id = 0
+        if cm_type_id > 0:
+            corp_members = corp_members.filter(
+                        corporate_membership_type_id=cm_type_id)
 
     EventLog.objects.log()
 
@@ -1403,6 +1417,9 @@ def summary_report(request,
     """
     Shows a report of corporate memberships per corporate membership type.
     """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     summary, total = get_corp_memb_summary()
 
     EventLog.objects.log()
