@@ -1,10 +1,13 @@
 from django.contrib import admin
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
 from tendenci.addons.corporate_memberships.models import (
                                             CorporateMembershipType,
                                             CorpMembershipApp,
                                             CorpMembershipAppField,
+                                            CorpMembership,
                                             CorporateMembership)
 from tendenci.addons.corporate_memberships.models import CorpApp, CorpField
 from tendenci.addons.corporate_memberships.forms import (
@@ -74,7 +77,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'description',
                            'confirmation_text', 'notes',
                            'corp_memb_type', 'payment_methods',
-                           'memb_app',)},),
+                           )},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
@@ -250,5 +253,27 @@ class CorpAppAdmin(admin.ModelAdmin):
         super(CorpAppAdmin, self).log_addition(request, object)
 
 
+class CorpMembershipAdmin(admin.ModelAdmin):
+    list_display = ['corp_profile', 'join_dt',
+                    'renewal', 'renew_dt',
+                    'expiration_dt',
+                    'approved', 'status_detail']
+    list_filter = ['status_detail', 'join_dt', 'expiration_dt']
+    search_fields = ['corp_profile__name']
+
+    fieldsets = (
+        (None, {'fields': ()}),
+    )
+
+    def add_view(self, request, form_url='', extra_context=None):
+        return HttpResponseRedirect(reverse('corpmembership.add'))
+
+    def change_view(self, request, object_id, form_url='',
+                    extra_context=None):
+        return HttpResponseRedirect(reverse('corpmembership.view',
+                                            args=[object_id]))
+
+admin.site.register(CorpMembership, CorpMembershipAdmin)
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
 admin.site.register(CorpMembershipApp, CorpMembershipAppAdmin)
+

@@ -25,6 +25,7 @@ from django.template.loader import render_to_string
 from django.http import Http404
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
+from django.utils.translation import ugettext_lazy as _
 from johnny.cache import invalidate
 
 from tendenci.core.imports.utils import render_excel
@@ -189,6 +190,7 @@ def corpmembership_add(request,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
+    app_fields = app_fields.exclude(field_name='expiration_dt')
     app_fields = app_fields.order_by('order')
 
     corpprofile_form = CorpProfileForm(app_fields,
@@ -284,6 +286,10 @@ def corpmembership_add(request,
                                     reverse('payment.pay_online',
                                     args=[corp_membership.invoice.id,
                                           corp_membership.invoice.guid]))
+            else:
+                if is_superuser and corp_membership.status \
+                    and corp_membership.status_detail == 'active':
+                    corp_membership.approve_join(request)
 
             return HttpResponseRedirect(reverse('corpmembership.add_conf',
                                                 args=[corp_membership.id]))
@@ -480,14 +486,15 @@ def corpmembership_view(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
-def corpmembership_search(request,
+def corpmembership_search(request, my_corps_only=False,
             template_name="corporate_memberships/applications/search.html"):
     allow_anonymous_search = get_setting('module',
                                      'corporate_memberships',
                                      'anonymoussearchcorporatemembers')
 
-    if not request.user.is_authenticated() and not allow_anonymous_search:
-        raise Http403
+    if not request.user.is_authenticated():
+        if my_corps_only or not allow_anonymous_search:
+            raise Http403
 
     search_form = CorpMembershipSearchForm(request.GET)
     if search_form.is_valid():
@@ -506,30 +513,20 @@ def corpmembership_search(request,
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
     else:
-        filter_and, filter_or = CorpMembership.get_search_filter(request.user)
-
-        q_obj = None
-        if filter_and:
-            q_obj = Q(**filter_and)
-        if filter_or:
-            q_obj_or = reduce(operator.or_, [Q(**{key: value}
-                        ) for key, value in filter_or.items()])
-            if q_obj:
-                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
-            else:
-                q_obj = q_obj_or
+        corp_members = CorpMembership.get_my_corporate_memberships(request.user,
+                                                my_corps_only=my_corps_only)
 
         if query:
-            corp_members = CorpMembership.objects.filter(
+            corp_members = corp_members.filter(
                                 corp_profile__name__icontains=query)
-        else:
-            corp_members = CorpMembership.objects.all()
-        if q_obj:
-            corp_members = corp_members.filter(q_obj)
 
     if cm_id:
         corp_members = corp_members.filter(id=cm_id)
     corp_members = corp_members.order_by('corp_profile__name')
+    search_form.fields['cm_id'].choices = [(0, _('Select One'))]
+    search_form.fields['cm_id'].choices.extend([(corp_memb.id,
+                                            corp_memb.corp_profile.name
+                                            ) for corp_memb in corp_members])
 
     EventLog.objects.log()
 
@@ -849,7 +846,10 @@ def corp_renew_conf(request, id,
 @login_required
 def roster_search(request,
                   template_name='corporate_memberships/roster_search.html'):
-    form = RosterSearchAdvancedForm(request.GET or None)
+    invalidate('corporate_memberships_corpprofile')
+    invalidate('corporate_memberships_corpmembership')
+    form = RosterSearchAdvancedForm(request.GET or None,
+                                    request_user=request.user)
     if form.is_valid():
         # cm_id - CorpMembership id
         cm_id = form.cleaned_data['cm_id']

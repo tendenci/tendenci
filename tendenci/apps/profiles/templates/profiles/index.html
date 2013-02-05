@@ -215,7 +215,7 @@
     {% for reg in registrations %}
         <tr>
             <td>
-            <a href="{{ reg.get_absolute_url }}">{% trans "Registrant" %} #{{ reg.pk }}</a>
+            <a href="{{ reg.get_absolute_url }}">{% trans "Registration" %} #{{ reg.registration.pk }}</a>
             </td>
             <td>
             {{ reg.reg8n_status }}

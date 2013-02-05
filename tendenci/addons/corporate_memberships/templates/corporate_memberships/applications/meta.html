@@ -28,7 +28,9 @@
     <ul>
         <li><a class="eventlog-link" href="{% url event_log.search %}?object_id={{ corporate_membership.pk }}&source={{ corporate_membership.opt_app_label }}">{% trans "Eventlogs" %}</a></li>
         {% if corporate_membership.status_detail != 'archive' %}
+        {% if corporate_membership.is_active or corporate_membership.is_expired %}
         <li><a class="edit-link" href="{% url corpmembership.edit corporate_membership.pk %}">{% trans "Edit" %}</a></li>
+        {% endif %}
         <li><a class="options-link" href="#">{% trans "Options" %} <small>&#9650;</small></a>
         <div class="options-list">
             <ul>

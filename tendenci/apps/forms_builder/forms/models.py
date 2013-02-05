@@ -237,10 +237,7 @@ class FormEntry(models.Model):
         verbose_name_plural = _("Form entries")
 
     def __unicode__(self):
-        u = ''
-        for f in self.fields.all()[0:5]:
-            u = u + str(f) + ' '
-        return u[0:len(u) - 1]
+        return unicode(self.id)
 
     @models.permalink
     def get_absolute_url(self):

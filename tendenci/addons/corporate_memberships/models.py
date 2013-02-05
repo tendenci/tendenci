@@ -1,3 +1,4 @@
+import operator
 import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -10,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
+from django.db.models import Q
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
@@ -292,6 +294,9 @@ class CorpProfile(TendenciBaseModel):
                 self.entity_id = 1
         super(CorpProfile, self).save(*args, **kwargs)
 
+    def __unicode__(self):
+        return "%s" % (self.name)
+
     def assign_secret_code(self):
         if not self.secret_code:
             # use the make_random_password in the User object
@@ -426,33 +431,40 @@ class CorpMembership(TendenciBaseModel):
                 ).exclude(field_name=''))
 
     @staticmethod
-    def get_search_filter(user):
-        if user.profile.is_superuser:
-            return None, None
-
+    def get_search_filter(user, my_corps_only=False):
         filter_and, filter_or = None, None
-
-        allow_anonymous_search = get_setting('module',
-                                     'corporate_memberships',
-                                     'anonymoussearchcorporatemembers')
-        allow_member_search = get_setting('module',
-                                  'corporate_memberships',
-                                  'membersearchcorporatemembers')
-
-        if allow_anonymous_search or \
-            (allow_member_search and user.profile.is_member):
-            filter_and = {'status': True,
+        if my_corps_only:
+            filter_or = ({'creator': user,
+                         'owner': user,
+                         'corp_profile__reps__user': user})
+            if user.profile.is_superuser:
+                filter_and = {'status': True,
                           'status_detail': 'active'}
         else:
-            if user.is_authenticated():
-                filter_or = {'creator': user,
-                             'owner': user}
-                if use_search_index:
-                    filter_or.update({'corp_profile__reps': user})
-                else:
-                    filter_or.update({'corp_profile__reps__user': user})
+            if user.profile.is_superuser:
+                return None, None
+
+            allow_anonymous_search = get_setting('module',
+                                         'corporate_memberships',
+                                         'anonymoussearchcorporatemembers')
+            allow_member_search = get_setting('module',
+                                      'corporate_memberships',
+                                      'membersearchcorporatemembers')
+
+            if allow_anonymous_search or \
+                (allow_member_search and user.profile.is_member):
+                filter_and = {'status': True,
+                              'status_detail': 'active'}
             else:
-                filter_and = {'allow_anonymous_view': True}
+                if user.is_authenticated():
+                    filter_or = {'creator': user,
+                                 'owner': user}
+                    if use_search_index:
+                        filter_or.update({'corp_profile__reps': user})
+                    else:
+                        filter_or.update({'corp_profile__reps__user': user})
+                else:
+                    filter_and = {'allow_anonymous_view': True}
 
         return filter_and, filter_or
 
@@ -478,6 +490,49 @@ class CorpMembership(TendenciBaseModel):
             filter_and = {'allow_anonymous_view': True}
 
         return filter_and, filter_or
+
+    @staticmethod
+    def get_my_corporate_memberships(user, my_corps_only=False):
+        """Get the corporate memberships owned or has the permission
+            by this user.
+            Returns a query set.
+        """
+        if not my_corps_only and user.profile.is_superuser:
+            return CorpMembership.objects.all()
+
+        filter_and, filter_or = CorpMembership.get_search_filter(user,
+                                            my_corps_only=my_corps_only)
+        q_obj = None
+        if filter_and:
+            q_obj = Q(**filter_and)
+        if filter_or:
+            q_obj_or = reduce(operator.or_, [Q(**{key: value}
+                        ) for key, value in filter_or.items()])
+            if q_obj:
+                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
+            else:
+                q_obj = q_obj_or
+        if q_obj:
+            return CorpMembership.objects.filter(q_obj)
+        else:
+            return CorpMembership.objects.all()
+
+    @staticmethod
+    def get_my_corporate_profiles_choices(user):
+        corp_members = CorpMembership.get_my_corporate_memberships(user)
+        corp_members = corp_members.exclude(status_detail='archive')
+        if not user.profile.is_superuser:
+            corp_members = corp_members.filter(status_detail__in=['active',
+                                                                  'expired'])
+        corp_members = corp_members.values_list(
+                        'id', 'corp_profile__name'
+                                ).order_by('corp_profile__name')
+        choices = [(0, _('Select One'))]
+        choices.extend([
+                        (value[0], value[1]) for value in corp_members
+                                              ])
+        return choices
+
 
     # Called by payments_pop_by_invoice_user in Payment model.
     def get_payment_description(self, inv):
@@ -611,6 +666,26 @@ class CorpMembership(TendenciBaseModel):
 
             # this will make accounting entry
             self.invoice.make_payment(user, payment.amount)
+
+    def expire(self, request_user):
+        """
+        Expire this corporate memberships and its associated
+        individual memberships.
+        """
+        if self.status and \
+            self.status_detail == 'active' and \
+            self.approved:
+            self.status_detail = 'expired'
+            self.expiration_dt = datetime.now()
+            self.save()
+
+            memberships = MembershipDefault.objects.filter(
+                        corporate_membership_id=self.id
+                            )
+            for membership in memberships:
+                membership.expire(request_user)
+            return True
+        return False
 
     def approve_join(self, request, **kwargs):
         self.approved = True
@@ -864,23 +939,20 @@ class CorpMembership(TendenciBaseModel):
         return False
 
     def allow_edit_by(self, this_user):
-        if this_user.profile.is_superuser:
-            return True
+        if self.is_active or self.is_expired:
+            if this_user.profile.is_superuser:
+                return True
 
-        if not this_user.is_anonymous():
-            if self.status and (self.status_detail not in [
-                                               'inactive',
-                                               'archive',
-                                               'archived',
-                                               'admin hold']):
-                if self.is_rep(this_user):
-                    return True
-                if self.creator:
-                    if this_user.id == self.creator.id:
+            if not this_user.is_anonymous():
+                if self.is_active:
+                    if self.is_rep(this_user):
                         return True
-                if self.owner:
-                    if this_user.id == self.owner.id:
-                        return True
+                    if self.creator:
+                        if this_user.id == self.creator.id:
+                            return True
+                    if self.owner:
+                        if this_user.id == self.owner.id:
+                            return True
 
         return False
 
@@ -963,6 +1035,10 @@ class CorpMembership(TendenciBaseModel):
             return self.status_detail
 
     @property
+    def is_active(self):
+        return self.status_detail.lower() in ('active',)
+
+    @property
     def obj_perms(self):
         t = '<span class="perm-%s">%s</span>'
 
@@ -1012,7 +1088,8 @@ class CorpMembershipApp(TendenciBaseModel):
     memb_app = models.OneToOneField(MembershipApp,
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
-                            verbose_name=_("Membership Application"))
+                            verbose_name=_("Membership Application"),
+                            null=True)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
 
