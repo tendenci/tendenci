@@ -32,7 +32,6 @@ FIELD_CHOICES = (
     ("DateTimeField", _("Date/time")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Description", _("Description")),
     ("CharField/tendenci.apps.forms_builder.forms.widgets.Header", _("Section Heading")),
-    #("ModelMultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi checkbox")),
 )
 
 FIELD_FUNCTIONS = (
