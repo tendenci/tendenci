@@ -37,7 +37,7 @@
                 <td>{{ type.pending }}</td>
                 <td>{{ type.expired }}</td>
                  <td>{{ type.in_grace_period }}</td>
-                <td>{{ type.total }}</td>
+                <td><a href="{% url corpmembership.search %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></td>
             </tr>
             {% endfor %}
             <tr>
