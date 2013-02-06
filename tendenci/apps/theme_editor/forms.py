@@ -27,6 +27,8 @@ FILE_EXTENTIONS = (
     '.ico',
     '.gif',
     '.txt',
+    '.xml',
+    '.kml',
 )
 
 
