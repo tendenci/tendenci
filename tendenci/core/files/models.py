@@ -252,5 +252,5 @@ class File(TendenciBaseModel):
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                 return self.file.url
             else:
-                return "%s%s%s" % (get_setting("site", "global", "siteurl"), settings.MEDIA_URL, self.file)
+                return "%s%s" % (settings.MEDIA_URL, self.file)
         return None

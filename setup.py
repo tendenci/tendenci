@@ -111,7 +111,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.14',
+    version='5.1.15',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
