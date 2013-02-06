@@ -842,7 +842,7 @@ class Image(ImageModel, TendenciBaseModel):
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                 im = rImage.open(self.get_file_from_remote_storage())
             else:
-                im = rImage.open(self.image.file.path)
+                im = rImage.open(self.image.file.name)
             return im.size
         except Exception:
             return (0, 0)

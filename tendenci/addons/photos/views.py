@@ -213,7 +213,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     image.save(response, "JPEG", quality=quality)
 
     if photo.is_public_photo() and photo.is_public_photoset():
-        file_name = photo.image.file.name
+        file_name = photo.image_filename()
         file_path = 'cached%s%s' % (request.path, file_name)
         default_storage.save(file_path, ContentFile(response.content))
         full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
