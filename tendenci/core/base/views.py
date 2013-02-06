@@ -253,7 +253,7 @@ def base_file(request, file_name):
     Renders file_name at url path /file_name
     Only predefined extensions are allowed.
     """
-    ext = os.path.splitext(file_name)[0].strip('.')
+    ext = os.path.splitext(file_name)[1].strip('.')
     if not ext in BASEFILE_EXTENSIONS:
         raise Http404
 
