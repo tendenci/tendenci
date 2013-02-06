@@ -55,7 +55,7 @@ class Command(BaseCommand):
         """
         Copy media files to this sites' S3 location.
         """
-        conn = S3Connection(anon=True)
+        conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
         bucket = conn.get_bucket('tendenci-static')
         bucket_list = bucket.list('npo_defaults')
 
