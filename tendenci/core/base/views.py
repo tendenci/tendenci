@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.template import RequestContext
+from django.template import RequestContext, TemplateDoesNotExist
 from django.template.loader import get_template
 from django.shortcuts import redirect
 from django.conf import settings
@@ -259,7 +259,7 @@ def base_file(request, file_name):
 
     try:
         t = get_template(file_name)
-    except Exception:
+    except TemplateDoesNotExist:
         raise Http404
 
     return HttpResponse(t.render(RequestContext(request)))
