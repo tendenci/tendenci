@@ -2228,7 +2228,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         sort_field = '-%s' % sort_field
 
     if not roster_view: # default to total page
-        return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
+        roster_view = 'total'
 
     # paid or non-paid or total
     registrations = Registration.objects.filter(event=event, canceled=False)
