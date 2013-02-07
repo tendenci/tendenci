@@ -341,7 +341,8 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
                 # superusers cannot demote themselves
                 if user_edit == request.user:
                     security_level = 'superuser'
-                    messages.add_message(request, messages.INFO, _("You cannot convert yourself to \"%(role)s\" role.") % {'role' : form.cleaned_data['security_level']})
+                    if form.cleaned_data['security_level'] != 'superuser':
+                        messages.add_message(request, messages.INFO, _("You cannot convert yourself to \"%(role)s\" role.") % {'role' : form.cleaned_data['security_level']})
                 else:
                     security_level = form.cleaned_data['security_level']
                 
