@@ -220,6 +220,9 @@ def search(request, template_name="profiles/search.html"):
     if only_members:
         profiles = profiles.exclude(member_number='')  # exclude non-members
 
+    if not request.user.profile.is_superuser:
+        profiles = profiles.exclude(hide_in_search=True)
+
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     EventLog.objects.log()
