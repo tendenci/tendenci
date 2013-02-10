@@ -1969,7 +1969,7 @@ class MembershipAppField(models.Model):
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
 
-    name = models.CharField(_("Name"), max_length=155)
+    name = models.CharField(_("Application Name"), max_length=155)
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(blank=True,
         help_text="Description of this application. Displays at top of application.")
