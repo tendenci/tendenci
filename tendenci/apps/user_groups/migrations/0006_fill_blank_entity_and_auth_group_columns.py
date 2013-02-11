@@ -1,9 +1,5 @@
 # encoding: utf-8
-import datetime
-from south.db import db
 from south.v2 import DataMigration
-from django.db import models
-from django.contrib.auth.models import Group as AuthGroup
 
 
 class Migration(DataMigration):
@@ -17,7 +13,7 @@ class Migration(DataMigration):
                 ugroup.entity = Entity.objects.first()
                 ugroup.save()
             if not ugroup.group:
-                ugroup.group = AuthGroup.objects.create(name=ugroup.name)
+                # the save method will take care of the auth group.
                 ugroup.save()
 
     def backwards(self, orm):
