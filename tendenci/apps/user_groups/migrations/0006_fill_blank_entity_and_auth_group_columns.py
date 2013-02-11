@@ -8,13 +8,15 @@ class Migration(DataMigration):
         from tendenci.apps.entities.models import Entity
         from tendenci.apps.user_groups.models import Group
         groups = Group.objects.all()
-        for ugroup in groups:
-            if not ugroup.entity:
-                ugroup.entity = Entity.objects.first()
-                ugroup.save()
-            if not ugroup.group:
-                # the save method will take care of the auth group.
-                ugroup.save()
+        if groups:
+            first_entity = Entity.objects.first()
+            for ugroup in groups:
+                if not ugroup.entity:
+                    ugroup.entity = first_entity
+                    ugroup.save()
+                if not ugroup.group:
+                    # the save method will take care of the auth group.
+                    ugroup.save()
 
     def backwards(self, orm):
         pass
