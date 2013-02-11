@@ -68,6 +68,7 @@ class Group(TendenciBaseModel):
             # note that the name of auth group is also unique
             group_name = self.get_unique_auth_group_name()
             self.group = AuthGroup.objects.create(name=group_name)
+            self.save()
 
     @property
     def active_members(self):
