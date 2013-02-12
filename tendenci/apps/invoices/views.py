@@ -93,7 +93,6 @@ def void_payment(request, id):
     return redirect(invoice)
 
 
-@is_enabled('discounts')
 @login_required
 def search(request, template_name="invoices/search.html"):
     query = u''
