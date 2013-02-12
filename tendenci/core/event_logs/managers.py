@@ -235,13 +235,7 @@ class EventLogManager(Manager):
             if hasattr(request, 'META'):
                 # Check for HTTP_X_REAL_IP first in case we are
                 # behind a load balancer
-                print "http_http_real: ", request.META.get('HTTP_HTTP_X_REAL_IP', "no http_http_real found")
-                print "http_real: ", request.META.get('HTTP_X_REAL_IP', "no http_real found")
-                print "real: ", request.META.get('X_REAL_IP', "no http_real found")
-                print "http_http_forward: ", request.META.get('HTTP_HTTP_X_FORWARDED_FOR', "no http_http_forward found")
-                print "http_forward: ", request.META.get('HTTP_X_FORWARDED_FOR', "no http_forward found")
-                print "forward: ", request.META.get('X_FORWARDED_FOR', "no http_forward found")
-                event_log.user_ip_address = request.META.get('HTTP_HTTP_X_REAL_IP', request.META.get('REMOTE_ADDR', ''))
+                event_log.user_ip_address = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
                 event_log.http_referrer = request.META.get('HTTP_REFERER', '')[:255]
                 event_log.http_user_agent = request.META.get('HTTP_USER_AGENT', '')
                 event_log.request_method = request.META.get('REQUEST_METHOD', '')
