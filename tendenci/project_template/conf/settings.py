@@ -322,7 +322,7 @@ if MEMCACHIER_SERVERS:
 
 # Caching defaults
 
-CACHES['default']['TIMEOUT'] = 604800  # 1 week
+CACHES['default']['TIMEOUT'] = 60 * 60 * 24 * 30  # 30 days
 CACHES['default']['JOHNNY_CACHE'] = True
 
 
