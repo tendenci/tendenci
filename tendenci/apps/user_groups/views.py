@@ -174,7 +174,7 @@ def group_delete(request, id, template_name="user_groups/delete.html"):
                 }
                 notification.send_emails(recipients,'group_deleted', extra_context)
 
-        EventLog.objects.log(**log_defaults)
+        EventLog.objects.log(instance=group)
 
         group.delete()
         return HttpResponseRedirect(reverse('group.search'))
