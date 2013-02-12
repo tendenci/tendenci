@@ -177,7 +177,7 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     ln = re.sub('[^A-Za-z0-9]', u'', ln)
 
     # only letters digits underscores dashes @ + .
-    em = re.sub('[^A-Za-z0-9@+._-]', u'', em)
+    em = re.sub('[^\w@+.-]', u'', em)
 
     if fn and ln:
         un = '%s.%s' % (fn, ln)
