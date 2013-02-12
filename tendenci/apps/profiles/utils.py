@@ -172,9 +172,12 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     django_max_un_length = 30
     max_length = django_max_un_length - 3  # to account for appended numbers
 
-    fn = re.sub('[^A-Za-z0-9]', u'', fn)   # only letters, digits
-    ln = re.sub('[^A-Za-z0-9]', u'', ln)   # only letters, digits
-    em = re.sub('[^A-Za-z0-9@]', u'', em)  # only letters, digits, at-symbol
+    # only letters and digits
+    fn = re.sub('[^A-Za-z0-9]', u'', fn)
+    ln = re.sub('[^A-Za-z0-9]', u'', ln)
+
+    # only letters digits underscores dashes @ + .
+    em = re.sub('[^A-Za-z0-9@+._-]', u'', em)
 
     if fn and ln:
         un = '%s.%s' % (fn, ln)
