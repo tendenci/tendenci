@@ -140,7 +140,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         for entry in entries:
             values = FieldEntry.objects.filter(entry=entry)
             row = [""] * len(columns)
-            entry_time = entry.entry_time.strftime("%d-%m-%y %H:%M:%S")
+            entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
             row[-4] = entry_time
             if entry.pricing:
                 row[-3] = entry.pricing.label
