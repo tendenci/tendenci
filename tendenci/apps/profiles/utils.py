@@ -166,9 +166,19 @@ def spawn_username(fn=u'', ln=u'', em=u''):
     """
     Uses a first name, last name and email to
     spawn a typical username.  All usernames are
-    lowercase.  All usernames are unique. All usernames
-    can only contain letters, digits, and a dot.
+    lowercase.  All usernames are unique.
+
+    Usernames generated via first or last name will only
+    contain letters, digits, and periods.
+
+    Usernames generated via the email address may contain
+    letters, digits, underscores, hypens, periods and at-symbols
+
+    Usernames that 100% auto-generated start with 'user.' and end
+    with 10 digits which can later be replaced by the user primary key.
+    Example user.3482938481
     """
+
     django_max_un_length = 30
     max_length = django_max_un_length - 3  # to account for appended numbers
 
