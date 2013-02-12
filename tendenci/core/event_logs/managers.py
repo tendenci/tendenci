@@ -233,7 +233,9 @@ class EventLogManager(Manager):
                 event_log.session_id = request.COOKIES.get('sessionid', '')
 
             if hasattr(request, 'META'):
-                event_log.user_ip_address = request.META.get('REMOTE_ADDR', '')
+                # Check for HTTP_X_REAL_IP first in case we are
+                # behind a load balancer
+                event_log.user_ip_address = request.META.get('HTTP_X_REAL_IP', request.META.get('REMOTE_ADDR', ''))
                 event_log.http_referrer = request.META.get('HTTP_REFERER', '')[:255]
                 event_log.http_user_agent = request.META.get('HTTP_USER_AGENT', '')
                 event_log.request_method = request.META.get('REQUEST_METHOD', '')
