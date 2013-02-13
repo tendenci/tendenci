@@ -2065,6 +2065,12 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('events')
+def today_redirect(request):
+    day, month, year = datetime.now().day, datetime.now().month, datetime.now().year
+    return HttpResponseRedirect(reverse('event.day', args=(int(year), int(month), int(day))))
+
+
 @login_required
 def types(request, template_name='events/types/index.html'):
     from django.forms.models import modelformset_factory

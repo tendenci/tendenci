@@ -4,6 +4,7 @@ from tendenci.addons.events.feeds import LatestEntriesFeed
 urlpatterns = patterns('tendenci.addons.events',
     url(r'^$', 'views.month_redirect', name="events"),
     url(r'^month/$', 'views.month_view', name="event.month"),
+    url(r'^today/$', 'views.today_redirect', name="event.today"),
     url(r'^search/$', 'views.search', name="event.search"),
     url(r'^ics/$', 'views.icalendar', name="event.ics"),
     url(r'^print-view/(?P<id>\d+)/$', 'views.print_view', name="event.print_view"),
