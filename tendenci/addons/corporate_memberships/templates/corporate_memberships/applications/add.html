@@ -128,4 +128,32 @@
               step: 15
             });
       </script>
+      
+      <script type="text/javascript" >
+        var op;
+        var payment_method_block = $(".id_payment_method").closest('.form-field');
+        var selected_type = $('input[name=corporate_membership_type]:checked');
+        if (selected_type.length > 0){
+            if ($(selected_type).closest('label').html().split('$')[1] == 0){
+                payment_method_block.hide();
+            }else{
+                payment_method_block.show();
+            }
+        }
+        
+        var membership_type = $(".id_corporate_membership_type");
+        var type_options = membership_type.find('li');
+        $(type_options).each(function() {
+            var $this = $(this);
+            $this.find('label').click(function() {
+                if(parseFloat($this.find('label').html().split('$')[1])==0) {
+                    payment_method_block.hide();
+                 }else{
+                     payment_method_block.show();
+                 }
+            });
+        });
+        
+        
+    </script>
 {% endblock extra_body %}
