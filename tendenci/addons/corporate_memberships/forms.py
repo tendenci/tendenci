@@ -309,8 +309,9 @@ class CorpMembershipForm(forms.ModelForm):
         else:
             self.fields['payment_method'].empty_label = None
             self.fields['payment_method'].widget = forms.widgets.RadioSelect(
-                        choices=self.fields['payment_method'].widget.choices,
-                        attrs=self.fields['payment_method'].widget.attrs)
+                        choices=get_payment_method_choices(
+                                    self.request_user,
+                                    self.corpmembership_app))
         self_fields_keys = self.fields.keys()
         if 'status_detail' in self_fields_keys:
             self.fields['status_detail'].widget = forms.widgets.Select(
