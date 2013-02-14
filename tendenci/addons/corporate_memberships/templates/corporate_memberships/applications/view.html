@@ -123,7 +123,11 @@
                             {% if  field_obj.is_date %}
                                 {{ field_obj.value|date:'long' }}
                             {% else %}
+                                {% if field_obj.field_name == 'url' %}
+                                {{ field_obj.value|safe|urlize }}
+                                {% else %}
                                 {{ field_obj.value }}
+                                {% endif %}
                                 {% if field_obj.field_name == 'payment_method' %}
                                     {% if corporate_membership.invoice %}
                                      - <a href="{% url invoice.view corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
