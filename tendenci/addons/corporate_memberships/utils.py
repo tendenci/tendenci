@@ -221,9 +221,16 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.status_detail = 'estimate'
         inv.save(user)
 
+        if not corp_memb.payment_method:
+            is_online = True
+            if inv.balance <= 0:
+                is_online = False
+            corp_memb.payment_method = corp_memb.get_payment_method(
+                                            is_online=is_online)
+
         if user.profile.is_superuser:
             # if offline payment method
-            if not corp_memb.get_payment_method().is_online:
+            if not corp_memb.payment_method.is_online:
                 inv.tender(user)  # tendered the invoice for admin if offline
 
                 # mark payment as made

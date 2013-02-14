@@ -617,15 +617,16 @@ class CorpMembership(TendenciBaseModel):
                                          'corp_memb_paid',
                                          extra_context)
 
-    def get_payment_method(self):
+    def get_payment_method(self, is_online=True):
         # return payment method if defined
         if self.payment_method:
             return self.payment_method
 
         # first method is credit card (online)
         # will raise exception if payment method does not exist
-        self.payment_method = PaymentMethod.objects.get(
-                                        machine_name='credit-card')
+        [self.payment_method] = PaymentMethod.objects.filter(
+                                is_online=is_online)[:1] or [None]
+
         return self.payment_method
 
     def copy(self):
