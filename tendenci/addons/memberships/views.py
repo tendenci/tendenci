@@ -49,6 +49,7 @@ from tendenci.addons.corporate_memberships.models import (CorpMembership,
 from reports import ReportNewMems
 from tendenci.core.files.models import File
 from tendenci.core.exports.utils import render_csv, run_export_task
+from tendenci.core.perms.utils import get_notice_recipients
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
@@ -1408,7 +1409,6 @@ def membership_default_add(request,
     corp_membership = None
 
     if join_under_corporate:
-        from tendenci.addons.corporate_memberships.models import CorpMembershipApp
         corp_app = CorpMembershipApp.objects.current_app()
         if not corp_app:
             raise Http404
@@ -1611,6 +1611,18 @@ def membership_default_add(request,
                     'admin:memberships_membershipdefault_change',
                     args=[membership.pk],
                 ))
+
+            # send email notification to admin
+            recipients = get_notice_recipients(
+                                       'module', 'memberships',
+                                       'membershiprecipients')
+            extra_context = {
+                'membership': membership,
+                'app': app,
+                'request': request
+            }
+            send_email_notification('membership_joined_to_admin', recipients,
+                                    extra_context)
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(

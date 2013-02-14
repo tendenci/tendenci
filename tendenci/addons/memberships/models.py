@@ -751,6 +751,11 @@ class MembershipDefault(TendenciBaseModel):
 
         return self.get_expire_dt() < datetime.now()
 
+    def is_pending(self):
+        if self.status and self.status_detail == 'pending':
+            return True
+        return False
+
     def is_active(self):
         """
         status = True, status_detail = 'active', and has not expired
