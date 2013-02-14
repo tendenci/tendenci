@@ -31,7 +31,7 @@
                 {% if corporate_membership.invoice %}
                     - {{ SITE_GLOBAL_CURRENCYSYMBOL }}{{ corporate_membership.invoice.total }}
                     {% if request.user.is_superuser %}
-                    <a href="{% url invoice.view corporate_membership.id %}">View Invoice</a>
+                    <a href="{% url invoice.view corporate_membership.invoice.id %}">View Invoice</a>
                     {% endif %}
                 {% endif %}
                 </div>
