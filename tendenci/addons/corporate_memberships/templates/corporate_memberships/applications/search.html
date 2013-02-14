@@ -24,7 +24,7 @@
 
 <form class="search-form" action="{% url corpmembership.search %}" method="get">
 <p>
-    {% trans "Company Name" %}: {{ search_form.cm_id }}
+    {% trans "Company Name" %}: {{ search_form.cp_id }}
     {% if not SITE_GLOBAL_SEARCHINDEX %}
     <input type="submit" name="search" value="Submit" />
     {% endif %}

@@ -435,8 +435,8 @@ class RosterSearchAdvancedForm(forms.Form):
 
 
 class CorpMembershipSearchForm(forms.Form):
-    cm_id = forms.ChoiceField(label=_('Company Name'),
-                                  choices=get_corp_memberships_choices(),
+    cp_id = forms.ChoiceField(label=_('Company Name'),
+                                  choices=(),
                                   required=False)
     q = forms.CharField(max_length=100,
                                  required=False)

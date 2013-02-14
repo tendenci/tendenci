@@ -502,16 +502,12 @@ def corpmembership_search(request, my_corps_only=False,
     is_superuser = request.user.profile.is_superuser
 
     search_form = CorpMembershipSearchForm(request.GET)
-    if search_form.is_valid():
-        query = search_form.cleaned_data['q']
-        cm_id = search_form.cleaned_data['cm_id']
-        try:
-            cm_id = int(cm_id)
-        except:
-            pass
-    else:
-        query = None
-        cm_id = None
+
+    query = request.GET.get('q')
+    try:
+        cp_id = request.GET.get('cp_id')
+    except:
+        cp_id = 0
 
     if query == 'is_pending:true' and is_superuser:
         # pending list only for admins
@@ -520,18 +516,24 @@ def corpmembership_search(request, my_corps_only=False,
     else:
         corp_members = CorpMembership.get_my_corporate_memberships(request.user,
                                                 my_corps_only=my_corps_only)
-
-        if query:
-            corp_members = corp_members.filter(
-                                corp_profile__name__icontains=query)
-
-    if cm_id:
-        corp_members = corp_members.filter(id=cm_id)
     corp_members = corp_members.order_by('corp_profile__name')
-    search_form.fields['cm_id'].choices = [(0, _('Select One'))]
-    search_form.fields['cm_id'].choices.extend([(corp_memb.id,
-                                            corp_memb.corp_profile.name
-                                            ) for corp_memb in corp_members])
+
+    # generate the choices for the cp_id field
+    corp_profiles_choices = [(0, _('Select One'))]
+    for corp_memb in corp_members:
+        t = (corp_memb.corp_profile.id, corp_memb.corp_profile.name)
+        if not t in corp_profiles_choices:
+            corp_profiles_choices.append(t)
+
+    search_form.fields['cp_id'].choices = corp_profiles_choices
+
+    if query:
+        corp_members = corp_members.filter(
+                            corp_profile__name__icontains=query)
+
+    if cp_id:
+        corp_members = corp_members.filter(corp_profile_id=cp_id)
+
     if not my_corps_only and is_superuser:
         # add cm_type_id for the links in the summary report
         try:
@@ -541,6 +543,7 @@ def corpmembership_search(request, my_corps_only=False,
         if cm_type_id > 0:
             corp_members = corp_members.filter(
                         corporate_membership_type_id=cm_type_id)
+    corp_members = corp_members.order_by('-expiration_dt')
 
     EventLog.objects.log()
 
