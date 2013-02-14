@@ -121,8 +121,9 @@ def get_indiv_memberships_choices(corp_membership):
     im_list = []
     indiv_memberships = MembershipDefault.objects.filter(
                             corp_profile_id=corp_membership.corp_profile.id,
-                            status_detail__in=['active', 'expired'],
-                            status=True)
+                            status=True).exclude(
+                            status_detail='archive'
+                                )
 
     for membership in indiv_memberships:
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
