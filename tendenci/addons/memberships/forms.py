@@ -883,6 +883,8 @@ class MembershipDefault2Form(forms.ModelForm):
         else:
             membership.save_invoice(status_detail='estimate')
 
+        membership.user.profile.refresh_member_number()
+
         return membership
 
 
