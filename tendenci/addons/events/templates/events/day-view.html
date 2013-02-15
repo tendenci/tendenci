@@ -22,9 +22,18 @@
 	{% event_nav user %}
 
 	<h2>{{ date|date:"l, F j Y" }}</h2>
-    
-    {% event_list date type as events %}
 
+    <div class="days-nav">
+        <div class="yesterday-link">
+            <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
+        </div>
+        <div class="tomorrow-link">
+            <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+    {% event_list date type as events %}
 	{% for event in events %}
 		<div class="event-wrap">
 			<div class="time-stamp">{{ event.start_dt|date:"f A" }}</div>
@@ -76,6 +85,18 @@
 			<a href="{% url event.add date.year date.month date.day %}">
 			{% trans "I would like to add one." %}</a></div>
 	{% endfor %}
+
+    {% if events %}
+    <div class="days-nav">
+        <div class="yesterday-link">
+            <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
+        </div>
+        <div class="tomorrow-link">
+            <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    {% endif %}
 
 </div>
 

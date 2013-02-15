@@ -2056,12 +2056,30 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
     if year <= 1900:
         raise Http404
 
+    day_date = datetime(year=int(year), month=int(month), day=int(day))
+    yesterday = day_date - timedelta(days=1)
+    yesterday_url = reverse('event.day', args=(
+            int(yesterday.year),
+            int(yesterday.month),
+            int(yesterday.day)
+        ))
+    tomorrow = day_date + timedelta(days=1)
+    tomorrow_url = reverse('event.day', args=(
+            int(tomorrow.year),
+            int(tomorrow.month),
+            int(tomorrow.day)
+        ))
+
     EventLog.objects.log()
 
     return render_to_response(template_name, {
-        'date': datetime(year=int(year), month=int(month), day=int(day)),
-        'now':datetime.now(),
-        'type':None,
+        'date': day_date,
+        'now': datetime.now(),
+        'type': None,
+        'yesterday': yesterday,
+        'tomorrow': tomorrow,
+        'yesterday_url': yesterday_url,
+        'tomorrow_url': tomorrow_url,
     }, context_instance=RequestContext(request))
 
 

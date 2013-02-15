@@ -1,3 +1,9 @@
+.day-view { padding-right: 10px; }
+
+.days-nav { padding-bottom: 8px;}
+.yesterday-link { display: block; float: left; }
+.tomorrow-link { display: block; float: right; }
+
 .event-wrap {
 	background-color: #EEE;
 	border: 1px solid silver;
