@@ -1616,16 +1616,13 @@ class MembershipImport(models.Model):
 
 
 class MembershipImportData(models.Model):
-    mimport = models.ForeignKey(MembershipImport,
-                                related_name="membership_import_data",)
+    mimport = models.ForeignKey(MembershipImport, related_name="membership_import_data")
     # dictionary object representing a row in csv
     row_data = DictField(_('Row Data'))
     # the original row number in the uploaded csv file
     row_num = models.IntegerField(_('Row #'))
     # action_taken can be 'insert', 'update' or 'mixed'
-    action_taken = models.CharField(_('Action Taken'),
-                                    max_length=20, null=True)
-
+    action_taken = models.CharField(_('Action Taken'), max_length=20, null=True)
 
 
 NOTICE_TYPES = (

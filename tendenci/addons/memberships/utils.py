@@ -36,6 +36,7 @@ from tendenci.addons.memberships.models import (App,
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.imports.utils import get_unique_username
+from tendenci.apps.profiles.utils import make_username_unique
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 
@@ -975,9 +976,10 @@ class ImportMembDefault(object):
         self.field_names = memb_data.keys()
         user = None
         memb = None
-        user_display = {}
-        user_display['error'] = ''
-        user_display['user'] = None
+        user_display = {
+            'error': u'',
+            'user': None,
+        }
 
         missing_fields_msg = check_missing_fields(self.memb_data, self.key)
 
@@ -1022,7 +1024,7 @@ class ImportMembDefault(object):
             elif self.key == 'member_number':
                 user = get_user_by_member_number(
                                 self.memb_data['member_number'])
-            else:   # email
+            else:  # email
                 user = get_user_by_email(self.memb_data['email'])
 
             if user:
@@ -1062,14 +1064,15 @@ class ImportMembDefault(object):
                 return
 
         user_display.update({
-                    'first_name': self.memb_data.get('first_name', ''),
-                    'last_name': self.memb_data.get('last_name', ''),
-                    'email': self.memb_data.get('email', ''),
-                    'username': self.memb_data.get('username', ''),
-                    'member_number': self.memb_data.get('member_number', ''),
-                    'phone': self.memb_data.get('phone', ''),
-                    'company': self.memb_data.get('company', ''),
-                             })
+            'first_name': self.memb_data.get('first_name', u''),
+            'last_name': self.memb_data.get('last_name', u''),
+            'email': self.memb_data.get('email', u''),
+            'username': self.memb_data.get('username', u''),
+            'member_number': self.memb_data.get('member_number', u''),
+            'phone': self.memb_data.get('phone', u''),
+            'company': self.memb_data.get('company', u''),
+        })
+
         return user_display
 
     def do_import_membership_default(self, user, memb, action_info):
@@ -1083,32 +1086,30 @@ class ImportMembDefault(object):
         else:
             username_before_assign = user.username
 
-        # exclude user
+        # always remove user column
         if 'user' in self.field_names:
             self.field_names.remove('user')
 
         self.assign_import_values_from_dict(user, action_info['user_action'])
 
         # clean username
-        if user.username:
-            user.username = re.sub('[^+-.\w\d@]', '', user.username)
+        user.username = re.sub('[^\w+-.@]', u'', user.username)
+
         # make sure username is unique.
         if action_info['user_action'] == 'insert':
-            user.username = get_unique_username(user)
+            user.username = make_username_unique(user.username)
+            # user.username = get_unique_username(user)
         else:
             # it's update but a new username is assigned
             # check if its unique
             if user.username != username_before_assign:
                 user.username = get_unique_username(user)
 
-        if 'password' in self.field_names and \
-                self.mimport.override and user.password:
+        # allow import with override of password
+        if 'password' in self.field_names and self.mimport.override and user.password:
             user.set_password(user.password)
 
-        if not user.password:
-            user.set_password(User.objects.make_random_password(length=8))
-
-        # set to active if is_active not present in the spreadsheet.
+        # is_active; unless forced via import
         if 'is_active' not in self.field_names:
             user.is_active = True
 
@@ -1125,9 +1126,10 @@ class ImportMembDefault(object):
                owner_username=self.request_user.username,
                **self.private_settings
             )
-        self.assign_import_values_from_dict(profile,
-                                            action_info['user_action'])
+
+        self.assign_import_values_from_dict(profile, action_info['user_action'])
         profile.user = user
+
         if profile.status == None or profile.status == '' or \
             self.memb_data.get('status', '') == '':
             profile.status = True

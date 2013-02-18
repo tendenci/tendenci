@@ -820,8 +820,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             csv.is_public = False
             csv.save()
 
-            file_path = str(csv.file.name)
-            #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            file_path = unicode(csv.file.name)
 
             import_valid, import_errs = is_import_valid(file_path)
 
@@ -861,7 +860,6 @@ def membership_import_preview(request, id):
             #show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
             file_path = memport.get_file().file.name
-            #file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             memberships, stats = parse_mems_from_csv(
                 file_path,
                 cleaned_data,
@@ -1015,22 +1013,24 @@ def membership_default_import_preview(request, mimport_id,
     """
     Preview the import
     """
+
     if not request.user.profile.is_superuser:
         raise Http403
+
     invalidate('memberships_membershipimport')
-    mimport = get_object_or_404(MembershipImport,
-                                    pk=mimport_id)
+    mimport = get_object_or_404(MembershipImport, pk=mimport_id)
 
     if mimport.status == 'preprocess_done':
-#        fieldnames, data_list = memb_import_parse_csv(mimport)
+
         try:
             curr_page = int(request.GET.get('page', 1))
         except:
             curr_page = 1
+
         num_items_per_page = 10
-#        total_rows = len(data_list)
-        total_rows = MembershipImportData.objects.filter(
-                                mimport=mimport).count()
+
+        total_rows = MembershipImportData.objects.filter(mimport=mimport).count()
+
         # if total_rows not updated, update it
         if mimport.total_rows != total_rows:
             mimport.total_rows = total_rows
