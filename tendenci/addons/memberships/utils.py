@@ -35,7 +35,6 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipAppField)
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.imports.utils import get_unique_username
 from tendenci.apps.profiles.utils import make_username_unique
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
@@ -673,8 +672,6 @@ def spawn_username(*args):
     if not args:
         raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
 
-    import re
-
     max_length = 8
 
     un = ' '.join(args)             # concat args into one string
@@ -1098,7 +1095,6 @@ class ImportMembDefault(object):
         # make sure username is unique.
         if action_info['user_action'] == 'insert':
             user.username = make_username_unique(user.username)
-            # user.username = get_unique_username(user)
         else:
             # it's update but a new username is assigned
             # check if its unique
