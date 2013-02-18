@@ -1103,7 +1103,7 @@ class ImportMembDefault(object):
             # it's update but a new username is assigned
             # check if its unique
             if user.username != username_before_assign:
-                user.username = get_unique_username(user)
+                user.username = make_username_unique(user.username)
 
         # allow import with override of password
         if 'password' in self.field_names and self.mimport.override and user.password:
