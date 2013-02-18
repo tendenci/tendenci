@@ -370,24 +370,24 @@ def has_null_byte(file_path):
 
 def csv_to_dict(file_path, **kwargs):
     """
-    Returns a list of dicts. Each dict represents record.
+    Returns a list of dicts. Each dict represents a row.
     """
     machine_name = kwargs.get('machine_name', False)
 
     # null byte; assume xls; not csv
     if has_null_byte(file_path):
         return []
-    
+
     normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
     colnames = csv_file.next()  # row 1;
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
-        
+
     cols = xrange(len(colnames))
     lst = []
-    
+
     # make sure colnames are unique
     duplicates = {}
     for i in cols:
@@ -397,14 +397,14 @@ def csv_to_dict(file_path, **kwargs):
                 number = duplicates.get(colnames[i], 0) + 1
                 duplicates[colnames[i]] = number
                 colnames[j] = colnames[j] + "-" + str(number)
-    
+
     for row in csv_file:
         entry = {}
         rows = len(row) - 1
         for col in cols:
             if col > rows:
                 break  # go to next row
-            entry[colnames[col]] = row[col]
+            entry[colnames[col]] = row[col].strip()
         lst.append(entry)
 
     return lst  # list of dictionaries
