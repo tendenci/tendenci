@@ -2085,7 +2085,13 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
 
 @is_enabled('events')
 def today_redirect(request):
-    day, month, year = datetime.now().day, datetime.now().month, datetime.now().year
+    today_date = request.GET.get('today_date', None)
+    try:
+        today_date = datetime.strptime(today_date, '%Y-%m-%d')
+    except:
+        today_date = datetime.now()
+
+    day, month, year = today_date.day, today_date.month, today_date.year
     return HttpResponseRedirect(reverse('event.day', args=(int(year), int(month), int(day))))
 
 
