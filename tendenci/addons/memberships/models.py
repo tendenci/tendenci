@@ -33,7 +33,6 @@ from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.user_groups.models import Group
 from tendenci.core.files.models import File
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.notifications import models as notification
@@ -2509,7 +2508,7 @@ class AppEntry(TendenciBaseModel):
             if value:
                 lst.append(Q(i))
 
-        if lst:        
+        if lst:
             for u in User.objects.filter(reduce(OR, lst)):
                 users[u.pk] = ' '.join([u.first_name, u.last_name, u.username, u.email])
 
@@ -2666,7 +2665,7 @@ class AppEntry(TendenciBaseModel):
 
         (use_threshold, threshold_price) = self.get_corp_memb_threshold_price()
         membership_price = self.get_memb_price()
-                
+
         if use_threshold:
             invoice.subtotal = threshold_price
             invoice.total = threshold_price
@@ -2709,7 +2708,7 @@ class AppEntry(TendenciBaseModel):
             threshold_price = corp_memb.corporate_membership_type.individual_threshold_price
             if self.membership_type.admin_fee:
                 threshold_price = corp_memb.corporate_membership_type.individual_threshold_price + self.membership_type.admin_fee
-                
+
             if allow_threshold and threshold_limit and threshold_limit > 0:
                 # check how many memberships have joined under this corporate
                 field_entries = AppFieldEntry.objects.filter(
@@ -2721,7 +2720,7 @@ class AppEntry(TendenciBaseModel):
                     return True, threshold_price
 
         return False, None
-        
+
     def execute_field_functions(self):
         app = self.app
         fields = app.fields.exclude(field_function=None)
