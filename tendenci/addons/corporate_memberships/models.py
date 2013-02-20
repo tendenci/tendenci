@@ -1090,7 +1090,7 @@ class CorpMembershipApp(TendenciBaseModel):
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
                             verbose_name=_("Membership Application"),
-                            null=True)
+                            default=1)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
 
@@ -1107,6 +1107,15 @@ class CorpMembershipApp(TendenciBaseModel):
     @models.permalink
     def get_absolute_url(self):
         return ("corpmembership_app.preview", [self.id])
+
+    def is_current(self):
+        """
+        Check if this app is the current app.
+        Corporate memberships do not support multiple apps.
+        """
+        current_app = CorpMembershipApp.objects.current_app()
+
+        return current_app and current_app.id == self.id
 
     def save(self, *args, **kwargs):
         if not self.id:
