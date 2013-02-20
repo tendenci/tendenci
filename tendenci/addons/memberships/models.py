@@ -1900,7 +1900,7 @@ class MembershipApp(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('membership_default.preview', [self.slug])
+        return ('membership_default.add', [self.slug])
 
     def save(self, *args, **kwargs):
         if not self.id:
