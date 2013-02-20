@@ -56,10 +56,6 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
         "get_app_fields_json",
         name="memberships.get_app_fields"),
 
-    # membership default application preview
-    url(r"^applications/(?P<app_id>\d+)/preview/$",
-        "membership_default_preview",
-        name="membership_default.preview"),
     # corp individual add pre
     url(r"^applications/corp-pre-add/(?P<cm_id>\d+)?/?$",
         "membership_default_corp_pre_add",
@@ -83,6 +79,11 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^applications/add/(?P<cm_id>\d+)/(?P<secret_hash>[\d\w]+)$",
         "membership_default_add", {'join_under_corporate': True},
         name="membership.add_via_corp_secret_code"),
+
+    # membership default application preview
+    url(r"^applications/(?P<slug>[\w\-]+)/preview/$",
+        "membership_default_preview",
+        name="membership_default.preview"),
 
     # reports
     url(r'^reports/$', 'report_list', name='reports-memberships'),

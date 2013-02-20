@@ -1351,12 +1351,12 @@ def get_app_fields_json(request):
     return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
 
 
-def membership_default_preview(request, app_id,
+def membership_default_preview(request, slug,
                            template='memberships/applications/preview.html'):
     """
     Membership default preview.
     """
-    app = get_object_or_404(MembershipApp, pk=app_id)
+    app = get_object_or_404(MembershipApp, slug=slug)
     is_superuser = request.user.profile.is_superuser
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
