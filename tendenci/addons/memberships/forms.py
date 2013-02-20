@@ -746,7 +746,7 @@ class MembershipDefault2Form(forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
-        membership_app = kwargs.pop('membership_app')
+        self.membership_app = kwargs.pop('membership_app')
         if 'join_under_corporate' in kwargs.keys():
             self.join_under_corporate = kwargs.pop('join_under_corporate')
         else:
@@ -763,7 +763,7 @@ class MembershipDefault2Form(forms.ModelForm):
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
         self.fields['membership_type'].widget = forms.widgets.RadioSelect(
                     choices=get_membership_type_choices(request_user,
-                                        membership_app,
+                                        self.membership_app,
                                         corp_membership=self.corp_membership),
                     attrs=self.fields['membership_type'].widget.attrs)
         if self.corp_membership:
@@ -772,13 +772,13 @@ class MembershipDefault2Form(forms.ModelForm):
             require_payment = (memb_type.price > 0 or memb_type.admin_fee > 0)
         else:
             # if all membership types are free, no need to display payment method
-            require_payment = membership_app.membership_types.filter(
+            require_payment = self.membership_app.membership_types.filter(
                                     Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
 
         if not require_payment:
             del self.fields['payment_method']
         else:
-            payment_method_choices = [(p.pk, p.human_name) for p in membership_app.payment_methods.all()]
+            payment_method_choices = [(p.pk, p.human_name) for p in self.membership_app.payment_methods.all()]
             self.fields['payment_method'].empty_label = None
             self.fields['payment_method'].widget = forms.widgets.RadioSelect(
                         choices=payment_method_choices,
@@ -856,6 +856,9 @@ class MembershipDefault2Form(forms.ModelForm):
 
         # assign member number
         membership.set_member_number()
+
+        # set app
+        membership.app = self.membership_app
 
         # create record in database
         # helps with associating invoice record
