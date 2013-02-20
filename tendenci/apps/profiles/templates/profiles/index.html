@@ -119,7 +119,7 @@
     <div class="membership info">
 
 		<h2>Memberships 
-		<a title="Join membership" href="{% url membership_default.add membership.ma.slug %}?username={{ user_this.username }}" class="glyph plus">+</a>
+		<a title="Join membership" href="{% url membership_default.add membership.app.slug %}?username={{ user_this.username }}" class="glyph plus">+</a>
 		</h2>
 
 		{% if memberships %}
@@ -143,7 +143,7 @@
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
                         {% if membership.can_renew %}
-                        <a href="{% url membership_default.add membership.ma.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                        <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
                         {% endif %}
 
 	        		</td>

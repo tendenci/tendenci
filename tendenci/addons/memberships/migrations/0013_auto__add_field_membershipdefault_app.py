@@ -1,23 +1,21 @@
 # encoding: utf-8
-from south.v2 import DataMigration
+import datetime
+from south.db import db
+from south.v2 import SchemaMigration
+from django.db import models
 
-
-class Migration(DataMigration):
+class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        from tendenci.addons.memberships.models import (
-                                            MembershipDefault,
-                                            MembershipApp)
-        memberships = MembershipDefault.objects.all()
-        if memberships.count() > 0:
-            current_app = MembershipApp.objects.current_app()
-            for membership in memberships:
-                if not membership.ma:
-                    membership.ma = current_app
-                    membership.save()
+        
+        # Adding field 'MembershipDefault.app'
+        db.add_column('memberships_membershipdefault', 'app', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['memberships.MembershipApp'], null=True), keep_default=False)
+
 
     def backwards(self, orm):
-        pass
+        
+        # Deleting field 'MembershipDefault.app'
+        db.delete_column('memberships_membershipdefault', 'app_id')
 
 
     models = {
@@ -36,7 +34,7 @@ class Migration(DataMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 20, 9, 56, 38, 968968)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 20, 11, 30, 26, 784459)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -44,7 +42,7 @@ class Migration(DataMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 20, 9, 56, 38, 968864)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 20, 11, 30, 26, 784352)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -444,6 +442,7 @@ class Migration(DataMigration):
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'app': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.MembershipApp']", 'null': 'True'}),
             'application_abandoned': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'application_abandoned_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
             'application_abandoned_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'application_abandond_set'", 'null': 'True', 'to': "orm['auth.User']"}),
@@ -484,7 +483,6 @@ class Migration(DataMigration):
             'lang': ('django.db.models.fields.CharField', [], {'default': "'eng'", 'max_length': '10'}),
             'license_number': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '50', 'blank': 'True'}),
             'license_state': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '50', 'blank': 'True'}),
-            'ma': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.MembershipApp']", 'null': 'True'}),
             'member_number': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
             'membership_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.MembershipType']"}),
             'network_sectors': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '250', 'blank': 'True'}),
