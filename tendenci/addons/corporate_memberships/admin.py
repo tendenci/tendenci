@@ -77,6 +77,7 @@ class CorpMembershipAppAdmin(admin.ModelAdmin):
                            'description',
                            'confirmation_text', 'notes',
                            'corp_memb_type', 'payment_methods',
+                           'memb_app'
                            )},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
         ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
