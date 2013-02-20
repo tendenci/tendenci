@@ -354,6 +354,8 @@ class MembershipDefault(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True)
     groups = models.ManyToManyField(Group, null=True)
 
+    ma = models.ForeignKey("MembershipApp", null=True)
+
     objects = MembershipDefaultManager()
 
     class Meta:
