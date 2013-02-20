@@ -307,9 +307,16 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         Intercept add page and redirect to form.
         """
-        return HttpResponseRedirect(
-            reverse('membership_default.add')
-        )
+        # TODO: update to take account into corporate memberships
+        app = MembershipApp.objects.current_app()
+        if app:
+            return HttpResponseRedirect(
+                reverse('membership_default.add', args=[app.slug])
+            )
+        else:
+            return HttpResponseRedirect(
+                reverse('admin:memberships_membershipapp_changelist')
+            )
 
     def queryset(self, request):
         qs = super(MembershipDefaultAdmin, self).queryset(request)

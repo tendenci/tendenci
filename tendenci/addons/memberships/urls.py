@@ -66,10 +66,7 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^verifyemail/(?P<id>\d+)/(?P<guid>[\d\w-]+)/$",
         "verify_email",
         name="membership.verify_email"),
-    # membership default add
-    url(r"^applications/add/$",
-        "membership_default_add",
-        name="membership_default.add"),
+    
     url(r"^applications/add/(?P<cm_id>\d+)/$",
         "membership_default_add", {'join_under_corporate': True},
         name="membership_default.add_under_corp"),
@@ -84,6 +81,11 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^applications/(?P<slug>[\w\-]+)/preview/$",
         "membership_default_preview",
         name="membership_default.preview"),
+    # membership default add
+    url(r"^applications/(?P<slug>[\w\-]+)/$",
+        "membership_default_add",
+        name="membership_default.add"),
+
 
     # reports
     url(r'^reports/$', 'report_list', name='reports-memberships'),

@@ -1380,7 +1380,7 @@ def membership_default_preview(request, slug,
     return render_to_response(template, context, RequestContext(request))
 
 
-def membership_default_add(request,
+def membership_default_add(request, slug='',
                     template='memberships/applications/add.html',
                     **kwargs):
     """
@@ -1450,7 +1450,7 @@ def membership_default_add(request,
                                     args=[cm_id]))
 
     else:
-        app = MembershipApp.objects.current_app()
+        app = get_object_or_404(MembershipApp, slug=slug)
 
     if not app:
         raise Http404
