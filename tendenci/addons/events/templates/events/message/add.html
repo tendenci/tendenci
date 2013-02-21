@@ -29,7 +29,13 @@
 
     		<div class="message-item"><a href="{% url event.registrant.roster event.id %}">{% trans "View all registrant(s)" %}</a></div>
     		
+            <div class="message-item">
+                <p><strong>{{ form.subject.label }}:</strong></p>
+                {{ form.subject }}
+            </div>
+
     		<div class="message-item">
+                <p><strong>{{ form.body.label }}:</strong></p>
     			{{ form.body }}
     		</div>
     		

@@ -12,6 +12,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.meta.forms import MetaForm
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (get_notice_recipients, has_perm,
     update_perms_and_save, get_query_filters)
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -23,6 +24,7 @@ from tendenci.apps.notifications import models as notification
 from tendenci.core.perms.utils import assign_files_perms
 
 
+@is_enabled('news')
 def detail(request, slug=None, template_name="news/view.html"):
     if not slug:
         return HttpResponseRedirect(reverse('news.search'))
@@ -43,6 +45,7 @@ def detail(request, slug=None, template_name="news/view.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 def search(request, template_name="news/search.html"):
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
@@ -66,6 +69,7 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('news'))
 
 
+@is_enabled('news')
 def print_view(request, slug, template_name="news/print-view.html"):
     news = get_object_or_404(News, slug=slug)
 
@@ -78,6 +82,7 @@ def print_view(request, slug, template_name="news/print-view.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
     news = get_object_or_404(News, pk=id)
@@ -110,9 +115,9 @@ def edit(request, id, form_class=NewsForm, template_name="news/edit.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.html"):
-
     # check permission
     news = get_object_or_404(News, pk=id)
     if not has_perm(request.user, 'news.change_news', news):
@@ -142,9 +147,9 @@ def edit_meta(request, id, form_class=MetaForm, template_name="news/edit-meta.ht
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def add(request, form_class=NewsForm, template_name="news/add.html"):
-
     # check permission
     if not has_perm(request.user, 'news.add_news'):
         raise Http403
@@ -183,6 +188,7 @@ def add(request, form_class=NewsForm, template_name="news/add.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def delete(request, id, template_name="news/delete.html"):
     news = get_object_or_404(News, pk=id)
@@ -211,6 +217,7 @@ def delete(request, id, template_name="news/delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('news')
 @login_required
 def export(request, template_name="news/export.html"):
     """Export News"""

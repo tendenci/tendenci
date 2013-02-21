@@ -14,15 +14,8 @@ def guide_page(request, slug=None, template_name="tendenci_guide/detail.html"):
     if remaining:
         next = remaining[0]
     if request.user.profile.is_superuser:
-        log_defaults = {
-            'event_id' : 1002500,
-            'event_data': '%s (%d) viewed by %s' % (guide._meta.object_name, guide.pk, request.user),
-            'description': '%s viewed' % guide._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': guide,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log(instance=guide)
         return render_to_response(template_name, locals(), context_instance=RequestContext(request))
     else:
         raise Http403

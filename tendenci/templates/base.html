@@ -38,9 +38,15 @@
 <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
 {% block top_bar %}
 {% if request.user.is_superuser %}
-    {% include "top_menu/admin_top.html" %}
-    {% if request.session.theme %}
-        {% include "themes/theme_top.html" %}
+    {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+        {% if request.user.is_authenticated %}
+        {% include "top_menu/user_top.html" %}
+        {% endif %}
+    {% else %}
+        {% include "top_menu/admin_top.html" %}
+        {% if request.session.theme %}
+            {% include "themes/theme_top.html" %}
+        {% endif %}
     {% endif %}
 {% else %}
     {% if request.user.is_authenticated %}
@@ -54,7 +60,7 @@
 {% if request.user.is_superuser %}{# include "admin_menu/admin_bottom.html" #}{% endif %}
 </body>
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>
+{% block jquery_script %}<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js"></script>{% endblock jquery_script %}
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-dropdown.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-alerts.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-modal.js"></script>

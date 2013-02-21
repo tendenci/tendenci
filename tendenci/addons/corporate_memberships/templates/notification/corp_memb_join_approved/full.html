@@ -1,10 +1,10 @@
 {% load i18n %}
 
-<p>{% blocktrans with object.name as objname %}Your corporate membership "{{ objname }}" has been approved.{% endblocktrans %}
+<p>{% blocktrans with object.corp_profile.name as objname %}Your corporate membership "{{ objname }}" has been approved.{% endblocktrans %}
 </p>
 
 <p>
-{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+{% blocktrans %}To view this corporate membership, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
 </p>
 
 <p>
@@ -12,13 +12,14 @@
 	</p>
 
 <p>
-{% blocktrans %}To add individual memberships under your corporate, go to:{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre object.corp_app.memb_app.slug object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url membership.application_details_corp_pre object.corp_app.memb_app.slug object.pk %}</a>
+{% blocktrans %}To add individual memberships under your corporate, go to:
+{% endblocktrans %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url membership_default.add_under_corp object.id %}">{{ SITE_GLOBAL_SITEURL }}{% url membership_default.add_under_corp object.id %}</a>
 </p>
 
-{% if object.corp_app.authentication_method == 'secret_code' %}
+{% if object.authentication_method == 'secret_code' %}
 <p>
 {% blocktrans %}<b>secret code</b>:{% endblocktrans %}<br />
-<b>{{ object.secret_code }}</b>
+<b>{{ object.corp_profile.secret_code }}</b>
 </p>
 {% endif %}
 

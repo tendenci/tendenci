@@ -129,5 +129,6 @@ def update_invoice_for_entry(invoice, form):
     inv.message = 'Thank You.'
     inv.status = True
     inv.estimate = True
-    inv.status_detail = 'tendered'
+    inv.status_detail = 'estimate'
     inv.save()
+

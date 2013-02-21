@@ -1,13 +1,13 @@
  [
  	{
-        "default_value": "false", 
+        "default_value": "true", 
         "description": "Module is enabled or not.", 
         "data_type": "boolean", 
         "update_dt": "2010-08-13 09:33:29", 
         "input_type": "select", 
         "client_editable": false, 
         "name": "enabled", 
-        "value": "false", 
+        "value": "true", 
         "label": "Enabled", 
         "input_value": "true,false", 
         "parent_id": 0, 

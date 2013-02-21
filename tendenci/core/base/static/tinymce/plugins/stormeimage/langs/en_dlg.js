@@ -1,5 +1,6 @@
 tinyMCE.addI18n('en.stormeimage_dlg',{
 tab_fromcomputer:"Insert Media",
+tab_gallery:"File Gallery",
 tab_imageedit:"Edit Image",
 tab_pgallery:"Photos",
 tab_general:"General",

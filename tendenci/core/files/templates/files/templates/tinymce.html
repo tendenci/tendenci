@@ -29,6 +29,7 @@
 		<div class="tabs">
 			<ul>
 				<li id="fromcomputer_tab" class="current"><span><a href="javascript:mcTabs.displayTab('fromcomputer_tab','fromcomputer_panel');" onmousedown="return false;">{#stormeimage_dlg.tab_fromcomputer}</a></span></li>
+				<li id="gallery_tab"><span><a href="javascript:mcTabs.displayTab('gallery_tab','gallery_panel');" onmousedown="return false;">{#stormeimage_dlg.tab_gallery}</a></span></li>
                 <li id="imageedit_tab"><span><a href="javascript:mcTabs.displayTab('imageedit_tab','imageedit_panel');" onmousedown="return false;">{#stormeimage_dlg.tab_imageedit}</a></span></li>
 			</ul>
 		</div>
@@ -50,6 +51,28 @@
 							<legend><span id="photo-queue">{{ media.count }}</span>&nbsp;{% trans "Files" %}</legend>
 							<div class="flash" id="fsUploadProgress">
                                 {% for file in media %}
+                                	<div class="progressWrapper">
+                                    <div class="progressContainer blue">
+                                    {% include 'files/templates/tinymce_upload.html' with delete='True'%}
+                                    </div> <!-- END progressContainer -->
+                                    </div> <!-- END progressWrapper -->
+                                {% endfor %}
+							</div> <!-- END fsUploadProgress -->
+						</fieldset>
+
+					</div> <!-- flash uploader -->
+					<div id="degradedUI"></div>
+					<div id="stop-upload"></div>
+			</div>
+
+			<div id="gallery_panel" class="panel">
+
+					<div id="flashUI">
+					
+						<fieldset id="chosen-photos">
+							<legend><span id="photo-queue">{{ all_media.count }}</span>&nbsp;{% trans "Files" %}</legend>
+							<div class="flash" id="fsUploadProgress">
+                                {% for file in all_media %}
                                 	<div class="progressWrapper">
                                     <div class="progressContainer blue">
                                     {% include 'files/templates/tinymce_upload.html' %}

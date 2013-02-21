@@ -42,6 +42,14 @@
 </div>
 {% endif %}
 
+{% if request.user.is_superuser and invoice.payments_credits > 0 %}
+<div class="invoice-options">
+    <ul>
+        <li><a class="admin-option" href="{% url invoice.void_payment invoice.id %}"> {% trans "Void Payment" %}</a></li>
+    </ul>
+</div>
+{% endif %}
+
 <div class="invoice-options">
     <ul>
       <li><a href="{% url invoice.print_view invoice.id guid%}">Print Invoice</a></li>

@@ -1,0 +1,189 @@
+{% extends "memberships/base-wide.html" %}
+{% load membership_tags %}
+{% load base_tags %}
+{% load base_filters %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}Import Memberships from CSV file{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/membership-default-import.css">
+    <style>
+        .error{
+            color: red;
+        }
+        .template-download{
+            float: left;
+            margin-top: 3em;
+            width: 15%;
+        }
+        .template-download .link{
+            margin-top: 1em;
+        }
+        #import-instruction{
+            margin: 1em 1em 0 0;
+            padding: 1em;
+            width: 65%;
+            background-color: #F7F7F9;
+            float: left;
+        }
+        #import-instruction li{
+            padding: 3px 0;
+            list-style: circle;
+        }
+        .alert{
+            background-color: #fcf8e3;
+            border: 1px solid #FBEED5;
+            border-radius: 4px 4px 4px 4px;
+            color: #c09853;
+            padding: 1em;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+            width: 70%;
+            margin: 1em 0;
+        }
+        #fk-list{
+            margin: 3px 2em;
+            line-height: 1.1em;
+            color: #39B54A;
+            font-size: 0.9;
+            font-family:"Courier New", Courier, monospace;
+        }
+        #fk-list-wrap{
+            margin-top: 1em;
+        }
+    </style>
+
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div id="import-wrap">
+    
+    <h1>{% trans "Import Membership" %}</h1>
+    
+    {% if not memb_type_exists %}
+    <div class="alert">
+        Please <a href="{% url admin:memberships_membershiptype_add %}">set up membership types</a> before proceeding.  
+    </div>
+    {% endif %}
+
+    
+    <div id="import-instruction">
+        <p style="margin-bottom:0;">{% trans "<strong>Download</strong> and <strong>fill in</strong> your spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong> then <strong>submit</strong>." %}</p>
+
+        <p style="margin-top:0;">Please review your membership <a href="{% url settings.index 'module' 'memberships' %}">privacy settings</a> before importing.</p>
+
+
+        <h3>How to prepare the spreadsheet (.csv file)?</h3>
+        <ul>
+           <li>
+               The required fields are the field(s) in the selected key (see the second field below).
+           </li>
+           <li>
+               If the <strong>membership_type</strong> is not present in the spreadsheet, the first membership type
+               in the system will be used.
+           </li>
+           <li>
+               The data type of ForeignKey fields (ex: membership_type) is <strong>integer</strong>. So, please fill the ForeignKey fields with IDs. 
+           </li>
+            <li>
+               Use the field names in the <strong>Template</strong>. The order of the field names doesn't matter. 
+           </li>
+        </ul>
+        <div id="fk-list-wrap">
+            <h3>List of ForeignKey Fields:</h3>
+            <div id="fk-list">
+                {{ foreign_keys}}
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="template-download">
+        <a href="{% url memberships.download_default_template %}">
+        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+        </a>
+        
+        <div class="link">
+            <a href="{% url memberships.download_default_template %}">{% trans "Download Template" %}</a>
+            
+        </div>
+    </div>
+ 
+    <div class="clear"></div>
+        
+    <form method='post' action='{% url memberships.default_import %}' enctype="multipart/form-data">
+    {% csrf_token %}
+    <div id="upload-form-wrap">    
+        <h3 class="import-step">{% trans "Step 1/3 - Upload" %}</h3>
+        
+        {% if form.errors.values %}
+        <div class="errors">
+        There were some problems in the form. Please review. Thanks!
+        {% for error in form.non_field_errors %}
+            <p><a href="#">{{ error }}</a></p>
+        {% endfor %}
+       
+        {% for field in form %}
+            {% if field.errors %}
+                  {% for error in field.errors %}
+                    <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                  {% endfor %}
+            {% endif %}
+        {% endfor %}
+            
+        </div>
+        {% endif %}
+
+        <div class="fields-block">
+            <div>{{ form.interactive }}</div>
+            
+            {% if form.override.errors %}
+            <div class="error">
+                {% for error in form.override.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+                        
+            <div class="import-field">
+                <div class="field-label">Update</div>
+                <div>{{ form.override }}</div>
+            </div>
+            
+            {% if form.key.errors %}
+            <div class="error">
+                {% for error in form.key.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="import-field">
+                 <div class="field-label">Identify duplicates by</div>
+                <div>{{ form.key }}</div>
+            </div>
+        
+            {% if form.upload_file.errors %}
+            <div class="error">
+                {% for error in form.upload_file.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+             <div class="import-field">{{ form.upload_file }}</div>
+
+            <div class="prev-btn"><input type="submit" value="Preview Import" class="btn"></div>
+        </div>
+        
+     </div>
+    </form>
+
+</div>
+</div>
+{% endblock %}
+

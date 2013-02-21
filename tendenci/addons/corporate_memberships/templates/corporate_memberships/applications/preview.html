@@ -1,0 +1,90 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load base_filters %}
+{% load i18n %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+    .inline-block{
+        display: inline-block;
+    }
+    div.short-label{
+        width: 125px;
+    }
+    div.float-left{
+        float: left;
+        margin-right: 3px;
+    }
+    div.clear{
+        clear: both;
+    }
+    div.form-field{
+        margin: 3px 0;
+    }
+    div.admin-only-header{
+        color: #CC0000;
+    }
+    div.section-break{
+        margin: 2em 0 1em 0;
+    }
+    div.form-field ul{
+        list-style-type: none;
+    }
+    div.form-field{
+        margin-left: 2em;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="application-form-wrap">
+ {% corpmemb_nav request.user %}
+        <div class="alert-message" data-alert="alert">
+            <a class="close" href="#">×</a>
+            <p>
+                This is the preview{% if current_app.id == app.id%}
+                of the <a href="{% url corpmembership.add %}">current application</a>.
+                {% else %}
+                - Not the current application.
+                {% endif %}
+            </p>
+        </div>
+    
+        <h1>{{ app.name }}</h1>
+        {{ app.description|safe }}
+
+       {% for field_obj in app_fields %}
+            {% render_corpmembership_field request field_obj corpprofile_form corpmembership_form %} 
+        {% endfor %}
+        
+        <input class="btn" type="submit" name="submit" value="Submit" disabled="true" />
+
+</div>
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+      <script type="text/javascript" 
+      src="{{ STATIC_URL }}js/jquery-ui-1.8.2.custom.min.js"></script>
+      <script src="{{ STATIC_URL }}js/jquery.time.picker.js" type="text/javascript"></script>
+      <script type="text/javascript">
+            $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+            $('.timepicker').timePicker({
+              show24Hours: false,
+              step: 15
+            });
+      </script>
+{% endblock extra_body %}

@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
-from widgets import TypeExpMethodWidget, NoticeTimeTypeWidget
+from widgets import (TypeExpMethodWidget, NoticeTimeTypeWidget,
+                     AppFieldSelectionWidget)
 from tendenci.core.site_settings.utils import get_setting
 
         
@@ -51,4 +52,30 @@ class PriceInput(forms.TextInput):
         currency_symbol = get_setting('site', 'global', 'currencysymbol')
         if currency_symbol == '': currency_symbol = "$"
         return mark_safe('$ %s' % super(PriceInput, self).render(name, value, attrs))
-        
+
+
+class AppFieldSelectionField(forms.MultipleChoiceField):
+    widget = AppFieldSelectionWidget
+
+    def __init__(self, *args, **kwargs):
+        # dynamic build choices
+        all_fields_tuple = self.widget.all_fields_tuple
+        all_fields_dict = self.widget.all_fields_dict
+        kwargs['choices'] = []
+#        filtered_fields_items = filter(lambda x: x[0] in all_fields_tuple,
+#                                       all_fields_dict.items())
+        # filter any field that is not in all_fields_tuple
+        for field_name in all_fields_tuple:
+            if all_fields_dict.has_key(field_name):
+                label = all_fields_dict[field_name].verbose_name
+                if not label:
+                    label = all_fields_dict[field_name].name
+            else:
+                label = field_name
+            kwargs['choices'].append((field_name, label))
+#        print all_fields_dict
+#        kwargs['choices'] = map(lambda x: (x[0], x[1].verbose_name or x[1].name),
+#                                all_fields_dict.items())
+
+        super(AppFieldSelectionField, self).__init__(*args, **kwargs)
+

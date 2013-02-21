@@ -1,0 +1,30 @@
+{% extends "admin/change_form.html" %}
+
+{% load i18n %}
+  
+{% block object-tools %}
+
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+
+    <li><a href="{% url profile original.user.username %}">
+        {% trans "Go to profile" %}</a></li>
+
+    {% if original.is_approved %}
+        <li><a href="{% url admin:membership.admin_expire original.pk %}" >
+            {% trans "Expire" %}</a></li>
+    {% elif original.can_renew %}
+        <li><a href="{% url membership_default.add %}?username={{ original.user.username }}&amp;membership_type_id={{ original.membership_type.pk }}">Renew</a></li>
+    {% else %}
+        <li><a href="{% url admin:membership.admin_approve original.pk %}" >
+            {% trans "Approve" %}</a></li>
+    {% endif %}
+
+    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+
+    {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}

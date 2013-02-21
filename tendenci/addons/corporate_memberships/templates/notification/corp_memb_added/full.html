@@ -21,19 +21,19 @@
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td width="11%">{% trans "Company:" %}</td>
-                  <td width="87%"><b>{{ object.name }}</b></td>
+                  <td width="87%"><b>{{ object.corp_profile.name }}</b></td>
                 </tr>
                 <tr>
                   <td width="11%">{% trans "Address:" %}</td>
-                  <td width="87%"><b>{{ object.address }}</b></td>
+                  <td width="87%"><b>{{ object.corp_profile.address }} {{ object.corp_profile.address2 }}</b></td>
                 </tr>
                 <tr>
                   <td width="11%">{% trans "City/State/ZIP:" %}</td>
-                  <td width="87%"><b>{{ object.city }} {{ object.state }} {{ object.zip }}</b></td>
+                  <td width="87%"><b>{{ object.corp_profile.city }} {{ object.corp_profile.state }} {{ object.corp_profile.zip }}</b></td>
                 </tr>
                 <tr>
                   <td width="11%">{% trans "Phone:" %}</td>
-                  <td width="87%"><b>{{ object.phone }}</b></td>
+                  <td width="87%"><b>{{ object.corp_profile.phone }}</b></td>
                 </tr>
               </table>
               <p>{% trans "This form was submitted by:" %}
@@ -72,10 +72,10 @@
                 </tr>
               </table>              <p>                  <br>
                 {% trans "To view the complete application, go to:" %}
-                <strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}</strong>
+                <strong>{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}</strong>
                 {% if object.status_detail == 'pending' and object.payment_method != 'cc' %}
                 	<p>{% trans "To approve the application, go to:" %}
-                	<strong>{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.approve object.pk %}</strong></p>
+                	<strong>{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.approve object.pk %}</strong></p>
                 {% endif %}
               {% if not creator %}
               <p>{% trans "For more on the person who submitted the application, go to:" %} <strong>{{ SITE_GLOBAL_SITEURL }}{{ profile.get_absolute_url }}</strong></p>

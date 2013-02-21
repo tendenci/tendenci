@@ -25,7 +25,8 @@ def parse_tag_kwargs(bits):
 
     for bit in bits:
         if '=' in bit:
-            key, value = bit.split('=')
+            key = bit.split("=", 1)[0]
+            value = bit.split("=", 1)[1]
             kwargs[key] = value
 
     return kwargs

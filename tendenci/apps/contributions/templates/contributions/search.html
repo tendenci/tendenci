@@ -24,7 +24,6 @@
 	
 	<div class="contributions-wrap">
     {% for contribution in contributions %}
-		{% with contribution.object as contribution %}
     	{% has_perm user contributions.view_contribution contribution as can_view %}
     	{% if can_view %}
 		<div class="contribution-wrap">
@@ -38,7 +37,6 @@
             </div>
 		</div>
 		{% endif %}
-		{% endwith %}
 	{% empty %}
 		<div>{% trans "0 Results Found" %}</div>
     {% endfor %}

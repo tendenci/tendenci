@@ -15,6 +15,8 @@ h1 {
 	vertical-align: bottom;
 	text-align: center;
 	width: 24px;
+  padding: 1px;
+  border: none;
 }
 
 
@@ -101,3 +103,32 @@ tr.odd {
 .condensed-table th, .condensed-table td {
   padding: 5px 5px 4px;
 }
+.membership-list-report table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+.membership-list-report th, td {
+    padding: 10px;
+    border: 1px solid silver;
+    text-align: left;
+}
+.mems-wrap.stat-table table {
+  width: 100%;
+}
+.mems-wrap.stat-table th,
+.mems-wrap.stat-table td {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid silver;
+}
+.corp-mems-wrap table {
+  width: 100%;
+}
+.corp-mems-wrap th,
+.corp-mems-wrap td {
+  text-align: left;
+  border: 1px solid silver;
+  padding: 10px;
+}
+
+

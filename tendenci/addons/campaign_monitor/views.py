@@ -1,5 +1,6 @@
 import datetime
 import os
+from datetime import timedelta
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -317,13 +318,16 @@ def template_edit(request, template_id, form_class=TemplateForm, template_name='
             #set up urls
             site_url = get_setting('site', 'global', 'siteurl')
             
+            if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
+                html_url = template.html_file.url
+            else:
+                html_url = str("%s%s" % (site_url, template.get_html_url()))
+
             if template.zip_file:
                 if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                     zip_url = template.get_zip_url()
-                    html_url = template.html_file.url
                 else:
-                    zip_url = "%s%s"%(site_url, template.get_zip_url())
-                    html_url = str("%s%s"%(site_url, template.get_html_url()))
+                    zip_url = "%s%s" % (site_url, template.get_zip_url())
             else:
                 zip_url = ""
             
@@ -374,21 +378,30 @@ def template_update(request, template_id):
     
     #set up urls
     site_url = get_setting('site', 'global', 'siteurl')
-    
+    html_url = unicode("%s%s"%(site_url, template.get_html_url()))
+    html_url += "?jump_links=1&articles=1&articles_days=60&news=1&news_days=60&jobs=1&jobs_days=60&pages=1&pages_days=7"
+    try:
+        from tendenci.addons.events.models import Event, Type
+        html_url += "&events=1"
+        html_url += "&events_type="
+        html_url += "&event_start_dt=%s" % datetime.date.today()
+        end_dt = datetime.date.today() + timedelta(days=90)
+        html_url += "&event_end_dt=%s" % end_dt
+    except ImportError:
+        pass
+
     if template.zip_file:
         if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-            zip_url = template.get_zip_url()
-            html_url = template.html_file.url
+            zip_url = unicode(template.get_zip_url())
         else:
-            zip_url = "%s%s" % (site_url, template.get_zip_url())
-            html_url = str("%s%s" % (site_url, template.get_html_url()))
+            zip_url = unicode("%s%s"%(site_url, template.get_zip_url()))
     else:
-        zip_url = ""
+        zip_url = unicode()
     
     #sync with campaign monitor
     try:
         t = CST(template_id = template.template_id)
-        t.update(str(template.name), html_url, zip_url)
+        t.update(unicode(template.name), html_url, zip_url)
     except BadRequest, e:
         messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
         return redirect(template)
@@ -435,7 +448,7 @@ def template_sync(request):
     if not has_perm(request.user,'campaign_monitor.add_template'):
         raise Http403
     
-    sync_templates()
+    sync_templates(request)
     
     messages.add_message(request, messages.SUCCESS, 'Successfully synced with Campaign Monitor')
     return redirect("campaign_monitor.template_index")

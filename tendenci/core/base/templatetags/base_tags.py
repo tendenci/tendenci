@@ -11,7 +11,9 @@ from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
+from django.conf import settings
 
+from tendenci.libs.boto_s3.utils import StaticStorage
 from tendenci.core.base.template_tags import parse_tag_kwargs
 from tendenci.core.base.utils import url_exists
 from tendenci.apps.profiles.models import Profile
@@ -468,7 +470,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return unicode()
+            return StaticStorage().url(getattr(settings, 'DEFAULT_IMAGE_URL'))
 
         cache_key = generate_image_cache_key(file=str(photo.pk), size=self.size, pre_key="photo", crop=self.crop, unique_key=str(photo.pk), quality=self.quality, constrain=self.constrain)
         cached_image_url = cache.get(cache_key)
@@ -540,25 +542,33 @@ class ImageURL(Node):
 
             args = [file.pk]
             if self.size:
-                args.append(self.size)
+                try:
+                    size = Variable(self.size)
+                    size = size.resolve(context)
+                except:
+                    size = self.size
+                args.append(size)
             if self.crop:
                 args.append("crop")
+            if self.constrain:
+                args.append("constrain")
             if self.quality:
                 args.append(self.quality)
             url = reverse('file', args=args)
             return url
-        # return empty unicode string
-        return unicode('')
+
+        # return the default image url
+        return StaticStorage().url(getattr(settings, 'DEFAULT_IMAGE_URL'))
 
 
 @register.tag
 def image_url(parser, token):
     """
-    Creates a url for a photo that can be resized, cropped, and have quality reduced.
+    Creates a url for a photo that can be resized, cropped, constrianed, and have quality reduced.
     
     Usage::
 
-        {% image_url file [options][size=100x100] [crop=True] [quality=90] %}
+        {% image_url file [options][size=100x100] [crop=True] [constrain=True] [quality=90] %}
 
     Options include:
     
@@ -567,7 +577,9 @@ def image_url(parser, token):
         ``crop``
            Whether or not to crop the image. **Default: False**
         ``quality``
-           The quality of the rendered image. Use smaller for faster loading. **Default: 90**
+           The quality of the rendered image. Use smaller for faster loading. Must be used with ``size`` **Default: 90**
+        ``constrain``
+            The size of the image will be constrained instead of cropped
 
     Example::
 
@@ -582,6 +594,8 @@ def image_url(parser, token):
             kwargs["size"] = bit.split("=")[1]
         if "crop=" in bit:
             kwargs["crop"] = bool(bit.split("=")[1])
+        if "constrain=" in bit:
+            kwargs["constrain"] = bool(bit.split("=")[1])
         if "quality=" in bit:
             kwargs["quality"] = bit.split("=")[1]
 

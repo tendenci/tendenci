@@ -2,6 +2,29 @@ from django.template import Node, Variable, Library
 
 register = Library()
 
+
+@register.inclusion_tag(
+        "corporate_memberships/applications/render_corpmembership_field.html")
+def render_corpmembership_field(request, field_obj,
+                                corpprofile_form,
+                            corpmembership_form):
+    if field_obj.field_type == "section_break":
+        field = None
+    else:
+        field_name = field_obj.field_name
+        if field_name in corpprofile_form.field_names \
+                and not field_obj.display_only:
+            field = corpprofile_form[field_name]
+        elif field_name in corpmembership_form.field_names \
+                and not field_obj.display_only:
+            field = corpmembership_form[field_name]
+        else:
+            field = None
+
+    return {'request': request, 'field_obj': field_obj,
+            'field': field}
+
+
 @register.inclusion_tag("corporate_memberships/render_corp_field.html")
 def render_corp_field(request, field_obj, form):
     if field_obj.field_type == "section_break" or field_obj.field_type == "page_break":
@@ -22,11 +45,14 @@ def render_corp_field(request, field_obj, form):
 
 @register.inclusion_tag("corporate_memberships/nav.html", takes_context=True)
 def corpmemb_nav(context, user, corp_memb=None):
+    if corp_memb:
+        print corp_memb.corp_profile.name
     context.update({
         'nav_object': corp_memb,
         "user": user
     })
     return context
+
 
 @register.inclusion_tag("corporate_memberships/options.html", takes_context=True)
 def corpmemb_options(context, user, corp_memb):
@@ -35,6 +61,12 @@ def corpmemb_options(context, user, corp_memb):
         "user": user
     })
     return context
+
+
+@register.inclusion_tag("corporate_memberships/applications/search_form.html", takes_context=True)
+def corpmembership_search(context):
+    return context
+
 
 @register.inclusion_tag("corporate_memberships/search_form.html", takes_context=True)
 def corp_memb_search(context):

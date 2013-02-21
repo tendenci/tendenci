@@ -6,11 +6,55 @@
     
     {% if active %}
         <h1>{% trans "Active Memberships Report" %}</h1>
-        {% trans "Lists all memberships that are still active." %}
+        {% if days = 0 %}
+            {% trans "Lists all memberships that are still active." %}
+        {% else %}
+        {% if days = 1826 %}
+            {% trans "Currently showing members who joined in the last 5 years." %}
+        {% else %}
+            {% blocktrans with days=days %}
+            Currently showing members who joined in the last {{ days }} days.
+            {% endblocktrans %}
+        {% endif %}
+        {% endif %}
+        <form class="search-form" action="{% url reports-active-members %}" method="get">
+        <label for="id_days">{% trans "Filter by join date" %}:</label><select name="days" id="id_days" onchange="this.form.submit();">
+        <option value="" selected="selected">-----------</option>
+        <option value="30">Last 30 days</option>
+        <option value="60">Last 60 days</option>
+        <option value="90">Last 90 days</option>
+        <option value="180">Last 180 days</option>
+        <option value="365">Last 365 days</option>
+        <option value="1826">Last 5 years</option>
+        </select>
+        </form>
     {% else %}
         <h1>{% trans "Expired Memberships Report" %}</h1>
-        {% trans "Lists all memberships that have expired.  Grace periods are not included." %}
+        {% if days = 0 %}
+            {% trans "Lists all memberships that have expired.  Grace periods are not included." %}
+        {% else %}
+        {% if days = 1826 %}
+            {% trans "Currently showing members who expired in the last 5 years." %}
+        {% else %}
+            {% blocktrans with days=days %}
+            Currently showing members who expired in the last {{ days }} days.
+            {% endblocktrans %}
+        {% endif %}
+        {% endif %}
+        <form class="search-form" action="{% url reports-expired-members %}" method="get">
+        <label for="id_days">{% trans "Filter by expire date" %}:</label><select name="days" id="id_days" onchange="this.form.submit();">
+        <option value="" selected="selected">-----------</option>
+        <option value="30">Last 30 days</option>
+        <option value="60">Last 60 days</option>
+        <option value="90">Last 90 days</option>
+        <option value="180">Last 180 days</option>
+        <option value="365">Last 365 days</option>
+        <option value="1826">Last 5 years</option>
+        </select>
+        </form>
     {% endif %}
+
+
 
     {{ mems|length }} {% trans "Members listed" %}
     {% autopaginate mems 50 %}
@@ -23,10 +67,11 @@
         Download CSV File</a></p>
     {% endif %}
 
+    <div class="membership-report-list">
     <table>
         <tr>
             {% if active %}
-            <th>#</a></th>
+            <th></th>
             <th>
 				{% if is_ascending_username %}
 				<a href="{% url reports-active-members %}?sort=username" >{% trans "Username" %}
@@ -49,13 +94,6 @@
 				{% endif %}
 			</th>
             <th>
-				{% if is_ascending_app %}
-				<a href="{% url reports-active-members %}?sort=application" >{% trans "Application" %}</a>
-				{% else %}
-				<a href="{% url reports-active-members %}?sort=-application" >{% trans "Application" %}</a>
-				{% endif %}
-			</th>
-            <th>
 				{% if is_ascending_type %}
 				<a href="{% url reports-active-members %}?sort=type" >{% trans "Type" %}</a>
 				{% else %}
@@ -64,9 +102,9 @@
 			</th>
             <th>
 				{% if is_ascending_subscription %}
-				<a href="{% url reports-active-members %}?sort=subscription" >{% trans "Subscription" %}</a>
+				<a href="{% url reports-active-members %}?sort=subscription" >{% trans "Join" %}</a>
 				{% else %}
-				<a href="{% url reports-active-members %}?sort=-subscription" >{% trans "Subscription" %}</a>
+				<a href="{% url reports-active-members %}?sort=-subscription" >{% trans "Join" %}</a>
 				{% endif %}
 			</th>
             <th>
@@ -84,7 +122,7 @@
 				{% endif %}
 			</th>
             {% else %}
-            <th>#</th>
+            <th></th>
             <th>
 				{% if is_ascending_username %}
 				<a href="{% url reports-expired-members %}?sort=username" >{% trans "Username" %}</a>
@@ -107,13 +145,6 @@
 				{% endif %}
 			</th>
             <th>
-				{% if is_ascending_app %}
-				<a href="{% url reports-expired-members %}?sort=application" >{% trans "Application" %}</a>
-				{% else %}
-				<a href="{% url reports-expired-members %}?sort=-application" >{% trans "Application" %}</a>
-				{% endif %}
-			</th>
-            <th>
 				{% if is_ascending_type %}
 				<a href="{% url reports-expired-members %}?sort=type" >{% trans "Type" %}</a>
 				{% else %}
@@ -122,9 +153,9 @@
 			</th>
             <th>
 				{% if is_ascending_subscription %}
-				<a href="{% url reports-expired-members %}?sort=subscription" >{% trans "Subscription" %}</a>
+				<a href="{% url reports-expired-members %}?sort=subscription" >{% trans "Join" %}</a>
 				{% else %}
-				<a href="{% url reports-expired-members %}?sort=-subscription" >{% trans "Subscription" %}</a>
+				<a href="{% url reports-expired-members %}?sort=-subscription" >{% trans "Join" %}</a>
 				{% endif %}
 			</th>
             <th>
@@ -149,17 +180,19 @@
                 <td><a href="{% url profile mem.user.username %}">{{ mem.user.username }}</a></td>
                 <td>{{ mem.user.get_full_name }}</td>
                 <td><a href="mailto:{{ mem.user.email }}">{{ mem.user.email }}</td>
-                <td>{{ mem.ma }}</td>
                 <td>{{ mem.membership_type }}</td>
-                <th>{{ mem.subscribe_dt }}</th>
-                <th>{{ mem.expire_dt }}</th>
+                <td>{{ mem.join_dt|date:"N j, Y" }}</td>
+                <td>{{ mem.expire_dt|date:"N j, Y" }}</td>
                 <td>
-                    {% if mem.get_entry.invoice.pk %}
-                    <a href="{% url invoice.view mem.get_entry.invoice.pk %}">{{ mem.get_entry.invoice.pk }}</a>
-                    {% else %} - {% endif %}
+                    {% if mem.get_invoice %}
+                    <a href="{% url invoice.view mem.get_invoice.pk %}">
+                        {{ mem.get_invoice.pk }}</a>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
     </table>
+    </div>
+
     {% paginate %}
 {% endblock content %}

@@ -8,7 +8,7 @@ from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.forms import build_settings_form
 from tendenci.core.site_settings.utils import delete_settings_cache
 from tendenci.core.perms.utils import has_perm
-
+from tendenci.core.theme.utils import theme_options
 
 def list(request, scope, scope_category, template_name="site_settings/list.html"):
     if not has_perm(request.user, 'site_settings.change_setting'):
@@ -17,6 +17,16 @@ def list(request, scope, scope_category, template_name="site_settings/list.html"
     settings = Setting.objects.filter(scope=scope, scope_category=scope_category).order_by('label')
     if not settings:
         raise Http404
+
+    # check if module setting is for theme editor
+    if scope_category == 'theme_editor':
+        theme_setting = Setting.objects.get(name='theme')
+        # no need to update input values if there is no change
+        if theme_setting.input_value != theme_options():
+            theme_setting.input_value = theme_options()
+            theme_setting.save()
+            # update queryset to include the changes done
+            settings = Setting.objects.filter(scope=scope, scope_category=scope_category).order_by('label')
 
     if request.method == 'POST':
         form = build_settings_form(request.user, settings)(request.POST, request.FILES)

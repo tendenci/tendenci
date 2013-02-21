@@ -1,0 +1,45 @@
+{% extends "events/base.html" %}
+{% load pagination_tags %}
+{% load event_tags %}
+{% load base_tags %}
+{% load perm_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% firstof MODULE_EVENTS_LABEL_PLURAL 'Events' %} {% trans "Import" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% event_nav request.user %}
+
+<div class="imports">
+    <h1>{% firstof MODULE_EVENTS_LABEL_PLURAL 'Events' %} {% trans "Import" %}</h1>
+
+    <p>
+    {% trans "<strong>Download</strong> and <strong>fill in</strong> spreadsheet. <strong>Upload</strong> your updated spreadsheet, <strong>preview</strong>, and then <strong>submit</strong>." %}
+    </p>
+
+    <div class="download-csv">
+        <img src="{{ STATIC_URL }}images/icons/xls-icon.gif" alt="Download CSV Template" title="Download CSV Template"/>
+        <div class="item-right">
+            <p style="margin-bottom:0;"><a href="{% url event.download_template_csv %}">{% trans "Download template" %}</a></p>
+            <p style="margin-top:0;">{% trans "Fill in with your event information. Dates should be formatted MM/DD/YYYY 12:00:00"%}</p>
+        </div>
+        <div class="clear-both"></div>
+    </div>
+    
+    <div class="forms">
+        <form class="import" action="." method="post" enctype="multipart/form-data" >
+            {% csrf_token %}
+            {{ form|styled_form }}
+            <input type="submit" class="submit-btn"  name="submit" value="Preview Import">
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}

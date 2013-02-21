@@ -5,16 +5,10 @@
     <td>
 		{% if obj %}
 			{{ obj.corporate_membership_type.name|truncatewords:30 }}
-			{% if obj.module_name == 'corporatemembership'%}
-				#<a href="{% url corp_memb.view obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
-			{% else %}
-				#<a href="{% url corp_memb.view obj.corporate_membership.id %}" title="Corporate Membership">{{ obj.corporate_membership.id }}</a>
-			{% endif %}
-			{% if obj.module_name == 'corporatemembership'%}
-				&nbsp;{{ obj.name|truncatewords:5 }}
-			{% else %}
-				&nbsp;{{ obj.corporate_membership.name|truncatewords:5 }}
-			{% endif %}
+			#<a href="{% url corpmembership.view obj.id %}" title="Corporate Membership">{{ obj.id }}</a>
+			
+			&nbsp;{{ obj|truncatewords:5 }}
+			
 		{% else %}
 			{% trans "Corporate Membership information not available" %}
 		{% endif%}
@@ -24,15 +18,13 @@
 	</td>
 </tr>
 
-{% if obj.module_name == 'corpmembrenewentry' %}
-	{% if obj.indiv_memb_renew_entries %}
-		{% for renew_entry in obj.indiv_memb_renew_entries %}
-			<tr>
-				<td>
-					<a href="{% url profile renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }} #{{ renew_entry.membership.member_number }}</a>
-				</td>
-				<td class="td-right">---</td>
-			</tr>
-		{% endfor %}
-	{% endif%}
+{% if obj.renewal %}
+	{% for renew_entry in obj.indivmembershiprenewentry_set.all %}
+		<tr>
+			<td>
+				<a href="{% url profile renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }} #{{ renew_entry.membership.member_number }}</a>
+			</td>
+			<td class="td-right">---</td>
+		</tr>
+	{% endfor %}
 {% endif%}

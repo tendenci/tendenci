@@ -11,6 +11,7 @@ from django.contrib.contenttypes import generic
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.managers import ProfileManager, ProfileActiveManager
+from tendenci.apps.entities.models import Entity
 
 from tendenci.libs.abstracts.models import Person, Identity, Address
 
@@ -22,6 +23,7 @@ from tendenci.libs.abstracts.models import Person, Identity, Address
 class Profile(Person):
     # relations
     guid = models.CharField(max_length=40)
+    entity = models.ForeignKey(Entity, blank=True, null=True)
     pl_id = models.IntegerField(default=1)
     historical_member_number = models.CharField(_('historical member number'), max_length=50, blank=True)
 
@@ -74,7 +76,8 @@ class Profile(Person):
         verbose_name_plural = "Users"
 
     def __unicode__(self):
-        return self.user.username
+        if hasattr(self, 'user'):
+            return self.user.username
 
     @models.permalink
     def get_absolute_url(self):
@@ -106,6 +109,15 @@ class Profile(Person):
     @property
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
+
+    def get_name(self):
+
+        user = self.user
+
+        name = "%s %s" % (user.first_name, user.last_name)
+        name = name.strip()
+
+        return self.display_name or name or user.email or user.username
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -162,12 +174,56 @@ class Profile(Person):
                         return True
         return False
 
+    def can_renew(self):
+        """
+        Looks at all memberships the user is actively associated
+        with and returns whether the user is within a renewal period (boolean).
+        """
+
+        if not hasattr(self.user, 'memberships'):
+            return False
+
+        # look at active memberships
+
+        active_memberships = self.user.memberships.filter(
+            status=True, status_detail='active'
+        )
+
+        for membership in active_memberships:
+            if membership.can_renew():
+                return True
+
+        return False
+
+    def can_renew2(self):
+        """
+        Looks at all memberships the user is actively associated
+        with and returns whether the user is within a renewal period (boolean).
+        """
+
+        if not hasattr(self.user, 'memberships'):
+            return False
+
+        # look at active memberships
+
+        active_memberships = self.user.membershipdefault_set.filter(
+            status=True, status_detail__iexact='active'
+        )
+
+        for membership in active_memberships:
+            if membership.can_renew():
+                return True
+
+        return False
+
     def get_groups(self):
         memberships = self.user.group_member.all()
         return [membership.group for membership in memberships]
 
     def refresh_member_number(self):
-        memberships = self.user.memberships.active_strict(order_by='-pk')
+        memberships = self.user.membershipdefault_set.filter(
+            status=True, status_detail__iexact='active'
+        )
 
         if memberships:
             self.member_number = memberships[0].member_number
@@ -176,6 +232,93 @@ class Profile(Person):
 
         self.save()
         return self.member_number
+
+    @classmethod
+    def spawn_username(*args):
+        """
+        Join arguments to create username [string].
+        Find similiar usernames; auto-increment newest username.
+        Return new username [string].
+        """
+        if not args:
+            raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
+
+        import re
+
+        max_length = 8
+        # the first argument is the class, exclude it
+        un = ' '.join(args[1:])             # concat args into one string
+        un = re.sub('\s+', '_', un)       # replace spaces w/ underscores
+        un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
+        un = un.strip('_.- ')           # strip funny-characters from sides
+        un = un[:max_length].lower()    # keep max length and lowercase username
+
+        others = []  # find similiar usernames
+        for u in User.objects.filter(username__startswith=un):
+            if u.username.replace(un, '0').isdigit():
+                others.append(int(u.username.replace(un, '0')))
+
+        if others and 0 in others:
+            # the appended digit will compromise the username length
+            # there would have to be more than 99,999 duplicate usernames
+            # to kill the database username max field length
+            un = '%s%s' % (un, str(max(others) + 1))
+
+        return un.lower()
+
+    @classmethod
+    def get_or_create_user(cls, **kwargs):
+        """
+        Return a user that's newly created or already existed.
+        Return new or existing user.
+
+        If username is passed.  It uses the username to return
+        an existing user record or creates a new user record.
+
+        If an email is passed.  It uses the email to return
+        an existing user record or create a new user record.
+
+        User is updated with first name, last name, and email
+        address passed.
+
+        If a password is passed; it is only used in order to
+        create a new user account.
+        """
+
+        un = kwargs.get('username', u'')
+        pw = kwargs.get('password', u'')
+        fn = kwargs.get('first_name', u'')
+        ln = kwargs.get('last_name', u'')
+        em = kwargs.get('email', u'')
+
+        user = None
+        created = False
+
+        if un:
+            # created = False
+            [user] = User.objects.filter(
+                username=un)[:1] or [None]
+        elif em:
+            [user] = User.objects.filter(
+                email=em).order_by('-pk')[:1] or [None]
+
+        if not user:
+            created = True
+            user = User.objects.create_user(**{
+                'username': un or Profile.spawn_username(fn[:1], ln),
+                'email': em,
+                'password': pw or uuid.uuid1().get_hex()[:6],
+            })
+
+        user.first_name = fn
+        user.last_name = ln
+        user.email = em
+        user.save()
+
+        if created:
+            Profile.objects.create_profile(user)
+
+        return user, created
 
     def roles(self):
         role_set = []
@@ -202,4 +345,3 @@ class Profile(Person):
         for role in roles:
             if role in self.roles():
                 return role
-

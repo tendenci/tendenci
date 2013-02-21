@@ -23,6 +23,7 @@ div.column0 ul li {
 .size-s input[type="text"]{width: 20% !important;}
 .size-m input[type="text"]{width: 50% !important;}
 
+/*
 div.section-break h2{
 	font-size: 1.2em;
 	margin: 1.5em 0 1em;
@@ -31,6 +32,7 @@ div.section-break h2{
 	border-top: 1px dotted silver;
 	color: #417690;
 }
+*/ 
 
 div.admin-only h2{
 	color: #9f2221;
@@ -62,6 +64,21 @@ div.forms div.form-field input.timepicker{
 }
 .status-expired{
 	color: red;
+}
+.status-archived{
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    font-weight: bold;
+}
+.status-archive{
+    background-color: #000;
+    color: #fff;
+    padding: 5px;
+    font-weight: bold;
+}
+.status-disapproved{
+    color:#C09853;
 }
 .pending-info-box{
 	background-color: #F7FFAF;
@@ -163,4 +180,13 @@ div.forms div.form-field input.timepicker{
 }
 .disapproved .meta, .disapproved{
 	background-color: #ccc !important;
+}
+
+/* search */
+.field-label{
+    font-weight: bold;
+    margin-right: 3px;
+}
+.indiv-join-link{
+    font-size: 1.2em;
 }	

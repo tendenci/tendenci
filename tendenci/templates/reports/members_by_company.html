@@ -1,0 +1,16 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "Current Member Totals by Company" %}</h1>
+<div class="mems-wrap">
+<ul>
+{% for company in companies %}
+<li>{{ company.name }} - <a href="{% url profile.search %}?q={{company.name }}&members=on">{{ company.total_members }} member{% if not company.total_members = 1 %}s{% endif %}</a></li>
+{% empty %}
+<li>{% trans "No company data available." %}</li>
+{% endfor %}
+</ul>
+</div>
+
+{% endblock content %}

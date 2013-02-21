@@ -26,6 +26,17 @@
             </div>
      </div>
 </div>
+
+<div class="form-field clearfix">
+    <div class="id_registration">
+            <div class="label">
+                <label for="registration">Registration?</label>
+            </div>
+            <div class="field">
+                <input type="checkbox" {% if with_registration %}checked="yes"{% endif %} name="registration"/>
+            </div>
+     </div>
+</div>
 <div class="clear"></div>
 
 {% if SITE_GLOBAL_SEARCHINDEX %}

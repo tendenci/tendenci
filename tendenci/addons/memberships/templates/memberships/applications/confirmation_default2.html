@@ -1,0 +1,33 @@
+{% extends "memberships/base-wide.html" %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="application-entry-wrap">
+
+        <h1>{% trans "Membership Confirmation" %}</h1>
+
+        {% if app.confirmation_text %}
+        {{ app.confirmation_text|safe }}
+        {% else %}
+        <p>Thank you for your submission!</p>
+        {% endif %}
+
+        {% if membership.is_pending %}
+        <p><span style="background-color: #ECF716;">{% trans "Your membership is pending for admin approvel." %}</span></p>
+        {% endif %}
+        <p>&nbsp;</p>
+</div>
+</div>
+{% endblock %}

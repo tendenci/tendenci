@@ -1,0 +1,32 @@
+# Ignore all local development files
+# local_settings.py
+django
+*.db
+
+# Ignore ephemeral directories
+# during local development
+/cache
+/media
+
+# Ignore all dotfiles...
+.*
+
+# Ignore all pyc file
+*.pyc
+
+# Ignore plugins json
+plugins_list.json
+addons_list.json
+
+# except for .gitignore and .env_example
+!/.gitignore
+!/.env_example
+
+venv/
+tendenci-site/local.py
+conf/local.py
+/static
+
+/schema.xml
+celeryd.pid
+/index.whoosh

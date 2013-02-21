@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.user_groups.managers import GroupManager
+from tendenci.apps.entities.models import Entity
 
 
 class Group(TendenciBaseModel):
@@ -26,13 +27,11 @@ class Group(TendenciBaseModel):
     sync_newsletters = models.BooleanField(_('Sync for newsletters'), default=1)
     description = models.TextField(blank=True)
     auto_respond = models.BooleanField(_('Auto Responder'), default=0)
-    auto_respond_template = models.CharField(_('Auto Responder Template'),
-        help_text=_("Auto Responder Template URL"), max_length=100, blank=True)
     auto_respond_priority = models.FloatField(_('Priority'), blank=True, default=0)
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
 
-    group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.OneToOneField(AuthGroup, null=True, default=None)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
     # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
 
@@ -58,31 +57,38 @@ class Group(TendenciBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
 
-        if self.name and not self.group:
-            try:
-                group = AuthGroup.objects.create(name=self.name)
-            except IntegrityError:
-                connection._rollback()
-                id = AuthGroup.objects.count()
-                group = AuthGroup.objects.create(name=" ".join([self.name, str(id)]))
-            group.save()
-            self.group = group
-
-        elif self.name and self.group:
-            self.group.name = self.name
-            try:
-                self.group.save()
-            except IntegrityError:
-                connection._rollback()
+        # add the default entity
+        if not self.entity:
+            self.entity = Entity.objects.first()
 
         super(Group, self).save(force_insert, force_update, *args, **kwargs)
-     
-    @property    
+
+        if not self.group:
+            # create auth group if not exists
+            # note that the name of auth group is also unique
+            group_name = self.get_unique_auth_group_name()
+            self.group = AuthGroup.objects.create(name=group_name)
+            self.save()
+
+    @property
     def active_members(self):
         return GroupMembership.objects.filter(
-                                            group=self,
-                                            status=True, 
-                                            status_detail='active')
+            group=self, status=True, status_detail='active')
+
+    def get_unique_auth_group_name(self):
+        # get the unique name for auth group.
+        # the max length of the name of the auth group is 80.
+        name = self.name
+        if not name:
+            name = str(self.id)
+
+        if len(name) > 80:
+            name = name[:80]
+
+        if AuthGroup.objects.filter(name=name).exists():
+            name = 'User Group %d' % self.id
+
+        return name
 
     def is_member(self, user):
         # impersonation
@@ -95,6 +101,7 @@ class Group(TendenciBaseModel):
         return (user, created)
         """
         from django.db import IntegrityError
+        from django.db import transaction, connection
 
         try:
             GroupMembership.objects.create(**{
@@ -109,12 +116,17 @@ class Group(TendenciBaseModel):
             })
             return user, True  # created
         except IntegrityError:
+            connection._rollback()
             return user, False
+        except Exception:
+            transaction.rollback()
+            return user, False
+
 
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
     member = models.ForeignKey(User, related_name='group_member')
-    
+
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
 
@@ -141,7 +153,7 @@ class GroupMembership(models.Model):
         verbose_name_plural = "Group Memberships"
 
     @classmethod
-    def add_to_group(cls, *kwargs):
+    def add_to_group(cls, **kwargs):
         """
         Easily add someone to a group, we're setting basic defaults
         e.g. GroupMembership.add_to_group(member=member, group=group)
@@ -155,9 +167,9 @@ class GroupMembership(models.Model):
         return cls.objects.create(
             group=group,
             member=member,
-            creator=editor,
+            creator_id=editor.pk,
             creator_username=editor.username,
-            owner=editor,
+            owner_id=editor.pk,
             owner_username=editor.username,
             status=status,
             status_detail=status_detail

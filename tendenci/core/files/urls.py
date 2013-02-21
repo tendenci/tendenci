@@ -11,6 +11,7 @@ urlpatterns = patterns('tendenci.core.files.views',
     url(r'^(?P<id>\d+)/(?P<download>(download)?)/$', 'details', name="file"),
     url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/$', 'details', name="file"),
     url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<constrain>constrain)/$', 'details', name="file"),
+    url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<constrain>constrain)/(?P<quality>\d+)/$', 'details', name="file"),
     url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>download)/$', 'details', name="file"),
     url(r'^(?P<id>\d+)/(?P<size>\d*x\d*)/(?P<download>download)/(?P<constrain>constrain)/$', 'details', name="file"),
 

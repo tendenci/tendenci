@@ -1,0 +1,44 @@
+{% load i18n %}
+<div class="date_range">
+    <div class="row start">
+    {% with min as field %}
+        <label for="{{ field.widget.auto_id }}">{% trans "Start date" %}</label>
+        {{ field }}
+        <span class="info{% if field.errors %} error{% else %}{% endif %}">
+          {{ field.errors|join:" " }}</span>
+        <span class="help-text">{{ field.help_text|safe }}</span>
+    {% endwith %}
+    </div>
+    <div class="row end">
+    {% with max as field %}
+        <label for="{{ field.widget.auto_id }}">{% trans "End date" %}</label>
+        {{ field }}
+        <span class="info{% if field.errors %} error{% else %}{% endif %}">
+          {{ field.errors|join:" " }}</span>
+        <span class="help-text">{{ field.help_text|safe }}</span>
+    {% endwith %}
+    </div>
+</div>
+<style>
+form .row {
+    float: left;
+    clear: both;
+    margin: 5px 0;
+}
+.date_range {
+    float: left;
+    clear: right;
+}
+.date_range .row {
+    margin: 2px;
+}
+.date_range input
+{
+    width:100px !important;
+}
+.date_range label
+{
+    width:auto !important;
+    min-width: 100px;
+}
+</style>

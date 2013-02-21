@@ -1,0 +1,29 @@
+{% load box_tags %}
+{% load forms_tags %}
+<footer class="container">
+     
+  <div id="footer-cols" class="clearfix sixteen columns">
+  
+    <div id="footer-col-1" class="footer-col four columns omega">
+      {% box 7 %}
+    </div><!--footer-col-1-->
+     
+    <div id="footer-col-2" class="footer-col four columns omega">
+      {% box 8 %}
+    </div><!--footer-col-2-->
+     
+    <div id="footer-col-3" class="footer-col four columns omega">
+      {% box 9 %}
+    </div><!--footer-col-3-->
+     
+    <div id="footer-col-4" class="footer-col four columns omega">
+      {% embed_form 1 %}
+    </div><!--footer-col-4-->
+  
+  </div><!--/#footer-cols-->  
+    
+  <div id="footer-links" class="clearfix sixteen columns">
+     {% box 10%}
+  </div><!--footer-links-->
+     
+</footer>

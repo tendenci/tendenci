@@ -10,6 +10,34 @@ from django.core.files.storage import default_storage
 from storages.backends.s3boto import S3BotoStorage, S3BotoStorageFile
 
 
+class StaticStorage(S3BotoStorage):
+    """
+    Storage for static files.
+    The folder is defined in settings.STATIC_S3_PATH
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs['location'] = settings.STATIC_S3_PATH
+        super(StaticStorage, self).__init__(*args, **kwargs)
+
+    def url(self, name):
+        url = super(StaticStorage, self).url(name)
+        if name.endswith('/') and not url.endswith('/'):
+            url += '/'
+        return url
+
+
+class DefaultStorage(S3BotoStorage):
+    """
+    Storage for uploaded media files.
+    The folder is defined in settings.DEFAULT_S3_PATH
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs['location'] = settings.DEFAULT_S3_PATH
+        super(DefaultStorage, self).__init__(*args, **kwargs)
+
+
 def read_media_file_from_s3(file_path):
     """
     Read a media file from S3.
@@ -174,3 +202,11 @@ def download_files_from_s3(prefix='', to_dir='', update_only=False, dry_run=Fals
             else:
                 item.get_contents_to_filename(copy_to_fullpath)
                 print 'Downloaded %s' % s3_file_relative_path
+
+def delete_file_from_s3(file):
+    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID,
+                           settings.AWS_SECRET_ACCESS_KEY)
+    b = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    k = Key(b)
+    k.key = file
+    b.delete_key(k)

@@ -39,15 +39,8 @@ def subscriber_delete(request, id, template_name="subscribers/delete.html"):
         raise Http403
         
     if request.method == 'POST':
-        log_defaults = {
-            'event_id' : 223000,
-            'event_data': '%s (%d) deleted by %s' % (grp_sub._meta.object_name, grp_sub.pk, request.user),
-            'description': '%s deleted' % grp_sub._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': grp_sub,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log(instance=grp_sub)
         messages.add_message(request, messages.SUCCESS, 'Successfully removed subscriber %s (%s) from group %s' % (grp_sub.name, grp_sub.email, grp_sub.group))
         grp_sub.delete()
         return HttpResponseRedirect(grp_sub.group.get_absolute_url())

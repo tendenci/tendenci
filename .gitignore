@@ -1,22 +1,7 @@
 # Ignore all local development files
-local_settings.py
-local_urls.py
 schema.xml
 django
 *.db
-
-# ignore all django themes except for default theme
-themes/*
-!themes/readme.md
-
-# Ignore media files
-site_media/directories/
-site_media/photologue/
-site_media/files/
-site_media/media/*
-site_media/static/tresources/
-
-!site_media/media/readme.txt
 
 # Ignore django cache
 cache/
@@ -31,23 +16,14 @@ _notes/
 # Ignore all pyc file
 *.pyc
 
-# Ignore deploy files
-deploy/deploy.wsgi
-
-# Ignore plugins json
-plugins/apps.json
-
 # except for .gitignore
 !.gitignore
 
-/themes/thinksmart/media/css/styles.css
-/themes/thinksmart/media/css/styles.less
-/themes/thinksmart/media/images/logo-blue.png
-/themes/thinksmart/settings.json
-/themes/thinksmart/templates/admin_menu/
-/themes/thinksmart/templates/header.html
-/themes/thinksmart/templates/nav.html
-/themes/thinksmart/templates/sidebar.html
-
+# Ignore docs build files
 docs/build/
 docs/local/
+
+# Ignore build directories and egg
+/build
+/dist
+*.egg-info

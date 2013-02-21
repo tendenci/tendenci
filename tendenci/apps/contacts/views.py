@@ -1,3 +1,5 @@
+import random, string
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -13,6 +15,7 @@ from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.contacts.models import Contact, Address, Phone, Email, URL
 from tendenci.apps.contacts.forms import ContactForm, SubmitContactForm
 from tendenci.apps.contacts.utils import listed_in_email_block
+from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.utils import has_perm, has_view_perm, get_query_filters, get_notice_recipients
 from tendenci.core.event_logs.models import EventLog
@@ -108,41 +111,102 @@ def delete(request, id, template_name="contacts/delete.html"):
     else:
         raise Http403
 
+
 def index(request, form_class=SubmitContactForm, template_name="form.html"):
 
+    if request.method == "GET":
+        # event-log view
+        EventLog.objects.log(instance=Contact(), action='viewed')
+
     if request.method == "POST":
+        event_log_dict = {}
         form = form_class(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email', None)
-            first_name = form.cleaned_data.get('first_name', None)
-            last_name = form.cleaned_data.get('last_name', None)
-            
+            email = form.cleaned_data.get('email')
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+
             if listed_in_email_block(email):
                 # listed in the email blocks - it's a spam email we want to block
                 # log the spam
                 EventLog.objects.log()
-                
+
                 # redirect normally so they don't suspect
                 return HttpResponseRedirect(reverse('form.confirmation'))
-            
-            address = form.cleaned_data.get('address', None)
-            city = form.cleaned_data.get('city', None)
-            state = form.cleaned_data.get('state', None)
-            zipcode = form.cleaned_data.get('zipcode', None)
-            country = form.cleaned_data.get('country', None)
-            phone = form.cleaned_data.get('phone', None)
-            
-            url = form.cleaned_data.get('url', None)
-            message = form.cleaned_data.get('message', None)
+
+            address = form.cleaned_data.get('address')
+            city = form.cleaned_data.get('city')
+            state = form.cleaned_data.get('state')
+            zipcode = form.cleaned_data.get('zipcode')
+            country = form.cleaned_data.get('country')
+            phone = form.cleaned_data.get('phone')
+            url = form.cleaned_data.get('url')
+            message = form.cleaned_data.get('message')
+
+            exists = User.objects.filter(
+                first_name__iexact=first_name,
+                last_name__iexact=last_name,
+                email__iexact=email,
+            ).exists()
+
+            if request.user.is_anonymous():
+                username = first_name.replace(' ', '')
+                if last_name:
+                    username = username + '_' + last_name.replace(' ', '')
+                username = username.lower()
+                try:
+                    User.objects.get(username=username)
+                    x = User.objects.filter(first_name=first_name).count()
+                    username = username + '_' + unicode(x)
+                except User.DoesNotExist:
+                    pass
+
+                contact_user = User(
+                    username=username,
+                    email=email,
+                    first_name=first_name,
+                    last_name=last_name,
+                )
+
+                contact_user.is_active = False
+                contact_user.save()
+                profile = Profile(user=contact_user, owner=contact_user, creator=User.objects.get(pk=1),
+                                  address=address, country=country, city=city, state=state,
+                                  url=url, phone=phone, zipcode=zipcode)
+                profile.save()
+
+                # if exists:
+                #     event_log_dict['description'] = 'logged-out submission as existing user'
+                # else:
+                event_log_dict['description'] = 'logged-out submission as new user'
+
+            else:  # logged in user
+                self_submit = all([
+                    request.user.first_name.lower().strip() == first_name.lower().strip(),
+                    request.user.last_name.lower().strip() == last_name.lower().strip(),
+                    request.user.email.lower().strip() == email.lower().strip(),
+                ])
+
+                contact_user = request.user
+
+                if exists:
+                    if self_submit:
+                        event_log_dict['description'] = 'logged-in submission as self'
+                    else:
+                        event_log_dict['description'] = 'logged-in submission as existing user'
+                else:
+                    event_log_dict['description'] = 'logged-in submission as non-existing user'
 
             contact_kwargs = {
                 'first_name': first_name,
                 'last_name': last_name,
                 'message': message,
-            } 
+                'user': contact_user,
+            }
+
             contact = Contact(**contact_kwargs)
-            contact.creator_id = 1 # TODO: decide if we should use tendenci base model
-            contact.owner_id = 1 # TODO: decide if we should use tendenci base model
+            contact.creator_id = 1  # TODO: decide if we should use tendenci base model
+            contact.owner_id = 1  # TODO: decide if we should use tendenci base model
             contact.allow_anonymous_view = False
             contact.save()
 
@@ -155,23 +219,23 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                     'country': country,
                 }
                 obj_address = Address(**address_kwargs)
-                obj_address.save() # saves object
-                contact.addresses.add(obj_address) # saves relationship
+                obj_address.save()  # saves object
+                contact.addresses.add(obj_address)  # saves relationship
 
             if phone:
                 obj_phone = Phone(number=phone)
-                obj_phone.save() # saves object
-                contact.phones.add(obj_phone) # saves relationship
+                obj_phone.save()  # saves object
+                contact.phones.add(obj_phone)  # saves relationship
 
             if email:
                 obj_email = Email(email=email)
-                obj_email.save() # saves object
-                contact.emails.add(obj_email) # saves relationship
+                obj_email.save()  # saves object
+                contact.emails.add(obj_email)  # saves relationship
 
             if url:
                 obj_url = URL(url=url)
-                obj_url.save() # saves object
-                contact.urls.add(obj_url) # saves relationship
+                obj_url.save()  # saves object
+                contact.urls.add(obj_url)  # saves relationship
 
             site_name = get_setting('site', 'global', 'sitedisplayname')
             message_link = get_setting('site', 'global', 'siteurl')
@@ -183,36 +247,43 @@ def index(request, form_class=SubmitContactForm, template_name="form.html"):
                 if notification:
                     extra_context = {
                     'reply_to': email,
-                    'contact':contact,
-                    'first_name':first_name,
-                    'last_name':last_name,
-                    'address':address,
-                    'city':city,
-                    'state':state,
-                    'zipcode':zipcode,
-                    'country':country,
-                    'phone':phone,
-                    'email':email,
-                    'url':url,
-                    'message':message,
-                    'message_link':message_link,
-                    'site_name':site_name,
+                    'contact': contact,
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'address': address,
+                    'city': city,
+                    'state': state,
+                    'zipcode': zipcode,
+                    'country': country,
+                    'phone': phone,
+                    'email': email,
+                    'url': url,
+                    'message': message,
+                    'message_link': message_link,
+                    'site_name': site_name,
                     }
-                    notification.send_emails(recipients,'contact_submitted', extra_context)
+                    notification.send_emails(recipients, 'contact_submitted', extra_context)
 
-            try: user = User.objects.filter(email=email)[0]
-            except: user = None
+            # event-log (logged in)
+            event_log = EventLog.objects.log(
+                instance=contact,
+                user=contact_user,
+                action='submitted',
+                **event_log_dict
+            )
 
-            EventLog.objects.log(instance=contact)
+            event_log.url = contact.get_absolute_url()
+            event_log.save()
 
             return HttpResponseRedirect(reverse('form.confirmation'))
         else:
-            return render_to_response(template_name, {'form': form}, 
+            return render_to_response(template_name, {'form': form},
                 context_instance=RequestContext(request))
 
     form = form_class()
-    return render_to_response(template_name, {'form': form}, 
+    return render_to_response(template_name, {'form': form},
         context_instance=RequestContext(request))
+
 
 def confirmation(request, form_class=SubmitContactForm, template_name="form-confirmation.html"):
     return render_to_response(template_name, context_instance=RequestContext(request))

@@ -29,10 +29,14 @@
 
     <div class="content" style="float: left; margin-left:5px;">
         {% if profile.user.email %}
+        {% if request.user.profile.is_superuser or not profile.hide_email %}
         <b>{% trans "Email:" %}</b> {{ profile.user.email|obfuscate_email }}<br />
         {% endif %}
+        {% endif %}
         {% if profile.phone %}
-        <b>{% trans "Phone:" %}</b> {{ profile.phone }}<br />
+        {% if request.user.profile.is_superuser or not profile.hide_phone %}
+        <b>{% trans "Phone:" %}</b> {{ profile.phone|phonenumber }}<br />
+        {% endif %}
         {% endif %}
         {% if profile.company %}
         <b>{% trans "Company:" %}</b> {{ profile.company }}<br />
@@ -50,6 +54,6 @@
     <div class="clear"></div>
 
 </div>
-{% include 'profiles/meta.html' %}
+{% profile_meta %}
 </div>
 {% endif %}
