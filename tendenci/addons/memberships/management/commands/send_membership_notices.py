@@ -23,9 +23,9 @@ class Command(BaseCommand):
 
         from django.conf import settings
         from tendenci.addons.memberships.models import (Notice,
-                                                        Membership,
+                                                        MembershipDefault,
                                                         NoticeLog,
-                                                        NoticeLogRecord)
+                                                        NoticeDefaultLogRecord)
         from tendenci.core.base.utils import fieldify
         from tendenci.core.emails.models import Email
         from tendenci.core.site_settings.utils import get_setting
@@ -101,7 +101,7 @@ class Command(BaseCommand):
                                        'membershiprecipients').strip()
             if admin_emails:
                 admin_emails = admin_emails.split(',')
-            if not user.profile.is_superuser_emails:
+            if not admin_emails:
                 admin_emails = (get_setting('site', 'global',
                                             'admincontactemail'
                                             ).strip()).split(',')
@@ -118,18 +118,21 @@ class Command(BaseCommand):
             else:
                 start_dt = now - timedelta(days=notice.num_days)
 
-            memberships = Membership.objects.active()
+            memberships = MembershipDefault.objects.filter(
+                                    status=True,
+                                    status_detail__in=['active', 'expired']
+                                    )
             if notice.notice_type == 'join':
                 memberships = memberships.filter(
-                                    subscribe_dt__year=start_dt.year,
-                                    subscribe_dt__month=start_dt.month,
-                                    subscribe_dt__day=start_dt.day,
+                                    join_dt__year=start_dt.year,
+                                    join_dt__month=start_dt.month,
+                                    join_dt__day=start_dt.day,
                                     renewal=False)
             elif notice.notice_type == 'renew':
                 memberships = memberships.filter(
-                                    subscribe_dt__year=start_dt.year,
-                                    subscribe_dt__month=start_dt.month,
-                                    subscribe_dt__day=start_dt.day,
+                                    renew_dt__year=start_dt.year,
+                                    renew_dt__month=start_dt.month,
+                                    renew_dt__day=start_dt.day,
                                     renewal=True)
             else:  # 'expire'
                 memberships = memberships.filter(
@@ -142,7 +145,9 @@ class Command(BaseCommand):
                 memberships = memberships.filter(
                                 membership_type=notice.membership_type)
 
-            if memberships:
+            memberships_count = memberships.count()
+
+            if memberships_count > 0:
                 email.content_type = notice.content_type
 
                 # password
@@ -167,8 +172,6 @@ class Command(BaseCommand):
                 notice.log = notice_log
                 notice.err = ''
 
-                memberships_count = memberships.count()
-
                 for membership in memberships:
                     try:
                         email_member(notice, membership, global_context)
@@ -177,13 +180,14 @@ class Command(BaseCommand):
                         num_sent += 1
 
                         # log record
-                        notice_log_record = NoticeLogRecord(
+                        notice_log_record = NoticeDefaultLogRecord(
                                                 notice_log=notice_log,
                                                 membership=membership)
                         notice_log_record.save()
                     except:
                         # catch the exception and email
                         notice.err += traceback.format_exc()
+                        print traceback.format_exc()
 
                 if num_sent > 0:
                     notice_log.num_sent = num_sent
@@ -195,19 +199,19 @@ class Command(BaseCommand):
             user = membership.user
 
             body = notice.email_content
-            context = membership.entry_items
+            context = membership.get_field_items()
+            context['membership'] = membership
             context.update(global_context)
+
+            # memberships page ------------
+            memberships_page = "%s%s" % \
+                (site_url, reverse('profile', args=[membership.user]))
 
             body = body.replace("[membershiptypeid]",
                                 str(membership.membership_type.id))
             body = body.replace("[membershiplink]",
-                                '%s%s' % (site_url,
-                                          membership.get_absolute_url()))
+                                '%s' % memberships_page)
 
-            # memberships page ------------
-            memberships_page = "%s%s%s" % \
-                (site_url, reverse('profile', args=[membership.user]),
-                 "#userview-memberships")
             body = body.replace("[renewlink]", memberships_page)
 
             if membership.expire_dt:
@@ -227,9 +231,7 @@ class Command(BaseCommand):
 
             context.update({'membershiptypeid':
                                 str(membership.membership_type.id),
-                            'membershiplink':
-                                '%s%s' % (site_url,
-                                          membership.get_absolute_url()),
+                            'membershiplink': memberships_page,
                             'renewlink': memberships_page,
                             'membernumber': membership.member_number,
                             'membershiptype': membership.membership_type.name,
