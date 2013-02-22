@@ -34,14 +34,20 @@ def membership_notice_log_search(request, template_name="memberships/notices/log
     
     return render_to_response(template_name, {'logs': logs, 'form':form},
         context_instance=RequestContext(request))
-    
-    
+
+
 @login_required
-def membership_notice_log_view(request, id, template_name="memberships/notices/log_view.html"):
-    if not has_perm(request.user,'memberships.change_notice'): raise Http403
-    
+def membership_notice_log_view(request, id,
+                               template_name="memberships/notices/log_view.html"):
+    if not has_perm(request.user, 'memberships.change_notice'):
+        raise Http403
+
     log = get_object_or_404(NoticeLog, id=id)
-    log_records = log.log_records.all()
-    
-    return render_to_response(template_name, {'log': log, 'log_records': log_records},
+
+    log_records = log.default_log_records.all()
+    if not log_records:
+        log_records = log.log_records.all()
+
+    return render_to_response(template_name, {'log': log,
+                                              'log_records': log_records},
         context_instance=RequestContext(request))
