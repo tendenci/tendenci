@@ -1869,6 +1869,17 @@ class NoticeLogRecord(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
 
 
+class NoticeDefaultLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog,
+                                   related_name="default_log_records")
+    membership = models.ForeignKey(MembershipDefault,
+                                   related_name="default_log_records")
+    action_taken = models.BooleanField(default=0)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+
+
 class MembershipApp(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)
 
