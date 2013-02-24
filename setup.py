@@ -2,9 +2,10 @@ import os
 import sys
 
 from fnmatch import fnmatchcase
-
 from distutils.util import convert_path
 from setuptools import setup, find_packages
+
+from tendenci import __version__ as version
 
 
 def read(*path):
@@ -111,7 +112,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.18',
+    version=version,
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
