@@ -7,7 +7,7 @@ from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 
 class MembershipDefaultIndex(TendenciBaseSearchIndex):
-    corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id')
+    corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id', null=True)
     member_number = indexes.CharField(model_attr='member_number')
     membership_type = indexes.IntegerField()
     first_name = indexes.CharField(null=True)
