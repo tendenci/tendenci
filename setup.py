@@ -111,7 +111,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.17',
+    version='5.1.18',
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -167,7 +167,7 @@ setup(
         "django-haystack==1.2.7",
         "feedparser>=4.1",
         "httplib2>=0.4.0",
-        "pytz>=2010h",
+        "pytz==2012j",
         "simplejson>=2.0.9",
         "webcolors>=1.3.1",
         "xlrd==0.7.3",
