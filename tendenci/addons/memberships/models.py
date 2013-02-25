@@ -1223,9 +1223,8 @@ class MembershipDefault(TendenciBaseModel):
         return all(good)
 
     def get_field_items(self):
-        app = MembershipApp.objects.current_app()
-        # to be updated if supports multiple apps
-        # app = self.app
+        app = self.app
+
         items = {}
         field_names = MembershipAppField.objects.filter(
                                         membership_app=app,
