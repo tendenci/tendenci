@@ -127,6 +127,20 @@ def index(request, username='', template_name="profiles/index.html"):
     if not can_edit:
         can_edit = request.user == user_this
 
+    multiple_apps = False
+    if get_setting('module', 'memberships', 'enabled'):
+        from tendenci.addons.memberships.models import MembershipApp
+        membership_apps = MembershipApp.objects.filter(
+                               status=True,
+                               status_detail__in=['published',
+                                                  'active']
+                                ).values('id', 'name', 'slug'
+                                         ).order_by('name')
+        if len(membership_apps) > 1:
+            multiple_apps = True
+    else:
+        membership_apps = None
+
     return render_to_response(template_name, {
         'can_edit': can_edit,
         "user_this": user_this,
@@ -138,6 +152,8 @@ def index(request, username='', template_name="profiles/index.html"):
         'group_memberships': group_memberships,
         'memberships': memberships,
         'registrations': registrations,
+        'membership_apps': membership_apps,
+        'multiple_apps': multiple_apps
         }, context_instance=RequestContext(request))
 
 
