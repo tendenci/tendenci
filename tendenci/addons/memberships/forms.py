@@ -2115,7 +2115,10 @@ class MembershipDefaultForm(TendenciBaseForm):
                 del self.fields[field_name]
 
         demographics = self.instance.demographics
-        app = MembershipApp.objects.current_app()
+        if self.instance and self.instance.app:
+            app = self.instance.app
+        else:
+            app = MembershipApp.objects.current_app()
         demographic_fields = get_selected_demographic_fields(app, forms)
         self.demographic_field_names = [field_item[0] for field_item in demographic_fields]
         for field_name, field in demographic_fields:

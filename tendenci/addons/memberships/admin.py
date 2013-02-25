@@ -216,7 +216,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     def get_fieldsets(self, request, instance=None):
-        demographics_fields = get_selected_demographic_field_names()
+        demographics_fields = get_selected_demographic_field_names(
+                                        instance and instance.app)
 
         if demographics_fields:
             demographics = (
