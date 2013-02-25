@@ -467,10 +467,11 @@ class MembershipTypeAdmin(admin.ModelAdmin):
 
         ('Other Options', {'fields': (
             'expiration_grace_period', ('require_approval', 
-            'admin_only'), 'order', 'status_detail')}),
+            'admin_only'), 'position', 'status_detail')}),
     )
 
     form = MembershipTypeForm
+    ordering = ['position',]
     
     def add_view(self, request):
         num_types = MembershipType.objects.all().count()

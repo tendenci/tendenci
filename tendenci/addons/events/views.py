@@ -191,7 +191,7 @@ def view_attendees(request, event_id, template_name='events/attendees.html'):
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(request.user, is_strict=False)
-    pricing = pricing.order_by('display_order', '-price')
+    pricing = pricing.order_by('position', '-price')
 
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
@@ -982,8 +982,8 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
                                                spots_available=spots_available
                                                )
 
-    individual_pricings = pricings.filter(quantity=1).order_by('display_order', '-price')
-    table_pricings = pricings.filter(quantity__gt=1).order_by('display_order', '-price')
+    individual_pricings = pricings.filter(quantity=1).order_by('position', '-price')
+    table_pricings = pricings.filter(quantity__gt=1).order_by('position', '-price')
 
     if not (individual_pricings or table_pricings):
         raise Http404
@@ -1094,7 +1094,7 @@ def register(request, event_id=0,
                                         Q(allow_user=True) | Q(allow_anonymous=True)
                                                 ).exists()
 
-        pricings = pricings.order_by('display_order', '-price')
+        pricings = pricings.order_by('position', '-price')
 
         try:
             pricing_id = int(pricing_id)

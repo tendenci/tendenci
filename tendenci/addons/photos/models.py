@@ -31,6 +31,7 @@ from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 import Image as PILImage
 import ImageFile
@@ -664,7 +665,7 @@ class PhotoSet(TendenciBaseModel):
             )
 
 
-class Image(ImageModel, TendenciBaseModel):
+class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     """
     A photo with its details
     """
@@ -684,8 +685,6 @@ class Image(ImageModel, TendenciBaseModel):
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
-
-    photoset_position = models.IntegerField(default=0, null=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)

@@ -81,7 +81,7 @@ def registration_pricing_and_button(context, event, user):
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(user, is_strict=False)
-    pricing = pricing.order_by('display_order', '-price')
+    pricing = pricing.order_by('position', '-price')
     
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)

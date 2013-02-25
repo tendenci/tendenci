@@ -1482,7 +1482,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
     if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     
-    field_objs = list(field_objs.order_by('order'))
+    field_objs = list(field_objs.order_by('position'))
     
     form = CorpMembForm(corp_app, field_objs, request.POST or None, request.FILES or None)
     
@@ -1614,7 +1614,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     
-    field_objs = list(field_objs.order_by('order'))
+    field_objs = list(field_objs.order_by('position'))
     
     # get the field entry for each field_obj if exists
     for field_obj in field_objs:
@@ -1982,7 +1982,7 @@ def view(request, id, template="corporate_memberships/view.html"):
     if not can_edit:
         field_objs = field_objs.exclude(field_name='corporate_membership_type')
     
-    field_objs = list(field_objs.order_by('order'))
+    field_objs = list(field_objs.order_by('position'))
     
     if can_edit:
         field_objs.append(CorpField(label='Representatives', field_type='section_break', admin_only=0))
@@ -2581,7 +2581,7 @@ def corp_export(request):
             filename = "corporate_memberships_%d_export.csv" % corp_app.id
             
             corp_fields = CorpField.objects.filter(corp_app=corp_app).exclude(field_type__in=('section_break', 
-                                                               'page_break')).order_by('order')
+                                                               'page_break')).order_by('position')
             label_list = [corp_field.label for corp_field in corp_fields]
             extra_field_labels = ['Dues reps', 'Join Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
             extra_field_names = ['dues_reps', 'join_dt', 'expiration_dt', 'status', 'status_detail', 'invoice_id', 'total', 'balance']
