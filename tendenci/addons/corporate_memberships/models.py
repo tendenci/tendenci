@@ -1122,6 +1122,10 @@ class CorpMembershipApp(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(CorpMembershipApp, self).save(*args, **kwargs)
 
+        if not self.memb_app.use_for_corp:
+            self.memb_app.use_for_corp = True
+            self.memb_app.save()
+
 
 class CorpMembershipAppField(models.Model):
     corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
