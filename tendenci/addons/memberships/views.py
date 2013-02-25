@@ -538,7 +538,7 @@ def application_confirmation_default(request, hash):
             raise Http404
         app = corp_app.memb_app
     else:
-        app = MembershipApp.objects.current_app()
+        membership.app
 
     return render_to_response(
         template_name, {
