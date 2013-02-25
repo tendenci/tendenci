@@ -1408,7 +1408,7 @@ def membership_default_add(request, slug='',
             raise Http404
 
         #app = corp_app.memb_app
-        app = MembershipApp.objects.current_app()
+        app = corp_app.memb_app
 
         cm_id = kwargs.get('cm_id')
         if not cm_id:
@@ -1445,6 +1445,9 @@ def membership_default_add(request, slug='',
 
     else:
         app = get_object_or_404(MembershipApp, slug=slug)
+
+        if app.use_for_corp:
+            return redirect(reverse('membership_default.corp_pre_add'))
 
     if not app:
         raise Http404
@@ -1651,7 +1654,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
 #    if not app.corp_app:
 #        raise Http404
     corp_app = CorpMembershipApp.objects.current_app()
-    app = MembershipApp.objects.current_app()
+    app = corp_app.memb_app
     if not app:
         raise Http404
 
