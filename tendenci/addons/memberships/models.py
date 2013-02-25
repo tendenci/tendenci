@@ -1222,6 +1222,42 @@ class MembershipDefault(TendenciBaseModel):
 
         return all(good)
 
+    def get_field_items(self):
+        app = MembershipApp.objects.current_app()
+        # to be updated if supports multiple apps
+        # app = self.app
+        items = {}
+        field_names = MembershipAppField.objects.filter(
+                                        membership_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).values_list('field_name',
+                                                      flat=True)
+        if field_names:
+            user = self.user
+            profile = user.profile
+            if hasattr(user, 'demographics'):
+                demographics = getattr(user, 'demographics')
+            else:
+                demographics = None
+            for field_name in field_names:
+                if hasattr(user, field_name):
+                    items[field_name] = getattr(user, field_name)
+                elif hasattr(profile, field_name):
+                    items[field_name] = getattr(profile, field_name)
+                elif demographics and hasattr(demographics, field_name):
+                    items[field_name] = getattr(demographics, field_name)
+                elif hasattr(self, field_name):
+                    items[field_name] = getattr(self, field_name)
+
+            for name, value in items.iteritems():
+                if hasattr(value, 'all'):
+                    items[name] = ', '.join([item.__unicode__() \
+                                             for item in value.all()])
+
+        return items
+
     def auto_update_paid_object(self, request, payment):
         """
         Update membership status and dates. Created archives if
@@ -1872,6 +1908,17 @@ class NoticeLogRecord(models.Model):
     guid = models.CharField(max_length=50, editable=False)
     notice_log = models.ForeignKey(NoticeLog, related_name="log_records")
     membership = models.ForeignKey(Membership, related_name="log_records")
+    action_taken = models.BooleanField(default=0)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)
+
+
+class NoticeDefaultLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog,
+                                   related_name="default_log_records")
+    membership = models.ForeignKey(MembershipDefault,
+                                   related_name="default_log_records")
     action_taken = models.BooleanField(default=0)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)

@@ -149,7 +149,7 @@ class EventListNode(Node):
         end_dt = day
 
         filters = get_query_filters(context['user'], 'events.view_event')
-        events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt).distinct()
+        events = Event.objects.filter(filters).filter(start_dt__lte=start_dt, end_dt__gte=end_dt).distinct().extra(select={'hour': 'extract( hour from start_dt )'}).extra(select={'minute': 'extract( minute from start_dt )'})
 
         if type:
             events = events.filter(type=type)
@@ -157,8 +157,11 @@ class EventListNode(Node):
         if weekday == 'Sun' or weekday == 'Sat':
             events = events.filter(on_weekend=True)
 
-        events = events.order_by(self.ordering or 'start_dt')
-        
+        if self.ordering == "single_day":
+            events = events.order_by('hour', 'minute')
+        else:
+            events = events.order_by(self.ordering or 'start_dt')
+
         context[self.context_var] = events
         return ''
 

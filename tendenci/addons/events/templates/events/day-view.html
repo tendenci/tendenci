@@ -48,7 +48,7 @@
         <div style="clear: both;"></div>
     </div>
 
-    {% event_list date type as events %}
+    {% event_list date type 'single_day' as events %}
 	{% for event in events %}
 		<div class="event-wrap">
 			<div class="event-sidebar">
@@ -160,7 +160,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
     <script type="text/javascript">
        $(".datepicker").live('focus', function() {
-            console.log('this', this);
             $(this).datepicker({ dateFormat: 'yy-mm-dd' });
        });
     </script>
