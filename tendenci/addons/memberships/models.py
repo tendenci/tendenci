@@ -333,10 +333,6 @@ class MembershipDefault(TendenciBaseModel):
     exported = models.BooleanField()
     chapter = models.CharField(max_length=150, blank=True)
     areas_of_expertise = models.CharField(max_length=1000, blank=True)
-    organization_entity = models.ForeignKey(Entity,
-        related_name='organization_set', editable=False, null=True)
-    corporate_entity = models.ForeignKey(Entity,
-        related_name='corporate_set', editable=False, null=True)
     corp_profile_id = models.IntegerField(blank=True, default=0)
     corporate_membership_id = models.IntegerField(blank=True, null=True)
     home_state = models.CharField(max_length=50, blank=True, default=u'')

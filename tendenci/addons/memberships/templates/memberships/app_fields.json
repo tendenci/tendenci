@@ -574,20 +574,6 @@
     "admin_only": "false"
     },
     {
-    "label": "Organization Entity",
-    "field_name": "organization_entity",
-    "display": "true",
-    "required": "false",
-    "admin_only": "false"
-    },
-    {
-    "label": "Corporate Entity",
-    "field_name": "corporate_entity",
-    "display": "true",
-    "required": "false",
-    "admin_only": "false"
-    },
-    {
     "label": "Corporate Membership",
     "field_name": "corporate_membership_id",
     "display": "true",
