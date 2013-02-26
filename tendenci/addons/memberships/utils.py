@@ -949,6 +949,37 @@ class ImportMembDefault(object):
                              'GMT': 'UTC'
                              }
         self.t4_timezone_map_keys = self.t4_timezone_map.keys()
+        self.membership_type_ids = MembershipType.objects.all(
+                                    ).values_list('id', flat=True)
+        self.membership_apps = MembershipApp.objects.all()
+        self.membership_app_ids_dict = dict([(app.id, app
+                                    ) for app in self.membership_apps])
+        self.membership_app_names_dict = dict([(app.name, app
+                                    ) for app in self.membership_apps])
+        # membership_type to app map
+        self.membership_types_to_apps_map = dict([(mt_id, ([], [])
+                                    ) for mt_id in self.membership_type_ids])
+        for app in self.membership_apps:
+            mt_ids = app.membership_types.all().values_list('id', flat=True)
+            for mt_id in self.membership_type_ids:
+                if mt_id in mt_ids:
+                    if app.use_for_corp:
+                        self.membership_types_to_apps_map[
+                                    mt_id][1].append(app.id)
+                    else:
+                        self.membership_types_to_apps_map[
+                                    mt_id][0].append(app.id)
+        apps = MembershipApp.objects.filter(
+                                    status=True,
+                                    status_detail__in=['active',
+                                                        'published']
+                                    ).order_by('id')
+        [self.default_app_id] = apps.filter(
+                                    use_for_corp=False
+                                    )[:1] or [None]
+        [self.default_app_id_for_corp_indiv] = apps.filter(
+                                    use_for_corp=True
+                                    )[:1] or [None]
 
     def init_summary(self):
         return {
@@ -977,6 +1008,67 @@ class ImportMembDefault(object):
             d['allow_member_view'] = True
         return d
 
+    def clean_membership_type(self, memb_data):
+        """
+        Ensure we have a valid membership type.
+        """
+        if 'membership_type' in memb_data.keys():
+            value = memb_data['membership_type']
+
+            if value.isdigit():
+                if not value in self.membership_type_ids:
+                    memb_data['membership_type'] = None
+            else:
+                if isinstance(value, basestring):
+                    [memb_data['membership_type']] = MembershipType.objects.filter(
+                                                name=value).values_list(
+                                                    'id',
+                                                    flat=True
+                                                    )[:1] or [None]
+        if not 'membership_type' in memb_data.keys() or \
+                not memb_data['membership_type']:
+            memb_data['membership_type'] = self.membership_type_ids[0]
+
+    def clean_app(self, memb_data):
+        """
+        Ensure the app field has the right data.
+        """
+        has_app = False
+
+        if 'app' in memb_data.keys():
+            value = memb_data['app']
+
+            if value.isdigit():
+                if value in self.membership_app_ids_dict.keys():
+                    app = self.membership_app_ids_dict[value]
+                    if app.membership_types.filter(
+                        id=memb_data['membership_type']
+                        ).exists():
+                        has_app = True
+            else:
+                if isinstance(value, basestring):
+                    # check for app name
+                    if value in self.membership_app_names_dict.keys():
+                        app = self.membership_app_names_dict[value]
+                        if app.membership_types.filter(
+                            id=memb_data['membership_type']
+                            ).exists():
+                            has_app = True
+        if not has_app:
+            membership_type_id = memb_data['membership_type']
+            if memb_data.get('corporate_membership_id'):
+                [app_id] = self.membership_types_to_apps_map[
+                                        membership_type_id][1][:1]
+                if not app_id:
+                    app_id = self.default_app_id_for_corp_indiv
+            else:
+                [app_id] = self.membership_types_to_apps_map[
+                                    membership_type_id][0][:1]
+                if not app_id:
+                    app_id = self.default_app_id
+
+            memb_data['app'] = app_id
+
     def process_default_membership(self, memb_data, **kwargs):
         """
         Check if it's insert or update. If dry_run is False,
@@ -984,6 +1076,8 @@ class ImportMembDefault(object):
 
         :param memb_data: a dictionary that includes the info of a membership
         """
+        self.clean_membership_type(memb_data)
+        self.clean_app(memb_data)
         self.memb_data = memb_data
         self.field_names = memb_data.keys()
         user = None
@@ -1043,7 +1137,10 @@ class ImportMembDefault(object):
                 user_display['user_action'] = 'update'
                 user_display['user'] = user
                 # pick the most recent one
-                [memb] = MembershipDefault.objects.filter(user=user).exclude(
+                [memb] = MembershipDefault.objects.filter(
+                        user=user,
+                        membership_type__id=self.memb_data['membership_type']
+                                          ).exclude(
                           status_detail='archive'
                                 ).order_by('-id')[:1] or [None]
                 if memb:
@@ -1392,7 +1489,7 @@ def get_membership_type_by_value(value):
         value = int(value)
     if isinstance(value, int):
         return get_membership_type_by_id(value)
-    elif isinstance(value, str):
+    elif isinstance(value, basestring):
         return get_membership_type_by_name(value)
 
 
