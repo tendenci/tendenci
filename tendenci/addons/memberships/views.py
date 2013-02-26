@@ -52,8 +52,8 @@ from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, MembershipImport, MembershipDefault,
     MembershipImportData, MembershipApp)
-from tendenci.addons.memberships.forms import (MembershipExportForm,
-    AppCorpPreForm, MembershipForm, MembershipDefaultForm,
+from tendenci.addons.memberships.forms import (
+    MembershipExportForm, AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
     AppEntryForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
     DemographicsForm,
@@ -1577,6 +1577,10 @@ def membership_default_add(request,
             profile_form.save(
                 request_user=request.user
             )
+            # save demographics
+            demographics = demographics_form.save(commit=False)
+            demographics.user = user
+            demographics.save()
 
             # save demographics
             demographics = demographics_form.save(commit=False)

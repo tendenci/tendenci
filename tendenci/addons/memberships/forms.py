@@ -710,37 +710,6 @@ class MembershipDefault2Form(forms.ModelForm):
                       (0, 'Inactive')
                       )
 
-    ud1 = forms.CharField(widget=forms.TextInput)
-    ud2 = forms.CharField(widget=forms.TextInput)
-    ud3 = forms.CharField(widget=forms.TextInput)
-    ud4 = forms.CharField(widget=forms.TextInput)
-    ud5 = forms.CharField(widget=forms.TextInput)
-    ud6 = forms.CharField(widget=forms.TextInput)
-    ud7 = forms.CharField(widget=forms.TextInput)
-    ud8 = forms.CharField(widget=forms.TextInput)
-    ud9 = forms.CharField(widget=forms.TextInput)
-    ud10 = forms.CharField(widget=forms.TextInput)
-    ud11 = forms.CharField(widget=forms.TextInput)
-    ud12 = forms.CharField(widget=forms.TextInput)
-    ud13 = forms.CharField(widget=forms.TextInput)
-    ud14 = forms.CharField(widget=forms.TextInput)
-    ud15 = forms.CharField(widget=forms.TextInput)
-    ud16 = forms.CharField(widget=forms.TextInput)
-    ud17 = forms.CharField(widget=forms.TextInput)
-    ud18 = forms.CharField(widget=forms.TextInput)
-    ud19 = forms.CharField(widget=forms.TextInput)
-    ud20 = forms.CharField(widget=forms.TextInput)
-    ud21 = forms.CharField(widget=forms.TextInput)
-    ud22 = forms.CharField(widget=forms.TextInput)
-    ud23 = forms.CharField(widget=forms.TextInput)
-    ud24 = forms.CharField(widget=forms.TextInput)
-    ud25 = forms.CharField(widget=forms.TextInput)
-    ud26 = forms.CharField(widget=forms.TextInput)
-    ud27 = forms.CharField(widget=forms.TextInput)
-    ud28 = forms.CharField(widget=forms.TextInput)
-    ud29 = forms.CharField(widget=forms.TextInput)
-    ud30 = forms.CharField(widget=forms.TextInput)
-
     class Meta:
         model = MembershipDefault
 
@@ -884,7 +853,6 @@ class MembershipDefault2Form(forms.ModelForm):
             membership.save_invoice(status_detail='estimate')
 
         membership.user.profile.refresh_member_number()
-
         return membership
 
 
