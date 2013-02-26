@@ -22,8 +22,14 @@ class GetBoxNode(Node):
                 user = context['user']
 
         try:
+            pk = Variable(self.pk)
+            pk = pk.resolve(context)
+        except:
+            pk = self.pk
+
+        try:
             filters = get_query_filters(user, 'boxes.view_box')
-            box = Box.objects.filter(filters).filter(pk=self.pk)
+            box = Box.objects.filter(filters).filter(pk=pk)
             if user.is_authenticated():
                 if not user.profile.is_superuser:
                     box = box.distinct()
