@@ -949,14 +949,17 @@ class ImportMembDefault(object):
                              'GMT': 'UTC'
                              }
         self.t4_timezone_map_keys = self.t4_timezone_map.keys()
-        self.membership_type_ids = MembershipType.objects.all(
-                                    ).values_list('id', flat=True)
+        self.membership_type_ids = [mt.id for mt in MembershipType.objects.all(
+                                    )
+                                    if mt.membershipapp_set.all().exists()
+                                    ]
         self.membership_apps = MembershipApp.objects.all()
         self.membership_app_ids_dict = dict([(app.id, app
                                     ) for app in self.membership_apps])
         self.membership_app_names_dict = dict([(app.name, app
                                     ) for app in self.membership_apps])
         # membership_type to app map
+        # the two lists are: apps and apps for corp individuals
         self.membership_types_to_apps_map = dict([(mt_id, ([], [])
                                     ) for mt_id in self.membership_type_ids])
         for app in self.membership_apps:
@@ -969,6 +972,13 @@ class ImportMembDefault(object):
                     else:
                         self.membership_types_to_apps_map[
                                     mt_id][0].append(app.id)
+        [self.default_membership_type_id] = [key for key in \
+                    self.membership_types_to_apps_map.keys() \
+            if self.membership_types_to_apps_map[key][0] != []][:1] or [None]
+        [self.default_membership_type_id_for_corp_indiv] = [key for key in \
+                    self.membership_types_to_apps_map.keys() \
+            if self.membership_types_to_apps_map[key][1] != []][:1] or [None]
+
         apps = MembershipApp.objects.filter(
                                     status=True,
                                     status_detail__in=['active',
@@ -976,9 +986,13 @@ class ImportMembDefault(object):
                                     ).order_by('id')
         [self.default_app_id] = apps.filter(
                                     use_for_corp=False
+                                    ).values_list('id',
+                                                  flat=True
                                     )[:1] or [None]
         [self.default_app_id_for_corp_indiv] = apps.filter(
                                     use_for_corp=True
+                                    ).values_list('id',
+                                                  flat=True
                                     )[:1] or [None]
 
     def init_summary(self):
@@ -1027,7 +1041,10 @@ class ImportMembDefault(object):
                                                     )[:1] or [None]
         if not 'membership_type' in memb_data.keys() or \
                 not memb_data['membership_type']:
-            memb_data['membership_type'] = self.membership_type_ids[0]
+            if memb_data.get('corporate_membership_id'):
+                memb_data['membership_type'] = self.default_membership_type_id_for_corp_indiv
+            else:
+                memb_data['membership_type'] = self.default_membership_type_id
 
     def clean_app(self, memb_data):
         """
@@ -1056,14 +1073,16 @@ class ImportMembDefault(object):
                             has_app = True
         if not has_app:
             membership_type_id = memb_data['membership_type']
+
             if memb_data.get('corporate_membership_id'):
                 [app_id] = self.membership_types_to_apps_map[
-                                        membership_type_id][1][:1]
+                                    membership_type_id][1][:1] or [None]
                 if not app_id:
                     app_id = self.default_app_id_for_corp_indiv
             else:
                 [app_id] = self.membership_types_to_apps_map[
-                                    membership_type_id][0][:1]
+                                    membership_type_id][0][:1] or [None]
+
                 if not app_id:
                     app_id = self.default_app_id
 
@@ -1252,14 +1271,21 @@ class ImportMembDefault(object):
         # membership
         if not memb:
             memb = MembershipDefault(
-                    user=user,
-                    creator=self.request_user,
-                    creator_username=self.request_user.username,
-                    owner=self.request_user,
-                    owner_username=self.request_user.username,
-                                     )
+                    user=user)
 
         self.assign_import_values_from_dict(memb, action_info['memb_action'])
+        if not memb.creator:
+            memb.creator = self.request_user
+        if not memb.creator_username:
+            memb.creator_username = self.request_user.username
+        if not memb.owner:
+            memb.owner = self.request_user
+        if not memb.owner_username:
+            memb.owner_username = self.request_user.username
+        if not memb.entity:
+            memb.entity_id = 1
+        if not memb.lang:
+            memb.lang = 'eng'
 
         if memb.status == None or memb.status == '' or \
             self.memb_data.get('status', '') == '':
@@ -1307,6 +1333,7 @@ class ImportMembDefault(object):
         if not memb.member_number:
             if memb.is_active:
                 memb.member_number = 5100 + memb.pk
+                memb.save()
         if memb.member_number:
             if not profile.member_number:
                 profile.member_number = memb.member_number
