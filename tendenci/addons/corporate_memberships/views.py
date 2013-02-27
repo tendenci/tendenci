@@ -115,12 +115,12 @@ def get_app_fields_json(request):
 
 
 @login_required
-def app_preview(request, app_id,
+def app_preview(request, slug,
                     template='corporate_memberships/applications/preview.html'):
     """
     Corporate membership application preview.
     """
-    app = get_object_or_404(CorpMembershipApp, pk=app_id)
+    app = get_object_or_404(CorpMembershipApp, slug=slug)
     is_superuser = request.user.profile.is_superuser
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
@@ -160,7 +160,8 @@ def corpmembership_add_pre(request,
             EventLog.objects.log(instance=creator)
 
             # redirect to add
-            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add'),
+            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add',
+                                                          args=[app.slug]),
                                               '?hash=%s' % hash))
 
     context = {"form": form,
@@ -168,15 +169,11 @@ def corpmembership_add_pre(request,
     return render_to_response(template, context, RequestContext(request))
 
 
-def corpmembership_add(request,
+def corpmembership_add(request, slug='',
                        template='corporate_memberships/applications/add.html'):
     """
     Corporate membership add.
     """
-    app = CorpMembershipApp.objects.current_app()
-    if not app:
-        raise Http404
-    is_superuser = request.user.profile.is_superuser
     creator = None
     hash = request.GET.get('hash', '')
     if not request.user.is_authenticated():
@@ -186,6 +183,19 @@ def corpmembership_add(request,
             # anonymous user - redirect them to enter their
             # contact email before processing
             return HttpResponseRedirect(reverse('corpmembership.add_pre'))
+
+    if not slug:
+        app = CorpMembershipApp.objects.current_app()
+        if not app:
+            raise Http404
+    else:
+        app = get_object_or_404(CorpMembershipApp, slug=slug)
+        current_app = CorpMembershipApp.objects.current_app()
+
+        if app.id != current_app.id:
+            return HttpResponseRedirect(reverse('corpmembership_app.preview',
+                                                args=[app.slug]))
+    is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
     if not is_superuser:

@@ -7,9 +7,9 @@
   <ul class="object-tools">
     {% block object-tools-items %}
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-    <li><a href="{% url "corpmembership_app.preview" original.id %}" class="viewsitelink">{% trans "Preview" %}</a></li>
+    <li><a href="{% url "corpmembership_app.preview" original.slug %}" class="viewsitelink">{% trans "Preview" %}</a></li>
     {% if original.is_current %}
-    <li><a href="{% url "corpmembership.add" %}" class="viewsitelink">{% trans "View on site" %}</a></li>
+    <li><a href="{% url "corpmembership.add" original.slug %}" class="viewsitelink">{% trans "View on site" %}</a></li>
     {% endif %}
     {% endblock %}
   </ul>
