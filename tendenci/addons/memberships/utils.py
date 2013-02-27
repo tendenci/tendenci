@@ -1188,6 +1188,7 @@ class ImportMembDefault(object):
         """
         Database import here - insert or update
         """
+        from tendenci.addons.corporate_memberships.models import CorpMembership
         # handle user
         if not user:
             user = User()
@@ -1285,6 +1286,18 @@ class ImportMembDefault(object):
                 expire_dt = memb.membership_type.get_expiration_dt(
                                             join_dt=memb.join_dt)
                 setattr(memb, 'expire_dt', expire_dt)
+
+        # check corp_profile_id
+        if memb.corporate_membership_id:
+            if not memb.corp_profile_id:
+                [corp_profile_id] = CorpMembership.objects.filter(
+                                    id=memb.corporate_membership_id
+                                    ).values_list(
+                                'corp_profile_id',
+                                flat=True)[:1] or [None]
+                if corp_profile_id:
+                    memb.corp_profile_id = corp_profile_id
+
         memb.save()
 
         memb.is_active = self.is_active(memb)
