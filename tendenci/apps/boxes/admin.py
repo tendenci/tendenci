@@ -7,8 +7,9 @@ from tendenci.apps.boxes.forms import BoxForm
 
 
 class BoxAdmin(TendenciBaseModelAdmin):
-    list_display = ('edit_link', 'pk', 'title', 'tags', 'content', 'admin_perms', 'admin_status')
+    list_display = ('edit_link', 'pk', 'title', 'tags', 'content', 'admin_perms', 'admin_status', 'position')
     search_fields = ('title', 'content', 'tags',)
+    list_editable = ['position']
     fieldsets = (
         (None, {'fields': ('title', 'content', 'tags')}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
@@ -23,9 +24,13 @@ class BoxAdmin(TendenciBaseModelAdmin):
         )}),
     )
     form = BoxForm
+    ordering = ['-position']
 
     class Media:
         js = (
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.17.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
         )
 

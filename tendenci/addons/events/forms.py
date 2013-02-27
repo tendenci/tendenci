@@ -729,7 +729,8 @@ class Reg8nConfPricingForm(BetterModelForm):
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         kwargs.update({'initial': {'start_dt':datetime.now(),
-                                   'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
+                        'end_dt': (datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17, 0, 0)
+                        + timedelta(days=29))}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
 
@@ -770,7 +771,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'allow_anonymous',
             'allow_user',
             'allow_member',
-            'display_order'
+            'position'
          ]
 
         fieldsets = [('Registration Pricing', {
@@ -783,7 +784,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
-                    'display_order'
+                    'position'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],

@@ -4,12 +4,17 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 
+from django.shortcuts import get_object_or_404
+
 from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
 from tendenci.apps.forms_builder.forms.managers import FormManager
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.base.fields import EmailVerificationField
+from tendenci.apps.redirects.models import Redirect
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 #STATUS_DRAFT = 1
 #STATUS_PUBLISHED = 2
@@ -144,7 +149,7 @@ class FieldManager(models.Manager):
         return self.filter(visible=True)
 
 
-class Field(models.Model):
+class Field(OrderingBaseModel):
     """
     A field for a user-built form.
     'field_function' has the following options:
@@ -169,7 +174,6 @@ class Field(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable")
-    position = models.PositiveIntegerField(_('position'), default=0)
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text="Default value of the field")
 
@@ -179,7 +183,6 @@ class Field(models.Model):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         #order_with_respect_to = "form"
-        ordering = ('position',)
 
     def __unicode__(self):
         return self.label

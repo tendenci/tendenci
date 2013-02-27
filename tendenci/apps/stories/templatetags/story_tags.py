@@ -157,7 +157,7 @@ class ListStoriesNode(ListNode):
         if order:
             items = items.order_by(order)
         else:
-            items = items.order_by('-ncsortorder', '-start_dt')
+            items = items.order_by('-position', '-start_dt')
 
         # if order is not specified it sorts by relevance
         if randomize:

@@ -34,12 +34,12 @@ from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.files.models import File
+from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.apps.entities.models import Entity
 from tendenci.apps.notifications import models as notification
 from tendenci.addons.directories.models import Directory
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
-
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^tinymce.models.HTMLField"])
@@ -86,7 +86,7 @@ FIELD_FUNCTIONS = (
 )
 
 
-class MembershipType(TendenciBaseModel):
+class MembershipType(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
@@ -107,8 +107,6 @@ class MembershipType(TendenciBaseModel):
     renewal = models.BooleanField(_('Renewal Only'), default=0)
     renewal_require_approval = models.BooleanField(_('Renewal Requires Approval'), default=1)
 
-    order = models.IntegerField(_('Order'), default=0,
-        help_text='Types will be displayed in ascending order based on this field')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
 
     never_expires = models.BooleanField(_("Never Expires"), default=0,
@@ -2120,7 +2118,7 @@ class AppFieldManager(models.Manager):
         return self.filter(visible=True, admin_only=False).order_by('position')
 
 
-class AppField(models.Model):
+class AppField(OrderingBaseModel):
     app = models.ForeignKey("App", related_name="fields")
     content_type = models.ForeignKey(ContentType,
         related_name="membership_app_field_set", editable=False, null=True)
@@ -2147,7 +2145,6 @@ class AppField(models.Model):
 
     unique = models.BooleanField(_("Unique"), default=False, blank=True)
     admin_only = models.BooleanField(_("Admin Only"), default=False)
-    position = models.IntegerField(blank=True)
     exportable = models.BooleanField(_("Exportable"), default=True)
 
     objects = AppFieldManager()

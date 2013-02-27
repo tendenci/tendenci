@@ -36,6 +36,7 @@ from tendenci.addons.events.settings import (FIELD_MAX_LENGTH,
 from tendenci.core.base.utils import localize_date
 from tendenci.core.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
@@ -199,7 +200,7 @@ class RegistrationConfiguration(models.Model):
             
         return pricings
 
-class RegConfPricing(models.Model):
+class RegConfPricing(OrderingBaseModel):
     """
     Registration configuration pricing
     """
@@ -208,7 +209,6 @@ class RegConfPricing(models.Model):
     title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
-    display_order = models.IntegerField(default=1, help_text="The pricing will be sorted by this field.")
     
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
@@ -1195,7 +1195,7 @@ class CustomRegForm(models.Model):
             
         return cloned_obj
 
-class CustomRegField(models.Model):
+class CustomRegField(OrderingBaseModel):
     form = models.ForeignKey("CustomRegForm", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     map_to_field = models.CharField(_("Map to User Field"), choices=USER_FIELD_CHOICES,
@@ -1206,7 +1206,6 @@ class CustomRegField(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
-    position = models.PositiveIntegerField(_('position'), default=0)
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text="Default value of the field")
     display_on_roster = models.BooleanField(_("Show on Roster"), default=False)

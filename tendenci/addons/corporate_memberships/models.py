@@ -44,6 +44,7 @@ from tendenci.addons.corporate_memberships.utils import (
                                             dues_rep_emails_list,
                                             corp_memb_update_perms)
 from tendenci.core.imports.utils import get_unique_username
+from tendenci.libs.abstracts.models import OrderingBaseModel
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
 
@@ -82,7 +83,7 @@ SIZE_CHOICES = (
                 )
 
 
-class CorporateMembershipType(TendenciBaseModel):
+class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
@@ -94,8 +95,6 @@ class CorporateMembershipType(TendenciBaseModel):
     membership_type = models.ForeignKey(MembershipType, 
                                         help_text=_("Bind individual memberships to this membership type.")) 
     
-    order = models.IntegerField(_('Order'), default=0, 
-                                help_text='Types will be displayed in ascending order based on this field.')
     admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
     
     apply_threshold = models.BooleanField(_('Allow Threshold'), default=0)
@@ -2020,7 +2019,7 @@ class CorpApp(TendenciBaseModel):
         super(CorpApp, self).save(*args, **kwargs)
  
        
-class CorpField(models.Model):
+class CorpField(OrderingBaseModel):
     corp_app = models.ForeignKey("CorpApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     # hidden fields - field_name and object_type
@@ -2030,7 +2029,6 @@ class CorpField(models.Model):
     field_type = models.CharField(_("Field Type"), choices=FIELD_CHOICES, max_length=80, 
                                   blank=True, null=True, default='CharField')
     
-    order = models.IntegerField(_("Order"), default=0)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
                                 help_text="Comma separated options where applicable")
     # checkbox/radiobutton
@@ -2051,7 +2049,6 @@ class CorpField(models.Model):
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        ordering = ('order',)
         
     def __unicode__(self):
         if self.field_name:

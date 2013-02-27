@@ -78,7 +78,6 @@ class Command(BaseCommand):
         from tendenci.core.files.models import File
 
         staff_installed = "addons.staff" in settings.INSTALLED_APPS
-
         print 'npo_default_auth_user.json'
         call_command('loaddata', 'npo_default_auth_user.json')
         print 'npo_default_entities.json'

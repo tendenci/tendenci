@@ -140,3 +140,12 @@ class Identity(models.Model):
 
     class Meta:
         abstract = True
+
+
+class OrderingBaseModel(models.Model):
+    position = models.IntegerField(_('Position'), default=0,
+                                   null=True, blank=True)
+
+    class Meta:
+        abstract = True
+        ordering = ('position',)

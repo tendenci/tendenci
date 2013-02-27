@@ -6,6 +6,7 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.pages.models import Page
 from tendenci.apps.navs.managers import NavManager
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 class Nav(TendenciBaseModel):
     class Meta:
@@ -33,15 +34,14 @@ class Nav(TendenciBaseModel):
         """
         Returns all items with level 0.
         """
-        return self.navitem_set.filter(level=0).order_by('ordering')
+        return self.navitem_set.filter(level=0).order_by('position')
     
-class NavItem(models.Model):
+class NavItem(OrderingBaseModel):
     nav = models.ForeignKey(Nav)
     label = models.CharField(max_length=100)
     title = models.CharField(_("Title Attribute"), max_length=100, blank=True, null=True)
     new_window = models.BooleanField(_("Open in a new window"), default=False)
     css = models.CharField(_("CSS Class"), max_length=100, blank=True, null=True)
-    ordering = models.IntegerField(default=0)
     level = models.IntegerField(default=0)
     page = models.ForeignKey(Page, null=True)
     url = models.CharField(_("URL"), max_length=200, blank=True, null=True)
@@ -62,27 +62,27 @@ class NavItem(models.Model):
         """
         #get the first sibling among the ones with greater ordering
         siblings = NavItem.objects.filter(nav=self.nav,
-            ordering__gt=self.ordering,
-            level=self.level).order_by('ordering')
+            position__gt=self.position,
+            level=self.level).order_by('position')
         if siblings:
             sibling = siblings[0]
             #return all the items between the adjacent siblings.
             children = NavItem.objects.filter(nav=self.nav,
                 level = self.level+1,
-                ordering__gt=self.ordering,
-                ordering__lt=sibling.ordering).order_by('ordering')
+                position__gt=self.position,
+                position__lt=sibling.position).order_by('position')
             return children
         else:
             # get children for the last item in a list
             children = NavItem.objects.filter(nav=self.nav,
                 level = self.level+1,
-                ordering__gt=self.ordering).order_by('ordering')
+                position__gt=self.position).order_by('position')
             return children
     
     @property
     def next(self):
         try:
-            next = NavItem.objects.get(ordering=self.ordering+1, nav=self.nav)
+            next = NavItem.objects.get(position=self.position+1, nav=self.nav)
         except NavItem.DoesNotExist:
             return None
         return next
@@ -90,7 +90,7 @@ class NavItem(models.Model):
     @property
     def prev(self):
         try:
-            prev = NavItem.objects.get(ordering=self.ordering-1, nav=self.nav)
+            prev = NavItem.objects.get(position=self.position-1, nav=self.nav)
         except NavItem.DoesNotExist:
             return None
         return prev

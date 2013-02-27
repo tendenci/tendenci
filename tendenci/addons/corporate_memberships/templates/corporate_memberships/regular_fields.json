@@ -14,7 +14,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 1
+  "position": 1
  }, 
  {
   "label": "Company Name", 
@@ -31,7 +31,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 2
+  "position": 2
  }, 
  {
   "label": "Address", 
@@ -48,7 +48,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 3
+  "position": 3
  }, 
  {
   "label": "Address2", 
@@ -65,7 +65,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 4
+  "position": 4
  }, 
  {
   "label": "City", 
@@ -82,7 +82,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 5
+  "position": 5
  }, 
  {
   "label": "State", 
@@ -99,7 +99,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 6
+  "position": 6
  }, 
  {
   "label": "Zip Code", 
@@ -116,7 +116,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 7
+  "position": 7
  }, 
  {
   "label": "Country", 
@@ -133,7 +133,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 8
+  "position": 8
  }, 
  {
   "label": "Phone", 
@@ -150,7 +150,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 9
+  "position": 9
  }, 
  {
   "label": "Website", 
@@ -167,7 +167,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 10
+  "position": 10
  }, 
  {
   "label": "Membership Details", 
@@ -184,7 +184,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 11
+  "position": 11
  }, 
  {
   "label": "Corporate Membership Type", 
@@ -201,7 +201,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 12
+  "position": 12
  }, 
  {
   "label": "Authorized E-mail Domains", 
@@ -218,7 +218,7 @@
   "instruction": "Comma delimited.",
   "default_value": "",
   "css_class": "",
-  "order": 13
+  "position": 13
  },  
  {
   "label": "Payment Details", 
@@ -235,7 +235,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 15
+  "position": 15
  }, 
  {
   "label": "Payment Method", 
@@ -252,7 +252,7 @@
   "instruction": "",
   "default_value": "",
   "css_class": "",
-  "order": 16
+  "position": 16
  }
  
 ]

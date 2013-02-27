@@ -144,7 +144,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
             else:
                 return redirect('navs.detail', id=nav.id)
     else:
-        formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('ordering'))
+        formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('position'))
 
     return render_to_response(
         template_name,

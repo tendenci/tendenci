@@ -2,9 +2,10 @@ import os
 import sys
 
 from fnmatch import fnmatchcase
-
 from distutils.util import convert_path
 from setuptools import setup, find_packages
+
+from tendenci import __version__ as version
 
 
 def read(*path):
@@ -111,7 +112,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.17',
+    version=version,
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -141,6 +142,7 @@ setup(
     entry_points="""
             [console_scripts]
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
+            update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     include_package_data=True,
     dependency_links=[
@@ -167,7 +169,7 @@ setup(
         "django-haystack==1.2.7",
         "feedparser>=4.1",
         "httplib2>=0.4.0",
-        "pytz>=2010h",
+        "pytz==2012j",
         "simplejson>=2.0.9",
         "webcolors>=1.3.1",
         "xlrd==0.7.3",

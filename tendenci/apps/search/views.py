@@ -77,7 +77,7 @@ class SearchView(object):
         if self.query:
             return self.form.search()
         
-        return self.form.search()
+        return self.form.search(order_by='newest')
     
     def build_page(self):
         """
