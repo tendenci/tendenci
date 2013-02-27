@@ -1139,7 +1139,7 @@ class ImportMembDefault(object):
                 # pick the most recent one
                 [memb] = MembershipDefault.objects.filter(
                         user=user,
-                        membership_type__id=self.memb_data['membership_type']
+                        app__id=self.memb_data['app']
                                           ).exclude(
                           status_detail='archive'
                                 ).order_by('-id')[:1] or [None]
