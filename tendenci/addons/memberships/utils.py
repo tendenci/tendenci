@@ -130,7 +130,7 @@ def get_membership_type_choices(user, membership_app, renew=False,
         membership_types = membership_app.membership_types.all()
         if not user or not user.profile.is_superuser:
             membership_types = membership_types.filter(admin_only=False)
-        membership_types = membership_types.order_by('order')
+        membership_types = membership_types.order_by('position')
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
@@ -635,7 +635,7 @@ def get_notice_token_help_text(notice=None):
                                         display=True,
                                         ).exclude(
                                         field_name=''
-                                        ).order_by('order')
+                                        ).order_by('position')
             help_text += "<ul>"
             for field in fields:
                 help_text += '<li>{{ %s }} - (for %s)</li>' % (
