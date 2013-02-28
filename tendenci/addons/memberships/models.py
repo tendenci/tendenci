@@ -348,7 +348,11 @@ class MembershipDefault(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True)
     groups = models.ManyToManyField(Group, null=True)
 
-    app = models.ForeignKey("MembershipApp", null=True)
+    organization_entity = models.ForeignKey(Entity,
+        related_name='organization_set', editable=False, null=True)
+    corporate_entity = models.ForeignKey(Entity,
+        related_name='corporate_set', editable=False, null=True)
+    #app = models.ForeignKey("MembershipApp", null=True)
 
     objects = MembershipDefaultManager()
 
