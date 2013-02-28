@@ -93,6 +93,13 @@ def nav(context, nav_id):
     if 'user' in context:
         if isinstance(context['user'], User):
             user = context['user']
+
+    try:
+        nav_id = Variable(nav_id)
+        nav_id = nav_id.resolve(context)
+    except:
+        pass
+
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
