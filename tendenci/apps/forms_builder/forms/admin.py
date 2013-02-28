@@ -175,7 +175,6 @@ class FormAdmin(TendenciBaseModelAdmin):
         return response
 
     def save_formset(self, request, form, formset, change):
-        print 'form.instance', form.instance
         instances = formset.save(commit=False)
         for instance in instances:
             instance.object_id = instance.form.pk

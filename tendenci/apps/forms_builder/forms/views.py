@@ -439,6 +439,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
             email_from = email_to or email_from # Send from the email entered.
+            email_headers = {}  # Reset the email_headers
             email_headers.update({'Reply-To':email_from})
             email_copies = [e.strip() for e in form.email_copies.split(",")
                 if e.strip()]
