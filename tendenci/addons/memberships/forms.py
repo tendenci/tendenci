@@ -523,9 +523,15 @@ def assign_fields(form, app_field_objs):
     # update the field attrs - label, required...
     for obj in app_field_objs:
         if obj.field_name in field_names:
-            field = form.fields[obj.field_name]
-            field.label = obj.label
-            field.required = obj.required
+            if obj.field_type:
+                field = obj.get_field_class(
+                        initial=form.fields[obj.field_name].initial)
+                form.fields[obj.field_name] = field
+            else:
+                field = form.fields[obj.field_name]
+                field.label = obj.label
+                field.required = obj.required
+
             obj.field_stype = field.widget.__class__.__name__.lower()
 
             if obj.field_stype == 'textinput':
@@ -693,7 +699,9 @@ class DemographicsForm(forms.ModelForm):
         self.field_names = [name for name in self.fields.keys()]
         # change the default widget to TextInput instead of TextArea
         for field in self.fields.values():
-            field.widget = forms.widgets.TextInput({'size': 30})
+            if field.widget.__class__.__name__.lower() == 'textinput':
+                field.widget.attrs.update({'size': 30})
+                #field.widget = forms.widgets.TextInput({'size': 30})
 
 
 class MembershipDefault2Form(forms.ModelForm):

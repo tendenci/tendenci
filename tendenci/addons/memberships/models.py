@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
+from django import forms
+from django.utils.importlib import import_module
 
 from tendenci.core.base.utils import day_validate
 from tendenci.core.site_settings.utils import get_setting
@@ -35,7 +37,6 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.files.models import File
 from tendenci.libs.abstracts.models import OrderingBaseModel
-from tendenci.apps.entities.models import Entity
 from tendenci.apps.notifications import models as notification
 from tendenci.addons.directories.models import Directory
 from tendenci.addons.industries.models import Industry
@@ -84,7 +85,7 @@ PERIOD_UNIT_CHOICES = (
 FIELD_FUNCTIONS = (
     ("Group", _("Subscribe to Group")),
 )
-
+FIELD_MAX_LENGTH = 2000
 
 class MembershipType(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -2018,6 +2019,38 @@ class MembershipAppField(models.Model):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+
+    def get_field_class(self, initial=None):
+        """
+            Generate the form field class for this field.
+        """
+        if self.field_type and self.id:
+            if "/" in self.field_type:
+                field_class, field_widget = self.field_type.split("/")
+            else:
+                field_class, field_widget = self.field_type, None
+            field_class = getattr(forms, field_class)
+            field_args = {"label": self.label,
+                          "required": self.required,
+                          'help_text': self.help_text}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if initial:
+                field_args['initial'] = initial
+            else:
+                if self.default_value:
+                    field_args['initial'] = self.default_value
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                if self.field_name not in ['membership_type', 'payment_method']:
+                    choices = self.choices.split(",")
+                    field_args["choices"] = zip(choices, choices)
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+
+            return field_class(**field_args)
+        return None
 
 
 class App(TendenciBaseModel):
