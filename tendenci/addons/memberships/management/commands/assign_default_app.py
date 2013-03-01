@@ -32,7 +32,7 @@ class Command(BaseCommand):
                             'with the corporate membership application ' + \
                             '"%s".' % corp_app.name
         if memberships.exclude(corporate_membership_id__gt=0).exists():
-            app = MembershipApp.objects.filter(
+            [app] = MembershipApp.objects.filter(
                            status=True,
                            status_detail__in=['active', 'published']
                            ).exclude(use_for_corp=True
