@@ -43,7 +43,7 @@ class Command(BaseCommand):
         if errors:
             print errors
             print 'Exiting...Please correct the issue(s) then ' + \
-                    'run this command again.'
+                    'run this command "assign_default_app" again.'
             sys.exit()
 
         count = 0

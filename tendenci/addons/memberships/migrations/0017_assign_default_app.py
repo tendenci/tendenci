@@ -1,50 +1,12 @@
 # encoding: utf-8
 from south.v2 import DataMigration
+from django.core.management import call_command
 
 
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        from tendenci.addons.memberships.models import (
-                                            MembershipDefault,
-                                            MembershipApp)
-        from tendenci.addons.corporate_memberships.models import CorpMembershipApp
-        memberships = MembershipDefault.objects.all()
-        if memberships.count() > 0:
-            corp_app = CorpMembershipApp.objects.current_app()
-            if corp_app:
-                app_for_corp_indiv = corp_app.memb_app
-            else:
-                app_for_corp_indiv = None
-                if memberships.filter(corporate_membership_id__gt=0).exists():
-                    err_msg = 'Missing a corporate membership ' + \
-                              'application.\nPlease create a ' + \
-                              'corporate membership application ' + \
-                              'before proceeding!'
-                    raise Exception(err_msg)
-
-            apps = MembershipApp.objects.filter(
-                           status=True,
-                           status_detail__in=['active', 'published']
-                           ).order_by('id')
-            if app_for_corp_indiv:
-                apps = apps.exclude(id=app_for_corp_indiv.id)
-            try:
-                app = apps[0]
-            except IndexError:
-                if memberships.exclude(corporate_membership_id__gt=0).exists():
-                    err_msg = 'Missing a membership application.\n' + \
-                              'Please create a membership application ' + \
-                              'before proceeding!'
-                    raise Exception(err_msg)
-
-            for membership in memberships:
-                if not membership.app:
-                    if membership.corporate_membership_id:
-                        membership.app = app_for_corp_indiv
-                    else:
-                        membership.app = app
-                    membership.save()
+        call_command('assign_default_app', verbosity=0)
 
     def backwards(self, orm):
         pass
