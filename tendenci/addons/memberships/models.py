@@ -1953,6 +1953,11 @@ class MembershipApp(TendenciBaseModel):
             self.guid = str(uuid.uuid1())
         super(MembershipApp, self).save(*args, **kwargs)
 
+    def application_form_link(self):
+        return '<a href="%s">%s</a>' % (
+                            self.get_absolute_url(), self.slug)
+    application_form_link.allow_tags = True
+
 
 class MembershipAppField(models.Model):
     LABEL_MAX_LENGTH = 2000
