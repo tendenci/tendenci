@@ -699,9 +699,8 @@ class DemographicsForm(forms.ModelForm):
         self.field_names = [name for name in self.fields.keys()]
         # change the default widget to TextInput instead of TextArea
         for field in self.fields.values():
-            if field.widget.__class__.__name__.lower() == 'textinput':
-                field.widget.attrs.update({'size': 30})
-                #field.widget = forms.widgets.TextInput({'size': 30})
+            if field.widget.__class__.__name__.lower() == 'textarea':
+                field.widget = forms.widgets.TextInput({'size': 30})
 
 
 class MembershipDefault2Form(forms.ModelForm):
