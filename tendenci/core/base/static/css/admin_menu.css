@@ -394,12 +394,17 @@ a.edit-setting { text-decoration: underline; cursor: pointer; }
 
 #admin-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 980; background: transparent; background: rgba(50,50,50,.80); display: none; }
 
-@media print 
+@media only screen and (max-width: 767px) {
+	#admin-bar > ul > li {display: none; }
+	#admin-bar li.visible-mobile { display: list-item; }
+}
+
+@media print {
 	#admin-bar,#bottom-admin-bar {
 		display:none;
 	}
 	
 	body.admin-bar {
-		margin-top:0!important;
+		margin-top: 0 !important;
 	}
 }
