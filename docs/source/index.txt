@@ -28,14 +28,6 @@ App Guides
 
    app_guides/*
 
-App Reference
--------------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   app_reference/*
 
 Templating
 ----------
