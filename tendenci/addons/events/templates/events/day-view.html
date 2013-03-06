@@ -76,7 +76,10 @@
 
 				<div class="options">{% event_options user event %}</div>
 				
-				<h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+				<h3>{% if event.priority %}
+                        <div class="event-priority"></div>
+                    {% endif %}
+                    <a href="{% url event event.pk %}">{{ event.title }}</a></h3>
 				<div class="description">{{ event.description|safe }}</div>
 
 				{% if event.registration_configuration.enabled %}

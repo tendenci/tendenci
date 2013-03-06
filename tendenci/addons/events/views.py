@@ -265,7 +265,7 @@ def search(request, redirect=False, template_name="events/search.html"):
     if with_registration:
         events = events.filter(registration_configuration__enabled=True)
 
-    events = events.order_by('-priority', 'start_dt')
+    events = events.order_by('start_dt', '-priority')
 
     types = Type.objects.all().order_by('name')
 
