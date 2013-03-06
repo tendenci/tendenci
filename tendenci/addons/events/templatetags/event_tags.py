@@ -125,7 +125,7 @@ class EventListNode(Node):
         self.type_slug = Variable(type_slug)
         self.ordering = ordering
         if ordering:
-            self.ordering = ordering.replace("'",'')
+            self.ordering = ordering.replace("'", '')
         self.context_var = context_var
 
     def render(self, context):
@@ -158,9 +158,12 @@ class EventListNode(Node):
             events = events.filter(on_weekend=True)
 
         if self.ordering == "single_day":
-            events = events.order_by('hour', 'minute')
+            events = events.order_by('-priority', 'hour', 'minute')
         else:
-            events = events.order_by(self.ordering or 'start_dt')
+            if self.ordering:
+                events = events.order_by(self.ordering)
+            else:
+                events = events.order_by('-priority', 'start_dt')
 
         context[self.context_var] = events
         return ''
@@ -189,7 +192,7 @@ def event_list(parser, token):
         day = bits[1]
         type_slug = bits[2]
         context_var = bits[4]
-        
+
     if len(bits) == 6:
         day = bits[1]
         type_slug = bits[2]
