@@ -4,7 +4,7 @@
 <tr>
     <td>
 		{% if obj %}
-			{% trans "Membership #" %}<a href="{% url membership.application_entries obj.pk %}" title="Membership Application">{{ obj.pk }}</a>&nbsp;
+			{% trans "Membership #" %}<a href="{% url admin:memberships_membershipdefault_change obj.pk %}" title="Membership Application">{{ obj.pk }}</a>&nbsp;
 			{{ obj.membership_type.name|truncatewords:30 }}
 			{% if obj.first_name or obj.last_name or obj.email %}
 				&nbsp;&ndash;&nbsp;{{ obj.first_name }} {{ obj.last_name }} {{ obj.email }}
