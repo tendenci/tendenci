@@ -935,6 +935,11 @@ class ImportMembDefault(object):
                             for field in Profile._meta.fields \
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid']])
+        self.membershipdemographic_fields = dict([(field.name, field) \
+                            for field in MembershipDemographic._meta.fields \
+                            if field.get_internal_type() != 'AutoField' and \
+                            field.name not in ['user']])
+        self.should_handle_demographic = False
         self.membership_fields = dict([(field.name, field) \
                             for field in MembershipDefault._meta.fields \
                             if field.get_internal_type() != 'AutoField' and \
@@ -1087,6 +1092,16 @@ class ImportMembDefault(object):
                     app_id = self.default_app_id
 
             memb_data['app'] = app_id
+
+    def has_demographic_fields(self, field_names):
+        """
+        Check if import has demographic fields.
+        """
+        for field_name in self.membershipdemographic_fields.keys():
+            if field_name in field_names:
+                return True
+
+        return False
 
     def process_default_membership(self, memb_data, **kwargs):
         """
@@ -1267,6 +1282,19 @@ class ImportMembDefault(object):
             profile.status_detail = profile.status_detail.lower()
 
         profile.save()
+
+        # membership_demographic
+        if self.mimport.num_processed == 0:
+            self.should_handle_demographic = self.has_demographic_fields(
+                                        self.memb_data.keys())
+
+        if self.should_handle_demographic:
+            # process only if we have demographic fields in the import.
+            demographic = MembershipDemographic.objects.get_or_create(
+                                    user=user)[0]
+            self.assign_import_values_from_dict(demographic,
+                                                action_info['user_action'])
+            demographic.save()
 
         # membership
         if not memb:
