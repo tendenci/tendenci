@@ -104,9 +104,6 @@ class Command(BaseCommand):
                 )
 
             if not hasattr(m_default, 'membership_type'):
-                if e.membership.membership_type:
-                    m_default.membership_type = e.memberships.membership_type
-
                 if verbosity:
                     self.echo(
                         m_default, e,
