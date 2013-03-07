@@ -976,8 +976,8 @@ def membership_default_import_upload(request,
                                      args=[memb_import.id]))
 
     # make sure the site has membership types set up
-    memb_type_exists = MembershipType.objects.all(
-                                    ).exists()
+    memb_type_exists = MembershipType.objects.all().exists()
+    memb_app_exists = MembershipApp.objects.all().exists()
 
     # list of foreignkey fields
     user_fks = [field.name for field in User._meta.fields \
@@ -997,6 +997,7 @@ def membership_default_import_upload(request,
     return render_to_response(template_name, {
         'form': form,
         'memb_type_exists': memb_type_exists,
+        'memb_app_exists': memb_app_exists,
         'foreign_keys': foreign_keys
         }, context_instance=RequestContext(request))
 
@@ -1076,7 +1077,11 @@ def membership_default_import_preview(request, mimport_id,
         # to be efficient, we only process memberships on the current page
         fieldnames = None
         for idata in data_list:
+
             user_display = imd.process_default_membership(idata.row_data)
+
+
+
             user_display['row_num'] = idata.row_num
             users_list.append(user_display)
             if not fieldnames:
