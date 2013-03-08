@@ -954,6 +954,10 @@ class ImportMembDefault(object):
                              'GMT': 'UTC'
                              }
         self.t4_timezone_map_keys = self.t4_timezone_map.keys()
+        # all membership types
+        self.all_membership_type_ids = MembershipType.objects.values_list(
+                                        'id', flat=True)
+        # membership types associated membership apps
         self.membership_type_ids = [mt.id for mt in MembershipType.objects.all(
                                     )
                                     if mt.membershipapp_set.all().exists()
@@ -1035,8 +1039,11 @@ class ImportMembDefault(object):
             value = memb_data['membership_type']
 
             if value.isdigit():
-                if not value in self.membership_type_ids:
+                value = int(value)
+                if not value in self.all_membership_type_ids:
                     memb_data['membership_type'] = None
+                else:
+                    memb_data['membership_type'] = value
             else:
                 if isinstance(value, basestring):
                     [memb_data['membership_type']] = MembershipType.objects.filter(
@@ -1047,7 +1054,10 @@ class ImportMembDefault(object):
         if not 'membership_type' in memb_data.keys() or \
                 not memb_data['membership_type']:
             if memb_data.get('corporate_membership_id'):
-                memb_data['membership_type'] = self.default_membership_type_id_for_corp_indiv
+                if self.default_membership_type_id_for_corp_indiv:
+                    memb_data['membership_type'] = self.default_membership_type_id_for_corp_indiv
+                else:
+                    memb_data['membership_type'] = self.default_membership_type_id
             else:
                 memb_data['membership_type'] = self.default_membership_type_id
 
@@ -1079,19 +1089,37 @@ class ImportMembDefault(object):
         if not has_app:
             membership_type_id = memb_data['membership_type']
 
-            if memb_data.get('corporate_membership_id'):
-                [app_id] = self.membership_types_to_apps_map[
-                                    membership_type_id][1][:1] or [None]
-                if not app_id:
-                    app_id = self.default_app_id_for_corp_indiv
-            else:
-                [app_id] = self.membership_types_to_apps_map[
-                                    membership_type_id][0][:1] or [None]
+            app_id = None
+            if self.membership_types_to_apps_map and \
+                membership_type_id in self.membership_types_to_apps_map:
+                if memb_data.get('corporate_membership_id'):
+                    [app_id] = self.membership_types_to_apps_map[
+                                        membership_type_id][1][:1] or [None]
+                    if not app_id:
+                        app_id = self.default_app_id_for_corp_indiv
+                        if not app_id:
+                            app_id = self.default_app_id
+                else:
+                    [app_id] = self.membership_types_to_apps_map[
+                                        membership_type_id][0][:1] or [None]
 
-                if not app_id:
-                    app_id = self.default_app_id
+            if not app_id:
+                app_id = self.default_app_id
 
             memb_data['app'] = app_id
+
+    def clean_corporate_membership(self, memb_data):
+        if 'corporate_membership_id' in memb_data:
+            try:
+                memb_data['corporate_membership_id'] = int(memb_data['corporate_membership_id'])
+            except:
+                memb_data['corporate_membership_id'] = 0
+
+        if 'corp_profile_id' in memb_data:
+            try:
+                memb_data['corp_profile_id'] = int(memb_data['corp_profile_id'])
+            except:
+                memb_data['corp_profile_id'] = 0
 
     def has_demographic_fields(self, field_names):
         """
@@ -1110,6 +1138,7 @@ class ImportMembDefault(object):
 
         :param memb_data: a dictionary that includes the info of a membership
         """
+        self.clean_corporate_membership(memb_data)
         self.clean_membership_type(memb_data)
         self.clean_app(memb_data)
         self.memb_data = memb_data
@@ -1173,7 +1202,7 @@ class ImportMembDefault(object):
                 # pick the most recent one
                 [memb] = MembershipDefault.objects.filter(
                         user=user,
-                        app__id=self.memb_data['app']
+                        membership_type__id=self.memb_data['membership_type']
                                           ).exclude(
                           status_detail='archive'
                                 ).order_by('-id')[:1] or [None]
