@@ -1,11 +1,11 @@
 $(document).ready(function () {
 	if ($('input[name=never_expires]').is(':checked')){
-		$('div.type_exp_method').hide();
+		$('div.field-type_exp_method').hide();
 	}else{
-		$('div.type_exp_method').show();
+		$('div.field-type_exp_method').show();
 	}
 	$("input[name=never_expires]").click(function(){
-		$('div.type_exp_method').toggle("slow");
+		$('div.field-type_exp_method').toggle("slow");
 	});
 	
 	if ($("select[name=type_exp_method_0]").val()== "fixed"){
