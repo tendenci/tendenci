@@ -963,9 +963,13 @@ def membership_default_import_upload(request,
     if not request.user.profile.is_superuser:
         raise Http403
 
+    # make sure the site has membership types set up
+    memb_type_exists = MembershipType.objects.all().exists()
+    memb_app_exists = MembershipApp.objects.all().exists()
+
     form = MembershipDefaultUploadForm(request.POST or None,
                                        request.FILES or None)
-    if request.method == 'POST':
+    if request.method == 'POST' and memb_type_exists and memb_app_exists:
         if form.is_valid():
             memb_import = form.save(commit=False)
             memb_import.creator = request.user
@@ -974,10 +978,6 @@ def membership_default_import_upload(request,
             # redirect to preview page.
             return redirect(reverse('memberships.default_import_preview',
                                      args=[memb_import.id]))
-
-    # make sure the site has membership types set up
-    memb_type_exists = MembershipType.objects.all().exists()
-    memb_app_exists = MembershipApp.objects.all().exists()
 
     # list of foreignkey fields
     user_fks = [field.name for field in User._meta.fields \
