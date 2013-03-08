@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.utils.http import urlquote
 from django.shortcuts import redirect
 
-PASSWORD_PROMT_MAX_AGE = 10 * 60      # 10 minites
+PASSWORD_PROMT_MAX_AGE = 30 * 60      # 30 minites
 
 
 def ssl_required(view_func):
