@@ -25,9 +25,12 @@ def password_required(view):
     """Decorator to force a password promt"""
     def decorator(request, *args, **kwargs):
         if 'password_promt' in request.session and \
+            isinstance(request.session['password_promt'], dict) and \
             request.session['password_promt'].get('value', False):
-            pwd_age = int(time.time()) - request.session['password_promt']['time']
+            tstart = request.session['password_promt'].get('time', 0)
+            pwd_age = int(time.time()) - tstart
             if pwd_age < PASSWORD_PROMT_MAX_AGE:
                 return view(request, *args, **kwargs)
-        return redirect(("%s?next=%s") % (reverse("password_again"), urlquote(request.get_full_path())))
+        return redirect(("%s?next=%s") % (reverse("password_again"),
+                                          urlquote(request.get_full_path())))
     return decorator
