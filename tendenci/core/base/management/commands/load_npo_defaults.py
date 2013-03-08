@@ -1,21 +1,37 @@
 import os
+from optparse import make_option
+from boto.s3.connection import S3Connection
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from boto.s3.connection import S3Connection
 
 
 class Command(BaseCommand):
     help = "Insert non-profit-organization default data"
+
+    option_list = BaseCommand.option_list + (
+        make_option('--reset-nav',
+            action="store_true", dest='reset_nav', default=False,
+            help='Reset the navigation'),
+        make_option('--skip-media',
+            action="store_true", dest='skip_media', default=False,
+            help='Skip downloading media files'),
+    )
 
     def handle(self, **options):
         """
         Load data and from non profit fixtures
         and download images from s3 location.
         """
-        self.copy_files()
-        self.call_loaddata()
+        reset_nav = options.get('reset_nav', None)
+        skip_media = options.get('skip_media', None)
+
+        if not skip_media:
+            self.copy_files()
+
+        self.call_loaddata(reset_nav)
 
     def copy_files(self):
         """
@@ -69,13 +85,21 @@ class Command(BaseCommand):
                 print settings.AWS_STORAGE_BUCKET_NAME, target_key_name
                 source_key.copy(settings.AWS_STORAGE_BUCKET_NAME, target_key_name)
 
-    def call_loaddata(self):
+    def call_loaddata(self, reset_nav=False):
         """
         This calls the loaddata command on all
         non profit fixtures.
         The order - It's a big deal.
         """
         from tendenci.core.files.models import File
+
+        if reset_nav:
+            from tendenci.apps.navs.models import Nav
+            try:
+                main_nav = Nav.objects.get(pk=1)
+                main_nav.delete()
+            except:
+                pass
 
         staff_installed = "addons.staff" in settings.INSTALLED_APPS
         print 'npo_default_auth_user.json'
