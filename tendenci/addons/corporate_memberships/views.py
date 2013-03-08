@@ -2576,7 +2576,7 @@ def corp_export(request):
     if request.method == 'POST':
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             corp_app = form.cleaned_data['corp_app']
             
             filename = "corporate_memberships_%d_export.csv" % corp_app.id

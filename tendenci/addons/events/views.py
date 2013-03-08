@@ -3404,7 +3404,7 @@ def import_add(request, form_class=ImportForm,
             EventLog.objects.log()
 
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
 
             return HttpResponseRedirect(
                 reverse('event.import_preview', args=[import_i.id]))

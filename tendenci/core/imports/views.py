@@ -33,7 +33,7 @@ def user_upload_add(request, form_class=UserImportForm,
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
 
             # save the uploaded file
             f = request.FILES['file']
