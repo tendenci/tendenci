@@ -300,7 +300,9 @@ def password_again(request, template_name="base/password.html"):
     if request.method == "POST":
         form = PasswordForm(request.POST, user=request.user)
         if form.is_valid():
-            request.session['password_promt'] = True
+            request.session['password_promt'] = dict(
+                                    time=int(time.time()),
+                                    value=True)
             return redirect(next)
     else:
         form = PasswordForm(user=request.user)
