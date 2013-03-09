@@ -89,7 +89,7 @@ class FileManager(TendenciBaseManager):
 
             try:
                 file = self.get(file=file_path)
-                file.name = file.name
+                file.name = re.sub(r'[^a-z0-9._]+', '_', file.name.lower())
                 file.owner = user
                 file.owner_username = user.username
                 file.update_dt = datetime.now()
