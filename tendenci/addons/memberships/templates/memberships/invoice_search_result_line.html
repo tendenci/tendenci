@@ -6,19 +6,21 @@
     {% invoices_search_line_header request invoice '#ff6600' %}
 
     <tr>
-    	<td>{% trans "Memb. App. ID" %}</td>
-    	<td colspan="2">{% trans "First Name" %}</td>
-    	<td>{% trans "Last Name" %}</td>
+    	<td>{% trans "Membership" %}</td>
+    	<td colspan="2">{% trans "Name" %}</td>
+        <td>{% trans "Payment Method" %}</td>
     	<td>{% trans "Price" %}</td>
     	<td>{% trans "Balance" %}</td>
     </tr>
+
     {% if obj %}
       <tr>
-     	<td><a href="{% url membership.application_entries obj.pk %}">{{ obj.pk }}</a></td>
-     	<td colspan="2">{{ obj.first_name }}</td>
-     	<td>{{ obj.last_name }}</td>
-     	<td>{{ obj.invoice.total }}</td>
-     	<td class="body-copy-yellow">{{ obj.invoice.balance }}</td>
+     	<td><a href="{% url admin:memberships_membershipdefault_change obj.pk %}">
+            {{ obj.pk }}</a></td>
+     	<td colspan="2">{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}</td>
+        <td>{{ obj.payment_method.human_name }}</td>
+     	<td>{{ invoice.total }}</td>
+     	<td class="body-copy-yellow">{{ invoice.balance }}</td>
      </tr>
      {% endif %}
 </table>

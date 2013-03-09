@@ -240,7 +240,7 @@ class MembershipTypeForm(forms.ModelForm):
                   'renewal_period_start',
                   'renewal_period_end',
                   'expiration_grace_period',
-                  'order',
+                  'position',
                   'status',
                   'status_detail',
                   )
@@ -852,7 +852,34 @@ class MembershipDefault2Form(forms.ModelForm):
         else:
             membership.save_invoice(status_detail='estimate')
 
+        membership.user.profile.refresh_member_number()
         return membership
+
+
+class MembershipExportForm(forms.Form):
+    STATUS_DETAIL_CHOICES = (
+            (' ', 'ALL'),
+            ('active', 'Active'),
+            ('pending', 'Pending'),
+            ('expired', 'Expired'),
+                             )
+    EXPORT_TYPE_CHOICES = (
+            ('main_fields', 'Main Fields Only (for faster download)'),
+            ('all_fields', 'ALL Fields')
+                           )
+    export_format = forms.ChoiceField(
+                label=_('Export Format'),
+                choices=(('csv', 'csv (Export)'),))
+    export_status_detail = forms.ChoiceField(
+                label=_('Export Status Detail'),
+                choices=STATUS_DETAIL_CHOICES,
+                initial=''
+                )
+    export_type = forms.ChoiceField(
+                label=_('Export Type'),
+                choices=EXPORT_TYPE_CHOICES,
+                widget=forms.widgets.RadioSelect
+                )
 
 
 class NoticeForm(forms.ModelForm):
@@ -2145,7 +2172,8 @@ class MembershipDefaultForm(TendenciBaseForm):
         if membership.pk:
             # changing membership record
             membership.set_member_number()
-
+            membership.user.profile.member_number = membership.member_number
+            membership.user.profile.save()
         else:
             # adding membership record
             membership.renewal = membership.user.profile.can_renew()

@@ -33,7 +33,7 @@ def user_upload_add(request, form_class=UserImportForm,
         form = form_class(request.POST, request.FILES)
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
 
             # save the uploaded file
             f = request.FILES['file']
@@ -93,7 +93,7 @@ def user_upload_preview(request, sid,
 
     if not default_storage.exists(os.path.join(import_dict['folder_name'],
                                                import_dict['file_name'])):
-        return HttpResponseRedirect(reverse('iimport.user_upload_add'))
+        return HttpResponseRedirect(reverse('import.user_upload_add'))
 
     users_list = user_import_process(request,
                                             import_dict,
@@ -330,7 +330,8 @@ def download_user_upload_template(request, file_ext='.xls'):
                          'work_phone', 'mobile_phone',
                          'fax', 'url', 'dob', 'spouse',
                          'direct_mail', 'notes', 'admin_notes',
-                         'username', 'password', 'member_number', ]
+                         'username', 'member_number', ]
+
     data_row_list = []
 
     return render_excel(filename, import_field_list, data_row_list, file_ext)

@@ -1,10 +1,16 @@
 import inspect
+from operator import or_
 
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
+from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
+from tagging.models import TaggedItem
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.utils import update_perms_and_save
 
@@ -101,3 +107,50 @@ class TendenciBaseModelAdmin(admin.ModelAdmin):
     def log_deletion(self, request, object, object_repr):
         application = inspect.getmodule(self).__name__
         super(TendenciBaseModelAdmin, self).log_deletion(request, object, object_repr)
+
+class TagsFilter(SimpleListFilter):
+    ##################################################
+    # Adds a filter on admin sidebar to filter by tags
+    ##################################################
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = _('Tags')
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'tags'
+
+    def lookups(self, request, model_admin):
+        """
+        Returns a list of tuples. The first element in each
+        tuple is the coded value for the option that will
+        appear in the URL query. The second element is the
+        human-readable name for the option that will appear
+        in the right sidebar.
+        """
+        #Loads in model to get tags from
+        content_type = ContentType.objects.get_for_model(model_admin.model)
+        tags = TaggedItem.objects.filter(content_type=content_type).values('tag__name').distinct().order_by('tag__name')
+        tags_list = []
+        for tag in tags:
+            tags_list.append((tag['tag__name'], tag['tag__name']))
+
+        return tuple(tags_list)
+
+    def queryset(self, request, queryset):
+        """
+        Returns the filtered queryset based on the value
+        provided in the query string and retrievable via
+        `self.value()`.
+        """
+        if self.value():
+            # Identifies individual tags based on commas and spacing
+            tag = self.value().strip()
+            tag_queries = [Q(tags__iexact=tag)]
+            tag_queries += [Q(tags__istartswith=tag + ",")]
+            tag_queries += [Q(tags__iendswith=", " + tag)]
+            tag_queries += [Q(tags__iendswith="," + tag)]
+            tag_queries += [Q(tags__icontains=", " + tag + ",")]
+            tag_queries += [Q(tags__icontains="," + tag + ",")]
+            tag_query = reduce(or_, tag_queries)
+            return queryset.filter(tag_query)
+        return queryset

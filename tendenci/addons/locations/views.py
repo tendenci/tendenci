@@ -209,7 +209,7 @@ def locations_import_upload(request, template_name='locations/import-upload-file
                 return redirect('locations_import_upload_file')
             EventLog.objects.log()
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             return redirect('locations_import_preview', locport.id)
     else:
         form = UploadForm()
@@ -274,7 +274,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
 
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            file_path = str(locport.get_file().file.name)
 
             if not settings.CELERY_IS_ACTIVE:
                 # if celery server is not present 

@@ -6,6 +6,7 @@
 
 {% block extra_head %}
 {{ block.super }}
+<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
@@ -15,10 +16,39 @@
      <div class="invoices-wrap">
         <h1>{% trans "Invoices Export" %}</h1>
         <div class="content">
+            <p>Pick your start and end dates (the default is the last 30 days) for your invoices export. Click download and your export will be begin processing. Please be patient for large date ranges.</p>
             <form action="." method="POST" >{% csrf_token %}
+                <div class="form-field clearfix">
+                    <div class="id_start_dt" style="float: left; margin-right: 10px;">
+                            <div class="label">
+                                <label for="start_dt">Start Date</label>
+                            </div>
+                            <div class="field">
+                                <input style="width: 70px;" type="text" class="datepicker" name="start_dt" value="{{ start_dt|date:"Y-m-d" }}" />
+                            </div>
+                     </div>
+                     <div class="id_end_dt">
+                            <div class="label">
+                                <label for="end_dt">End Date</label>
+                            </div>
+                            <div class="field">
+                                <input style="width: 70px;" type="text" class="datepicker" name="end_dt" value="{{ end_dt|date:"Y-m-d" }}" />
+                            </div>
+                     </div>
+                </div>
+                <br />
                 <input type="submit" value="{% trans 'Download' %}" />
             </form>
         </div>
     </div>
 </div>
 {% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    <script type="text/javascript">
+       $(".datepicker").live('focus', function() {
+            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+       });
+    </script>
+{% endblock extra_body %}

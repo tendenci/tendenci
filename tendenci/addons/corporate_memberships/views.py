@@ -25,6 +25,7 @@ from django.template.loader import render_to_string
 from django.http import Http404
 from django.db.models import ForeignKey, OneToOneField
 from django.db.models.fields import AutoField
+from django.utils.translation import ugettext_lazy as _
 from johnny.cache import invalidate
 
 from tendenci.core.imports.utils import render_excel
@@ -94,7 +95,7 @@ from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.files.models import File
 from tendenci.apps.profiles.models import Profile
-from tendenci.addons.corporate_memberships.settings import use_search_index
+#from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.core.site_settings.utils import get_setting
 
 
@@ -189,6 +190,7 @@ def corpmembership_add(request,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
+    app_fields = app_fields.exclude(field_name='expiration_dt')
     app_fields = app_fields.order_by('order')
 
     corpprofile_form = CorpProfileForm(app_fields,
@@ -284,6 +286,10 @@ def corpmembership_add(request,
                                     reverse('payment.pay_online',
                                     args=[corp_membership.invoice.id,
                                           corp_membership.invoice.guid]))
+            else:
+                if is_superuser and corp_membership.status \
+                    and corp_membership.status_detail == 'active':
+                    corp_membership.approve_join(request)
 
             return HttpResponseRedirect(reverse('corpmembership.add_conf',
                                                 args=[corp_membership.id]))
@@ -327,6 +333,10 @@ def corpmembership_edit(request, id,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
+    if corp_membership.is_expired:
+        # if it is expired, remove the expiration_dt field so they can
+        # renew this corporate membership
+        app_fields = app_fields.exclude(field_name='expiration_dt')
     app_fields = app_fields.order_by('order')
 
     corpprofile_form = CorpProfileForm(app_fields,
@@ -480,56 +490,60 @@ def corpmembership_view(request, id,
     return render_to_response(template, context, RequestContext(request))
 
 
-def corpmembership_search(request,
+def corpmembership_search(request, my_corps_only=False,
             template_name="corporate_memberships/applications/search.html"):
     allow_anonymous_search = get_setting('module',
                                      'corporate_memberships',
                                      'anonymoussearchcorporatemembers')
 
-    if not request.user.is_authenticated() and not allow_anonymous_search:
-        raise Http403
+    if not request.user.is_authenticated():
+        if my_corps_only or not allow_anonymous_search:
+            raise Http403
+    is_superuser = request.user.profile.is_superuser
 
     search_form = CorpMembershipSearchForm(request.GET)
-    if search_form.is_valid():
-        query = search_form.cleaned_data['q']
-        cm_id = search_form.cleaned_data['cm_id']
-        try:
-            cm_id = int(cm_id)
-        except:
-            pass
-    else:
-        query = None
-        cm_id = None
 
-    if query == 'is_pending:true' and request.user.profile.is_superuser:
+    query = request.GET.get('q')
+    try:
+        cp_id = request.GET.get('cp_id')
+    except:
+        cp_id = 0
+
+    if query == 'is_pending:true' and is_superuser:
         # pending list only for admins
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
     else:
-        filter_and, filter_or = CorpMembership.get_search_filter(request.user)
-
-        q_obj = None
-        if filter_and:
-            q_obj = Q(**filter_and)
-        if filter_or:
-            q_obj_or = reduce(operator.or_, [Q(**{key: value}
-                        ) for key, value in filter_or.items()])
-            if q_obj:
-                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
-            else:
-                q_obj = q_obj_or
-
-        if query:
-            corp_members = CorpMembership.objects.filter(
-                                corp_profile__name__icontains=query)
-        else:
-            corp_members = CorpMembership.objects.all()
-        if q_obj:
-            corp_members = corp_members.filter(q_obj)
-
-    if cm_id:
-        corp_members = corp_members.filter(id=cm_id)
+        corp_members = CorpMembership.get_my_corporate_memberships(request.user,
+                                                my_corps_only=my_corps_only)
     corp_members = corp_members.order_by('corp_profile__name')
+
+    # generate the choices for the cp_id field
+    corp_profiles_choices = [(0, _('Select One'))]
+    for corp_memb in corp_members:
+        t = (corp_memb.corp_profile.id, corp_memb.corp_profile.name)
+        if not t in corp_profiles_choices:
+            corp_profiles_choices.append(t)
+
+    search_form.fields['cp_id'].choices = corp_profiles_choices
+
+    if query:
+        corp_members = corp_members.filter(
+                            corp_profile__name__icontains=query)
+
+    if cp_id:
+        corp_members = corp_members.filter(corp_profile_id=cp_id)
+
+    if not my_corps_only and is_superuser:
+        # add cm_type_id for the links in the summary report
+        try:
+            cm_type_id = int(request.GET.get('cm_type_id'))
+        except:
+            cm_type_id = 0
+        if cm_type_id > 0:
+            corp_members = corp_members.filter(
+                        corporate_membership_type_id=cm_type_id)
+    corp_members = corp_members.order_by('-expiration_dt')
 
     EventLog.objects.log()
 
@@ -849,7 +863,10 @@ def corp_renew_conf(request, id,
 @login_required
 def roster_search(request,
                   template_name='corporate_memberships/roster_search.html'):
-    form = RosterSearchAdvancedForm(request.GET or None)
+    invalidate('corporate_memberships_corpprofile')
+    invalidate('corporate_memberships_corpmembership')
+    form = RosterSearchAdvancedForm(request.GET or None,
+                                    request_user=request.user)
     if form.is_valid():
         # cm_id - CorpMembership id
         cm_id = form.cleaned_data['cm_id']
@@ -1326,6 +1343,7 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
 def corp_reps_lookup(request):
     q = request.REQUEST['term']
+    use_search_index = get_setting('site', 'global', 'searchindex')
 
     if use_search_index:
         profiles = Profile.objects.search(
@@ -1402,6 +1420,10 @@ def summary_report(request,
     """
     Shows a report of corporate memberships per corporate membership type.
     """
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     summary, total = get_corp_memb_summary()
 
     EventLog.objects.log()
@@ -1461,7 +1483,7 @@ def add(request, slug=None, hash=None, template="corporate_memberships/add.html"
     if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     
-    field_objs = list(field_objs.order_by('order'))
+    field_objs = list(field_objs.order_by('position'))
     
     form = CorpMembForm(corp_app, field_objs, request.POST or None, request.FILES or None)
     
@@ -1593,7 +1615,7 @@ def edit(request, id, template="corporate_memberships/edit.html"):
     if not user_is_superuser:
         field_objs = field_objs.filter(admin_only=0)
     
-    field_objs = list(field_objs.order_by('order'))
+    field_objs = list(field_objs.order_by('position'))
     
     # get the field entry for each field_obj if exists
     for field_obj in field_objs:
@@ -1961,7 +1983,7 @@ def view(request, id, template="corporate_memberships/view.html"):
     if not can_edit:
         field_objs = field_objs.exclude(field_name='corporate_membership_type')
     
-    field_objs = list(field_objs.order_by('order'))
+    field_objs = list(field_objs.order_by('position'))
     
     if can_edit:
         field_objs.append(CorpField(label='Representatives', field_type='section_break', admin_only=0))
@@ -2070,6 +2092,7 @@ def delete(request, id, template_name="corporate_memberships/delete.html"):
     
 def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_memberships/edit_reps.html"):
     corp_memb = get_object_or_404(CorporateMembership, pk=id)
+    use_search_index = get_setting('site', 'global', 'searchindex')
     
     if not has_perm(request.user,'corporate_memberships.change_corporatemembership',corp_memb):
         raise Http403
@@ -2114,6 +2137,7 @@ def edit_reps(request, id, form_class=CorpMembRepForm, template_name="corporate_
     
 def reps_lookup(request):
     q = request.REQUEST['term']
+    use_search_index = get_setting('site', 'global', 'searchindex')
     
     if use_search_index:
         profiles = Profile.objects.search(
@@ -2147,6 +2171,7 @@ def reps_lookup(request):
 def delete_rep(request, id, template_name="corporate_memberships/delete_rep.html"):
     rep = get_object_or_404(CorporateMembershipRep, pk=id)
     corp_memb = rep.corporate_membership
+    use_search_index = get_setting('site', 'global', 'searchindex')
 
     if corp_memb.allow_edit_by(request.user) or \
          has_perm(request.user,'corporate_memberships.edit_corporatemembership'):   
@@ -2551,13 +2576,13 @@ def corp_export(request):
     if request.method == 'POST':
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             corp_app = form.cleaned_data['corp_app']
             
             filename = "corporate_memberships_%d_export.csv" % corp_app.id
             
             corp_fields = CorpField.objects.filter(corp_app=corp_app).exclude(field_type__in=('section_break', 
-                                                               'page_break')).order_by('order')
+                                                               'page_break')).order_by('position')
             label_list = [corp_field.label for corp_field in corp_fields]
             extra_field_labels = ['Dues reps', 'Join Date', 'Expiration Date', 'Status', 'Status Detail', 'Invoice Number', 'Invoice Amount', 'Invoice Balance']
             extra_field_names = ['dues_reps', 'join_dt', 'expiration_dt', 'status', 'status_detail', 'invoice_id', 'total', 'balance']

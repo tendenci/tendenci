@@ -29,9 +29,8 @@ def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
     corporate_membership_types = corpmembership_app.corp_memb_type.all()
 
     if not user.profile.is_superuser:
-        corporate_membership_types = corporate_membership_types.filter(
-                                                        admin_only=False)
-    corporate_membership_types = corporate_membership_types.order_by('order', 'id')
+        corporate_membership_types = corporate_membership_types.filter(admin_only=False)
+    corporate_membership_types = corporate_membership_types.order_by('position')
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
     for cmt in corporate_membership_types:
@@ -121,8 +120,9 @@ def get_indiv_memberships_choices(corp_membership):
     im_list = []
     indiv_memberships = MembershipDefault.objects.filter(
                             corp_profile_id=corp_membership.corp_profile.id,
-                            status_detail__in=['active', 'expired'],
-                            status=True)
+                            status=True).exclude(
+                            status_detail='archive'
+                                )
 
     for membership in indiv_memberships:
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
@@ -221,9 +221,16 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.status_detail = 'estimate'
         inv.save(user)
 
+        if not corp_memb.payment_method:
+            is_online = True
+            if inv.balance <= 0:
+                is_online = False
+            corp_memb.payment_method = corp_memb.get_payment_method(
+                                            is_online=is_online)
+
         if user.profile.is_superuser:
             # if offline payment method
-            if not corp_memb.get_payment_method().is_online:
+            if not corp_memb.payment_method.is_online:
                 inv.tender(user)  # tendered the invoice for admin if offline
 
                 # mark payment as made
@@ -288,29 +295,56 @@ def get_corp_memb_summary():
     total_active = 0
     total_pending = 0
     total_expired = 0
+    total_in_grace_period = 0
     total_total = 0
     for corp_memb_type in corp_memb_types:
+        membership_type = corp_memb_type.membership_type
+        grace_period = membership_type.expiration_grace_period
+        now = datetime.now()
+        date_to_expire = now - relativedelta(days=grace_period)
         mems = CorpMembership.objects.filter(
                     corporate_membership_type=corp_memb_type)
-        active = mems.filter(status=True, status_detail='active')
-        expired = mems.filter(status=True, status_detail='expired')
+        active = mems.filter(status=True, status_detail='active',
+                             expiration_dt__gt=now
+                             )
+        expired = mems.filter(status=True,
+                              status_detail__in=('expired', 'active'),
+                              expiration_dt__lt=date_to_expire)
+        in_grace_period = mems.filter(status=True,
+                              status_detail='active',
+                              expiration_dt__lte=now,
+                              expiration_dt__gt=date_to_expire)
         pending = mems.filter(status=True, status_detail__contains='ending')
-        total_active += active.count()
-        total_pending += pending.count()
-        total_expired += expired.count()
-        total_total += mems.count()
+
+        active_count = active.count()
+        pend_count = pending.count()
+        expired_count = expired.count()
+        in_grace_period_count = in_grace_period.count()
+        type_total = sum([active_count,
+                            pend_count,
+                            expired_count,
+                            in_grace_period_count
+                            ])
+
+        total_active += active_count
+        total_pending += pend_count
+        total_expired += expired_count
+        total_in_grace_period += in_grace_period_count
+        total_total += type_total
         summary.append({
             'type': corp_memb_type,
-            'active': active.count(),
-            'pending': pending.count(),
-            'expired': expired.count(),
-            'total': mems.count(),
+            'active': active_count,
+            'pending': pend_count,
+            'expired': expired_count,
+            'in_grace_period': in_grace_period_count,
+            'total': type_total,
         })
 
     return (sorted(summary, key=lambda x: x['type'].name),
         {'total_active': total_active,
          'total_pending': total_pending,
          'total_expired': total_expired,
+         'total_in_grace_period': total_in_grace_period,
          'total_total': total_total})
 
 
@@ -336,7 +370,7 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
     
     if not user.profile.is_superuser:
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
-    corporate_membership_types = corporate_membership_types.order_by('order')
+    corporate_membership_types = corporate_membership_types.order_by('position')
     currency_symbol = get_setting("site", "global", "currencysymbol")
     
     for cmt in corporate_membership_types:

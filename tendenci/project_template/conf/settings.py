@@ -106,16 +106,6 @@ if env('DEBUG_TOOLBAR', None):
 
 
 # -------------------------------------- #
-# SOLR
-# -------------------------------------- #
-
-HAYSTACK_URL = env('WEBSOLR_URL', 'http://localhost')
-
-HAYSTACK_SEARCH_ENGINE = env('HAYSTACK_SEARCH_ENGINE', 'solr')
-HAYSTACK_SOLR_URL = HAYSTACK_URL
-
-
-# -------------------------------------- #
 # THEMES
 # -------------------------------------- #
 
@@ -190,11 +180,11 @@ if USE_S3_STORAGE:
                        )
     # media
     DEFAULT_S3_PATH = "%s/media" % AWS_LOCATION
-    DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+    DEFAULT_FILE_STORAGE = 'tendenci.libs.boto_s3.utils.DefaultStorage'
 
     # static
     STATIC_S3_PATH = "%s/static" % AWS_LOCATION
-    STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
+    STATICFILES_STORAGE = 'tendenci.libs.boto_s3.utils.StaticStorage'
 
     # themes
     THEME_S3_PATH = "%s/themes" % AWS_LOCATION
@@ -231,6 +221,24 @@ else:
 
 
 SSL_ENABLED = env('SSL_ENABLED', False)
+
+# celery
+CELERY_IS_ACTIVE = env('CELERY_IS_ACTIVE', False)
+
+
+# -------------------------------------- #
+# HAYSTACK SEARCH INDEX
+# -------------------------------------- #
+
+HAYSTACK_SEARCH_ENGINE = env('HAYSTACK_SEARCH_ENGINE', 'solr')
+HAYSTACK_URL = env('WEBSOLR_URL', 'http://localhost')
+
+if HAYSTACK_SEARCH_ENGINE == "solr":
+    HAYSTACK_SOLR_URL = HAYSTACK_URL
+
+if HAYSTACK_SEARCH_ENGINE == 'whoosh':
+    HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, 'index.whoosh')
+
 
 # ---------------------------------------#
 # PAYMENT GATEWAY
@@ -314,7 +322,7 @@ if MEMCACHIER_SERVERS:
 
 # Caching defaults
 
-CACHES['default']['TIMEOUT'] = 604800  # 1 week
+CACHES['default']['TIMEOUT'] = 60 * 60 * 24 * 30  # 30 days
 CACHES['default']['JOHNNY_CACHE'] = True
 
 
@@ -389,6 +397,15 @@ CAMPAIGNMONITOR_API_CLIENT_ID = env('CAMPAIGNMONITOR_API_CLIENT_ID', '')
 #   BLACKBAUD
 #   ETC...
 # -------------------------------------- #
+
+# ------------------------------------ #
+# IMPERSONATION ADDON
+# ------------------------------------ #
+
+if os.path.exists(os.path.join(PROJECT_ROOT, 'addons/impersonation/')):
+    MIDDLEWARE_CLASSES += (
+        'addons.impersonation.middleware.ImpersonationMiddleware',
+    )
 
 
 # THIS MUST BE AT THE END!

@@ -27,7 +27,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 0,
+            "position": 0,
             "level": 0,
             "label": "Events",
             "url": "/events/month/",
@@ -42,7 +42,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 1,
+            "position": 1,
             "level": 1,
             "label": "Calendar",
             "url": "/events/month/",
@@ -57,7 +57,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 2,
+            "position": 2,
             "level": 1,
             "label": "Event Photos",
             "url": "/photos/set/latest/",
@@ -72,7 +72,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 3,
+            "position": 3,
             "level": 0,
             "label": "Jobs",
             "url": "/jobs/search/",
@@ -87,7 +87,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 4,
+            "position": 4,
             "level": 1,
             "label": "Search Resumes",
             "url": "/resumes/",
@@ -102,7 +102,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 5,
+            "position": 5,
             "level": 0,
             "label": "Company Directory",
             "url": "/directories/",
@@ -117,7 +117,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "About Us",
-            "ordering": 6,
+            "position": 6,
             "level": 0,
             "label": "About",
             "url": "",
@@ -132,7 +132,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Mission/Vision",
-            "ordering": 7,
+            "position": 7,
             "level": 1,
             "label": "Mission/Vision",
             "url": "",
@@ -147,7 +147,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 8,
+            "position": 8,
             "level": 1,
             "label": "News",
             "url": "/news/search/",
@@ -162,7 +162,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 9,
+            "position": 9,
             "level": 1,
             "label": "Committees",
             "url": "/committees/",
@@ -177,7 +177,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 10,
+            "position": 10,
             "level": 1,
             "label": "Study Groups",
             "url": "/study-groups/",
@@ -192,7 +192,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 12,
+            "position": 12,
             "level": 1,
             "label": "Photos",
             "url": "/photos/",
@@ -207,7 +207,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 13,
+            "position": 13,
             "level": 1,
             "label": "Videos",
             "url": "/videos/",
@@ -222,7 +222,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 14,
+            "position": 14,
             "level": 0,
             "label": "Membership",
             "url": "/memberships/",
@@ -237,7 +237,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Membership Benefits",
-            "ordering": 15,
+            "position": 15,
             "level": 1,
             "label": "Join",
             "url": "",
@@ -252,7 +252,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 16,
+            "position": 16,
             "level": 1,
             "label": "Member Directory",
             "url": "/memberships/search/",
@@ -267,7 +267,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Membership Benefits",
-            "ordering": 17,
+            "position": 17,
             "level": 1,
             "label": "Membership Benefits",
             "url": "",
@@ -282,7 +282,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 18,
+            "position": 18,
             "level": 1,
             "label": "Membership Application",
             "url": "/memberships/applications/add/",
@@ -297,7 +297,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 19,
+            "position": 19,
             "level": 0,
             "label": "Contact",
             "url": "/contact/",
@@ -312,7 +312,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 20,
+            "position": 20,
             "level": 0,
             "label": "Donate",
             "url": "/donations/",
@@ -327,7 +327,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Theme Resources",
-            "ordering": 21,
+            "position": 21,
             "level": 0,
             "label": "Theme Resources",
             "url": "",
@@ -342,7 +342,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "How to Use Your Theme",
-            "ordering": 22,
+            "position": 22,
             "level": 1,
             "label": "How to Use Your Theme",
             "url": "",
@@ -357,7 +357,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Full Width Layout",
-            "ordering": 23,
+            "position": 23,
             "level": 1,
             "label": "Full Width Layout",
             "url": "",
@@ -372,7 +372,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Sidebar Layout",
-            "ordering": 24,
+            "position": 24,
             "level": 1,
             "label": "Right Sidebar Layout Example",
             "url": "",
@@ -387,7 +387,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "Left Sidebar Layout Example",
-            "ordering": 25,
+            "position": 25,
             "level": 1,
             "label": "Left Sidebar Layout Example",
             "url": "",
@@ -402,7 +402,7 @@
         "model": "navs.navitem",
         "fields": {
             "title": "",
-            "ordering": 11,
+            "position": 11,
             "level": 1,
             "label": "Speaker Directory",
             "url": "/speakers",

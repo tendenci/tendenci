@@ -13,5 +13,7 @@ class Command(BaseCommand):
         call_command('expire_resumes')
         call_command('expire_stories')
         call_command('send_event_reminders')
+        call_command('clean_corporate_memberships')
         call_command('send_membership_notices')
-        call_command('remove_expired_memberships')
+        call_command('clean_memberships')
+        call_command('refresh_membership_groups')

@@ -215,8 +215,13 @@ if cm_api_key and cm_client_id:
                 setup_custom_fields(cm_list)
                 # if the list title doesn't match with the group name, update the list title
                 if instance.name != list.Name:
-                    cm_list.update(instance.name, "", False, "")
-                        
+                    try:
+                        # trap the error for now
+                        # TODO: update only if the list title does not exist
+                        # within a client.
+                        cm_list.update(instance.name, "", False, "")
+                    except:
+                        pass
 
     def delete_cm_list(sender, instance=None, **kwargs):
         """Delete the list from campaign monitor

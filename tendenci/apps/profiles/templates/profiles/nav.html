@@ -43,6 +43,7 @@
             {% if can_add_profile %}
                 <li><a href="{% url profile.add %}">{% trans "Add a User" %}</a></li>
             {% endif %}
+            <li><a href="{% url profile.similar %}">{% trans "Similar Users List" %}</a></li>
             {% if user.profile.is_staff %}
                 <li><a href="{% url profile.admins %}">{% trans "Admin List" %}</a></li>
                 <li class="divider"></li>

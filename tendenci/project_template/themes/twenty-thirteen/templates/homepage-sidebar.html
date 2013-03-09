@@ -1,0 +1,49 @@
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load news_tags %}
+{% load event_tags %}
+
+   <div id="stories-sponsors">
+      {% list_stories as sponsor_stories tags="sponsors" limit=1 random=true %}
+        <h3>Featured Sponsor</h3>
+        <div id="sponsor-items">
+        {% if sponsor_stories %}
+        {% for story in sponsor_stories %}
+            {% if story.image %}
+            <a href="{{ story.full_story_link }}"><img alt="{{ story.title }}" src="{% image_url story.image size=180x120 crop=true quality=92 %}" /></a>
+            {% endif %}
+        {% endfor %}
+        {% else %}
+        {% for item in TEMPLATE_STORIES_SPONSORS_LIMIT|make_range %}
+            <img alt="Visit our Sponsor" src="{% stock_image_url '180x120' %}" />
+        {% endfor %}
+            {% if user.is_authenticated %}<p><a href="/stories/add/?tags={{ TEMPLATE_STORIES_SPONSORS_TAG }}">Add a story</a> and tag it <strong>sponsors</strong> to have it appear as an image above.</p>{% endif %}
+        {% endif %}
+        </div>
+   </div><!--/#stories-sponsors-->
+
+   <div id="events-list">
+      <h3>Upcoming Events</h3>
+      {% list_events as events_list limit=3 %}
+      {% for event in events_list %}
+      <h4><span class="event-time">{{ event.start_dt }}</span><br/><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+          <p>{{ event.description|striptags|truncatewords:"12"|safe }}</p>
+      {% empty %}
+          <h4>{% if user.profile.is_superuser %}<a href="{% url event.add %}">Add your first event</a>{% else %}<a href="#">Great Event</a>{% endif %}</h4>
+          <p>{% now "b" %} 28th</p>
+      {% endfor %}
+      <p style="text-align: center; margin: 15px 0;"><a  class="readmorelarge" href="/events/">View More Events &raquo;</a></p>
+  </div><!--/#events-list-->
+
+  <div id="news-list">
+    <h3>Latest News</h3>
+    {% list_news as news_list limit=3 %}
+    {% for news_item in news_list %}
+    <h4><a href="{{ news_item.get_absolute_url }}">{{ news_item.headline }}</a></h4>
+    <p>{{ news_item.summary|striptags|safe|truncatewords:"10" }}</p>
+    {% endfor %}
+    <p style="text-align: center; margin: 15px 0;"><a  class="readmorelarge" href="/news/">View More News &raquo;</a></p>
+  </div><!--/#news-list-->
+

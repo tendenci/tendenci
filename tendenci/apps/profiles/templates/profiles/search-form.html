@@ -1,9 +1,12 @@
 {% load i18n %}
 
-{% if SITE_GLOBAL_SEARCHINDEX %}
+
 <form class="search-form" action="{% url profile.search %}" method="get">
 <input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" name="search" value="Search" />
-<p><label for="members">{% trans 'Only Show Members' %}</label><input type="checkbox" name="members" onchange="this.form.submit();" {% if request.GET.members %}checked=checked{% endif %} /></p>
-</form>
+<input type="submit" value="Search" />
+
+{% if show_checkbox %}
+<p><label for="members">{% trans 'Only Show Members' %}</label><input type="checkbox" name="members" value="&#x2713;" onchange="this.form.submit();" {% if request.GET.members %}checked=checked{% endif %} /></p>
 {% endif %}
+
+</form>

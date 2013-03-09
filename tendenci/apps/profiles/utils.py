@@ -1,4 +1,8 @@
+import re
+from string import digits
+from random import choice
 from django.conf import settings
+from django.contrib.auth.models import User
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import GroupMembership, Group
 from tendenci.addons.memberships.models import Membership, App
@@ -138,3 +142,65 @@ def update_user(user, **kwargs):
         if hasattr(user, k):
             setattr(user, k, v)
     user.save()
+
+
+def make_username_unique(un):
+    """
+    Requires a string parameter.
+    Returns a unique username by appending
+    a digit to the end of the username.
+    """
+    others = []  # find similiar usernames
+    for u in User.objects.filter(username__startswith=un):
+        if u.username.replace(un, '0').isdigit():
+            others.append(int(u.username.replace(un, '0')))
+
+    if others and 0 in others:
+        # the appended digit will compromise the username length
+        un = '%s%s' % (un, unicode(max(others) + 1))
+
+    return un
+
+
+def spawn_username(fn=u'', ln=u'', em=u''):
+    """
+    Uses a first name, last name and email to
+    spawn a typical username.  All usernames are
+    lowercase.  All usernames are unique.
+
+    Usernames generated via first or last name will only
+    contain letters, digits, and periods.
+
+    Usernames generated via the email address may contain
+    letters, digits, underscores, hypens, periods and at-symbols
+
+    Usernames that 100% auto-generated start with 'user.' and end
+    with 10 digits which can later be replaced by the user primary key.
+    Example user.3482938481
+    """
+
+    django_max_un_length = 30
+    max_length = django_max_un_length - 3  # to account for appended numbers
+
+    # only letters and digits
+    fn = re.sub('[^A-Za-z0-9]', u'', fn)
+    ln = re.sub('[^A-Za-z0-9]', u'', ln)
+
+    # only letters digits underscores dashes @ + .
+    em = re.sub('[^\w@+.-]', u'', em)
+
+    if fn and ln:
+        un = '%s.%s' % (fn, ln)
+        return make_username_unique(un[:max_length].lower())
+
+    if fn:
+        return make_username_unique(fn[:max_length].lower())
+
+    if ln:
+        return make_username_unique(ln[:max_length].lower())
+
+    if em:
+        return make_username_unique(em.split('@')[0][:max_length].lower())
+
+    int_string = ''.join([choice(digits) for x in xrange(10)])
+    return 'user.%s' % int_string

@@ -44,6 +44,7 @@
         float: right;
         margin-right: 1em;
     }
+
 </style>
 {% endblock %}
 
@@ -57,17 +58,15 @@
          <div class="quick-options">
             {% corpmemb_options request.user corporate_membership %}        
          </div>
-         {% if corporate_membership.status and corporate_membership.status_detail == "active" %}
+         {% if corporate_membership.is_active %}
         <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
         {% endif %}
     </div>
-   
-    
-    
+     
                     
    {% for field_obj in app_fields %}
         {% if field_obj.field_name == '' %}
-            {% if field_obj.field_name == '' %}
+            {% if not forloop.last %}
                 <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
                     <h2>{{ field_obj.label  }}</h2>
                 </div>
@@ -103,11 +102,15 @@
                                 {% endfor %}
                                 </table>
                                 <div>&nbsp;</div>
+                                 {% if corporate_membership.status_detail != 'archive' %}
                                 <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></div>
+                                {% endif %}
                             {% else %}
                                 <div>{% trans "No representatives available" %}</div>
                                 <div>&nbsp;</div>
+                                {% if corporate_membership.status_detail != 'archive' %}
                                 <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
+                                {% endif %}
                             {% endif %} 
                             
                         {% else %}
@@ -120,7 +123,11 @@
                             {% if  field_obj.is_date %}
                                 {{ field_obj.value|date:'long' }}
                             {% else %}
+                                {% if field_obj.field_name == 'url' %}
+                                {{ field_obj.value|safe|urlize }}
+                                {% else %}
                                 {{ field_obj.value }}
+                                {% endif %}
                                 {% if field_obj.field_name == 'payment_method' %}
                                     {% if corporate_membership.invoice %}
                                      - <a href="{% url invoice.view corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
