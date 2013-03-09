@@ -30,8 +30,8 @@
             
                 {# createor username #}
                 <td>
-                    {% if invoice.creator_username %}
-                        <a href="{% url profile invoice.creator_username %}">{{ invoice.creator_username }}</a>
+                    {% if invoice.creator.username %}
+                        <a href="{% url profile invoice.creator.username %}">{{ invoice.creator.username }}</a>
                     {% else %}
                         &nbsp;
                      {% endif %}

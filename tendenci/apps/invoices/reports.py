@@ -1,8 +1,8 @@
 from django.utils.translation import ugettext_lazy as _
 from django.utils.html import mark_safe
 
-from model_report.report import reports, ReportAdmin
-from model_report.utils import (sum_column, us_date_format, date_label, obj_type_format)
+from tendenci.libs.model_report.report import reports, ReportAdmin
+from tendenci.libs.model_report.utils import (sum_column, us_date_format, date_label, obj_type_format)
 
 from tendenci.apps.invoices.models import Invoice
 from tendenci.core.site_settings.utils import get_setting

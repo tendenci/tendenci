@@ -53,17 +53,19 @@ def get_user_import_settings(request, id):
         return d
 
     d['file_name'] = (request.session[id]).get('file_name', u'')
-    d['interactive'] = request.session[id].get('interactive', u'')
-    d['override'] = request.session[id].get('override', u'')
+    d['interactive'] = request.session[id].get('interactive', False)
+    d['override'] = request.session[id].get('override', False)
     d['key'] = request.session[id].get('key', u'')
     d['group'] = request.session[id].get('group', u'')
     d['clear_group_membership'] = request.session[id].get(
-                                'clear_group_membership', u''
+                                'clear_group_membership', False
                                 )
 
-    d['interactive'] = d.get('interactive') or False
-    d['override'] = d.get('override') or False
-    d['clear_group_membership'] = d.get('clear_group_membership') or False
+    if d['override'] == "False":
+        d['override'] = False
+
+    if d['interactive'] == "False":
+        d['interactive'] = False
 
     if d['override']:
         d['str_update'] = 'Override All Fields'

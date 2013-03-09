@@ -1,0 +1,847 @@
+[
+    {
+        "pk": 1,
+        "model": "events.type",
+        "fields": {
+            "color_set": 26,
+            "name": "Community Workshop",
+            "slug": "community-workshop"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.type",
+        "fields": {
+            "color_set": 44,
+            "name": "Board Meeting",
+            "slug": "board-meeting"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "events.type",
+        "fields": {
+            "color_set": 15,
+            "name": "Staff Holiday",
+            "slug": "staff-holiday"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "events.type",
+        "fields": {
+            "color_set": 7,
+            "name": "Membership Luncheon",
+            "slug": "membership-luncheon"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "events.type",
+        "fields": {
+            "color_set": 5,
+            "name": "Networking Event",
+            "slug": "networking-event"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.place",
+        "fields": {
+            "city": "",
+            "name": "",
+            "zip": "",
+            "url": "",
+            "country": "",
+            "state": "",
+            "address": "",
+            "description": ""
+        }
+    },
+    {
+        "pk": 6,
+        "model": "events.place",
+        "fields": {
+            "city": "Boston",
+            "name": "Cheers Bar Boston",
+            "zip": "02109",
+            "url": "",
+            "country": "",
+            "state": "MA",
+            "address": "1 South Market Street",
+            "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce porttitor, orci nec pretium faucibus, erat lacus eleifend nisl, sed iaculis arcu tortor ut ipsum. Fusce id diam sed orci imperdiet consequat.</p>"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "events.place",
+        "fields": {
+            "city": "",
+            "name": "",
+            "zip": "",
+            "url": "",
+            "country": "",
+            "state": "",
+            "address": "",
+            "description": ""
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.place",
+        "fields": {
+            "city": "Phoenix",
+            "name": "Phoenix Convention Center",
+            "zip": "85004",
+            "url": "",
+            "country": "",
+            "state": "AZ",
+            "address": "100 North 3rd Street",
+            "description": "<p>Meet in Conference Room 3B</p>"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "events.place",
+        "fields": {
+            "city": "Houston",
+            "name": "",
+            "zip": "",
+            "url": "",
+            "country": "",
+            "state": "Texas",
+            "address": "123 Same Street",
+            "description": ""
+        }
+    },
+    {
+        "pk": 3,
+        "model": "events.place",
+        "fields": {
+            "city": "Houston",
+            "name": "Houston Public Library",
+            "zip": "77002",
+            "url": "",
+            "country": "",
+            "state": "TX",
+            "address": "500 McKinney",
+            "description": "<p>Meet in the large meeting room on the third floor.</p>"
+        }
+    },
+    {
+        "pk": 7,
+        "model": "events.place",
+        "fields": {
+            "city": "Houston",
+            "name": "Community Garden",
+            "zip": "",
+            "url": "",
+            "country": "",
+            "state": "TX",
+            "address": "2013 S Main",
+            "description": ""
+        }
+    },
+    {
+        "pk": 6,
+        "model": "events.registrationconfiguration",
+        "fields": {
+            "create_dt": "2012-12-31T12:50:29.220",
+            "registration_email_text": "",
+            "use_custom_reg_form": false,
+            "update_dt": "2012-12-31T15:45:10.684",
+            "payment_method": [
+                1,
+                2,
+                3
+            ],
+            "payment_required": false,
+            "enabled": true,
+            "reg_form": null,
+            "bind_reg_form_to_conf_only": true,
+            "limit": 0,
+            "require_guests_info": false,
+            "send_reminder": false,
+            "reminder_days": "7,1",
+            "discount_eligible": false,
+            "email": null,
+            "is_guest_price": false
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.registrationconfiguration",
+        "fields": {
+            "create_dt": "2012-12-27T08:44:40.559",
+            "registration_email_text": "",
+            "use_custom_reg_form": false,
+            "update_dt": "2012-12-31T16:42:20.711",
+            "payment_method": [
+                1,
+                2,
+                3
+            ],
+            "payment_required": true,
+            "enabled": false,
+            "reg_form": null,
+            "bind_reg_form_to_conf_only": true,
+            "limit": 0,
+            "require_guests_info": false,
+            "send_reminder": false,
+            "reminder_days": "7,1",
+            "discount_eligible": true,
+            "email": null,
+            "is_guest_price": false
+        }
+    },
+    {
+        "pk": 4,
+        "model": "events.registrationconfiguration",
+        "fields": {
+            "create_dt": "2012-12-30T09:26:56.990",
+            "registration_email_text": "",
+            "use_custom_reg_form": false,
+            "update_dt": "2012-12-31T16:42:54.477",
+            "payment_method": [
+                1,
+                2,
+                3
+            ],
+            "payment_required": true,
+            "enabled": true,
+            "reg_form": null,
+            "bind_reg_form_to_conf_only": true,
+            "limit": 0,
+            "require_guests_info": false,
+            "send_reminder": false,
+            "reminder_days": "7,1",
+            "discount_eligible": true,
+            "email": null,
+            "is_guest_price": false
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.registrationconfiguration",
+        "fields": {
+            "create_dt": "2012-12-27T08:44:58.449",
+            "registration_email_text": "",
+            "use_custom_reg_form": false,
+            "update_dt": "2012-12-31T16:50:56.631",
+            "payment_method": [
+                1,
+                2,
+                3
+            ],
+            "payment_required": true,
+            "enabled": false,
+            "reg_form": null,
+            "bind_reg_form_to_conf_only": true,
+            "limit": 0,
+            "require_guests_info": false,
+            "send_reminder": false,
+            "reminder_days": "",
+            "discount_eligible": true,
+            "email": null,
+            "is_guest_price": false
+        }
+    },
+    {
+        "pk": 3,
+        "model": "events.registrationconfiguration",
+        "fields": {
+            "create_dt": "2012-12-27T08:45:42.038",
+            "registration_email_text": "",
+            "use_custom_reg_form": false,
+            "update_dt": "2012-12-31T16:51:11.288",
+            "payment_method": [
+                1,
+                2,
+                3
+            ],
+            "payment_required": true,
+            "enabled": true,
+            "reg_form": null,
+            "bind_reg_form_to_conf_only": true,
+            "limit": 0,
+            "require_guests_info": true,
+            "send_reminder": false,
+            "reminder_days": "",
+            "discount_eligible": false,
+            "email": null,
+            "is_guest_price": false
+        }
+    },
+    {
+        "pk": 5,
+        "model": "events.registrationconfiguration",
+        "fields": {
+            "create_dt": "2012-12-31T10:49:47.690",
+            "registration_email_text": "",
+            "use_custom_reg_form": false,
+            "update_dt": "2012-12-31T16:51:43.524",
+            "payment_method": [
+                1,
+                2,
+                3
+            ],
+            "payment_required": false,
+            "enabled": true,
+            "reg_form": null,
+            "bind_reg_form_to_conf_only": true,
+            "limit": 0,
+            "require_guests_info": false,
+            "send_reminder": false,
+            "reminder_days": "7,1",
+            "discount_eligible": false,
+            "email": null,
+            "is_guest_price": false
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 1,
+            "group": null,
+            "title": "",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-27T08:43:00",
+            "end_dt": "2013-01-26T10:43:00",
+            "price": "0.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 2,
+            "group": null,
+            "title": "",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-27T08:41:16.568",
+            "end_dt": "2013-01-26T14:41:16.568",
+            "price": "0.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 6,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 6,
+            "group": 1,
+            "title": "RSVP",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-31T01:00:00",
+            "end_dt": "2013-06-18T17:00:00",
+            "price": "0.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 4,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 4,
+            "group": null,
+            "title": "Member Price - Early Registration",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-30T09:25:00",
+            "end_dt": "2013-09-25T11:25:00",
+            "price": "50.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 3,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": false,
+            "status": true,
+            "reg_conf": 3,
+            "group": 1,
+            "title": "Member Price",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": true,
+            "start_dt": "2012-12-27T08:41:00",
+            "end_dt": "2013-04-04T14:41:00",
+            "price": "20.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 7,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 3,
+            "group": null,
+            "title": "Non-Member Price",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-27T08:41:00",
+            "end_dt": "2014-03-11T12:00:00",
+            "price": "40.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 8,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 3,
+            "group": null,
+            "title": "Student Price",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-27T08:41:00",
+            "end_dt": "2014-03-11T12:00:00",
+            "price": "15.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 5,
+        "model": "events.regconfpricing",
+        "fields": {
+            "allow_anonymous": true,
+            "status": true,
+            "reg_conf": 5,
+            "group": null,
+            "title": "RSVP",
+            "position": 1,
+            "reg_form": null,
+            "allow_user": false,
+            "allow_member": false,
+            "start_dt": "2012-12-31T10:46:00",
+            "end_dt": "2013-01-30T12:46:00",
+            "price": "0.00",
+            "quantity": 1
+        }
+    },
+    {
+        "pk": 4,
+        "model": "events.organizer",
+        "fields": {
+            "event": [
+                4
+            ],
+            "description": "<p><span>Mauris bibendum neque eu lacus ultrices accumsan. Duis et libero leo, sed ornare augue. Ut nec adipiscing dolor. Fusce faucibus, orci eu vehicula posuere, elit orci placerat lorem, suscipit rhoncus urna ante ac arcu. Sed ut quam vel dui gravida aliquam et sit amet tellus. Proin arcu leo, lacinia sit amet tincidunt vel, molestie et leo. Etiam nec eros sed turpis tempus tincidunt at molestie elit. Integer nunc felis, imperdiet pellentesque luctus vel, accumsan non nisi.</span></p>",
+            "user": null,
+            "name": "The Association"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.organizer",
+        "fields": {
+            "event": [
+                2
+            ],
+            "description": "",
+            "user": null,
+            "name": ""
+        }
+    },
+    {
+        "pk": 3,
+        "model": "events.organizer",
+        "fields": {
+            "event": [
+                3
+            ],
+            "description": "<p>Our organization puts on quarterly luncheons to our members as an opportunity for professional development, networking, and furthering our mission.</p>",
+            "user": null,
+            "name": "Your Association"
+        }
+    },
+    {
+        "pk": 5,
+        "model": "events.organizer",
+        "fields": {
+            "event": [
+                5
+            ],
+            "description": "",
+            "user": null,
+            "name": "Our Organization"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "events.organizer",
+        "fields": {
+            "event": [
+                6
+            ],
+            "description": "<p>Donec non sodales odio. Nam dui nisi, eleifend sollicitudin porttitor sed, dignissim a metus. Aenean porta condimentum euismod. Ut faucibus tempus lectus, laoreet ultrices sem ultricies non. Quisque elit lectus, vulputate nec cursus at, iaculis nec nunc. Curabitur vestibulum pretium elit, ut vehicula erat hendrerit mollis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a enim massa. Sed quis tortor ipsum, sit amet tempor justo. Ut quis risus neque. Quisque luctus diam sed diam dapibus pulvinar at quis odio.</p>",
+            "user": null,
+            "name": "The Association"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.organizer",
+        "fields": {
+            "event": [
+                1
+            ],
+            "description": "",
+            "user": null,
+            "name": ""
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.speaker",
+        "fields": {
+            "event": [
+                4
+            ],
+            "description": "<p>Mauris elementum mattis diam, ac convallis risus tempor at. Ut in est id turpis suscipit lacinia. Duis eget sagittis diam. Cras rutrum lobortis sapien, vel ultrices enim ultrices sit amet. Mauris in ante suscipit libero pellentesque ornare. Cras scelerisque porttitor sapien, nec suscipit massa dapibus non. Morbi nunc metus, suscipit quis vulputate quis, dapibus nec ligula. Quisque mattis fermentum nulla quis egestas. Nulla at odio erat.</p>\r\n<p>Integer sodales diam sit amet nulla lobortis convallis. Aliquam erat volutpat. Vivamus sed nibh ligula. Integer at facilisis arcu. Maecenas aliquam, augue vel ultricies pharetra, eros quam rutrum odio, ac fringilla velit odio vitae lacus. Aliquam erat volutpat. Donec convallis dui in neque tempus sed blandit sem cursus. Nunc aliquam placerat suscipit. Nam tempus porta lectus, sit amet pulvinar sapien viverra a. Vivamus rhoncus eros eu dui hendrerit nec pellentesque odio scelerisque. Proin et adipiscing orci. Sed diam tellus, ornare sit amet ullamcorper non, lobortis in mi.</p>",
+            "user": null,
+            "name": "Joe Speaker"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.speaker",
+        "fields": {
+            "event": [
+                3
+            ],
+            "description": "<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque malesuada pretium hendrerit. Sed dui eros, semper a euismod non, cursus viverra mauris. Ut ut malesuada lacus. Donec pharetra augue eget nulla tempus at cursus purus sollicitudin. Duis suscipit ultrices urna, in volutpat purus malesuada a. Etiam id lacus lorem. Praesent dui nibh, pellentesque id ornare id, molestie commodo sapien. Quisque sodales justo sit amet lacus fringilla vitae tincidunt eros volutpat. Cras a viverra tortor. Duis risus enim, placerat id commodo in, luctus id mauris. Maecenas velit leo, volutpat quis volutpat ut, vulputate vitae ligula. Nullam in nisl vel urna dignissim auctor.</span></p>",
+            "user": null,
+            "name": "Jane Holiday"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "events.event",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "private": false,
+            "allow_member_view": false,
+            "on_weekend": true,
+            "owner": null,
+            "timezone": "America/Chicago",
+            "guid": "fc33861e-5033-11e2-9429-1231381d2980",
+            "create_dt": "2012-12-27T08:44:57.932",
+            "creator_username": "",
+            "group": 1,
+            "update_dt": "2012-12-31T16:50:57.154",
+            "priority": false,
+            "type": 4,
+            "image": null,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "mark_registration_ended": false,
+            "description": "<p><strong>Our office will be closed for the Christmas Holiday all week. Please email us or fill out our online <a href=\"/contact\">contact form</a> to reach us during this time.</strong></p>\r\n<p>Duis non varius neque. Phasellus quis tortor non lacus egestas lobortis.  Suspendisse leo magna, rhoncus eget luctus nec, mattis nec justo.  Vivamus sapien magna, ullamcorper et imperdiet vel, ultrices in velit.  Pellentesque ipsum risus, malesuada nec commodo suscipit, eleifend nec  mi. In sit amet nibh ac dui consectetur aliquet. Pellentesque faucibus,  massa a faucibus tristique, diam justo varius nibh, at pretium massa  sapien non arcu. Quisque nec rutrum lorem. Ut scelerisque, nunc vitae  consequat mattis, ligula turpis fringilla nulla, ac luctus orci lacus  quis lectus. Praesent volutpat porta sapien vel bibendum. Donec velit  tellus, lacinia id lacinia at, congue id libero.</p>",
+            "tags": "tendencidemo",
+            "display_event_registrants": false,
+            "status_detail": "active",
+            "entity": 1,
+            "registration_configuration": 2,
+            "display_registrants_to": "admin",
+            "allow_user_edit": false,
+            "title": "Staff Holiday",
+            "all_day": false,
+            "password": "",
+            "meta": null,
+            "place": 4,
+            "allow_member_edit": false,
+            "start_dt": "2013-12-22T00:00:00",
+            "end_dt": "2013-12-28T23:30:00",
+            "external_url": ""
+        }
+    },
+    {
+        "pk": 6,
+        "model": "events.event",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "private": false,
+            "allow_member_view": false,
+            "on_weekend": true,
+            "owner": null,
+            "timezone": "America/Chicago",
+            "guid": "f272a85e-537a-11e2-a2e2-22000a1e8c2c",
+            "create_dt": "2012-12-31T12:50:29.325",
+            "creator_username": "",
+            "group": 1,
+            "update_dt": "2012-12-31T15:45:11.410",
+            "priority": false,
+            "type": 3,
+            "image": null,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "mark_registration_ended": false,
+            "description": "<p>Join us for our Quarterly Networking Happy Hour for networking and to catch up on the latest news from our Association. Registration is free, but please RSVP.</p>\r\n<h2>More Details</h2>\r\n<div id=\"lipsum\">\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce porttitor, orci nec pretium faucibus, erat lacus eleifend nisl, sed iaculis arcu tortor ut ipsum. Fusce id diam sed orci imperdiet consequat. Cras imperdiet euismod magna, ac pellentesque nulla imperdiet at. Proin nisl turpis, varius et cursus ut, volutpat aliquet velit. Donec eget mi sem. Aliquam a risus elit, in sodales purus. Suspendisse magna felis, laoreet quis commodo quis, scelerisque nec lacus. Cras quis est est, et mollis metus. Nam odio ipsum, consequat quis imperdiet ut, hendrerit eu nunc. Duis quis justo ac ante bibendum consectetur ut ac arcu. Vivamus ut auctor lorem. Mauris sed quam sit amet erat fermentum semper. Phasellus tristique laoreet lectus fringilla suscipit.</p>\r\n<p>Donec non sodales odio. Nam dui nisi, eleifend sollicitudin porttitor sed, dignissim a metus. Aenean porta condimentum euismod. Ut faucibus tempus lectus, laoreet ultrices sem ultricies non. Quisque elit lectus, vulputate nec cursus at, iaculis nec nunc. Curabitur vestibulum pretium elit, ut vehicula erat hendrerit mollis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus a enim massa. Sed quis tortor ipsum, sit amet tempor justo. Ut quis risus neque. Quisque luctus diam sed diam dapibus pulvinar at quis odio.</p>\r\n</div>",
+            "tags": "tendencidemo",
+            "display_event_registrants": true,
+            "status_detail": "active",
+            "entity": 1,
+            "registration_configuration": 6,
+            "display_registrants_to": "public",
+            "allow_user_edit": false,
+            "title": "Networking Happy Hour",
+            "all_day": false,
+            "password": "",
+            "meta": null,
+            "place": 6,
+            "allow_member_edit": false,
+            "start_dt": "2013-06-19T17:00:00",
+            "end_dt": "2013-06-19T20:00:00",
+            "external_url": ""
+        }
+    },
+    {
+        "pk": 4,
+        "model": "events.event",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "private": false,
+            "allow_member_view": false,
+            "on_weekend": true,
+            "owner": null,
+            "timezone": "America/Chicago",
+            "guid": "5902ddfa-5295-11e2-8119-123139081846",
+            "create_dt": "2012-12-30T09:26:57.150",
+            "creator_username": "",
+            "group": 1,
+            "update_dt": "2012-12-31T16:42:55.063",
+            "priority": false,
+            "type": 3,
+            "image": null,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "mark_registration_ended": false,
+            "description": "<p>Join us for our Community Workshop!</p>\r\n<h2>Details</h2>\r\n<p><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque malesuada pretium hendrerit. Sed dui eros, semper a euismod non, cursus viverra mauris. Ut ut malesuada lacus. Donec pharetra augue eget nulla tempus at cursus purus sollicitudin. Duis suscipit ultrices urna, in volutpat purus malesuada a. Etiam id lacus lorem. Praesent dui nibh, pellentesque id ornare id, molestie commodo sapien. Quisque sodales justo sit amet lacus fringilla vitae tincidunt eros volutpat. Cras a viverra tortor. Duis risus enim, placerat id commodo in, luctus id mauris. Maecenas velit leo, volutpat quis volutpat ut, vulputate vitae ligula. Nullam in nisl vel urna dignissim auctor.</span></p>\r\n<h2>Agenda</h2>\r\n<p><span>Mauris bibendum neque eu lacus ultrices accumsan. Duis et libero leo, sed ornare augue. Ut nec adipiscing dolor. Fusce faucibus, orci eu vehicula posuere, elit orci placerat lorem, suscipit rhoncus urna ante ac arcu. Sed ut quam vel dui gravida aliquam et sit amet tellus. Proin arcu leo, lacinia sit amet tincidunt vel, molestie et leo. Etiam nec eros sed turpis tempus tincidunt at molestie elit. Integer nunc felis, imperdiet pellentesque luctus vel, accumsan non nisi.</span></p>",
+            "tags": "featured, tendencidemo",
+            "display_event_registrants": false,
+            "status_detail": "active",
+            "entity": 1,
+            "registration_configuration": 4,
+            "display_registrants_to": "public",
+            "allow_user_edit": false,
+            "title": "Community Workshop",
+            "all_day": false,
+            "password": "",
+            "meta": null,
+            "place": 4,
+            "allow_member_edit": false,
+            "start_dt": "2013-09-26T12:00:00",
+            "end_dt": "2013-09-26T15:00:00",
+            "external_url": ""
+        }
+    },
+    {
+        "pk": 3,
+        "model": "events.event",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "private": false,
+            "allow_member_view": false,
+            "on_weekend": true,
+            "owner": null,
+            "timezone": "America/Chicago",
+            "guid": "1655dcae-5034-11e2-991f-1231381d2980",
+            "create_dt": "2012-12-27T08:45:41.778",
+            "creator_username": "",
+            "group": 1,
+            "update_dt": "2012-12-31T16:51:11.850",
+            "priority": false,
+            "type": 4,
+            "image": null,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "mark_registration_ended": false,
+            "description": "<p>Use the events calendar to create calendar events that people can register for. Include details like location, sponsor, speaker, etc. and allow people to register online. You also have the ability to set up different pricing for Members, Nonmembers, Students, Board Members, etc.</p>",
+            "tags": "tendencidemo",
+            "display_event_registrants": true,
+            "status_detail": "active",
+            "entity": 1,
+            "registration_configuration": 3,
+            "display_registrants_to": "public",
+            "allow_user_edit": false,
+            "title": "Quarterly Luncheon",
+            "all_day": false,
+            "password": "",
+            "meta": null,
+            "place": 3,
+            "allow_member_edit": false,
+            "start_dt": "2014-03-12T11:30:00",
+            "end_dt": "2014-03-12T13:30:00",
+            "external_url": ""
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.event",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "private": false,
+            "allow_member_view": false,
+            "on_weekend": true,
+            "owner": null,
+            "timezone": "America/Chicago",
+            "guid": "f1f14aa6-5033-11e2-a3d1-1231381d2980",
+            "create_dt": "2012-12-27T08:44:40.721",
+            "creator_username": "",
+            "group": 1,
+            "update_dt": "2012-12-31T16:42:21.298",
+            "priority": false,
+            "type": 2,
+            "image": null,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "mark_registration_ended": false,
+            "description": "<p>Use an event like this to create a board meeting. Add details here.</p>\r\n<h2>Agenda</h2>\r\n<ol>\r\n<li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>\r\n<li>Quisque malesuada pretium hendrerit. Sed dui eros, semper a euismod non, cursus viverra mauris.</li>\r\n<li>Ut ut malesuada lacus.</li>\r\n<li>Donec pharetra augue eget nulla tempus at cursus purus sollicitudin.</li>\r\n</ol>",
+            "tags": "tendencidemo",
+            "display_event_registrants": false,
+            "status_detail": "active",
+            "entity": 1,
+            "registration_configuration": 1,
+            "display_registrants_to": "public",
+            "allow_user_edit": false,
+            "title": "Monthly Board Meeting",
+            "all_day": false,
+            "password": "",
+            "meta": null,
+            "place": 1,
+            "allow_member_edit": false,
+            "start_dt": "2013-03-15T10:00:00",
+            "end_dt": "2013-03-15T12:00:00",
+            "external_url": ""
+        }
+    },
+    {
+        "pk": 5,
+        "model": "events.event",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "private": false,
+            "allow_member_view": false,
+            "on_weekend": true,
+            "owner": null,
+            "timezone": "America/Chicago",
+            "guid": "1629a8ee-536a-11e2-9cfb-22000a1e8c2c",
+            "create_dt": "2012-12-31T10:49:47.800",
+            "creator_username": "",
+            "group": 1,
+            "update_dt": "2012-12-31T16:51:44.028",
+            "priority": false,
+            "type": 5,
+            "image": null,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "mark_registration_ended": false,
+            "description": "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque malesuada pretium hendrerit. Sed dui eros, semper a euismod non, cursus viverra mauris. Ut ut malesuada lacus. Donec pharetra augue eget nulla tempus at cursus purus sollicitudin. Duis suscipit ultrices urna, in volutpat purus malesuada a. Etiam id lacus lorem. Praesent dui nibh, pellentesque id ornare id, molestie commodo sapien. Quisque sodales justo sit amet lacus fringilla vitae tincidunt eros volutpat. Cras a viverra tortor. Duis risus enim, placerat id commodo in, luctus id mauris. Maecenas velit leo, volutpat quis volutpat ut, vulputate vitae ligula. Nullam in nisl vel urna dignissim auctor.</p>\r\n<h2>Details</h2>\r\n<p>Mauris bibendum neque eu lacus ultrices accumsan. Duis et libero leo, sed ornare augue. Ut nec adipiscing dolor. Fusce faucibus, orci eu vehicula posuere, elit orci placerat lorem, suscipit rhoncus urna ante ac arcu. Sed ut quam vel dui gravida aliquam et sit amet tellus. Proin arcu leo, lacinia sit amet tincidunt vel, molestie et leo. Etiam nec eros sed turpis tempus tincidunt at molestie elit. Integer nunc felis, imperdiet pellentesque luctus vel, accumsan non nisi.</p>",
+            "tags": "tendencidemo",
+            "display_event_registrants": false,
+            "status_detail": "active",
+            "entity": 1,
+            "registration_configuration": 5,
+            "display_registrants_to": "public",
+            "allow_user_edit": false,
+            "title": "Member Volunteer Day",
+            "all_day": false,
+            "password": "",
+            "meta": null,
+            "place": 7,
+            "allow_member_edit": false,
+            "start_dt": "2014-06-14T09:30:00",
+            "end_dt": "2014-06-14T12:00:00",
+            "external_url": ""
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.customregform",
+        "fields": {
+            "last_name": true,
+            "creator": null,
+            "position_title": true,
+            "owner": null,
+            "mail_name": false,
+            "city": false,
+            "create_dt": "2012-12-27T08:43:02.285",
+            "zip": false,
+            "update_dt": "2012-12-27T08:43:02.569",
+            "comments": true,
+            "state": false,
+            "company_name": true,
+            "email": true,
+            "owner_username": "",
+            "status": "active",
+            "meal_option": false,
+            "first_name": true,
+            "phone": false,
+            "address": false,
+            "creator_username": "",
+            "name": "Default Custom Registration Form",
+            "country": false,
+            "notes": "This is a default custom registration form."
+        }
+    },
+    {
+        "pk": 1,
+        "model": "events.customregfield",
+        "fields": {
+            "field_type": "CharField",
+            "form": 1,
+            "display_on_roster": true,
+            "default": "",
+            "required": true,
+            "label": "First Name",
+            "visible": true,
+            "choices": "",
+            "position": 1,
+            "map_to_field": "first_name"
+        }
+    }
+]
+

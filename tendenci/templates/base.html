@@ -38,9 +38,15 @@
 <body id="{% block body_ids %}{% endblock %}" class="{% block body_classes %}{% endblock %}">
 {% block top_bar %}
 {% if request.user.is_superuser %}
-    {% include "top_menu/admin_top.html" %}
-    {% if request.session.theme %}
-        {% include "themes/theme_top.html" %}
+    {% if request.user.impersonated_user and not request.user.impersonated_user.is_superuser  %}
+        {% if request.user.is_authenticated %}
+        {% include "top_menu/user_top.html" %}
+        {% endif %}
+    {% else %}
+        {% include "top_menu/admin_top.html" %}
+        {% if request.session.theme %}
+            {% include "themes/theme_top.html" %}
+        {% endif %}
     {% endif %}
 {% else %}
     {% if request.user.is_authenticated %}
@@ -60,6 +66,13 @@
 <script type="text/javascript" src="{{ STATIC_URL }}bootstrap/js/bootstrap-modal.js"></script>
 {% if request.user.is_superuser %}<script type="text/javascript" src="{{ STATIC_URL }}js/admin_menu.js"></script>{% endif %}
 {% if user.is_authenticated %}<script type="text/javascript" src="{{ STATIC_URL }}js/global/authenticated.js"></script>{% endif %}
+{% if request.user.is_authenticated %}
+<script type="text/javascript">
+$(document).keyup(function(e) {
+  if (e.keyCode == 27) { window.location="{% url dashboard %}"; }   // esc
+});
+</script>
+{% endif %}
 {% block extra_body %}{% endblock %}
 {{ NEW_RELIC_FOOTER|safe }}
 </html>

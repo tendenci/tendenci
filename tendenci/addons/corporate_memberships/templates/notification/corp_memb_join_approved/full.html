@@ -19,7 +19,7 @@
 {% if object.authentication_method == 'secret_code' %}
 <p>
 {% blocktrans %}<b>secret code</b>:{% endblocktrans %}<br />
-<b>{{ object.secret_code }}</b>
+<b>{{ object.corp_profile.secret_code }}</b>
 </p>
 {% endif %}
 

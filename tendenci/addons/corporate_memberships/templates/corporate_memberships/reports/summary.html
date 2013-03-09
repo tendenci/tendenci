@@ -1,0 +1,88 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+{% load i18n %}
+
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
+<style>
+    .summary-graph, .corp-stat-table{
+        width: 600px;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{% corpmemb_nav request.user %}
+<h1>{% trans "Corporate Membership Summary" %}</h1>
+<div class="corp-mems-wrap corp-stat-table">
+    <table>
+        <thead>
+            <tr>
+                <th>{% trans 'Type' %}</th>
+                <th>{% trans 'Active' %}</th>
+                <th>{% trans 'Pending' %}</th>
+                <th>{% trans 'Expired' %}</th>
+                <th>{% trans 'Expired - in grace period' %}</th>
+                <th>{% trans 'Total' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for type in summary %}
+            <tr>
+                <td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change type.type.id %}">{{ type.type.name }}</a></td>
+                <td>{{ type.active }}</td>
+                <td>{{ type.pending }}</td>
+                <td>{{ type.expired }}</td>
+                 <td>{{ type.in_grace_period }}</td>
+                <td><a href="{% url corpmembership.search %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td>Total</td>
+                <td>{{ total.total_active }}</td>
+                <td>{{ total.total_pending }}</td>
+                <td>{{ total.total_expired }}</td>
+                <td>{{ total.total_in_grace_period }}</td>
+                <td>{{ total.total_total }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="chart_div" style="width: 850px; height: 500px;">
+
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+       
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['{% trans 'Corp. Membership Type' %}',
+          '{% trans 'Active' %}', '{% trans 'Pending' %}',
+          '{% trans 'Expired' %}', '{% trans 'Expired - in grace period' %}'],
+          {% for type in summary %}
+          ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
+          {{ type.expired }}, {{ type.in_grace_period }}],
+          {% endfor %}
+        ]);
+
+        var options = {
+          title: 'Summary By Type',
+          hAxis: {title: '{% trans 'Corp. Membership Type' %}', titleTextStyle: {color: 'black'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+</script>
+{% endblock extra_body %}

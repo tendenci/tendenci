@@ -232,7 +232,8 @@ def delete(request, id, template_name="articles/delete.html"):
 @staff_member_required
 def articles_report(request, template_name='reports/articles.html'):
     article_type = ContentType.objects.get(app_label="articles", model="article")
-    stats = EventLog.objects.filter(event_id=435000, content_type=article_type) \
+    stats = EventLog.objects.filter(content_type=article_type,
+                                    action='detail') \
                     .values('content_type', 'object_id', 'headline')\
                     .annotate(count=Count('pk'))\
                     .order_by('-count')

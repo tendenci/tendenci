@@ -3,6 +3,7 @@ import datetime
 import csv
 from StringIO import StringIO
 from django.http import HttpResponse
+from django.conf import settings
 from tendenci.core.exports.models import Export
 
 
@@ -66,9 +67,12 @@ def run_export_task(app_label, model_name, fields, memb_app=None):
         model_name=model_name,
         memb_app=memb_app,
     )
-    # subprocess.Popen(['python', 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
 
-    from django.core.management import call_command
-    args = [unicode(export.pk)] + fields
-    call_command('run_export_task', *args)
+    if settings.USE_SUBPROCESS:
+        subprocess.Popen(['python', 'manage.py', 'run_export_task', unicode(export.pk)] + fields)
+    else:
+        from django.core.management import call_command
+        args = [unicode(export.pk)] + fields
+        call_command('run_export_task', *args)
+
     return export.pk

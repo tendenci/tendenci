@@ -1,8 +1,11 @@
+import time
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.http import urlquote
 from django.shortcuts import redirect
+
+PASSWORD_PROMT_MAX_AGE = 30 * 60      # 30 minites
 
 
 def ssl_required(view_func):
@@ -21,7 +24,13 @@ def ssl_required(view_func):
 def password_required(view):
     """Decorator to force a password promt"""
     def decorator(request, *args, **kwargs):
-        if request.session.get('password_promt', False):
-            return view(request, *args, **kwargs)
-        return redirect(("%s?next=%s") % (reverse("password_again"), urlquote(request.get_full_path())))
+        if 'password_promt' in request.session and \
+            isinstance(request.session['password_promt'], dict) and \
+            request.session['password_promt'].get('value', False):
+            tstart = request.session['password_promt'].get('time', 0)
+            pwd_age = int(time.time()) - tstart
+            if pwd_age < PASSWORD_PROMT_MAX_AGE:
+                return view(request, *args, **kwargs)
+        return redirect(("%s?next=%s") % (reverse("password_again"),
+                                          urlquote(request.get_full_path())))
     return decorator

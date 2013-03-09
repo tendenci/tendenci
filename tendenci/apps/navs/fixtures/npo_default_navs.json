@@ -1,0 +1,415 @@
+[
+    {
+        "pk": 1,
+        "model": "navs.nav",
+        "fields": {
+            "status": true,
+            "create_dt": "2012-04-05T15:57:43",
+            "megamenu": false,
+            "description": "The main navigation that is initially created.",
+            "update_dt": "2012-04-05T15:57:43",
+            "allow_user_edit": false,
+            "allow_user_view": false,
+            "creator": null,
+            "allow_member_view": false,
+            "entity": null,
+            "owner_username": "",
+            "owner": null,
+            "title": "Main Navigation",
+            "status_detail": "active",
+            "creator_username": "",
+            "allow_member_edit": false,
+            "allow_anonymous_view": true
+        }
+    },
+    {
+        "pk": 1,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 0,
+            "level": 0,
+            "label": "Events",
+            "url": "/events/month/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 2,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 1,
+            "level": 1,
+            "label": "Calendar",
+            "url": "/events/month/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 3,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 2,
+            "level": 1,
+            "label": "Event Photos",
+            "url": "/photos/set/latest/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 4,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 3,
+            "level": 0,
+            "label": "Jobs",
+            "url": "/jobs/search/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 5,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 4,
+            "level": 1,
+            "label": "Search Resumes",
+            "url": "/resumes/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 6,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 5,
+            "level": 0,
+            "label": "Company Directory",
+            "url": "/directories/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 7,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "About Us",
+            "position": 6,
+            "level": 0,
+            "label": "About",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 1,
+            "css": ""
+        }
+    },
+    {
+        "pk": 8,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Mission/Vision",
+            "position": 7,
+            "level": 1,
+            "label": "Mission/Vision",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 3,
+            "css": ""
+        }
+    },
+    {
+        "pk": 9,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 8,
+            "level": 1,
+            "label": "News",
+            "url": "/news/search/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 10,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 9,
+            "level": 1,
+            "label": "Committees",
+            "url": "/committees/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 11,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 10,
+            "level": 1,
+            "label": "Study Groups",
+            "url": "/study-groups/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 12,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 12,
+            "level": 1,
+            "label": "Photos",
+            "url": "/photos/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 13,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 13,
+            "level": 1,
+            "label": "Videos",
+            "url": "/videos/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 14,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 14,
+            "level": 0,
+            "label": "Membership",
+            "url": "/memberships/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 15,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Membership Benefits",
+            "position": 15,
+            "level": 1,
+            "label": "Join",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 2,
+            "css": ""
+        }
+    },
+    {
+        "pk": 16,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 16,
+            "level": 1,
+            "label": "Member Directory",
+            "url": "/memberships/search/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 17,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Membership Benefits",
+            "position": 17,
+            "level": 1,
+            "label": "Membership Benefits",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 2,
+            "css": ""
+        }
+    },
+    {
+        "pk": 18,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 18,
+            "level": 1,
+            "label": "Membership Application",
+            "url": "/memberships/applications/add/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 19,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 19,
+            "level": 0,
+            "label": "Contact",
+            "url": "/contact/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 20,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 20,
+            "level": 0,
+            "label": "Donate",
+            "url": "/donations/",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    },
+    {
+        "pk": 21,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Theme Resources",
+            "position": 21,
+            "level": 0,
+            "label": "Theme Resources",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 5,
+            "css": "inactive-link"
+        }
+    },
+    {
+        "pk": 22,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "How to Use Your Theme",
+            "position": 22,
+            "level": 1,
+            "label": "How to Use Your Theme",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 4,
+            "css": ""
+        }
+    },
+    {
+        "pk": 23,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Full Width Layout",
+            "position": 23,
+            "level": 1,
+            "label": "Full Width Layout",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 6,
+            "css": ""
+        }
+    },
+    {
+        "pk": 24,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Sidebar Layout",
+            "position": 24,
+            "level": 1,
+            "label": "Right Sidebar Layout Example",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 7,
+            "css": ""
+        }
+    },
+    {
+        "pk": 25,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "Left Sidebar Layout Example",
+            "position": 25,
+            "level": 1,
+            "label": "Left Sidebar Layout Example",
+            "url": "",
+            "new_window": false,
+            "nav": 1,
+            "page": 8,
+            "css": ""
+        }
+    },
+    {
+        "pk": 26,
+        "model": "navs.navitem",
+        "fields": {
+            "title": "",
+            "position": 11,
+            "level": 1,
+            "label": "Speaker Directory",
+            "url": "/speakers",
+            "new_window": false,
+            "nav": 1,
+            "page": null,
+            "css": ""
+        }
+    }
+]

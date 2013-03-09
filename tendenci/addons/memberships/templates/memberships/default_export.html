@@ -1,0 +1,32 @@
+{% extends "memberships/base.html" %}
+{% load base_tags %}
+{% load base_filters %}
+{% load i18n %}
+
+{% block title %}{% trans "Export Memberships" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+    <style>
+       #membership-export ul li{
+          list-style: none;  
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div id="membership-export-wrap">
+    
+    <h1>{% trans "Membership CSV Export" %}</h1>
+   
+    <div id="membership-export">
+        
+        <form method="post" action="">{% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn" type='submit' value='Export'>
+        </form>
+    
+    </div>
+</div>
+{% endblock %}

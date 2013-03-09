@@ -1,12 +1,12 @@
 {% load base_filters %}
 {% load i18n %}
             <div class="submitted">{% blocktrans with obj.create_dt|date:"long" as create_date %}Created on {{ create_date }}{% endblocktrans %}
-            {% if obj.creator_username %}
-            {% trans " by: " %}<a href="{% url profile obj.creator_username %}">{{ obj.creator_username }}</a>
+            {% if obj.creator.username %}
+            {% trans " by: " %}<a href="{% url profile obj.creator.username %}">{{ obj.creator.username }}</a>
             {% endif %}
             </div>
             <div class="submitted">{% blocktrans with obj.update_dt|date:"long" as update_date %}Last updated {{ update_date }}{% endblocktrans %}
-            {% if obj.owner_username %}
-            {% trans " by: " %}<a href="{% url profile obj.owner_username %}">{{ obj.owner_username }}</a>
+            {% if obj.owner.username %}
+            {% trans " by: " %}<a href="{% url profile obj.owner.username %}">{{ obj.owner.username }}</a>
             {% endif %}
             </div>

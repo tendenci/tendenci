@@ -145,13 +145,22 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
+            # We set the logo to None temporarily because we need
+            # the PK when we save to get the filepath of the file
+            logo = directory.logo
+            directory.logo = None
+
+            directory = update_perms_and_save(request, form, directory)
+
+            # directory now has a pk, so we can reassign the logo
+            # and resave
+            directory.logo = logo
+
             if directory.logo:
                 directory.logo.file.seek(0)
-            # update all permissions and save the model
-            directory = update_perms_and_save(request, form, directory)
-            
-            # resize the image that has been uploaded
-            if directory.logo:
+
+                directory.save(log=False)
+
                 if settings.USE_S3_STORAGE:
                     resize_s3_image(directory.logo.name)
                 else:

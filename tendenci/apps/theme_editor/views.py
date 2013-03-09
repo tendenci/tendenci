@@ -275,6 +275,7 @@ def delete_file(request):
     EventLog.objects.log()
     return redirect('theme_editor.editor')
 
+
 def upload_file(request):
 
     if not has_perm(request.user, 'theme_editor.add_themefileversion'):
@@ -282,6 +283,7 @@ def upload_file(request):
 
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
+
         if form.is_valid():
             upload = request.FILES['upload']
             file_dir = form.cleaned_data['file_dir']
@@ -293,15 +295,16 @@ def upload_file(request):
                 return HttpResponseRedirect('/theme-editor/editor')
             else:
                 handle_uploaded_file(upload, file_dir)
-                response = {
-                    "success": True
-                }
                 messages.add_message(request, messages.SUCCESS, ('Successfully uploaded %s.' % (upload.name)))
 
                 EventLog.objects.log()
 
                 return HttpResponseRedirect('/theme-editor/editor/')
+
+        else:  # not valid
+            messages.add_message(request, messages.ERROR, form.errors)
+
     else:
         form = UploadForm()
 
-    return render_to_response(context_instance=RequestContext(request))
+    return HttpResponseRedirect('/theme-editor/editor/')
