@@ -64,6 +64,7 @@ class ListNode(Node):
         exclude = u''
         randomize = False
         group = u''
+        status_detail = u'active'
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -137,6 +138,13 @@ class ListNode(Node):
             except:
                 group = None
 
+        if 'status_detail' in self.kwargs:
+            try:
+                status_detail = Variable(self.kwargs['status_detail'])
+                status_detail = status_detail.resolve(context)
+            except:
+                status_detail = self.kwargs['status_detail']
+
         # get the list of items
         self.perms = getattr(self, 'perms', unicode())
 
@@ -169,6 +177,9 @@ class ListNode(Node):
 
             if hasattr(self.model, 'group') and group:
                 items = items.filter(group=group)
+
+            if hasattr(self.model(), 'status_detail'):
+                items = items.filter(status_detail__iexact=status_detail)
 
         objects = []
 
