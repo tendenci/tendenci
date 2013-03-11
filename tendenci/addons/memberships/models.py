@@ -1660,6 +1660,7 @@ class MembershipImportData(models.Model):
     row_num = models.IntegerField(_('Row #'))
     # action_taken can be 'insert', 'update' or 'mixed'
     action_taken = models.CharField(_('Action Taken'), max_length=20, null=True)
+    error = models.CharField(_('Error'), max_length=500, default='')
 
 
 NOTICE_TYPES = (
