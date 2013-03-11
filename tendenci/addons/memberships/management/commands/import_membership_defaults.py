@@ -47,3 +47,7 @@ class Command(BaseCommand):
         mimport.status = 'completed'
         mimport.complete_dt = datetime.now()
         mimport.save()
+
+        # generate a recap file
+        mimport.generate_recap()
+

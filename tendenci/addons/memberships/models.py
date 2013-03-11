@@ -1,3 +1,4 @@
+import os
 import re
 import hashlib
 import uuid
@@ -6,6 +7,7 @@ from copy import deepcopy
 from functools import partial
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import csv
 
 from django.db import models
 from django.db.models.query_utils import Q
@@ -18,6 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
 from django import forms
 from django.utils.importlib import import_module
+from django.core.files.storage import default_storage
 
 from tendenci.core.base.utils import day_validate
 from tendenci.core.site_settings.utils import get_setting
@@ -1656,6 +1659,30 @@ class MembershipImport(models.Model):
 
     def __unicode__(self):
         return self.get_file().file.name
+
+    def generate_recap(self):
+        if not self.recap_file and self.header_line:
+            file_name = 'membership_import_%d_recap.csv' % self.id
+            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+                                   file_name)
+            f = default_storage.open(file_path, 'wb')
+            recap_writer = csv.writer(f)
+            header_row = self.header_line.split(',')
+            header_row.extend(['action_taken', 'error'])
+            recap_writer.writerow(header_row)
+            data_list = MembershipImportData.objects.filter(
+                                            mimport=self
+                                            ).order_by('row_num')
+            for idata in data_list:
+                data_dict = idata.row_data
+                row = [data_dict[k] for k in header_row if k not in [
+                                            'action_taken', 'error']]
+                row.extend([idata.action_taken, idata.error])
+                recap_writer.writerow(row)
+
+            f.close()
+            self.recap_file.name = file_path
+            self.save()
 
 
 class MembershipImportData(models.Model):
