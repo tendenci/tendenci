@@ -1621,6 +1621,12 @@ class MembershipImport(models.Model):
     upload_file = models.FileField(_("Upload File"), max_length=260,
                                    upload_to=UPLOAD_DIR,
                                    null=True)
+    recap_file = models.FileField(_("Recap File"), max_length=260,
+                                   upload_to=UPLOAD_DIR,
+                                   null=True)
+    # store the header line to assist in generating recap
+    header_line = models.CharField(_('Header Line'), max_length=3000,
+                           default='')
     # active users
     interactive = models.IntegerField(choices=INTERACTIVE_CHOICES, default=0)
     # overwrite already existing fields if match
