@@ -1577,10 +1577,6 @@ def membership_default_add(request,
             profile_form.save(
                 request_user=request.user
             )
-            # save demographics
-            demographics = demographics_form.save(commit=False)
-            demographics.user = user
-            demographics.save()
 
             # save demographics
             demographics = demographics_form.save(commit=False)
