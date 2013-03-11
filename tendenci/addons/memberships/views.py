@@ -1077,10 +1077,7 @@ def membership_default_import_preview(request, mimport_id,
         # to be efficient, we only process memberships on the current page
         fieldnames = None
         for idata in data_list:
-
-            user_display = imd.process_default_membership(idata.row_data)
-
-
+            user_display = imd.process_default_membership(idata)
 
             user_display['row_num'] = idata.row_num
             users_list.append(user_display)

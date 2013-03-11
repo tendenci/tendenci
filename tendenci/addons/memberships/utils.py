@@ -833,11 +833,12 @@ def memb_import_parse_csv(mimport):
     return fieldnames, data_list
 
 
-def check_missing_fields(memb_data, key):
+def check_missing_fields(memb_data, key, **kwargs):
     """
     Check if we have enough data to process for this row.
     """
     missing_field_msg = ''
+    is_valid = True
     if key in ['member_number/email/fn_ln_phone',
                'email/member_number/fn_ln_phone']:
         if not any([memb_data['member_number'],
@@ -859,7 +860,10 @@ def check_missing_fields(memb_data, key):
         if not memb_data['email']:
             missing_field_msg = "Missing key 'email'"
 
-    return missing_field_msg
+    if missing_field_msg:
+        is_valid = False
+
+    return is_valid, missing_field_msg
 
 
 def get_user_by_email(email):
@@ -957,6 +961,8 @@ class ImportMembDefault(object):
         # all membership types
         self.all_membership_type_ids = MembershipType.objects.values_list(
                                         'id', flat=True)
+        self.all_membership_type_names = MembershipType.objects.values_list(
+                                        'name', flat=True)
         # membership types associated membership apps
         self.membership_type_ids = [mt.id for mt in MembershipType.objects.all(
                                     )
@@ -1031,62 +1037,70 @@ class ImportMembDefault(object):
             d['allow_member_view'] = True
         return d
 
-    def clean_membership_type(self, memb_data):
+    def clean_membership_type(self, memb_data, **kwargs):
         """
         Ensure we have a valid membership type.
         """
-        if 'membership_type' in memb_data.keys():
+        is_valid = True
+        error_msg = ''
+
+        if 'membership_type' in memb_data and memb_data['membership_type']:
             value = memb_data['membership_type']
 
             if value.isdigit():
                 value = int(value)
                 if not value in self.all_membership_type_ids:
-                    memb_data['membership_type'] = None
+                    is_valid = False
+                    error_msg = 'Invalid membership type "%d"' % value
                 else:
                     memb_data['membership_type'] = value
             else:
-                if isinstance(value, basestring):
-                    [memb_data['membership_type']] = MembershipType.objects.filter(
-                                                name=value).values_list(
-                                                    'id',
-                                                    flat=True
-                                                    )[:1] or [None]
-        if not 'membership_type' in memb_data.keys() or \
-                not memb_data['membership_type']:
+                if not MembershipType.objects.filter(
+                                            name=value).exists():
+                    is_valid = False
+                    error_msg = 'Invalid membership type "%s"' % value
+        else:
+            # the spread sheet doesn't have the membership_type field,
+            # assign the default one
             if memb_data.get('corporate_membership_id'):
                 if self.default_membership_type_id_for_corp_indiv:
                     memb_data['membership_type'] = self.default_membership_type_id_for_corp_indiv
                 else:
-                    memb_data['membership_type'] = self.default_membership_type_id
+                    is_valid = False
+                    error_msg = 'Membership type for corp. individuals not available.'
             else:
-                memb_data['membership_type'] = self.default_membership_type_id
+                if self.default_membership_type_id:
+                    memb_data['membership_type'] = self.default_membership_type_id
+                else:
+                    is_valid = False
+                    error_msg = 'No membership type. Please add one to the site.'
+
+        return is_valid, error_msg
 
     def clean_app(self, memb_data):
         """
         Ensure the app field has the right data.
         """
-        has_app = False
+        is_valid = True
+        error_msg = ''
 
-        if 'app' in memb_data.keys():
+        if 'app' in memb_data and memb_data['app'] and memb_data['app']:
             value = memb_data['app']
 
             if value.isdigit():
-                if value in self.membership_app_ids_dict.keys():
-                    app = self.membership_app_ids_dict[value]
-                    if app.membership_types.filter(
-                        id=memb_data['membership_type']
-                        ).exists():
-                        has_app = True
+                value = int(value)
+                if not value in self.membership_app_ids_dict:
+                    is_valid = False
+                    error_msg = 'Invalid app "%d"' % value
+                else:
+                    memb_data['app'] = value
             else:
-                if isinstance(value, basestring):
-                    # check for app name
-                    if value in self.membership_app_names_dict.keys():
-                        app = self.membership_app_names_dict[value]
-                        if app.membership_types.filter(
-                            id=memb_data['membership_type']
-                            ).exists():
-                            has_app = True
-        if not has_app:
+                # check for app name
+                if not value in self.membership_app_names_dict:
+                    is_valid = False
+                    error_msg = 'Invalid app "%s"' % value
+        else:
+            # no app specified, assign the default one
             membership_type_id = memb_data['membership_type']
 
             app_id = None
@@ -1103,10 +1117,16 @@ class ImportMembDefault(object):
                     [app_id] = self.membership_types_to_apps_map[
                                         membership_type_id][0][:1] or [None]
 
-            if not app_id:
-                app_id = self.default_app_id
+            if app_id:
+                memb_data['app'] = app_id
+            else:
+                if self.default_app_id:
+                    memb_data['app'] = self.default_app_id
+                else:
+                    is_valid = False
+                    error_msg = 'No membership app. Please add one to the site.'
 
-            memb_data['app'] = app_id
+        return is_valid, error_msg
 
     def clean_corporate_membership(self, memb_data):
         if 'corporate_membership_id' in memb_data:
@@ -1131,33 +1151,41 @@ class ImportMembDefault(object):
 
         return False
 
-    def process_default_membership(self, memb_data, **kwargs):
+    def process_default_membership(self, idata, **kwargs):
         """
         Check if it's insert or update. If dry_run is False,
         do the import to the membership_default.
 
         :param memb_data: a dictionary that includes the info of a membership
         """
-        self.clean_corporate_membership(memb_data)
-        self.clean_membership_type(memb_data)
-        self.clean_app(memb_data)
-        self.memb_data = memb_data
-        self.field_names = memb_data.keys()
+        self.memb_data = idata.row_data
+        self.field_names = self.memb_data.keys()
         user = None
         memb = None
         user_display = {
             'error': u'',
             'user': None,
+            'action': ''
         }
 
-        missing_fields_msg = check_missing_fields(self.memb_data, self.key)
+        is_valid, error_msg = check_missing_fields(self.memb_data,
+                                                  self.key)
+        if is_valid:
+            self.clean_corporate_membership(self.memb_data)
+            is_valid, error_msg = self.clean_membership_type(
+                                                self.memb_data)
+            if is_valid:
+                is_valid, error_msg = self.clean_app(self.memb_data)
 
         # don't process if we have missing value of required fields
-        if missing_fields_msg:
-            user_display['error'] = missing_fields_msg
+        if not is_valid:
+            user_display['error'] = error_msg
             user_display['action'] = 'skip'
             if not self.dry_run:
                 self.summary_d['invalid'] += 1
+                idata.action_taken = 'skipped'
+                idata.error = user_display['error']
+                idata.save()
         else:
             if self.key == 'member_number/email/fn_ln_phone':
                 user = get_user_by_member_number(
@@ -1223,16 +1251,20 @@ class ImportMembDefault(object):
                         user_display['memb_action'] == 'insert'
                         ]):
                     self.summary_d['insert'] += 1
+                    idata.action_taken = 'insert'
                 elif all([
                         user_display['user_action'] == 'update',
                         user_display['memb_action'] == 'update'
                         ]):
                     self.summary_d['update'] += 1
+                    idata.action_taken = 'update'
                 else:
                     self.summary_d['update_insert'] += 1
+                    idata.action_taken = 'update_insert'
 
                 # now do the update or insert
                 self.do_import_membership_default(user, memb, user_display)
+                idata.save()
                 return
 
         user_display.update({
