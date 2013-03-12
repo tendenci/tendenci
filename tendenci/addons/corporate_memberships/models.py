@@ -885,11 +885,18 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
-            corp_membership_update_perms(self)
 
-            # TODO:
-            # assign object permissions
-#            corp_memb_update_perms(self)
+            # assign creator to be dues_rep
+            if not CorpMembershipRep.objects.filter(
+                                    corp_profile=self.corp_profile,
+                                    user=self.creator).exists():
+                CorpMembershipRep.objects.create(
+                        corp_profile=self.corp_profile,
+                        user=self.creator,
+                        is_dues_rep=True
+                                )
+
+            corp_membership_update_perms(self)
 
             # update invoice creator/owner
             if self.invoice:
