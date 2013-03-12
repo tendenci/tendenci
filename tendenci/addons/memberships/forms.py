@@ -44,7 +44,7 @@ from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.addons.educations.models import Education
 from tendenci.addons.careers.models import Career
 from tendenci.apps.entities.models import Entity
-from tendenci.apps.discounts.models import Discount
+from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.utils import assign_discount
 
 
@@ -867,9 +867,17 @@ class MembershipDefault2Form(forms.ModelForm):
 
         if membership.application_approved:
             membership.archive_old_memberships()
-            membership.save_invoice(status_detail='tendered')
+            invoice = membership.save_invoice(status_detail='tendered')
         else:
-            membership.save_invoice(status_detail='estimate')
+            invoice = membership.save_invoice(status_detail='estimate')
+
+        if discount_code and discount:
+            for dmount in discount_list:
+                if dmount > 0:
+                    DiscountUse.objects.create(
+                            discount=discount,
+                            invoice=invoice,
+                        )
 
         membership.user.profile.refresh_member_number()
         return membership
