@@ -567,3 +567,33 @@ def normalize_newline(file_path):
     f.write(data)
     f.close()
 
+
+def get_pagination_page_range(num_pages, max_num_in_group=10,
+                              start_num=35, curr_page=1):
+    """
+    Calculate the pagination page range to display.
+    Display the page links in 3 groups.
+    """
+    if num_pages > start_num:
+        # first group
+        page_range = range(1, max_num_in_group + 1)
+        # middle group
+        i = curr_page - int(max_num_in_group / 2)
+        if i <= max_num_in_group:
+            i = max_num_in_group
+        else:
+            page_range.extend(['...'])
+        j = i + max_num_in_group
+        if j > num_pages - max_num_in_group:
+            j = num_pages - max_num_in_group
+        page_range.extend(range(i, j))
+        if j < num_pages - max_num_in_group:
+            page_range.extend(['...'])
+        # last group
+        page_range.extend(range(num_pages - max_num_in_group,
+                                num_pages + 1))
+    else:
+        page_range = range(1, num_pages + 1)
+    return page_range
+
+

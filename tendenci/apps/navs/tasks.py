@@ -37,7 +37,7 @@ class NavsExportTask(Task):
             'title',
             'new_window',
             'css',
-            'ordering',
+            'position',
             'level',
             'page',
             'url',

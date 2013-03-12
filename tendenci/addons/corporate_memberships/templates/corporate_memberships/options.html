@@ -16,13 +16,21 @@
 			{% if opt_object.status_detail == 'paid - pending approval'%}
 				<span class="status-pending">{{ opt_object.real_time_status_detail|capfirst }}</span>
 			{% else %}
+			     {% if opt_object.status_detail == 'archive'%}
+			     <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
+			     {% else %}
 				<span class="status-{{ opt_object.status_detail }}">{{ opt_object.real_time_status_detail|capfirst }}</span>
+			     {% endif %}
 			{% endif %}
 		{% endif %}
+	{% else %}
+         {% if opt_object.status_detail == 'archive'%}
+         <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
+         {% endif %}
 	{% endif %}
 
     {% if opt_object.status and opt_object.status_detail != 'archive' %}
-	{% if can_edit or allow_edit %}
+	{% if  allow_edit %}
 		<a class="opt-link" href="{% url corpmembership.edit opt_object.pk %}" title="Edit">Edit</a>
 	{% endif %}
 
@@ -64,5 +72,12 @@
 
     	{% endif %}
     {% endif %}
+{% endif %}
+
+{% if request.user.is_superuser and  opt_object.status_detail == 'disapproved' %}
+    <div><span>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve">{% trans "approve it" %}</a>
+        </span>
+    </div>
 {% endif %}
 

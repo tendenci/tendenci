@@ -9,9 +9,9 @@ from tendenci.core.perms.utils import update_perms_and_save
 
 
 class StoryAdmin(TendenciBaseModelAdmin):
-    list_display = ('image_preview', 'title', 'tags', 'status', 'ncsortorder')
+    list_display = ('image_preview', 'title', 'tags', 'status', 'position')
     search_fields = ('title', 'content')
-    list_editable = ['title', 'tags', 'ncsortorder']
+    list_editable = ['title', 'tags', 'position']
     fieldsets = [('Story Information', {
                       'fields': ['title',
                                  'content',
@@ -37,7 +37,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
                       'classes': ['admin-only'],
                     })]
     form = StoryAdminForm
-    ordering = ['-ncsortorder']
+    ordering = ['-position']
 
     class Media:
         css = {
@@ -46,7 +46,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
         js = (
             'js/jquery-1.6.2.min.js',
             'js/jquery-ui-1.8.17.custom.min.js',
-            'js/story-admin-list-reorder.js',
+            'js/admin/admin-list-reorder.js',
             'js/global/tinymce.event_handlers.js',
         )
     
@@ -69,7 +69,7 @@ class StoryAdmin(TendenciBaseModelAdmin):
             log_defaults['action'] = "add"
 
         # Handle a special case for bulk reordering via the list view.
-        if form.changed_data != ['ncsortorder']:
+        if form.changed_data != ['position']:
             EventLog.objects.log(**log_defaults)
         return object
 

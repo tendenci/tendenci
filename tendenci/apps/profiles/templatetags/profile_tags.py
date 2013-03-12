@@ -47,3 +47,17 @@ def profile_meta(context, detail_view=None):
     })
     return context
 
+
+@register.inclusion_tag("profiles/similar_profile_items.html", takes_context=True)
+def similar_profile_items(context, users):
+    context.update({
+        "users": users,
+    })
+    return context
+
+@register.inclusion_tag("profiles/merge_detail.html", takes_context=True)
+def merge_detail(context, profile):
+    context.update({
+        "profile": profile,
+    })
+    return context

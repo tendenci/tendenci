@@ -1,0 +1,40 @@
+{% extends "admin/app_index.html" %}
+{% load i18n %}
+{% load url from future %}
+
+
+{% block sidebar %}
+<style>
+   .report-section{
+       border: 1px solid #99c299;
+       margin-top: 2em;
+       padding: 1em;
+   } 
+   .report-section h2{
+       margin-top: 5px;
+   }
+   .report-section-body{
+       padding-left: 1em;
+   }
+</style>
+<br class="clear" />
+<div class="report-section">
+    <h2>{% trans "Reporting Options" %}</h2>
+    <div class="report-section-body">
+        <h3>{% trans "Imports" %}</h3>
+        <ol>
+            <li><a href="{% url 'corpmembership.import' %}">{% trans "Import" %}</a></li>
+        </ol>
+        <h3>{% trans "Exports" %}</h3>
+        <ol>
+            <li><a href="{% url 'corpmembership.export' %}">{% trans "Export" %}</li>
+        </ol>
+        <h3>{% trans "Others" %}</h3>
+        <ol>
+            <li><a href="{% url 'corpmembership.search' %}">{% trans "Search" %}</a></li>
+             <li><a href="{% url 'corp_membership.summary_report' %}">{% trans "Summary Report" %}</a></li>
+        </ol>
+    
+    </div>
+</div>
+{% endblock %}

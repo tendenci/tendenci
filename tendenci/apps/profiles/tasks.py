@@ -128,11 +128,6 @@ class ExportProfilesTask(Task):
                 profile.first_responder,
                 profile.agreed_to_tos,
                 profile.original_username,
-                profile.ud1,
-                profile.ud2,
-                profile.ud3,
-                profile.ud4,
-                profile.ud5,
                 '\n',
             ]
             data_rows.append(data_row)

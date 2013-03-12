@@ -47,6 +47,7 @@ class CategoryForm(forms.Form):
         categories = CategoryItem.objects.filter(content_type=content_type,
                                                  parent__exact=None)
         categories = list(set([cat.category.name for cat in categories]))
+        categories.sort()
         categories = [[cat, cat] for cat in categories]
         categories.insert(0,[0,'------------'])
         if post_data:
@@ -62,6 +63,7 @@ class CategoryForm(forms.Form):
         sub_categories = CategoryItem.objects.filter(content_type=content_type,
                                                      category__exact=None)
         sub_categories = list(set([cat.parent.name for cat in sub_categories]))
+        sub_categories.sort()
         sub_categories = [[cat, cat] for cat in sub_categories]
         sub_categories.insert(0,[0,'------------'])
         if post_data:

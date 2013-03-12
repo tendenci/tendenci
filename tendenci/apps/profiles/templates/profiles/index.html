@@ -45,6 +45,7 @@
 	    	{% endif %}
 	    	{% endif %}
 
+        <p><strong>{% trans 'Username' %}:</strong> {{ profile.user.username }}</p>
 		{% if profile.company %}
 			<p>{{ profile.company }}</p>
 		{% endif %}
@@ -72,22 +73,18 @@
 
 		<table>
 
-            {% if not profile.is_superuser %}
-            {% if not profile.hide_email %}
+            {% if can_edit or not profile.hide_email %}
 			<tr>
 				<td>Email</td>
 				<td>{{ user_this.email }}</td>
 			</tr>
             {% endif %}
-            {% endif %}
 
-            {% if not profile.is_superuser %}
-            {% if not profile.hide_phone %}
+            {% if can_edit or not profile.hide_phone %}
 			<tr>
 				<td>Phone</td>
 				<td>{% firstof profile.phone|phonenumber profile.phone2|phonenumber %}</td>
 			</tr>
-            {% endif %}
             {% endif %}
 
 			<tr>
@@ -95,13 +92,11 @@
 				<td>{{ profile.url }}</td>
 			</tr>
 
-            {% if not profile.is_superuser %}
-            {% if not profile.hide_address %}
+            {% if can_edit or not profile.hide_address %}
 			<tr>
 				<td>Address</td>
 				<td>{{ profile.address }} <span class="city-state-zip">{{ city_state_zip }}</span></td>
 			</tr>
-            {% endif %}
             {% endif %}
 
 		</table>
@@ -125,7 +120,7 @@
     <div class="membership info">
 
 		<h2>Memberships 
-		<a title="Join membership" href="{% url membership_default.add %}" class="glyph plus">+</a>
+		<a title="Join membership" href="{% url membership_default.add %}?username={{ user_this.username }}" class="glyph plus">+</a>
 		</h2>
 
 		{% if memberships %}
@@ -141,8 +136,6 @@
                         {% endif %}
         			</td>
         			<td>
-
-
                         {{ membership.join_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
                         (grace period: 
@@ -151,7 +144,7 @@
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
                         {% if membership.can_renew %}
-                        <a href="{% url membership_default.add %}">Renew</a>
+                        <a href="{% url membership_default.add %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
                         {% endif %}
 
 	        		</td>
@@ -172,7 +165,8 @@
     	{% endif %}
 
     </div>
-    {% endif %}
+        
+{% endif %}
 
     <div class="group info">
 
@@ -207,6 +201,35 @@
 		{% endif %}
 
     </div>
+    
+{% if request.user == user_this or request.user.profile.is_superuser %}
+    <div class="events info">
+    <h2>{% trans "Upcoming Event Registrations" %}</h2>
+    {% if registrations %}
+    <table>
+    {% for reg in registrations %}
+        <tr>
+            <td>
+            <a href="{{ reg.get_absolute_url }}">{% trans "Registration" %} #{{ reg.registration.pk }}</a>
+            </td>
+            <td>
+            {{ reg.reg8n_status }}
+            </td>
+            <td>
+            <a href="{{ reg.registration.event.get_absolute_url }}">{{ reg.registration.event }}</a>
+            </td>
+            <td>
+            {{ reg.registration.event.start_dt }} - {{ reg.registration.event.end_dt }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+    {% trans "No upcoming event registrations." %}
+    {% endif %}
+    </div>
+{% endif %}
+    
 
 	{% latest_contributions user_this as contributions %}
 	{% if  contributions %}

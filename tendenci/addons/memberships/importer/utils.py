@@ -61,8 +61,6 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
         join dt, renew dt, expire dt,
         added, skipped, renewal
     """
-    from tendenci.core.base.utils import is_blank
-
     # initialize membership import settings
     membership_import = kwargs['membership_import']
     key = membership_import.key  # for determining duplicates
@@ -91,7 +89,7 @@ def parse_mems_from_csv(file_path, mapping, **kwargs):
                 m[clean_field_name(app_field)] = csv_dict.get(csv_field, '')
 
         # remove empty keys
-        m = dict( [(k,v) for k,v in m.items() if len(v)>0])
+        m = dict([(k, v) for k, v in m.items() if len(v) > 0])
 
         if not m:  # empty row in imported file
             continue  # on to the next one

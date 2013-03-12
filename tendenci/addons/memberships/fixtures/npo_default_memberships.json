@@ -48,7 +48,7 @@
             "fixed_option2_rollover_days": 1,
             "allow_member_edit": false,
             "fixed_option1_year": 2011,
-            "order": 0,
+            "position": 0,
             "renewal_require_approval": true
         }
     },
@@ -101,7 +101,7 @@
             "fixed_option2_rollover_days": 1,
             "allow_member_edit": false,
             "fixed_option1_year": 2011,
-            "order": 0,
+            "position": 0,
             "renewal_require_approval": true
         }
     },
@@ -146,7 +146,7 @@
             "renewal_period_start": 30,
             "period_unit": "years",
             "fixed_option2_month": 1,
-            "name": "Individual Corporate Member",
+            "name": "Educator",
             "never_expires": false,
             "allow_user_edit": false,
             "renewal": false,
@@ -154,7 +154,7 @@
             "fixed_option2_rollover_days": 1,
             "allow_member_edit": false,
             "fixed_option1_year": 2011,
-            "order": 0,
+            "position": 0,
             "renewal_require_approval": false
         }
     },

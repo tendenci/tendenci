@@ -13,13 +13,21 @@ from django.template.response import TemplateResponse
 from django.conf import settings
 from django.core.cache import cache
 from tendenci.core.sitemaps import TendenciSitemap
+from tendenci.core.site_settings.utils import get_setting
 
 
 _sitemap_cache = []
+
+
 def get_all_sitemaps():
-    for app in settings.INSTALLED_APPS:
-        _try_import(app + '.feeds')
-    return TendenciSitemap.__subclasses__()
+    # commenting out the following 2 lines because it has no effect to the result.
+#    for app in settings.INSTALLED_APPS:
+#        _try_import(app + '.feeds')
+    sitemap_classes = TendenciSitemap.__subclasses__()
+    for sitemap_class in sitemap_classes:
+        if not get_setting('module', sitemap_class.__module__.split('.')[-2], 'enabled'):
+            sitemap_classes.remove(sitemap_class)
+    return sitemap_classes
 
 
 def _try_import(module):

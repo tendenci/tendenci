@@ -7,7 +7,6 @@ django
 # during local development
 /cache
 /media
-/static
 
 # Ignore all dotfiles...
 .*
@@ -15,12 +14,19 @@ django
 # Ignore all pyc file
 *.pyc
 
+# Ignore plugins json
+plugins_list.json
+addons_list.json
+
 # except for .gitignore and .env_example
 !/.gitignore
 !/.env_example
 
-# Ignore the virtual environment
 venv/
+tendenci-site/local.py
+conf/local.py
+/static
 
 /schema.xml
 celeryd.pid
+/index.whoosh

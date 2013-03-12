@@ -25,7 +25,10 @@ FILE_EXTENTIONS = (
     '.jpeg',
     '.png',
     '.ico',
-    '.gif'
+    '.gif',
+    '.txt',
+    '.xml',
+    '.kml',
 )
 
 
@@ -105,4 +108,3 @@ class UploadForm(forms.Form):
         if not data.name.lower().endswith(FILE_EXTENTIONS):
             raise forms.ValidationError("This is not a valid file type to upload.")
         return data
-        

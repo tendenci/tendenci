@@ -1,5 +1,6 @@
 #import time
 #import hashlib
+from datetime import datetime
 from django.conf import settings
 #from django.http import Http404
 from django.core.urlresolvers import reverse
@@ -46,7 +47,7 @@ def prepare_firstdata_form(request, payment):
               #'txndatetime': txndatetime,
               #'hash': hash,
               #'currency': currency,
-              'oid':payment.id,
+              'oid': "%s-%s" % (payment.id, datetime.now().strftime('%Y%m%d-%H%M%S')),
               'userid':userid,
               'bcountry':payment.country,
               #'objectguid':payment.guid,

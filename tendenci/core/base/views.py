@@ -11,7 +11,8 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.template import RequestContext
+from django.template import RequestContext, TemplateDoesNotExist
+from django.template.loader import get_template
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -22,12 +23,18 @@ from tendenci.core.base.forms import PasswordForm
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.site_settings.utils import get_setting
 
+BASEFILE_EXTENSIONS = (
+    'txt',
+    'xml',
+    'kml',
+)
+
 
 def image_preview(request, app_label, model, id,  size):
     """
         Grab all image link within a peice of content
         and generate thumbnails of largest image
-    """    
+    """
     # get page object; protect size
     try:
         content_type = ContentType.objects.get(app_label=app_label, model=model)
@@ -241,6 +248,23 @@ def robots_txt(request):
     return render_to_response(template_name, {}, context_instance=RequestContext(request), mimetype="text/plain")
 
 
+def base_file(request, file_name):
+    """
+    Renders file_name at url path /file_name
+    Only predefined extensions are allowed.
+    """
+    ext = os.path.splitext(file_name)[1].strip('.')
+    if not ext in BASEFILE_EXTENSIONS:
+        raise Http404
+
+    try:
+        t = get_template(file_name)
+    except TemplateDoesNotExist:
+        raise Http404
+
+    return HttpResponse(t.render(RequestContext(request)))
+
+
 def exception_test(request):
     raise Exception('Successfully raised the exception test. Boom.')
 
@@ -276,7 +300,9 @@ def password_again(request, template_name="base/password.html"):
     if request.method == "POST":
         form = PasswordForm(request.POST, user=request.user)
         if form.is_valid():
-            request.session['password_promt'] = True
+            request.session['password_promt'] = dict(
+                                    time=int(time.time()),
+                                    value=True)
             return redirect(next)
     else:
         form = PasswordForm(user=request.user)
