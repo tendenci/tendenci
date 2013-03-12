@@ -1,0 +1,9 @@
+{% for field in form %}
+  <p class="row{% if field.field.required %} row-required{% endif %}{% if field.errors or form.non_field_errors %} row-errors{% endif %}">
+    <label for="{{ field.auto_id }}">{{ field.label }}</label>
+    {{ field }}
+    <span class="info{% if field.errors %} error{% else %}{% endif %}">
+      {{ field.errors|join:" " }}</span>
+    <span class="help-text">{{ field.help_text }}</span>
+  </p>
+{% endfor %}

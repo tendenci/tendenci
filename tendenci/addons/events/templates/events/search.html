@@ -25,7 +25,7 @@
     {% autopaginate events 10 %}
     {% event_search %}
     <div class="highlight">
-            You found {{ paginator.count }} event{{ paginator.count|pluralize }}{% if event_type %}.{% else %} starting on or after {{ start_dt|date:"F jS, Y" }}.{% endif %}
+            You found {{ paginator.count }} event{{ paginator.count|pluralize }}{% if with_registration %} with registration{% endif %}{% if event_type %}.{% else %} starting on or after {{ start_dt|date:"F jS, Y" }}.{% endif %}
     </div>
 
     <div class="events-wrap">

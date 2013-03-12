@@ -3,6 +3,7 @@ from datetime import datetime, date
 from django.core.management.base import BaseCommand
 from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
+from django.contrib.contenttypes.models import ContentType
 
 
 class Command(BaseCommand):
@@ -111,6 +112,15 @@ class Command(BaseCommand):
 
                 corp_membership.corp_profile = corp_profile
                 corp_membership.save()
+
+                # update invoice object_type and object_id
+                if corp_membership.invoice:
+                    corp_membership.invoice.object_type = ContentType.objects.get(
+                                  app_label=corp_membership._meta.app_label,
+                                  model=corp_membership._meta.module_name)
+                    corp_membership.invoice.object_id = corp_membership.id
+                    corp_membership.invoice.save()
+
                 if verbosity >= 2:
                     print 'Insert corp_membership (id=%d) for: ' % corp_membership.id, corp_profile
 

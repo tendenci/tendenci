@@ -405,13 +405,13 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     if user_list:
                         anonymous_creator = user_list[0]
                     else:
-                        anonymous_creator = User(username=emailfield, email=emailfield, 
+                        anonymous_creator = User(username=emailfield[:30], email=emailfield, 
                                                  first_name=firstnamefield, last_name=lastnamefield)
                         anonymous_creator.set_password(password)
                         anonymous_creator.is_active = False
                         anonymous_creator.save()
                         anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
-                                                    creator=User.objects.get(pk=1), phone=phonefield)
+                                                    creator=anonymous_creator, phone=phonefield)
                         anonymous_profile.save()
                     entry.creator = anonymous_creator
             else:
@@ -439,6 +439,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
             email_from = email_to or email_from # Send from the email entered.
+            email_headers = {}  # Reset the email_headers
             email_headers.update({'Reply-To':email_from})
             email_copies = [e.strip() for e in form.email_copies.split(",")
                 if e.strip()]

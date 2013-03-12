@@ -54,7 +54,7 @@
 }
 
 .t .search-form .form-field { float: left; }
-.t .search-form #event_types_container { margin-left: 20px;height: 58px; }
+.t .search-form #event_types_container{ margin: 0 20px;height: 58px; }
 
 .t .quick-options {
 	float: right;

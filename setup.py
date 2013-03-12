@@ -2,9 +2,10 @@ import os
 import sys
 
 from fnmatch import fnmatchcase
-
 from distutils.util import convert_path
 from setuptools import setup, find_packages
+
+from tendenci import __version__ as version
 
 
 def read(*path):
@@ -111,7 +112,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.4',
+    version=version,
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -141,15 +142,15 @@ setup(
     entry_points="""
             [console_scripts]
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
+            update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     include_package_data=True,
     dependency_links=[
-        "https://github.com/tendenci/django-model-report/tarball/master#egg=django-model-report-0.0.11",
-        "http://a.pypi.python.org/",
+        "http://b.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
     install_requires=[
-        "Django==1.4.2",
+        "Django==1.4.3",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
@@ -168,7 +169,7 @@ setup(
         "django-haystack==1.2.7",
         "feedparser>=4.1",
         "httplib2>=0.4.0",
-        "pytz>=2010h",
+        "pytz==2012j",
         "simplejson>=2.0.9",
         "webcolors>=1.3.1",
         "xlrd==0.7.3",
@@ -197,13 +198,12 @@ setup(
         "johnny-cache==1.4",
         "docutils==0.9.1",
         'chardet==2.1.1',
-        "django-model-report==0.0.11",
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
         "gunicorn==0.16.1",
-        "gevent==0.13.8",
         "django-s3-folder-storage==0.1",
         "django-storages==1.1.5",
         "python-memcached==1.48",
+        "Whoosh==2.4.1",
     ],
 )

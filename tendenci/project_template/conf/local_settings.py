@@ -10,4 +10,11 @@ INSTALLED_APPS = get_setting('INSTALLED_APPS')
 
 INSTALLED_APPS += (
     'videos',
+    #'other_app_here',
+    'case_studies',
+    'committees',
+    'donations',
+    'speakers',
+    'staff',
+    'studygroups',
 )

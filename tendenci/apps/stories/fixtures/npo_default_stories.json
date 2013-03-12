@@ -1,0 +1,169 @@
+[
+    {
+        "pk": 2,
+        "model": "stories.story",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "entity": 1,
+            "owner": null,
+            "guid": "086626aa-4a33-11e2-8585-12313d162ab5",
+            "create_dt": "2012-12-19T17:23:01.923",
+            "group": 1,
+            "update_dt": "2012-12-31T13:08:45.561",
+            "position": 1,
+            "content": "Join our Association Today. Help support the cause to educate and promote to future generations. To find out more about Membership Benefits follow the link. ",
+            "image": 33,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "link_title": "",
+            "tags": "rotator, tendencidemo",
+            "expires": false,
+            "status_detail": "active",
+            "syndicate": false,
+            "creator_username": "",
+            "full_story_link": "/membership-benefits/",
+            "allow_user_edit": false,
+            "title": "Join Today",
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "start_dt": "2012-12-19T17:15:00",
+            "end_dt": "2013-01-02T17:15:00"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "stories.story",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "entity": 1,
+            "owner": null,
+            "guid": "e941d8fa-4a32-11e2-8585-12313d162ab5",
+            "create_dt": "2012-12-19T17:22:09.676",
+            "group": 1,
+            "update_dt": "2012-12-31T14:30:18.091",
+            "position": 0,
+            "content": "Find out how to use this website theme and how to modify the content to fit your organization.",
+            "image": 32,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "link_title": "",
+            "tags": "rotator, tendencidemo",
+            "expires": false,
+            "status_detail": "active",
+            "syndicate": false,
+            "creator_username": "",
+            "full_story_link": "/how-to-use-your-theme/",
+            "allow_user_edit": false,
+            "title": "How to Use Your Theme",
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "start_dt": "2012-12-19T17:15:00",
+            "end_dt": "2013-01-02T17:15:00"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "stories.story",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "entity": 1,
+            "owner": null,
+            "guid": "ae447782-513d-11e2-8d63-22000a1d018e",
+            "create_dt": "2012-12-28T16:26:53.311",
+            "group": 1,
+            "update_dt": "2012-12-31T14:30:57.082",
+            "position": 2,
+            "content": "",
+            "image": 37,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "link_title": "",
+            "tags": "sponsors, tendencidemo",
+            "expires": false,
+            "status_detail": "active",
+            "syndicate": false,
+            "creator_username": "",
+            "full_story_link": "",
+            "allow_user_edit": false,
+            "title": "Sponsor-Homepage Example",
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "start_dt": "2012-12-28T15:21:00",
+            "end_dt": "2013-01-11T15:21:00"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "stories.story",
+        "fields": {
+            "creator": null,
+            "allow_user_view": false,
+            "entity": 1,
+            "owner": null,
+            "guid": "281eef00-537e-11e2-9cfb-22000a1e8c2c",
+            "create_dt": "2012-12-31T13:13:27.864",
+            "group": 1,
+            "update_dt": "2013-01-17T13:57:36.365",
+            "position": 3,
+            "content": "Learn about the association and how to get involved. Founded in 1997 we have become leaders in helping associations grow.",
+            "image": 36,
+            "owner_username": "",
+            "allow_anonymous_view": true,
+            "status": true,
+            "link_title": "",
+            "tags": "rotator, tendencidemo",
+            "expires": false,
+            "status_detail": "active",
+            "syndicate": false,
+            "creator_username": "",
+            "full_story_link": "/about/",
+            "allow_user_edit": false,
+            "title": "About Us",
+            "allow_member_view": false,
+            "allow_member_edit": false,
+            "start_dt": "2012-12-31T08:41:00",
+            "end_dt": "2013-01-14T08:41:00"
+        }
+    },
+    {
+        "pk": 31,
+        "model": "stories.storyphoto",
+        "fields": {}
+    },
+    {
+        "pk": 32,
+        "model": "stories.storyphoto",
+        "fields": {}
+    },
+    {
+        "pk": 33,
+        "model": "stories.storyphoto",
+        "fields": {}
+    },
+    {
+        "pk": 34,
+        "model": "stories.storyphoto",
+        "fields": {}
+    },
+    {
+        "pk": 35,
+        "model": "stories.storyphoto",
+        "fields": {}
+    },
+    {
+        "pk": 36,
+        "model": "stories.storyphoto",
+        "fields": {}
+    },
+    {
+        "pk": 37,
+        "model": "stories.storyphoto",
+        "fields": {}
+    }
+]

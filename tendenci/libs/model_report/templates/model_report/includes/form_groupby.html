@@ -1,0 +1,9 @@
+{% load i18n %}
+{% if form_groupby %}
+    {% with form_groupby as form %}
+        <fieldset class="report-form" id="groupby">
+            <legend>{% trans "Group by" %}</legend>
+            {% include "model_report/includes/form_fields.html" %}
+        </fieldset>
+    {% endwith %}
+{% endif %}

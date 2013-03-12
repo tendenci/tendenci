@@ -116,7 +116,18 @@ def search(request, template_name="pages/search.html"):
 
 @is_enabled('pages')
 def print_view(request, slug, template_name="pages/print-view.html"):
-    page = get_object_or_404(Page, slug=slug, status_detail='active')
+    try:
+        page = get_object_or_404(Page, slug=slug)
+    except Page.MultipleObjectsReturned:
+        pages = Page.objects.filter(
+            slug=slug, status_detail='active'
+        ).order_by('-pk')
+        if not pages:
+            pages = Page.objects.filter(slug=slug).order_by('-pk')
+        if not pages:
+            raise Http404
+
+        page = pages[0]
 
     if not has_perm(request.user, 'pages.view_page', page):
         raise Http403

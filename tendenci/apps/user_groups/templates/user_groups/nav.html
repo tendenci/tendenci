@@ -46,6 +46,9 @@
             {% if can_add_group %}
                 <li><a href="{% url group.add %}">{% trans "Add Group" %}</a></li>
             {% endif %}
+            {% if request.user.is_superuser %}
+                <li><a href="{% url group.import_add %}">{% trans "Import" %}</a></li>
+            {% endif %}
         </ul>
         {% if nav_object %}
             {% if can_view_group or can_edit_group %}

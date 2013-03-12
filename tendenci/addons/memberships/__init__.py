@@ -3,11 +3,12 @@ from django.utils.translation import ugettext_noop as _
 
 from tendenci.apps.notifications import models as notification
 
+
 def create_notice_types(app, created_models, verbosity, **kwargs):
 
     notification.create_notice_type(
-        "user_welcome", 
-        _("User Welcome"), 
+        "user_welcome",
+        _("User Welcome"),
         _("User Account Created, Welcome Message"))
 
     notification.create_notice_type(
@@ -49,7 +50,7 @@ def create_notice_types(app, created_models, verbosity, **kwargs):
         'membership_disapproved_to_member',
         _('Membership Application Disapproved'),
         _('Membership Application Disapproved'))
-    
+
     notification.create_notice_type(
         'membership_corp_indiv_verify_email',
         _('Membership Corp Indiv Verify Email'),

@@ -1,0 +1,239 @@
+<!-- Tendenci Specific Load Tags
+================================================== -->
+{% load base_filters %}
+{% load base_tags %}
+{% load theme_tags %}
+{% load story_tags %}
+{% load box_tags %}
+{% load nav_tags %}
+{% load video_tags %}
+{% load video_filters %}
+{% load news_tags %}
+{% load photo_tags %}
+{% load news_tags %}
+{% load event_tags %}
+{% load directory_tags %}
+{% load job_tags %}
+
+<!-- Extends Tendenci Base Structure
+================================================== -->
+{% theme_extends 'base.html' %}
+
+{% block extra_head %}
+<!-- Mobile Specific Metas
+================================================== -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<!-- Favicons
+================================================== -->
+  <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+  <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+
+  <!-- CSS
+================================================== -->
+  <link rel='stylesheet' href='{{ THEME_URL }}media/css/skeleton.css' type="text/css"/>
+  <link rel="stylesheet" href="{{ THEME_URL }}media/css/styles.css" type="text/css"/>
+
+<!-- IE Specific Compatibility
+================================================== -->
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <!--[if lt IE 9]>   
+  <script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+  <![endif]-->
+{% endblock extra_head %}
+
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+
+<!-- Primary Page Layout
+================================================== -->
+{% block html_body %}
+
+  <div id="header-container">
+    <div class="container sixteen columns">
+      {% theme_include "header.html" %} <!-- Pulls in the Header Document -->
+    </div><!-- /.container sixteen columns -->
+  </div><!-- /#header-container -->
+
+  <div id="rotator-container" class="container">
+      <div id="rotator-wrap" class="sixteen columns alpha omega">
+          <div id="rotator">
+            {% list_stories as stories_list limit=6 tags="rotator" quality="90" %}
+            {% for story in stories_list %}
+              <div class="rotator-item">
+                <div class="rotator-content">
+                  <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+                  <p>{{ story.content|safe|truncatewords:30 }} <a class="readmore" href="{{ story.full_story_link }}">Read More &raquo;</a></p>
+                </div><!-- /.rotator-content-->
+                <div class="rotator-image">
+                   <a href="{{ story.full_story_link }}"><img src="{% image_url story.image size=920x400 crop=True quality=90 %}" alt="{{ story.title }}" /></a>
+                </div><!-- /.rotator-image-->
+              </div><!-- /.rotator-item -->
+            {% endfor %}
+          </div><!-- /#rotator-->
+          <div id="stories-pager"></div>
+    </div><!-- /#rotator-wrap -->
+  </div><!-- /#rotator-container-->
+
+  <div class="container">
+    <section id="home-content" class="clearfix">
+      {% theme_include "base/messages.html" %} <!--Pulls in the Alert Messages within Tendenci Core-->
+           
+      <div id="home-body" class="eleven columns omega">
+       <div class="home-row" class="clearfix">  
+         <div class="col five columns">
+           {% box 4 %}
+         </div><!--/.col -->         
+         <div class="col five columns">
+           {% box 5 %}
+         </div><!--/.col -->   
+       </div><!--/.home-row -->
+                         
+       <div class="home-row" class="clearfix">  
+         <div class="col five columns">
+           {% box 6 %}
+         </div><!--/.col -->         
+         
+         <div class="col five columns">
+           {% list_events as events_list limit=1 %}
+           <section id="single-event">
+             <h3>Featured Event</h3>
+             {% if events_list %}
+             {% for event in events_list %}
+             <div class="event-info">
+               {% if event.image %}
+               <img alt="{{ event.title }}" src="{% image_url event.image size=310x154 crop=true %}"/>
+               {% else %}
+               <img src="/themes/twenty-thirteen/media/images/box-4.jpg"/>
+               {% endif %}
+               <p class="event-date">{{ event.start_dt|date:"F d, Y" }}</p>
+               <h4><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h4>
+               <p>{{ event.description|striptags|truncatewords:"30"|safe }}</p>
+               <p><span><a class="readmore" href="{{ event.get_absolute_url }}">Read More &raquo;</a></span></p>
+             </div>
+             {% endfor %}
+             {% else %}
+             <div class="event-info">
+              <img src="{%  if  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE  %}/files/{{  TEMPLATE_SINGLE_EVENT_DEFAULT_FILE }}/310x154/crop/90/{%  else  %}http://schipul.com/files/2369/310x154/crop/90/{% endif %}"/>
+              <h4>Add an Event Today to See Something Here</h4>
+              <p class="event-date">{% now "F d, Y" %}</p>
+              <p>This is example of what your event description will look like.  Start adding Events to start adding your own content today!</p>
+              {% if request.user.is_authenticated %}<p>Display your next upcoming event right on your homepage. Once you <a href="/events/add/">add your first event</a>, this area will be replaced by that information. Don't forget to add an evennt photo!</p>{% endif %}
+              <p><span><a class="readmore" href="#">Read More &raquo;</a></span></p>
+             </div>
+             {% endif %}
+           </section><!-- /#single-event -->
+         </div><!--/.col --> 
+       </div><!--/.home-row -->
+               
+       <div id="directories" class="clearfix">   
+         <div class="col eleven columns alpha omega">
+           <div id="carousel-container">
+             <h3>Business Directories</h3>
+             <div class="prev" id="port-left"></div>
+             <div id="carousel-wrap" class="clearfix">
+               <div class="carousel-items">
+                 <ul>
+                 {% list_directories as directories_list limit=3 tags="featured" %}
+                 {% for directory in directories_list %}
+                   <li>
+                     <a href="{{ directory.get_absolute_url }}"><img src="{{ directory.get_logo_url }}" alt="{{ directory.headline }}"/></a><a href="{{ directory.get_absolute_url }}">{{ directory.headline }}</a>
+                   </li>
+                 {% endfor %}
+                 </ul>
+               </div><!--/.carousel-items-->
+             </div><!--/#carousel-wrap-->
+             <div class="next" id="port-right"></div>
+           </div><!--/#carousel-container--> 
+         </div><!--/.col -->   
+      </div><!--/ #directories -->
+        
+    <div id="home-body-shadow" class="eleven columns omega"></div><!-- /#home-body-shadow -->
+    </div><!-- /#home-body -->             
+        
+     <div id="home-sidebar" class="four columns alpha omega">
+      {% theme_include "homepage-sidebar.html" %} <!-- Pulls in the Homepage Sidebar Document -->
+     </div><!--/#home-sidebar-->   
+    </section><!--/#home-content -->
+    
+    <section id="home-feed-content" class="container sixteen columns">
+         <div id="feed-col-1" class="feed-col four columns alpha omega">
+           <h3>Latest Job Listings</h3>
+             {% list_jobs as jobs_list limit=4 %}
+             {% for job in jobs_list %}
+             <h4><a href="{{ job.get_absolute_url }}">{{ job.title }} &raquo;</a></h4>
+           <p>{{ job.location }}</p>
+             {% empty %}
+           <h4>{% if user.profile.is_superuser %}<a href="/jobs/add/">{Add your first job</a>{% else %}<a href="#">Great New Job</a>{% endif %}</h4>
+             <p>Houston: A new job opening is available...</p>
+             {% endfor %}
+         </div><!--/#feed-col-1--><!--/jobs-list-->
+         
+         <div id="feed-col-2" class="feed-col five columns alpha omega">
+           <h3>Our Photos</h3>
+           {% list_photos as photos_list limit=6 random=True %}
+           <ul>
+             {% for photo in photos_list %}
+             <li><a href="{{ photo.get_absolute_url }}"><img alt="{{ photo.title }}" src="{% photo_image_url photo size=72x66 crop=True %}" /></a></li>
+             {% endfor %}
+           </ul>
+         </div><!--/#feed-col-2--><!--/photos-feed-->
+         
+         <div id="feed-col-3" class="feed-col five columns alpha omega">
+           <h3>Featured Video</h3>
+           <ul id="video-urls">
+             {% list_videos as videos_list limit=1 tags="featured"  %}
+             {% for video in videos_list %}
+             <li>
+               <a href="{{ video.get_absolute_url }}">{{ video|video_embed:"294" }}</a>
+             </li>
+             {% endfor %}
+           </ul>
+         </div><!--/#feed-col-3--><!--/video-feed-->
+         <div id="home-feed-shadow"></div><!--/#home-feed-shadow-->
+       </section><!--/#home-feed-content-->
+    
+  </div><!-- /.container -->
+  
+    <section id="footer">
+    {% theme_include "footer.html" %} <!-- Pulls in the Footer Document -->
+    </section><!-- /#footer -->
+
+<!-- End Document
+================================================== -->
+{% endblock %}
+
+<!-- JQuery & Scripts
+================================================== -->
+{% block extra_body %}
+{{ block.super }}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.hint.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jcarousellite_1.0.1.pack.js" type="text/javascript"></script>
+
+    <script type="text/javascript"> 
+    $('input[title!=""]').hint();
+    $(document).ready(function() {
+        $("#rotator").cycle({              // Controls the Rotator
+            timeout: 8000,
+            speed: 2000,
+            pager: '#stories-pager',
+            pagerEvent: 'mouseover'
+        });
+      $(".carousel-items").jCarouselLite({ // Controls the 'Directories Rotator'
+      btnNext: "#port-left",
+      btnPrev: "#port-right",
+      circular: true,
+      speed: 1000,
+      visible: 3,
+      });
+    });
+    </script>
+{% endblock %}
