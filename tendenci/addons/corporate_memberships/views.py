@@ -1236,6 +1236,7 @@ def download_template(request):
                                if not name in base_field_list]
     corp_memb_field_list.remove('guid')
     corp_memb_field_list.remove('corp_profile')
+    corp_memb_field_list.remove('anonymous_creator')
 
     title_list = corp_profile_field_list + corp_memb_field_list \
                      + base_field_list
