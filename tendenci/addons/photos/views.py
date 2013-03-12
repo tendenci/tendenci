@@ -607,7 +607,6 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     PhotoFormSet = modelformset_factory(
         Image,
-        can_delete=True,
         exclude=(
             'title_slug',
             'creator_username',
@@ -629,6 +628,10 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         form = PhotoBatchEditForm(request.POST, instance=photo)
 
         if form.is_valid():
+            delete_photo = request.POST.get('delete')
+            if delete_photo:
+                photo.delete()
+
             photo = form.save()
             EventLog.objects.log(instance=photo)
             # set album cover if specified
@@ -650,6 +653,9 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     cover.save()
 
             return HttpResponse('Success')
+
+        else:
+            return HttpResponse('Failed')
 
     else:  # if request.method != POST
 
