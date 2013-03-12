@@ -1273,6 +1273,7 @@ def corpmembership_export(request,
                              if not field.__class__ == AutoField]
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
+            corp_memb_field_list.remove('anonymous_creator')
 
             title_list = corp_profile_field_list + corp_memb_field_list
 
