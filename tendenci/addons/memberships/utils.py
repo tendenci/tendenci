@@ -1159,7 +1159,6 @@ class ImportMembDefault(object):
         :param memb_data: a dictionary that includes the info of a membership
         """
         self.memb_data = idata.row_data
-        self.field_names = self.memb_data.keys()
         user = None
         memb = None
         user_display = {
@@ -1262,6 +1261,7 @@ class ImportMembDefault(object):
                     self.summary_d['update_insert'] += 1
                     idata.action_taken = 'update_insert'
 
+                self.field_names = self.memb_data.keys()
                 # now do the update or insert
                 self.do_import_membership_default(user, memb, user_display)
                 idata.save()
