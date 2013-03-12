@@ -7,7 +7,6 @@ from copy import deepcopy
 from functools import partial
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-import csv
 
 from django.db import models
 from django.db.models.query_utils import Q
@@ -21,6 +20,7 @@ from django.contrib.contenttypes import generic
 from django import forms
 from django.utils.importlib import import_module
 from django.core.files.storage import default_storage
+from django.utils.encoding import smart_str
 
 from tendenci.core.base.utils import day_validate
 from tendenci.core.site_settings.utils import get_setting
@@ -44,6 +44,7 @@ from tendenci.apps.notifications import models as notification
 from tendenci.addons.directories.models import Directory
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
+from tendenci.core.base.utils import UnicodeWriter
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^tinymce.models.HTMLField"])
@@ -1666,9 +1667,9 @@ class MembershipImport(models.Model):
             file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
                                    file_name)
             f = default_storage.open(file_path, 'wb')
-            recap_writer = csv.writer(f)
+            recap_writer = UnicodeWriter(f, encoding='utf-8')
             header_row = self.header_line.split(',')
-            header_row.extend(['action_taken', 'error'])
+            header_row.extend(['action', 'error'])
             recap_writer.writerow(header_row)
             data_list = MembershipImportData.objects.filter(
                                             mimport=self
@@ -1676,8 +1677,9 @@ class MembershipImport(models.Model):
             for idata in data_list:
                 data_dict = idata.row_data
                 row = [data_dict[k] for k in header_row if k not in [
-                                            'action_taken', 'error']]
+                                            'action', 'error']]
                 row.extend([idata.action_taken, idata.error])
+                row = [smart_str(s).decode('utf-8') for s in row]
                 recap_writer.writerow(row)
 
             f.close()
