@@ -209,7 +209,7 @@ def locations_import_upload(request, template_name='locations/import-upload-file
                 return redirect('locations_import_upload_file')
             EventLog.objects.log()
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             return redirect('locations_import_preview', locport.id)
     else:
         form = UploadForm()

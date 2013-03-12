@@ -1057,8 +1057,7 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
             sid = str(int(time.time()))
             request.session[sid] = {'master': form.cleaned_data["master_record"],
                                     'users': form.cleaned_data['user_list']}
-            # let them re-enter password on the real merge
-            request.session['password_promt'] = False
+
             return HttpResponseRedirect(reverse(
                                     'profile.merge_process',
                                     args=[sid]))
@@ -1161,7 +1160,6 @@ def merge_process(request, sid):
         invalidate('profiles_profile')
         messages.add_message(request, messages.SUCCESS, 'Successfully merged users. %s' % description)
 
-    request.session['password_promt'] = False
     return redirect("profile.search")
 
 

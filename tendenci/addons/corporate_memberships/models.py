@@ -1903,7 +1903,7 @@ class CorporateMembershipArchive(TendenciBaseModel):
         verbose_name_plural = _("Corporate Membership Archives")
     
     def __unicode__(self):
-        return "%s (%s)" % (self.user.get_full_name(), self.member_number)
+        return "ID: %s Archive for %s" % (self.pk, self.corporate_membership)
     
     def save(self, *args, **kwargs):
         if not self.id:

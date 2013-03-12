@@ -2019,58 +2019,7 @@ def view(request, id, template="corporate_memberships/view.html"):
 
 
 def search(request, template_name="corporate_memberships/search.html"):
-    allow_anonymous_search = get_setting('module', 
-                                     'corporate_memberships', 
-                                     'anonymoussearchcorporatemembers')
-
-    if not request.user.is_authenticated() and not allow_anonymous_search:
-        raise Http403
-    
-    query = request.GET.get('q', None)
-    
-    if query == 'is_pending:true' and request.user.profile.is_superuser:
-        # pending list only for admins
-        pending_rew_entry_ids = CorpMembRenewEntry.objects.filter(
-                                    status_detail__in=['pending', 'paid - pending approval']
-                                    ).values_list('id', flat=True)
-        q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
-        if pending_rew_entry_ids:
-            q_obj = q_obj | Q(renew_entry_id__in=pending_rew_entry_ids)
-        corp_members = CorporateMembership.objects.filter(q_obj)
-    else:
-    
-        filter_and, filter_or = CorporateMembership.get_search_filter(request.user)
-        q_obj = None
-        if filter_and:
-            q_obj = Q(**filter_and)
-        if filter_or:
-            q_obj_or = reduce(operator.or_, [Q(**{key: value}) for key, value in filter_or.items()])
-            if q_obj:
-                q_obj = reduce(operator.and_, [q_obj, q_obj_or])
-            else:
-                q_obj = q_obj_or
-        
-        if get_setting('site', 'global', 'searchindex') and query:
-            corp_members = CorporateMembership.objects.search(query, user=request.user)
-            if q_obj:
-                corp_members = corp_members.filter(q_obj)
-            corp_members = corp_members.order_by('name_exact')
-        else:
-            if q_obj:
-                corp_members = CorporateMembership.objects.filter(q_obj)
-            else:
-                corp_members = CorporateMembership.objects.all()
-        
-    #        if request.user.is_authenticated():
-    #            corp_members = corp_members.select_related()
-            
-        
-    corp_members = corp_members.order_by('name')
-
-    EventLog.objects.log()
-
-    return render_to_response(template_name, {'corp_members': corp_members}, 
-        context_instance=RequestContext(request))
+    return HttpResponseRedirect(reverse('corpmembership.search'))
 
 @login_required
 def delete(request, id, template_name="corporate_memberships/delete.html"):
@@ -2586,7 +2535,7 @@ def corp_export(request):
     if request.method == 'POST':
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             corp_app = form.cleaned_data['corp_app']
             
             filename = "corporate_memberships_%d_export.csv" % corp_app.id

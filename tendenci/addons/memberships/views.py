@@ -792,7 +792,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             cleaned_data = form.cleaned_data
             app = cleaned_data['app']
             interactive = cleaned_data['interactive']
@@ -1605,10 +1605,6 @@ def membership_default_add(request, slug='',
             profile_form.save(
                 request_user=request.user
             )
-            # save demographics
-            demographics = demographics_form.save(commit=False)
-            demographics.user = user
-            demographics.save()
 
             # save demographics
             demographics = demographics_form.save(commit=False)
@@ -1859,7 +1855,7 @@ def membership_export(request):
     if request.method == 'POST':
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             app = form.cleaned_data['app']
             export_id = run_export_task('memberships', 'membership', [], app)
             return redirect('export.status', export_id)
