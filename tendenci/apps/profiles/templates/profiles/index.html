@@ -158,10 +158,14 @@
                         {% endif %}
         			</td>
         			<td>
-                        {{ membership.join_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+                        {{ membership.join_dt|date:"M j, Y" }}
+                        
+                        {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
                         (grace period: 
                         {{ membership.membership_type.expiration_grace_period }} days)
+                        
+                        {% endif %}
 
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
