@@ -1166,6 +1166,7 @@ def membership_default_import_download_recap(request, mimport_id):
 
     if not request.user.profile.is_superuser:
         raise Http403
+    invalidate('memberships_membershipimport')
     mimport = get_object_or_404(MembershipImport,
                                     pk=mimport_id)
     filename = os.path.split(mimport.recap_file.name)[1]
