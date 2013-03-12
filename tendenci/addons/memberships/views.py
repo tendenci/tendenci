@@ -1,3 +1,4 @@
+import os
 import math
 import hashlib
 from hashlib import md5
@@ -1155,6 +1156,28 @@ def membership_default_import_status(request, mimport_id,
     return render_to_response(template_name, {
         'mimport': mimport,
         }, context_instance=RequestContext(request))
+
+
+@login_required
+def membership_default_import_download_recap(request, mimport_id):
+    """
+    Download import recap.
+    """
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+    mimport = get_object_or_404(MembershipImport,
+                                    pk=mimport_id)
+    filename = os.path.split(mimport.recap_file.name)[1]
+
+    recap_path = mimport.recap_file.name
+    if default_storage.exists(recap_path):
+        response = HttpResponse(default_storage.open(recap_path).read(),
+                                mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    else:
+        raise Http404
 
 
 @csrf_exempt
