@@ -4,7 +4,7 @@
 
 <div id="admin-bar">
     <ul>
-       <li><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
+       <li class="visible-mobile"><a class="admin-logo" href="{% url dashboard %}"><img src="{{ STATIC_URL }}images/tendenci_white_small_100x51.gif" height="24" /></a></li>
         <li><a href="#"><span class="glyph heading">&#97;</span>&nbsp;&nbsp;{% trans "Content" %}</a>
             <div class="sub">
                 <div class="column">
@@ -155,7 +155,7 @@
                         <li><a href="http://support.schipul.com" target="_blank">{% trans "Contact Schipul Support" %}</a></li>
                         {% if "Schipul" == SITE_DEVELOPER_PARTNER|join:"" %}
                         <li><a href="http://schipul.com/py/" target="_blank">{% trans "Make a Payment" %}</a></li>
-                        <li><a href="https://github.com/tendenci/tendenci" target="_blank">Version: 5.1.8</a></li>
+                        <li><a href="https://github.com/tendenci/tendenci" target="_blank">Version: {{ TENDENCI_VERSION }}</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -178,9 +178,9 @@
             <li><a href="?">{% trans "View using My Template" %}</a></li>
         {% endif %}
 
-        <li class="right"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
+        <li class="right visible-mobile"><a href="/accounts/logout"><span class="glyph heading">&#88;</span>&nbsp;&nbsp;{% trans "Logout" %}</a></li>
         <li class="right"><a href="/profiles">{{ user.username }}</a></li>
-        <li class="right">
+        <li class="right visible-mobile">
             <form action="/search/" method="get" name="search" id="admin-search-box">
                             <input type="text" maxlength="255" value="" name="q" id="admin-search-bar" x-webkit-speech speech onwebkitspeechchange="this.form.submit();"><input type="submit" class="glyph heading" value="&#76;" id="admin-search-submit">                            </form>
         </li>

@@ -2,9 +2,11 @@ import os
 import csv
 import re
 from decimal import Decimal
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
 import dateutil.parser as dparser
 import pytz
+from sets import Set
+import time as ttime
 
 from django.http import Http404, HttpResponseServerError
 from django.conf import settings
@@ -16,6 +18,9 @@ from django.db.models import Q
 from django.core.files.storage import default_storage
 from django.core import exceptions
 from django.utils.safestring import mark_safe
+from django.utils.encoding import smart_str
+from django.db.models.fields import AutoField
+from django.db.models import ForeignKey, OneToOneField
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
@@ -30,7 +35,7 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipAppField)
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
-from tendenci.core.imports.utils import get_unique_username
+from tendenci.apps.profiles.utils import make_username_unique
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 
@@ -125,7 +130,7 @@ def get_membership_type_choices(user, membership_app, renew=False,
         membership_types = membership_app.membership_types.all()
         if not user or not user.profile.is_superuser:
             membership_types = membership_types.filter(admin_only=False)
-        membership_types = membership_types.order_by('order')
+        membership_types = membership_types.order_by('position')
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
@@ -197,6 +202,165 @@ def get_selected_demographic_field_names(membership_app=None):
     return selected_field_names
 
 
+def membership_rows(user_field_list,
+                    profile_field_list,
+                    demographic_field_list,
+                    membership_field_list,
+                    foreign_keys,
+                    export_status_detail=''):
+    # grab all except the archived
+    memberships = MembershipDefault.objects.filter(
+                                status=True
+                                ).exclude(
+                                status_detail='archive'
+                                )
+    if export_status_detail:
+        if export_status_detail == 'pending':
+            memberships = memberships.filter(
+                        status_detail__icontains='pending'
+                                )
+        else:
+            memberships = memberships.filter(
+                        status_detail=export_status_detail)
+
+    for membership in memberships:
+        row_dict = {}
+        user = membership.user
+        [profile] = Profile.objects.filter(user=user)[:1] or [None]
+        [demographic] = MembershipDemographic.objects.filter(user=user)[:1] or [None]
+
+        for field_name in user_field_list:
+            row_dict[field_name] = get_obj_field_value(field_name, user)
+        if profile:
+            for field_name in profile_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                                                field_name, profile,
+                                                field_name in foreign_keys)
+        if demographic:
+            for field_name in demographic_field_list:
+                row_dict[field_name] = get_obj_field_value(
+                                                field_name, demographic,
+                                                field_name in foreign_keys)
+        for field_name in membership_field_list:
+            row_dict[field_name] = get_obj_field_value(
+                                            field_name, membership,
+                                            field_name in foreign_keys)
+
+        yield row_dict
+
+
+def get_obj_field_value(field_name, obj, is_foreign_key=False):
+    value = getattr(obj, field_name)
+    if value and is_foreign_key:
+        value = value.id
+    return value
+
+
+def process_export(export_type='all_fields',
+                   export_status_detail='active',
+                   identifier=''):
+    from tendenci.core.perms.models import TendenciBaseModel
+    if export_type == 'main_fields':
+        base_field_list = []
+        user_field_list = ['first_name', 'last_name', 'username',
+                           'email', 'is_active', 'is_staff',
+                           'is_superuser']
+        profile_field_list = ['member_number', 'company',
+                              'phone', 'address',
+                              'address2', 'city',
+                              'state', 'zipcode',
+                              'country']
+        demographic_field_list = []
+        membership_field_list = ['membership_type',
+                                 'corp_profile_id',
+                                 'corporate_membership_id',
+                                 'join_dt',
+                                 'expire_dt',
+                                 'renewal',
+                                 'renew_dt',
+                                 'status',
+                                 'status_detail'
+                                 ]
+    else:
+        base_field_list = [smart_str(field.name) for field \
+                           in TendenciBaseModel._meta.fields \
+                         if not field.__class__ == AutoField]
+        user_field_list = [smart_str(field.name) for field \
+                           in User._meta.fields \
+                         if not field.__class__ == AutoField]
+        # remove password
+        user_field_list.remove('password')
+        profile_field_list = [smart_str(field.name) for field \
+                           in Profile._meta.fields \
+                         if not field.__class__ == AutoField]
+        profile_field_list = [name for name in profile_field_list \
+                                   if not name in base_field_list]
+        profile_field_list.remove('guid')
+        profile_field_list.remove('user')
+        demographic_field_list = [smart_str(field.name) for field \
+                           in MembershipDemographic._meta.fields \
+                         if not field.__class__ == AutoField]
+        demographic_field_list.remove('user')
+        membership_field_list = [smart_str(field.name) for field \
+                           in MembershipDefault._meta.fields \
+                         if not field.__class__ == AutoField]
+        membership_field_list.remove('user')
+
+    title_list = user_field_list + profile_field_list + \
+        membership_field_list + demographic_field_list + \
+        base_field_list
+
+    # list of foreignkey fields
+    if export_type == 'main_fields':
+        fks = ['membership_type']
+    else:
+        user_fks = [field.name for field in User._meta.fields \
+                       if isinstance(field, (ForeignKey, OneToOneField))]
+        profile_fks = [field.name for field in Profile._meta.fields \
+                       if isinstance(field, (ForeignKey, OneToOneField))]
+        demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
+                       if isinstance(field, (ForeignKey, OneToOneField))]
+        membership_fks = [field.name for field in MembershipDefault._meta.fields \
+                    if isinstance(field, (ForeignKey, OneToOneField))]
+
+        fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
+
+    if not identifier:
+        identifier = int(ttime.time())
+    file_name_temp = 'export/memberships/%s_temp.csv' % identifier
+    with default_storage.open(file_name_temp, 'wb') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(title_list)
+        # corp_membership_rows is a generator - for better performance
+        for row_dict in membership_rows(user_field_list,
+                                        profile_field_list,
+                                        demographic_field_list,
+                                        membership_field_list,
+                                        fks,
+                                        export_status_detail):
+            items_list = []
+            for field_name in title_list:
+                item = row_dict.get(field_name)
+                if item is None:
+                    item = ''
+                if item:
+                    if isinstance(item, datetime):
+                        item = item.strftime('%Y-%m-%d %H:%M:%S')
+                    elif isinstance(item, date):
+                        item = item.strftime('%Y-%m-%d')
+                    elif isinstance(item, time):
+                        item = item.strftime('%H:%M:%S')
+                    elif isinstance(item, basestring):
+                        item = item.encode("utf-8")
+                items_list.append(item)
+            csv_writer.writerow(items_list)
+    # rename the file name
+    file_name = 'export/memberships/%s.csv' % identifier
+    default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
+    # delete the temp file
+    default_storage.delete(file_name_temp)
+
+
 def has_null_byte(file_path):
     f = default_storage.open(file_path, 'r')
     data = f.read()
@@ -206,24 +370,24 @@ def has_null_byte(file_path):
 
 def csv_to_dict(file_path, **kwargs):
     """
-    Returns a list of dicts. Each dict represents record.
+    Returns a list of dicts. Each dict represents a row.
     """
     machine_name = kwargs.get('machine_name', False)
 
     # null byte; assume xls; not csv
     if has_null_byte(file_path):
         return []
-    
+
     normalize_newline(file_path)
     csv_file = csv.reader(default_storage.open(file_path, 'rU'))
     colnames = csv_file.next()  # row 1;
 
     if machine_name:
         colnames = [slugify(c).replace('-', '') for c in colnames]
-        
+
     cols = xrange(len(colnames))
     lst = []
-    
+
     # make sure colnames are unique
     duplicates = {}
     for i in cols:
@@ -233,14 +397,14 @@ def csv_to_dict(file_path, **kwargs):
                 number = duplicates.get(colnames[i], 0) + 1
                 duplicates[colnames[i]] = number
                 colnames[j] = colnames[j] + "-" + str(number)
-    
+
     for row in csv_file:
         entry = {}
         rows = len(row) - 1
         for col in cols:
             if col > rows:
                 break  # go to next row
-            entry[colnames[col]] = row[col]
+            entry[colnames[col]] = row[col].strip()
         lst.append(entry)
 
     return lst  # list of dictionaries
@@ -429,12 +593,14 @@ def get_notice_token_help_text(notice=None):
     if notice and notice.membership_type:
         membership_types = [notice.membership_type]
     else:
-        membership_types = MembershipType.objects.filter(status=True, status_detail='active')
+        membership_types = MembershipType.objects.filter(
+                                             status=True,
+                                             status_detail='active')
 
     # get a list of apps from membership types
     apps_list = []
     for mt in membership_types:
-        apps = App.objects.filter(membership_types=mt)
+        apps = MembershipApp.objects.filter(membership_types=mt)
         if apps:
             apps_list.extend(apps)
 
@@ -445,27 +611,40 @@ def get_notice_token_help_text(notice=None):
     help_text += '<div style="margin: 1em 10em;">'
     help_text += """
                 <div style="margin-bottom: 1em;">
-                You can use tokens to display member info or site specific information.
-                A token is composed of a field label or label lower case with underscore (_)
-                instead of spaces, wrapped in
+                You can use tokens to display member info or site specific
+                information.
+                A token is a field name wrapped in
                 {{ }} or [ ]. <br />
-                For example, token for "First Name" field: {{ first_name }}. Please note that tokens for member number, membership link, and expiration date/time are not available until the membership is approved.
+                For example, token for first_name field: {{ first_name }}.
+                Please note that tokens for member number, membership link,
+                and expiration date/time are not available until the membership
+                is approved.
                 </div>
                 """
 
-    help_text += '<div id="toggle_token_view"><a href="javascript:;">Click to view available tokens</a></div>'
+    help_text += '<div id="toggle_token_view"><a href="javascript:;">' + \
+                'Click to view available tokens</a></div>'
     help_text += '<div id="notice_token_list">'
     if apps_list:
         for app in apps_list:
             if apps_len > 1:
-                help_text += '<div style="font-weight: bold;">%s</div>' % app.name
-            labels_list = get_app_field_labels(app)
+                help_text += '<div style="font-weight: bold;">%s</div>' % (
+                                                            app.name)
+            fields = MembershipAppField.objects.filter(
+                                        membership_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).order_by('order')
             help_text += "<ul>"
-            for label in labels_list:
-                help_text += '<li>{{ %s }}</li>' % slugify(label).replace('-', '_')
+            for field in fields:
+                help_text += '<li>{{ %s }} - (for %s)</li>' % (
+                                                       field.field_name,
+                                                       field.label)
             help_text += "</ul>"
     else:
-        help_text += '<div>No field tokens because there is no applications.</div>'
+        help_text += '<div>No field tokens because there is no ' + \
+                    'applications.</div>'
 
     other_labels = ['member_number',
                     'membership_type',
@@ -507,8 +686,6 @@ def spawn_username(*args):
     """
     if not args:
         raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
-
-    import re
 
     max_length = 8
 
@@ -811,9 +988,10 @@ class ImportMembDefault(object):
         self.field_names = memb_data.keys()
         user = None
         memb = None
-        user_display = {}
-        user_display['error'] = ''
-        user_display['user'] = None
+        user_display = {
+            'error': u'',
+            'user': None,
+        }
 
         missing_fields_msg = check_missing_fields(self.memb_data, self.key)
 
@@ -858,7 +1036,7 @@ class ImportMembDefault(object):
             elif self.key == 'member_number':
                 user = get_user_by_member_number(
                                 self.memb_data['member_number'])
-            else:   # email
+            else:  # email
                 user = get_user_by_email(self.memb_data['email'])
 
             if user:
@@ -898,14 +1076,15 @@ class ImportMembDefault(object):
                 return
 
         user_display.update({
-                    'first_name': self.memb_data.get('first_name', ''),
-                    'last_name': self.memb_data.get('last_name', ''),
-                    'email': self.memb_data.get('email', ''),
-                    'username': self.memb_data.get('username', ''),
-                    'member_number': self.memb_data.get('member_number', ''),
-                    'phone': self.memb_data.get('phone', ''),
-                    'company': self.memb_data.get('company', ''),
-                             })
+            'first_name': self.memb_data.get('first_name', u''),
+            'last_name': self.memb_data.get('last_name', u''),
+            'email': self.memb_data.get('email', u''),
+            'username': self.memb_data.get('username', u''),
+            'member_number': self.memb_data.get('member_number', u''),
+            'phone': self.memb_data.get('phone', u''),
+            'company': self.memb_data.get('company', u''),
+        })
+
         return user_display
 
     def do_import_membership_default(self, user, memb, action_info):
@@ -919,32 +1098,29 @@ class ImportMembDefault(object):
         else:
             username_before_assign = user.username
 
-        # exclude user
+        # always remove user column
         if 'user' in self.field_names:
             self.field_names.remove('user')
 
         self.assign_import_values_from_dict(user, action_info['user_action'])
 
         # clean username
-        if user.username:
-            user.username = re.sub('[^+-.\w\d@]', '', user.username)
+        user.username = re.sub('[^\w+-.@]', u'', user.username)
+
         # make sure username is unique.
         if action_info['user_action'] == 'insert':
-            user.username = get_unique_username(user)
+            user.username = make_username_unique(user.username)
         else:
             # it's update but a new username is assigned
             # check if its unique
             if user.username != username_before_assign:
-                user.username = get_unique_username(user)
+                user.username = make_username_unique(user.username)
 
-        if 'password' in self.field_names and \
-                self.mimport.override and user.password:
+        # allow import with override of password
+        if 'password' in self.field_names and self.mimport.override and user.password:
             user.set_password(user.password)
 
-        if not user.password:
-            user.set_password(User.objects.make_random_password(length=8))
-
-        # set to active if is_active not present in the spreadsheet.
+        # is_active; unless forced via import
         if 'is_active' not in self.field_names:
             user.is_active = True
 
@@ -961,9 +1137,10 @@ class ImportMembDefault(object):
                owner_username=self.request_user.username,
                **self.private_settings
             )
-        self.assign_import_values_from_dict(profile,
-                                            action_info['user_action'])
+
+        self.assign_import_values_from_dict(profile, action_info['user_action'])
         profile.user = user
+
         if profile.status == None or profile.status == '' or \
             self.memb_data.get('status', '') == '':
             profile.status = True

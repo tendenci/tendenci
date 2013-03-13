@@ -21,8 +21,11 @@
     <h1>{% trans 'Edit '%} {{user_this.first_name }} {{user_this.last_name }}</h1>
     <p>{% trans 'Change the information below as needed and press Submit changes.'%}</p>
 {% if form.errors or  form.non_field_errors %}
-<div class="body-copy-alerts">{% trans "There are some issues on the form, please review." %}</div>
-{{form.non_field_errors}}
+  <div class="body-copy-alerts">{% trans "There are some issues on the form, please review." %}</div>
+  {{form.non_field_errors}}
+  {% for error in form.errors.values %}
+    {{ error }}
+  {% endfor %}
 {% endif %}
     <div class="profile-wrap">
     	<form action="." method="post">{% csrf_token %}
@@ -420,6 +423,9 @@
                               </td>
                               <td class="label"><label for="id_dob">{% trans 'DOB'%}{%if form.dob.label in required_fields_list%}<span class="body-copy-alerts">*</span>{% endif %}</label> </td>
                               <td > 
+                              {% if form.dob.errors %}
+                                {{ form.dob.errors }}
+                              {% endif %}
                               {{ form.dob }}
                               </td>
                             </tr>

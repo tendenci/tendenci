@@ -69,7 +69,7 @@ from tendenci.addons.events.forms import (EventForm, Reg8nEditForm,
     PlaceForm, SpeakerForm, OrganizerForm, TypeForm, MessageAddForm,
     RegistrationForm, RegistrantForm, RegistrantBaseFormSet,
     Reg8nConfPricingForm, PendingEventForm, AddonForm, AddonOptionForm,
-    FormForCustomRegForm, RegConfPricingBaseModelFormSet,
+    FormForCustomRegForm, RegConfPricingBaseModelFormSet, RegistrantSearchForm,
     RegistrationPreForm, EventICSForm, EmailForm, DisplayAttendeesForm, ReassignTypeForm)
 from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
@@ -191,7 +191,7 @@ def view_attendees(request, event_id, template_name='events/attendees.html'):
     registration = event.registration_configuration
 
     pricing = registration.get_available_pricings(request.user, is_strict=False)
-    pricing = pricing.order_by('display_order', '-price')
+    pricing = pricing.order_by('position', '-price')
 
     reg_started = registration_has_started(event, pricing=pricing)
     reg_ended = registration_has_ended(event, pricing=pricing)
@@ -239,6 +239,7 @@ def search(request, redirect=False, template_name="events/search.html"):
     query = request.GET.get('q', None)
     event_type = request.GET.get('event_type', None)
     start_dt = request.GET.get('start_dt', None)
+    with_registration = request.GET.get('registration', None)
     try:
         start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
     except:
@@ -261,17 +262,22 @@ def search(request, redirect=False, template_name="events/search.html"):
         if request.user.is_authenticated():
             events = events.select_related()
 
-    events = events.order_by('-priority', 'start_dt')
+    if with_registration:
+        events = events.filter(registration_configuration__enabled=True)
+
+    events = events.order_by('start_dt', '-priority')
+
     types = Type.objects.all().order_by('name')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name,{
+    return render_to_response(template_name, {
         'events': events,
         'types': types,
         'now': datetime.now(),
         'event_type': event_type,
-        'start_dt': start_dt
+        'start_dt': start_dt,
+        'with_registration': with_registration,
         }, context_instance=RequestContext(request))
 
 
@@ -976,8 +982,8 @@ def register_pre(request, event_id, template_name="events/reg8n/register_pre2.ht
                                                spots_available=spots_available
                                                )
 
-    individual_pricings = pricings.filter(quantity=1).order_by('display_order', '-price')
-    table_pricings = pricings.filter(quantity__gt=1).order_by('display_order', '-price')
+    individual_pricings = pricings.filter(quantity=1).order_by('position', '-price')
+    table_pricings = pricings.filter(quantity__gt=1).order_by('position', '-price')
 
     if not (individual_pricings or table_pricings):
         raise Http404
@@ -1088,7 +1094,7 @@ def register(request, event_id=0,
                                         Q(allow_user=True) | Q(allow_anonymous=True)
                                                 ).exists()
 
-        pricings = pricings.order_by('display_order', '-price')
+        pricings = pricings.order_by('position', '-price')
 
         try:
             pricing_id = int(pricing_id)
@@ -2056,13 +2062,43 @@ def day_view(request, year=None, month=None, day=None, template_name='events/day
     if year <= 1900:
         raise Http404
 
+    day_date = datetime(year=int(year), month=int(month), day=int(day))
+    yesterday = day_date - timedelta(days=1)
+    yesterday_url = reverse('event.day', args=(
+            int(yesterday.year),
+            int(yesterday.month),
+            int(yesterday.day)
+        ))
+    tomorrow = day_date + timedelta(days=1)
+    tomorrow_url = reverse('event.day', args=(
+            int(tomorrow.year),
+            int(tomorrow.month),
+            int(tomorrow.day)
+        ))
+
     EventLog.objects.log()
 
     return render_to_response(template_name, {
-        'date': datetime(year=int(year), month=int(month), day=int(day)),
-        'now':datetime.now(),
-        'type':None,
+        'date': day_date,
+        'now': datetime.now(),
+        'type': None,
+        'yesterday': yesterday,
+        'tomorrow': tomorrow,
+        'yesterday_url': yesterday_url,
+        'tomorrow_url': tomorrow_url,
     }, context_instance=RequestContext(request))
+
+
+@is_enabled('events')
+def today_redirect(request):
+    today_date = request.GET.get('today_date', None)
+    try:
+        today_date = datetime.strptime(today_date, '%Y-%m-%d')
+    except:
+        today_date = datetime.now()
+
+    day, month, year = today_date.day, today_date.month, today_date.year
+    return HttpResponseRedirect(reverse('event.day', args=(int(year), int(month), int(day))))
 
 
 @login_required
@@ -2096,7 +2132,7 @@ def types(request, template_name='events/types/index.html'):
 @login_required
 def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='events/types/reassign.html'):
     type = get_object_or_404(Type, pk=type_id)
-        
+
     form = form_class(request.POST or None, type_id=type.id)
 
     if request.method == 'POST':
@@ -2110,6 +2146,44 @@ def reassign_type(request, type_id, form_class=ReassignTypeForm, template_name='
 
 
 @is_enabled('events')
+def global_registrant_search(request, template_name='events/registrants/global-search.html'):
+
+    form = RegistrantSearchForm(request.GET)
+
+    if form.is_valid():
+        event = form.cleaned_data.get('event')
+        start_dt = form.cleaned_data.get('start_dt')
+        end_dt = form.cleaned_data.get('end_dt')
+
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+        email = form.cleaned_data.get('email')
+        user_id = form.cleaned_data.get('user_id')
+
+    registrants = Registrant.objects.order_by("-update_dt")
+
+    if event:
+        registrants = registrants.filter(registration__event=event)
+    if start_dt:
+        registrants = registrants.filter(registration__event__start_dt__gte=start_dt)
+    if end_dt:
+        registrants = registrants.filter(registration__event__end_dt__lte=end_dt)
+    try:
+        registrants = registrants.filter(user=user_id)
+    except ValueError:
+        pass
+
+    registrants = (registrants.filter(first_name__icontains=first_name)
+                              .filter(last_name__icontains=last_name)
+                              .filter(email__icontains=email))
+
+    return render_to_response(template_name, {
+        'registrants': registrants,
+        'form': form,
+        }, context_instance=RequestContext(request))
+
+
+@is_enabled('events')
 @login_required
 def registrant_search(request, event_id=0, template_name='events/registrants/search.html'):
     query = request.GET.get('q', None)
@@ -2117,7 +2191,7 @@ def registrant_search(request, event_id=0, template_name='events/registrants/sea
 
     event = get_object_or_404(Event, pk=event_id)
 
-    if not has_perm(request.user,'events.change_event', event):
+    if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
         raise Http403
 
     if not query:
@@ -2175,6 +2249,9 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
     query = ''
     has_addons = event.has_addons
 
+    if not (has_perm(request.user,'events.view_registrant') or has_perm(request.user,'events.change_event', event)):
+        raise Http403
+
     sort_order = request.GET.get('sort_order', 'last_name')
     sort_type = request.GET.get('sort_type', 'asc')
 
@@ -2187,7 +2264,7 @@ def registrant_roster(request, event_id=0, roster_view='', template_name='events
         sort_field = '-%s' % sort_field
 
     if not roster_view: # default to total page
-        return HttpResponseRedirect(reverse('event.registrant.roster.total', args=[event.pk]))
+        roster_view = 'total'
 
     # paid or non-paid or total
     registrations = Registration.objects.filter(event=event, canceled=False)
@@ -2538,7 +2615,6 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             email.reply_to = request.user.email
             email.recipient = request.user.email
             email.content_type = "text/html"
-            email.subject = '%s notice from %s' % (event.title, get_setting('site', 'global', 'sitedisplayname'))
             email.save(request.user)
             subject = email.subject
 
@@ -2573,9 +2649,11 @@ def message_add(request, event_id, form_class=MessageAddForm, template_name='eve
             return HttpResponseRedirect(reverse('event', args=([event_id])))
 
     else:
+        defaultsubject = render_to_string('events/message/subject-text.txt', {'event': event},
+            context_instance=RequestContext(request))
         openingtext = render_to_string('events/message/opening-text.txt', {'event': event},
             context_instance=RequestContext(request))
-        form = form_class(event.id, initial={'body': openingtext})
+        form = form_class(event.id, initial={'subject':defaultsubject, 'body': openingtext})
 
     return render_to_response(template_name, {
         'event':event,
@@ -2956,7 +3034,7 @@ def delete_speaker(request, id):
 @is_enabled('events')
 @login_required
 def delete_group_pricing(request, id):
-    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+    if not has_perm(request.user,'events.delete_registrationconfiguration'):
         raise Http403
 
     gp = get_object_or_404(GroupRegistrationConfiguration, id = id)
@@ -2972,7 +3050,7 @@ def delete_group_pricing(request, id):
 @is_enabled('events')
 @login_required
 def delete_special_pricing(request, id):
-    if not has_perm(request.user,'events.delete_registrationconfiguration'): 
+    if not has_perm(request.user,'events.delete_registrationconfiguration'):
         raise Http403
 
     s = get_object_or_404(SpecialPricing, id = id)
@@ -3326,7 +3404,7 @@ def import_add(request, form_class=ImportForm,
             EventLog.objects.log()
 
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
 
             return HttpResponseRedirect(
                 reverse('event.import_preview', args=[import_i.id]))

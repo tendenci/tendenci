@@ -9,6 +9,7 @@ from django.db.utils import IntegrityError
 from tendenci.core.base.fields import SlugField
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.apps.user_groups.managers import GroupManager
+from tendenci.apps.entities.models import Entity
 
 
 class Group(TendenciBaseModel):
@@ -30,7 +31,7 @@ class Group(TendenciBaseModel):
     notes = models.TextField(blank=True)
     members = models.ManyToManyField(User, through='GroupMembership')
 
-    group = models.OneToOneField(AuthGroup, null=True, default=None, on_delete=models.SET_NULL)
+    group = models.OneToOneField(AuthGroup, null=True, default=None)
     permissions = models.ManyToManyField(Permission, related_name='group_permissions', blank=True)
     # use_for_membership = models.BooleanField(_('User for Membership Only'), default=0, blank=True)
 
@@ -56,31 +57,38 @@ class Group(TendenciBaseModel):
         if not self.slug:
             self.slug = slugify(self.name)
 
-        if self.name and not self.group:
-            try:
-                group = AuthGroup.objects.create(name=self.name)
-            except IntegrityError:
-                connection._rollback()
-                id = AuthGroup.objects.count()
-                group = AuthGroup.objects.create(name=" ".join([self.name, str(id)]))
-            group.save()
-            self.group = group
-
-        elif self.name and self.group:
-            self.group.name = self.name
-            try:
-                self.group.save()
-            except IntegrityError:
-                connection._rollback()
+        # add the default entity
+        if not self.entity:
+            self.entity = Entity.objects.first()
 
         super(Group, self).save(force_insert, force_update, *args, **kwargs)
-     
-    @property    
+
+        if not self.group:
+            # create auth group if not exists
+            # note that the name of auth group is also unique
+            group_name = self.get_unique_auth_group_name()
+            self.group = AuthGroup.objects.create(name=group_name)
+            self.save()
+
+    @property
     def active_members(self):
         return GroupMembership.objects.filter(
-                                            group=self,
-                                            status=True, 
-                                            status_detail='active')
+            group=self, status=True, status_detail='active')
+
+    def get_unique_auth_group_name(self):
+        # get the unique name for auth group.
+        # the max length of the name of the auth group is 80.
+        name = self.name
+        if not name:
+            name = str(self.id)
+
+        if len(name) > 80:
+            name = name[:80]
+
+        if AuthGroup.objects.filter(name=name).exists():
+            name = 'User Group %d' % self.id
+
+        return name
 
     def is_member(self, user):
         # impersonation
@@ -118,7 +126,7 @@ class Group(TendenciBaseModel):
 class GroupMembership(models.Model):
     group = models.ForeignKey(Group)
     member = models.ForeignKey(User, related_name='group_member')
-    
+
     role = models.CharField(max_length=255, default="", blank=True)
     sort_order =  models.IntegerField(_('Sort Order'), default=0, blank=True)
 

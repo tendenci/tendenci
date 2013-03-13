@@ -25,7 +25,7 @@ class PhotoSetIndex(TendenciBaseSearchIndex):
         return obj.allow_anonymous_view and obj.status == 1 \
         and obj.status_detail == 'active'
 
-    def prepare_syndicate_order(self, obj):
+    def prepare_order(self, obj):
         return obj.update_dt
 
 
@@ -57,7 +57,7 @@ class PhotoIndex(TendenciBaseSearchIndex):
         return obj.allow_anonymous_view and obj.status == 1 \
          and obj.status_detail == 'active'
     
-    def prepare_syndicate_order(self, obj):
+    def prepare_order(self, obj):
         return obj.update_dt
         
 

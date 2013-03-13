@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <style>
     .summary-graph, .corp-stat-table{
-        width: 500px;
+        width: 600px;
     }
 </style>
 {% endblock %}
@@ -25,17 +25,19 @@
                 <th>{% trans 'Active' %}</th>
                 <th>{% trans 'Pending' %}</th>
                 <th>{% trans 'Expired' %}</th>
+                <th>{% trans 'Expired - in grace period' %}</th>
                 <th>{% trans 'Total' %}</th>
             </tr>
         </thead>
         <tbody>
             {% for type in summary %}
             <tr>
-                <td>{{ type.type.name }}</td>
+                <td><a href="{% url admin:corporate_memberships_corporatemembershiptype_change type.type.id %}">{{ type.type.name }}</a></td>
                 <td>{{ type.active }}</td>
                 <td>{{ type.pending }}</td>
                 <td>{{ type.expired }}</td>
-                <td>{{ type.total }}</td>
+                 <td>{{ type.in_grace_period }}</td>
+                <td><a href="{% url corpmembership.search %}?cm_type_id={{ type.type.id  }}">{{ type.total }}</a></td>
             </tr>
             {% endfor %}
             <tr>
@@ -43,46 +45,14 @@
                 <td>{{ total.total_active }}</td>
                 <td>{{ total.total_pending }}</td>
                 <td>{{ total.total_expired }}</td>
+                <td>{{ total.total_in_grace_period }}</td>
                 <td>{{ total.total_total }}</td>
             </tr>
         </tbody>
     </table>
 </div>
-<table style="display: none;" class="highchart"  data-graph-yaxis-1-title-text="count"
-data-graph-container=".. .. .highchart-container" data-graph-type="column"
-data-graph-datalabels-enabled="1" data-graph-datalabels-color="white"
->
-        <caption>Corporate Membership Count by Type</caption>
-        <thead>
-            <tr>
-                <th></th>
-                <th data-graph-stack-group="1">{% trans 'Active' %}</th>
-                <th data-graph-stack-group="1" data-graph-datalabels-color="blue">{% trans 'Pending' %}</th>
-                <th data-graph-stack-group="1" data-graph-datalabels-color="green">{% trans 'Expired' %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for type in summary %}
-            <tr>
-                <td>{{ type.type.name }}</td>
-                <td>{{ type.active }}</td>
-                <td>{{ type.pending }}</td>
-                <td>{{ type.expired }}</td>
-            </tr>
-            {% endfor %}
-            <tr>
-                <td>Total</td>
-                <td>{{ total.total_active }}</td>
-                <td>{{ total.total_pending }}</td>
-                <td>{{ total.total_expired }}</td>
-            </tr>
-        </tbody>
-    </table>
 
-<div class="summary-graph">
-    <div class="highchart-container">
-    </div>
-</div>
+<div id="chart_div" style="width: 850px; height: 500px;">
 
 </div>
 
@@ -90,11 +60,29 @@ data-graph-datalabels-enabled="1" data-graph-datalabels-color="white"
 
 {% block extra_body %}
     {{ block.super }}
-    <script type="text/javascript" src="{{ STATIC_URL }}js/highcharts.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.highchartTable.js"></script>
-<script>
-   $(document).ready(function() {
-  $('table.highchart').highchartTable();
-});
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+       
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['{% trans 'Corp. Membership Type' %}',
+          '{% trans 'Active' %}', '{% trans 'Pending' %}',
+          '{% trans 'Expired' %}', '{% trans 'Expired - in grace period' %}'],
+          {% for type in summary %}
+          ['{{ type.type.name }}',  {{ type.active }}, {{ type.pending }},
+          {{ type.expired }}, {{ type.in_grace_period }}],
+          {% endfor %}
+        ]);
+
+        var options = {
+          title: 'Summary By Type',
+          hAxis: {title: '{% trans 'Corp. Membership Type' %}', titleTextStyle: {color: 'black'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
 </script>
 {% endblock extra_body %}

@@ -1,21 +1,37 @@
 import os
+from optparse import make_option
+from boto.s3.connection import S3Connection
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from boto.s3.connection import S3Connection
 
 
 class Command(BaseCommand):
     help = "Insert non-profit-organization default data"
+
+    option_list = BaseCommand.option_list + (
+        make_option('--reset-nav',
+            action="store_true", dest='reset_nav', default=False,
+            help='Reset the navigation'),
+        make_option('--skip-media',
+            action="store_true", dest='skip_media', default=False,
+            help='Skip downloading media files'),
+    )
 
     def handle(self, **options):
         """
         Load data and from non profit fixtures
         and download images from s3 location.
         """
-        self.copy_files()
-        self.call_loaddata()
+        reset_nav = options.get('reset_nav', None)
+        skip_media = options.get('skip_media', None)
+
+        if not skip_media:
+            self.copy_files()
+
+        self.call_loaddata(reset_nav)
 
     def copy_files(self):
         """
@@ -38,9 +54,6 @@ class Command(BaseCommand):
         for source_key in bucket_list:
             if not source_key.name.endswith('/'):  # if file
 
-                filename = os.path.basename(source_key.name)
-                source_key.get_contents_to_filename(filename)
-
                 dst = source_key.name.replace('npo_defaults/', '')
                 dst = os.path.join(settings.MEDIA_ROOT, dst)
 
@@ -58,7 +71,7 @@ class Command(BaseCommand):
         """
         Copy media files to this sites' S3 location.
         """
-        conn = S3Connection(anon=True)
+        conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
         bucket = conn.get_bucket('tendenci-static')
         bucket_list = bucket.list('npo_defaults')
 
@@ -72,7 +85,7 @@ class Command(BaseCommand):
                 print settings.AWS_STORAGE_BUCKET_NAME, target_key_name
                 source_key.copy(settings.AWS_STORAGE_BUCKET_NAME, target_key_name)
 
-    def call_loaddata(self):
+    def call_loaddata(self, reset_nav=False):
         """
         This calls the loaddata command on all
         non profit fixtures.
@@ -80,6 +93,15 @@ class Command(BaseCommand):
         """
         from tendenci.core.files.models import File
 
+        if reset_nav:
+            from tendenci.apps.navs.models import Nav
+            try:
+                main_nav = Nav.objects.get(pk=1)
+                main_nav.delete()
+            except:
+                pass
+
+        staff_installed = "addons.staff" in settings.INSTALLED_APPS
         print 'npo_default_auth_user.json'
         call_command('loaddata', 'npo_default_auth_user.json')
         print 'npo_default_entities.json'
@@ -92,7 +114,8 @@ class Command(BaseCommand):
         box_ct = ContentType.objects.get(app_label='boxes', model='box')
         story_ct = ContentType.objects.get(app_label='stories', model='story')
         setting_ct = ContentType.objects.get(app_label='site_settings', model='setting')
-        staff_ct = ContentType.objects.get(app_label='staff', model='staff')
+        if staff_installed:
+            staff_ct = ContentType.objects.get(app_label='staff', model='staff')
 
         files = File.objects.all()
 
@@ -105,25 +128,26 @@ class Command(BaseCommand):
                 f.content_type = story_ct
             if 'setting' in unicode(f.file):
                 f.content_type = setting_ct
-            if 'staff' in unicode(f.file):
+            if 'staff' in unicode(f.file) and staff_installed:
                 f.content_type = staff_ct
 
             f.save()
 
         suffix_list = [
-            'profiles_profile'
+            'profiles_profile',
             'events',
             'jobs',
             'memberships',
             'memberships_membershipdefault',
             'directories',
+            'articles',
             'news',
             'photos',
             'boxes',
             'pages',
             'navs',
-            'videos',
             'stories',
+            'videos',
         ]
 
         # call loaddata on fixtures
@@ -132,3 +156,5 @@ class Command(BaseCommand):
 
             print filename
             call_command('loaddata', filename)
+
+        call_command('set_theme', 'twenty-thirteen')
