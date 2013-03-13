@@ -429,6 +429,8 @@ def application_details(request, template_name="memberships/applications/details
 
 
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
+    # redirect to the new system
+    return redirect(reverse('membership_default.corp_pre_add'))
 
     try:
         app = App.objects.get(slug=slug)
