@@ -2203,8 +2203,9 @@ class AppEntry(TendenciBaseModel):
     An entry submitted via a membership application.
     """
     app = models.ForeignKey("App", related_name="entries")
-    user = models.ForeignKey(User, null=True)
-    membership = models.ForeignKey("Membership", related_name="entries", null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    membership = models.ForeignKey("Membership", related_name="entries",
+                                   null=True, on_delete=models.SET_NULL)
     entry_time = models.DateTimeField(_("Date/Time"))
     hash = models.CharField(max_length=40, null=True, default='')
     is_renewal = models.BooleanField()
