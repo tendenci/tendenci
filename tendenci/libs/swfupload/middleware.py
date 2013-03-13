@@ -3,10 +3,10 @@
 This is necessary because SWFUpload won't send proper cookies back; instead, all the cookies are
 added to the form that gets POST-ed back to us.
 """
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponsePermanentRedirect, get_host
+
 
 class SWFUploadMiddleware(object):
     def process_request(self, request):
@@ -20,6 +20,7 @@ class SWFUploadMiddleware(object):
                     request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[swf_cookie_name]
                 if request.POST.has_key('csrftoken'):           
                     request.COOKIES["csrftoken"] = request.POST['csrftoken']
+
 
 class MediaUploadMiddleware(object):
     def process_request(self, request):
@@ -48,7 +49,6 @@ class SSLRedirectMiddleware(object):
             del view_kwargs['SSL']
 
             if not secure == self._is_secure(request):
-                print secure
                 return self._redirect(request, secure)
 
     def _is_secure(self, request):
