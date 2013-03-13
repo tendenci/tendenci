@@ -633,7 +633,7 @@ class CorpMembership(TendenciBaseModel):
         field_names = [field.name for field in self.__class__._meta.fields]
         ignore_fields = ['id', 'renewal', 'renew_dt', 'status',
                          'status_detail', 'approved', 'approved_denied_dt',
-                         'approved_denied_user']
+                         'approved_denied_user', 'anonymous_creator']
         for field in ignore_fields:
             field_names.remove(field)
 
@@ -766,15 +766,19 @@ class CorpMembership(TendenciBaseModel):
                 # update the membership record with the renewal info
                 new_membership.renewal = True
                 new_membership.renew_dt = self.renew_dt
-                new_membership.expiration_dt = self.expiration_dt
+                new_membership.expire_dt = self.expiration_dt
                 new_membership.corporate_membership_id = self.id
                 new_membership.corp_profile_id = self.corp_profile.id
-                new_membership.membership_type = self.corporate_membership_type.membership_type
+                new_membership.membership_type = \
+                    self.corporate_membership_type.membership_type
                 new_membership.status = True
                 new_membership.status_detail = 'active'
+                new_membership.application_approved = True
+                new_membership.application_approved_dt = self.approved_denied_dt
                 if not request_user.is_anonymous():
                     new_membership.owner_id = request_user.id
                     new_membership.owner_username = request_user.username
+                    new_membership.application_approved_user = request_user
 
                 new_membership.save()
                 # archive old memberships
