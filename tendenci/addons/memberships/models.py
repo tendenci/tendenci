@@ -1179,14 +1179,23 @@ class MembershipDefault(TendenciBaseModel):
             self.expire_dt = None
             return None
 
-        if self.renew_dt:
-            self.expire_dt = self.membership_type.get_expiration_dt(
-                renewal=self.renewal, renew_dt=self.renew_dt
-            )
-        elif self.join_dt:
-            self.expire_dt = self.membership_type.get_expiration_dt(
-                renewal=self.renewal, join_dt=self.join_dt
-            )
+        if self.corporate_membership_id:
+            # corp individuals expire with their corporate membership
+            from tendenci.addons.corporate_memberships.models import CorpMembership
+            [corp_expiration_dt] = CorpMembership.objects.filter(
+                                        id=self.corporate_membership_id
+                                        ).values_list('expiration_dt',
+                                                      flat=True)[:1] or [None]
+            self.expire_dt = corp_expiration_dt
+        else:
+            if self.renew_dt:
+                self.expire_dt = self.membership_type.get_expiration_dt(
+                    renewal=self.renewal, renew_dt=self.renew_dt
+                )
+            elif self.join_dt:
+                self.expire_dt = self.membership_type.get_expiration_dt(
+                    renewal=self.renewal, join_dt=self.join_dt
+                )
 
     def set_member_number(self):
         """
