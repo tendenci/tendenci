@@ -9,15 +9,15 @@
             <th>{% trans "Last Name" %}</th>
             <th>{% trans "Email" %}</th>
         </tr>
-        {% for profile in profiles %}
+        {% for user in users %}
         <tr>
-            <td>{{ profile.user.id }}</td>
-            <td><a href="{% if profile.user.username %}{% url profile profile.user.username %}{% else %}{% url profile.edit profile.user.id  %}{% endif %}">{{ profile.user.username }}</a></td>
-            <td>{{ profile.user.first_name }}</td>
-            <td>{{ profile.user.last_name }}</td>
-            <td>{{ profile.user.email }}</td>
+            <td>{{ user.id }}</td>
+            <td><a href="{% if user.username %}{% url profile user.username %}{% else %}{% url profile.edit user.id  %}{% endif %}">{{ user.username }}</a></td>
+            <td>{{ user.first_name }}</td>
+            <td>{{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
         </tr>
-        <input name="id_users" type="hidden" value="{{ profile.user.id }}">
+        <input name="id_users" type="hidden" value="{{ user.id }}">
         {% endfor %}
     </table>
     {% if request.user.is_superuser %}

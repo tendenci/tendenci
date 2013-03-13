@@ -9,40 +9,61 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/forms.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
-<style>
-    div.similar_group{
-        margin: 2em 0;
-    }
-     div.group{
-        margin: 1em 0;
-    }
-</style>
+
 {% endblock %}
 
 {% block body %}
 {{ block.super }}
 <div class="t">
 {% users_nav request.user user_this %}
-    {% if profiles_with_duplicate_name %}
+    {% if users_with_duplicate_name %}
     <div class="similar_group">
     <h3>{% trans "Users with Same Names" %}</h3>
-    {% for profiles in profiles_with_duplicate_name %}
-        {% similar_profile_items profiles %}
+    {% for users in users_with_duplicate_name %}
+        {% similar_profile_items users %}
     {% endfor %}
     </div>
     {% endif %}
 
-    {% if profiles_with_duplicate_email %}
+    {% if users_with_duplicate_email %}
     <div class="similar_group">
     <h3>{% trans "Users with Same Email" %}</h3>
-    {% for profiles in profiles_with_duplicate_email %}
-        {% similar_profile_items profiles %}
+    {% for users in users_with_duplicate_email %}
+        {% similar_profile_items users %}
     {% endfor %}
     </div>
     {% endif %}
 
-    {% if not profiles_with_duplicate_name and not profiles_with_duplicate_email %}
+    {% if not users_with_duplicate_name and not users_with_duplicate_email %}
     <h3>{% trans "No similar users found" %}
+    {% endif %}
+    
+    {% if num_pages > 1%}
+    <div id="import-paginate">
+        {% if prev %}
+        <a href="?page={{ prev }}">Prev</a>
+        {% else %}
+        Prev
+         {% endif %}
+         
+        {% for page in page_range %}
+            {% if page = '...' %}
+                {{ page }}
+            {% else %}
+                {% if page == curr_page %}
+                <strong>{{ page }}</strong>
+                {% else %}
+                <a href="?page={{ page }}">{{ page }}</a>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {% if curr_page >= num_pages  %}
+        Next
+        {% else %}
+        <a href="?page={{ next }}">Next</a>
+         {% endif %}
+    </div>
     {% endif %}
 
 </div>

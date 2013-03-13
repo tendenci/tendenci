@@ -77,6 +77,7 @@ class ListStoriesNode(ListNode):
         limit = 3
         order = u''
         randomize = False
+        group = u''
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -125,6 +126,18 @@ class ListStoriesNode(ListNode):
             except:
                 order = self.kwargs['order']
 
+        if 'group' in self.kwargs:
+            try:
+                group = Variable(self.kwargs['group'])
+                group = unicode(group.resolve(context))
+            except:
+                group = self.kwargs['group']
+
+            try:
+                group = int(group)
+            except:
+                group = None
+
         filters = get_query_filters(user, self.perms)
         items = self.model.objects.filter(filters)
         if user.is_authenticated():
@@ -144,20 +157,23 @@ class ListStoriesNode(ListNode):
             tag_query = reduce(or_, tag_queries)
             items = items.filter(tag_query)
 
+        if group:
+            items = items.filter(group=group)
+
         objects = []
 
         # Removed seconds and microseconds so we can cache the query better
         now = datetime.now().replace(second=0, microsecond=0)
 
         # Custom filter for stories
-        date_query = reduce(or_, [Q(end_dt__gte = now), Q(expires=False)])
-        date_query = reduce(and_, [Q(start_dt__lte = now), date_query])
+        date_query = reduce(or_, [Q(end_dt__gte=now), Q(expires=False)])
+        date_query = reduce(and_, [Q(start_dt__lte=now), date_query])
         items = items.filter(date_query)
 
         if order:
             items = items.order_by(order)
         else:
-            items = items.order_by('-ncsortorder', '-start_dt')
+            items = items.order_by('-position', '-start_dt')
 
         # if order is not specified it sorts by relevance
         if randomize:
@@ -169,6 +185,7 @@ class ListStoriesNode(ListNode):
 
         return ""
 
+
 @register.tag
 def list_stories(parser, token):
     """
@@ -178,22 +195,24 @@ def list_stories(parser, token):
 
         {% list_stories as [varname] [options] %}
 
-    Be sure the [varname] has a specific name like ``stories_sidebar`` or 
+    Be sure the [varname] has a specific name like ``stories_sidebar`` or
     ``stories_list``. Options can be used as [option]=[value]. Wrap text values
     in quotes like ``tags="cool"``. Options include:
-    
+
         ``limit``
-           The number of items that are shown. **Default: 3**
+           The number of stories that are shown. **Default: 3**
         ``order``
-           The order of the items. **Default: Order in Admin**
+           The order of the stories. **Default: Order in Admin**
         ``user``
-           Specify a user to only show public items to all. **Default: Viewing user**
+           Specify a user to only show public stories to all. **Default: Viewing user**
         ``query``
-           The text to search for items. Will not affect order.
+           The text to search for stories. Will not affect order.
         ``tags``
-           The tags required on items to be included.
+           The tags required on stories to be included.
+        ``group``
+           The group id of stories to be included.
         ``random``
-           Use this with a value of true to randomize the items included.
+           Use this with a value of true to randomize the stories included.
 
     Example::
 

@@ -30,7 +30,7 @@
         "pk": 1,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 1,
+            "position": 1,
             "date_taken": "2012-12-31T15:46:32.875",
             "creator": null,
             "allow_user_view": false,
@@ -71,7 +71,7 @@
         "pk": 4,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 5,
+            "position": 5,
             "date_taken": "2012-12-31T15:46:49.912",
             "creator": null,
             "allow_user_view": false,
@@ -112,7 +112,7 @@
         "pk": 10,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 11,
+            "position": 11,
             "date_taken": "2012-12-31T15:47:17.634",
             "creator": null,
             "allow_user_view": false,
@@ -153,7 +153,7 @@
         "pk": 5,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 7,
+            "position": 7,
             "date_taken": "2012-12-31T15:47:00.518",
             "creator": null,
             "allow_user_view": false,
@@ -194,7 +194,7 @@
         "pk": 14,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 14,
+            "position": 14,
             "date_taken": "2012-12-31T15:47:32.233",
             "creator": null,
             "allow_user_view": false,
@@ -235,7 +235,7 @@
         "pk": 11,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 12,
+            "position": 12,
             "date_taken": "2012-12-31T15:47:21.406",
             "creator": null,
             "allow_user_view": false,
@@ -276,7 +276,7 @@
         "pk": 7,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 10,
+            "position": 10,
             "date_taken": "2012-12-31T15:47:06.933",
             "creator": null,
             "allow_user_view": false,
@@ -317,7 +317,7 @@
         "pk": 8,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 2,
+            "position": 2,
             "date_taken": "2012-12-31T15:47:10.556",
             "creator": null,
             "allow_user_view": false,
@@ -358,7 +358,7 @@
         "pk": 3,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 4,
+            "position": 4,
             "date_taken": "2012-12-31T15:46:39.663",
             "creator": null,
             "allow_user_view": false,
@@ -399,7 +399,7 @@
         "pk": 9,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 6,
+            "position": 6,
             "date_taken": "2012-12-31T15:47:14.463",
             "creator": null,
             "allow_user_view": false,
@@ -440,7 +440,7 @@
         "pk": 6,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 8,
+            "position": 8,
             "date_taken": "2012-12-31T15:47:04.198",
             "creator": null,
             "allow_user_view": false,
@@ -481,7 +481,7 @@
         "pk": 2,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 3,
+            "position": 3,
             "date_taken": "2012-12-31T15:46:34.947",
             "creator": null,
             "allow_user_view": false,
@@ -522,7 +522,7 @@
         "pk": 13,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 9,
+            "position": 9,
             "date_taken": "2012-12-31T15:47:28.991",
             "creator": null,
             "allow_user_view": false,
@@ -563,7 +563,7 @@
         "pk": 12,
         "model": "photos.image",
         "fields": {
-            "photoset_position": 13,
+            "position": 13,
             "date_taken": "2012-12-31T15:47:25.607",
             "creator": null,
             "allow_user_view": false,

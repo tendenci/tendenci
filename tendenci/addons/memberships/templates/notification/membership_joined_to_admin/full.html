@@ -15,20 +15,23 @@
     {% if membership.membership_type.price %}
         <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type and membership.membership_type.price as membership_type_price %}Membership Type: {{ membership_type }} ${{ membership_type_price }}{% endblocktrans %}</div>
     {% else %}
-        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type %}Membership Type: {{ membership_type }} Free{% endblocktrans %}</div>
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type as membership_type %}Membership Type: {{ membership_type }} (Free) {% endblocktrans %}</div>
     {% endif %}
 
     <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
     <div>{{ membership.user.email }}</div>
     <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
-        {% trans "View Submitted Application" %}
+        <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">{% trans "View Submitted Application" %}</a> 
+        (<span style="color:{% if membership.is_pending %}red{% else %}green{% endif %};">{{ membership.get_status }}</span>)
     </a></div>
-
-    <div>========================</div>
-
-    <div><a href="{{ SITE_GLOBAL_SITEURL }}{{ app.get_absolute_url }}">
-        {% blocktrans with app.create_dt|date as create_date and app.create_dt|timesince as time_since %}Application Created {{ create_date }} ({{ time_since }}){% endblocktrans %}
-    </a><div>
+    
+    {% if membership.is_pending %}
+    <div>
+       {% trans "To approve this membership, go to: " %}<br />
+       <a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}</a>
+    </div>
+    {% endif %}
+    <p>&nbsp;</p>
 
 </body>
 </html>

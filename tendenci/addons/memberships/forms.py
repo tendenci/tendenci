@@ -1,4 +1,3 @@
-import sys
 from uuid import uuid4
 from captcha.fields import CaptchaField
 from os.path import join
@@ -20,7 +19,7 @@ from django.core.files.storage import FileSystemStorage
 
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.addons.corporate_memberships.models import (CorporateMembership,
-    CorpMembership, CorpMembershipAuthDomain, AuthorizedDomain)
+    CorpMembership, CorpMembershipAuthDomain)
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
@@ -28,8 +27,7 @@ from tendenci.addons.memberships.models import (Membership,
     MembershipDefault, MembershipDemographic,
     MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
     MembershipImport, MembershipApp)
-from tendenci.addons.memberships.fields import (TypeExpMethodField, PriceInput,
-    NoticeTimeTypeField, AppFieldSelectionField)
+from tendenci.addons.memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
 from tendenci.addons.memberships.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
 from tendenci.addons.memberships.utils import csv_to_dict, NoMembershipTypes
 from tendenci.addons.memberships.utils import normalize_field_names
@@ -37,7 +35,7 @@ from tendenci.addons.memberships.utils import (get_membership_type_choices,
                                                get_corporate_membership_choices,
                                                get_selected_demographic_fields)
 from tendenci.addons.memberships.widgets import (CustomRadioSelect, TypeExpMethodWidget,
-    NoticeTimeTypeWidget, AppFieldSelectionWidget)
+    NoticeTimeTypeWidget)
 from tendenci.addons.memberships.utils import get_notice_token_help_text
 from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.addons.educations.models import Education
@@ -50,7 +48,7 @@ fs = FileSystemStorage(location=UPLOAD_ROOT)
 type_exp_method_fields = (
     'period_type', 'period', 'period_unit', 'rolling_option',
     'rolling_option1_day', 'rolling_renew_option', 'rolling_renew_option1_day',
-    'rolling_renew_option2_day', 'fixed_option','fixed_option1_day',
+    'rolling_renew_option2_day', 'fixed_option', 'fixed_option1_day',
     'fixed_option1_month', 'fixed_option1_year', 'fixed_option2_day',
     'fixed_option2_month', 'fixed_option2_can_rollover',
     'fixed_option2_rollover_days'
@@ -95,6 +93,7 @@ CLASS_AND_WIDGET = {
     'horizontal-rule': ('CharField', 'tendenci.addons.memberships.widgets.Description'),
     'corporate_membership_id': ('ChoiceField', None),
 }
+
 
 def get_suggestions(entry):
     """
@@ -203,10 +202,10 @@ class MemberApproveForm(forms.Form):
 class MembershipTypeForm(forms.ModelForm):
     type_exp_method = TypeExpMethodField(label='Period Type')
     description = forms.CharField(label=_('Notes'), max_length=500, required=False,
-                               widget=forms.Textarea(attrs={'rows':'3'}))
-    price = forms.DecimalField(decimal_places=2, widget=PriceInput(), 
+                               widget=forms.Textarea(attrs={'rows': '3'}))
+    price = forms.DecimalField(decimal_places=2, widget=PriceInput(),
                                help_text="Set 0 for free membership.")
-    renewal_price = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False, 
+    renewal_price = forms.DecimalField(decimal_places=2, widget=PriceInput(), required=False,
                                help_text="Set 0 for free membership.")
     admin_fee = forms.DecimalField(decimal_places=2, required=False,
                                    widget=PriceInput(),
@@ -240,16 +239,16 @@ class MembershipTypeForm(forms.ModelForm):
                   'renewal_period_start',
                   'renewal_period_end',
                   'expiration_grace_period',
-                  'order',
+                  'position',
                   'status',
                   'status_detail',
                   )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(MembershipTypeForm, self).__init__(*args, **kwargs)
-        
+
         self.type_exp_method_fields = type_exp_method_fields
-        
+
         initial_list = []
         if self.instance.pk:
             for field in self.type_exp_method_fields:
@@ -261,25 +260,25 @@ class MembershipTypeForm(forms.ModelForm):
                         field_value = ''
                 initial_list.append(str(field_value))
             self.fields['type_exp_method'].initial = ','.join(initial_list)
-  
+
         else:
             self.fields['type_exp_method'].initial = "rolling,1,years,0,1,0,1,1,0,1,1,,1,1,,1"
-        
+
         # a field position dictionary - so we can retrieve data later
         fields_pos_d = {}
-        for i, field in enumerate(self.type_exp_method_fields):   
+        for i, field in enumerate(self.type_exp_method_fields):
             fields_pos_d[field] = (i, type_exp_method_widgets[i])
-        
-        self.fields['type_exp_method'].widget = TypeExpMethodWidget(attrs={'id':'type_exp_method'},
-                                                                    fields_pos_d=fields_pos_d) 
-        
+
+        self.fields['type_exp_method'].widget = TypeExpMethodWidget(attrs={'id': 'type_exp_method'},
+                                                                    fields_pos_d=fields_pos_d)
+
     def clean_type_exp_method(self):
         value = self.cleaned_data['type_exp_method']
-        
+
         # if never expires is checked, no need to check further
         if self.cleaned_data['never_expires']:
             return value
-        
+
         data_list = value.split(',')
         d = dict(zip(self.type_exp_method_fields, data_list))
         if d['period_type'] == 'rolling':
@@ -318,8 +317,8 @@ class MembershipTypeForm(forms.ModelForm):
                     d['rolling_renew_option2_day'] = int(d['rolling_renew_option2_day'])
                 except:
                     raise forms.ValidationError(_("The day(s) field in option 3 of Renew Expires On must be a numeric number."))
-        
-        else: # d['period_type'] == 'fixed'
+
+        else:  # d['period_type'] == 'fixed'
             try:
                 d['fixed_option'] = int(d['fixed_option'])
             except:
@@ -336,15 +335,15 @@ class MembershipTypeForm(forms.ModelForm):
                     d['fixed_option2_day'] = int(d['fixed_option2_day'])
                 except:
                     raise forms.ValidationError(_("The day(s) field in the option 2 of Expires On must be a numeric number."))
-                
-            if d.has_key('fixed_option2_can_rollover') and d['fixed_option2_can_rollover']:
+
+            if 'fixed_option2_can_rollover' in d:
                 try:
                     d['fixed_option2_rollover_days'] = int(d['fixed_option2_rollover_days'])
                 except:
                     raise forms.ValidationError(_("The grace period day(s) for optoin 2 must be a numeric number."))
-        
+
         return value
-    
+
     def save(self, *args, **kwargs):
         return super(MembershipTypeForm, self).save(*args, **kwargs)
 
@@ -710,37 +709,6 @@ class MembershipDefault2Form(forms.ModelForm):
                       (0, 'Inactive')
                       )
 
-    ud1 = forms.CharField(widget=forms.TextInput)
-    ud2 = forms.CharField(widget=forms.TextInput)
-    ud3 = forms.CharField(widget=forms.TextInput)
-    ud4 = forms.CharField(widget=forms.TextInput)
-    ud5 = forms.CharField(widget=forms.TextInput)
-    ud6 = forms.CharField(widget=forms.TextInput)
-    ud7 = forms.CharField(widget=forms.TextInput)
-    ud8 = forms.CharField(widget=forms.TextInput)
-    ud9 = forms.CharField(widget=forms.TextInput)
-    ud10 = forms.CharField(widget=forms.TextInput)
-    ud11 = forms.CharField(widget=forms.TextInput)
-    ud12 = forms.CharField(widget=forms.TextInput)
-    ud13 = forms.CharField(widget=forms.TextInput)
-    ud14 = forms.CharField(widget=forms.TextInput)
-    ud15 = forms.CharField(widget=forms.TextInput)
-    ud16 = forms.CharField(widget=forms.TextInput)
-    ud17 = forms.CharField(widget=forms.TextInput)
-    ud18 = forms.CharField(widget=forms.TextInput)
-    ud19 = forms.CharField(widget=forms.TextInput)
-    ud20 = forms.CharField(widget=forms.TextInput)
-    ud21 = forms.CharField(widget=forms.TextInput)
-    ud22 = forms.CharField(widget=forms.TextInput)
-    ud23 = forms.CharField(widget=forms.TextInput)
-    ud24 = forms.CharField(widget=forms.TextInput)
-    ud25 = forms.CharField(widget=forms.TextInput)
-    ud26 = forms.CharField(widget=forms.TextInput)
-    ud27 = forms.CharField(widget=forms.TextInput)
-    ud28 = forms.CharField(widget=forms.TextInput)
-    ud29 = forms.CharField(widget=forms.TextInput)
-    ud30 = forms.CharField(widget=forms.TextInput)
-
     class Meta:
         model = MembershipDefault
 
@@ -883,6 +851,7 @@ class MembershipDefault2Form(forms.ModelForm):
         else:
             membership.save_invoice(status_detail='estimate')
 
+        membership.user.profile.refresh_member_number()
         return membership
 
 
@@ -915,9 +884,10 @@ class MembershipExportForm(forms.Form):
 class NoticeForm(forms.ModelForm):
     notice_time_type = NoticeTimeTypeField(label='When to Send',
                                           widget=NoticeTimeTypeWidget)
-    email_content = forms.CharField(widget=TinyMCE(attrs={'style':'width:70%'}, 
-        mce_attrs={'storme_app_label':Notice._meta.app_label, 
-        'storme_model':Notice._meta.module_name.lower()}), help_text="Click here to view available tokens")    
+    email_content = forms.CharField(widget=TinyMCE(attrs={'style': 'width:70%'},
+        mce_attrs={'storme_app_label': Notice._meta.app_label,
+        'storme_model': Notice._meta.module_name.lower()}), help_text="Click here to view available tokens")
+
     class Meta:
         model = Notice
         fields = (
@@ -933,29 +903,29 @@ class NoticeForm(forms.ModelForm):
                   'status_detail',
                   )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(NoticeForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['email_content'].widget.mce_attrs['app_instance_id'] = 0
-        
+
         initial_list = []
         if self.instance.pk:
             initial_list.append(str(self.instance.num_days))
             initial_list.append(str(self.instance.notice_time))
             initial_list.append(str(self.instance.notice_type))
-        
+
         self.fields['notice_time_type'].initial = initial_list
-        
+
         self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
-        
+
     def clean_notice_time_type(self):
         value = self.cleaned_data['notice_time_type']
-        
+
         data_list = value.split(',')
         d = dict(zip(['num_days', 'notice_time', 'notice_type'], data_list))
-        
+
         try:
             d['num_days'] = int(d['num_days'])
         except:
@@ -1017,14 +987,14 @@ class AppCorpPreForm(forms.Form):
 class AppForm(TendenciBaseForm):
 
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':App._meta.app_label, 
-        'storme_model':App._meta.module_name.lower()}))
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': App._meta.app_label,
+        'storme_model': App._meta.module_name.lower()}))
 
     confirmation_text = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':App._meta.app_label, 
-        'storme_model':App._meta.module_name.lower()}))
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': App._meta.app_label,
+        'storme_model': App._meta.module_name.lower()}))
 
     status_detail = forms.ChoiceField(
         choices=(
@@ -1050,10 +1020,10 @@ class AppForm(TendenciBaseForm):
             'user_perms',
             'member_perms',
             'group_perms',
-            'status_detail', 
+            'status_detail',
             )
 
-    def __init__(self, *args, **kwargs): 
+    def __init__(self, *args, **kwargs):
         super(AppForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
@@ -1074,7 +1044,7 @@ class AppFieldForm(forms.ModelForm):
         super(AppFieldForm, self).__init__(*args, **kwargs)
 
         # remove "admin only" option from membership type and payment method
-        if self.instance.field_type in ['membership-type','payment-method']:
+        if self.instance.field_type in ['membership-type', 'payment-method']:
             self.fields['admin_only'] = BooleanField(widget=HiddenInput, required=False)
 
         # remove field_type options
@@ -1090,21 +1060,20 @@ class AppFieldForm(forms.ModelForm):
         # user hidden widget for payment-method
         if self.instance.field_type == 'payment-method':
             self.fields['field_type'] = CharField(label="Type", widget=HiddenInput)
-            
-    
+
     def clean_function_params(self):
         function_params = self.cleaned_data['function_params']
         clean_params = ''
         for val in function_params.split(','):
             clean_params = val.strip() + ',' + clean_params
-        return clean_params[0:len(clean_params)-1]
-        
+        return clean_params[0: len(clean_params) - 1]
+
     def clean(self):
         cleaned_data = self.cleaned_data
         field_function = cleaned_data.get("field_function")
         function_params = cleaned_data.get("function_params")
         field_type = cleaned_data.get("field_type")
-        
+
         if field_function == "Group":
             if field_type != "check-box":
                 raise forms.ValidationError("This field's function requires Checkbox as a field type")
@@ -1116,17 +1085,16 @@ class AppFieldForm(forms.ModelForm):
                         Group.objects.get(name=val)
                     except Group.DoesNotExist:
                         raise forms.ValidationError("The group \"%s\" does not exist" % (val))
-        
-        return cleaned_data
 
+        return cleaned_data
 
 
 class EntryEditForm(TendenciBaseForm):
     STATUS_CHOICES = (
-        ('active','Active'),
-        ('inactive','Inactive'),
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
     )
-    
+
     SALUTATION_CHOICES = (
         ('Mr.', 'Mr.'),
         ('Mrs.', 'Mrs.'),
@@ -1140,7 +1108,7 @@ class EntryEditForm(TendenciBaseForm):
         ('male', u'Male'),
         ('female', u'Female'),
     )
-    
+
     salutation = forms.ChoiceField(choices=SALUTATION_CHOICES, required=False)
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
@@ -1176,9 +1144,9 @@ class EntryEditForm(TendenciBaseForm):
     notes = forms.CharField(required=False)
     admin_notes = forms.CharField(required=False)
     referral_source = forms.CharField(required=False)
-    
+
     status_detail = forms.ChoiceField(choices=STATUS_CHOICES)
-    
+
     class Meta:
         model = AppEntry
         fields = (
@@ -1253,7 +1221,7 @@ class EntryEditForm(TendenciBaseForm):
             ('Administrator Only', {
                 'fields': [
                     'status',
-                    'status_detail'], 
+                    'status_detail'],
                 'classes': ['admin-only'],
             })]
 
@@ -1264,7 +1232,7 @@ class EntryEditForm(TendenciBaseForm):
 
         is_corporate = instance.membership_type and \
             instance.membership_type.corporatemembershiptype_set.exists()
-            
+
         for entry_field in entry_fields:
             field_type = entry_field.field.field_type  # shorten
             field_key = "%s.%s" % (entry_field.field.field_type, entry_field.pk)
@@ -1291,8 +1259,8 @@ class EntryEditForm(TendenciBaseForm):
 
                     if is_corporate:  # membership type; read-only
                         del field_args["choices"]
-                        field_class = getattr(forms, 'CharField') 
-                        field_args["widget"] = forms.TextInput(attrs={'readonly':'readonly'})
+                        field_class = getattr(forms, 'CharField')
+                        field_args["widget"] = forms.TextInput(attrs={'readonly': 'readonly'})
 
                 elif field_type == 'corporate_membership_id':
                     choices = [c.name for c in CorporateMembership.objects.all()]
@@ -1303,7 +1271,7 @@ class EntryEditForm(TendenciBaseForm):
                     field_args["choices"] = zip(choices, choices)
 
             self.fields[field_key] = field_class(**field_args)
-        
+
         # profile
         if self.instance:
             profile = self.instance.user.profile
@@ -1346,14 +1314,14 @@ class EntryEditForm(TendenciBaseForm):
 
     def save(self, *args, **kwargs):
         super(EntryEditForm, self).save(*args, **kwargs)
-        
+
         membership_type = None
         for key, value in self.cleaned_data.items():
             if len(key.split('.')) > 1:
                 pk = key.split('.')[1]
                 membership_type = None
                 membership_type_entry_pk = 0
-                
+
                 if 'corporate_membership' in key:
                     corp_memb = CorporateMembership.objects.get(name=value)  # get corp. via name
                     membership_type = corp_memb.corporate_membership_type.membership_type
@@ -1371,7 +1339,7 @@ class EntryEditForm(TendenciBaseForm):
         if self.instance.membership and membership_type:
             self.instance.membership.membership_type = membership_type
             self.instance.save()
-            
+
         # update profile
         if self.instance:
             data = self.cleaned_data
@@ -1419,6 +1387,7 @@ class EntryEditForm(TendenciBaseForm):
 
         return self.instance
 
+
 class AppEntryForm(forms.ModelForm):
 
     class Meta:
@@ -1449,15 +1418,15 @@ class AppEntryForm(forms.ModelForm):
 
     def __init__(self, app=None, *args, **kwargs):
         """
-        Dynamically add each of the form fields for the given form model 
+        Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
         """
 
         self.app = app
-        
+
         self.types_field = app.membership_types
         self.user = kwargs.pop('user', None) or AnonymousUser
-        self.corporate_membership = kwargs.pop('corporate_membership', None) # id; not object
+        self.corporate_membership = kwargs.pop('corporate_membership', None)  # id; not object
 
         super(AppEntryForm, self).__init__(*args, **kwargs)
 
@@ -1513,7 +1482,7 @@ class AppEntryForm(forms.ModelForm):
                 if field.field_type == 'membership-type':
 
                     if self.corporate_membership:
-                        membership_type = self.corporate_membership.corporate_membership_type.membership_type 
+                        membership_type = self.corporate_membership.corporate_membership_type.membership_type
                         choices = [membership_type.name]
                         choices_with_price = ['%s $%s' % (membership_type.name, membership_type.price)]
                         if membership_type.admin_fee:
@@ -1559,33 +1528,32 @@ class AppEntryForm(forms.ModelForm):
 
             if field.field_type == 'date':
                 year = datetime.today().year
-                self.fields[field_key].widget.years = range(year-120, year+120)
+                self.fields[field_key].widget.years = range(year - 120, year + 120)
 
         if app.use_captcha and not self.user.is_authenticated():
             self.fields['field_captcha'] = CaptchaField(**{
-                'label':'',
-                'error_messages':{'required':'CAPTCHA is required'}
+                'label': '',
+                'error_messages': {'required': 'CAPTCHA is required'}
             })
-
 
     def save(self, **kwargs):
         """
-        Create a AppEntry instance and related AppFieldEntry instances for each 
+        Create a AppEntry instance and related AppFieldEntry instances for each
         form field.
         """
         app_entry = super(AppEntryForm, self).save(commit=False)
         app_entry.app = self.app
-        
+
         # TODO: We're assuming that an administrator exists
         # We're assuming this administrator is actively used
         admin = User.objects.order_by('pk')[0]
-        
+
         user = None
         username = None
         if hasattr(self.user, 'pk'):
             user = self.user
             username = user.username
-        
+
         app_entry.user = user
         app_entry.entry_time = datetime.now()
         app_entry.creator = user or admin
@@ -1595,12 +1563,12 @@ class AppEntryForm(forms.ModelForm):
         app_entry.status = True
         app_entry.status_detail = 'active'
         app_entry.allow_anonymous_view = False
-        
+
         app_entry.save()
-        
+
         app_entry.hash = md5(unicode(app_entry.pk)).hexdigest()
         app_entry.save()
-        
+
         #create all field entries
         for field in self.form_fields:
             if field.field_type == 'corporate_membership_id' and not self.corporate_membership:
@@ -1610,11 +1578,12 @@ class AppEntryForm(forms.ModelForm):
             if value and self.fields[field_key].widget.needs_multipart_form:
                 value = fs.save(join("forms", str(uuid4()), value.name), value)
             # if the value is a list convert is to a comma delimited string
-            if isinstance(value,list):
+            if isinstance(value, list):
                 value = ','.join(value)
-            if not value: value=''
+            if not value:
+                value = ''
             app_entry.fields.create(field_id=field.id, value=value)
-            
+
         return app_entry
 
     def email_to(self):
@@ -1626,6 +1595,7 @@ class AppEntryForm(forms.ModelForm):
             if field_class == "EmailField":
                 return self.cleaned_data["field_%s" % field.id]
         return None
+
 
 class CSVForm(forms.Form):
     """
@@ -1648,12 +1618,12 @@ class CSVForm(forms.Form):
             """
             Basic Form: Application & File Uploader
             """
-            
+
             self.fields['app'] = forms.ModelChoiceField(
                 label='Application', queryset=App.objects.all())
 
             self.fields['csv'] = forms.FileField(label="CSV File")
-        
+
         if step_numeral == 2:
             """
             Basic Form + Mapping Fields
@@ -1666,9 +1636,9 @@ class CSVForm(forms.Form):
             choices = csv[0].keys()
 
             # make tuples; sort tuples (case-insensitive)
-            choice_tuples = [(c,c) for c in csv[0].keys()]
+            choice_tuples = [(c, c) for c in csv[0].keys()]
 
-            choice_tuples.insert(0, ('',''))  # insert blank option
+            choice_tuples.insert(0, ('', ''))  # insert blank option
             choice_tuples = sorted(choice_tuples, key=lambda c: c[0].lower())
 
             app_fields = AppField.objects.filter(app=app)
@@ -1720,14 +1690,13 @@ class CSVForm(forms.Form):
                     if app_field.label in choices:
                         self.fields[app_field.label].initial = app_field.label
 
-
     def save(self, *args, **kwargs):
         """
-        Loop through the dynamic fields and create an 
-        entry and membership record. Map application, 
+        Loop through the dynamic fields and create an
+        entry and membership record. Map application,
         entry, and membership record.
 
-        Checking app.pk, user.pk and entry_time to 
+        Checking app.pk, user.pk and entry_time to
         recognize duplicates.
         """
         step_numeral, step_name = kwargs.pop('step', (None, None))
@@ -1748,74 +1717,27 @@ class CSVForm(forms.Form):
         if step_numeral == 3:
             pass  # end-user is previewing
 
-        if step_numeral == 4:
-            memberships = request.session.get('membership.import.memberships')
-
-            for membership in memberships:
-
-                entry = AppEntry.objects.filter(
-                    app = app,
-                    user = user,
-                    entry_time = datetime.now(),
-                    membership = membership,
-                ).exists()
-
-                if not entry:  # create; if does not exist
-
-                    entry = AppEntry.objects.create(
-                        app = app,
-                        user = user,
-                        entry_time = datetime.now(),
-                        membership = membership,
-                        is_renewal = membership.renewal,
-                        is_approved = True,
-                        decision_dt = membership.create_dt,
-                        judge = membership.creator,
-                        creator=membership.creator,
-                        creator_username=membership.creator_username,
-                        owner=membership.owner,
-                        owner_username=membership.owner_username,
-                    )
-
-                    for key, value in self.cleaned_data.items():
-
-                        app_fields = AppField.objects.filter(app=app, label=key)
-                        if app_fields:
-                            app_field = app_fields[0]
-                        else:
-                            app_field = None
-
-                        try:
-                            AppFieldEntry.objects.create(
-                                entry=entry,
-                                field=app_field,
-                                value=value,
-                            )
-                        except:
-                            print sys.exc_info()[1]
-
 
 class ExportForm(forms.Form):
 
     app = forms.ModelChoiceField(
-        label=_('Application'), 
+        label=_('Application'),
         queryset=App.objects.all()
     )
 
     passcode = forms.CharField(
-        label=_("Type Your Password"), 
+        label=_("Type Your Password"),
         widget=forms.PasswordInput(render_value=False)
     )
-    
+
     def __init__(self, *args, **kwargs):
         from tendenci.core.base.http import Http403
         from tendenci.core.site_settings.utils import get_setting
-        from tendenci.addons.memberships.models import Membership
 
         self.user = kwargs.pop('user', None)
         super(ExportForm, self).__init__(*args, **kwargs)
 
-        who_can_export = get_setting('module','memberships','memberexport')
+        who_can_export = get_setting('module', 'memberships', 'memberexport')
 
         if not self.user.profile.is_superuser:
             if who_can_export == 'admin-only':
@@ -1835,10 +1757,11 @@ class ExportForm(forms.Form):
 
     def clean_passcode(self):
         value = self.cleaned_data['passcode']
-        
+
         if not self.user.check_password(value):
             raise forms.ValidationError(_("Invalid password."))
         return value
+
 
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
@@ -1846,9 +1769,9 @@ class ReportForm(forms.Form):
         ('ACTIVE', 'ACTIVE'),
         ('EXPIRED', 'EXPIRED'),
     )
-    
-    membership_type = forms.ModelChoiceField(queryset = MembershipType.objects.all(), required = False)
-    membership_status = forms.ChoiceField(choices = STATUS_CHOICES, required = False)
+
+    membership_type = forms.ModelChoiceField(queryset=MembershipType.objects.all(), required=False)
+    membership_status = forms.ChoiceField(choices=STATUS_CHOICES, required=False)
 
 
 class MembershipDefaultForm(TendenciBaseForm):
@@ -2202,7 +2125,8 @@ class MembershipDefaultForm(TendenciBaseForm):
         if membership.pk:
             # changing membership record
             membership.set_member_number()
-
+            membership.user.profile.member_number = membership.member_number
+            membership.user.profile.save()
         else:
             # adding membership record
             membership.renewal = membership.user.profile.can_renew()

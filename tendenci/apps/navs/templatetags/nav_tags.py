@@ -1,5 +1,4 @@
-from datetime import datetime
-from django.template import Library, TemplateSyntaxError, Variable
+from django.template import Library, TemplateSyntaxError, Variable, Node
 from tendenci.core.base.template_tags import ListNode, parse_tag_kwargs
 from tendenci.core.perms.utils import get_query_filters
 from django.contrib.auth.models import AnonymousUser, User
@@ -94,6 +93,13 @@ def nav(context, nav_id):
     if 'user' in context:
         if isinstance(context['user'], User):
             user = context['user']
+
+    try:
+        nav_id = Variable(nav_id)
+        nav_id = nav_id.resolve(context)
+    except:
+        pass
+
     try:
         filters = get_query_filters(user, 'navs.view_nav')
         navs = Nav.objects.filter(filters).filter(id=nav_id)
@@ -171,3 +177,60 @@ def list_navs(parser, token):
         kwargs['order'] = 'pk'
 
     return ListNavNode(context_var, *args, **kwargs)
+
+
+class GetNavNode(Node):
+    def __init__(self, pk, context_var):
+        self.pk = pk
+        self.context_var = context_var
+
+    def render(self, context):
+        user = AnonymousUser()
+
+        if 'user' in context:
+            if isinstance(context['user'], User):
+                user = context['user']
+
+        try:
+            pk = Variable(self.pk)
+            pk = pk.resolve(context)
+        except:
+            pk = self.pk
+
+        try:
+            filters = get_query_filters(user, 'navs.view_nav')
+            nav = Nav.objects.filter(filters).filter(pk=pk)
+            if user.is_authenticated():
+                if not user.profile.is_superuser:
+                    nav = nav.distinct()
+
+            context[self.context_var] = nav[0]
+        except:
+            pass
+
+        return unicode()
+
+
+@register.tag
+def nav_object(parser, token):
+    """
+    Get a nav object and return it to [varname] in the context
+
+    Usage::
+
+        {% nav_object 2 as [varname] %}
+    """
+    bits = token.split_contents()
+
+    context_var = bits[3]
+    pk = bits[1]
+
+    if len(bits) < 4:
+        message = "'%s' tag requires at least 3 parameters" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    if bits[2] != "as":
+        message = "'%s' second argument must be 'as'" % bits[0]
+        raise TemplateSyntaxError(message)
+
+    return GetNavNode(pk, context_var)

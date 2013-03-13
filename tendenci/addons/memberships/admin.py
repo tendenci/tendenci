@@ -460,56 +460,57 @@ class MembershipTypeAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'price', 'admin_fee', 'description')}),
         ('Expiration Method', {'fields': ('never_expires', 'type_exp_method',)}),
-        ('Renewal Options', {'fields': (('allow_renewal','renewal', 'renewal_require_approval'),
-                                        'renewal_price', 
-                                        'renewal_period_start', 
+        ('Renewal Options', {'fields': (('allow_renewal', 'renewal', 'renewal_require_approval'),
+                                        'renewal_price',
+                                        'renewal_period_start',
                                         'renewal_period_end',)}),
 
         ('Other Options', {'fields': (
-            'expiration_grace_period', ('require_approval', 
-            'admin_only'), 'order', 'status_detail')}),
+            'expiration_grace_period', ('require_approval',
+            'admin_only'), 'position', 'status_detail')}),
     )
 
     form = MembershipTypeForm
-    
+    ordering = ['position']
+
     def add_view(self, request):
         num_types = MembershipType.objects.all().count()
         max_types = settings.MAX_MEMBERSHIP_TYPES
         if num_types >= max_types:
             raise ExceededMaxTypes
         return super(MembershipTypeAdmin, self).add_view(request)
-    
+
     class Media:
-        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL, 
+        js = ("%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
               "%sjs/membtype.js" % settings.STATIC_URL,)
-            
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
-        
+
         # save the expiration method fields
         type_exp_method = form.cleaned_data['type_exp_method']
         type_exp_method_list = type_exp_method.split(",")
         for i, field in enumerate(form.type_exp_method_fields):
-            if field=='fixed_option2_can_rollover':
-                if type_exp_method_list[i]=='':
+            if field == 'fixed_option2_can_rollover':
+                if type_exp_method_list[i] == '':
                     type_exp_method_list[i] = ''
             else:
-                if type_exp_method_list[i]=='':
+                if type_exp_method_list[i] == '':
                     type_exp_method_list[i] = "0"
 
             setattr(instance, field, type_exp_method_list[i])
-         
+
         if not change:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
-            
+
             # create a group for this type
             group = Group()
             group.name = 'Membership: %s' % instance.name
             group.slug = slugify(group.name)
-            # just in case, check if this slug already exists in group. 
+            # just in case, check if this slug already exists in group.
             # if it does, make a unique slug
             tmp_groups = Group.objects.filter(slug__istartswith=group.slug)
             if tmp_groups:
@@ -520,7 +521,7 @@ class MembershipTypeAdmin(admin.ModelAdmin):
                 group.slug = '%s%s' % (group.slug, str(num))
                 # group name is also a unique field
                 group.name = '%s%s' % (group.name, str(num))
-            
+
             group.label = instance.name
             group.type = 'membership'
             group.email_recipient = request.user.email
@@ -536,15 +537,16 @@ class MembershipTypeAdmin(admin.ModelAdmin):
             group.owner_username = request.user.username
 
             group.save()
-            
+
             instance.group = group
- 
+
         # save the object
         instance.save()
-        
+
         #form.save_m2m()
 
         return instance
+
 
 class NoticeAdmin(admin.ModelAdmin):
     def notice_log(self):
@@ -596,7 +598,7 @@ class NoticeAdmin(admin.ModelAdmin):
 class AppFieldAdmin(admin.StackedInline):
     fieldsets = (
         (None, {'fields': (
-            ('label','field_type', ),
+            ('label', 'field_type', ),
             ('field_function', 'function_params'),
             (
                 'required',
@@ -616,6 +618,7 @@ class AppFieldAdmin(admin.StackedInline):
     extra = 0
     template = "memberships/admin/stacked.html"
 
+
 class AppAdmin(admin.ModelAdmin):
 
     def application_form_link(self):
@@ -625,9 +628,9 @@ class AppAdmin(admin.ModelAdmin):
     list_display = ('name', application_form_link)
 
     fieldsets = (
-        (None, {'fields': ('name','slug', 'description', 'confirmation_text', 'notes', 
+        (None, {'fields': ('name', 'slug', 'description', 'confirmation_text', 'notes',
                            'membership_types', 'payment_methods', 'use_for_corp', 'use_captcha')},),
-        ('Administrative', {'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms',
+        ('Administrative', {'fields': ('allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms',
                                        'status_detail')}),
     )
 
@@ -640,10 +643,8 @@ class AppAdmin(admin.ModelAdmin):
         )
         css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL], }
 
-
     def export_as_json(model_admin, request, queryset):
         from django.core import serializers
-        from django.http import HttpResponse
 
         response = HttpResponse(mimetype="text/javascript")
         serializers.serialize('json', queryset, stream=response, indent=4)
@@ -657,7 +658,7 @@ class AppAdmin(admin.ModelAdmin):
     actions = [export_as_json]
 
     def add_view(self, request, form_url='', extra_context=None):
-        self.inline_instances = [] # clear inline instances
+        self.inline_instances = []  # clear inline instances
         return super(AppAdmin, self).add_view(request, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -677,29 +678,28 @@ class AppAdmin(admin.ModelAdmin):
         return super(AppAdmin, self).change_view(request, object_id,
                                                  form_url=form_url,
                                                  extra_context=extra_context)
-    
+
     def response_change(self, request, obj, *args, **kwargs):
-        if request.POST.has_key('_popup'):
+        if '_popup' in request.POST:
             return HttpResponse("""
                     <script type="text/javascript">
                         opener.dismissAddAnotherPopup(window, "%s", "%s");
                     </script>
             """ % (escape(obj._get_pk_val()), escape(obj)))
         else:
-            return  super(AppAdmin, self).response_change(request, obj, *args, **kwargs)
-
+            return super(AppAdmin, self).response_change(request, obj, *args, **kwargs)
 
     def get_fieldsets(self, request, instance=None):
 
         field_list = [
-            
+
                     (None, {
-                        'fields': ('name','slug', 'use_for_corp', 'description', 'confirmation_text', 'notes', 
+                        'fields': ('name', 'slug', 'use_for_corp', 'description', 'confirmation_text', 'notes',
                                    'membership_types', 'payment_methods', 'use_captcha'),
                     }),
 
                     ('Administrative', {
-                        'fields': ('allow_anonymous_view','user_perms', 'member_perms', 'group_perms','status_detail'),
+                        'fields': ('allow_anonymous_view', 'user_perms', 'member_perms', 'group_perms', 'status_detail'),
                     }),
 
                     ('Form Fields', {
@@ -708,8 +708,8 @@ class AppAdmin(admin.ModelAdmin):
                     }),
         ]
 
-        if instance: # editing
-            field_list.pop() # removes default message (last item)
+        if instance:  # editing
+            field_list.pop()  # removes default message (last item)
 
         return field_list
 
@@ -723,9 +723,9 @@ class AppAdmin(admin.ModelAdmin):
         if add:
             # default application fields
             for default_field in get_default_membership_fields(use_for_corp=app.use_for_corp):
-                default_field.update({'app':app})
+                default_field.update({'app': app})
                 AppField.objects.create(**default_field)
-                
+
         if change:
             edit_app_update_corp_fields(app)
 

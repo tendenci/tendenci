@@ -45,8 +45,6 @@ def render_corp_field(request, field_obj, form):
 
 @register.inclusion_tag("corporate_memberships/nav.html", takes_context=True)
 def corpmemb_nav(context, user, corp_memb=None):
-    if corp_memb:
-        print corp_memb.corp_profile.name
     context.update({
         'nav_object': corp_memb,
         "user": user

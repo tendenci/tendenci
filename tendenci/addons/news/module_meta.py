@@ -9,57 +9,61 @@ from tendenci.core.categories.models import Category
 class NewsMeta():
 
     def get_title(self):
-        object = self.object
+        obj = self.object
 
         ### Assign variables -----------------------  
         primary_keywords = get_setting('site','global','siteprimarykeywords')
         geo_location = get_setting('site','global','sitegeographiclocation')
         site_name = get_setting('site','global','sitedisplayname')
-        category = Category.objects.get_for_object(object, 'category')
-        subcategory = Category.objects.get_for_object(object, 'subcategory')
+        category = Category.objects.get_for_object(obj, 'category')
+        subcategory = Category.objects.get_for_object(obj, 'subcategory')
 
         contact_name = '%s %s' % (
-            object.first_name, 
-            object.last_name
+            obj.first_name, 
+            obj.last_name
         )
         contact_name = contact_name.strip()
 
         ### Build string -----------------------
-        value = '%s - %s' % (object.headline, object.release_dt)
-        value = value.strip()
+        values_list = []
+        if obj.headline:
+            values_list.append(obj.headline)
 
-        value = ''
+        if obj.headline and obj.release_dt:
+            values_list.append('-')
+        if obj.release_dt:
+            values_list.append(obj.release_dt.strftime('%m-%d-%Y'))
 
-        # start w/ headline
-        if object.headline:
-            value += object.headline
-
-        # contact release
-        if object.headline and object.release_dt:
-            value += ' - %s' % object.release_dt.strftime('%m-%d-%Y')
-        elif object.release_dt:
-            value += object.release_dt.strftime('%m-%d-%Y')
-
-        # primary keywords OR category/subcategory
         if primary_keywords:
-            value = '%s : %s' % (value, primary_keywords)
+            if values_list:
+                values_list.append(':')
+                values_list.append(primary_keywords)
         else:
-            if category:
-                value = '%s %s' % (value, category)
             if category and subcategory:
-                value = '%s : %s' % (value, subcategory)
+                values_list.append('category')
+                values_list.append(':')
+                values_list.append('subcategory')
+            elif category:
+                values_list.append('category')
 
-        value = '%s news' % value
+        if site_name:
+            if values_list:
+                values_list.append('news for')
+            values_list.append(site_name)
 
         if contact_name:
-            value = '%s contact: %s' % (value, contact_name)
-
-        value = '%s news for %s' % (value, site_name)
+            values_list.append('contact: %s' % contact_name)
 
         if geo_location:
-            value = '%s in %s' % (value, geo_location)
+            values_list.append('in %s' % geo_location)
 
-        return value
+        title = ' '.join(values_list)
+        # truncate the meta title to 100 characters
+        max_length = 100
+        if len(title) > max_length:
+            title = '%s...' % title[:(max_length - 3)]
+
+        return title
 
     def get_description(self):
         object = self.object

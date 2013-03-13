@@ -39,7 +39,7 @@ the payment entries in the general ledger for accounting purposes.
 <tr>
 <td width="30%"><div class="label">{% trans "Invoice ID:" %}</div></td>
 <td width="20%"><a href="{% url invoice.view payment.invoice.id %}">{{ payment.invoice.id }}</a>
-<span class="body-copy-yellow"><a href="{% url invoices.views.detail payment.invoice.id %}">{% trans "accounting" %}</a></span>
+<span class="body-copy-yellow"><a href="{% url invoice.detail payment.invoice.id %}">{% trans "accounting" %}</a></span>
 </td>
 <td class="label" width="30%">{% trans "Payment Status:" %}</td>
 <td width="20%">{% if payment.status%}1{% else %}0{% endif %}</td>

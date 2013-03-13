@@ -126,13 +126,6 @@
     "admin_only": "false"
     },
     {
-    "label": "Notes",
-    "field_name": "notes",
-    "display": "true",
-    "required": "false",
-    "admin_only": "false"
-    },
-    {
     "label": "Section 2. Membership Details",
     "field_name": "",
     "display": "true",
@@ -245,6 +238,13 @@
     "admin_only": "true"
     },
     {
+    "label": "Expiration Date",
+    "field_name": "expiration_dt",
+    "display": "true",
+    "required": "false",
+    "admin_only": "true"
+    },
+    {
     "label": "Status",
     "field_name": "status",
     "display": "true",
@@ -267,28 +267,28 @@
     },
     {
     "label": "ud2",
-    "field_name": "ud1",
+    "field_name": "ud2",
     "display": "false",
     "required": "false",
     "admin_only": "false"
     },
     {
     "label": "ud3",
-    "field_name": "ud1",
+    "field_name": "ud3",
     "display": "false",
     "required": "false",
     "admin_only": "false"
     },
     {
     "label": "ud4",
-    "field_name": "ud1",
+    "field_name": "ud4",
     "display": "false",
     "required": "false",
     "admin_only": "false"
     },
     {
     "label": "ud5",
-    "field_name": "ud1",
+    "field_name": "ud5",
     "display": "false",
     "required": "false",
     "admin_only": "false"

@@ -32,7 +32,7 @@ class InvoiceSearchForm(forms.Form):
     end_dt = forms.DateField(label=_('To'), required=False)
 
     invoice_type = forms.ChoiceField(label=_("Invoice Type"), required=False, choices=INVOICE_TYPE_CHOICES)
-    event = forms.ModelChoiceField(queryset=Event.objects.filter(registration__invoice__isnull=False),
+    event = forms.ModelChoiceField(queryset=Event.objects.all(),
                                    label=_("Event "),
                                    required=False,
                                    empty_label='All Events')
@@ -60,8 +60,8 @@ class InvoiceSearchForm(forms.Form):
         self.fields['invoice_type'].choices = invoice_choices
 
         # Set event_id choices
-        events = Event.objects.filter(registration__invoice__isnull=False)
         choices = [('', 'All events')]
+        events = Event.objects.all()  # .filter(registration__invoice__isnull=False)
         for event_obj in events:
             choices.append((event_obj.pk, event_obj.pk))
         self.fields['event_id'].choices = choices

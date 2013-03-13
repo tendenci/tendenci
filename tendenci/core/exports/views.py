@@ -3,6 +3,8 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 
+from johnny.cache import invalidate
+
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.exports.models import Export
@@ -16,6 +18,7 @@ def status(request, export_id, template_name='exports/export_status.html'):
     if not request.user.is_superuser:
         raise Http403
 
+    invalidate('exports_export')
     export = get_object_or_404(Export, pk=export_id)
 
     return render_to_response(template_name, {

@@ -1,6 +1,6 @@
 $(document).ready(function() {
     // Set this to the name of the column holding the ordering
-    var pos_field = 'ordering';
+    var pos_field = 'position';
     
     // Determine the column number of the ordering field
     var pos_col = null;

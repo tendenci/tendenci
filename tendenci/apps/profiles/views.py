@@ -1,4 +1,5 @@
 # django
+import math
 import time
 from datetime import datetime, timedelta
 from django.db import models
@@ -14,6 +15,7 @@ from django.utils.translation import ugettext as _
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib import messages
 from django.conf import settings
+from django.db import connection
 # for password change
 from django.views.decorators.csrf import csrf_protect
 
@@ -21,9 +23,13 @@ from djcelery.models import TaskMeta
 from johnny.cache import invalidate
 
 from tendenci.core.base.decorators import ssl_required, password_required
+from tendenci.core.base.utils import get_pagination_page_range
 
 from tendenci.core.perms.object_perms import ObjectPermission
-from tendenci.core.perms.utils import (has_perm, update_perms_and_save, get_notice_recipients, get_query_filters)
+from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
+                                       get_notice_recipients,
+                                       get_query_filters
+                                       )
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
@@ -140,44 +146,79 @@ def search(request, template_name="profiles/search.html"):
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
+    only_members = request.GET.get('members', None)
 
-    if request.user.is_anonymous():
-        if not allow_anonymous_search:
-            raise Http403
+    # hide "only members" checkbox
+    # special occasion when box does nothing
+    show_checkbox = not all((
+        not allow_user_search,
+        membership_view_perms in ['all-members', 'member-type'],
+        not request.user.profile.is_superuser,
+    ))
 
-    if request.user.is_authenticated():
-        if not allow_user_search and not request.user.profile.is_superuser:
-            raise Http403
 
-    members = request.GET.get('members', None)
+    if not request.user.profile.is_superuser:
+        # block anon
+        if request.user.is_anonymous():
+            if not allow_anonymous_search:
+                raise Http403
+            if not allow_user_search:
+                raise Http403
+
+        # block member or user
+        if request.user.is_authenticated():
+            if request.user.profile.is_member:  # if member
+                if membership_view_perms == 'private':
+                    if not allow_user_search:
+                        raise Http403
+            else:  # if just user
+                if not allow_user_search:
+                    raise Http403
+
     query = request.GET.get('q', None)
     filters = get_query_filters(request.user, 'profiles.view_profile')
+
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(Q(status=True), Q(status_detail="active"), Q(user__first_name__icontains=query) | Q(user__last_name__icontains=query) | Q(user__email__icontains=query) | Q(user__username__icontains=query) | Q(display_name__icontains=query) | Q(company__icontains=query))
+        profiles = profiles.filter(
+            Q(user__first_name__icontains=query) | \
+            Q(user__last_name__icontains=query) | \
+            Q(user__email__icontains=query) | \
+            Q(user__username__icontains=query) | \
+            Q(display_name__icontains=query) | \
+            Q(company__icontains=query)
+        )
 
-    is_not_member_filter = (Q(member_number="") | Q(user__is_active=False))
-    if members:
-        if not request.user.profile.is_superuser:
-            if membership_view_perms == "private":
-                profiles = profiles.filter(is_not_member_filter)
-            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
-                if request.user.profile and request.user.profile.is_member:
-                    profiles = profiles.exclude(is_not_member_filter)
-                else:
-                    profiles = profiles.filter(is_not_member_filter)
-            else:
-                profiles = profiles.exclude(is_not_member_filter)
+    # if non-superuser
+        # if is member
+        # if is user
+        # if only_members
+            # exclude non-members
+
+    if not request.user.profile.is_superuser:
+        if request.user.profile.is_member:
+
+            if membership_view_perms == 'private':
+                profiles = profiles.exclude(~Q(member_number=''))  # exclude all members
+            elif membership_view_perms == 'member-type':
+                profiles = profiles.exclude(  # exclude specific members
+                    ~Q(user__membershipdefault__membership_type__in=request.user.membershipdefault_set.values_list('membership_type', flat=True))
+                )
+            elif membership_view_perms == 'all-members':
+                pass  # exclude nothing
+
+            if not allow_user_search:
+                profiles = profiles.exclude(member_number='')  # exclude non-members
+
         else:
-            profiles = profiles.exclude(is_not_member_filter)
-    else:
-        if not request.user.profile.is_superuser:
-            if membership_view_perms == "private":
-                    profiles = profiles.filter(is_not_member_filter)
-            elif membership_view_perms == "all-members" or membership_view_perms == "member-type":
-                if not request.user.profile or not request.user.profile.is_member:
-                    profiles = profiles.filter(is_not_member_filter)
+            if membership_view_perms != 'public':
+                profiles = profiles.exclude(~Q(member_number=''))  # exclude all members
+
+        profiles = profiles.exclude(hide_in_search=True)
+
+    if only_members:
+        profiles = profiles.exclude(member_number='')  # exclude non-members
 
     if not request.user.profile.is_superuser:
         profiles = profiles.exclude(hide_in_search=True)
@@ -185,7 +226,7 @@ def search(request, template_name="profiles/search.html"):
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     EventLog.objects.log()
-    return render_to_response(template_name, {'profiles': profiles, "user_this": None},
+    return render_to_response(template_name, {'profiles': profiles, 'show_checkbox': show_checkbox, 'user_this': None},
         context_instance=RequestContext(request))
 
 
@@ -300,7 +341,13 @@ def edit(request, id, form_class=ProfileForm, template_name="profiles/edit.html"
             profile = form.save(request, user_edit)
            
             if request.user.profile.is_superuser:
-                security_level = form.cleaned_data['security_level']
+                # superusers cannot demote themselves
+                if user_edit == request.user:
+                    security_level = 'superuser'
+                    if form.cleaned_data['security_level'] != 'superuser':
+                        messages.add_message(request, messages.INFO, _("You cannot convert yourself to \"%(role)s\" role.") % {'role' : form.cleaned_data['security_level']})
+                else:
+                    security_level = form.cleaned_data['security_level']
                 
                 if security_level == 'superuser':
                     user_edit.is_superuser = 1
@@ -408,24 +455,26 @@ def delete(request, id, template_name="profiles/delete.html"):
 
     return render_to_response(template_name, {'user_this':user, 'profile': profile}, 
         context_instance=RequestContext(request))
-    
+
+
 @login_required
 def edit_user_perms(request, id, form_class=UserPermissionForm, template_name="profiles/edit_perms.html"):
     user_edit = get_object_or_404(User, pk=id)
+
     try:
         profile = Profile.objects.get(user=user_edit)
     except Profile.DoesNotExist:
         profile = Profile.objects.create_profile(user=user_edit)
-   
+
     # for now, only admin can grant/remove permissions
-    if not request.user.profile.is_superuser: raise Http403
-    
+    if not request.user.profile.is_superuser:
+        raise Http403
+
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=user_edit)
     else:
         form = form_class(instance=user_edit)
     if form.is_valid():
-        user_edit.is_superuser = form.cleaned_data['is_superuser']
         user_edit.user_permissions = form.cleaned_data['user_permissions']
         user_edit.save()
 
@@ -851,6 +900,7 @@ def user_membership_add(request, username, form_class=UserMembershipForm, templa
                             'user_this': user,
                             }, context_instance=RequestContext(request))
 
+
 @login_required
 def similar_profiles(request, template_name="profiles/similar_profiles.html"):
     if not request.user.profile.is_superuser:
@@ -866,35 +916,102 @@ def similar_profiles(request, template_name="profiles/similar_profiles.html"):
                                     'profile.merge_view',
                                     args=[sid]))
 
-    profiles_with_duplicate_name = []
-    profiles_with_duplicate_email = []
+    users_with_duplicate_name = []
+    users_with_duplicate_email = []
 
-    duplicate_names = User.objects.values_list('first_name', 'last_name'
-                                          ).annotate(
-                                        num_last=Count('last_name')
-                                        ).annotate(
-                                        num_first=Count('first_name')
-                                        ).filter(num_last__gt=1
-                                        ).filter(num_first__gt=1)
+#    duplicate_names = User.objects.values_list('first_name', 'last_name'
+#                                          ).annotate(
+#                                        num_last=Count('last_name')
+#                                        ).annotate(
+#                                        num_first=Count('first_name')
+#                                        ).filter(num_last__gt=1,
+#                                                num_first__gt=1
+#                                        ).exclude(
+#                                        first_name='',
+#                                        last_name=''
+#                                        ).order_by('last_name', 'first_name')
+    # use raw sql to get the accurate number of duplicate names
+    sql = """
+            SELECT first_name , last_name
+            FROM auth_user
+            WHERE first_name <> '' and last_name <> ''
+            GROUP BY first_name , last_name
+            HAVING count(*) > 1
+            ORDER BY last_name, first_name
+        """
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    duplicate_names = cursor.fetchall()
+
     duplicate_emails = User.objects.values_list('email', flat=True
                                     ).annotate(
                                     num_emails=Count('email')
-                                    ).filter(num_emails__gt=1)
+                                    ).filter(num_emails__gt=1
+                                             ).exclude(email=''
+                                            ).order_by('email')
+    len_duplicate_names = len(duplicate_names)
+    len_duplicate_emails = len(duplicate_emails)
+    # total groups of duplicates
+    total_groups = len_duplicate_names + len_duplicate_emails
+
+    num_groups_per_page = 20
+    num_pages = int(math.ceil(total_groups * 1.0 / num_groups_per_page))
+    try:
+        curr_page = int(request.GET.get('page', 1))
+    except:
+        curr_page = 1
+    if curr_page <= 0 or curr_page > num_pages:
+        curr_page = 1
+    page_range = get_pagination_page_range(num_pages,
+                                           curr_page=curr_page)
+    # slice the duplicate_names and duplicate_emails
+    start_index = (curr_page - 1) * num_groups_per_page
+    end_index = curr_page * num_groups_per_page
+    if len_duplicate_names > 1:
+        if start_index <= len_duplicate_names - 1:
+            if end_index < len_duplicate_names:
+                duplicate_names = duplicate_names[start_index:end_index]
+            else:
+                duplicate_names = duplicate_names[start_index:]
+        else:
+            duplicate_names = []
+    if len_duplicate_emails > 1:
+        if end_index < len_duplicate_names:
+            duplicate_emails = []
+        else:
+            start_index = start_index - len_duplicate_names
+            end_index = end_index - len_duplicate_names
+            if start_index < 0:
+                start_index = 0
+
+            if end_index > len_duplicate_emails:
+                end_index = len_duplicate_emails
+
+            if start_index < end_index:
+                duplicate_emails = duplicate_emails[start_index:end_index]
+            else:
+                duplicate_emails = []
+
     for dup_name in duplicate_names:
         if dup_name[0] and dup_name[1]:
-            profiles = Profile.objects.filter(
-                        user__first_name=dup_name[0],
-                        user__last_name=dup_name[1])
-            if profiles.count() > 1:
-                profiles_with_duplicate_name.append(profiles)
+            users = User.objects.filter(
+                        first_name=dup_name[0],
+                        last_name=dup_name[1])
+            users_with_duplicate_name.append(users)
     for email in duplicate_emails:
-        profiles = Profile.objects.filter(
-                    user__email=email)
-        profiles_with_duplicate_email.append(profiles)
+        if email:
+            users = User.objects.filter(
+                        email=email)
+            users_with_duplicate_email.append(users)
 
     return render_to_response(template_name, {
-        'profiles_with_duplicate_name': profiles_with_duplicate_name,
-        'profiles_with_duplicate_email': profiles_with_duplicate_email,
+        'users_with_duplicate_name': users_with_duplicate_name,
+        'users_with_duplicate_email': users_with_duplicate_email,
+        'curr_page': curr_page,
+        'prev': curr_page - 1,
+        'next': curr_page + 1,
+        'num_pages': num_pages,
+        'page_range': page_range,
         'user_this': None,
     }, context_instance=RequestContext(request))
 
@@ -906,24 +1023,32 @@ def merge_profiles(request, sid, template_name="profiles/merge_profiles.html"):
         raise Http403
 
     sid = str(sid)
+    users_ids = (request.session[sid]).get('users', [])
+    profiles = []
+    for user_id in users_ids:
+        profile = Profile.objects.get_or_create(user_id=user_id,
+                                    defaults={
+                                    'creator_id': request.user.id,
+                                    'creator_username': request.user.username,
+                                    'owner_id': request.user.id,
+                                    'owner_username': request.user.username
+                                    })[0]
+        profiles.append(profile)
     form = ProfileMergeForm(request.POST or None,
                             list=(request.session[sid]).get('users', []))
-    profiles = Profile.objects.filter(user__in=(request.session[sid]).get('users', []))
-
     if request.method == 'POST':
         if form.is_valid():
             sid = str(int(time.time()))
             request.session[sid] = {'master': form.cleaned_data["master_record"],
                                     'users': form.cleaned_data['user_list']}
-            # let them re-enter password on the real merge
-            request.session['password_promt'] = False
+
             return HttpResponseRedirect(reverse(
                                     'profile.merge_process',
-                                    args=[sid]))            
+                                    args=[sid]))
 
     return render_to_response(template_name, {
-        'form':form,
-        'profiles':profiles,
+        'form': form,
+        'profiles': profiles,
     }, context_instance=RequestContext(request))
 
 
@@ -970,8 +1095,24 @@ def merge_process(request, sid):
                     for field in fields:
                         if not isinstance(field, models.OneToOneField):
                             objs = model.objects.filter(**{field.name: profile.user})
-                            if objs.exists():
-                                objs.update(**{field.name: master.user})
+                            # handle unique_together fields. for example, GroupMembership
+                            # unique_together = ('group', 'member',)
+                            [unique_together] = model._meta.unique_together[:1] or [None]
+                            if unique_together and field.name in unique_together:
+                                for obj in objs:
+                                    field_values = [getattr(obj, field_name) for field_name in unique_together]
+                                    field_dict = dict(zip(unique_together, field_values))
+                                    # switch to master user
+                                    field_dict[field.name] = master.user
+                                    # check if the master record exists
+                                    if model.objects.filter(**field_dict).exists():
+                                        obj.delete()
+                                    else:
+                                        setattr(obj, field.name, master.user)
+                                        obj.save()
+                            else:
+                                if objs.exists():
+                                    objs.update(**{field.name: master.user})
                         else: # OneToOne
                             [obj] = model.objects.filter(**{field.name: profile.user})[:1] or [None]
                             if obj:
@@ -1003,7 +1144,6 @@ def merge_process(request, sid):
         invalidate('profiles_profile')
         messages.add_message(request, messages.SUCCESS, 'Successfully merged users. %s' % description)
 
-    request.session['password_promt'] = False
     return redirect("profile.search")
 
 

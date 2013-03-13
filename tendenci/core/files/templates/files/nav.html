@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% has_perm user site_settings.change_setting as can_edit_setting %}
-{% has_perm user file.add_file as can_add_file %}
+{% has_perm user files.add_file as can_add_file %}
 
 <ul id="module-tabs" class="tabs">
     {% if user.is_authenticated %}

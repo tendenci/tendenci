@@ -24,7 +24,7 @@
 
 <form class="search-form" action="{% url corpmembership.search %}" method="get">
 <p>
-    {% trans "Company Name" %}: {{ search_form.cm_id }}
+    {% trans "Company Name" %}: {{ search_form.cp_id }}
     {% if not SITE_GLOBAL_SEARCHINDEX %}
     <input type="submit" name="search" value="Submit" />
     {% endif %}
@@ -37,9 +37,9 @@
 {% endif %}
 </form>
 
-
-
 {% autopaginate corp_members 10 %}
+<span><em>{{ paginator.count }} {% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL_PLURAL 'Corporate Members' %} {% trans "Found" %}</em></span>
+
 <div class="corpmembers-wrap">
     {% for corp_memb in corp_members %}
         {% with corp_memb|get_object as corporate_membership %}

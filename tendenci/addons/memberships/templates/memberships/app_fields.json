@@ -219,7 +219,7 @@
     {
     "label": "SSN",
     "field_name": "ssn",
-    "display": "true",
+    "display": "false",
     "required": "false",
     "admin_only": "false"
     },

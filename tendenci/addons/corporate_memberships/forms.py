@@ -75,7 +75,7 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'individual_threshold',
                   'individual_threshold_price',
                   'admin_only',
-                  'order',
+                  'position',
                   'status',
                   'status_detail',
                   )
@@ -234,12 +234,29 @@ class CorpProfileForm(forms.ModelForm):
                 self.fields['authorized_domain'].initial = auth_domains
         if not self.corpmembership_app.authentication_method == 'secret_code':
             del self.fields['secret_code']
+        else:
+            self.fields['secret_code'].help_text = 'This is the code that ' + \
+                'your members will need to enter to join under your corporate'
 
         del self.fields['status']
         del self.fields['status_detail']
 
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
+
+    def clean_secret_code(self):
+        secret_code = self.cleaned_data['secret_code']
+        if secret_code:
+            # check if this secret_code is available to ensure the uniqueness
+            corp_profiles = CorpProfile.objects.filter(
+                                secret_code=secret_code)
+            if self.instance:
+                corp_profiles = corp_profiles.exclude(id=self.instance.id)
+            if corp_profiles:
+                raise forms.ValidationError(
+            _("This secret code is already taken. Please use a different one.")
+            )
+        return self.cleaned_data['secret_code']
 
     def save(self, *args, **kwargs):
         if not self.instance.id:
@@ -265,10 +282,8 @@ class CorpMembershipForm(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', 'Active'),
             ('pending', 'Pending'),
-            ('admin_hold', 'Admin Hold'),
-            ('inactive', 'Inactive'),
+            ('paid - pending approval', 'Paid - Pending Approval'),
             ('expired', 'Expired'),
-            ('archive', 'Archive'),
                              )
     STATUS_CHOICES = (
                       (1, 'Active'),
@@ -294,8 +309,9 @@ class CorpMembershipForm(forms.ModelForm):
         else:
             self.fields['payment_method'].empty_label = None
             self.fields['payment_method'].widget = forms.widgets.RadioSelect(
-                        choices=self.fields['payment_method'].widget.choices,
-                        attrs=self.fields['payment_method'].widget.attrs)
+                        choices=get_payment_method_choices(
+                                    self.request_user,
+                                    self.corpmembership_app))
         self_fields_keys = self.fields.keys()
         if 'status_detail' in self_fields_keys:
             self.fields['status_detail'].widget = forms.widgets.Select(
@@ -397,7 +413,6 @@ class RosterSearchAdvancedForm(forms.Form):
                              ('exact', _('Exact')),
                              )
     cm_id = forms.ChoiceField(label=_('Company Name'),
-                                  choices=get_corp_memberships_choices(),
                                   required=False)
     first_name = forms.CharField(label=_('First Name'),
                                  max_length=100,
@@ -413,12 +428,15 @@ class RosterSearchAdvancedForm(forms.Form):
                                         required=False)
 
     def __init__(self, *args, **kwargs):
+        request_user = kwargs.pop('request_user')
         super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
+        choices = CorpMembership.get_my_corporate_profiles_choices(request_user)
+        self.fields['cm_id'].choices = choices
 
 
 class CorpMembershipSearchForm(forms.Form):
-    cm_id = forms.ChoiceField(label=_('Company Name'),
-                                  choices=get_corp_memberships_choices(),
+    cp_id = forms.ChoiceField(label=_('Company Name'),
+                                  choices=(),
                                   required=False)
     q = forms.CharField(max_length=100,
                                  required=False)
@@ -556,7 +574,7 @@ class CorpFieldForm(forms.ModelForm):
                   'default_value',
                   'admin_only',
                   'css_class',
-                  'order'
+                  'position'
                   )
 
     def __init__(self, *args, **kwargs):
