@@ -1271,9 +1271,6 @@ class MembershipDefault(TendenciBaseModel):
                 if created:
                     send_welcome_email(self.user)
 
-                # save invoice estimate
-                self.save_invoice(status_detail='tendered')
-
                 # auto approve -------------------------
                 self.application_approved = True
                 self.application_approved_user = self.user
