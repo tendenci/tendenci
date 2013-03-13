@@ -695,7 +695,6 @@ def corpmembership_approve(request, id,
 def corp_renew(request, id,
                template='corporate_memberships/renewal.html'):
     corp_membership = get_object_or_404(CorpMembership, id=id)
-    new_corp_membership = corp_membership.copy()
 
     if not has_perm(request.user,
                     'corporate_memberships.change_corpmembership',
@@ -711,6 +710,7 @@ def corp_renew(request, id,
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
     corpmembership_app = CorpMembershipApp.objects.current_app()
+    new_corp_membership = corp_membership.copy()
     form = CorpMembershipRenewForm(
                             request.POST or None,
                             instance=new_corp_membership,
