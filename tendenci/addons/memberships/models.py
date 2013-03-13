@@ -1263,10 +1263,11 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.notifications.utils import send_welcome_email
 
+        # TODO: update this function to be DRY
         if self.renewal:
             # if auto-approve renews
             if request.user.profile.is_superuser or \
-                 not self.membership_type.renewal_require_approval:
+                    not self.membership_type.renewal_require_approval:
                 self.user, created = self.get_or_create_user()
                 if created:
                     send_welcome_email(self.user)
@@ -1276,13 +1277,15 @@ class MembershipDefault(TendenciBaseModel):
                 self.application_approved_user = self.user
                 self.application_approved_dt = datetime.now()
                 self.application_approved_denied_user = self.user
+                self.status = True
+                self.status_detail = 'active'
 
                 self.set_join_dt()
                 self.set_renew_dt()
                 self.set_expire_dt()
+                self.save()
 
                 self.archive_old_memberships()
-
         else:
             # if auto-approve joins
             if request.user.profile.is_superuser or \
@@ -1296,13 +1299,21 @@ class MembershipDefault(TendenciBaseModel):
                 self.application_approved_user = self.user
                 self.application_approved_dt = datetime.now()
                 self.application_approved_denied_user = self.user
+                self.status = True
+                self.status_detail = 'active'
 
                 self.set_join_dt()
                 self.set_expire_dt()
+                self.save()
 
                 self.archive_old_memberships()
 
         if self.application_approved:
+            # user in [membership] group
+            self.group_refresh()
+
+            # show member number on profile
+            self.user.profile.refresh_member_number()
 
             Notice.send_notice(
                 request=request,
