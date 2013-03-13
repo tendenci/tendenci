@@ -1,12 +1,10 @@
 import math
-import os
-import csv
 import hashlib
 from hashlib import md5
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta
+import time as ttime
 import subprocess
 from sets import Set
-import chardet
 import calendar
 
 from django.conf import settings
@@ -26,7 +24,8 @@ from django.core.management import call_command
 from django.db.models import ForeignKey, OneToOneField
 from django.template.loader import render_to_string
 from django.db.models.query_utils import Q
-from django.contrib.contenttypes.models import ContentType
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from johnny.cache import invalidate
 from djcelery.models import TaskMeta
@@ -48,14 +47,14 @@ from tendenci.addons.corporate_memberships.models import (CorpMembership,
 from reports import ReportNewMems
 from tendenci.core.files.models import File
 from tendenci.core.exports.utils import render_csv, run_export_task
+from tendenci.core.perms.utils import get_notice_recipients
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
-    MembershipType, Notice, MembershipImport, MembershipDefault,
-    MembershipDemographic,
+    MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
     MembershipImportData, MembershipApp)
-from tendenci.addons.memberships.forms import (MembershipExportForm,
-    AppCorpPreForm, MembershipForm, MembershipDefaultForm,
+from tendenci.addons.memberships.forms import (
+    MembershipExportForm, AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
     AppEntryForm, MembershipDefaultUploadForm, UserForm, ProfileForm,
     DemographicsForm,
@@ -65,7 +64,6 @@ from tendenci.addons.memberships.utils import (is_import_valid, prepare_chart_da
     get_membership_stats, NoMembershipTypes, ImportMembDefault)
 from tendenci.addons.memberships.importer.forms import ImportMapForm, UploadForm
 from tendenci.addons.memberships.importer.utils import parse_mems_from_csv
-from tendenci.addons.memberships.utils import membership_rows, memb_import_parse_csv
 from tendenci.addons.memberships.importer.tasks import ImportMembershipsTask
 from tendenci.core.base.forms import CaptchaForm
 
@@ -244,6 +242,9 @@ def application_details(request, template_name="memberships/applications/details
     """
     Display a built membership application and handle submission.
     """
+    # only allow super users to view this [old] membership form
+    if not request.user.profile.is_superuser:
+        raise Http404
 
     slug = kwargs.get('slug')
     cmb_id = kwargs.get('cmb_id')
@@ -533,7 +534,6 @@ def application_confirmation_default(request, hash):
     template_name = 'memberships/applications/confirmation_default2.html'
     membership = get_object_or_404(MembershipDefault, guid=hash)
     if membership.corporate_membership_id:
-        from tendenci.addons.corporate_memberships.models import CorpMembershipApp
         corp_app = CorpMembershipApp.objects.current_app()
         if not corp_app:
             raise Http404
@@ -792,7 +792,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             cleaned_data = form.cleaned_data
             app = cleaned_data['app']
             interactive = cleaned_data['interactive']
@@ -815,8 +815,7 @@ def membership_import_upload(request, template_name='memberships/import-upload-f
             csv.is_public = False
             csv.save()
 
-            file_path = str(csv.file.name)
-            #file_path = os.path.join(settings.MEDIA_ROOT, csv.file.name)
+            file_path = unicode(csv.file.name)
 
             import_valid, import_errs = is_import_valid(file_path)
 
@@ -856,7 +855,6 @@ def membership_import_preview(request, id):
             #show the user a preview based on the mapping
             cleaned_data = form.cleaned_data
             file_path = memport.get_file().file.name
-            #file_path = os.path.join(settings.MEDIA_ROOT, memport.get_file().file.name)
             memberships, stats = parse_mems_from_csv(
                 file_path,
                 cleaned_data,
@@ -1010,22 +1008,24 @@ def membership_default_import_preview(request, mimport_id,
     """
     Preview the import
     """
+
     if not request.user.profile.is_superuser:
         raise Http403
+
     invalidate('memberships_membershipimport')
-    mimport = get_object_or_404(MembershipImport,
-                                    pk=mimport_id)
+    mimport = get_object_or_404(MembershipImport, pk=mimport_id)
 
     if mimport.status == 'preprocess_done':
-#        fieldnames, data_list = memb_import_parse_csv(mimport)
+
         try:
             curr_page = int(request.GET.get('page', 1))
         except:
             curr_page = 1
+
         num_items_per_page = 10
-#        total_rows = len(data_list)
-        total_rows = MembershipImportData.objects.filter(
-                                mimport=mimport).count()
+
+        total_rows = MembershipImportData.objects.filter(mimport=mimport).count()
+
         # if total_rows not updated, update it
         if mimport.total_rows != total_rows:
             mimport.total_rows = total_rows
@@ -1245,119 +1245,90 @@ def membership_default_export(request,
     """
     Export memberships as .csv
     """
-    from tendenci.core.perms.models import TendenciBaseModel
     if not request.user.profile.is_superuser:
         raise Http403
 
     form = MembershipExportForm(request.POST or None)
-    print request.POST.items()
+
     if request.method == "POST":
         if form.is_valid():
             export_status_detail = form.cleaned_data['export_status_detail']
             export_status_detail = export_status_detail.strip()
             export_type = form.cleaned_data['export_type']
-            if export_type == 'main_fields':
-                base_field_list = []
-                user_field_list = ['first_name', 'last_name', 'username',
-                                   'email', 'is_active', 'is_staff',
-                                   'is_superuser']
-                profile_field_list = ['member_number', 'company',
-                                      'phone', 'address',
-                                      'address2', 'city',
-                                      'state', 'zipcode',
-                                      'country']
-                demographic_field_list = []
-                membership_field_list = ['membership_type',
-                                         'corp_profile_id',
-                                         'corporate_membership_id',
-                                         'join_dt',
-                                         'expire_dt',
-                                         'renewal',
-                                         'renew_dt',
-                                         'status',
-                                         'status_detail'
-                                         ]
-            else:
-                base_field_list = [smart_str(field.name) for field \
-                                   in TendenciBaseModel._meta.fields \
-                                 if not field.__class__ == AutoField]
-                user_field_list = [smart_str(field.name) for field \
-                                   in User._meta.fields \
-                                 if not field.__class__ == AutoField]
-                # remove password
-                user_field_list.remove('password')
-                profile_field_list = [smart_str(field.name) for field \
-                                   in Profile._meta.fields \
-                                 if not field.__class__ == AutoField]
-                profile_field_list = [name for name in profile_field_list \
-                                           if not name in base_field_list]
-                profile_field_list.remove('guid')
-                profile_field_list.remove('user')
-                demographic_field_list = [smart_str(field.name) for field \
-                                   in MembershipDemographic._meta.fields \
-                                 if not field.__class__ == AutoField]
-                demographic_field_list.remove('user')
-                membership_field_list = [smart_str(field.name) for field \
-                                   in MembershipDefault._meta.fields \
-                                 if not field.__class__ == AutoField]
-                membership_field_list.remove('user')
+            identifier = int(ttime.time())
+            temp_file_path = 'export/memberships/%s_temp.csv' % identifier
+            default_storage.save(temp_file_path, ContentFile(''))
 
-            title_list = user_field_list + profile_field_list + \
-                membership_field_list + demographic_field_list + \
-                base_field_list
-
-            # list of foreignkey fields
-            if export_type == 'main_fields':
-                fks = ['membership_type']
-            else:
-                user_fks = [field.name for field in User._meta.fields \
-                               if isinstance(field, (ForeignKey, OneToOneField))]
-                profile_fks = [field.name for field in Profile._meta.fields \
-                               if isinstance(field, (ForeignKey, OneToOneField))]
-                demographic_fks = [field.name for field in MembershipDemographic._meta.fields \
-                               if isinstance(field, (ForeignKey, OneToOneField))]
-                membership_fks = [field.name for field in MembershipDefault._meta.fields \
-                            if isinstance(field, (ForeignKey, OneToOneField))]
-
-                fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
-
-            filename = 'memberships_export.csv'
-            response = HttpResponse(mimetype='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=' + filename
-
-            csv_writer = csv.writer(response)
-
-            csv_writer.writerow(title_list)
-            # corp_membership_rows is a generator - for better performance
-            for row_dict in membership_rows(user_field_list,
-                                            profile_field_list,
-                                            demographic_field_list,
-                                            membership_field_list,
-                                            fks,
-                                            export_status_detail):
-                items_list = []
-                for field_name in title_list:
-                    item = row_dict.get(field_name)
-                    if item is None:
-                        item = ''
-                    if item:
-                        if isinstance(item, datetime):
-                            item = item.strftime('%Y-%m-%d %H:%M:%S')
-                        elif isinstance(item, date):
-                            item = item.strftime('%Y-%m-%d')
-                        elif isinstance(item, time):
-                            item = item.strftime('%H:%M:%S')
-                        elif isinstance(item, basestring):
-                            item = item.encode("utf-8")
-                    items_list.append(item)
-                csv_writer.writerow(items_list)
-
+            # start the process
+            subprocess.Popen(["python", "manage.py",
+                          "membership_export_process",
+                          '--export_type=%s' % export_type,
+                          '--export_status_detail=%s' % export_status_detail,
+                          '--identifier=%s' % identifier,
+                          '--user=%s' % request.user.id])
             # log an event
             EventLog.objects.log()
-            # switch to StreamingHttpResponse once we're on 1.5
-            return response
+            return redirect(reverse('memberships.default_export_status',
+                                     args=[identifier]))
+
     context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+@password_required
+def membership_default_export_status(request, identifier,
+                        template='memberships/default_export_status.html'):
+    """
+    Display export status.
+    """
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    export_path = 'export/memberships/%s.csv' % identifier
+    download_ready = False
+    if default_storage.exists(export_path):
+        download_ready = True
+    else:
+        temp_export_path = 'export/memberships/%s_temp.csv' % identifier
+        if not default_storage.exists(temp_export_path) and \
+                not default_storage.exists(export_path):
+            raise Http404
+
+    context = {'identifier': identifier,
+               'download_ready': download_ready}
+    return render_to_response(template, context, RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def membership_default_export_check_status(request, identifier):
+    """
+    Check and get the export status.
+    """
+    status = ''
+    if not request.user.profile.is_superuser:
+        raise Http403
+    export_path = 'export/memberships/%s.csv' % identifier
+    if default_storage.exists(export_path):
+        status = 'done'
+    return HttpResponse(status)
+
+
+@login_required
+@password_required
+def membership_default_export_download(request, identifier):
+    if not request.user.profile.is_superuser:
+        raise Http403
+    file_name = '%s.csv' % identifier
+    file_path = 'export/memberships/%s' % file_name
+    if not default_storage.exists(file_path):
+        raise Http404
+
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=membership_export_%s' % file_name
+    response.content = default_storage.open(file_path).read()
+    return response
 
 
 @csrf_exempt
@@ -1426,18 +1397,18 @@ def membership_default_add(request,
         username == request.user.username,
     )
 
-    if any(good):
+    if any(good) and username:
         [user] = User.objects.filter(username=username)[:1] or [None]
 
     join_under_corporate = kwargs.get('join_under_corporate', False)
     corp_membership = None
 
     if join_under_corporate:
-        from tendenci.addons.corporate_memberships.models import CorpMembershipApp
         corp_app = CorpMembershipApp.objects.current_app()
         if not corp_app:
             raise Http404
 
+        #app = corp_app.memb_app
         app = MembershipApp.objects.current_app()
 
         cm_id = kwargs.get('cm_id')
@@ -1492,8 +1463,6 @@ def membership_default_add(request,
     if not join_under_corporate:
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
-
-
 
     user_form = UserForm(app_fields, request.POST or None)
     profile_form = ProfileForm(app_fields, request.POST or None)
@@ -1583,9 +1552,13 @@ def membership_default_add(request,
             'license_number': membership.license_number,
             'license_state': membership.license_state,
         }
+    multiple_membership = app.allow_multiple_membership
+    if membership or join_under_corporate:
+        multiple_membership = False
 
     membership_form = MembershipDefault2Form(app_fields,
-        multiple_membership=app.allow_mutilple_membership, **params)
+        request.POST or None, initial=membership_initial,
+        multiple_membership=multiple_membership, **params)
 
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
@@ -1597,10 +1570,8 @@ def membership_default_add(request,
         memberships = []
         for type in membership_types:
             post_values['membership_type'] = type
-            membership_form2 = MembershipDefault2Form(app_fields,
-                post_values, request_user=request.user, membership_app=app,
-                join_under_corporate=join_under_corporate,
-                corp_membership=corp_membership)
+            membership_form2 = MembershipDefault2Form(
+                app_fields, post_values, initial=membership_initial, **params)
 
             # tuple with boolean items
             good = (
@@ -1621,39 +1592,30 @@ def membership_default_add(request,
                     request_user=request.user
                 )
 
+                # save demographics
+                demographics = demographics_form.save(commit=False)
+                if hasattr(user, 'demographics'):
+                    demographics.pk = user.demographics.pk
+
+                demographics.user = user
+                demographics.save()
+
                 membership = membership_form2.save(
                     request=request,
                     user=user,
                 )
                 memberships.append(membership)
-            profile_form.instance = user.profile
-            profile_form.save(
-                request_user=request.user
-            )
-            # save demographics
-            demographics = demographics_form.save(commit=False)
-            if hasattr(user, 'demographics'):
-                demographics.pk = user.demographics.pk
-            else:
-                demographics.user = user
-            demographics.save()
-
-                # save demographics
-                demographics = demographics_form.save(commit=False)
-                demographics.user = user
-                demographics.save()
 
         if memberships:
             membership_set = MembershipSet()
             invoice = membership_set.save_invoice(memberships)
-            print "INV %s" % membership_set.invoice
 
             for membership in memberships:
                 membership.membership_set = membership_set
                 membership.save()
 
             # redirect: payment gateway
-            if memberships[0].is_paid_online():
+            if membership_set.is_paid_online():
                 return HttpResponseRedirect(reverse(
                     'payment.pay_online',
                     args=[invoice.pk, invoice.guid]
@@ -1665,6 +1627,18 @@ def membership_default_add(request,
                     'admin:memberships_membershipdefault_change',
                     args=[memberships[0].pk],
                 ))
+
+            # send email notification to admin
+            recipients = get_notice_recipients(
+                                       'module', 'memberships',
+                                       'membershiprecipients')
+            extra_context = {
+                'membership': membership,
+                'app': app,
+                'request': request
+            }
+            send_email_notification('membership_joined_to_admin', recipients,
+                                    extra_context)
 
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
@@ -1865,6 +1839,7 @@ def membership_join_report(request):
                 },
                 context_instance=RequestContext(request))
 
+
 @staff_member_required
 @password_required
 def membership_export(request):
@@ -1874,7 +1849,7 @@ def membership_export(request):
     if request.method == 'POST':
         if form.is_valid():
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             app = form.cleaned_data['app']
             export_id = run_export_task('memberships', 'membership', [], app)
             return redirect('export.status', export_id)
@@ -1907,6 +1882,7 @@ def membership_join_report_pdf(request):
 
     return resp
 
+
 @staff_member_required
 def report_list(request, template_name='reports/membership_report_list.html'):
     """ List of all available membership reports.
@@ -1915,6 +1891,7 @@ def report_list(request, template_name='reports/membership_report_list.html'):
     EventLog.objects.log()
 
     return render_to_response(template_name, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_active_members(request, template_name='reports/membership_list.html'):
@@ -2203,6 +2180,7 @@ def report_members_stats(request, template_name='reports/membership_stats.html')
         'total': total,
         }, context_instance=RequestContext(request))
 
+
 @staff_member_required
 def report_member_roster(request, template_name='reports/membership_roster.html'):
     """ Shows membership roster. Extends base-print for easy printing.
@@ -2212,6 +2190,7 @@ def report_member_roster(request, template_name='reports/membership_roster.html'
     EventLog.objects.log()
 
     return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_member_quick_list(request, template_name='reports/membership_quick_list.html'):
@@ -2249,6 +2228,7 @@ def report_member_quick_list(request, template_name='reports/membership_quick_li
 
     return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
 
+
 @staff_member_required
 def report_members_by_company(request, template_name='reports/members_by_company.html'):
     """ Total current members by company.
@@ -2277,6 +2257,7 @@ def report_members_by_company(request, template_name='reports/members_by_company
     EventLog.objects.log()
 
     return render_to_response(template_name, {'companies': companies}, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_renewed_members(request, template_name='reports/renewed_members.html'):
@@ -2329,6 +2310,7 @@ def report_renewed_members(request, template_name='reports/renewed_members.html'
 
     return render_to_response(template_name, {'members': members, 'days': days}, context_instance=RequestContext(request))
 
+
 @staff_member_required
 def report_renewal_period_members(request, template_name='reports/renewal_period_members.html'):
     """ Table of memberships ordered by join dt, filterable by time period between join date and now.
@@ -2353,6 +2335,7 @@ def report_renewal_period_members(request, template_name='reports/renewal_period
     EventLog.objects.log()
 
     return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
+
 
 @staff_member_required
 def report_grace_period_members(request, template_name='reports/grace_period_members.html'):
@@ -2379,13 +2362,13 @@ def report_grace_period_members(request, template_name='reports/grace_period_mem
 
     return render_to_response(template_name, {'members': members}, context_instance=RequestContext(request))
 
+
 @staff_member_required
 def report_active_members_ytd(request, template_name='reports/active_members_ytd.html'):
     import datetime
-    from datetime import timedelta
 
     year = datetime.datetime.now().year
-    years = [year, year-1, year-2, year-3, year-4]
+    years = [year, year - 1, year - 2, year - 3, year - 4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))
 
@@ -2406,7 +2389,7 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
         if index is 12:
             date = datetime.date(year, 12, 31)
         else:
-            date = datetime.date(year, index+1, 1) - datetime.timedelta(days=1)
+            date = datetime.date(year, index + 1, 1) - datetime.timedelta(days=1)
         total_active = MembershipDefault.objects.filter(
             create_dt__lte=date,
             expire_dt__gt=date,
@@ -2424,13 +2407,13 @@ def report_active_members_ytd(request, template_name='reports/active_members_ytd
 
     return render_to_response(template_name, {'months': months, 'total_new': total_new, 'total_renew': total_renew, 'years': years, 'year': year}, context_instance=RequestContext(request))
 
+
 @staff_member_required
 def report_members_ytd_type(request, template_name='reports/members_ytd_type.html'):
     import datetime
-    from datetime import timedelta
 
     year = datetime.datetime.now().year
-    years = [year, year-1, year-2, year-3, year-4]
+    years = [year, year - 1, year - 2, year - 3, year - 4]
     if request.GET.get('year'):
         year = int(request.GET.get('year'))
 
@@ -2477,7 +2460,6 @@ def report_members_ytd_type(request, template_name='reports/members_ytd_type.htm
         totals_new.append(new)
         totals_renew.append(renew)
         totals_expired.append(expired)
-
 
     EventLog.objects.log()
 

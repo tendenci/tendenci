@@ -1,4 +1,4 @@
-# NOTE: When updating the registration scheme be sure to check with the 
+# NOTE: When updating the registration scheme be sure to check with the
 # anonymous registration impementation of events in the registration module.
 
 import ast
@@ -89,10 +89,10 @@ def render_event_email(event, email):
                             event.title
                                                      )
     context = Context(context)
-    
+
     template = Template(email.subject)
     email.subject = template.render(context)
-    
+
     email.body = email.body.replace('event_location', 'event_location|safe')
     email.body = email.body.replace('event_link', 'event_link|safe')
     template = Template(email.body)
@@ -105,7 +105,7 @@ def get_default_reminder_template(event):
     context = {}
     for token in EMAIL_AVAILABLE_TOKENS:
         context[token] = '{{ %s }}' % token
-    return render_to_string('events/default_email.html', 
+    return render_to_string('events/default_email.html',
                            context)
 
 
@@ -124,11 +124,11 @@ def get_ACRF_queryset(event=None):
             for conf_pricing in regconfpricings:
                 if conf_pricing.reg_form:
                     rcp_reg_form_ids.append(str(conf_pricing.reg_form.id))
-    
-    sql = """SELECT id 
-            FROM events_customregform 
-            WHERE id not in (SELECT reg_form_id 
-                        FROM events_registrationconfiguration WHERE reg_form_id>0 %s) 
+
+    sql = """SELECT id
+            FROM events_customregform
+            WHERE id not in (SELECT reg_form_id
+                        FROM events_registrationconfiguration WHERE reg_form_id>0 %s)
             AND id not in (SELECT reg_form_id From events_regconfpricing WHERE reg_form_id>0 %s)
         """
     if rc_reg_form_ids:
@@ -140,26 +140,26 @@ def get_ACRF_queryset(event=None):
     else:
         rcp = ''
     sql = sql % (rc, rcp)
-    
-    
+
+
     # need to return a queryset not raw queryset
     cursor = connection.cursor()
     cursor.execute(sql)
     rows = cursor.fetchall()
     ids_list = [row[0] for row in rows]
-    
+
     if not ids_list:
         # no forms available, create one
-        initial = {"status": "active", 
-                   "name": "Default Custom Registration Form", 
-                   "notes": "This is a default custom registration form.", 
-                   "creator_id": 1, 
-                   "owner_id": 1, 
-                   "creator_username": "default", 
+        initial = {"status": "active",
+                   "name": "Default Custom Registration Form",
+                   "notes": "This is a default custom registration form.",
+                   "creator_id": 1,
+                   "owner_id": 1,
+                   "creator_username": "default",
                    "owner_username": "default"}
 
         form = CustomRegForm.objects.create(**initial)
-        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 
+        fixture_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                                  'fixtures/customregfield.json')
         with open(fixture_path) as f:
             data = simplejson.loads(f.read())
@@ -169,15 +169,15 @@ def get_ACRF_queryset(event=None):
                 CustomRegField.objects.create(**regfield['fields'])
                 if regfield['fields'].has_key('map_to_field'):
                     map_to_fields.append(regfield['fields']['map_to_field'])
-                
+
             for field in map_to_fields:
                 if field and hasattr(form, str(field)):
                     setattr(form, field, True)
-                    
+
             form.save()
-            
+
         ids_list = [form.id]
-    
+
     queryset = CustomRegForm.objects.filter(id__in=ids_list)
 
     return queryset
@@ -208,19 +208,19 @@ def get_ievent(request, d, event_id):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
     from tendenci.addons.events.models import Event
-    
+
     site_url = get_setting('site', 'global', 'siteurl')
-    
+
     event = Event.objects.get(id=event_id)
     e_str = "BEGIN:VEVENT\n"
-    
+
     # organizer
     organizers = event.organizer_set.all()
     if organizers:
         organizer_name_list = [organizer.name for organizer in organizers]
         e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
-    
-    # date time 
+
+    # date time
     if event.start_dt:
         start_dt = adjust_datetime_to_timezone(event.start_dt, settings.TIME_ZONE, 'GMT')
         start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
@@ -229,25 +229,25 @@ def get_ievent(request, d, event_id):
         end_dt = adjust_datetime_to_timezone(event.end_dt, settings.TIME_ZONE, 'GMT')
         end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
         e_str += "DTEND:%s\n" % (end_dt)
-    
+
     # location
     if event.place:
         e_str += "LOCATION:%s\n" % (event.place.name)
-        
+
     e_str += "TRANSP:OPAQUE\n"
     e_str += "SEQUENCE:0\n"
-    
+
     # uid
     e_str += "UID:uid%d@%s\n" % (event.pk, d['domain_name'])
-    
+
     event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
     d['event_url'] = event_url
-    
+
     # text description
     e_str += "DESCRIPTION:%s\n" % (build_ical_text(event,d))
     #  html description
     e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
-    
+
     e_str += "SUMMARY:%s\n" % strip_tags(event.title)
     e_str += "PRIORITY:5\n"
     e_str += "CLASS:PUBLIC\n"
@@ -257,7 +257,7 @@ def get_ievent(request, d, event_id):
     e_str += "DESCRIPTION:Reminder\n"
     e_str += "END:VALARM\n"
     e_str += "END:VEVENT\n"
-        
+
     return e_str
 
 
@@ -265,9 +265,9 @@ def get_vevents(user, d):
     from django.conf import settings
     from timezones.utils import adjust_datetime_to_timezone
     from tendenci.addons.events.models import Event
-    
+
     site_url = get_setting('site', 'global', 'siteurl')
-    
+
     e_str = ""
     # load only upcoming events by default
     filters = get_query_filters(user, 'events.view_event')
@@ -276,14 +276,14 @@ def get_vevents(user, d):
 
     for event in events:
         e_str += "BEGIN:VEVENT\n"
-        
+
         # organizer
         organizers = event.organizer_set.all()
         if organizers:
             organizer_name_list = [organizer.name for organizer in organizers]
             e_str += "ORGANIZER:%s\n" % (', '.join(organizer_name_list))
-        
-        # date time 
+
+        # date time
         if event.start_dt:
             start_dt = adjust_datetime_to_timezone(event.start_dt, settings.TIME_ZONE, 'GMT')
             start_dt = start_dt.strftime('%Y%m%dT%H%M%SZ')
@@ -292,25 +292,25 @@ def get_vevents(user, d):
             end_dt = adjust_datetime_to_timezone(event.end_dt, settings.TIME_ZONE, 'GMT')
             end_dt = end_dt.strftime('%Y%m%dT%H%M%SZ')
             e_str += "DTEND:%s\n" % (end_dt)
-        
+
         # location
         if event.place:
             e_str += "LOCATION:%s\n" % (event.place.name)
-            
+
         e_str += "TRANSP:OPAQUE\n"
         e_str += "SEQUENCE:0\n"
-        
+
         # uid
         e_str += "UID:uid%d@%s\n" % (event.pk, d['domain_name'])
-        
+
         event_url = "%s%s" % (site_url, reverse('event', args=[event.pk]))
         d['event_url'] = event_url
-        
+
         # text description
         e_str += "DESCRIPTION:%s\n" % (build_ical_text(event,d))
         #  html description
         e_str += "X-ALT-DESC;FMTTYPE=text/html:%s\n" % (build_ical_html(event,d))
-        
+
         e_str += "SUMMARY:%s\n" % strip_tags(event.title)
         e_str += "PRIORITY:5\n"
         e_str += "CLASS:PUBLIC\n"
@@ -320,7 +320,7 @@ def get_vevents(user, d):
         e_str += "DESCRIPTION:Reminder\n"
         e_str += "END:VALARM\n"
         e_str += "END:VEVENT\n"
-        
+
     return e_str
 
 
@@ -328,29 +328,29 @@ def build_ical_text(event, d):
     ical_text = "--- This iCal file does *NOT* confirm registration.\n"
     ical_text += "Event details subject to change. ---\n"
     ical_text += '%s\n\n' % d['event_url']
-    
+
     # title
     ical_text += "Event Title: %s\n" % strip_tags(event.title)
-    
+
     # start_dt
     ical_text += 'Start Date / Time: %s %s\n' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
-    
+
     # location
     if event.place:
         ical_text += 'Location: %s\n' % (event.place.name)
-    
+
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
 #    if sponsors:
 #        sponsor_name_list = [sponsor.name for sponsor in sponsors]
 #        ical_text += 'Sponsor: %s\n' % (', '.join(sponsor_name_list))
-    
+
     # speaker
     speakers = event.speaker_set.all()
     if speakers:
         speaker_name_list = [speaker.name for speaker in speakers]
         ical_text += 'Speaker: %s\n' % (', '.join(speaker_name_list))
-        
+
     # maps
     show_map_link = False
     if (event.place and event.place.address and event.place.city and event.place.state) \
@@ -369,19 +369,19 @@ def build_ical_text(event, d):
         if event.place.zip:
             ical_text += ','
             ical_text += event.place.zip
-            
+
         ical_text += "\n\nForecast\n"
         ical_text += "http://www.weather.com/weather/monthly/%s\n\n" % (event.place.zip)
-            
+
     ical_text += strip_tags(event.description)
-    
+
     ical_text += "--- This iCal file does *NOT* confirm registration."
     ical_text += "Event details subject to change. ---\n\n"
     ical_text += "--- Tendenci(tm) Software by Schipul.com - The Web Marketing Company ---\n"
-    
+
     ical_text  = ical_text.replace(';', '\;')
     ical_text  = ical_text.replace('\n', '\\n')
-   
+
     return ical_text
 
 
@@ -389,29 +389,29 @@ def build_ical_html(event, d):
     # disclaimer: registration
     ical_html = "<div>--- This iCal file does *NOT* confirm registration."
     ical_html += "Event details subject to change. ---</div>"
-    
+
     # title
     ical_html += "<h1>Event Title: %s</h1>" % (event.title)
-    
+
     ical_html += '<div>%s</div><br />' % d['event_url']
-    
+
     # start_dt
     ical_html += '<div>When: %s %s</div>' % (event.start_dt.strftime('%b %d, %Y %H:%M %p'), event.timezone)
-    
+
 #    # sponsor
 #    sponsors = event.sponsor_set.all()
 #    if sponsors:
 #        sponsor_name_list = [sponsor.name for sponsor in sponsors]
 #        ical_html += '<div>Sponsor: %s</div>' % (', '.join(sponsor_name_list))
-    
+
     # speaker
     speakers = event.speaker_set.all()
     if speakers:
         speaker_name_list = [speaker.name for speaker in speakers]
         ical_html += '<div>Speaker: %s</div>' % (', '.join(speaker_name_list))
-        
+
     ical_html += '<br />'
-    
+
     # maps
     show_map_link = False
     if (event.place and event.place.address and event.place.city and event.place.state) \
@@ -426,7 +426,7 @@ def build_ical_html(event, d):
         if event.place.zip:
             ical_html += ' %s' % (event.place.zip)
         ical_html += '<br />'
-    
+
         ical_html += "<div>"
         ical_html += "http://maps.google.com/maps?q="
         ical_html += event.place.address.replace(" ", "+")
@@ -440,20 +440,20 @@ def build_ical_html(event, d):
             ical_html += ','
             ical_html += event.place.zip
         ical_html += "</div><br />"
-            
+
         ical_html += "<div>Forecast: "
         ical_html += "http://www.weather.com/weather/monthly/%s</div><br /><br />" % (event.place.zip)
-            
+
     ical_html += '<div>%s</div>' % (event.description)
-    
+
     ical_html += "<div>--- This iCal file does *NOT* confirm registration."
     ical_html += "Event details subject to change. ---</div>"
     ical_html += "<div>--- Tendenci&reg; Software by <a href=\"http://www.schipul.com\">schipul.com</a>"
     ical_html += " - The Web Marketing Company ---</div>"
-    
+
     ical_html  = ical_html.replace(';', '\;')
     #ical_html  = degrade_tags(ical_html.replace(';', '\;'))
-   
+
     return ical_html
 
 
@@ -461,24 +461,24 @@ def degrade_tags(str):
     # degrade header tags h1, h2..., h6 to font tags for MS outlook
     # h1 --> font size 6
     str = re.sub(r'<h1[^>]*>(.*?)</h1>', r'<div><strong><font size="6">\1</font></strong></div>', str)
-    
+
     # h2 --> font size 5
     str = re.sub(r'<h2[^>]*>(.*?)</h2>', r'<div><strong><font size="5">\1</font></strong></div>', str)
-    
+
     # h3 --> font size 4
     str = re.sub(r'<h3[^>]*>(.*?)</h3>', r'<div><strong><font size="4">\1</font></strong></div>', str)
-    
+
     # h4 --> font size 3
     str = re.sub(r'<h4[^>]*>(.*?)</h4>', r'<div><strong><font size="3">\1</font></strong></div>', str)
-    
+
     # h5 --> font size 2
     str = re.sub(r'<h5[^>]*>(.*?)</h5>', r'<div><strong><font size="2">\1</font></strong></div>', str)
-    
+
     # h6 --> font size 1
     str = re.sub(r'<h6[^>]*>(.*?)</h6>', r'<div><strong><font size="1">\1</font></strong></div>', str)
-    
+
     return str
-      
+
 
 def next_month(month, year):
     # TODO: cleaner way to get next date
@@ -532,7 +532,7 @@ def email_registrants(event, email, **kwargs):
     # please DO NOT remove them. Otherwise, all recipients would have the same names.
     # as the first registrant in the email body. - GJQ  4/13/2011
     tmp_body = email.body
-        
+
     for registrant in registrants:
         if registrant.custom_reg_form_entry:
             first_name = registrant.custom_reg_form_entry.get_value_of_mapped_field('first_name')
@@ -541,21 +541,22 @@ def email_registrants(event, email, **kwargs):
         else:
             first_name = registrant.first_name
             last_name = registrant.last_name
-    
+
             email.recipient = registrant.email
-        
+
         if email.recipient:
             email.body = email.body.replace('[firstname]', first_name)
             email.body = email.body.replace('[lastname]', last_name)
             email.send()
-        
+
         email.body = tmp_body  # restore to the original
-        
+
 def email_admins(event, total_amount, self_reg8n, reg8n, registrants):
     site_label = get_setting('site', 'global', 'sitedisplayname')
     site_url = get_setting('site', 'global', 'siteurl')
     admins = get_setting('module', 'events', 'admin_emails').split(',')
-    email_list = [admin.strip() for admin in admins]
+    notice_recipients = get_setting('site', 'global', 'allnoticerecipients').split(',')
+    email_list = [admin.strip() for admin in admins] + [recipient.strip() for recipient in notice_recipients]
     notification.send_emails(
         email_list,
         'event_registration_confirmation',
@@ -588,7 +589,7 @@ def save_registration(*args, **kwargs):
 
     if not isinstance(user, User):
         user = None
-        
+
     registrant_set_defaults = {
         'user': user,
         'name': '',
@@ -633,7 +634,7 @@ def save_registration(*args, **kwargs):
     try:
         # find registrant using event + email
         registrant = Registrant.objects.get(
-            registration__event=event, 
+            registration__event=event,
             email=registrant_set_defaults['email'],
             cancel_dt=None,
         )
@@ -656,7 +657,7 @@ def save_registration(*args, **kwargs):
 
         # create registrant
         registrant = reg8n.registrant_set.create(**registrant_set_defaults)
-        
+
         created = True
 
     reg8n.save_invoice()
@@ -664,19 +665,19 @@ def save_registration(*args, **kwargs):
 
 def split_table_price(total_price, quantity):
     """
-    Split the price for a team. 
+    Split the price for a team.
     Returns a tuple: (first_individual_price, individual_price).
     """
     avg = Decimal(str(round(total_price/quantity, 2)))
     diff = total_price - avg * quantity
-    
+
     if diff <> 0:
         return (avg+diff, avg)
     return (avg, avg)
 
 def apply_discount(amount, discount_amount):
     """
-    Take the amount and discount amount as the input, 
+    Take the amount and discount amount as the input,
     return the new amount and discount amount left.
     """
     if discount_amount > amount:
@@ -693,15 +694,15 @@ def add_registration(*args, **kwargs):
     # moved them to an unpacked version
     (request, event, reg_form, registrant_formset, addon_formset,
     price, event_price) = args
-    
+
     total_amount = 0
     count = 0
     event_price = Decimal(str(event_price))
-    
+
     #kwargs
     admin_notes = kwargs.get('admin_notes', None)
     custom_reg_form = kwargs.get('custom_reg_form', None)
-    
+
     override_table = False
     override_price_table = Decimal(0)
     if event.is_table and request.user.is_superuser:
@@ -709,8 +710,8 @@ def add_registration(*args, **kwargs):
         override_price_table = reg_form.cleaned_data.get('override_price_table', Decimal(0))
         if override_price_table == None:
             override_price_table = 0
-    
-    
+
+
     # get the list of amount for registrants.
     amount_list = []
     if event.is_table:
@@ -718,7 +719,7 @@ def add_registration(*args, **kwargs):
             amount_list.append(override_price_table)
         else:
             amount_list.append(event_price)
-        
+
     else:
         override_price_total = Decimal(0)
         for i, form in enumerate(registrant_formset.forms):
@@ -727,7 +728,7 @@ def add_registration(*args, **kwargs):
             if request.user.is_superuser:
                 override = form.cleaned_data.get('override', False)
                 override_price = form.cleaned_data.get('override_price', Decimal(0))
-                
+
             price = form.cleaned_data['pricing']
 
             if override:
@@ -735,10 +736,10 @@ def add_registration(*args, **kwargs):
                 override_price_total += amount
             else:
                 amount = price.price
-                
+
             amount_list.append(amount)
 
-                  
+
     # apply discount if any
     discount_code = reg_form.cleaned_data.get('discount_code', None)
     discount_amount = Decimal(0)
@@ -747,7 +748,7 @@ def add_registration(*args, **kwargs):
         [discount] = Discount.objects.filter(discount_code=discount_code)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
-    
+
     reg8n_attrs = {
         "event": event,
         "payment_method": reg_form.cleaned_data.get('payment_method'),
@@ -760,19 +761,19 @@ def add_registration(*args, **kwargs):
     if discount_code and discount_amount:
         reg8n_attrs.update({'discount_code': discount_code,
                             'discount_amount': discount_amount})
-    
+
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
     if request.user.is_authenticated():
         reg8n_attrs['creator'] = request.user
         reg8n_attrs['owner'] = request.user
-        
+
     # create registration
     reg8n = Registration.objects.create(**reg8n_attrs)
-    
+
     if event.is_table:
         table_individual_first_price, table_individual_price = amount_list[0], Decimal('0')
-    
+
 #    discount_applied = False
     for i, form in enumerate(registrant_formset.forms):
         override = False
@@ -781,12 +782,12 @@ def add_registration(*args, **kwargs):
             if request.user.is_superuser:
                 override = form.cleaned_data.get('override', False)
                 override_price = form.cleaned_data.get('override_price', Decimal(0))
-                
+
             price = form.cleaned_data['pricing']
-            
+
             # this amount has taken account into admin override and discount code
             amount = amount_list[i]
-            
+
             if discount_code and discount_amount:
                 discount_amount = discount_list[i]
         else:
@@ -798,8 +799,8 @@ def add_registration(*args, **kwargs):
 #            if reg8n.override_table:
 #                override = reg8n.override_table
 #                override_price = amount
-        
-        # the table registration form does not have the DELETE field   
+
+        # the table registration form does not have the DELETE field
         if event.is_table or not form in registrant_formset.deleted_forms:
             registrant_args = [
                 form,
@@ -814,22 +815,22 @@ def add_registration(*args, **kwargs):
                                  'override_price': override_price}
             if not event.is_table:
                 registrant_kwargs['discount_amount'] = discount_list[i]
-            
+
             registrant = create_registrant_from_form(*registrant_args, **registrant_kwargs)
-            total_amount += registrant.amount 
-            
+            total_amount += registrant.amount
+
             count += 1
-            
+
     # create each regaddon
     for form in addon_formset.forms:
         form.save(reg8n)
     addons_price = addon_formset.get_total_price()
     total_amount += addons_price
-    
+
     # update reg8n with the real amount
     reg8n.amount_paid = total_amount
     created = True
-    
+
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
     if discount_code and discount:
@@ -839,7 +840,7 @@ def add_registration(*args, **kwargs):
                         discount=discount,
                         invoice=invoice,
                     )
-        
+
     return (reg8n, created)
 
 
@@ -883,7 +884,7 @@ def create_registrant_from_form(*args, **kwargs):
         registrant.phone = form.cleaned_data.get('phone', '')
         registrant.company_name = form.cleaned_data.get('company_name', '')
         registrant.comments = form.cleaned_data.get('comments', '')
-    
+
         if registrant.email:
             users = User.objects.filter(email=registrant.email)
             if users:
@@ -919,7 +920,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
             'amount': price.price,
             'qualifies': qualifies,
             'failure_type': failure_type,
-            'display_order': price.display_order
+            'position': price.position
         }
     else:
         if now >= price.start_dt and now <= price.end_dt:
@@ -928,7 +929,7 @@ def gen_pricing_dict(price, qualifies, failure_type, admin=False):
                 'amount': price.price,
                 'qualifies': qualifies,
                 'failure_type': failure_type,
-                'display_order': price.display_order
+                'position': price.position
             }
         else:
             pricing = {}
@@ -959,21 +960,21 @@ def get_pricing(user, event, pricing=None):
             reg_conf=event.registration_configuration,
             status=True,
         )
-    
+
 
     # iterate and create a dictionary based
     # on dates and permissions
     # gen_pricing_dict(price_instance, qualifies)
     for price in pricing:
         qualifies = True
-        
+
         # Admins are always true
         # This should always be at the top of this code
         if user.profile.is_superuser:
             qualifies = True
             pricing_list.append(gen_pricing_dict(
-               price, 
-               qualifies, 
+               price,
+               qualifies,
                '',
                admin=True)
             )
@@ -984,8 +985,8 @@ def get_pricing(user, event, pricing=None):
             if spots_left < price.quantity:
               qualifies = False
               pricing_list.append(gen_pricing_dict(
-                price, 
-                qualifies, 
+                price,
+                qualifies,
                 'limit')
               )
               continue
@@ -995,7 +996,7 @@ def get_pricing(user, event, pricing=None):
             qualifies = True
             pricing_list.append(gen_pricing_dict(
                price,
-               qualifies, 
+               qualifies,
                '')
             )
             continue
@@ -1003,14 +1004,14 @@ def get_pricing(user, event, pricing=None):
         # Admin only price
         if not any([price.allow_user, price.allow_anonymous, price.allow_member, price.group]):
             if not user.profile.is_superuser:
-                continue      
+                continue
 
         # User permissions
         if price.allow_user and not user.is_authenticated():
             qualifies = False
             pricing_list.append(gen_pricing_dict(
-               price, 
-               qualifies, 
+               price,
+               qualifies,
                'user')
             )
             continue
@@ -1018,12 +1019,12 @@ def get_pricing(user, event, pricing=None):
         # Group and Member permissions
         if price.group and price.allow_member:
             qualifies = False
-            
+
             if price.group.is_member(user) or user.profile.is_member:
-                qualifies = True            
+                qualifies = True
                 pricing_list.append(gen_pricing_dict(
-                   price, 
-                   qualifies, 
+                   price,
+                   qualifies,
                    '')
                 )
                 continue
@@ -1032,8 +1033,8 @@ def get_pricing(user, event, pricing=None):
         if price.group and not price.group.is_member(user):
             qualifies = False
             pricing_list.append(gen_pricing_dict(
-               price, 
-               qualifies, 
+               price,
+               qualifies,
                'group')
             )
             continue
@@ -1042,16 +1043,16 @@ def get_pricing(user, event, pricing=None):
         if price.allow_member and not user.profile.is_member:
             qualifies = False
             pricing_list.append(gen_pricing_dict(
-               price, 
-               qualifies, 
+               price,
+               qualifies,
                'member')
             )
             continue
 
         # pricing is true if doesn't get stopped above
         pricing_list.append(gen_pricing_dict(
-           price, 
-           qualifies, 
+           price,
+           qualifies,
            '')
         )
 
@@ -1064,7 +1065,7 @@ def get_pricing(user, event, pricing=None):
     if pricing_list:
         sorted_pricing_list = sorted(
             pricing_list, 
-            key=lambda k:( k['display_order'], k['amount'])
+            key=lambda k:( k['position'], k['amount'])
         )
 
         # set a default pricing on the first
@@ -1075,7 +1076,7 @@ def get_pricing(user, event, pricing=None):
                     'default': True,
                 })
                 break
-    
+
     return sorted_pricing_list
 
 
@@ -1109,15 +1110,15 @@ def registration_earliest_time(event, pricing=None):
     Get the earlist time out of all the pricing.
     This will not consider any registrations that have ended.
     """
-    
+
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration,
             status=True,
         )
-    
+
     pricing = pricing.filter(end_dt__gt=datetime.now()).order_by('start_dt')
-    
+
     try:
         return pricing[0].start_dt
     except IndexError:
@@ -1129,58 +1130,58 @@ def registration_has_started(event, pricing=None):
     started
     """
     reg_started = []
-    
+
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration,
             status=True,
         )
-    
+
     for price in pricing:
         reg_started.append(
             price.registration_has_started
         )
-    
+
     return any(reg_started)
-    
+
 def registration_has_ended(event, pricing=None):
     """
     Check all times and make sure the registration has
     ended
     """
     reg_ended = []
-    
+
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration,
             status=True,
         )
-    
+
     for price in pricing:
         reg_ended.append(
             price.registration_has_ended
         )
-    
+
     return all(reg_ended)
-    
+
 def registration_has_recently_ended(event, pricing=None):
     """
     Check all times and make sure the registration has
     recently ended
     """
     reg_ended = []
-    
+
     if not pricing:
         pricing = RegConfPricing.objects.filter(
             reg_conf=event.registration_configuration,
             status=True,
         )
-    
+
     for price in pricing:
         reg_ended.append(
             price.registration_has_recently_ended
         )
-    
+
     return all(reg_ended)
 
 def clean_price(price, user):
@@ -1191,10 +1192,10 @@ def clean_price(price, user):
     price_pk, amount = price.split('-')
     price = RegConfPricing.objects.get(pk=price_pk, status=True)
     amount = Decimal(str(amount))
-    
+
     if amount != price.price and not user.profile.is_superuser:
         raise ValueError("Invalid price amount")
-    
+
     return price, price_pk, amount
 
 def copy_event(event, user):
@@ -1221,7 +1222,7 @@ def copy_event(event, user):
         status_detail = event.status_detail,
         tags = event.tags,
     )
-        
+
     #copy place
     place = event.place
     if place:
@@ -1237,7 +1238,7 @@ def copy_event(event, user):
         )
         new_event.place = new_place
         new_event.save()
-    
+
     #copy speakers
     for speaker in event.speaker_set.all():
         new_speaker = Speaker.objects.create(
@@ -1246,7 +1247,7 @@ def copy_event(event, user):
             description = speaker.description,
         )
         new_speaker.event.add(new_event)
-        
+
     #copy organizers
     for organizer in event.organizer_set.all():
         new_organizer = Organizer.objects.create(
@@ -1255,7 +1256,7 @@ def copy_event(event, user):
             description = organizer.description,
         )
         new_organizer.event.add(new_event)
-        
+
     #copy registration configuration
     old_regconf = event.registration_configuration
     if old_regconf:
@@ -1269,7 +1270,7 @@ def copy_event(event, user):
         new_regconf.save()
         new_event.registration_configuration = new_regconf
         new_event.save()
-    
+
         #copy regconf pricings
         for pricing in old_regconf.regconfpricing_set.filter(status=True):
             new_pricing = RegConfPricing.objects.create(
@@ -1282,7 +1283,7 @@ def copy_event(event, user):
                 allow_user = pricing.allow_user,
                 allow_member = pricing.allow_member,
             )
-        
+
     #copy addons
     for addon in event.addon_set.all():
         new_addon = Addon.objects.create(
@@ -1301,7 +1302,7 @@ def copy_event(event, user):
                 addon = new_addon,
                 title = option.title,
             )
-    
+
     return new_event
 
 def get_active_days(event):
@@ -1313,7 +1314,7 @@ def get_active_days(event):
     current_dt = event.start_dt
     end_dt = event.end_dt
     day_list = []
-    
+
     start_dt = current_dt
     while(current_dt<end_dt):
         current_dt += timedelta(days=1)
@@ -1330,7 +1331,7 @@ def get_active_days(event):
     next_weekday = next_dt.strftime('%a')
     if next_weekday != 'Sun' and next_weekday != 'Sat':
         day_list.append((start_dt, next_dt))
-    
+
     return day_list
 
 def get_custom_registrants_initials(entries, **kwargs):

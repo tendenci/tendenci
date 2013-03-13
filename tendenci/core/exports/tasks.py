@@ -1,5 +1,6 @@
 import os
 from django.forms.models import model_to_dict
+from django.db.models.fields import DateTimeField
 from django.db.models.fields.related import ManyToManyField, ForeignKey
 from django.contrib.contenttypes import generic
 from celery.task import Task
@@ -37,7 +38,7 @@ class TendenciExportTask(Task):
             opts = item._meta
             d = {}
             for f in opts.fields + opts.many_to_many:
-                if f.name in fields: # include specified fields only
+                if f.name in fields:  # include specified fields only
                     if isinstance(f, ManyToManyField):
                         value = ["%s" % obj for obj in f.value_from_object(item)]
                     if isinstance(f, ForeignKey):
@@ -45,6 +46,9 @@ class TendenciExportTask(Task):
                     if isinstance(f, generic.GenericRelation):
                         generics = f.value_from_object(item).all()
                         value = ["%s" % obj for obj in generics]
+                    if isinstance(f, DateTimeField):
+                        if f.value_from_object(item):
+                            value = f.value_from_object(item).strftime("%Y-%m-%d %H:%M")
                     else:
                         value = f.value_from_object(item)
                     d[f.name] = value

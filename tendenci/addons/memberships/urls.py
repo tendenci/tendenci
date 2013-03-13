@@ -42,6 +42,15 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^export/$",
         "membership_default_export",
         name="memberships.default_export"),
+    url(r"^export/status/(?P<identifier>\d+)/$",
+        "membership_default_export_status",
+        name="memberships.default_export_status"),
+    url(r"^export/check_status/(?P<identifier>\d+)/$",
+        "membership_default_export_check_status",
+        name="memberships.default_export_check_status"),
+    url(r"^export/download/(?P<identifier>\d+)/$",
+        "membership_default_export_download",
+        name="memberships.default_export_download"),
 
     url(r"^get_app_fields/$",
         "get_app_fields_json",
@@ -116,12 +125,3 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^(?P<slug>[\w\-]+)/(?P<cmb_id>\d+)/(?P<secret_hash>[\d\w]+)$", "application_details", name="membership.application_details_via_corp_secret_code"),
     url(r"^(?P<slug>[\w\-]+)/corp-pre/(?P<cmb_id>\d+)?/?$", "application_details_corp_pre", name="membership.application_details_corp_pre"),
 )
-
-
-
-
-
-
-
-
-

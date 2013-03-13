@@ -120,8 +120,14 @@ def aspect_ratio(image_size, new_size, constrain=False):
     The new_size is a sequence of integers (200, 300)
     The constrain limits to within the new_size parameters.
     """
-
+    orig_w, orig_h = image_size
     w, h = new_size
+
+    # check if file size is 0, which means there's an exception
+    if orig_w != 0 and orig_h != 0:
+        if orig_w < w or orig_h < h:
+            # prevent upscaling of images
+            return orig_w, orig_h
 
     if not constrain and (w and h):
         return w, h

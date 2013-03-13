@@ -100,6 +100,7 @@ urlpatterns += patterns('',
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', 'tendenci.core.base.views.robots_txt', name="robots"),
+    url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.core.base.views.base_file'),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),

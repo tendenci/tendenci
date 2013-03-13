@@ -13,10 +13,10 @@ KEY_CHOICES = (('email','Email'),
 
 class UserImportForm(forms.Form):
     file  = forms.FileField(widget=forms.FileInput(attrs={'size': 35}))
-    interactive = forms.CharField(widget=forms.RadioSelect(choices=((1,'Interactive'),
-                                                          (0,'Not Interactive (no login)'),)), initial=0,)
-    override = forms.CharField(widget=forms.RadioSelect(choices=((0,'Blank Fields'),
-                                                          (1,'All Fields (override)'),)), initial=0, )
+    interactive = forms.CharField(widget=forms.RadioSelect(choices=((True,'Interactive'),
+                                                          (False,'Not Interactive (no login)'),)), initial=False,)
+    override = forms.CharField(widget=forms.RadioSelect(choices=((False,'Blank Fields'),
+                                                          (True,'All Fields (override)'),)), initial=False, )
     key = forms.ChoiceField(initial="email", choices=KEY_CHOICES)
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, 
                                                                  status_detail='active').order_by('name'),

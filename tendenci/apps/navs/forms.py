@@ -59,7 +59,7 @@ class ItemForm(forms.ModelForm):
             'label',
             'title',
             'css',
-            'ordering',
+            'position',
             'level',
             'page',
             'url',
@@ -71,7 +71,7 @@ class ItemForm(forms.ModelForm):
         #we dont need the select widget for this since it will be hidden
         self.fields['page'].required = False
         self.fields['page'].widget = forms.TextInput()
-        self.fields['ordering'].widget = forms.HiddenInput()
+        self.fields['position'].widget = forms.HiddenInput()
         self.fields['level'].widget = forms.HiddenInput()
 
     def clean_url(self):

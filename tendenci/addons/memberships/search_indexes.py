@@ -2,21 +2,21 @@ from haystack import indexes, site
 
 from django.utils.html import strip_tags, strip_entities
 
-from tendenci.addons.memberships.models import App, AppEntry, Membership
+from tendenci.addons.memberships.models import App, AppEntry, MembershipDefault
 from tendenci.core.perms.indexes import TendenciBaseSearchIndex
 
 
-class MembershipIndex(TendenciBaseSearchIndex):
-    corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id')
+class MembershipDefaultIndex(TendenciBaseSearchIndex):
+    corporate_membership_id = indexes.IntegerField(model_attr='corporate_membership_id', null=True)
     member_number = indexes.CharField(model_attr='member_number')
-    mem_type = indexes.IntegerField()
+    membership_type = indexes.IntegerField()
     first_name = indexes.CharField(null=True)
     last_name = indexes.CharField(null=True)
     email = indexes.CharField(null=True)
 
-    def prepare_mem_type(self, obj):
-        type = obj.membership_type.pk
-        return type
+    def prepare_membership_type(self, obj):
+        pk = obj.membership_type.pk
+        return pk
 
     def prepare_first_name(self, obj):
         first_name = obj.user.first_name
@@ -49,6 +49,6 @@ class MemberAppEntryIndex(TendenciBaseSearchIndex):
         return 'entry_time'
 
 
-site.register(Membership, MembershipIndex)
 site.register(App, MemberAppIndex)
 site.register(AppEntry, MemberAppEntryIndex)
+site.register(MembershipDefault, MembershipDefaultIndex)

@@ -20,14 +20,7 @@
                 <li>
                     <a href="{% url corpmembership_app.preview corp_app.pk %}">{{ corp_app.name }}</a> 
                     (<a href="{% url admin:corporate_memberships_corpmembershipapp_change corp_app.id %}">{% trans "Edit" %}</a>)
-                    --------------->>
-                    {% trans "Individual Member App: " %}
-                    {% if corp_app.memb_app %}
-                    <a href="{% url membership_default.preview corp_app.memb_app.pk %}">{{ corp_app.memb_app.name }}</a>
-                    (<a href="{% url admin:memberships_membershipapp_change corp_app.memb_app.id %}">{% trans "Edit" %}</a>)
-                    {% else %}
-                        <a href="{% url admin:memberships_membershipapp_add %}?use_for_corp=1">{% trans "Create it" %}</a>
-                    {% endif %}
+                   
                     
                     <h2>{% trans "Types:" %}</h2>
                     <table width="90%">

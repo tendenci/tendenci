@@ -128,6 +128,8 @@ AVATAR_GRAVATAR_BACKUP = False
 AVATAR_DEFAULT_URL = STATIC_URL + 'images/icons/default-user-80.jpg'
 AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
+# default image url (relative to the static folder)
+DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
 # TEMPLATE DIRECTORIES AND PROCESSORS
 
@@ -348,6 +350,11 @@ BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
 CELERY_IS_ACTIVE = False
+
+# USE_SUBPROCESS - in places like exports and long-running
+# processes that can timeout, subprocess will be used
+# if this setting is True
+USE_SUBPROCESS = True
 
 # --------------------------------------#
 # Hackstack Search

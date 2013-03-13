@@ -213,7 +213,7 @@ def photo_size(request, id, size, crop=False, quality=90, download=False, constr
     image.save(response, "JPEG", quality=quality)
 
     if photo.is_public_photo() and photo.is_public_photoset():
-        file_name = photo.image.file.name
+        file_name = photo.image_filename()
         file_path = 'cached%s%s' % (request.path, file_name)
         default_storage.save(file_path, ContentFile(response.content))
         full_file_path = "%s%s" % (settings.MEDIA_URL, file_path)
@@ -537,7 +537,7 @@ def photos_batch_add(request, photoset_id=0):
                 photo.member = request.user
                 photo.safetylevel = 3
                 photo.allow_anonymous_view = True
-                photo.photoset_position = 0
+                photo.position = 0
 
                 # update all permissions and save the model
                 photo = update_perms_and_save(request, photo_form, photo)
@@ -607,7 +607,6 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     PhotoFormSet = modelformset_factory(
         Image,
-        can_delete=True,
         exclude=(
             'title_slug',
             'creator_username',
@@ -629,6 +628,10 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         form = PhotoBatchEditForm(request.POST, instance=photo)
 
         if form.is_valid():
+            delete_photo = request.POST.get('delete')
+            if delete_photo:
+                photo.delete()
+
             photo = form.save()
             EventLog.objects.log(instance=photo)
             # set album cover if specified
@@ -651,11 +654,14 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
             return HttpResponse('Success')
 
+        else:
+            return HttpResponse('Failed')
+
     else:  # if request.method != POST
 
         # i would like to use the search index here; but it appears that
         # the formset class only accepts a queryset; not a searchqueryset or list
-        photo_qs = Image.objects.filter(photoset=photo_set).order_by("photoset_position")
+        photo_qs = Image.objects.filter(photoset=photo_set).order_by("position")
         photo_formset = PhotoFormSet(queryset=photo_qs)
 
     cc_licenses = License.objects.all()
@@ -685,7 +691,7 @@ def photoset_details(request, id, template_name="photos/photo-set/details.html")
     #    photos = photo_set.get_images(user=request.user).order_by('-pk')
     #else:
     #    photos = photo_set.get_images(user=request.user).order_by('pk')
-    photos = photo_set.get_images(user=request.user).order_by("photoset_position")
+    photos = photo_set.get_images(user=request.user).order_by("position")
     
     EventLog.objects.log(**{
         'event_id': 991500,

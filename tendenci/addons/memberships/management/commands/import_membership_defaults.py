@@ -23,10 +23,7 @@ class Command(BaseCommand):
 
         mimport = get_object_or_404(MembershipImport, pk=args[0])
         request_user = User.objects.get(pk=args[1])
-
-        data_list = MembershipImportData.objects.filter(
-                                mimport=mimport).order_by('pk')
-
+        data_list = MembershipImportData.objects.filter(mimport=mimport).order_by('pk')
         imd = ImportMembDefault(request_user, mimport, dry_run=False)
 
         for idata in data_list:
@@ -38,13 +35,14 @@ class Command(BaseCommand):
                 print e
 
             mimport.num_processed += 1
-            # save the status
+
+            # save the status -----------------------------------------------
             summary = 'insert:%d,update:%d,update_insert:%d,invalid:%d' % (
-                                        imd.summary_d['insert'],
-                                        imd.summary_d['update'],
-                                        imd.summary_d['update_insert'],
-                                        imd.summary_d['invalid']
-                                        )
+                imd.summary_d['insert'],
+                imd.summary_d['update'],
+                imd.summary_d['update_insert'],
+                imd.summary_d['invalid'],
+            )
             mimport.summary = summary
             mimport.save()
 

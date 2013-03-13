@@ -1,31 +1,23 @@
 # encoding: utf-8
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        
-        # Adding model 'MembershipSet'
-        db.create_table('memberships_membershipset', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('invoice', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['invoices.Invoice'])),
-        ))
-        db.send_create_signal('memberships', ['MembershipSet'])
+        "Write your forwards methods here."
 
-        # Adding field 'MembershipDefault.membership_set'
-        db.add_column('memberships_membershipdefault', 'membership_set', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['memberships.MembershipSet'], null=True, blank=True), keep_default=False)
+        # Deleting field 'MembershipType.order'
+        db.delete_column('memberships_membershiptype', 'order')
 
 
     def backwards(self, orm):
-        
-        # Deleting model 'MembershipSet'
-        db.delete_table('memberships_membershipset')
+        "Write your backwards methods here."
 
-        # Deleting field 'MembershipDefault.membership_set'
-        db.delete_column('memberships_membershipdefault', 'membership_set_id')
+        # Adding field 'MembershipType.order'
+        db.add_column('memberships_membershiptype', 'order', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
 
     models = {
@@ -44,7 +36,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 8, 6, 4, 45, 314539)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 22, 16, 18, 26, 69497)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -52,7 +44,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 1, 8, 6, 4, 45, 314433)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 22, 16, 18, 26, 69408)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -351,7 +343,7 @@ class Migration(SchemaMigration):
             'help_text': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '2000'}),
-            'position': ('django.db.models.fields.IntegerField', [], {'blank': 'True'}),
+            'position': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'unique': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'visible': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -399,7 +391,6 @@ class Migration(SchemaMigration):
             'allow_anonymous_view': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'allow_member_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'allow_mutilple_membership': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'confirmation_text': ('tinymce.models.HTMLField', [], {}),
@@ -494,7 +485,6 @@ class Migration(SchemaMigration):
             'license_number': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '50', 'blank': 'True'}),
             'license_state': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '50', 'blank': 'True'}),
             'member_number': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'membership_set': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.MembershipSet']", 'null': 'True', 'blank': 'True'}),
             'membership_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.MembershipType']"}),
             'network_sectors': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '250', 'blank': 'True'}),
             'networking': ('django.db.models.fields.CharField', [], {'default': "u''", 'max_length': '250', 'blank': 'True'}),
@@ -524,6 +514,41 @@ class Migration(SchemaMigration):
             'work_experience': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'year_left_native_country': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'})
         },
+        'memberships.membershipdemographic': {
+            'Meta': {'object_name': 'MembershipDemographic'},
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'ud1': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud10': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud11': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud12': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud13': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud14': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud15': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud16': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud17': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud18': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud19': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud2': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud20': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud21': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud22': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud23': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud24': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud25': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud26': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud27': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud28': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud29': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud3': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud30': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud4': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud5': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud6': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud7': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud8': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'ud9': ('django.db.models.fields.TextField', [], {'default': "u''", 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'demographics'", 'unique': 'True', 'to': "orm['auth.User']"})
+        },
         'memberships.membershipimport': {
             'Meta': {'object_name': 'MembershipImport'},
             'app': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.App']", 'null': 'True'}),
@@ -547,11 +572,6 @@ class Migration(SchemaMigration):
             'mimport': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'membership_import_data'", 'to': "orm['memberships.MembershipImport']"}),
             'row_data': ('tendenci.core.base.fields.DictField', [], {}),
             'row_num': ('django.db.models.fields.IntegerField', [], {})
-        },
-        'memberships.membershipset': {
-            'Meta': {'object_name': 'MembershipSet'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invoice': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['invoices.Invoice']"})
         },
         'memberships.membershiptype': {
             'Meta': {'object_name': 'MembershipType'},
@@ -582,12 +602,12 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
             'never_expires': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'owner': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'memberships_membershiptype_owner'", 'null': 'True', 'to': "orm['auth.User']"}),
             'owner_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'period': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'period_type': ('django.db.models.fields.CharField', [], {'default': "'rolling'", 'max_length': '10'}),
             'period_unit': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
+            'position': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'price': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '15', 'decimal_places': '2', 'blank': 'True'}),
             'renewal': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'renewal_period_end': ('django.db.models.fields.IntegerField', [], {'default': '30'}),

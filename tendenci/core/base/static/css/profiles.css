@@ -457,3 +457,18 @@ div.admin-item {
 .edit-profile-perms .selector ul.selector-chooser { background-image: none; width: 160px; margin: 0 auto; padding: 10px 240px; height: 28px; }
 .edit-profile-perms .selector ul.selector-chooser li { display: inline; float: left; padding: 0 16px; }
 .edit-profile-perms .selector-chosen .selector-filter { display: none; }
+
+
+/* merge profiles
+------------------------------- */
+
+.similar_group .group{
+    padding: 5px;
+    margin: 15px 0;
+    border: 1px solid;
+}
+.similar_group .group table{
+    width: 100%;
+    text-align: left;
+}
+

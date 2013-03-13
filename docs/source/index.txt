@@ -8,8 +8,6 @@ Tendenci is a content management system (CMS) designed for organizations with po
 
 Tendenci allows membership management organizations to communicate, manage and conduct transactions with web site visitors. Tendenci is easy to use and offers many modules as one customizable software package.
 
-The docs for Tendenci are a work in progress.
-
 Setup and Installation
 ----------------------
 
@@ -19,23 +17,15 @@ Setup and Installation
 
    installation/*
 
-App Guides
-----------
+.. App Guides
+.. ----------
 
-.. toctree::
-   :maxdepth: 1
-   :glob:
+.. .. toctree::
+..    :maxdepth: 1
+..    :glob:
 
-   app_guides/*
+..    app_guides/*
 
-App Reference
--------------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   app_reference/*
 
 Templating
 ----------

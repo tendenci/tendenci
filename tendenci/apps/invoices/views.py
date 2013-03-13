@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -14,13 +14,13 @@ from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
-
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.notifications.utils import send_notifications
+
+from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
@@ -93,7 +93,6 @@ def void_payment(request, id):
     return redirect(invoice)
 
 
-@is_enabled('discounts')
 @login_required
 def search(request, template_name="invoices/search.html"):
     query = u''
@@ -299,94 +298,44 @@ def detail(request, id, template_name="invoices/detail.html"):
                                               context_instance=RequestContext(request))
 
 
-@is_enabled('discounts')
 @login_required
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""
-    
+
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
-        # initilize initial values
-        file_name = "invoices.csv"
-        fields = [
-            'id',
-            'guid',
-            'object_type',
-            'title',
-            'tender_date',
-            'bill_to',
-            'bill_to_first_name',
-            'bill_to_last_name',
-            'bill_to_company',
-            'bill_to_address',
-            'bill_to_city',
-            'bill_to_state',
-            'bill_to_zip_code',
-            'bill_to_country',
-            'bill_to_phone',
-            'bill_to_fax',
-            'bill_to_email',
-            'ship_to',
-            'ship_to_first_name',
-            'ship_to_last_name',
-            'ship_to_company',
-            'ship_to_address',
-            'ship_to_city',
-            'ship_to_state',
-            'ship_to_zip_code',
-            'ship_to_country',
-            'ship_to_phone',
-            'ship_to_fax',
-            'ship_to_email',
-            'ship_to_address_type',
-            'receipt',
-            'gift',
-            'arrival_date_time',
-            'greeting',
-            'instructions',
-            'po',
-            'terms',
-            'due_date',
-            'ship_date',
-            'ship_via',
-            'fob',
-            'project',
-            'other',
-            'message',
-            'subtotal',
-            'shipping',
-            'shipping_surcharge',
-            'box_and_packing',
-            'tax_exempt',
-            'tax_exemptid',
-            'tax_rate',
-            'taxable',
-            'tax',
-            'variance',
-            'total',
-            'payments_credits',
-            'balance',
-            'estimate',
-            'disclaimer',
-            'variance_notes',
-            'admin_notes',
-            'create_dt',
-            'update_dt',
-            'creator',
-            'creator_username',
-            'owner',
-            'owner_username',
-            'status_detail',
-            'status',
-        ]
-        
-        export_id = run_export_task('invoices', 'invoice', fields)
+        end_dt = request.POST.get('end_dt', None)
+        start_dt = request.POST.get('start_dt', None)
+
+        # First, convert our strings into datetime objects
+        # in case we need to do a timedelta
+        try:
+            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
+        except:
+            end_dt = datetime.now()
+
+        try:
+            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+        except:
+            start_dt = end_dt - timedelta(days=30)
+
+        # convert our datetime objects back to strings
+        # so we can pass them on to the task
+        end_dt = end_dt.strftime("%Y-%m-%d")
+        start_dt = start_dt.strftime("%Y-%m-%d")
+
+        export_id = run_invoice_export_task('invoices', 'invoice', start_dt, end_dt)
         EventLog.objects.log()
         return redirect('export.status', export_id)
-        
+    else:
+        end_dt = datetime.now()
+        start_dt = end_dt - timedelta(days=30)
+
     return render_to_response(template_name, {
+        'start_dt': start_dt,
+        'end_dt': end_dt,
     }, context_instance=RequestContext(request))
 
 

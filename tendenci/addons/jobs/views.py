@@ -56,6 +56,8 @@ def detail(request, slug=None, template_name="jobs/view.html"):
 def search(request, template_name="jobs/search.html"):
     query = request.GET.get('q', None)
     my_pending_jobs = request.GET.get('my_pending_jobs', False)
+    category = None
+    subcategory = None
 
     if get_setting('site', 'global', 'searchindex') and query:
         jobs = Job.objects.search(query, user=request.user)

@@ -16,6 +16,7 @@
     <div style="background-color:#CFFFCE; padding:10px; font-size:1.2em;">
         {% if for_admin %}
             {% trans "Registration Complete." %}
+            <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
             <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
                     {% for registrant in registrants %}
@@ -24,6 +25,9 @@
                             {{ registrant.get_name }}
                         {% else %}
                             {% trans "Guest #" %}{{ forloop.counter0 }}
+                        {% endif %}
+                        {% if registrant.email %}
+                            ({{ registrant.email }})
                         {% endif %}
                         {% if registrant.custom_reg_form_entry %}
                         {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
@@ -47,6 +51,7 @@
         <div style="background-color:#FFC; padding:10px; font-size:1.2em;">
             {% if for_admin %}
                 {% trans "Almost Registered. Payment is still required." %}
+                <a href="{{ SITE_GLOBAL_SITEURL }}{% url invoice.view reg8n.invoice.pk reg8n.invoice.guid %}">{% trans "View Invoice."%}</a>
                 <div style="font-size:1.0em; margin-top:5px;">
                     {{ reg8n_number }} {% trans "Registrant" %}{{ reg8n_number|pluralize }}:<br />
                     {% for registrant in registrants %}
@@ -55,6 +60,9 @@
                             {{ registrant.get_name }}
                         {% else %}
                             {% trans "Guest #" %}{{ forloop.counter0 }}
+                        {% endif %}
+                        {% if registrant.email %}
+                            ({{ registrant.email }})
                         {% endif %}
                         {% if registrant.custom_reg_form_entry %}
                         {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
@@ -86,6 +94,9 @@
                                     {{ registrant.name }}
                             {% else %}
                                 {% trans "Guest #" %}{{ forloop.counter0 }}
+                            {% endif %}
+                            {% if registrant.email %}
+                                ({{ registrant.email }})
                             {% endif %}
                             {% if registrant.custom_reg_form_entry %}
                             {% with registrant.custom_reg_form_entry.roster_field_entry_list as roster_field_list %}
