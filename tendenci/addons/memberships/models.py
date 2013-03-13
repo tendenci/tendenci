@@ -1263,52 +1263,39 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.notifications.utils import send_welcome_email
 
-        # TODO: update this function to be DRY
-        if self.renewal:
-            # if auto-approve renews
-            if request.user.profile.is_superuser or \
-                    not self.membership_type.renewal_require_approval:
-                self.user, created = self.get_or_create_user()
-                if created:
-                    send_welcome_email(self.user)
+        can_approve = False
 
-                # auto approve -------------------------
-                self.application_approved = True
-                self.application_approved_user = self.user
-                self.application_approved_dt = datetime.now()
-                self.application_approved_denied_user = self.user
-                self.status = True
-                self.status_detail = 'active'
-
-                self.set_join_dt()
-                self.set_renew_dt()
-                self.set_expire_dt()
-                self.save()
-
-                self.archive_old_memberships()
+        if request.user.profile.is_superuser:
+            can_approve = True
         else:
-            # if auto-approve joins
-            if request.user.profile.is_superuser or \
-                 not self.membership_type.require_approval:
-                self.user, created = self.get_or_create_user()
-                if created:
-                    send_welcome_email(self.user)
+            if (self.renewal and \
+                    not self.membership_type.renewal_require_approval) \
+                or (not self.renewal and \
+                    not self.membership_type.require_approval):
+                    can_approve = True
 
-                # auto approve -------------------------
-                self.application_approved = True
-                self.application_approved_user = self.user
-                self.application_approved_dt = datetime.now()
-                self.application_approved_denied_user = self.user
-                self.status = True
-                self.status_detail = 'active'
+        if can_approve:
 
-                self.set_join_dt()
-                self.set_expire_dt()
-                self.save()
+            self.user, created = self.get_or_create_user()
+            if created:
+                send_welcome_email(self.user)
 
-                self.archive_old_memberships()
+            # auto approve -------------------------
+            self.application_approved = True
+            self.application_approved_user = self.user
+            self.application_approved_dt = datetime.now()
+            self.application_approved_denied_user = self.user
+            self.status = True
+            self.status_detail = 'active'
 
-        if self.application_approved:
+            self.set_join_dt()
+            if self.renewal:
+                self.set_renew_dt()
+            self.set_expire_dt()
+            self.save()
+
+            self.archive_old_memberships()
+
             # user in [membership] group
             self.group_refresh()
 
