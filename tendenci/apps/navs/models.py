@@ -62,21 +62,23 @@ class NavItem(OrderingBaseModel):
         """
         level = self.level or 0
         level_down = level + 1
+        position = self.position or 0
 
         # get the first sibling among the ones with greater ordering
         siblings = NavItem.objects.filter(
             nav=self.nav,
-            position__gt=self.position,
+            position__gt=position,
             level=level
         ).order_by('position')
         if siblings:
             sibling = siblings[0]
+            sibling_position = sibling.position or 0
             # return all the items between the adjacent siblings.
             children = NavItem.objects.filter(
                 nav=self.nav,
                 level=level_down,
-                position__gt=self.position,
-                position__lt=sibling.position
+                position__gt=position,
+                position__lt=sibling_position
             ).order_by('position')
             return children
         else:
@@ -84,7 +86,7 @@ class NavItem(OrderingBaseModel):
             children = NavItem.objects.filter(
                 nav=self.nav,
                 level=level_down,
-                position__gt=self.position
+                position__gt=position
             ).order_by('position')
             return children
     
