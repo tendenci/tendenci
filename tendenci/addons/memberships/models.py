@@ -1298,7 +1298,6 @@ class MembershipDefault(TendenciBaseModel):
                 self.application_approved_denied_user = self.user
 
                 self.set_join_dt()
-                self.set_renew_dt()
                 self.set_expire_dt()
 
                 self.archive_old_memberships()
