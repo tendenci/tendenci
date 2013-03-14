@@ -1,0 +1,8 @@
+tendenci>=5.1.0
+tendenci-donations>=1.0
+tendenci-case-studies>=1.0
+tendenci-committees>=1.0
+tendenci-speakers>=1.0
+tendenci-staff>=1.0
+tendenci-studygroups>=1.0
+tendenci-videos>=1.0.2

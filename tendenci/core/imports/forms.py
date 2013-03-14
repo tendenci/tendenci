@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from tendenci.apps.user_groups.models import Group
 from tendenci.core.imports.utils import get_header_list_from_content
+from tendenci.core.imports.models import Import
 
 KEY_CHOICES = (('email','Email'),
                ('first_name,last_name,email','First Name and Last Name and Email'),
@@ -9,12 +10,13 @@ KEY_CHOICES = (('email','Email'),
                ('first_name,last_name,company','First Name and Last Name and Company'),
                ('username','Username'),)
 
+
 class UserImportForm(forms.Form):
     file  = forms.FileField(widget=forms.FileInput(attrs={'size': 35}))
-    interactive = forms.CharField(widget=forms.RadioSelect(choices=((1,'Interactive'),
-                                                          (0,'Not Interactive (no login)'),)), initial=0,)
-    override = forms.CharField(widget=forms.RadioSelect(choices=((0,'Blank Fields'),
-                                                          (1,'All Fields (override)'),)), initial=0, )
+    interactive = forms.CharField(widget=forms.RadioSelect(choices=((True,'Interactive'),
+                                                          (False,'Not Interactive (no login)'),)), initial=False,)
+    override = forms.CharField(widget=forms.RadioSelect(choices=((False,'Blank Fields'),
+                                                          (True,'All Fields (override)'),)), initial=False, )
     key = forms.ChoiceField(initial="email", choices=KEY_CHOICES)
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, 
                                                                  status_detail='active').order_by('name'),
@@ -41,9 +43,16 @@ class UserImportForm(forms.Form):
                 raise forms.ValidationError(_("The uploaded file lacks the required field(s) as the identity for duplicates: %s." % missing_keys))
         return self.cleaned_data
 
+
 class UserImportPreviewForm(forms.Form):
     interactive = forms.CharField(widget=forms.HiddenInput(), required=False)
     override = forms.CharField(widget=forms.HiddenInput(), required=False)
     key = forms.CharField(widget=forms.HiddenInput())
     group = forms.CharField(widget=forms.HiddenInput(), required=False)
     clear_group_membership = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+
+class ImportForm(forms.ModelForm):
+    class Meta:
+        model = Import
+        fields = ('file',)

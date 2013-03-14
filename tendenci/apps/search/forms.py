@@ -250,10 +250,12 @@ class ModelSearchForm(SearchForm):
                 search_models.append(class_model)
         return search_models
     
-    def search(self):
-        sqs = super(ModelSearchForm, self).search(order_by=self.cleaned_data['sort_by'])
+    def search(self, order_by=None):
+        if not order_by:
+            order_by = self.cleaned_data['sort_by']
+        sqs = super(ModelSearchForm, self).search(order_by=order_by)
         sqs = sqs.models(*self.get_models())
-        if self.cleaned_data['sort_by'] == 'most_viewed':
+        if order_by == 'most_viewed':
             # we need to query for number of views
             for s in sqs:
                 instance = s.object

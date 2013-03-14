@@ -20,18 +20,18 @@ ALLOWED_LOGO_EXT = (
     '.jpg',
     '.jpeg',
     '.gif',
-    '.png' 
-)   
-                    
+    '.png'
+)
+
 class DirectoryForm(TendenciBaseForm):
     body = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'}, 
-        mce_attrs={'storme_app_label':Directory._meta.app_label, 
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':Directory._meta.app_label,
         'storme_model':Directory._meta.module_name.lower()}))
-    
+
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
-        
+
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
@@ -42,10 +42,10 @@ class DirectoryForm(TendenciBaseForm):
 
     email = EmailVerificationField(label=_("Email"), required=False)
     email2 = EmailVerificationField(label=_("Email 2"), required=False)
-    
-    pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
+
+    pricing = forms.ModelChoiceField(label=_('Requested Duration'),
                     queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
-    
+
     class Meta:
         model = Directory
         fields = (
@@ -94,7 +94,7 @@ class DirectoryForm(TendenciBaseForm):
                                  'body',
                                  'logo',
                                  'tags',
-                                 'source', 
+                                 'source',
                                  'timezone',
                                  'activation_dt',
                                  'pricing',
@@ -137,15 +137,15 @@ class DirectoryForm(TendenciBaseForm):
                      ('Administrator Only', {
                       'fields': ['syndicate',
                                  'status',
-                                 'status_detail'], 
+                                 'status_detail'],
                       'classes': ['admin-only'],
-                    })]   
-        
+                    })]
+
     def clean_logo(self):
         logo = self.cleaned_data['logo']
         if logo:
             extension = splitext(logo.name)[1]
-            
+
             # check the extension
             if extension.lower() not in ALLOWED_LOGO_EXT:
                 raise forms.ValidationError('The logo must be of jpg, gif, or png image type.')
@@ -163,7 +163,7 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.pk
             if self.user.profile.is_superuser:
                 self.fields['status_detail'].choices = (('active','Active'),
-                                                        ('inactive','Inactive'), 
+                                                        ('inactive','Inactive'),
                                                         ('pending','Pending'),
                                                         ('paid - pending approval', 'Paid - Pending Approval'),)
         else:
@@ -182,9 +182,9 @@ class DirectoryForm(TendenciBaseForm):
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
         if self.fields.has_key('pricing'):
             self.fields['pricing'].choices = get_duration_choices(self.user)
-        
+
         # expiration_dt = activation_dt + requested_duration
-        fields_to_pop = ['expiration_dt']    
+        fields_to_pop = ['expiration_dt']
         if not self.user.profile.is_superuser:
             fields_to_pop += [
                 'slug',
@@ -211,11 +211,11 @@ class DirectoryForm(TendenciBaseForm):
         if self.cleaned_data.get('remove_photo'):
             directory.logo = None
         return directory
-        
+
 
 class DirectoryPricingForm(forms.ModelForm):
     status = forms.ChoiceField(initial=1, choices=STATUS_CHOICES, required=False)
-    
+
     class Meta:
         model = DirectoryPricing
         fields = ('duration',
@@ -225,7 +225,7 @@ class DirectoryPricingForm(forms.ModelForm):
                   'premium_price_member',
                   'show_member_pricing',
                   'status',)
-    
+
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(DirectoryPricingForm, self).__init__(*args, **kwargs)
@@ -238,10 +238,10 @@ class DirectoryRenewForm(TendenciBaseForm):
     list_type = forms.ChoiceField(initial='regular', choices=(('regular','Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
-    
-    pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
+
+    pricing = forms.ModelChoiceField(label=_('Requested Duration'),
                     queryset=DirectoryPricing.objects.filter(status=True).order_by('duration'))
-    
+
     class Meta:
         model = Directory
         fields = (
@@ -271,4 +271,3 @@ class DirectoryRenewForm(TendenciBaseForm):
         if self.cleaned_data.has_key('pricing'):
             directory.requested_duration = self.cleaned_data['pricing'].duration
         return directory
-    

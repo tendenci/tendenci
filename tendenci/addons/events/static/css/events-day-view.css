@@ -1,3 +1,9 @@
+.day-view { padding-right: 10px; }
+
+.days-nav { padding-bottom: 8px;}
+.yesterday-link { display: block; float: left; }
+.tomorrow-link { display: block; float: right; }
+
 .event-wrap {
 	background-color: #EEE;
 	border: 1px solid silver;
@@ -7,19 +13,23 @@
 }
 .event-wrap div.description {
 }
-.event-wrap div.time-stamp {
+.event-wrap div.event-sidebar {
 	float: left;
-	width: 80px;
+	width: 100px;
 	text-align: center;
-	font-size: 1.1em;
 	font-weight: bold;
 	margin: 15px 0 0 0
-
 }
+
+.event-wrap div.time-stamp {
+	font-size: 1.2em;
+	margin-bottom: 8px;
+}
+
 .event-wrap .event-info {
 	background-color: white;
 	padding: 10px;
-	margin-left: 90px;
+	margin-left: 102px;
 	
 }
 .day-view .no-events {
@@ -61,3 +71,5 @@
 .day-view .event-info .closed .attend a {
 	color: white;
 }
+
+#ui-datepicker-div { z-index: 200 !important; }

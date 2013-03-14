@@ -105,8 +105,11 @@ def directory_set_inv_payment(user, directory, pricing):
             inv.subtotal = inv.total
             inv.balance = inv.total
             inv.estimate = 1
-            inv.status_detail = 'tendered'
+            inv.status_detail = 'estimate'
             inv.save(user)
+            
+            # tender the invoice
+            inv.tender(user)
             
             # update job
             directory.invoice = inv

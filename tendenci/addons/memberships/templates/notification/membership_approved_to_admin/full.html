@@ -10,17 +10,17 @@
 </head>
 <body bgcolor="#ffffff" text="#000000">
 
-    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ entry.app.name }} {% trans "Membership Approved" %}</div>
+    <div>{{ SITE_GLOBAL_SITEDISPLAYNAME }} {{ app.name }} {% trans "Membership Approved" %}</div>
 
-    {% if entry.membership_type.price %}
-        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type.name as memtype and entry.membership_type.price as memprice %}Membership Type: {{ memtype }} ${{ memprice }}{% endblocktrans %}</div>
+    {% if membership.membership_type.price %}
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type.name as memtype and membership.membership_type.price as memprice %}Membership Type: {{ memtype }} ${{ memprice }}{% endblocktrans %}</div>
     {% else %}
-        <div style="margin-bottom:20px;">{% blocktrans with entry.membership_type.name as memtype %}Membership Type: {{ memtype }} (Free){% endblocktrans %}</div>
+        <div style="margin-bottom:20px;">{% blocktrans with membership.membership_type.name as memtype %}Membership Type: {{ memtype }} (Free){% endblocktrans %}</div>
     {% endif %}
 
-    <div>{{ entry.first_name }} {{ entry.last_name }}</div>
-    <div>{{ entry.email }}</div>
-    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ entry.get_absolute_url }}">
+    <div>{{ membership.user.first_name }} {{ membership.user.last_name }}</div>
+    <div>{{ membership.user.email }}</div>
+    <div style="margin-bottom:20px;"><a href="{{ SITE_GLOBAL_SITEURL }}{{ membership.get_absolute_url }}">
         {% trans "View Approved Application" %}
     </a></div>
     

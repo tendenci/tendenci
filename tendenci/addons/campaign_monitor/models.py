@@ -28,7 +28,7 @@ class GroupQueue(models.Model):
     
 class SubscriberQueue(models.Model):
     group = models.ForeignKey(Group)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     subscriber = models.ForeignKey(FormEntry, null=True)
     
 class Template(models.Model):
@@ -154,14 +154,14 @@ cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
 if cm_api_key and cm_client_id:
     from createsend import CreateSend, List, Client, Subscriber, BadRequest, Unauthorized
     CreateSend.api_key = cm_api_key
-    
+
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
         """Check if sync_newsletters. Do nothing if false.
             On Group Add:
                 if group name does not exist on C. M,
                     add a list to C. M.
                 add an entry to listmap
-                
+
             On Group Edit:
                 if group exists on C. M.,
                     if list.name <> group.name,
@@ -170,31 +170,30 @@ if cm_api_key and cm_client_id:
                     add a list on C. M.
                     add an entry to listmap
         """
-        
+
         cl = Client(cm_client_id)
         lists = cl.lists()
         list_ids = [list.ListID for list in lists]
         list_names = [list.Name for list in lists]
         list_ids_d = dict(zip(list_names, list_ids))
         list_d = dict(zip(list_ids, lists))
-        
+
         if created and instance.sync_newsletters:
             if instance.name in list_names:
                 list_id = list_ids_d[instance.name]
-                
+
             else:
                 list_id = get_or_create_cm_list(cm_client_id, instance)
-            
+
             if list_id:
                 # add an entry to the listmap
                 listmap_insert(instance, list_id)
-                
+
                 # custom fields setup
                 cm_list = List(list_id)
                 setup_custom_fields(cm_list)
-                
-            
-        elif instance.sync_newsletters: # update
+
+        elif instance.sync_newsletters:  # update
             try:
                 # find the entry in the listmap
                 list_map = ListMap.objects.get(group=instance)
@@ -205,11 +204,9 @@ if cm_api_key and cm_client_id:
                 else:
                     # hasn't be created on C. M. yet. create one
                     list_id = get_or_create_cm_list(cm_client_id, instance)
-                        
-                  
-                if list_id:  
+
+                if list_id:
                     listmap_insert(instance, list_id)
-                    
 
             if list_id and list_id in list_ids:
                 list = list_d[list_id]
@@ -218,8 +215,13 @@ if cm_api_key and cm_client_id:
                 setup_custom_fields(cm_list)
                 # if the list title doesn't match with the group name, update the list title
                 if instance.name != list.Name:
-                    cm_list.update(instance.name, "", False, "")
-                        
+                    try:
+                        # trap the error for now
+                        # TODO: update only if the list title does not exist
+                        # within a client.
+                        cm_list.update(instance.name, "", False, "")
+                    except:
+                        pass
 
     def delete_cm_list(sender, instance=None, **kwargs):
         """Delete the list from campaign monitor

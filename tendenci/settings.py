@@ -128,6 +128,8 @@ AVATAR_GRAVATAR_BACKUP = False
 AVATAR_DEFAULT_URL = STATIC_URL + 'images/icons/default-user-80.jpg'
 AUTO_GENERATE_AVATAR_SIZES = (128, 80, 48,)
 
+# default image url (relative to the static folder)
+DEFAULT_IMAGE_URL = 'images/default-photo.jpg'
 
 # TEMPLATE DIRECTORIES AND PROCESSORS
 
@@ -179,6 +181,7 @@ INSTALLED_APPS = (
     'captcha',
     'south',
     'tastypie',
+    'tendenci.libs.model_report',
 
     'tendenci.apps.entities',
     'tendenci.core.base',
@@ -212,6 +215,11 @@ INSTALLED_APPS = (
     'tendenci.addons.memberships',
     'tendenci.addons.corporate_memberships',
     'tendenci.addons.locations',
+    'tendenci.addons.industries',
+    'tendenci.addons.regions',
+    'tendenci.addons.educations',
+    'tendenci.addons.careers',
+    'tendenci.core.site_settings',
     'tendenci.addons.make_payments',
     'tendenci.apps.accountings',
     'tendenci.core.emails',
@@ -341,7 +349,12 @@ BROKER_PORT = 5672
 BROKER_USER = "guest"
 BROKER_PASSWORD = "guest"
 BROKER_VHOST = "/"
-CELERY_IS_ACTIVE = True
+CELERY_IS_ACTIVE = False
+
+# USE_SUBPROCESS - in places like exports and long-running
+# processes that can timeout, subprocess will be used
+# if this setting is True
+USE_SUBPROCESS = True
 
 # --------------------------------------#
 # Hackstack Search
@@ -378,7 +391,7 @@ PAYFLOWLINK_PARTNER = ''
 PAYPAL_MERCHANT_LOGIN = ''
 PAYFLOWLINK_POST_URL = 'https://payflowlink.paypal.com'
 
-# PAYPAL 
+# PAYPAL
 PAYPAL_POST_URL = 'https://www.paypal.com/cgi-bin/webscr'
 # for test mode
 # PAYPAL_POST_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'

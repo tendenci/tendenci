@@ -1,0 +1,124 @@
+{% comment %}
+Salonify Theme - homepage.html
+{% endcomment %}
+
+{% load base_filters %}
+{% load base_tags %}
+{% load cache %}
+{% load story_tags %}
+{% load theme_tags %}
+{% load i18n %}
+
+{% theme_extends 'base.html' %}
+
+{% block extra_head %}
+{{ block.super }}
+    <link rel="shortcut icon" href="{{ THEME_URL }}media/images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ THEME_URL }}media/images/apple-touch-icon.png">
+    <link rel="stylesheet/less" href="{{ LOCAL_THEME_URL }}media/css/styles.less" type="text/css" media="screen" />
+    <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,200,300' rel='stylesheet' type='text/css'>
+    <script src="{{ THEME_URL }}media/js/less-1.1.3.min.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/libs/modernizr-1.6.min.js" type="text/javascript"></script>
+{% endblock extra_head %}
+
+{% block body_ids %}home{% endblock body_ids %}
+{% block body_classes %}home{% endblock body_classes %}
+
+{% block html_body %}
+<div id="wrapper">
+    {% theme_include "header.html" %}
+    <div class="container clearfix">
+        <div id="left-column" class="clearfix">
+            <section id="rotator">
+                {% theme_include "base/messages.html" %}
+                <div id="stories">
+                    {% list_stories as featured_stories limit=4 tags="rotator" %}
+                    {% if featured_stories %}
+                    {% for story in featured_stories %}
+                    <div class="story story-{{ forloop.counter }}">
+                        {% if story.image %}<img src="{% image_url story.image size=700x408 crop=true quality=90 %}" />{% endif %}
+                        <div class="blurb">
+                            <h2><a href="{{ story.full_story_link }}">{{ story.title }}</a></h2>
+                            <p>{{ story.content|striptags|truncatewords:"16"|safe }} <a class="readmore" href="{{ story.full_story_link }}">Read more</a></p>
+                            <span id="story-label-{{ forloop.counter0 }}" class="story-label">{{ story.title|truncatewords:"1"|slice:"-4" }}</span>
+                        </div>
+                    {% if admin %}
+                        <div class="admin-inline">
+                          <div class="admin-links clear-block"><a href="{% url story.edit story.pk %}?next={{ request.path }}" title="Edit Story" class="edit-story">Edit {{ story.title|title }} Story</a></div>
+                        </div>
+                    {% endif %}
+                    </div><!-- /.story-{{ forloop.counter }} -->
+                    {% endfor %}
+                    {% else %}
+                    {% for item in 4|make_range %}
+                    <div class="story">
+                        <img src="{% stock_image_url '940x544' %}" alt="Tendenci sample image" />
+                        <div class="blurb">
+                            <h2><a href="/">Sample Story {{ forloop.counter }}</a></h2>
+                            <p>Great new content. {% if request.user.is_authenticated %}<a href="/stories/add/?tags=rotator">Add your first story</a> to take the place of this photo. Be sure to tag it <strong>rotator</strong> so that it shows up in this area.{% endif %}</p>
+                            <span id="story-label-{{ forloop.counter0 }}" class="story-label">Sample {{ forloop.counter }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <div id="stories-pager" class="clearfix"></div>
+           </section><!-- /#rotator -->
+
+            <section id="home-content" class="clearfix">
+                    <div class="space" id="space_2">
+                        {% space_include MODULE_THEME_SPACE_2 %}
+                    </div>
+                    <div id="three-spaces">
+                        <div class="space" id="space_3">
+                            {% space_include MODULE_THEME_SPACE_3 %}
+                        </div>
+                        <div class="space" id="space_4">
+                            {% space_include MODULE_THEME_SPACE_4 %}
+                        </div>
+                        <div class="space" id="space_5">
+                            {% space_include MODULE_THEME_SPACE_5 %}
+                        </div>
+                    </div><!-- /#three-spaces -->
+            </section><!-- /#home-content -->
+        </div><!-- /#left-column -->
+
+        <div id="right-column" class="clearfix">
+            {% theme_include "sidebar.html" %}
+        </div><!-- /#right-column -->
+
+    </div><!-- /.container -->
+
+    <div class="container">
+        <section id="footer">
+            <footer class="clearfix">
+                {% theme_include "footer.html" %}
+            </footer>
+        </section><!-- /#footer -->
+    </div><!-- /.container -->
+
+</div><!-- /wrapper -->
+{% endblock %}
+
+{% block extra_body %}
+{{ block.super }}
+    <script src="{{ THEME_URL }}media/js/jquery.cycle.all.min.js" type="text/javascript"></script>
+    <script src="{{ THEME_URL }}media/js/jquery.hint.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    function clearDefault(val) {  
+        if (val.defaultValue==val.value) val.value = "" 
+    } 
+    $(document).ready(function() {
+        $("#stories").cycle({
+            timeout: 6000,
+            speed: 2000,
+            pager: '#stories-pager',
+            pagerEvent: 'mouseover',
+            pagerAnchorBuilder: function(index, panel) { 
+                var title = $('#story-label-'+index).text();
+      return '<a href="#">'+ title +'<div class="triangle-right-color">&nbsp;</div></a>'; 
+            }
+        });
+    });
+    </script>
+{% endblock extra_body %}

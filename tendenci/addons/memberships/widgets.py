@@ -1,12 +1,19 @@
 import datetime
+from itertools import chain
+from collections import OrderedDict
+
+from django.contrib.auth.models import User
 from django import forms
 from django.forms.widgets import RadioFieldRenderer, RadioInput
 from django.utils.safestring import mark_safe
 from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
+from django.forms.widgets import CheckboxSelectMultiple, CheckboxInput
 from django.forms.util import flatatt
-from tendenci.addons.memberships.models import NOTICE_TYPES
+
+from tendenci.apps.profiles.models import Profile
+from tendenci.addons.memberships.models import NOTICE_TYPES, MembershipDefault
 
 
 PERIOD_UNIT_CHOICE = (
@@ -379,3 +386,162 @@ class HorizontalRule(Output):
     Outputs text.  Using class name to identify the type
     of text that is being output.
     """
+
+
+class AppFieldSelectionWidget(CheckboxSelectMultiple):
+    required_fields = ('first_name', 'last_name', 'email',
+                       'membership_type', 'payment_method',
+                       'status', 'status_detail')
+    user_fields = OrderedDict([(field.name, field) \
+                        for field in User._meta.fields \
+                        if field.get_internal_type() != 'AutoField' \
+                              and field.name not in ('last_login',
+                                                     'date_joined',
+                                                     'is_active',
+                                                     'is_superuser',
+                                                     'is_staff')])
+    profile_fields = OrderedDict([(field.name, field) \
+                        for field in Profile._meta.fields \
+                        if field.get_internal_type() != 'AutoField' and \
+                        field.name not in ['user', 'guid']])
+    membership_fields = OrderedDict([(field.name, field) \
+                        for field in MembershipDefault._meta.fields \
+                        if field.get_internal_type() != 'AutoField' and \
+                        field.name not in ['user', 'guid']])
+    all_fields_dict = {}
+    all_fields_dict.update(user_fields)
+    all_fields_dict.update(profile_fields)
+    all_fields_dict.update(membership_fields)
+
+    admin_fields_tuple = ('admin_notes', 'member_number', 'status',
+                         'status_detail', 'join_dt', 'expire_dt', 'renew_dt',
+                         'application_approved', 'application_approved_dt',
+                         'application_denied',
+                        'application_approved_denied_dt',
+                         )
+    user_info_tuple = ('salutation', 'initials',
+                      'first_name', 'last_name', 'email', 'username',
+                      'password', 'phone', 'address', 'address2',
+                      'city', 'state', 'zipcode', 'county', 'country', 'url',
+                      'display_name', 'mailing_name', 'company',
+                      'position_title', 'position_assignment', 'sex',
+                      'address_type', 'phone2', 'fax', 'work_phone',
+                      'home_phone', 'mobile_phone', 'email2', 'url2',
+                      'dob', 'ssn', 'spouse', 'department', 'notes',
+                      'hide_in_search', 'hide_address', 'hide_email',
+                      'hide_phone'
+                      )
+    membeship_info_tuple = ('certifications', 'work_experience',
+                           'referral_source', 'referral_source_other',
+                           'referral_source_member_name',
+                           'referral_source_member_number',
+                           'affiliation_member_number',
+                           'primary_practice', 'how_long_in_practice',
+                           'bod_dt', 'chapter', 'areas_of_expertise',
+                           'organization_entity', 'corporate_entity',
+                           'corporate_membership_id', 'home_state',
+                           'year_left_native_country', 'network_sectors',
+                           'networking', 'government_worker',
+                           'government_agency', 'license_number',
+                           'license_state',
+                           )
+    # list of the names of all fields
+    all_fields_tuple = admin_fields_tuple + user_info_tuple + \
+                        membeship_info_tuple + \
+                        ('membership_type', 'payment_method',
+                         'user_group', 'industry', 'region')
+
+    all_fields = OrderedDict([
+             ('user', {'title': 'Section 1. User Information',
+                           'fields': user_info_tuple,
+                           'options': []}),
+             ('membership', {'title': 'Section 2. Membership Information',
+                           'fields': membeship_info_tuple,
+                           'options': []}),
+             ('membership_type', {'title': 'Section 3. Membership Type',
+                           'fields': ['membership_type'],
+                           'options': []}),
+             ('payment', {'title': 'Section 4. Payment',
+                           'fields': ['payment_method'],
+                           'options': []}),
+             # commenting out because education & career are
+             # not in membership_default
+#             ('section5', {'title': 'Education & Career',
+#                           'fields': []}),
+             ('user_group', {'title': 'Section 5. User Groups',
+                           'fields': ['user_group'],
+                           'options': []}),
+             ('industry', {'title': 'Section 6. Industry',
+                           'fields': ['industry'],
+                           'options': []}),
+             ('region', {'title': 'Section 7. Region',
+                           'fields': ['region'],
+                           'options': []}),
+             ('admin', {'title': 'Section 8. Admin Only',
+                           'fields': admin_fields_tuple,
+                           'options': []}),
+                                        ])
+    # TODO: add directory section
+
+    def render(self, name, value, attrs=None, choices=()):
+        if value is None:
+            value = []
+        has_id = attrs and 'id' in attrs
+        final_attrs = self.build_attrs(attrs, name=name)
+        output = [u'<div>']
+        # Normalize to strings
+        str_values = set([force_unicode(v) for v in value])
+
+        key = ''
+        for i, (option_value, option_label) in enumerate(chain(self.choices,
+                                                               choices)):
+            if option_value in self.all_fields['user']['fields']:
+                key = 'user'
+            elif option_value in self.all_fields['membership']['fields']:
+                key = 'membership'
+            elif option_value in self.all_fields['membership_type']['fields']:
+                key = 'membership_type'
+            elif option_value in self.all_fields['payment']['fields']:
+                key = 'payment'
+            elif option_value in self.all_fields['user_group']['fields']:
+                key = 'user_group'
+            elif option_value in self.all_fields['industry']['fields']:
+                key = 'industry'
+            elif option_value in self.all_fields['region']['fields']:
+                key = 'region'
+            elif option_value in self.all_fields['admin']['fields']:
+                key = 'admin'
+            if key:
+                self.all_fields[key]['options'].append((i,
+                                                        option_value,
+                                                        option_label))
+        for key in self.all_fields.keys():
+            output.append(u'<div style="clear: both;"></div>')
+            output.append(u'<h3>')
+            output.append(self.all_fields[key]['title'])
+            output.append(u'</h3>')
+            output.append(u'<div class="fields-section">')
+            for i, option_value, option_label in \
+                    self.all_fields[key]['options']:
+                # If an ID attribute was given, add a numeric index as a
+                # suffix, so that the checkboxes don't all have the same
+                # ID attribute.
+                if has_id:
+                    final_attrs = dict(final_attrs, id='%s_%s' % (attrs['id'],
+                                                                  i))
+                    label_for = u' for="%s"' % final_attrs['id']
+                else:
+                    label_for = ''
+
+                cb = CheckboxInput(final_attrs,
+                                   check_test=lambda value: value in str_values)
+                option_value = force_unicode(option_value)
+                rendered_cb = cb.render(name, option_value)
+                option_label = conditional_escape(force_unicode(option_label))
+                output.append(u'<div class="field-box select-field"><label%s>%s %s</label></div>' % (label_for,
+                                                                    rendered_cb,
+                                                                    option_label))
+            output.append(u'</div>')
+        output.append(u'</div>')
+        return mark_safe(u'\n'.join(output))
+

@@ -1,0 +1,28 @@
+{% extends "reports/base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% trans "Current Members Quick List" %}</h1>
+<div class="mems-wrap quick-list">
+{% if members %}
+<p><a href="{% url reports-members-quick-list %}?output=csv">
+    Download CSV File</a></p>
+    <table>
+        <tr>
+            <th>{% trans "Last Name" %}</th>
+            <th>{% trans "First Name" %}</th>
+            <th>{% trans "Company" %}</th>
+        </tr>
+        {% for member in members %}
+        <tr class="{% cycle 'even' 'odd' %}">
+            <td>{{ member.user.last_name }}</td>
+            <td>{{ member.user.first_name }}</td>
+            <td>{{ member.user.profile.company }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+{% trans "No active members." %}
+{% endif %}
+</div>
+{% endblock content %}

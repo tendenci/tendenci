@@ -25,7 +25,10 @@ FILE_EXTENTIONS = (
     '.jpeg',
     '.png',
     '.ico',
-    '.gif'
+    '.gif',
+    '.txt',
+    '.xml',
+    '.kml',
 )
 
 
@@ -83,11 +86,12 @@ class FileForm(forms.Form):
 
 
 class ThemeSelectForm(forms.Form):
-    THEME_CHOICES = ((x, x) for x in theme_choices())
-    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=THEME_CHOICES)
+    theme_edit = forms.ChoiceField(label=_('Theme:'), choices=[])
 
     def __init__(self, *args, **kwargs):
         super(ThemeSelectForm, self).__init__(*args, **kwargs)
+        THEME_CHOICES = ((x, x) for x in theme_choices())
+        self.fields['theme_edit'].choices = THEME_CHOICES
 
 
 class UploadForm(forms.Form):
@@ -104,4 +108,3 @@ class UploadForm(forms.Form):
         if not data.name.lower().endswith(FILE_EXTENTIONS):
             raise forms.ValidationError("This is not a valid file type to upload.")
         return data
-        

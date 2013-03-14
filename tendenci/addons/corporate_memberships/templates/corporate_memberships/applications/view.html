@@ -1,0 +1,158 @@
+{% extends "corporate_memberships/base.html" %}
+{% load base_filters %}
+{% load i18n %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+
+{% block title %}{% endblock %}
+{% block meta_description %}{% endblock %}
+{% block meta_keywords %}{% endblock %}
+{% block meta_canonical_url %}<link rel="canonical" href="" />{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.2.custom.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/timepicker.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<style>
+    .inline-block{
+        display: inline-block;
+    }
+    div.short-label{
+        width: 135px;
+    }
+    div.float-left{
+        float: left;
+        margin-right: 3px;
+    }
+    div.clear{
+        clear: both;
+    }
+    div.field-row{
+        margin: 5px 0;
+    }
+    div.admin-only-header{
+        color: #CC0000;
+    }
+    div.section-break{
+        margin: 2em 0 1em 0;
+    }
+    div.field-row{
+        margin-left: 2em;
+    }
+    div.float-right{
+        float: right;
+        margin-right: 1em;
+    }
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+<div class="application-form-wrap">
+{% corpmemb_nav request.user corporate_membership %} 
+   <h1>{% trans "View Corporate Membership Information" %}</h1>
+   
+   <div class="options float-right">
+         <div class="quick-options">
+            {% corpmemb_options request.user corporate_membership %}        
+         </div>
+         {% if corporate_membership.is_active %}
+        <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
+        {% endif %}
+    </div>
+     
+                    
+   {% for field_obj in app_fields %}
+        {% if field_obj.field_name == '' %}
+            {% if not forloop.last %}
+                <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
+                    <h2>{{ field_obj.label  }}</h2>
+                </div>
+            {% endif %}
+        {% else %}
+                <div class="field-row{% if field_obj.admin_only %} admin-only{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
+  
+                        {% if field_obj.field_name == 'reps' %}
+                            {% if field_obj.value %}
+                                <table width="70%">
+                                <tr>
+                                    <td class="header" width="55%">{% trans "Name" %}</td>
+                                    <td class="header" width="20%">{% trans "Is Dues Rep." %}</td>
+                                    <td class="header" width="20%">{% trans "Is Member Rep." %}</td>
+                                </tr>
+                                {% for rep in field_obj.value.all %}
+                                    <tr class="corp-rep">
+                                    <td><a href="{% url profile rep.user.username %}">
+                                        {{ rep.user.get_full_name }} ({{ rep.user.email  }})</a>
+                                        
+                                    </td>
+                                    <td>
+                                        {% if rep.is_dues_rep %}
+                                            {% trans "True" %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                    {% if rep.is_member_rep %}
+                                            {% trans "True" %}
+                                        {% endif %}
+                                    </td>
+                                    </tr>
+                                {% endfor %}
+                                </table>
+                                <div>&nbsp;</div>
+                                 {% if corporate_membership.status_detail != 'archive' %}
+                                <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add/Edit Representatives" %}</a></div>
+                                {% endif %}
+                            {% else %}
+                                <div>{% trans "No representatives available" %}</div>
+                                <div>&nbsp;</div>
+                                {% if corporate_membership.status_detail != 'archive' %}
+                                <div><a href="{% url corpmembership.edit_corp_reps corporate_membership.pk %}">{% trans "Add Representatives" %}</a></div>
+                                {% endif %}
+                            {% endif %} 
+                            
+                        {% else %}
+                            {% if field_obj.value != '' %}
+                            <div class="label{% if field_obj.short_label %} short-label{% endif %}{% if field_obj.required %} required{% endif %} {{ field_obj.field_div_class }}">
+                                {{ field_obj.label }}:
+                            </div>
+                            
+                            <div class="field-value {{ field_obj.field_div_class }}">
+                            {% if  field_obj.is_date %}
+                                {{ field_obj.value|date:'long' }}
+                            {% else %}
+                                {% if field_obj.field_name == 'url' %}
+                                {{ field_obj.value|safe|urlize }}
+                                {% else %}
+                                {{ field_obj.value }}
+                                {% endif %}
+                                {% if field_obj.field_name == 'payment_method' %}
+                                    {% if corporate_membership.invoice %}
+                                     - <a href="{% url invoice.view corporate_membership.invoice.id  %}">{% trans "View Invoice" %}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            </div>
+                    
+                            <div class="clear"></div>
+                            {% endif %}
+                        
+                      {% endif %}
+                                  
+                     </div>       
+        {% endif %}
+
+    {% endfor %}      
+    
+</div>
+<div class="clear"></div>
+</div>
+{% endblock %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+     
+{% endblock extra_body %}

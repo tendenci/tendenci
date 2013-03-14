@@ -1,0 +1,13 @@
+-r common.txt
+# The following packages are needed for Heroku.
+# You may not need them locally.
+
+# gevent for async workers
+gevent==0.13.8
+
+# Memcache
+pylibmc==1.2.2
+django-pylibmc-sasl==0.2.4
+
+# For Sentry
+raven==2.0.2

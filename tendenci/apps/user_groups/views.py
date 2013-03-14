@@ -1,3 +1,4 @@
+import subprocess
 from datetime import datetime
 from datetime import date
 from djcelery.models import TaskMeta
@@ -18,6 +19,10 @@ from django.http import HttpResponse
 from tendenci.core.base.http import Http403
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import get_notice_recipients, has_perm, get_query_filters, has_view_perm
+from tendenci.core.imports.forms import ImportForm
+from tendenci.core.imports.models import Import
+from tendenci.core.imports.utils import (extract_from_excel,
+                render_excel)
 from tendenci.apps.entities.models import Entity
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.event_logs.utils import request_month_range, day_bars
@@ -25,8 +30,9 @@ from tendenci.core.event_logs.views import event_colors
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.apps.user_groups.forms import GroupForm, GroupMembershipForm
 from tendenci.apps.user_groups.forms import GroupPermissionForm, GroupMembershipBulkForm
-from tendenci.apps.user_groups.importer.forms import UploadForm
-from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
+#from tendenci.apps.user_groups.importer.forms import UploadForm
+#from tendenci.apps.user_groups.importer.tasks import ImportSubscribersTask
+from tendenci.apps.user_groups.importer.utils import user_groups_import_process
 from tendenci.apps.notifications import models as notification
 
 
@@ -48,17 +54,9 @@ def search(request, template_name="user_groups/search.html"):
             groups = groups.select_related()
         groups = groups.order_by('slug')
 
-    log_defaults = {
-        'event_id' : 164000,
-        'event_data': '%s searched by %s' % ('Group', request.user),
-        'description': '%s searched' % 'Group',
-        'user': request.user,
-        'request': request,
-        'source': 'user_groups'
-    }
-    EventLog.objects.log(**log_defaults)
+    EventLog.objects.log()
 
-    return render_to_response(template_name, {'groups':groups}, 
+    return render_to_response(template_name, {'groups':groups},
         context_instance=RequestContext(request))
 
 def search_redirect(request):
@@ -72,34 +70,26 @@ def group_detail(request, group_slug, template_name="user_groups/detail.html"):
     group = get_object_or_404(Group, slug=group_slug)
 
     if not has_view_perm(request.user,'user_groups.view_group',group): raise Http403
-    
-    log_defaults = {
-        'event_id' : 165000,
-        'event_data': '%s (%d) viewed by %s' % (group._meta.object_name, group.pk, request.user),
-        'description': '%s viewed' % group._meta.object_name,
-        'user': request.user,
-        'request': request,
-        'instance': group,
-    }
-    EventLog.objects.log(**log_defaults)
-    
+
+    EventLog.objects.log(instance=group)
+
     groupmemberships = GroupMembership.objects.filter(group=group, 
                                                       status=True, 
                                                       status_detail='active'
                                                       ).order_by('member__last_name')
     #members = group.members.all()
     count_members = len(groupmemberships)
-    
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
-def group_add_edit(request, group_slug=None, 
-                   form_class=GroupForm, 
+def group_add_edit(request, group_slug=None,
+                   form_class=GroupForm,
                    template_name="user_groups/add_edit.html"):
     add, edit = False, False
     if group_slug:
         group = get_object_or_404(Group, slug=group_slug)
-       
+
         if not has_perm(request.user,'user_groups.change_group',group):
             raise Http403
         title = "Edit Group"
@@ -120,14 +110,14 @@ def group_add_edit(request, group_slug=None,
             if not group.id:
                 group.creator = request.user
                 group.creator_username = request.user.username
-                
+
             # set up user permission
             group.allow_user_view, group.allow_user_edit = form.cleaned_data['user_perms']
-                            
+
             group.owner =  request.user
             group.owner_username = request.user.username
             group = form.save()
-            
+
             if add:
                 # send notification to administrators
                 recipients = get_notice_recipients('module', 'groups', 'grouprecipients')
@@ -138,197 +128,140 @@ def group_add_edit(request, group_slug=None,
                             'request': request,
                         }
                         notification.send_emails(recipients,'group_added', extra_context)
-                    
-                log_defaults = {
-                    'event_id' : 161000,
-                    'event_data': '%s (%d) added by %s' % (group._meta.object_name, group.pk, request.user),
-                    'description': '%s added' % group._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group,
-                }
-                EventLog.objects.log(**log_defaults)                
-            if edit:
-                log_defaults = {
-                    'event_id' : 162000,
-                    'event_data': '%s (%d) edited by %s' % (group._meta.object_name, group.pk, request.user),
-                    'description': '%s edited' % group._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group,
-                }
-                EventLog.objects.log(**log_defaults)
-                
+
+            EventLog.objects.log(instance=group)
+
             return HttpResponseRedirect(group.get_absolute_url())
     else:
         if edit:
             form = form_class(instance=group, user=request.user)
         else:
             form = form_class(user=request.user)
-      
+
     return render_to_response(template_name, {'form':form, 'titie':title, 'group':group}, context_instance=RequestContext(request))
 
 
 @login_required
 def group_edit_perms(request, id, form_class=GroupPermissionForm, template_name="user_groups/edit_perms.html"):
     group_edit = get_object_or_404(Group, pk=id)
-    
+
     if request.method == "POST":
         form = form_class(request.POST, request.user, instance=group_edit)
     else:
         form = form_class(instance=group_edit)
-       
+
     if form.is_valid():
         group_edit.permissions = form.cleaned_data['permissions']
         group_edit.save()
         return HttpResponseRedirect(group_edit.get_absolute_url())
-   
-    return render_to_response(template_name, {'group':group_edit, 'form':form}, 
+
+    return render_to_response(template_name, {'group':group_edit, 'form':form},
         context_instance=RequestContext(request))
-    
+
 def group_delete(request, id, template_name="user_groups/delete.html"):
     group = get_object_or_404(Group, pk=id)
-    
+
     if not has_perm(request.user,'user_groups.delete_group',group): raise Http403
 
     if request.method == "POST":
         # send notification to administrators
         recipients = get_notice_recipients('module', 'groups', 'grouprecipients')
-        if recipients: 
+        if recipients:
             if notification:
                 extra_context = {
                     'object': group,
                     'request': request,
                 }
                 notification.send_emails(recipients,'group_deleted', extra_context)
-                    
-        log_defaults = {
-            'event_id' : 163000,
-            'event_data': '%s (%d) deleted by %s' % (group._meta.object_name, group.pk, request.user),
-            'description': '%s deleted' % group._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': group,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log(instance=group)
 
         group.delete()
         return HttpResponseRedirect(reverse('group.search'))
 
-    return render_to_response(template_name, {'group':group}, 
+    return render_to_response(template_name, {'group':group},
         context_instance=RequestContext(request))
 
 def group_membership_self_add(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
     user = get_object_or_404(User, pk=user_id)
-    
+
     if not has_view_perm(request.user,'user_groups.view_group', group) and not group.allow_self_add:
         raise Http403
-    
+
     group_membership = GroupMembership.objects.filter(member=user, group=group)
-    
-    if not group_membership:  
+
+    if not group_membership:
         group_membership = GroupMembership()
-        
+
         group_membership.group = group
         group_membership.member = user
         group_membership.creator_id = user.id
         group_membership.creator_username = user.username
         group_membership.owner_id =  user.id
-        group_membership.owner_username = user.username   
-        
+        group_membership.owner_username = user.username
+
         group_membership.save()
-    
-        log_defaults = {
-            'event_id' : 221000,
-            'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-            'description': '%s added' % group_membership._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': group_membership,
-        }
-        EventLog.objects.log(**log_defaults)     
-        
+
+        EventLog.objects.log(instance=group_membership)     
+
         messages.add_message(request, messages.SUCCESS, 'Successfully added yourself to group %s' % group)
     else:
         messages.add_message(request, messages.INFO, 'You are already in the group %s' % group)
-        
+
     return HttpResponseRedirect(reverse('group.search'))
 
 def group_membership_self_remove(request, slug, user_id):
     group = get_object_or_404(Group, slug=slug)
-    
+
     if not has_view_perm(request.user,'user_groups.view_group', group) and not group.allow_self_remove:
         raise Http403
 
     user = get_object_or_404(User, pk=user_id)
-    
+
     group_membership = GroupMembership.objects.filter(member=user, group=group)
-    
+
     if group_membership:
         group_membership = group_membership[0]
         if group_membership.member == user:
-            log_defaults = {
-                'event_id' : 223000,
-                'event_data': '%s (%d) deleted by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                'description': '%s deleted' % group_membership._meta.object_name,
-                'user': request.user,
-                'request': request,
-                'instance': group_membership,
-            }
-            EventLog.objects.log(**log_defaults)
+
+            EventLog.objects.log(instance=group_membership)
             group_membership.delete()
             messages.add_message(request, messages.SUCCESS, 'Successfully removed yourself from group %s' % group)
     else:
         messages.add_message(request, messages.INFO, 'You are not in the group %s' % group)
-                    
+
     return HttpResponseRedirect(reverse('group.search'))
 
-def groupmembership_bulk_add(request, group_slug, 
+def groupmembership_bulk_add(request, group_slug,
                         form_class=GroupMembershipBulkForm,
                         template_name="user_groups/member_add.html"):
     group = get_object_or_404(Group, slug=group_slug)
-    
+
     user_count = User.objects.all().count()
     if user_count > 1000:
         return HttpResponseRedirect(reverse('group.adduser_redirect'))
-    
+
     if request.method == 'POST':
         form = form_class(group, request.POST)
         if form.is_valid():
             members = form.cleaned_data['members']
-            
+
             old_members = GroupMembership.objects.filter(group=group)
-            
+
             #delete removed groupmemberships
             if members:
                 for old_m in old_members:
                     try:
                         members.get(pk=old_m.member.pk)
                     except User.DoesNotExist:
-                        log_defaults = {
-                            'event_id' : 223000,
-                            'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, request.user),
-                            'description': '%s deleted' % old_m._meta.object_name,
-                            'user': request.user,
-                            'request': request,
-                            'instance': old_m,
-                        }
-                        EventLog.objects.log(**log_defaults)
+                        EventLog.objects.log(instance=old_m)
                         old_m.delete()
             else: #when members is None
                 for old_m in old_members:
-                    log_defaults = {
-                        'event_id' : 223000,
-                        'event_data': '%s (%d) deleted by %s' % (old_m._meta.object_name, old_m.pk, request.user),
-                        'description': '%s deleted' % old_m._meta.object_name,
-                        'user': request.user,
-                        'request': request,
-                        'instance': old_m,
-                    }
-                    EventLog.objects.log(**log_defaults)
+                    EventLog.objects.log(instance=old_m)
                     old_m.delete()
-                    
+
             for m in members:
                 try:
                     group_membership = GroupMembership.objects.get(group=group, member=m)
@@ -336,37 +269,29 @@ def groupmembership_bulk_add(request, group_slug,
                     group_membership = GroupMembership(group=group, member=m)
                     group_membership.creator_id = request.user.id
                     group_membership.creator_username = request.user.username
-                
+
                 group_membership.role=form.cleaned_data['role']
                 group_membership.status=form.cleaned_data['status']
                 group_membership.status_detail=form.cleaned_data['status_detail']
                 group_membership.owner_id =  request.user.id
                 group_membership.owner_username = request.user.username
-                
+
                 group_membership.save()
 
-                log_defaults = {
-                    'event_id' : 221000,
-                    'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                    'description': '%s added' % group_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group_membership,
-                }
-                EventLog.objects.log(**log_defaults)
+                EventLog.objects.log(instance=group_membership)
             return HttpResponseRedirect(group.get_absolute_url())
     else:
         member_label = request.GET.get('member_label', 'username')
         form = form_class(group, member_label=member_label)
 
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
-    
-def groupmembership_add_edit(request, group_slug, user_id=None, 
-                             form_class=GroupMembershipForm, 
+
+def groupmembership_add_edit(request, group_slug, user_id=None,
+                             form_class=GroupMembershipForm,
                              template_name="user_groups/member_add_edit.html"):
     add, edit = None, None
     group = get_object_or_404(Group, slug=group_slug)
-    
+
     if user_id:
         user = get_object_or_404(User, pk=user_id)
         group_membership = get_object_or_404(GroupMembership, member=user, group=group)
@@ -391,27 +316,8 @@ def groupmembership_add_edit(request, group_slug, user_id=None,
             group_membership.owner_username = request.user.username
 
             group_membership.save()
-            if add:
-                log_defaults = {
-                    'event_id' : 221000,
-                    'event_data': '%s (%d) added by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                    'description': '%s added' % group_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group_membership,
-                }
-                EventLog.objects.log(**log_defaults)                
-            if edit:
-                log_defaults = {
-                    'event_id' : 222000,
-                    'event_data': '%s (%d) edited by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-                    'description': '%s edited' % group_membership._meta.object_name,
-                    'user': request.user,
-                    'request': request,
-                    'instance': group_membership,
-                }
-                EventLog.objects.log(**log_defaults)
-                            
+
+            EventLog.objects.log(instance=group_membership)       
             
             return HttpResponseRedirect(group.get_absolute_url())
     else:
@@ -426,27 +332,20 @@ def groupmembership_delete(request, group_slug, user_id, template_name="user_gro
     group_membership = get_object_or_404(GroupMembership, group=group, member=user)
     if not has_perm(request.user,'user_groups.delete_groupmembership',group_membership):
         raise Http403
-    
+
     if request.method == 'POST':
-        log_defaults = {
-            'event_id' : 223000,
-            'event_data': '%s (%d) deleted by %s' % (group_membership._meta.object_name, group_membership.pk, request.user),
-            'description': '%s deleted' % group_membership._meta.object_name,
-            'user': request.user,
-            'request': request,
-            'instance': group_membership,
-        }
-        EventLog.objects.log(**log_defaults)
+
+        EventLog.objects.log(instance=group_membership)
         group_membership.delete()
         messages.add_message(request, messages.SUCCESS, 'Successfully removed %s from group %s' % (user.get_full_name(), group))
         return HttpResponseRedirect(group.get_absolute_url())
-    
+
     return render_to_response(template_name, locals(), context_instance=RequestContext(request))
 
 
 def _events_chart(from_date, to_date, event_ids):
     "Returns events charts for provided date range and event ids"
-    
+
     data = EventLog.objects.all()\
             .filter(create_dt__gte=from_date)\
             .filter(create_dt__lte=to_date)\
@@ -456,11 +355,11 @@ def _events_chart(from_date, to_date, event_ids):
             .annotate(count=Count('pk'))\
             .order_by('day', 'event_id')
     return day_bars(data, from_date.year, from_date.month, 100, event_colors)
-    
+
 
 @staff_member_required
 def users_added_report(request, kind):
-    
+
     if kind == 'added':
         event_ids = (121000, 121100, 123001, 123103)
         title = 'Site Users Added Report'
@@ -469,26 +368,26 @@ def users_added_report(request, kind):
         title = 'Contacts Report - Referral Analysis Report (all contacts)'
     else:
         raise NotImplementedError('kind "%s" not supported' % kind)
-    
+
     from_date, to_date = request_month_range(request)
     queryset = EventLog.objects.all()
     queryset = queryset.filter(create_dt__gte=from_date)
     queryset = queryset.filter(create_dt__lte=to_date)
-    
+
     chart_data = _events_chart(from_date, to_date, event_ids)
-    
+
     data = queryset.filter(event_id=221000)\
             .filter()\
             .values('headline')\
             .annotate(count=Count('pk'))\
             .order_by('-count')
 
-    return render_to_response('reports/users_added.html', 
+    return render_to_response('reports/users_added.html',
                               {'data': data, 'chart_data': chart_data,
                                'report_title': title,
                                'entities': Entity.objects.all().order_by('entity_name'),
                                'site': Site.objects.get_current(),
-                               'date_range': (from_date, to_date)}, 
+                               'date_range': (from_date, to_date)},
                               context_instance=RequestContext(request))
 
 def group_member_export(request, group_slug):
@@ -508,7 +407,7 @@ def group_member_export(request, group_slug):
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
     sheet = book.add_sheet('Group Members')
-    
+
     # the key is what the column will be in the
     # excel sheet. the value is the database lookup
     # Used OrderedDict to maintain the column order
@@ -550,7 +449,7 @@ def group_member_export(request, group_slug):
     # Append the heading to the list of values that will
     # go into the excel sheet
     values_list.insert(0, group_mappings.keys())
-    
+
     # excel date styles
     default_style = xlwt.Style.default_style
     datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
@@ -579,32 +478,32 @@ def group_subscriber_export(request, group_slug):
     Export all group members for a specific group
     """
     group = get_object_or_404(Group, slug=group_slug)
-    
+
     # if they can edit it, they can export it
     if not has_perm(request.user,'user_groups.change_group', group):
         raise Http403
-    
+
     import xlwt
     from ordereddict import OrderedDict
     from django.db import connection
     from tendenci.apps.forms_builder.forms.models import FieldEntry
-    
+
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
     sheet = book.add_sheet('Group Subscribers')
-    
+
     # excel date styles
     default_style = xlwt.Style.default_style
     datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
     date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
-    
+
     entries = FieldEntry.objects.filter(entry__subscriptions__group=group).distinct()
     row_index = {}
     col_index = {}
-    
+
     for entry in entries:
         val = entry.value
-        
+
         if entry.entry.pk in row_index:
             # get the subscriber's row number
             row = row_index[entry.entry.pk]
@@ -612,7 +511,7 @@ def group_subscriber_export(request, group_slug):
             # assign the row if it is not yet available
             row = len(row_index.keys()) + 1
             row_index[entry.entry.pk] = row
-            
+
         if entry.field.label in col_index:
             # get the entry's col number
             col = col_index[entry.field.label]
@@ -622,7 +521,7 @@ def group_subscriber_export(request, group_slug):
             col = len(col_index.keys())
             col_index[entry.field.label] = col
             sheet.write(0, col, entry.field.label, style=default_style)
-            
+
         # styles the date/time fields
         if isinstance(val, datetime):
             style = datetime_style
@@ -630,7 +529,7 @@ def group_subscriber_export(request, group_slug):
             style = date_style
         else:
             style = default_style
-        
+
         sheet.write(row, col, val, style=style)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
@@ -656,11 +555,11 @@ def group_all_export(request, group_slug):
     # create the excel book and sheet
     book = xlwt.Workbook(encoding='utf8')
     sheet = book.add_sheet('Group Members and Subscribers')
-    
+
     #initialize indexes
     row_index = {}
     col_index = {}
-    
+
     #---------
     # MEMBERS
     #---------
@@ -668,7 +567,7 @@ def group_all_export(request, group_slug):
     default_style = xlwt.Style.default_style
     datetime_style = xlwt.easyxf(num_format_str='mm/dd/yyyy hh:mm')
     date_style = xlwt.easyxf(num_format_str='mm/dd/yyyy')
-    
+
     # the key is what the column will be in the
     # excel sheet. the value is the database lookup
     # Used OrderedDict to maintain the column order
@@ -718,11 +617,11 @@ def group_all_export(request, group_slug):
         # Write the data enumerated to the excel sheet
         for row, row_data in enumerate(values_list):
             for col, val in enumerate(row_data):
-                
+
                 if not row in row_index:
                     # assign the row if it is not yet available
                     row_index[row] = row + 1
-                
+
                 # styles the date/time fields
                 if isinstance(val, datetime):
                     style = datetime_style
@@ -730,18 +629,18 @@ def group_all_export(request, group_slug):
                     style = date_style
                 else:
                     style = default_style
-                
+
                 sheet.write(row + 1, col, val, style=style)
-    
+
     #-------------
     # Subscribers
     #-------------
     entries = FieldEntry.objects.filter(entry__subscriptions__group=group).distinct()
-    
+
     for entry in entries:
         val = entry.value
         field = entry.field.label.lower().replace(" ", "_")
-        
+
         if "subscriber %s" % str(entry.entry.pk) in row_index:
             # get the subscriber's row number
             row = row_index["subscriber %s" % str(entry.entry.pk)]
@@ -749,7 +648,7 @@ def group_all_export(request, group_slug):
             # assign the row if it is not yet available
             row = len(row_index.keys()) + 1
             row_index["subscriber %s" % str(entry.entry.pk)] = row
-        
+
         if field in col_index:
             # get the entry's col number
             col = col_index[field]
@@ -759,7 +658,7 @@ def group_all_export(request, group_slug):
             col = len(col_index.keys())
             col_index[field] = col
             sheet.write(0, col, field, style=default_style)
-            
+
         # styles the date/time fields
         if isinstance(val, datetime):
             style = datetime_style
@@ -767,7 +666,7 @@ def group_all_export(request, group_slug):
             style = date_style
         else:
             style = default_style
-        
+
         sheet.write(row, col, val, style=style)
 
     response = HttpResponse(mimetype='application/vnd.ms-excel')
@@ -775,46 +674,49 @@ def group_all_export(request, group_slug):
     book.save(response)
     return response
 
-def group_subscriber_import(request, group_slug, form_class=UploadForm, template="user_groups/import_subscribers.html"):
+def group_subscriber_import(request, group_slug, template="user_groups/import_subscribers.html"):
     """
     Import subscribers for a specific group
     """
-    group = get_object_or_404(Group, slug=group_slug)
-    
-    # if they can edit, they can export
-    if not has_perm(request.user,'user_groups.change_group', group):
-        raise Http403
+    raise Http404
 
-    if request.method == 'POST':
-        form = form_class(request.POST, request.FILES)
-        if form.is_valid():
-            csv = form.save(commit=False)
-            csv.group = group
-            csv.creator = request.user
-            csv.creator_username = request.user.username
-            csv.owner = request.user
-            csv.owner_username = request.user.username
-            csv.save()
-            
-            if not settings.CELERY_IS_ACTIVE:
-                # if celery server is not present 
-                # evaluate the result and render the results page
-                result = ImportSubscribersTask()
-                subs = result.run(group, csv.file.path)
-                return render_to_response('user_groups/import_subscribers_result.html', {
-                    'group':group,
-                    'subs':subs,
-                }, context_instance=RequestContext(request))
-            else:
-                result = ImportSubscribersTask.delay(group, csv.file.path)
-                return redirect('subscribers_import_status', group.slug, result.task_id)
-    else:
-        form = form_class()
-    
-    return render_to_response(template, {
-        'group':group,
-        'form':form,
-    }, context_instance=RequestContext(request))
+    # form_class=UploadForm
+    # group = get_object_or_404(Group, slug=group_slug)
+
+    # # if they can edit, they can export
+    # if not has_perm(request.user,'user_groups.change_group', group):
+    #     raise Http403
+
+    # if request.method == 'POST':
+    #     form = form_class(request.POST, request.FILES)
+    #     if form.is_valid():
+    #         csv = form.save(commit=False)
+    #         csv.group = group
+    #         csv.creator = request.user
+    #         csv.creator_username = request.user.username
+    #         csv.owner = request.user
+    #         csv.owner_username = request.user.username
+    #         csv.save()
+
+    #         if not settings.CELERY_IS_ACTIVE:
+    #             # if celery server is not present
+    #             # evaluate the result and render the results page
+    #             result = ImportSubscribersTask()
+    #             subs = result.run(group, csv.file.path)
+    #             return render_to_response('user_groups/import_subscribers_result.html', {
+    #                 'group':group,
+    #                 'subs':subs,
+    #             }, context_instance=RequestContext(request))
+    #         else:
+    #             result = ImportSubscribersTask.delay(group, csv.file.path)
+    #             return redirect('subscribers_import_status', group.slug, result.task_id)
+    # else:
+    #     form = form_class()
+
+    # return render_to_response(template, {
+    #     'group':group,
+    #     'form':form,
+    # }, context_instance=RequestContext(request))
 
 @login_required
 def subscribers_import_status(request, group_slug, task_id, template_name='user_groups/import_status.html'):
@@ -822,16 +724,16 @@ def subscribers_import_status(request, group_slug, task_id, template_name='user_
     Checks if a subscriber import is completed.
     """
     group = get_object_or_404(Group, slug=group_slug)
-    
+
     if not request.user.profile.is_superuser:
         raise Http403
-    
+
     try:
         task = TaskMeta.objects.get(task_id=task_id)
     except TaskMeta.DoesNotExist:
         #tasks database entries are not created at once.
         task = None
-    
+
     if task and task.status == "SUCCESS":
         subs = task.result
         return render_to_response('user_groups/import_subscribers_result.html', {
@@ -843,9 +745,89 @@ def subscribers_import_status(request, group_slug, task_id, template_name='user_
             'group':group,
             'task':task,
         }, context_instance=RequestContext(request))
-        
+
 @login_required
 def groupmembership_bulk_add_redirect(request, template_name='user_groups/bulk_add_redirect.html'):
     EventLog.objects.log()
 
     return render_to_response(template_name, {}, context_instance=RequestContext(request))
+
+
+@login_required
+def import_add(request, form_class=ImportForm,
+                template_name="user_groups/imports/user_groups_add.html"):
+    """Event Import Step 1: Validates and saves import file"""
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if request.method == 'POST':
+        form = form_class(request.POST, request.FILES)
+        if form.is_valid():
+            import_i = form.save(commit=False)
+            import_i.app_label = 'events'
+            import_i.model_name = 'event'
+            import_i.save()
+
+            EventLog.objects.log()
+
+            # reset the password_promt session
+            del request.session['password_promt']
+
+            return HttpResponseRedirect(
+                reverse('group.import_preview', args=[import_i.id]))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {'form': form},
+        context_instance=RequestContext(request))
+
+@login_required
+def import_preview(request, import_id,
+                    template_name="user_groups/imports/user_groups_preview.html"):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    import_i = get_object_or_404(Import, id=import_id)
+
+    user_groups_list, invalid_list = user_groups_import_process(import_i,
+                                                        preview=True)
+
+    return render_to_response(template_name, {
+        'total': import_i.total_created + import_i.total_invalid,
+        'user_groups_list': user_groups_list,
+        'import_i': import_i,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def import_process(request, import_id,
+                template_name="user_groups/imports/user_groups_process.html"):
+    """Import Step 3: Import into database"""
+
+    if not request.user.profile.is_superuser:
+        raise Http403   # admin only page
+
+    import_i = get_object_or_404(Import, id=import_id)
+
+    subprocess.Popen(['python', 'manage.py', 'import_groups', str(import_id)])
+
+    return render_to_response(template_name, {
+        'total': import_i.total_created + import_i.total_invalid,
+        "import_i": import_i,
+    }, context_instance=RequestContext(request))
+
+@login_required
+def import_download_template(request, file_ext='.csv'):
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    if file_ext == '.csv':
+        filename = "import-user-groups.csv"
+    else:
+        filename = "import-user-groups.xls"
+
+    import_field_list = ['name', 'label', 'type',
+                         'email_recipient', 'description',
+                          'auto_respond_priority', 'notes']
+    data_row_list = []
+
+    return render_excel(filename, import_field_list, data_row_list, file_ext)
+

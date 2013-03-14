@@ -3,6 +3,7 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 from django.views.generic.simple import direct_to_template, redirect_to
 from django.contrib import admin
+from tendenci.libs.model_report import report
 
 from tendenci.core.registry import autodiscover as reg_autodiscover
 from tendenci.core.newsletters.views import NewsletterGeneratorView
@@ -13,10 +14,18 @@ admin.autodiscover()
 # load the app_registry
 reg_autodiscover()
 
+# django model report
+report.autodiscover()
+
 # Admin Patterns
 urlpatterns = patterns('',
     (r'^admin/doc/', include('django.contrib.admindocs.urls')),
     (r'^admin/', include(admin.site.urls)),
+)
+
+#report patterns
+urlpatterns += patterns('',
+    (r'^model-report/', include('tendenci.libs.model_report.urls')),
 )
 
 # Tendenci Patterns
@@ -91,6 +100,7 @@ urlpatterns += patterns('',
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', 'tendenci.core.base.views.robots_txt', name="robots"),
+    url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.core.base.views.base_file'),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),

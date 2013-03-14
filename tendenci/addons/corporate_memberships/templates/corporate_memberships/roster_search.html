@@ -1,5 +1,6 @@
 {% extends "corporate_memberships/base.html" %}
 {% load pagination_tags %}
+{% load bootstrap_pagination_tags %}
 {% load avatar_tags %}
 {% load base_filters %}
 {% load corporate_memberships_tags %}
@@ -12,38 +13,72 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}bootstrap/bootstrap.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships-roster_search.css">
-{% endblock %}
+<style>
+     #corp-info table td{
+        border-top: none;
+    }
+    .member-details{
+        margin-left: 5px;
+    }
+    #id_first_name, #id_last_name, #id_email{
+        width: 200px;
+    }
+    #id_search_criteria, #id_search_text{
+        width: 150px;
+    }
+    #id_search_method{
+        width: 100px;
+    }
+    .float-left{
+        float: left;
+    }
+    .roster-search-form .form-field{
+        margin: 3px 0;
+    }
 
+</style>
+{% endblock %}
+   
 {% block body %}
 <div class="t">
 <div class="t-search">
- {% corpmemb_nav request.user corp_memb %}
+ {% corpmemb_nav request.user corp_membership %}
  
-<h1>{% blocktrans with corp_memb.name as member %}Roster - {{ member }}{% endblocktrans %}</h1>
+<h1>Roster - 
+    {% if corp_membership %}
+    <a href="{% url corpmembership.view corp_membership.id %}">{{ corp_profile.name }}</a>
+    {% else %}
+    ALL
+    {% endif %}
+    </h1>
 
-{% if corp_memb %}
+{% if corp_membership %}
 <div id="corp-info">
 	<table width="100%">
+	    {% if corp_profile.address %}
 		<tr>
 			<td width="20%">{% trans "Address:" %}</td>
-			<td width="80%" colspan="3">{{ corp_memb.address }} {{ corp_memb.address2 }}</td>
+			<td width="80%" colspan="3">{{ corp_profile.address }} {{ corp_profile.address2 }}</td>
 		</tr>
+		{% endif %}
+		{% if corp_profile.city or corp_profile.state or corp_profile.zip  %}
 		<tr>
 			<td width="20%">&nbsp;</td>
-			<td width="80%" colspan="3">{{ corp_memb.city }} {{ corp_memb.state }} {{ corp_memb.zip }}</td>
+			<td width="80%" colspan="3">{{ corp_profile.city }} {{ corp_profile.state }} {{ corp_profile.zip }}</td>
 		</tr>
+		{% endif %}
 		<tr>
 			<td width="20%">{% trans "Phone:" %}</td>
-			<td width="40%">{{ corp_memb.phone }}</td>
+			<td width="40%">{{ corp_profile.phone|phonenumber }}</td>
 			<td width="20%">{% trans "Join Date:" %}</td>
-			<td width="40%">{{ corp_memb.join_dt|date:'Y-n-j' }}</td>
+			<td width="40%">{{ corp_membership.join_dt|date:'Y-n-j' }}</td>
 		</tr>
 		<tr>
 			<td width="20%">{% trans "Member Type:" %}</td>
-			<td width="40%">{{ corp_memb.corporate_membership_type.name }}</td>
+			<td width="40%">{{ corp_membership.corporate_membership_type.name }}</td>
 			<td width="20%">{% trans "Expiration Date:" %}</td>
-			<td width="40%">{% if corp_memb.expiration_dt %}
-			    							{{ corp_memb.expiration_dt|date:'Y-n-j' }}
+			<td width="40%">{% if corp_membership.expiration_dt %}
+			    							{{ corp_membership.expiration_dt|date:'Y-n-j' }}
 			    							{% else %}
 			    							{% trans "Never Expire" %}
 			    							{% endif %}</td>
@@ -53,12 +88,28 @@
 </div>
 {% endif %}
 <br />
-<form name="roster-search" class="search-form" action="{% url corp_memb.roster_search %}" method="get">
-<div class="form-field">{{ form.name }}</div>
-<div class="form-field">
-{{ form.q }}
-<input type="submit" name="search" value="Search" />
+<form name="roster-search" class="roster-search-form" method="get">
+<div class="form-field">Company Name: {{ form.cm_id }}</div>
+<div class="float-left">
+    <div class="form-field">
+        First Name: {{ form.first_name }}
+    </div>
+    <div class="form-field">
+        Last Name:  {{ form.last_name }}
+    </div>
 </div>
+<div class="float-left">
+      <div class="form-field" style="margin-left: 3em;">
+        Email: {{ form.email }}
+    </div>  
+</div>
+<div class="clear-left"></div>
+<div class="form-field">
+    {{ form.search_criteria }} {{ form.search_text }} {{ form.search_method }}
+    <input type="submit" name="search" value="Search" />
+</div>
+
+
 </form>
 
 {% autopaginate memberships 10 %}
@@ -68,7 +119,7 @@
     {% endif %}
 
     {% for membership in memberships %}
-	    {% with membership.object as membership %}
+	    {% with membership|get_object as membership %}
 			<div class="member-line {% if membership.status_detail == 'inactive' %}inactive{% endif %}">
 				<div class="avatar">{% avatar membership.user 56 %}</div>
 				<div class="member-details">
@@ -87,7 +138,7 @@
 						<div>{% trans "Member Type: " %}{{ membership.membership_type }}</div>
 					</div>
 					<div class="member-right">
-						<div>{% trans "Join Date: " %}{{ membership.subscribe_dt|date:'Y-n-j' }}</div>
+						<div>{% trans "Join Date: " %}{{ membership.join_dt|date:'Y-n-j' }}</div>
 						<div>{% trans "Expiration Date: " %}{% if membership.expire_dt %}
 				    							{{ membership.expire_dt|date:'Y-n-j' }}
 				    							{% else %}

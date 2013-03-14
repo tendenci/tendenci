@@ -1,87 +1,124 @@
 Local Installation
 ==================
 
-Make sure you have Python 2.6 or 2.7 installed. Other versions of Python are not supported in the current build. 
+You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs.
 
-Set up environment
-~~~~~~~~~~~~~~~~~~
+Pre-config
+----------
 
-Our preferred way is to use virtualenv with virtualenvwrapper to create an isolated Python environment. 
+Install `pip <http://www.pip-installer.org/>`_:
+::
 
-- Install virtualenv
-  ::
+    sudo easy_install pip
+
+Install `virtualenv <http://www.virtualenv.org/>`_:
+::
 
     pip install virtualenv
-    pip install virtualenvwrapper
 
-- Add the following lines to your .bashrc and restart your shell
-  ::
-
-    export WORKON_HOME=$HOME/.virtualenv
-    source /usr/local/bin/virtualenvwrapper.sh
-    export PIP_VIRTUALENV_BASE=$WORKON_HOME
-    export PIP_RESPECT_VIRTUALENV=true
-
-- Make a virtualenv called ``tendenci``
-  ::
-
-    mkvirtualenv tendenci
-
-- Activate the virtual environment
-  ::
-
-    workon tendenci
-
-Pull Tendenci code
-~~~~~~~~~~~~~~~~~~
-
-Clone project. This creates the Tendenci folder in you current working directory
+If you are using OS X, you may need to sudo that command with:
 ::
 
-    git clone git@github.com:tendenci/tendenci.git
+    sudo pip install virtualenv
 
-Install dependencies
-~~~~~~~~~~~~~~~~~~~~
+You'll also need to have Git set up (see `this Github help article <https://help.github.com/articles/set-up-git>`_ for instructions).
+
+On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
+
+
+Setting up the database
+-----------------------
+
+Tendenci is designed for use with PostgreSQL. You will need to have a PostgreSQL server running locally. If you are on OS X, we recommend `Postgres.app <http://postgresapp.com/>`_ to get up and running fast.
+
+With Postgres.app installed, you can create a database from Terminal:
 ::
 
-    cd tendenci
-    pip install reportlab==2.5
-    pip install -r scripts/requirements.txt
+    psql -h localhost -c "CREATE DATABASE tendenci"
 
-Setup local settings (optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can also create a database in your GUI of choice (recommended: `PGAdmin <http://www.pgadmin.org/>`_).
 
-At this point, we recommend you setup local settings. You can do this by renaming ``local_settings_sample.py`` to ``local_settings.py`` and uncommenting the necessary sections. This includes ``DEBUG``, the ``ADMINS`` list, the root urls (which is based on the folder you install the project to), and possibly setting up a database other than the default sqlite3. We recommend MySQL.
+For more on installing PostgreSQL for Django check the docs at https://docs.djangoproject.com/en/dev/ref/databases/#postgresql-notes.
 
-Create database tables
-~~~~~~~~~~~~~~~~~~~~~~
+
+Downloading Tendenci
+--------------------
+
+Make a folder for your site and cd into it. Replace 'sitename' with the name of your site.
 ::
 
-    python manage.py syncdb
-    python manage.py migrate
-    python manage.py update_settings
+    mkdir sitename
+    cd sitename
 
-Install and select your theme
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are multiple themes available to use in ``/templates/themes/``. You can install (bulletpoints, for example), by running the following commands:
-
+It's best practice to make a virtual environment for your site. You will need `virtualenv <http://www.virtualenv.org/>`_ installed for the next step. If you don't have it, you can install it with ``pip install virtualenv``. Make a virtual environment called 'venv' and activate it.
 ::
 
-    cp -r templates/themes/bulletpoints themes/bulletpoints
-    python manage.py set_theme bulletpoints
+    virtualenv venv
+    source venv/bin/activate
 
-Now you can test your site by running the command locally:
+Install Tendenci. This download and install step may take a few minutes.
 ::
 
-    python manage.py runserver 0:8000
+    pip install tendenci
 
 
-Notes on database and index search engines
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setting up your site
+--------------------
 
-The above installation uses the ``sqlite3`` as the default database. For a 'large' database engine, check out django doc on how to get your database running.
+Once this is done, you can setup django project with the following:
+::
 
-Tendenci has the django haystack search built in. You can take advantage of global search and full-text search by setting up your own search engine. For information on how to install a search engine, see `their documentation`_.
+    create-tendenci-project
 
-.. _their documentation: http://django-haystack.readthedocs.org/en/latest/installing_search_engines.html
+.. Note::
+
+    If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the ``.env`` file that is created.
+
+Next, we install requirements for the project. We add tendenci videos as an example to use.
+::
+
+    pip install -r requirements/dev.txt
+
+Now we are ready to use our deploy script.
+::
+
+    python deploy.py
+
+.. Note:: 
+
+    If this is your first time using Tendenci, we **recommend** you install some default data and our twenty-thirteen theme to get a feel of what a full Tendenci site is like. You can install this data and theme with the command:
+    ::
+
+        python manage.py load_npo_defaults
+
+
+To create your login, run the following command and fill in the prompts:
+::
+
+    python manage.py createsuperuser
+
+Finally, we can use the runserver command so that we can view the site in our browser:
+::
+
+    python manage.py runserver
+
+Open http://127.0.0.1:8000/ in your browser to see your tendenci site!
+
+
+Advanced Options
+----------------
+
+**Optional:** If you want to use a different theme, you can set that theme with the following command, replacing `my-theme-name` with the name of your theme:
+::
+
+    python manage.py set_theme my-theme-name
+
+**Optional:** You can add additional local environment variables to the ``.env`` file by defining them as ``KEY='value'``. Settings that are sensitive (like passwords) or vary per environment should be added to this file. For example, to use Amazon's S3 service as a file storage backend, set the following key/value pairs in your ``.env`` file:
+::
+
+    AWS_ACCESS_KEY_ID='MY_ACCESS_KEY'
+    AWS_SECRET_ACCESS_KEY='MY_SECRET_KEY'
+    AWS_STORAGE_BUCKET_NAME='bucket_name'
+    AWS_LOCATION='new-site-name'
+
+If you are interested in deploying your site to Heroku, see our `online instructions <https://github.com/tendenci/tendenci/blob/master/docs/heroku.md>`_.

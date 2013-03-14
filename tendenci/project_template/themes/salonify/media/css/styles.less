@@ -1,0 +1,274 @@
+/*   
+Theme Name: Salonify
+Theme URI: http://tendenci.com/
+Description: Custom theme design for Tendenci
+Designer: Erica Bogdan
+Designer URI: http://schipul.com
+Developer: Felicia Bates
+Developer URI: http://schipul.com
+Version: 1.0
+*/
+
+// ------------------------------
+//  LESS CSS Styles
+// ------------------------------
+
+@import '/static/css/template-includes.less';
+
+@primary: #007799;
+@secondary: #666;
+@complimentary: #8ac1d6;
+
+@background: url("../images/bg.png");
+@text: #333;
+
+@alink: darken(@complimentary, 15%);
+@ahover: darken(@alink, 6%);
+@avisited: darken(@alink, 12%);
+
+@nav-height: 30px;
+
+@column: 60px;
+@base-width: (@column + 20)*12;
+
+.base-font() {
+    font-family: Helvetica, Arial, "sans-serif"; 
+    font:12px/1.231 sans-serif; 
+    *font-size:small;
+}
+.header-font(@size: 30px){
+    font-size: @size;
+}
+.grid(@count: 1){ margin: 0 10px 0 10px; width: @count*(@column+20)-20; float: left; }
+.inner(@wide: 50%){ float: left; width: @wide; }
+.center() { width: @base-width; margin: 0 auto;}
+.gradient-bg(@color, @alpha: 10) {
+   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(@color), to(darken(@color, @alpha)));
+   background-image: -webkit-linear-gradient(top, @color, darken(@color, @alpha));
+   background-image:    -moz-linear-gradient(top, @color, darken(@color, @alpha));
+   background-image:     -ms-linear-gradient(top, @color, darken(@color, @alpha));
+   background-image:      -o-linear-gradient(top, @color, darken(@color, @alpha));
+}
+
+/* ------------------------------
+    Reset HTML 
+------------------------------ */
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code, del, dfn, img, ins, kbd, q, samp,
+small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, #menu, section {
+  display: block;
+}
+
+/* ------------------------------
+    Base HTML Elements 
+------------------------------ */
+body { background: @background; font-family: Helvetica, Arial, "sans-serif"; font:13px/1.231 sans-serif; *font-size:small; color: @text; margin: 0; }
+
+h1, h1 a, h2, h2 a, h3, h3 a, h4, h4 a, h5, h5 a, h6, h6 a { font-family: 'Yanone Kaffeesatz', sans-serif; text-transform: uppercase; font-weight: 300; color: @primary; }
+
+h1, h1 a { font-size: 32px; line-height: 34px; text-decoration: none; margin-bottom: 10px; }
+h2, h2 a { font-size: 24px; line-height: 26px; text-decoration: none; margin-bottom: 10px; }
+h3, h3 a { font-size: 20px; line-height: 22px; text-decoration: none; margin-bottom: 6px; }
+h4, h4 a,
+h5, h5 a,
+h6, h6 a { font-size: 16px; line-height: 18px; text-decoration: none; margin-bottom: 6px; }
+
+a { color: @alink; }
+a:hover { color: @ahover; }
+a:visited, a:active { color: @avisited; }
+
+p { margin-bottom: 10px; line-height: 18px; }
+
+ul, ol { margin: 0 0 10px 24px; }
+ol { list-style-type: decimal; }
+
+select, input, textarea, button { font:99% sans-serif; }
+pre, code, kbd, samp { font-family: monospace, sans-serif; margin-bottom: 10px; padding: 8px; }
+
+small { font-size: 85%; }
+strong, th { font-weight: bold; }
+
+td, td img { vertical-align: top; } 
+
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+blockquote { margin: 0 0 10px 20px; }
+
+/* ------------------------------
+    Base Layout 
+------------------------------ */
+.container { width: 100%; margin-bottom: 20px; padding: 0; .center; }
+.primary { margin-top: -36px; }
+
+#header { .center; background: #000; width: 100%; padding: 10px 0 0 0; margin-bottom: 56px; }
+#header-content { .center; margin-bottom: 10px; }
+header { position: relative; margin: 10px 0;
+    #logo { .grid(3); margin: 0;
+        img { background-color: #ccc; width: 100px; height: 100px; float: left; }
+        h1 { text-indent: -9999px; height: 100px; margin: 0; padding: 0;}
+        div.admin-links { left: 10px; }
+    }
+    #login { .grid(9); margin: 0 0 44px 0; height: 28px; padding: 0; text-align: right;
+        form {display: block;}
+        input[type="text"], input[type="password"] { font-size: 14px; width: 120px; }
+        input[type="submit"] { font-size: 12px; font-weight: bold; background-color: @primary; padding: 4px 10px; border: 0; }
+        span { color: @primary; }
+    }
+}
+
+/* Standard Nav organization for a dropdown
+The ul li a line-height and the top of ul li ul need to match
+colors, heights, and borders can be overridden */
+#nav nav {display: block;
+    ul { list-style: none;
+        li { float: left; position: relative;
+            a { line-height: 40px; padding: 0 20px; background-color: transparent; display: block; color: @primary; 
+                &:hover { color: @primary }
+            }
+            ul { display: none; float: left; margin: 0; position: absolute; top: 40px; width: 148px; z-index: 99999;
+                a { height: auto; line-height: 40px; width: 120px; }
+                ul { left: 100%; top: 0; }
+            }
+        }
+        li:hover > a, a:focus { /* background-color: transparent; */ }
+        li:hover > ul { display: block; }
+    }
+}
+
+#nav { width: 100%; height: @nav-height; background-color: @primary; }
+#nav-content { .grid(12); .center; float: none; 
+    nav {
+        ul { margin: 0; display: inline; background-color: @primary;
+            li { text-align: left;
+                a { line-height: @nav-height; text-transform: uppercase; text-decoration: none; color: #fff; 
+                    &:hover { background-color: @complimentary; color: #fff; }
+                    &:visited { color: #fff; }
+                }
+                ul { top: @nav-height; 
+                    li { border: none; }
+                    a { line-height: @nav-height; background-color: @primary; }
+                }
+            }
+            li:last-child {
+                border-right: none;
+            }
+        }
+    }
+}
+
+#footer { .grid(12);
+    footer { color: @primary; font-size: 12px; padding: 10px 0; }
+    #footer-links { .grid(12); text-align: center; color: @primary; }
+}
+
+/* ------------------------------
+    Homepage Content
+------------------------------ */
+#left-column { .grid(9); margin: 0 20px 0 0; }
+#rotator { .grid(9); position: relative; margin: 0; float: left; border: 10px solid #fff; margin-bottom: 20px; }
+#stories { .grid(9); height: 408px; margin: 0; }
+.story {
+    position: relative;
+    margin-bottom: 24px;
+    img { width: 100%; height: 408px; background-color: @primary; }
+    .blurb { position: absolute; bottom: 50px; left: 0; background-color: fadeout(#fff,25); padding: 10px; width: 420px; height: 120px;
+        h2 { font-size: 24px; margin: 0; display: block; border-bottom: 1px solid #666; }
+        p { margin: 5px 0 0 0; }
+    }
+    .story-label { height: 0; display: none; }
+}
+
+#stories-pager { position: absolute; left: -10px; top: -46px; background-color: @primary; z-index: 990;
+    a { width: 110px; display: block; color: #fff; padding: 10px 0; float:left; text-align: center; text-decoration: none; font-size: 14px; height: 16px; position: relative;}
+    a.activeSlide { background-color: @complimentary; }
+}
+
+#home-content { .grid(9); float: left; padding: 0; margin: 0;
+    .space { padding: 0;
+        img { border: 4px solid #007799; }
+    }
+    #space_2 { .grid(9); margin: 0 0 20px 0; }
+    #three-spaces { .grid(9); margin: 0 0 20px 0;
+        #space_3 { .grid(3); float: left; margin: 0 20px 0 0; }
+        #space_4 { .grid(3); float: left; margin: 0 20px 0 0; }
+        #space_5 { .grid(3); float: left; margin: 0; }
+    }
+}
+
+#right-column { .grid(3); margin: -36px 0 0 0; float: right; }
+#home-sidebar { .grid(3); float: right; margin: 0; color: #fff;
+    .space { background: #000; padding: 10px;
+        img { border: 4px solid #007799; }
+    }
+    h3 { padding: 8px 0 8px 10px; background: @primary; color: #fff; margin: -10px -10px 10px; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5); }
+    #space_1 { margin-bottom: 12px; }
+    #space_8 { margin-bottom: 12px; }
+    #sidebar-login { background: @primary; margin-bottom: 10px; padding: 10px;
+        h3 { box-shadow: none; }
+        a.h3-styling { color: #fff; font-size: 20px; line-height: 22px; text-decoration: none; margin-bottom: 6px; font-family: 'Yanone Kaffeesatz', sans-serif; text-transform: uppercase; font-weight: 300; }
+    }
+    #space_6 { margin-bottom: 12px; }
+    #space_7 { margin-bottom: 12px; }
+    #connect h3 { margin: 0; margin-bottom: 10px; }
+    .connect-links { float: left; display: block; width: 35px; height: 34px; text-indent: -9999px; margin-right: 10px; }
+    a#facebook { background: url("../images/facebook.jpg") no-repeat; }
+    a#twitter { background: url("../images/twitter.jpg") no-repeat; }
+    a#flickr { background: url("../images/flickr.jpg") no-repeat; }
+ }
+
+/* ------------------------------
+    Sidebar 
+------------------------------ */
+#sidebar { .grid(3);
+    #upcoming-events { width: 100%; margin: 0; float: right; }
+    #sidebar-login input[type="submit"] { font-size: 12px; font-weight: bold; color: @primary; padding: 4px 10px; border: 0; background-color: #000; }
+}
+
+/* ------------------------------
+    Body Content
+------------------------------ */
+#body-content { .center; padding: 20px 0;
+    .content-middle { .grid(9); float: left; background: #fff; padding: 10px; padding-right: 0px; margin-left: 0px; }
+    .content-wide { .grid(12); width: @base-width - 20px !important; }
+}
+
+/*
+.triangle-right-color {
+height: 0;
+width: 0;
+position: absolute;
+right: -30px;
+top: 0;
+  border-top: 36px solid transparent;
+  border-left: 36px solid @primary;
+}
+*/
+
+/* ------------------------------
+    Extras 
+------------------------------ */
+a.readmore { font-style: italic; }
+.alert-message { margin-right: 10px; }
+
+.clear { clear: both; }
+.clearfix:before, .clearfix:after { content: "\0020"; display: block; height: 0; visibility: hidden; }
+.clearfix:after { clear: both; }
+.clearfix { zoom: 1; }
+

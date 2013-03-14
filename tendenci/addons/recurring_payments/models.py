@@ -42,7 +42,7 @@ class RecurringPayment(models.Model):
     # gateway assigned ID associated with the customer profile
     customer_profile_id = models.CharField(max_length=100, default='')
     user = models.ForeignKey(User, related_name="recurring_payment_user",
-                             verbose_name=_('Customer'),  null=True)
+                             verbose_name=_('Customer'),  null=True, on_delete=models.SET_NULL)
     url = models.CharField(_('Website URL'), max_length=100, default='', blank=True, null=True)
     description = models.CharField(_('Description'), max_length=100, help_text="Use a short term, example: web hosting")
     # with object_content_type and object_content_id, we can apply the recurring
@@ -86,9 +86,9 @@ class RecurringPayment(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="recurring_payment_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="recurring_payment_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="recurring_payment_owner", null=True)
+    owner = models.ForeignKey(User, related_name="recurring_payment_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active', choices=STATUS_DETAIL_CHOICES)
     status = models.BooleanField(default=True)
@@ -422,8 +422,11 @@ class RecurringPayment(models.Model):
 
         inv.balance = inv.total
         inv.estimate = 1
-        inv.status_detail = 'tendered'
+        inv.status_detail = 'estimate'
         inv.save(self.user)
+
+        # tender the invoice
+        inv.tender(self.user)
 
         rp_invoice = RecurringPaymentInvoice(
                              recurring_payment=self,
@@ -490,9 +493,9 @@ class PaymentProfile(models.Model):
 
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="payment_profile_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="payment_profile_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="payment_profile_owner", null=True)
+    owner = models.ForeignKey(User, related_name="payment_profile_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='active')
     status = models.BooleanField(default=True)
@@ -623,7 +626,7 @@ class PaymentTransaction(models.Model):
     message_text = models.CharField(max_length=200, default='')
 
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, related_name="payment_transaction_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="payment_transaction_creator",  null=True, on_delete=models.SET_NULL)
     # True=success or False=failed
     status = models.BooleanField()
     #status_detail = models.CharField(max_length=50,  null=True)

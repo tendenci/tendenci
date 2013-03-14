@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from celery.task import Task
 from tendenci.apps.profiles.models import Profile
+from tendenci.apps.profiles.utils import spawn_username
 from tendenci.addons.corporate_memberships.models import CorporateMembership
 from tendenci.addons.memberships.models import AppEntry, AppField, AppFieldEntry, MembershipType, Membership
-from tendenci.addons.memberships.utils import spawn_username
 from tendenci.addons.memberships.importer.utils import parse_mems_from_csv, clean_field_name
 
 class ImportMembershipsTask(Task):
@@ -44,7 +44,7 @@ class ImportMembershipsTask(Task):
         for m in mems:
 
             # membership type required
-            if not m['membershiptype']:
+            if not m.get('membershiptype', u''):
                 continue  # on to the next one
 
             # username or email required
@@ -52,7 +52,7 @@ class ImportMembershipsTask(Task):
                 continue  # on to the next one
 
             if m['status__action'] != 'skip':
-                membership_type = MembershipType.objects.get(name=m['membershiptype'])
+                membership_type = MembershipType.objects.get(name=m.get('membershiptype', ''))
 
                 # initialize dates
                 expire_dt = m['expiredt']
@@ -71,8 +71,16 @@ class ImportMembershipsTask(Task):
 
                 if not user:
                     try:  # we make you a username via your email
-                        m['username'] = spawn_username(m['email'])
+                        m['username'] = spawn_username(
+                            fn=m['firstname'],
+                            ln=m['lastname'],
+                            em=m['email']
+                        )
                         user = User.objects.create_user(m['username'], m['email'])
+
+                        if user.username.startswith('user.'):
+                            user.username = 'user.%s' % user.pk
+                            user.save()
                     except:
                         # username already exists
                         continue  # on to the next one

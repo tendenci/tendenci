@@ -40,3 +40,24 @@ def users_options(context, user_current, user_this):
 def profile_search(context):
     return context
 
+@register.inclusion_tag("profiles/meta.html", takes_context=True)
+def profile_meta(context, detail_view=None):
+    context.update({
+        "detail_view":detail_view,
+    })
+    return context
+
+
+@register.inclusion_tag("profiles/similar_profile_items.html", takes_context=True)
+def similar_profile_items(context, users):
+    context.update({
+        "users": users,
+    })
+    return context
+
+@register.inclusion_tag("profiles/merge_detail.html", takes_context=True)
+def merge_detail(context, profile):
+    context.update({
+        "profile": profile,
+    })
+    return context

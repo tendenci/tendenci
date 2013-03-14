@@ -1,15 +1,14 @@
-{{ object.name }}
-app: {{ object.corp_app }}
+{{ object.corp_profile.name }}
 {{ object.corporate_membership_type }}  
-{{ object.address }} 
-{{ object.address2 }} 
-{{ object.city }} 
-{{ object.state }} 
-{{ object.zip }} 
-{{ object.country }} 
-{{ object.phone }} 
-{{ object.email }}   
-{{ object.secret_code }}
+{{ object.corp_profile.address }} 
+{{ object.corp_profile.address2 }} 
+{{ object.corp_profile.city }} 
+{{ object.corp_profile.state }} 
+{{ object.corp_profile.zip }} 
+{{ object.corp_profile.country }} 
+{{ object.corp_profile.phone }} 
+{{ object.corp_profile.email }}   
+{{ object.corp_profile.secret_code }}
 {{ object.status_detail }}
 {% for authorized_domain in object.authorized_domains.all %}
 authorized domain:{{ authorized_domain }} 

@@ -15,6 +15,7 @@ class FileIndex(TendenciBaseSearchIndex):
 
     type = indexes.CharField()
     clicks = indexes.IntegerField()
+    group_id = indexes.IntegerField()
 
     # categories
     category = indexes.CharField()
@@ -29,6 +30,11 @@ class FileIndex(TendenciBaseSearchIndex):
     def prepare_type(self, obj):
         return obj.type()
     
+    def prepare_group_id(self, obj):
+        if obj.group_id:
+            return int(obj.group_id)
+        return int()
+
     def prepare_clicks(self, obj):
         """
         Return integer of views/downloads per file

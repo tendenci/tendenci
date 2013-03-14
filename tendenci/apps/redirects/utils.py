@@ -21,6 +21,7 @@ def get_redirect_patterns():
     for redirect in redirects:
         extra = {}
         pattern = r'^%s/?$' % redirect.from_url
+
         if 'http' in redirect.to_url:
             extra.update({'url':'%s' % redirect.to_url}) 
         elif 'https' in redirect.to_url:

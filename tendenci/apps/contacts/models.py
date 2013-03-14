@@ -8,6 +8,7 @@ from tendenci.core.perms.models import TendenciBaseModel
 from timezones.fields import TimeZoneField
 from tendenci.apps.contacts.managers import ContactManager
 
+
 class Address(models.Model):
     address = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
@@ -18,14 +19,18 @@ class Address(models.Model):
     def city_state(self):
         return [s for s in (self.city, self.state) if s]
 
+
 class Phone(models.Model):
     number = models.CharField(max_length=50, blank=True)
+
 
 class Email(models.Model):
     email = models.EmailField()
 
+
 class URL(models.Model):
     url = models.URLField()
+
 
 class Company(models.Model):
     name = models.CharField(max_length=200, blank=True)
@@ -33,6 +38,7 @@ class Company(models.Model):
     phones = models.ManyToManyField(Phone, blank=True)
     emails = models.ManyToManyField(Email, blank=True)
     urls = models.ManyToManyField(URL, blank=True)
+
 
 class Comment(models.Model):
     """
@@ -46,6 +52,7 @@ class Comment(models.Model):
     update_dt = models.DateTimeField(auto_now=True)
     create_dt = models.DateTimeField(auto_now_add=True)
 
+
 class Contact(TendenciBaseModel):
     """
     Contact records are created when someone fills out a form.
@@ -55,9 +62,10 @@ class Contact(TendenciBaseModel):
     """
     guid = models.CharField(max_length=40)
     timezone = TimeZoneField()
+    user = models.ForeignKey(User, null=True, related_name='contact_user')
 
     first_name = models.CharField(max_length=100, blank=True)
-    middle_name= models.CharField(max_length=100, blank=True)
+    middle_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     suffix = models.CharField(max_length=5, blank=True)
 
@@ -70,24 +78,23 @@ class Contact(TendenciBaseModel):
     message = models.TextField()
 
     perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+        object_id_field="object_id", content_type_field="content_type")
 
     # TODO: consider attachments
 
     objects = ContactManager()
 
     class Meta:
-        permissions = (("view_contact","Can view contact"),)
+        permissions = (("view_contact", "Can view contact"),)
 
     @models.permalink
     def get_absolute_url(self):
         return ("contact", [self.pk])
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
-            
+
         super(Contact, self).save(*args, **kwargs)
 
     def __unicode__(self):

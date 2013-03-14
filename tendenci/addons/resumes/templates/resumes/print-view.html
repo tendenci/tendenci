@@ -1,4 +1,5 @@
 {% extends "resumes/base-print.html" %}
+{% load base_filters %}
 {% load resume_tags %}
 {% load i18n %}
 
@@ -60,8 +61,8 @@
 		<h2>{% trans "Contact Information" %}</h2>
 		<div class="contact-wrap">
 			<div>{{ resume.contact_name }}</div>
-			<div>{{ resume.contact_phone }}</div>
-			<div>{{ resume.contact_phone2 }}</div>
+			<div>{{ resume.contact_phone|phonenumber }}</div>
+			<div>{{ resume.contact_phone2|phonenumber }}</div>
 			<div>{{ resume.contact_fax }}</div>
 			<div><a href="">{{ resume.contact_email|urlize }}</a></div>
 		</div>

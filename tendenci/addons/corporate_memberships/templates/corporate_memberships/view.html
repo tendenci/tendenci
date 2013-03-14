@@ -49,7 +49,7 @@
   		
     		<div class="corp-app-name">
 			 {% if can_change_app %}
-			 	{% trans "App: " %}<a href="{% url admin:corporate_memberships_corpapp_change corporate_membership.corp_app.id %}">{{ corporate_membership.corp_app.name }}</a>
+			 	{% trans "App: " %}<a href="{% url admin:corporate_memberships_corpmembershipapp_change corporate_membership.corp_app.id %}">{{ corporate_membership.corp_app.name }}</a>
 			 {% else %}
 			 	{% trans "App: " %}{{ corporate_membership.corp_app.name }}
 			 {% endif %}
@@ -110,7 +110,11 @@
 				 					<a href="{{ MEDIA_URL }}{{ field_obj.value }}">{{ field_obj.value|basename }}</a>
 				 				{% else %}
 				 					{% if field_obj.value %}
+                                        {% if field_obj.field_name  == 'phone' %}
+                                        {{ field_obj.value|phonenumber }}
+                                        {% else %}
 				 						{{ field_obj.value|safe|urlize }}
+                                        {% endif %}
 				 					{% endif %}
 				 				{% endif %}
 				 			{% endif %}

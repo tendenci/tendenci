@@ -7,10 +7,13 @@ Files and Folders
 -----------------
 
 - media
+
   - css
   - js
   - img
+
 - templates
+
   - homepage.html
   - default.html
 

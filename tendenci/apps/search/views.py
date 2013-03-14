@@ -33,9 +33,6 @@ class SearchView(object):
         if template:
             self.template = template
 
-    def __name__(self):
-        return "SearchView"
-
     def __call__(self, request):
         """
         Generates the actual response to the search.
@@ -80,7 +77,7 @@ class SearchView(object):
         if self.query:
             return self.form.search()
         
-        return self.form.search()
+        return self.form.search(order_by='newest')
     
     def build_page(self):
         """

@@ -1,3 +1,1 @@
-{% load i18n %}
-
-{{ SITE_GLOBAL_SITEDISPLAYNAME }} - {% trans "Membership application disapproved" %} {{ entry.first_name }} {{ entry.last_name }}
+{{ subject }}

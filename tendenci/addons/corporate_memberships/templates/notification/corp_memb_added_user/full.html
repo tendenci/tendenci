@@ -1,6 +1,6 @@
 {% load i18n %}
 
-<p>{% blocktrans with object.name as bname %}Thank you for applying for the corporate membership "{{ bname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
+<p>{% blocktrans with object.corp_profile.name as bname %}Thank you for applying for the corporate membership "{{ bname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
 </p>
 {% if object.corp_app.authentication_method == 'secret_code' %}
 <p>
@@ -31,7 +31,7 @@
 	</p>
 {% else %}
 <p>
-{% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corp_memb.view object.pk  %}</a>
+{% trans "To view this corporate membership, go to:" %} <a href="{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk %}">{{ SITE_GLOBAL_SITEURL }}{% url corpmembership.view object.pk  %}</a>
 </p>
 {% endif %}
 

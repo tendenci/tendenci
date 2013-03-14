@@ -1,6 +1,37 @@
+{% load styled_forms %}
+
 {% if SITE_GLOBAL_SEARCHINDEX %}
 <form class="search-form" action="{% url invoice.search %}" method="get">
-<input type="text" name="q" value="{{ request.GET.q|striptags }}" />
-<input type="submit" value="Search" />
+	<div class="fieldWrapper">
+		{{ form.q.label }}
+        {{ form.q }}
+    </div>
+    
+    <div class="linkWrapper">
+	    <a id="advancedOptionsLink" href="#">Advanced Options</a>
+    </div>
+    
+    <div class="fieldWrapper advanced">
+		{{ form.start_dt.label }}
+		{{ form.start_dt }}
+		
+		{{ form.end_dt.label }}
+		{{ form.end_dt }}
+    </div>
+    
+    <div class="fieldWrapper advanced">
+		{{ form.invoice_type.label }}
+		{{ form.invoice_type }}
+    </div>
+    
+    <div class="fieldWrapper advanced eventFields">
+		{{ form.event.label }}
+		{{ form.event }}
+		
+		{{ form.event_id.label }}
+		{{ form.event_id }}
+    </div>
+    
+    <input type="submit" value="Search" />
 </form>
 {% endif %}

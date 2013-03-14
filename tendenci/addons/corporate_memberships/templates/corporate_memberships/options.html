@@ -3,65 +3,81 @@
 {% load corporate_memberships_tags %}
 {% load i18n %}
 
-{% has_perm user corporate_memberships.change_corporatemembership as can_edit %}
+{% has_perm user corporate_memberships.change_corpmembership as can_edit %}
 {% allow_edit_corp opt_object user as allow_edit %}
-{% has_perm user corporate_memberships.delete_corporatemembership as can_delete %}
+{% has_perm user corporate_memberships.delete_corpmembership as can_delete %}
 
 <div class="t-iconrow">
 
 	{% if can_edit or allow_edit %}
-		{% if opt_object.real_time_status_detail in 'expired - in grace period' %}
+		{% if opt_object.real_time_status_detail == 'expired - in grace period' %}
 			<span class="status-expired">{{ opt_object.real_time_status_detail|capfirst }}</span>
 		{% else %}
-			{% if opt_object.status_detail in 'paid - pending approval'%}
+			{% if opt_object.status_detail == 'paid - pending approval'%}
 				<span class="status-pending">{{ opt_object.real_time_status_detail|capfirst }}</span>
 			{% else %}
+			     {% if opt_object.status_detail == 'archive'%}
+			     <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
+			     {% else %}
 				<span class="status-{{ opt_object.status_detail }}">{{ opt_object.real_time_status_detail|capfirst }}</span>
+			     {% endif %}
 			{% endif %}
 		{% endif %}
+	{% else %}
+         {% if opt_object.status_detail == 'archive'%}
+         <span class="status-{{ opt_object.status_detail }}">{% trans "This is Archive" %}</span>
+         {% endif %}
 	{% endif %}
 
-	{% if can_edit or allow_edit %}
-		<a class="opt-link" href="{% url corp_memb.edit opt_object.pk %}" title="Edit">Edit</a>
+    {% if opt_object.status and opt_object.status_detail != 'archive' %}
+	{% if  allow_edit %}
+		<a class="opt-link" href="{% url corpmembership.edit opt_object.pk %}" title="Edit">Edit</a>
 	{% endif %}
 
- {% if can_edit or allow_edit %}
-	{% if request.user.is_authenticated %}
-		<a class="opt-link" href="{% url corp_memb.roster_search %}?name={{opt_object.name|urlencode}}" title="Roster">{% trans "Roster" %}</a>
-	{% endif %}
-	{% if can_delete %}
-		<a class="opt-link" href="{% url corp_memb.delete opt_object.pk %}" title="delete">{% trans "Delete" %}</a>
-	{% endif %}
+    {% if can_edit or allow_edit %}
+    	{% if request.user.is_authenticated %}
+    		<a class="opt-link" href="{% url corpmembership.roster_search %}?cm_id={{opt_object.id}}" title="Roster">{% trans "Roster" %}</a>
+    	{% endif %}
+    	{% if can_delete %}
+    		<a class="opt-link" href="{% url corpmembership.delete opt_object.pk %}" title="delete">{% trans "Delete" %}</a>
+    	{% endif %}
+  {% endif %}
   {% endif %}
  
 </div>
 
- {% with opt_object.get_pending_renewal_entry as pending_renewal_entry %}
-{% if pending_renewal_entry %}
+
+{% if opt_object.is_renewal_pending %}
     <div><span class="pending-info-box">
-    {% blocktrans with pending_renewal_entry.create_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
-    {% trans "Status of Renewal: " %}<span class="status-pending">{{ pending_renewal_entry.status_detail }}</span><br />
+    {% blocktrans with opt_object.renew_dt|date:"d-M-Y" as renewal %} Renewed on {{ renewal }} {% endblocktrans %}<br />
+    {% trans "Status of Renewal: " %}<span class="status-pending">{{ opt_object.status_detail }}</span><br />
     {% if request.user.is_superuser %}
-        <b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
     {% endif %}
     </span>
     </div>
 {% else %}
     {% if request.user.is_superuser and opt_object.is_join_pending %}
         <div><span class="pending-info-box">
-        <b>{% trans "Admin" %}</b>: <a href="{% url corp_memb.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve/Disapprove">{% trans "Approve / Disapprove" %}</a>
         </span>
         </div>
     {% endif %}
     
     {% if opt_object.can_renew %}
-        <a href="{% url corp_memb.renew opt_object.id %}" style="background-color:yellow;" title="Renew">{% trans "Renew" %}</a>
+        <a href="{% url corpmembership.renew opt_object.id %}" style="background-color:yellow;" title="Renew">{% trans "Renew" %}</a>
     {% else %}
     	{% if opt_object.is_expired and request.user.is_superuser %}
-    	 <a href="{% url corp_memb.renew opt_object.id %}" style="background-color:yellow;" title="Admin: Renew">{% trans "Admin: Renew" %}</a>
+    	 <a href="{% url corpmembership.renew opt_object.id %}" style="background-color:yellow;" title="Admin: Renew">{% trans "Admin: Renew" %}</a>
 
     	{% endif %}
     {% endif %}
 {% endif %}
 
-{% endwith %}
+{% if request.user.is_superuser and  opt_object.status_detail == 'disapproved' %}
+    <div><span>
+        <b>{% trans "Admin" %}</b>: <a href="{% url corpmembership.approve opt_object.pk %}" title="Approve">{% trans "approve it" %}</a>
+        </span>
+    </div>
+{% endif %}
+

@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class MakePayment(models.Model):
     guid = models.CharField(max_length=50)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     company = models.CharField(max_length=50, default='', blank=True, null=True)
@@ -24,9 +24,9 @@ class MakePayment(models.Model):
     payment_method = models.CharField(max_length=50, default='cc')
     invoice_id = models.IntegerField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
-    creator = models.ForeignKey(User, null=True,  related_name="make_payment_creator")
+    creator = models.ForeignKey(User, null=True,  related_name="make_payment_creator", on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, null=True, related_name="make_payment_owner")
+    owner = models.ForeignKey(User, null=True, related_name="make_payment_owner", on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='estimate')
     status = models.BooleanField(default=True)

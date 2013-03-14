@@ -14,6 +14,13 @@
 <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
 <link href="{{ STATIC_URL }}css/jquery.tagit.css" rel="stylesheet" type="text/css">
 <script type="text/javascript" src="{{ TINYMCE_JS_URL }}"></script>
+<style type="text/css">
+    div.forms input[type="button"].previewButton {
+		margin-top: 15px;
+		padding: 5px;
+		cursor: pointer;
+	}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -40,7 +47,9 @@
                     {{ metaform|styled_form }}
                 </div>
             </fieldset>
+            <input type="hidden" id="id_preview_for" name="preview_for"/>
         	<input type="submit" value="Add {% firstof MODULE_PAGES_LABEL 'Page' %}" />
+        	<input class="previewButton" type="button" value="Preview"/>
 		</div>
         </form>
     </div>
@@ -105,5 +114,17 @@
             availableTags: [{% all_tags_list %}],
             allowSpaces: true
         });
+        
+        //Set preview button
+        $('input.previewButton').click(function() {
+            var form = $('div.page-wrap > form');
+		    var url = form.attr('action');
+		    form.attr('action', "{% url page.preview %}");
+		    form.attr('target', '_blank');
+		    form.submit();
+		    
+		    form.attr('action', url);
+		    form.attr('target', '');
+		});
     </script>
 {% endblock %}

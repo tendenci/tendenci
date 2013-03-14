@@ -6,11 +6,11 @@ jQuery(function($) {
         table = $(this).find('table');
 
         // Drag and drop functionality - only used if a position field exists
-        if (position_field != '' && table.find('td').is('.' + position_field))
+        if (position_field != '' && table.find('td').is('.field-' + position_field))
         {
             // Hide "position"-field (both td:s and th:s)
-            $(this).find('td.' + position_field).hide();
-            td_pos_field_index = table.find('tbody tr td').index($(this).find('td.' + position_field));
+            $(this).find('td.field-' + position_field).hide();
+            td_pos_field_index = table.find('tbody tr td').index($(this).find('td.field-' + position_field));
             $(this).find('th:eq(' + (td_pos_field_index-1) + ')').hide();
             
             // Hide "original"-field and set any colspan to 1 (why show in the first case?)
@@ -35,7 +35,7 @@ jQuery(function($) {
             // which the rest of this script (hopefully) guarantees.
             rows = [];
             table.find('tbody tr').each(function() {
-                position = $(this).find('td.' + position_field + ' input').val();
+                position = $(this).find('td.field-' + position_field + ' input').val();
                 rows[position] = $(this);
                 
                 // Add move cursor to table row.
@@ -62,7 +62,7 @@ function update_positions(table, update_ids)
         if (position_field != '')
         {
             // Update position field
-            $(this).find('td.' + position_field + ' input').val(position + 1);
+            $(this).find('td.field-' + position_field + ' input').val(position + 1);
             position++;
             
             // Update row coloring

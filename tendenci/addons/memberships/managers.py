@@ -1,11 +1,11 @@
 import operator
+from dateutil.relativedelta import relativedelta
 
 from django.db.models import Manager
 from django.db.models import Q
 from django.contrib.auth.models import User, AnonymousUser
 
 from haystack.query import SearchQuerySet
-
 from tendenci.core.perms.managers import TendenciBaseManager
 from tendenci.core.site_settings.utils import get_setting
 
@@ -69,7 +69,7 @@ class MemberAppEntryManager(TendenciBaseManager):
 
         if query:
             sqs = sqs.auto_query(sqs.query.clean(query))
-        
+
         if user.profile.is_superuser:
             sqs = sqs.all()
         else:
@@ -85,7 +85,6 @@ class MemberAppEntryManager(TendenciBaseManager):
                 # pass
 
         return sqs
-
 
 
 def user3_sqs(sqs, **kwargs):
@@ -344,3 +343,55 @@ class MembershipManager(Manager):
                 silenced_memberships.append(membership)
 
         return silenced_memberships
+
+
+class MembershipDefaultManager(Manager):
+    def first(self, **kwargs):
+        """
+        Returns first instance that matches filters.
+        If no instance is found then a none type object is returned.
+        """
+        [instance] = self.filter(**kwargs).order_by('pk')[:1] or [None]
+        return instance
+
+    def expired(self, **kwargs):
+        """
+        Returns memberships records that are expired. Considers records
+        that are expired, include records that have a status detail of 'expired'.
+        """
+        from datetime import datetime
+        from tendenci.addons.memberships.models import MembershipType
+
+        qs = self.none()
+
+        m_types = MembershipType.objects.filter(status=True, status_detail='active')
+        for m_type in m_types:
+
+            grace_period = m_type.expiration_grace_period
+            expire_dt = datetime.now() + relativedelta(days=grace_period)
+
+            qs = qs | self.filter(
+                status=True,
+                membership_type=m_type,
+                expire_dt__lte=expire_dt,
+            )
+
+        qs = qs | self.filter(
+            status=True,
+            status_detail='expired',
+        )
+
+        return qs
+
+
+class MembershipAppManager(Manager):
+    def current_app(self, **kwargs):
+        """
+        Returns the app being used currently.
+        """
+        [current_app] = self.filter(
+                           status=True,
+                           status_detail__in=['active', 'published']
+                           ).order_by('id')[:1] or [None]
+
+        return current_app

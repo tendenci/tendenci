@@ -36,6 +36,7 @@ from tendenci.addons.events.settings import (FIELD_MAX_LENGTH,
 from tendenci.core.base.utils import localize_date
 from tendenci.core.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^timezones.fields.TimeZoneField"])
@@ -80,6 +81,9 @@ class Type(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def event_count(self):
+        return self.event_set.count()
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -132,6 +136,7 @@ class RegistrationConfiguration(models.Model):
 
     is_guest_price = models.BooleanField(_('Guests Pay Registrant Price'), default=False)
     discount_eligible = models.BooleanField(default=True)
+    display_registration_stats = models.BooleanField(_('Publicly Show Registration Stats'), default=False, help_text='Display the number of spots registered and the number of spots left to the public.')
 
     # custom reg form
     use_custom_reg_form = models.BooleanField(_('Use Custom Registration Form'), default=False)
@@ -196,7 +201,7 @@ class RegistrationConfiguration(models.Model):
             
         return pricings
 
-class RegConfPricing(models.Model):
+class RegConfPricing(OrderingBaseModel):
     """
     Registration configuration pricing
     """
@@ -205,7 +210,6 @@ class RegConfPricing(models.Model):
     title = models.CharField(_('Pricing display name'), max_length=50, blank=True)
     quantity = models.IntegerField(_('Number of attendees'), default=1, blank=True, help_text='Total people included in each registration for this pricing group. Ex: Table or Team.')
     group = models.ForeignKey(Group, blank=True, null=True)
-    display_order = models.IntegerField(default=1, help_text="The pricing will be sorted by this field.")
     
     price = models.DecimalField(_('Price'), max_digits=21, decimal_places=2, default=0)
     
@@ -254,6 +258,16 @@ class RegConfPricing(models.Model):
     @property
     def registration_has_ended(self):
         if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            return True
+        return False
+        
+    @property
+    def registration_has_recently_ended(self):
+        if localize_date(datetime.now()) >= localize_date(self.end_dt, from_tz=self.timezone):
+            delta = localize_date(datetime.now()) - localize_date(self.end_dt, from_tz=self.timezone)
+            # Only include events that is within the 1-2 days window.
+            if delta > timedelta(days=2):
+                return False
             return True
         return False
     
@@ -383,8 +397,8 @@ class Registration(models.Model):
                                           default=0)
     canceled = models.BooleanField(_('Canceled'), default=False)
 
-    creator = models.ForeignKey(User, related_name='created_registrations', null=True)
-    owner = models.ForeignKey(User, related_name='owned_registrations', null=True)
+    creator = models.ForeignKey(User, related_name='created_registrations', null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, related_name='owned_registrations', null=True, on_delete=models.SET_NULL)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
 
@@ -530,6 +544,20 @@ class Registration(models.Model):
             self.guid = str(uuid.uuid1())
         super(Registration, self).save(*args, **kwargs)
 
+    def get_invoice(self):
+        object_type = ContentType.objects.get(app_label=self._meta.app_label,
+            model=self._meta.module_name)
+
+        try:
+            invoice = Invoice.objects.get(
+                object_type=object_type,
+                object_id=self.pk,
+            )
+        except ObjectDoesNotExist:
+            invoice = self.invoice
+
+        return invoice
+
     def save_invoice(self, *args, **kwargs):
         status_detail = kwargs.get('status_detail', 'tendered')
         admin_notes = kwargs.get('admin_notes', None)
@@ -600,7 +628,7 @@ class Registrant(models.Model):
     This is the information that was used while registering
     """
     registration = models.ForeignKey('Registration')
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
     # this is a field used for dynamic pricing registrations only
     pricing = models.ForeignKey('RegConfPricing', null=True)
@@ -682,6 +710,10 @@ class Registrant(models.Model):
         else:
             if self.first_name or self.last_name:
                 return self.first_name + ' ' + self.last_name
+
+        if self.name:
+            return self.name
+
         return None
 
     @classmethod
@@ -721,7 +753,7 @@ class Registrant(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('event.registration_confirmation', [self.registration.event.pk, self.pk])
+        return ('event.registration_confirmation', [self.registration.event.pk, self.registration.pk])
 
     def reg8n_status(self):
         """
@@ -729,7 +761,11 @@ class Registrant(models.Model):
         """
         config = self.registration.event.registration_configuration
 
-        balance = self.registration.invoice.balance
+        invoice = self.registration.get_invoice()
+        if invoice:
+            balance = invoice.balance
+        else:
+            balance = 0
         payment_required = config.payment_required
 
         if self.cancel_dt:
@@ -892,6 +928,7 @@ class Event(TendenciBaseModel):
     timezone = TimeZoneField(_('Time Zone'))
     place = models.ForeignKey('Place', null=True)
     registration_configuration = models.OneToOneField('RegistrationConfiguration', null=True, editable=False)
+    mark_registration_ended = models.BooleanField(_('Registration Ended'), default=False)
     private = models.BooleanField() # hide from lists
     password = models.CharField(max_length=50, blank=True)
     on_weekend = models.BooleanField(default=True, help_text=_("This event occurs on weekends"))
@@ -900,7 +937,7 @@ class Event(TendenciBaseModel):
         help_text=_('Photo that represents this event.'), null=True, blank=True)
     group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL, default=get_default_group)
     tags = TagField(blank=True)
-    priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the events list. They will be featured with a star icon on the monthly calendar."))
+    priority = models.BooleanField(default=False, help_text=_("Priority events will show up at the top of the event calendar day list and single day list. They will be featured with a star icon on the monthly calendar and the list view."))
 
     # recurring events
     is_recurring_event = models.BooleanField(_('Is Recurring Event'), default=False)
@@ -991,7 +1028,10 @@ class Event(TendenciBaseModel):
         )['invoice__total__sum']
 
         # total_sum is the amount of money received when all is said and done
-        return total_sum - self.money_outstanding
+        if total_sum and self.money_outstanding:
+            return total_sum - self.money_outstanding
+        else:
+            return 0
 
     @property
     def money_outstanding(self):
@@ -1005,7 +1045,10 @@ class Event(TendenciBaseModel):
         balance_sum = figures['invoice__balance__sum']
         total_sum = figures['invoice__total__sum']
 
-        return total_sum - balance_sum
+        if total_sum and balance_sum:
+            return total_sum - balance_sum
+        else:
+            return 0
 
     def registrants(self, **kwargs):
         """
@@ -1121,12 +1164,12 @@ class CustomRegForm(models.Model):
     
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True)
+    creator = models.ForeignKey(User, related_name="custom_reg_creator", null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50)
-    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True)    
+    owner = models.ForeignKey(User, related_name="custom_reg_owner", null=True, on_delete=models.SET_NULL)    
     owner_username = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='active')
-    
+
     # registrant fields to be selected
     first_name = models.BooleanField(_('First Name'), default=False)
     last_name = models.BooleanField(_('Last Name'), default=False)
@@ -1142,7 +1185,7 @@ class CustomRegForm(models.Model):
     company_name = models.BooleanField(_('Company'), default=False)
     meal_option = models.BooleanField(_('Meal Option'), default=False)
     comments = models.BooleanField(_('Comments'), default=False)
-    
+
     class Meta:
         verbose_name = _("Custom Registration Form")
         verbose_name_plural = _("Custom Registration Forms")
@@ -1176,7 +1219,7 @@ class CustomRegForm(models.Model):
             
         return cloned_obj
 
-class CustomRegField(models.Model):
+class CustomRegField(OrderingBaseModel):
     form = models.ForeignKey("CustomRegForm", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     map_to_field = models.CharField(_("Map to User Field"), choices=USER_FIELD_CHOICES,
@@ -1187,7 +1230,6 @@ class CustomRegField(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
-    position = models.PositiveIntegerField(_('position'), default=0)
     default = models.CharField(_("Default"), max_length=1000, blank=True,
         help_text="Default value of the field")
     display_on_roster = models.BooleanField(_("Show on Roster"), default=False)

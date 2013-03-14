@@ -67,7 +67,7 @@ def update_perms_and_save(request, form, instance, **kwargs):
         try:
             instance.save()
         except Exception as e:
-            print 'boom!', e
+            print 'boom! in update_perms_and_save()', e
 
     # assign permissions for selected groups
     if 'group_perms' in form.cleaned_data:
@@ -230,7 +230,7 @@ def get_query_filters(user, perm, **kwargs):
         return anon_filter
     else:
         if user.profile.is_superuser:
-            return Q()
+            return Q(status=True)
         else:
 
             if '.' in perm and perms_field:

@@ -5,10 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
 
 from tendenci.core.base.http import Http403
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
@@ -16,7 +17,11 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.apps.discounts.models import Discount, DiscountUse
 from tendenci.apps.discounts.forms import DiscountForm, DiscountCodeForm, DiscountHandlingForm
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.apps.redirects.models import Redirect
 
+
+@is_enabled('discounts')
 @login_required
 def search(request, template_name="discounts/search.html"):
     if not has_perm(request.user, 'discounts.view_discount'):
@@ -36,6 +41,8 @@ def search(request, template_name="discounts/search.html"):
         context_instance=RequestContext(request)
     )
 
+
+@is_enabled('discounts')
 @login_required    
 def detail(request, id, template_name="discounts/detail.html"):
     discount = get_object_or_404(Discount, id=id)
@@ -51,6 +58,8 @@ def detail(request, id, template_name="discounts/detail.html"):
         context_instance=RequestContext(request)
     )
 
+
+@is_enabled('discounts')
 @login_required
 def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
     if not has_perm(request.user, 'discounts.add_discount'):
@@ -73,6 +82,8 @@ def add(request, form_class=DiscountForm, template_name="discounts/add.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('discounts')
 @login_required
 def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.html"):
     discount = get_object_or_404(Discount, id=id)
@@ -100,6 +111,7 @@ def edit(request, id, form_class=DiscountForm, template_name="discounts/edit.htm
     )
 
 
+@is_enabled('discounts')
 @login_required
 def delete(request, id, template_name="discounts/delete.html"):
     discount = get_object_or_404(Discount, pk=id)
@@ -117,6 +129,7 @@ def delete(request, id, template_name="discounts/delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('discounts')
 @csrf_exempt
 def discounted_price(request, form_class=DiscountCodeForm):
     if request.method == 'POST':
@@ -141,6 +154,7 @@ def discounted_price(request, form_class=DiscountCodeForm):
         mimetype="text/html")
 
 
+@is_enabled('discounts')
 @csrf_exempt
 def discounted_prices(request, form_class=DiscountHandlingForm):
     if request.method == 'POST':
@@ -174,10 +188,10 @@ def discounted_prices(request, form_class=DiscountHandlingForm):
         mimetype="text/html")
 
 
+@is_enabled('discounts')
 @login_required
 def export(request, template_name="discounts/export.html"):
     """Export Discounts"""
-
     if not request.user.is_superuser:
         raise Http403
 

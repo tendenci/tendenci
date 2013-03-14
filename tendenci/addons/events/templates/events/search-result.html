@@ -35,23 +35,15 @@
             {{ event.type.name|truncatewords:3 }}
             </div>
         {% endif %}
-
-        {% if event.priority %}
-            <style type="text/css">
-                .event-priority {
-                    margin: 5px;
-                    padding: 3px 5px;
-                    font-size: 11px;
-                }
-            </style>
-            <div class="event-priority">
-            {% trans "Prioritized" %}
-            </div>
-        {% endif %}
     </div>
     <div class="event-info">
         
-        <h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+        <h3>
+        {% if event.priority %}
+            <div class="event-priority"></div>
+        {% endif %}
+        <a href="{% url event event.pk %}">{{ event.title }}</a>
+        </h3>
         <div class="place">{{ event.place }}</div>
 
         <div class="time-period">
@@ -76,7 +68,7 @@
             {% is_registered_user user event as registered_user %}
             {% if registered_user %}
             <div class="attend-wrap registered">
-                <div class="attend"><a href="{% url event event.pk %}">{% trans "You are registered" %}</a></div>
+                <div class="attend"><a href="{% url event.myevents %}">{% trans "You are registered" %}</a></div>
                 <div style="clear:both;"></div>
             </div>
             {% else %}

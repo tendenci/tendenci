@@ -21,9 +21,14 @@ from tendenci.libs.boto_s3.utils import set_s3_file_permission
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.user_groups.utils import get_default_group
 from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.files.managers import FileManager
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.categories.models import CategoryItem
+
+from tendenci.apps.redirects.models import Redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 
 
 def file_directory(instance, filename):
@@ -49,6 +54,10 @@ class File(TendenciBaseModel):
         default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(null=True, blank=True)
     categories = generic.GenericRelation(CategoryItem, object_id_field="object_id", content_type_field="content_type")
+
+    perms = generic.GenericRelation(ObjectPermission,
+                                          object_id_field="object_id",
+                                          content_type_field="content_type")
 
     objects = FileManager()
 
@@ -243,5 +252,5 @@ class File(TendenciBaseModel):
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                 return self.file.url
             else:
-                return "%s%s%s" % (get_setting("site", "global", "siteurl"), settings.MEDIA_URL, self.file)
+                return "%s%s" % (settings.MEDIA_URL, self.file)
         return None

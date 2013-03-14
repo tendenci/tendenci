@@ -26,22 +26,22 @@ class Payment(models.Model):
     description = models.CharField(max_length=1600)
     first_name = models.CharField(max_length=100, default='', blank=True, null=True)
     last_name = models.CharField(max_length=100, default='', blank=True, null=True)
-    company = models.CharField(max_length=50, default='', blank=True, null=True)
-    address = models.CharField(max_length=60, default='', blank=True, null=True)
-    address2 = models.CharField(max_length=60, default='', blank=True, null=True)
-    city = models.CharField(max_length=40, default='', blank=True,null=True)
-    state = models.CharField(max_length=40, default='', blank=True, null=True)
+    company = models.CharField(max_length=100, default='', blank=True, null=True)
+    address = models.CharField(max_length=250, default='', blank=True, null=True)
+    address2 = models.CharField(max_length=100, default='', blank=True, null=True)
+    city = models.CharField(max_length=50, default='', blank=True,null=True)
+    state = models.CharField(max_length=50, default='', blank=True, null=True)
     zip = models.CharField(max_length=20, default='', blank=True, null=True)
     country = models.CharField(max_length=60, default='', blank=True, null=True)
-    phone = models.CharField(max_length=25, default='', blank=True, null=True)
-    fax = models.CharField(max_length=25, default='', blank=True, null=True)
+    phone = models.CharField(max_length=50, default='', blank=True, null=True)
+    fax = models.CharField(max_length=50, default='', blank=True, null=True)
     email = models.CharField(max_length=255, default='', blank=True, null=True)
     ship_to_first_name = models.CharField(max_length=100, default='', null=True)
     ship_to_last_name = models.CharField(max_length=100, default='', null=True)
-    ship_to_company = models.CharField(max_length=50, default='', null=True)
-    ship_to_address = models.CharField(max_length=60, default='', null=True)
-    ship_to_city = models.CharField(max_length=40, default='', null=True)
-    ship_to_state = models.CharField(max_length=40, default='', null=True)
+    ship_to_company = models.CharField(max_length=100, default='', null=True)
+    ship_to_address = models.CharField(max_length=250, default='', null=True)
+    ship_to_city = models.CharField(max_length=50, default='', null=True)
+    ship_to_state = models.CharField(max_length=50, default='', null=True)
     ship_to_zip = models.CharField(max_length=20, default='', null=True)
     ship_to_country = models.CharField(max_length=60, default='', null=True)
     method = models.CharField(max_length=50)
@@ -56,9 +56,9 @@ class Payment(models.Model):
     submit_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, related_name="payment_creator",  null=True)
+    creator = models.ForeignKey(User, related_name="payment_creator",  null=True, on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="payment_owner", null=True)
+    owner = models.ForeignKey(User, related_name="payment_owner", null=True, on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     status_detail = models.CharField(max_length=50, default='')
     status = models.BooleanField(default=True)
@@ -143,7 +143,7 @@ class Payment(models.Model):
             self.invoice = inv
             # hard coded here - same as in T4
             self.method = 'cc'
-            self.status = 1
+            self.status = True
             
             
             # default description

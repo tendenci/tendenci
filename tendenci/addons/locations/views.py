@@ -13,6 +13,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (has_perm, has_view_perm,
     update_perms_and_save, get_query_filters)
 from tendenci.core.perms.decorators import admin_required
@@ -29,8 +30,11 @@ from tendenci.addons.locations.importer.utils import is_import_valid, parse_locs
 from tendenci.addons.locations.importer.tasks import ImportLocationsTask
 from tendenci.core.imports.utils import render_excel
 from tendenci.core.files.models import File
+from tendenci.apps.redirects.models import Redirect
 from djcelery.models import TaskMeta
 
+
+@is_enabled('locations')
 def detail(request, id=None, template_name="locations/view.html"):
     if not id: return HttpResponseRedirect(reverse('locations'))
     location = get_object_or_404(Location, pk=id)
@@ -43,6 +47,7 @@ def detail(request, id=None, template_name="locations/view.html"):
         raise Http403
 
 
+@is_enabled('locations')
 def search(request, template_name="locations/search.html"):
     query = request.GET.get('q', None)
 
@@ -66,6 +71,7 @@ def search_redirect(request):
     return HttpResponseRedirect(reverse('locations'))
 
 
+@is_enabled('locations')
 def nearest(request, template_name="locations/nearest.html"):
     locations = []
     lat, lng = None, None
@@ -94,6 +100,7 @@ def nearest(request, template_name="locations/nearest.html"):
         }, context_instance=RequestContext(request))
 
 
+@is_enabled('locations')
 def print_view(request, id, template_name="locations/print-view.html"):
     location = get_object_or_404(Location, pk=id)    
 
@@ -104,7 +111,9 @@ def print_view(request, id, template_name="locations/print-view.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+
+@is_enabled('locations')
 @login_required
 def edit(request, id, form_class=LocationForm, template_name="locations/edit.html"):
     location = get_object_or_404(Location, pk=id)
@@ -129,6 +138,8 @@ def edit(request, id, form_class=LocationForm, template_name="locations/edit.htm
     else:
         raise Http403
 
+
+@is_enabled('locations')
 @login_required
 def add(request, form_class=LocationForm, template_name="locations/add.html"):
     if has_perm(request.user,'locations.add_location'):
@@ -150,7 +161,9 @@ def add(request, form_class=LocationForm, template_name="locations/add.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-    
+
+
+@is_enabled('locations')
 @login_required
 def delete(request, id, template_name="locations/delete.html"):
     location = get_object_or_404(Location, pk=id)
@@ -168,6 +181,7 @@ def delete(request, id, template_name="locations/delete.html"):
         raise Http403
 
 
+@is_enabled('locations')
 @login_required
 @admin_required
 @password_required
@@ -195,7 +209,7 @@ def locations_import_upload(request, template_name='locations/import-upload-file
                 return redirect('locations_import_upload_file')
             EventLog.objects.log()
             # reset the password_promt session
-            request.session['password_promt'] = False
+            del request.session['password_promt']
             return redirect('locations_import_preview', locport.id)
     else:
         form = UploadForm()
@@ -260,7 +274,7 @@ def locations_import_confirm(request, id, template_name='locations/import-confir
 
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            file_path = os.path.join(settings.MEDIA_ROOT, locport.get_file().file.name)
+            file_path = str(locport.get_file().file.name)
 
             if not settings.CELERY_IS_ACTIVE:
                 # if celery server is not present 
@@ -307,6 +321,8 @@ def locations_import_status(request, task_id, template_name='locations/import-co
             'now': datetime.now(),
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('locations')
 @login_required
 def export(request, template_name="locations/export.html"):
     """Export Locations"""
@@ -345,13 +361,13 @@ def export(request, template_name="locations/export.html"):
     return render_to_response(template_name, {
     }, context_instance=RequestContext(request))
 
+
+@is_enabled('locations')
 @admin_required
 @login_required
-def download_location_upload_template(request, file_ext='.xls'):
-    if file_ext == '.csv':
-        filename = "import-locations.csv"
-    else:
-        filename = "import-locations.xls"
+def download_location_upload_template(request):
+    file_ext = '.csv'
+    filename = "import-locations.csv"
 
     import_field_list = [
         'Location Name',

@@ -26,7 +26,7 @@ def send_welcome_email(user):
     site_name = get_setting('site', 'global', 'sitedisplayname')
 
     # send new user account welcome email (notification)
-    send_emails([user.email],'user_welcome', {
+    send_emails([user.email], 'user_welcome', {
         'site_url': site_url,
         'site_name': site_name,
         'uid': int_to_base36(user.id),

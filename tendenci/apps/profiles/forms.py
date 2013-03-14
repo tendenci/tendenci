@@ -191,6 +191,9 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['status']
                 del self.fields['status_detail']
 
+            if self.user_current.profile.is_superuser and self.user_current == self.user_this:
+                self.fields['security_level'].choices = (('superuser','Superuser'),)
+
         if not self.user_current.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -270,14 +273,14 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions')
-        
+
+
 class UserPermissionForm(forms.ModelForm):
-    is_superuser = forms.BooleanField(required=False, label=_("Is Admin"), 
-                                      help_text = _("If selected, admin has all permissions without explicitly assigning them."))
+
     class Meta:
         model = User
-        fields= ('is_superuser', 'user_permissions',)
-        
+        fields = ('user_permissions',)
+
     def __init__(self, *args, **kwargs):
         super(UserPermissionForm, self).__init__(*args, **kwargs)
         # filter out the unwanted permissions,
@@ -285,9 +288,10 @@ class UserPermissionForm(forms.ModelForm):
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
         content_types = ContentType.objects.exclude(app_label='auth')
-        
+
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
-    
+
+
 class UserGroupsForm(forms.Form):
     groups = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required=False)
     
@@ -426,3 +430,21 @@ class ExportForm(forms.Form):
         if not self.user.check_password(value):
             raise forms.ValidationError(_("Invalid password."))
         return value
+
+
+class ProfileMergeForm(forms.Form):
+    master_record = forms.ModelChoiceField(queryset=Profile.objects.none(),
+                        empty_label=None,
+                        label=_("Choose the master record"),
+                        widget=forms.RadioSelect())
+
+    user_list = forms.ModelMultipleChoiceField(queryset=Profile.objects.none(),
+                    label=_("Choose the users to merge"),
+                    widget=forms.CheckboxSelectMultiple())
+
+    def __init__(self, *args, **kwargs):
+        choices = kwargs.pop('list', None)
+        super(ProfileMergeForm, self).__init__(*args, **kwargs)
+
+        self.fields["master_record"].queryset = Profile.objects.filter(user__in=choices)
+        self.fields["user_list"].queryset = Profile.objects.filter(user__in=choices)

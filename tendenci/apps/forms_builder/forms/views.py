@@ -1,4 +1,4 @@
-import datetime
+import datetime, random, string
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -14,7 +14,10 @@ from django.utils.encoding import smart_str
 from django.template.defaultfilters import yesno
 from django.core.files.storage import default_storage
 from django.template.loader import get_template
+from django.contrib.auth.models import User
+from djcelery.models import TaskMeta
 
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import check_template, template_exists
@@ -23,6 +26,7 @@ from tendenci.core.perms.utils import (has_perm, update_perms_and_save,
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.invoices.models import Invoice
+from tendenci.apps.profiles.models import Profile
 from tendenci.addons.recurring_payments.models import RecurringPayment
 from tendenci.core.exports.utils import run_export_task
 
@@ -33,7 +37,10 @@ from tendenci.apps.forms_builder.forms.utils import (generate_admin_email_body,
     generate_submitter_email_body, generate_email_subject,
     make_invoice_for_entry, update_invoice_for_entry)
 from tendenci.apps.forms_builder.forms.formsets import BaseFieldFormSet
+from tendenci.apps.forms_builder.forms.tasks import FormEntriesExportTask
 
+
+@is_enabled('forms')
 @login_required
 def add(request, form_class=FormForm, template_name="forms/add.html"):
     if not has_perm(request.user,'forms.add_form'):
@@ -67,6 +74,7 @@ def add(request, form_class=FormForm, template_name="forms/add.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
     form_instance = get_object_or_404(Form, pk=id)
 
@@ -107,6 +115,7 @@ def edit(request, id, form_class=FormForm, template_name="forms/edit.html"):
         },context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def update_fields(request, id, template_name="forms/update_fields.html"):
     form_instance = get_object_or_404(Form, id=id)
@@ -131,6 +140,7 @@ def update_fields(request, id, template_name="forms/update_fields.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def delete(request, id, template_name="forms/delete.html"):
     form_instance = get_object_or_404(Form, pk=id)
@@ -148,6 +158,8 @@ def delete(request, id, template_name="forms/delete.html"):
     return render_to_response(template_name, {'form': form_instance},
         context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def copy(request, id):
     """
@@ -220,6 +232,8 @@ def copy(request, id):
     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % new_form)
     return redirect('form_edit', new_form.pk)
 
+
+@is_enabled('forms')
 @login_required
 def entries(request, id, template_name="forms/entries.html"):
     form = get_object_or_404(Form, pk=id)
@@ -235,6 +249,7 @@ def entries(request, id, template_name="forms/entries.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def entry_delete(request, id, template_name="forms/entry_delete.html"):
     entry = get_object_or_404(FormEntry, pk=id)
@@ -251,6 +266,8 @@ def entry_delete(request, id, template_name="forms/entry_delete.html"):
     return render_to_response(template_name, {'entry': entry},
         context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def entry_detail(request, id, template_name="forms/entry_detail.html"):
     entry = get_object_or_404(FormEntry, pk=id)
@@ -263,7 +280,8 @@ def entry_detail(request, id, template_name="forms/entry_detail.html"):
         context_instance=RequestContext(request))
 
 
-def entries_export(request, id):
+@is_enabled('forms')
+def entries_export(request, id, include_files=False):
     form_instance = get_object_or_404(Form, pk=id)
 
     # check permission
@@ -275,80 +293,14 @@ def entries_export(request, id):
     entries = form_instance.entries.all()
 
     if entries:
-        import csv
-        import zipfile
-        from os.path import join
-        from os import unlink
-        from time import time
-        from tempfile import NamedTemporaryFile
-
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=export_entries_%d.csv' % time()
-        headers = []
-        has_files = False
-
-        # check for a field field
-        for entry in entries:
-            for field in entry.fields.all():
-                if field.field.field_type == 'FileField':
-                    has_files = True
-
-        # if the object hase file store the csv elsewhere
-        # so that we can zip the files
-        if has_files:
-            temp_csv = NamedTemporaryFile(mode='w', delete=False)
-            temp_zip = NamedTemporaryFile(mode='wb', delete=False)
-            writer = csv.writer(temp_csv, delimiter=',')
-            zip = zipfile.ZipFile(temp_zip, 'w', compression=zipfile.ZIP_DEFLATED)
+        if not settings.CELERY_IS_ACTIVE:
+            task = FormEntriesExportTask()
+            response = task.run(form_instance, entries, include_files)
+            return response
         else:
-            writer = csv.writer(response, delimiter=',')
-
-        # get the header for headers for the csv
-        headers.append('submitted on')
-        for field in entries[0].fields.all():
-            headers.append(smart_str(field.field.label))
-        writer.writerow(headers)
-
-        # write out the values
-        for entry in entries:
-            values = []
-            values.append(entry.entry_time)
-            for field in entry.fields.all():
-                if has_files and field.field.field_type == 'FileField':
-                    archive_name = join('files',field.value)
-                    if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
-                        file_path = field.value
-                        try:
-                            # TODO: for large files, we may need to copy down
-                            # the files before adding them to the zip file.
-                            zip.writestr(archive_name, default_storage.open(file_path).read())
-                        except IOError:
-                            pass
-                    else:
-                        file_path = join(settings.MEDIA_ROOT,field.value)
-                        zip.write(file_path, archive_name, zipfile.ZIP_DEFLATED)
-
-                if field.field.field_type == 'BooleanField':
-                    values.append(yesno(smart_str(field.value)))
-                else:
-                    values.append(smart_str(field.value))
-            writer.writerow(values)
-
-        # add the csv file to the zip, close it, and set the response
-        if has_files:
-            # add the csv file and close it all out
-            temp_csv.close()
-            zip.write(temp_csv.name, 'entries.csv', zipfile.ZIP_DEFLATED)
-            zip.close()
-            temp_zip.close()
-
-            # set the response for the zip files
-            response = HttpResponse(open(temp_zip.name,'rb'), mimetype='application/zip')
-            response['Content-Disposition'] = 'attachment; filename=export_entries_%d.zip' % time()
-
-            # remove the temporary files
-            unlink(temp_zip.name)
-            unlink(temp_csv.name)
+            task = FormEntriesExportTask.delay(form_instance, entries, include_files)
+            task_id = task.task_id
+            return redirect('form_entries_export_status', task_id)
     else:
         # blank csv document
         response = HttpResponse(mimetype='text/csv')
@@ -357,7 +309,42 @@ def entries_export(request, id):
 
     return response
 
+def entries_export_status(request, task_id, template_name="forms/entry_export_status.html"):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    return render_to_response(template_name, {
+        'task':task,
+        'task_id':task_id,
+        'user_this':None,
+    }, context_instance=RequestContext(request))
+    
+def entries_export_check(request, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+        
+    if task and task.status == "SUCCESS":
+        return HttpResponse("OK")
+    else:
+        return HttpResponse("DNE")
 
+def entries_export_download(request, task_id):
+    try:
+        task = TaskMeta.objects.get(task_id=task_id)
+    except TaskMeta.DoesNotExist:
+        task = None
+
+    if task and task.status == "SUCCESS":
+        return task.result
+    else:
+        raise Http404
+
+
+@is_enabled('forms')
 def search(request, template_name="forms/search.html"):
     if not has_perm(request.user,'forms.view_form'):
         raise Http403
@@ -376,6 +363,7 @@ def search(request, template_name="forms/search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 def form_detail(request, slug, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
@@ -403,6 +391,31 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         if form_for_form.is_valid():
             entry = form_for_form.save()
             entry.entry_path = request.POST.get("entry_path", "")
+            if request.user.is_anonymous():
+                if entry.get_email_address():
+                    emailfield = entry.get_email_address()
+                    firstnamefield = entry.get_first_name()
+                    lastnamefield = entry.get_last_name()
+                    phonefield = entry.get_phone_number()
+                    password = ''
+                    for i in range(0, 10):
+                        password += random.choice(string.ascii_lowercase + string.ascii_uppercase)
+
+                    user_list = User.objects.filter(email=emailfield).order_by('-last_login')
+                    if user_list:
+                        anonymous_creator = user_list[0]
+                    else:
+                        anonymous_creator = User(username=emailfield[:30], email=emailfield, 
+                                                 first_name=firstnamefield, last_name=lastnamefield)
+                        anonymous_creator.set_password(password)
+                        anonymous_creator.is_active = False
+                        anonymous_creator.save()
+                        anonymous_profile = Profile(user=anonymous_creator, owner=anonymous_creator,
+                                                    creator=anonymous_creator, phone=phonefield)
+                        anonymous_profile.save()
+                    entry.creator = anonymous_creator
+            else:
+                entry.creator = request.user
             entry.save()
 
             # Email
@@ -426,6 +439,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
             email_from = email_to or email_from # Send from the email entered.
+            email_headers = {}  # Reset the email_headers
             email_headers.update({'Reply-To':email_from})
             email_copies = [e.strip() for e in form.email_copies.split(",")
                 if e.strip()]
@@ -434,8 +448,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 msg = EmailMessage(subject, admin_body, sender, email_copies, headers=email_headers)
                 msg.content_subtype = 'html'
                 for f in form_for_form.files.values():
+                    f.open()
                     f.seek(0)
                     msg.attach(f.name, f.read())
+                    f.close()
                 msg.send()
 
             # payment redirect
@@ -513,6 +529,8 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     context = {"form": form, "form_template": form.template}
     return render_to_response(template, context, RequestContext(request))
 
+
+@is_enabled('forms')
 def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm, template="forms/form_payment.html"):
     """
     Show billing form, update the invoice then proceed to external payment.
@@ -552,10 +570,11 @@ def form_entry_payment(request, invoice_id, invoice_guid, form_class=BillingForm
             'form_template': form_template,
         }, context_instance=RequestContext(request))
 
+
+@is_enabled('forms')
 @login_required
 def export(request, template_name="forms/export.html"):
     """Export forms"""
-
     if not request.user.is_superuser:
         raise Http403
 
@@ -568,6 +587,7 @@ def export(request, template_name="forms/export.html"):
     }, context_instance=RequestContext(request))
 
 
+@is_enabled('forms')
 @login_required
 def files(request, id):
     """
@@ -577,7 +597,6 @@ def files(request, id):
         We can get data from remote location, convert to file
         object and return a file response.
     """
-
     import os
     import mimetypes
     from django.http import Http404

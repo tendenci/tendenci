@@ -17,6 +17,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.core.meta.forms import MetaForm
 from tendenci.core.versions.models import Version
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (update_perms_and_save,
                                        get_notice_recipients,
                                        has_perm,
@@ -32,12 +33,12 @@ from tendenci.apps.pages.models import Page, HeaderImage
 from tendenci.apps.pages.forms import PageForm
 
 
-def index(request, slug=None, id=None, hash=None, 
+@is_enabled('pages')
+def index(request, slug=None, id=None, hash=None,
           template_name="pages/view.html"):
     """
     Return page object, either as an archive, active, or version.
     """
-
     if not slug and not id and not hash:
         return HttpResponseRedirect(reverse('page.search'))
 
@@ -87,6 +88,7 @@ def index(request, slug=None, id=None, hash=None,
         context_instance=RequestContext(request))
 
 
+@is_enabled('pages')
 def search(request, template_name="pages/search.html"):
     """
     Search pages.
@@ -112,8 +114,20 @@ def search(request, template_name="pages/search.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('pages')
 def print_view(request, slug, template_name="pages/print-view.html"):
-    page = get_object_or_404(Page, slug=slug, status_detail='active')
+    try:
+        page = get_object_or_404(Page, slug=slug)
+    except Page.MultipleObjectsReturned:
+        pages = Page.objects.filter(
+            slug=slug, status_detail='active'
+        ).order_by('-pk')
+        if not pages:
+            pages = Page.objects.filter(slug=slug).order_by('-pk')
+        if not pages:
+            raise Http404
+
+        page = pages[0]
 
     if not has_perm(request.user, 'pages.view_page', page):
         raise Http403
@@ -123,6 +137,8 @@ def print_view(request, slug, template_name="pages/print-view.html"):
     return render_to_response(template_name, {'page': page},
         context_instance=RequestContext(request))
 
+
+@is_enabled('pages')
 @login_required
 def edit(request, id, form_class=PageForm,
          meta_form_class=MetaForm,
@@ -236,12 +252,12 @@ def edit(request, id, form_class=PageForm,
         context_instance=RequestContext(request))
 
 
+@is_enabled('pages')
 @login_required
 def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.html"):
     """
     Return page that allows you to edit meta-html information.
     """
-
     # check permission
     page = get_object_or_404(Page, pk=id)
     if not has_perm(request.user, 'pages.change_page', page):
@@ -273,10 +289,61 @@ def edit_meta(request, id, form_class=MetaForm, template_name="pages/edit-meta.h
 
 
 @login_required
+def preview(request, id=None, form_class=PageForm, meta_form_class=MetaForm,
+        category_form_class=CategoryForm, template="pages/preview.html"):
+
+    content_type = get_object_or_404(ContentType,
+                                     app_label='pages',
+                                     model='page')
+    page = None
+    if id:
+        page = get_object_or_404(Page, pk=id)
+
+    if request.method == "POST":
+        if page:
+            form = form_class(request.POST, request.FILES, instance=page, user=request.user)
+        else:
+            form = form_class(request.POST, request.FILES, user=request.user)
+        metaform = meta_form_class(request.POST, prefix='meta')
+        categoryform = category_form_class(content_type,
+                                           request.POST,
+                                           prefix='category')
+        if form.is_valid():
+           page = form.save(commit=False)
+
+           edit_button = False
+           if request.POST['preview_for'] == 'edit':
+               edit_button = True 
+           
+           f = form.cleaned_data['header_image']
+           if f:
+               header = HeaderImage()
+               header.content_type = ContentType.objects.get_for_model(Page)
+               header.object_id = page.id
+               header.creator = request.user
+               header.creator_username = request.user.username
+               header.owner = request.user
+               header.owner_username = request.user.username
+               filename = "%s-%s" % (page.slug, f.name)
+               f.file.seek(0)
+               header.file.save(filename, f, save=False)
+               page.header_image = header
+           
+           return render_to_response(template, {'page': page,
+                                                'form': form,
+                                                'metaform': metaform,
+                                                'categoryform': categoryform,
+                                                'edit_button': edit_button},
+               context_instance=RequestContext(request))
+
+    return HttpResponseRedirect(reverse('page.search'))
+
+
+@is_enabled('pages')
+@login_required
 def add(request, form_class=PageForm, meta_form_class=MetaForm,
         category_form_class=CategoryForm,
         template_name="pages/add.html"):
-
     if not has_perm(request.user, 'pages.add_page'):
         raise Http403
 
@@ -377,6 +444,7 @@ def add(request, form_class=PageForm, meta_form_class=MetaForm,
             context_instance=RequestContext(request))
 
 
+@is_enabled('pages')
 @login_required
 def delete(request, id, template_name="pages/delete.html"):
     page = get_object_or_404(Page, pk=id)
@@ -409,6 +477,7 @@ def delete(request, id, template_name="pages/delete.html"):
         context_instance=RequestContext(request))
 
 
+@is_enabled('pages')
 def display_header_image(request, id):
     page = get_object_or_404(Page, pk=id)
 
@@ -420,10 +489,10 @@ def display_header_image(request, id):
     return file_display(request, page.header_image.file.name)
 
 
+@is_enabled('pages')
 @login_required
 def export(request, template_name="pages/export.html"):
     """Export Pages"""
-
     if not request.user.is_superuser:
         raise Http403
 

@@ -1,0 +1,430 @@
+{% extends "corporate_memberships/base-wide.html" %}
+{% load corporate_memberships_tags %}
+{% load styled_forms %}
+{% load i18n %}
+
+{% block title %}{% trans "Corporate Membership Renewal" %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/corporate_memberships.css">
+<!--<link rel="stylesheet" href="{{ LOCAL_STATIC_URL }}css/corporate_memberships-renew.css"> -->
+<style>
+div.id_members .field ul li {
+    float: left;
+    width: 35%;
+    margin: 0;
+    padding: 0;
+}
+div.id_payment_method ul{
+    list-style: none;
+}
+#main-forms{
+    text-align: left;
+    float: left;
+    width: 500px;
+}
+#summary-form-wrap{
+    width:300px;
+    text-align: left;
+    margin-left:1em;
+    float: left;
+}
+#summary-form-box{
+    border: 1px solid #ccc;
+    background-color: #fff;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    width: 300px;
+}
+
+#summary-price, #summary-total-price{
+    width: 98%;
+}
+#summary-price td, #summary-total-price td{
+    padding: 3px;
+}
+#summary-total-price{
+    margin-bottom: 1em;
+    padding-top: 3px;
+    border-top: 1px dotted #ccc;
+}
+.summary-header{
+    font-weight: bold;
+    text-align: center;
+}
+#total-label,#total-amount{ 
+    font-weight: bold;
+}
+#update_summary{
+    margin-bottom: 1em;
+    padding: 3px;
+}
+#renew-button-wrap{
+    margin-top: 1em;
+    text-align: center;
+}
+.center{
+    text-align: center;
+}
+.right{
+    text-align: right;
+}
+
+.summary-wrap{
+    background: #3E83C9;
+    color: #fff;
+    padding: 5px;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-align: center;
+}
+#summary-content{
+   padding: 10px;
+}
+div.forms{
+    width: 100%;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="t">
+{# corpmemb_nav request.user corporate_membership #} 
+
+     <h1>{% trans "Corporate Membership Renewal" %}</h1>
+  
+<form action="" method="post">{% csrf_token %}
+
+
+
+
+<div id="main-forms">
+<div class="forms">
+    <p>
+     <a href="{% url corpmembership.view corp_membership.id %}" target="_blank">{{ corp_profile.name }}</a><br />
+        {% if corp_profile.address %}
+            {{ corp_profile.address }} 
+        {% endif %}
+        {% if corp_profile.address2 %}
+            {{ corp_profile.address2 }} 
+        {% endif %}
+        <br />
+        {% if corp_profile.city %}
+            {{ corp_profile.city }} 
+        {% endif %}
+        {% if corp_profile.state %}
+            {{ corp_profile.state }}
+        {% endif %}
+        {% if corp_profile.zip %}
+            {{ corp_profile.zip }} 
+        {% endif %}
+        <br />
+        {% if corp_profile.phone %}
+            {{ corp_profile.phone }} <br />
+        {% endif %}
+        {% if corp_profile.email %}
+            {{ corp_profile.email }} <br />
+        {% endif %}
+        {% trans "Join Date:" %} {{ corp_membership.join_dt }}<br />
+        <b>{% trans "Expiration Date" %}</b>: {{ corp_membership.expiration_dt }}
+        {% if corp_membership.is_expired %}
+            {% if corp_membership.is_in_grace_period %}
+                <span style="color:#F79D3D">{% trans "(in grace period)" %}</span>
+            {% else %}
+                <span style="color:red">{% trans "(expired)" %}</span>
+            {% endif %}
+        {% endif %}
+        <br />
+     </p>
+     
+   <div style="height:1px;width:80%;border-bottom:1px dashed #ccc;margin-bottom:1em;">&nbsp;</div>
+        
+  {% if form.errors %}<h1>{% trans "Please correct the following errors" %}</h1>{% endif %}
+
+    {% if form.errors.values %}
+        <div class="errors">
+            {% for field in form %}
+                {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p><a href="{{ request.get_full_path }}#{{ field.auto_id }}">{{ field.label }} - {{ error }}</a></p>
+                      {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div class="form-field">
+        <div class="{{ form.corporate_membership_type.auto_id }}{{ form.corporate_membership_type.field.css_classes }}">
+            <div class="label{% if form.corporate_membership_type.field.required %} required{% endif %}">
+                  {{ form.corporate_membership_type.label_tag }}
+              </div>
+              {% if form.corporate_membership_type.errors %}
+              <div class="error">
+                  {% for error in form.corporate_membership_type.errors %}
+                  <p>{{ error }}</p>
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <div class="field">
+                  {{ form.corporate_membership_type }}
+              </div>
+              {% if form.corporate_membership_type.help_text %}
+              <div class="help-text">{{ form.corporate_membership_type.help_text }}</div>
+              {% endif %}
+           </div>
+        </div>
+       
+        
+     <div class="form-field">
+        <div class="{{ form.members.auto_id }}{{ form.members.field.css_classes }}">
+            <div class="label{% if form.members.field.required %} required{% endif %}">
+                  {{ form.members.label_tag }}
+              </div>
+              {% if form.members.errors %}
+              <div class="error">
+                  {% for error in form.members.errors %}
+                  <p>{{ error }}</p>
+                  {% endfor %}
+              </div>
+              {% endif %}
+              <div class="field_members_all">
+                <ul>
+                <li>
+                <label for="id_select_all_members">
+                {{ form.select_all_members }}
+                <span style="background:yellow">{% trans "Renew all individuals" %}</span>
+                </label>
+                </li>
+                </ul>
+              </div>
+              <div class="field">
+                  {{ form.members }}
+              </div>
+              {% if form.members.help_text %}
+              <div class="help-text">{{ form.members.help_text }}</div>
+              {% endif %}
+           </div>
+        <div style="clear: both"></div>
+     </div>    
+      
+    </div>
+</div>
+
+
+
+<div id="summary-form-wrap">
+    <div class="float-anchor"><!-- ie7 fix --></div>
+    <div class="float-window">
+    <div id="summary-form-box">
+        <div class="summary-wrap">
+        <div>{% trans "Summary" %}</div>
+        </div>
+        <div id="summary-content">
+            <table id="summary-price">
+                <tr>
+                    <td width="26%" class="summary-header">&nbsp;</td>
+                    <td width="20%" class="summary-header">{% trans "Qty" %}</td>
+                    <td width="27%" class="summary-header">{% trans "Unit Price" %}</td>
+                    <td width="27%" class="summary-header">{% trans "Sub-total" %}</td>
+                </tr>
+                <tr>
+                    <td>{% trans "Corporate" %}</td>
+                    <td class="center">1</td>
+                    <td class="right">
+                        <span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-price">{{ summary_data.corp_price }}</span>
+                    </td>
+                    <td class="right">
+                        <span>{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span><span id="corp-sub-total">{{ summary_data.corp_price }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>{% trans "Individuals" %}</td>
+                    <td class="center" id="ind-qty">{{ summary_data.individual_count }}</td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-price">{{ summary_data.individual_price }}</span>
+                    </td>
+                    <td class="right">
+                        {{ SITE_GLOBAL_CURRENCYSYMBOL }}<span id="ind-sub-total">{{ summary_data.individual_total }}</span>
+                    </td>
+                </tr>
+            </table>
+            <table id="summary-total-price">
+                <tr>
+                    <td><div id="total-label">{% trans "Total" %}</div></td>
+                    <td align="right">
+                        <span class="currency-symbol">{{ SITE_GLOBAL_CURRENCYSYMBOL }}</span>
+                        <span id="total-amount">{{ summary_data.total_amount }}</span>
+                    </td>
+                </tr>
+            </table>
+            
+            <noscript>
+                <div>
+                    <input title="Update Summary" type="submit" id="update_summary" name="update_summary" value="Update Summary" />
+                </div>
+            </noscript>
+            
+            <div class="form-field">
+                <div class="{{ form.payment_method.auto_id }}{{ form.payment_method.field.css_classes }}">
+                  <div class="label{% if form.payment_method.field.required %} required{% endif %}">
+                      {{ form.payment_method.label_tag }}
+                  </div>
+                  {% if form.payment_method.errors %}
+                  <div class="error">{{ error }}</div>
+                  {% endif %}
+                  <div class="field">
+                      {{ form.payment_method }}
+                  </div>
+                  {% if form.payment_method.help_text %}
+                  <div class="help-text">{{ form.payment_method.help_text }}</div>
+                  {% endif %}
+               </div>
+            </div>
+            
+            <div id="renew-button-wrap">
+            <input type="submit" value="Renew Now" class="btn" />
+            </div>
+        
+        </div>
+    </div>
+    </div>
+</div>  
+
+<div style="clear:both;"></div>
+
+</form> 
+    
+</div>
+
+
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+    
+    function IndUpdateSummary(memb){
+        var ind_qty = $("#ind-qty").html();
+        var ind_price = $("#ind-price").html();
+        var ind_sub_total = $("#ind-sub-total").html();
+        var total_amount = $("#total-amount").html();
+
+        ind_price = parseFloat(ind_price);
+       
+        if(memb.checked){
+            ind_qty = parseInt(ind_qty) + 1;
+            if (isNaN(ind_price)==false && ind_price > 0){
+                ind_sub_total = parseFloat(ind_sub_total) + parseFloat(ind_price);
+                total_amount = parseFloat(total_amount) + parseFloat(ind_price);
+            }
+        }else{
+            ind_qty = parseInt(ind_qty) - 1;
+            if (isNaN(ind_price)==false && ind_price > 0){
+                ind_sub_total = parseFloat(ind_sub_total) - parseFloat(ind_price);
+                total_amount = parseFloat(total_amount) - parseFloat(ind_price);
+            }
+        }
+
+        $("#ind-qty").html(ind_qty);
+
+        if (isNaN(ind_price)==false && ind_price > 0){
+            ind_sub_total = ind_sub_total.toFixed(2);
+            total_amount = total_amount.toFixed(2);
+            $("#ind-sub-total").html(ind_sub_total);
+            $("#total-amount").html(total_amount);
+        }
+       
+       
+    }
+
+    function TypeUpdateSummary(corp_type){
+        var corp_price = $("#corp-price").html();
+        var ind_qty = $("#ind-qty").html();
+        var ind_price = $("#ind-price").html();
+        var ind_sub_total = $("#ind-sub-total").html();
+        //var total_amount = $("#total-amount").html();
+
+        var new_corp_price = $(corp_type).parent().find(".type-corp-price").html();
+        var new_ind_price = $(corp_type).parent().find(".type-ind-price").html();
+
+        new_corp_price = parseFloat(new_corp_price);
+        if (isNaN(new_corp_price) == true){
+            new_corp_price = 0
+        }
+        new_corp_price = new_corp_price.toFixed(2);
+        
+        new_ind_price = parseFloat(new_ind_price);
+        if (isNaN(new_ind_price) == true){
+            new_ind_price = 0
+        }
+        new_ind_price = new_ind_price.toFixed(2);
+
+        var update_total = false;
+
+        // update corp. price and total
+        if (parseFloat(new_corp_price) != parseFloat(corp_price)){
+            $("#corp-price").html(new_corp_price);
+            $("#corp-sub-total").html(new_corp_price);
+            update_total = true;
+        }
+
+        // update individual price and total
+        if (parseFloat(new_ind_price) != parseFloat(ind_price)){
+            $("#ind-price").html(new_ind_price);
+            ind_sub_total = (parseInt(ind_qty) * parseFloat(new_ind_price)).toFixed(2);
+            $("#ind-sub-total").html(ind_sub_total);
+            update_total = true;
+        }
+
+        // update total amount
+        if (update_total){
+            total_amount = (parseFloat(new_corp_price) + parseFloat(ind_sub_total)).toFixed(2);
+            $("#total-amount").html(total_amount);
+        }
+
+    }
+    
+    $(document).ready(function()
+    {
+        $("#id_select_all_members").click(function()                
+        {
+            var checked_status = this.checked;
+            $("input[name=members]").each(function()
+            {
+                var old_status = this.checked;
+                this.checked = checked_status;
+                if (old_status != checked_status){
+                    IndUpdateSummary(this);
+                }
+            });
+        }); 
+
+        $("input[name=members]").change(function()
+        {
+            IndUpdateSummary(this);
+        });
+
+        $("input[name=corporate_membership_type]").change(function()
+        {
+            TypeUpdateSummary(this);
+        });                 
+    });
+
+    $(window).scroll(function(){
+        if  ($(window).scrollTop() > $(".float-anchor").offset().top){
+            $(".float-window").css("position", "fixed");
+            $(".float-window").css("top", "8px");
+        }
+        
+        if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
+            $(".float-window").css("position", "relative");
+            $(".float-window").css("top", $(".float-anchor").offset);
+        }
+    });
+    
+    </script>
+   
+    
+
+{% endblock %}

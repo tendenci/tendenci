@@ -14,6 +14,7 @@ from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.base.http import Http403
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters, has_view_perm
 from tendenci.apps.pages.models import Page
 from tendenci.core.exports.utils import run_export_task
@@ -22,6 +23,8 @@ from tendenci.apps.navs.models import Nav, NavItem
 from tendenci.apps.navs.forms import NavForm, PageSelectForm, ItemForm
 from tendenci.apps.navs.utils import cache_nav
 
+
+@is_enabled('navs')
 @login_required
 def search(request, template_name="navs/search.html"):
     query = request.GET.get('q', None)
@@ -39,6 +42,8 @@ def search(request, template_name="navs/search.html"):
         context_instance=RequestContext(request)
     )
 
+
+@is_enabled('navs')
 @login_required
 def detail(request, id, template_name="navs/detail.html"):
     nav = get_object_or_404(Nav, id=id)
@@ -54,6 +59,8 @@ def detail(request, id, template_name="navs/detail.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def add(request, form_class=NavForm, template_name="navs/add.html"):
     if not has_perm(request.user, 'navs.add_nav'):
@@ -76,6 +83,8 @@ def add(request, form_class=NavForm, template_name="navs/add.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
     nav = get_object_or_404(Nav, id=id)
@@ -100,6 +109,8 @@ def edit(request, id, form_class=NavForm, template_name="navs/edit.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def edit_items(request, id, template_name="navs/nav_items.html"):
     nav = get_object_or_404(Nav, id=id)
@@ -133,7 +144,7 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
             else:
                 return redirect('navs.detail', id=nav.id)
     else:
-        formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('ordering'))
+        formset = ItemFormSet(queryset=nav.navitem_set.all().order_by('position'))
 
     return render_to_response(
         template_name,
@@ -141,6 +152,8 @@ def edit_items(request, id, template_name="navs/nav_items.html"):
         context_instance=RequestContext(request),
     )
 
+
+@is_enabled('navs')
 @login_required
 def delete(request, id, template_name="navs/delete.html"):
     nav = get_object_or_404(Nav, pk=id)
@@ -157,6 +170,8 @@ def delete(request, id, template_name="navs/delete.html"):
     else:
         raise Http403
 
+
+@is_enabled('navs')
 @login_required
 def page_select(request, form_class=PageSelectForm):
     if not request.user.profile.is_superuser:
@@ -180,6 +195,8 @@ def page_select(request, form_class=PageSelectForm):
                 "error": True
             }), mimetype="text/plain")
 
+
+@is_enabled('navs')
 @login_required
 def export(request, template_name="navs/export.html"):
     """Export Navs"""

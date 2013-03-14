@@ -16,26 +16,32 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from captcha.fields import CaptchaField
-from tendenci.addons.events.models import Event, Place, RegistrationConfiguration, \
-    Payment, Sponsor, Organizer, Speaker, Type, \
-    TypeColorSet, Registrant, RegConfPricing, Addon, \
-    AddonOption, CustomRegForm, CustomRegField, CustomRegFormEntry, \
-    CustomRegFieldEntry, RecurringEvent
+from tendenci.addons.events.models import (
+    Event, Place, RegistrationConfiguration, Payment,
+    Sponsor, Organizer, Speaker, Type, TypeColorSet,
+    RegConfPricing, Addon, AddonOption, CustomRegForm,
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
+    Registrant, RecurringEvent
+)
 
+from form_utils.forms import BetterModelForm
+from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.emails.models import Email
+from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.imports.utils import get_header_list_from_content
+from tendenci.core.imports.models import Import
 from form_utils.forms import BetterModelForm
 from tendenci.apps.user_groups.models import Group
 from tendenci.apps.discounts.models import Discount
+from tendenci.apps.profiles.models import Profile
 from tendenci.addons.events.settings import FIELD_MAX_LENGTH
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.addons.memberships.models import Membership
-from tendenci.apps.profiles.models import Profile
 
-from fields import Reg8nDtField, Reg8nDtWidget, UseCustomRegField
+from fields import Reg8nDtField, UseCustomRegField
 from widgets import UseCustomRegWidget
 
 ALLOWED_LOGO_EXT = (
@@ -51,37 +57,39 @@ EMAIL_AVAILABLE_TOKENS = ['event_title',
                           'event_link'
                           ]
 
+
 class CustomRegFormAdminForm(forms.ModelForm):
     status = forms.ChoiceField(
-        choices=(('draft','Draft'),('active','Active'),('inactive', 'Inactive'),))
+        choices=(('draft', 'Draft'), ('active', 'Active'), ('inactive', 'Inactive')))
     #used = forms.BooleanField(initial=True, required=False)
 
     class Meta:
         model = CustomRegForm
-        fields = ('name',
-                  'notes',
-                  'status',
-                  #'used',
-                  'first_name',
-                  'last_name',
-                  'mail_name',
-                  'address',
-                  'city',
-                  'state',
-                  'zip',
-                  'country',
-                  'phone',
-                  'email',
-                  'position_title',
-                  'company_name',
-                  'meal_option',
-                  'comments',
-                 )
+        fields = (
+            'name',
+            'notes',
+            'status',
+            'first_name',
+            'last_name',
+            'mail_name',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'phone',
+            'email',
+            'position_title',
+            'company_name',
+            'meal_option',
+            'comments',
+        )
 
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
         model = CustomRegField
         exclude = ["position"]
+
 
 class FormForCustomRegForm(forms.ModelForm):
 
@@ -363,12 +371,16 @@ def _get_price_labels(pricing):
     else:
         target_display = ''
 
-    return mark_safe('<span data-price="%s">%s%s %s%s</span>' % (
+    end_dt = '<br/>&nbsp;(ends ' + unicode(pricing.end_dt.date()) + ')'
+
+    return mark_safe('&nbsp;<span data-price="%s">%s%s %s%s</span>%s' % (
                                       pricing.price,
                                       currency_symbol,
                                       pricing.price,
                                       pricing.title,
-                                      target_display) )
+                                      target_display,
+                                      end_dt) )
+
 
 class RadioImageFieldRenderer(forms.widgets.RadioFieldRenderer):
 
@@ -638,15 +650,80 @@ class TypeForm(forms.ModelForm):
     class Meta:
         model = Type
 
+class ReassignTypeForm(forms.Form):
+    type = forms.ModelChoiceField(empty_label=None, initial=1, queryset=Type.objects.none(), label=_('Reassign To'))
+
+    def __init__(self, *args, **kwargs):
+        type_id = kwargs.pop('type_id')
+        super(ReassignTypeForm, self).__init__(*args, **kwargs)
+
+        event_types = Type.objects.exclude(pk=type_id)
+
+        self.fields['type'].queryset = event_types
+
 
 class PlaceForm(forms.ModelForm):
+    place = forms.ChoiceField(label=_('Place'), required=False, choices=[])
     description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style':'width:100%'},
-        mce_attrs={'storme_app_label':Place._meta.app_label,
-        'storme_model':Place._meta.module_name.lower()}))
+        widget=TinyMCE(attrs={'style': 'width:100%'},
+        mce_attrs={'storme_app_label': Place._meta.app_label,
+        'storme_model': Place._meta.module_name.lower()}))
+
     label = 'Location Information'
+
     class Meta:
         model = Place
+
+    def __init__(self, *args, **kwargs):
+        super(PlaceForm, self).__init__(*args, **kwargs)
+        # Populate place
+        places = Place.objects.all().order_by(
+            'address', 'city', 'state', 'zip', 'country', '-pk').distinct(
+            'address', 'city', 'state', 'zip', 'country')
+
+        choices = [('', '------------------------------')]
+        for p in places:
+            choices.append((p.pk, unicode(p)))
+        if self.fields.get('place'):
+            self.fields.get('place').choices = choices
+
+        self.fields.keyOrder = [
+            'place',
+            'name',
+            'description',
+            'address',
+            'city',
+            'state',
+            'zip',
+            'country',
+            'url',
+        ]
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+
+    def save(self, *args, **kwargs):
+        place = super(PlaceForm, self).save(commit=False)
+        # Handle case if place is given
+        if self.cleaned_data.get('place'):
+            place_obj = Place.objects.get(pk=self.cleaned_data.get('place'))
+            # Check if there is a change in value.
+            # If there is a change in value, create new place
+            if place_obj.name != place.name or \
+                place_obj.description != place.description or \
+                place_obj.address != place.address or \
+                place_obj.city != place.city or \
+                place_obj.zip != place.zip or \
+                place_obj.country != place.country or \
+                place_obj.url != place.url:
+                place.pk = None
+                place.save()
+            else:
+                place = place_obj
+        else:
+            place.save()
+        return place
 
 
 class SponsorForm(forms.ModelForm):
@@ -682,6 +759,12 @@ class SpeakerForm(BetterModelForm):
           })
         ]
 
+    def __init__(self, *args, **kwargs):
+        super(SpeakerForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 class OrganizerForm(forms.ModelForm):
     description = forms.CharField(required=False,
@@ -697,6 +780,13 @@ class OrganizerForm(forms.ModelForm):
             'name',
             'description',
         )
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizerForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 
 class PaymentForm(forms.ModelForm):
@@ -715,7 +805,8 @@ class Reg8nConfPricingForm(BetterModelForm):
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         kwargs.update({'initial': {'start_dt':datetime.now(),
-                                   'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
+                        'end_dt': (datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17, 0, 0)
+                        + timedelta(days=29))}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
 
@@ -756,7 +847,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'allow_anonymous',
             'allow_user',
             'allow_member',
-            'display_order'
+            'position'
          ]
 
         fieldsets = [('Registration Pricing', {
@@ -769,7 +860,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
-                    'display_order'
+                    'position'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -814,6 +905,10 @@ class Reg8nEditForm(BetterModelForm):
         initial=[1,2,3]) # first three items (inserted via fixture)
     use_custom_reg = UseCustomRegField(label="Custom Registration Form")
 
+    registration_email_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':RegistrationConfiguration._meta.app_label,
+        'storme_model':RegistrationConfiguration._meta.module_name.lower()}))
 
     class Meta:
         model = RegistrationConfiguration
@@ -825,6 +920,7 @@ class Reg8nEditForm(BetterModelForm):
             'payment_required',
             'require_guests_info',
             'discount_eligible',
+            'display_registration_stats',
             'use_custom_reg',
             'send_reminder',
             'reminder_days',
@@ -838,6 +934,7 @@ class Reg8nEditForm(BetterModelForm):
                     'payment_required',
                     'require_guests_info',
                     'discount_eligible',
+                    'display_registration_stats',
                     'use_custom_reg',
                     'send_reminder',
                     'reminder_days',
@@ -890,8 +987,10 @@ class Reg8nEditForm(BetterModelForm):
             self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
                                         (self.fields['reminder_days'].help_text,
                                          reminder_edit_link)
+            self.fields['registration_email_text'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['use_custom_reg'].initial =',0,1'
+            self.fields['registration_email_text'].widget.mce_attrs['app_instance_id'] = 0
 
         #.short_text_input
         self.fields['reminder_days'].initial = '7,1'
@@ -1150,9 +1249,8 @@ class RegistrantForm(forms.Form):
     #username = forms.CharField(max_length=50, required=False)
     phone = forms.CharField(max_length=20, required=False)
     email = EmailVerificationField(label=_("Email"))
-    comments = forms.CharField(max_length=300,
-                               widget=forms.Textarea,
-                               required=False)
+    comments = forms.CharField(
+        max_length=300, widget=forms.Textarea, required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
@@ -1192,13 +1290,6 @@ class RegistrantForm(forms.Form):
             self.fields['pricing'].label_from_instance = _get_price_labels
             self.fields['pricing'].empty_label = None
             self.fields['pricing'].required=True
-            self.fields['pricing'].choices = [(p.pk,
-                mark_safe(
-                '<div>' +
-                unicode(p) +
-                    '<br/>(ends ' + unicode(p.end_dt.date()) + ')' +
-                '</div>'))
-                for p in self.pricings]
 
         # member id
         if hasattr(self.event, 'has_member_price') and \
@@ -1464,6 +1555,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.module_name.lower()}),
@@ -1480,10 +1572,14 @@ class MessageAddForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('body',)
+        fields = ('subject', 'body',)
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
@@ -1502,6 +1598,10 @@ class EmailForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 class PendingEventForm(EventForm):
     class Meta:
@@ -1582,5 +1682,33 @@ class AddonOptionForm(forms.ModelForm):
         model = AddonOption
         fields = ('title',)
 
+
 class EventICSForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all())
+
+
+class RegistrantSearchForm(forms.Form):
+    event = forms.ModelChoiceField(queryset=Event.objects.filter(registration__isnull=False).distinct('pk'),
+                                   label=_("Event"),
+                                   required=False,
+                                   empty_label='All Events')
+    start_dt = forms.DateField(label=_('Start Date'), required=False)
+    end_dt = forms.DateField(label=_('End Date'), required=False)
+
+    user_id = forms.CharField(label=_('User ID'), required=False)
+    first_name = forms.CharField(label=('First Name'), required=False)
+    last_name = forms.CharField(label=('Last Name'), required=False)
+    email = forms.CharField(label=('Email'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrantSearchForm, self).__init__(*args, **kwargs)
+
+        # Set start date and end date
+        if self.fields.get('start_dt'):
+            self.fields.get('start_dt').widget.attrs = {
+                'class': 'datepicker',
+            }
+        if self.fields.get('end_dt'):
+            self.fields.get('end_dt').widget.attrs = {
+                'class': 'datepicker',
+            }

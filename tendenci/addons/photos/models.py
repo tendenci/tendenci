@@ -31,6 +31,7 @@ from tendenci.addons.photos.managers import PhotoManager, PhotoSetManager
 from tendenci.core.meta.models import Meta as MetaTags
 from tendenci.addons.photos.module_meta import PhotoMeta
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
+from tendenci.libs.abstracts.models import OrderingBaseModel
 
 import Image as PILImage
 import ImageFile
@@ -556,7 +557,7 @@ class PhotoSet(TendenciBaseModel):
     publish_type = models.IntegerField(_('publish_type'), choices=PUBLISH_CHOICES, default=2)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL)
     tags = TagField(blank=True, help_text="Tags are separated by commas, ex: Tag 1, Tag 2, Tag 3")
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     perms = generic.GenericRelation(ObjectPermission,
                                           object_id_field="object_id",
@@ -664,7 +665,7 @@ class PhotoSet(TendenciBaseModel):
             )
 
 
-class Image(ImageModel, TendenciBaseModel):
+class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
     """
     A photo with its details
     """
@@ -678,14 +679,12 @@ class Image(ImageModel, TendenciBaseModel):
     caption = models.TextField(_('caption'), blank=True)
     date_added = models.DateTimeField(_('date added'), auto_now_add=True, editable=False)
     is_public = models.BooleanField(_('public'), default=True, help_text=_('Public photographs will be displayed in the default views.'))
-    member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True)
+    member = models.ForeignKey(User, related_name="added_photos", blank=True, null=True, on_delete=models.SET_NULL)
     safetylevel = models.IntegerField(_('safety level'), choices=SAFETY_LEVEL, default=3)
     photoset = models.ManyToManyField(PhotoSet, blank=True, verbose_name=_('photo set'))
     tags = TagField(blank=True, help_text="Comma delimited (eg. mickey, donald, goofy)")
     license = models.ForeignKey('License', null=True, blank=True)
     group = models.ForeignKey(Group, null=True, default=get_default_group, on_delete=models.SET_NULL, blank=True)
-
-    photoset_position = models.IntegerField(default=0, null=True)
 
     # html-meta tags
     meta = models.OneToOneField(MetaTags, blank=True, null=True)
@@ -731,9 +730,15 @@ class Image(ImageModel, TendenciBaseModel):
         cache_path = self.cache_path()
 
         # delete cached [resized] versions
-        filename_list = default_storage.listdir(cache_path)[1]
-        for filename in filename_list:
-            default_storage.delete(os.path.join(cache_path, filename))
+        try:
+            filename_list = default_storage.listdir(cache_path)[1]
+            for filename in filename_list:
+                try:
+                    default_storage.delete(os.path.join(cache_path, filename))
+                except OSError:
+                    pass
+        except OSError:
+            pass
 
         # delete actual image; do not save() self.instance
         self.image.delete(save=False)
@@ -751,12 +756,12 @@ class Image(ImageModel, TendenciBaseModel):
     def meta_keywords(self):
         return ''
 #        from base.utils import generate_meta_keywords
-#        keywords = caching.cache_get(PHOTOS_KEYWORDS_CACHE, key=self.pk)    
+#        keywords = caching.cache_get(PHOTOS_KEYWORDS_CACHE, key=self.pk)
 #        if not keywords:
 #            value = self.title + ' ' + self.caption + ' ' + self.tags
 #            keywords = generate_meta_keywords(value)
-#            caching.cache_add(PHOTOS_KEYWORDS_CACHE, keywords, key=self.pk)     
-#        return keywords  
+#            caching.cache_add(PHOTOS_KEYWORDS_CACHE, keywords, key=self.pk)
+#        return keywords
 
     def check_perm(self, user, permission, *args, **kwargs):
         """
@@ -842,7 +847,7 @@ class Image(ImageModel, TendenciBaseModel):
             if hasattr(settings, 'USE_S3_STORAGE') and settings.USE_S3_STORAGE:
                 im = rImage.open(self.get_file_from_remote_storage())
             else:
-                im = rImage.open(self.image.file.path)
+                im = rImage.open(self.image.path)
             return im.size
         except Exception:
             return (0, 0)
@@ -851,7 +856,7 @@ class Image(ImageModel, TendenciBaseModel):
 
     def __unicode__(self):
         return self.title
-        
+
 class License(models.Model):
     """
     License with details
@@ -861,7 +866,7 @@ class License(models.Model):
     author = models.CharField(_('author'), max_length=200, blank=True)
     deed = models.URLField(_('license deed'), blank=True)
     legal_code = models.URLField(_('legal code'), blank=True)
-    
+
     def __unicode__(self):
        return "%s" % (self.name)
 
@@ -883,14 +888,14 @@ class Pool(models.Model):
         unique_together = (('photo', 'content_type', 'object_id'),)
         verbose_name = _('pool')
         verbose_name_plural = _('pools')
-        
+
 class AlbumCover(models.Model):
     """
     model to mark a photo set's album cover
     """
     photoset = models.OneToOneField(PhotoSet)
     photo = models.ForeignKey(Image)
-    
+
     def __unicode__(self):
         return self.photo.title
 

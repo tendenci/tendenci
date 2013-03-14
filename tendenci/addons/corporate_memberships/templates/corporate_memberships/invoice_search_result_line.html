@@ -16,21 +16,22 @@
       </tr>
     {% if obj %}
        <tr>
-       	<td><a href="{% url corporate_memberships.views.view obj.id %}">{{obj.id}}</a></td>
-       	<td>{% if obj.module_name == 'corpmembrenewentry' %}{{obj.corporate_membership.name}}{% else %}{{obj.name}}{% endif %}   </td>
+       	<td><a href="{% url corpmembership.view obj.id %}">{{obj.id}}</a></td>
+       	<td>{{obj}}</td>
        	<td>{{obj.create_dt|date:'long'}}</td>
        	<td>{{invoice.total|format_currency}}</td>
        	<td><div {% if invoice.balance > 0 %}class="body-copy-yellow"{% endif %}>{{invoice.balance|format_currency}}</div></td>
        </tr> 
-       {% if obj.module_name == 'corpmembrenewentry' %}
-       		{% if obj.indiv_memb_renew_entries %}
+       {% if obj.renewal %}
+            {% with  obj.indivmembershiprenewentry_set.all as indiv_memb_renew_entries %}
+       		{% if indiv_memb_renew_entries %}
        			<tr><td colspan="5">&nbsp;</td></tr>
 		       <tr>
 		       	<td colspan="3"><b>{% trans "Individual memberships renewed in this transaction:" %}</b></td>
 		       	<td colspan="2">&nbsp;</td>
 		       </tr>
 		       
-		       {% for renew_entry in obj.indiv_memb_renew_entries %}
+		       {% for renew_entry in indiv_memb_renew_entries %}
 					<tr>
 					<td>&nbsp;</td>
 					<td><a href="{% url profile renew_entry.membership.user.username %}">{{ renew_entry.membership.user.get_full_name }}</a></td>
@@ -39,7 +40,8 @@
 					</tr>
 				{% endfor %}
 		       
-	       {% endif %}   
+	       {% endif %} 
+	       {% endwith %}  
        {% endif %}   
    {% endif %}   
             

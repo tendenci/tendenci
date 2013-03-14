@@ -5,26 +5,23 @@ from mimetypes import guess_type
 from os.path import join
 
 from django.conf import settings
-from django.utils.encoding import iri_to_uri
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.template import loader, Context
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
-from tendenci.core.perms.utils import update_perms_and_save
 
 from tendenci.apps.forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, Pricing
 from tendenci.apps.forms_builder.forms.settings import UPLOAD_ROOT
 from tendenci.apps.forms_builder.forms.forms import FormAdminForm, FormForField, PricingForm
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
+
 
 class PricingAdminForm(PricingForm):
     class Meta:
@@ -35,10 +32,12 @@ class PricingAdminForm(PricingForm):
                    'due_sore',
                   )
 
+
 class PricingAdmin(admin.StackedInline):
     model = Pricing
     form = PricingAdminForm
     extra = 0
+
 
 class FieldAdminForm(FormForField):
     class Meta:
@@ -50,6 +49,7 @@ class FieldAdmin(admin.TabularInline):
     form = FieldAdminForm
     extra = 0
     ordering = ("position",)
+
 
 class FormAdmin(TendenciBaseModelAdmin):
 
@@ -66,7 +66,7 @@ class FormAdmin(TendenciBaseModelAdmin):
         (None, {"fields": ("title", "slug", "intro", "response", "completion_url", "template")}),
         (_("Email"), {"fields": ('subject_template', "email_from", "email_copies", "send_email", "email_text")}),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
-        ('Advanced Permissions', {'classes': ('collapse',),'fields': (
+        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
             'user_perms',
             'member_perms',
             'group_perms',
@@ -140,7 +140,8 @@ class FormAdmin(TendenciBaseModelAdmin):
         for entry in entries:
             values = FieldEntry.objects.filter(entry=entry)
             row = [""] * len(columns)
-            row[-4] = entry.entry_time
+            entry_time = entry.entry_time.strftime("%Y-%m-%d %H:%M:%S")
+            row[-4] = entry_time
             if entry.pricing:
                 row[-3] = entry.pricing.label
                 row[-2] = entry.pricing.price
@@ -174,7 +175,6 @@ class FormAdmin(TendenciBaseModelAdmin):
         return response
 
     def save_formset(self, request, form, formset, change):
-        print 'form.instance', form.instance
         instances = formset.save(commit=False)
         for instance in instances:
             instance.object_id = instance.form.pk

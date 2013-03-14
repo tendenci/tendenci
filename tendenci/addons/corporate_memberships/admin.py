@@ -1,45 +1,113 @@
 from django.contrib import admin
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 
-from tendenci.addons.corporate_memberships.models import CorporateMembershipType, CorporateMembership
+from tendenci.addons.corporate_memberships.models import (
+                                            CorporateMembershipType,
+                                            CorpMembershipApp,
+                                            CorpMembershipAppField,
+                                            CorpMembership,
+                                            CorporateMembership)
 from tendenci.addons.corporate_memberships.models import CorpApp, CorpField
-from tendenci.addons.corporate_memberships.forms import CorporateMembershipTypeForm, CorpFieldForm, CorpAppForm
+from tendenci.addons.corporate_memberships.forms import (
+                                            CorporateMembershipTypeForm,
+                                            CorpMembershipAppForm,
+                                            CorpFieldForm,
+                                            CorpAppForm)
 from tendenci.addons.corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields, edit_corpapp_update_memb_app
 
 from tendenci.core.event_logs.models import EventLog
 
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'renewal_price', 'membership_type',  
-                     'admin_only', 'status_detail', 'order']
+    list_display = ['name', 'price', 'renewal_price', 'membership_type',
+                     'admin_only', 'status_detail', 'position']
     list_filter = ['name', 'price', 'status_detail']
-    
+    list_editable = ['position']
     fieldsets = (
-        (None, {'fields': ('name', 'price', 'renewal_price', 'membership_type', 'description')}),
-        ('Individual Pricing Options', {'fields': ('apply_threshold', 'individual_threshold',
-                                                   'individual_threshold_price',)}),
+        (None, {'fields': ('name', 'price', 'renewal_price',
+                           'membership_type', 'description')}),
+        ('Individual Pricing Options', {'fields':
+                                    ('apply_threshold', 'individual_threshold',
+                                    'individual_threshold_price',)}),
         ('Other Options', {'fields': (
-            'order', ('admin_only', 'status'), 'status_detail')}),
+            'position', ('admin_only', 'status'), 'status_detail')}),
     )
-    
+
     form = CorporateMembershipTypeForm
-    
-    
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery-ui-1.8.17.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+        )
+
     def save_model(self, request, object, form, change):
         instance = form.save(commit=False)
-         
+
         if not change:
             instance.creator = request.user
             instance.creator_username = request.user.username
             instance.owner = request.user
             instance.owner_username = request.user.username
- 
+
         # save the object
         instance.save()
-        
+
         #form.save_m2m()
-        
+
         return instance
+
+
+class CorpMembershipAppFieldAdmin(admin.TabularInline):
+    model = CorpMembershipAppField
+    fields = ('label', 'field_name', 'display',
+              'required', 'admin_only', 'order',
+              )
+#    readonly_fields = ('field_name',)
+    extra = 0
+    can_delete = False
+    verbose_name = 'Section Break'
+    ordering = ("order",)
+    template = "corporate_memberships/admin/corpmembershipapp/tabular.html"
+
+
+class CorpMembershipAppAdmin(admin.ModelAdmin):
+    inlines = (CorpMembershipAppFieldAdmin, )
+    prepopulated_fields = {'slug': ['name']}
+    list_display = ('name', 'status', 'status_detail')
+    search_fields = ('name', 'status', 'status_detail')
+    fieldsets = (
+        (None, {'fields': ('name', 'slug', 'authentication_method',
+                           'description',
+                           'confirmation_text', 'notes',
+                           'corp_memb_type', 'payment_methods',
+                           )},),
+        ('Permissions', {'fields': ('allow_anonymous_view',)}),
+        ('Advanced Permissions', {'classes': ('collapse',), 'fields': (
+            'user_perms',
+            'member_perms',
+            'group_perms',
+        )}),
+        ('Status', {'fields': (
+            'status',
+            'status_detail',
+        )}),
+    )
+
+    form = CorpMembershipAppForm
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
+            '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
+            '%sjs/admin/corpmembershipapp_tabular_inline_ordering.js' % settings.STATIC_URL,
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+        css = {'all': ['%scss/admin/dynamic-inlines-with-sort.css' % settings.STATIC_URL,
+                       '%scss/corpmemberships-admin.css' % settings.STATIC_URL], }
 
 
 #class FieldInline(admin.TabularInline):
@@ -50,7 +118,7 @@ class FieldInline(admin.StackedInline):
     fieldsets = (
         (None, {'fields': (('label', 'field_type'),
         ('choices', 'field_layout'), 'size', ('required', 'visible', 'no_duplicates', 'admin_only'), 
-            'instruction', 'default_value', 'css_class', 'order')}),
+            'instruction', 'default_value', 'css_class', 'position')}),
     )
     #raw_id_fields = ("page", 'section', 'field') 
     template = "corporate_memberships/admin/stacked.html"
@@ -73,7 +141,7 @@ class CorpAppAdmin(admin.ModelAdmin):
         js = (
             '%sjs/jquery-1.4.2.min.js' % settings.STATIC_URL,
             '%sjs/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js' % settings.STATIC_URL,
-            '%sjs/admin/inline_ordering2.js' % settings.STATIC_URL,
+            '%sjs/admin/dynamic-inlines-with-sort.js' % settings.STATIC_URL,
             '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
             #'%sjs/admin/corpapp.js' % settings.STATIC_URL,
         )
@@ -192,5 +260,27 @@ class CorpAppAdmin(admin.ModelAdmin):
         super(CorpAppAdmin, self).log_addition(request, object)
 
 
+class CorpMembershipAdmin(admin.ModelAdmin):
+    list_display = ['corp_profile', 'join_dt',
+                    'renewal', 'renew_dt',
+                    'expiration_dt',
+                    'approved', 'status_detail']
+    list_filter = ['status_detail', 'join_dt', 'expiration_dt']
+    search_fields = ['corp_profile__name']
+
+    fieldsets = (
+        (None, {'fields': ()}),
+    )
+
+    def add_view(self, request, form_url='', extra_context=None):
+        return HttpResponseRedirect(reverse('corpmembership.add'))
+
+    def change_view(self, request, object_id, form_url='',
+                    extra_context=None):
+        return HttpResponseRedirect(reverse('corpmembership.view',
+                                            args=[object_id]))
+
+admin.site.register(CorpMembership, CorpMembershipAdmin)
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
-admin.site.register(CorpApp, CorpAppAdmin)
+admin.site.register(CorpMembershipApp, CorpMembershipAppAdmin)
+

@@ -1,4 +1,6 @@
 from django.conf.urls.defaults import patterns, url
+from tendenci.apps.user_groups.signals import init_signals
+init_signals()
 
 urlpatterns = patterns('tendenci.apps.user_groups.views',
     url(r'^$',                              'search',     name='groups'),
@@ -7,6 +9,12 @@ urlpatterns = patterns('tendenci.apps.user_groups.views',
     url(r'^edit_perms/(?P<id>\d+)/$',       'group_edit_perms', name="group.edit_perms"),
     url(r'^delete/(?P<id>\d+)/$',       'group_delete', name="group.delete"),
     url(r'^adduser/redirect/$', 'groupmembership_bulk_add_redirect', name='group.adduser_redirect'),
+
+    url(r'^import/add/$', 'import_add', name='group.import_add'),
+    url(r'^import/preview/(?P<import_id>\d+)/$', 'import_preview', name='group.import_preview'),
+    url(r'^import/process/(?P<import_id>\d+)/$', 'import_process', name='group.import_process'),
+    url(r'^import/download_template/$', 'import_download_template', name='group.import_download_template'),
+
     url(r'^(?P<group_slug>[-.\w]+)/$',      'group_detail',   name='group.detail'),
     url(r'^(?P<group_slug>[-.\w]+)/export/members/$', 'group_member_export', name='group.member_export'),
     url(r'^(?P<group_slug>[-.\w]+)/export/subscribers/$', 'group_subscriber_export', name='group.subscriber_export'),

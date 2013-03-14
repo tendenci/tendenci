@@ -26,7 +26,11 @@ def search(request, template_name="contributions/search.html"):
     if request.user.profile.is_superuser:
         contributions = Contribution.objects.all()
     else:
-        contributions = Contribution.objects.filter(Q(creator=request.user)|Q(owner=request.user))
+        contributions = Contribution.objects.filter(Q(creator=request.user) | Q(owner=request.user))
+
+    if query:
+        contributions = contributions.filter(Q(creator__username=query) | Q(owner__username=query) | Q(title__icontains=query))
+
     contributions = contributions.order_by('-create_dt')
 
     return render_to_response(template_name, {'contributions':contributions}, 

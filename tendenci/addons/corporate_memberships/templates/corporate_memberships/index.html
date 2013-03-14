@@ -20,11 +20,11 @@
 	     	{% for corp_app in corp_apps %}
 	     		<li>
 		     		<a href="{% url corp_memb.add corp_app.slug %}">{{ corp_app.name }}</a> 
-		     		(<a href="{% url admin:corporate_memberships_corpapp_change corp_app.id %}">{% trans "Edit" %}</a>)
+		     		(<a href="{% url admin:corporate_memberships_corpmembershipapp_change corp_app.id %}">{% trans "Edit" %}</a>)
 		     		--------------->>
 		     		{% trans "Individual Member App: " %}
 		     		{% if corp_app.memb_app %}
-		     		<a href="{% url membership.application_details corp_app.memb_app.slug %}">{{ corp_app.memb_app.name }}</a>
+		     		<a href="{% url membership.application_detail_default corp_app.memb_app.slug %}">{{ corp_app.memb_app.name }}</a>
 		     		(<a href="{% url admin:memberships_app_change corp_app.memb_app.id %}">{% trans "Edit" %}</a>)
 		     		{% else %}
 		     			<a href="{% url admin:memberships_app_add %}?use_for_corp=1">{% trans "Create it" %}</a>

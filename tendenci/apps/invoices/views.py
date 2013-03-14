@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from datetime import datetime, time, timedelta
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -13,15 +14,18 @@ from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
+from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import has_perm
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.notifications.utils import send_notifications
+
+from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
-from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm
+from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
 
+@is_enabled('invoices')
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -76,17 +80,67 @@ def mark_as_paid(request, id):
     return redirect(invoice)
 
 
+def void_payment(request, id):
+    
+    invoice = get_object_or_404(Invoice, pk=id)
+    
+    if not (request.user.profile.is_superuser): raise Http403    
+    
+    amount = invoice.payments_credits
+    invoice.void_payment(request.user, amount)
+    
+    messages.add_message(request, messages.SUCCESS, 'Successfully voided payment for Invoice %s.' % invoice.id)
+    return redirect(invoice)
+
+
 @login_required
 def search(request, template_name="invoices/search.html"):
-    query = request.GET.get('q', None)
+    query = u''
+    invoice_type = u''
+    start_dt = None
+    end_dt = None
+    event = None
+    event_id = None
+    
+    has_index = get_setting('site', 'global', 'searchindex')
+    form = InvoiceSearchForm(request.GET)
+    
+    if form.is_valid():
+        query = form.cleaned_data.get('q')
+        invoice_type = form.cleaned_data.get('invoice_type')
+        start_dt = form.cleaned_data.get('start_dt')
+        end_dt = form.cleaned_data.get('end_dt')
+        event = form.cleaned_data.get('event')
+        event_id = form.cleaned_data.get('event_id')
+    
     bill_to_email = request.GET.get('bill_to_email', None)
 
-    if get_setting('site', 'global', 'searchindex') and query:
+    if has_index and query:
         invoices = Invoice.objects.search(query)
     else:
         invoices = Invoice.objects.all()
         if bill_to_email:
             invoices = invoices.filter(bill_to_email=bill_to_email)
+    
+    if invoice_type:
+        content_type = ContentType.objects.filter(app_label=invoice_type)
+        invoices = invoices.filter(object_type__in=content_type)
+        if invoice_type == 'events':
+            # Set event filters
+            event_set = set()
+            if event:
+                event_set.add(event.pk)
+            if event_id:
+                event_set.add(event_id)
+            if event or event_id:
+                invoices = invoices.filter(registration__event__pk__in=event_set)
+            
+    if start_dt:
+        invoices = invoices.filter(create_dt__gte=datetime.combine(start_dt, time.min))
+     
+    if end_dt:
+        invoices = invoices.filter(create_dt__lte=datetime.combine(end_dt, time.max))
+    
     if request.user.profile.is_superuser or has_perm(request.user, 'invoices.view_invoice'):
         invoices = invoices.order_by('-create_dt')
     else:
@@ -96,7 +150,7 @@ def search(request, template_name="invoices/search.html"):
         else:
             raise Http403
     EventLog.objects.log()
-    return render_to_response(template_name, {'invoices': invoices, 'query': query}, 
+    return render_to_response(template_name, {'invoices': invoices, 'query': query, 'form':form,}, 
         context_instance=RequestContext(request))
 
 
@@ -147,7 +201,8 @@ def search_report(request, template_name="invoices/search.html"):
     return render_to_response(template_name, {'invoices': invoices, 'query': query},
         context_instance=RequestContext(request))
 
-    
+
+@is_enabled('discounts')
 def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adjust.html"):
     #if not id: return HttpResponseRedirect(reverse('invoice.search'))
     invoice = get_object_or_404(Invoice, pk=id)
@@ -204,7 +259,8 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
                                               'form':form}, 
         context_instance=RequestContext(request))
 
-    
+
+@is_enabled('discounts')
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
 
@@ -245,89 +301,41 @@ def detail(request, id, template_name="invoices/detail.html"):
 @login_required
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""
-    
+
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
-        # initilize initial values
-        file_name = "invoices.csv"
-        fields = [
-            'guid',
-            'object_type',
-            'title',
-            'tender_date',
-            'bill_to',
-            'bill_to_first_name',
-            'bill_to_last_name',
-            'bill_to_company',
-            'bill_to_address',
-            'bill_to_city',
-            'bill_to_state',
-            'bill_to_zip_code',
-            'bill_to_country',
-            'bill_to_phone',
-            'bill_to_fax',
-            'bill_to_email',
-            'ship_to',
-            'ship_to_first_name',
-            'ship_to_last_name',
-            'ship_to_company',
-            'ship_to_address',
-            'ship_to_city',
-            'ship_to_state',
-            'ship_to_zip_code',
-            'ship_to_country',
-            'ship_to_phone',
-            'ship_to_fax',
-            'ship_to_email',
-            'ship_to_address_type',
-            'receipt',
-            'gift',
-            'arrival_date_time',
-            'greeting',
-            'instructions',
-            'po',
-            'terms',
-            'due_date',
-            'ship_date',
-            'ship_via',
-            'fob',
-            'project',
-            'other',
-            'message',
-            'subtotal',
-            'shipping',
-            'shipping_surcharge',
-            'box_and_packing',
-            'tax_exempt',
-            'tax_exemptid',
-            'tax_rate',
-            'taxable',
-            'tax',
-            'variance',
-            'total',
-            'payments_credits',
-            'balance',
-            'estimate',
-            'disclaimer',
-            'variance_notes',
-            'admin_notes',
-            'create_dt',
-            'update_dt',
-            'creator',
-            'creator_username',
-            'owner',
-            'owner_username',
-            'status_detail',
-            'status',
-        ]
-        
-        export_id = run_export_task('invoices', 'invoice', fields)
+        end_dt = request.POST.get('end_dt', None)
+        start_dt = request.POST.get('start_dt', None)
+
+        # First, convert our strings into datetime objects
+        # in case we need to do a timedelta
+        try:
+            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
+        except:
+            end_dt = datetime.now()
+
+        try:
+            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+        except:
+            start_dt = end_dt - timedelta(days=30)
+
+        # convert our datetime objects back to strings
+        # so we can pass them on to the task
+        end_dt = end_dt.strftime("%Y-%m-%d")
+        start_dt = start_dt.strftime("%Y-%m-%d")
+
+        export_id = run_invoice_export_task('invoices', 'invoice', start_dt, end_dt)
         EventLog.objects.log()
         return redirect('export.status', export_id)
-        
+    else:
+        end_dt = datetime.now()
+        start_dt = end_dt - timedelta(days=30)
+
     return render_to_response(template_name, {
+        'start_dt': start_dt,
+        'end_dt': end_dt,
     }, context_instance=RequestContext(request))
 
 
