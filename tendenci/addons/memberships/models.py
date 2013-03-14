@@ -941,16 +941,7 @@ class MembershipDefault(TendenciBaseModel):
 
         returns boolean
         """
-
         renewal_period = self.get_renewal_period_dt()
-
-        # if never expires; can never renew
-        if self.is_forever():
-            return False
-
-        # if membership type allows renewals
-        if not self.membership_type.allow_renewal:
-            return False
 
         # renewal not allowed; or no renewal period
         if not renewal_period:
