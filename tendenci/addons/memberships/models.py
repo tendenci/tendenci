@@ -716,10 +716,10 @@ class MembershipDefault(TendenciBaseModel):
 
     def is_forever(self):
         """
-        status=True, status_detail='active' and has
-        not expire_dt (within database is NULL).
+        Returns boolean.
+        Tests if expiration datetime exists.
         """
-        return self.is_active() and not self.expire_dt
+        return not self.expire_dt
 
     def get_expire_dt(self):
         """
