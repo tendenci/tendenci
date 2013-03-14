@@ -1952,13 +1952,17 @@ class MembershipDefaultForm(TendenciBaseForm):
         mts = MembershipType.objects.filter(status=True, status_detail='active')
         mt_values = mts.values_list('pk', 'name', 'price', 'renewal_price', 'admin_fee')
 
+        renew_mode = False
+        if hasattr(request_user, 'profile'):
+            renew_mode = request_user.profile.can_renew()
+
+        # only include admin fee on join
+
         mt_choices = []
         for pk, name, price, renewal_price, admin_fee in mt_values:
             price = price or float()
             renewal_price = renewal_price or float()
             admin_fee = admin_fee or float()
-
-            renew_mode = request_user.profile.can_renew2(membership_type=pk)
 
             if renew_mode:
                 mt_choices.append((pk, '%s $%s' % (name, renewal_price)))

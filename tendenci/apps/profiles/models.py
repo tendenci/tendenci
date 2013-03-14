@@ -174,7 +174,7 @@ class Profile(Person):
                         return True
         return False
 
-    def can_renew(self, membership_type=None):
+    def can_renew(self):
         """
         Looks at all memberships the user is actively associated
         with and returns whether the user is within a renewal period (boolean).
@@ -184,13 +184,10 @@ class Profile(Person):
             return False
 
         # look at active memberships
+
         active_memberships = self.user.memberships.filter(
             status=True, status_detail='active'
         )
-
-        if membership_type:
-            active_memberships = active_memberships.filter(
-                membership_type=membership_type)
 
         for membership in active_memberships:
             if membership.can_renew():
@@ -198,7 +195,7 @@ class Profile(Person):
 
         return False
 
-    def can_renew2(self, membership_type=None):
+    def can_renew2(self):
         """
         Looks at all memberships the user is actively associated
         with and returns whether the user is within a renewal period (boolean).
@@ -212,10 +209,6 @@ class Profile(Person):
         active_memberships = self.user.membershipdefault_set.filter(
             status=True, status_detail__iexact='active'
         )
-
-        if membership_type:
-            active_memberships = active_memberships.filter(
-                membership_type=membership_type)
 
         for membership in active_memberships:
             if membership.can_renew():
