@@ -46,8 +46,7 @@ from tendenci.addons.events.models import (Event,
     Registration, Registrant, Speaker, Organizer, Type,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
     CustomRegFormEntry, CustomRegField, CustomRegFieldEntry,
-    RegAddonOption, RegistrationConfiguration, EventPhoto,
-    Place, RecurringEvent)
+    RegAddonOption, RegistrationConfiguration, Place, RecurringEvent)
 from tendenci.addons.events.utils import (email_registrants,
     render_event_email, get_default_reminder_template,
     add_registration, registration_has_started, registration_has_ended,
@@ -55,7 +54,8 @@ from tendenci.addons.events.utils import (email_registrants,
     get_event_spots_taken, get_ievent, split_table_price,
     copy_event, email_admins, get_active_days, get_ACRF_queryset,
     get_custom_registrants_initials, render_registrant_excel,
-    event_import_process, check_month, get_recurrence_dates)
+    event_import_process, check_month, get_recurrence_dates,
+    event_update_util, handle_recurring_event_edit)
 
 from tendenci.addons.events.addons.forms import RegAddonForm
 from tendenci.addons.events.addons.formsets import RegAddonBaseFormSet
@@ -70,7 +70,6 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import convert_absolute_urls
 from tendenci.core.exports.utils import run_export_task
 from tendenci.core.event_logs.models import EventLog
-from tendenci.core.files.models import File
 from tendenci.core.imports.forms import ImportForm
 from tendenci.core.imports.models import Import
 from tendenci.core.imports.utils import (extract_from_excel,
@@ -415,17 +414,98 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
         organizer.save()
 
     if has_perm(request.user,'events.change_event', event):
-        if request.method == "POST":    
+        if request.method == "POST":
+            eventform_params = {'edit_mode': True}
+            form_event = form_class(
+                request.POST, request.FILES, instance=event, user=request.user, **eventform_params)
+            form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
+            form_organizer = OrganizerForm(
+                request.POST,
+                instance=organizer,
+                prefix='organizer'
+            )
+
+            form_regconf = Reg8nEditForm(
+                request.POST,
+                instance=event.registration_configuration,
+                reg_form_queryset=reg_form_queryset,
+                prefix='regconf'
+            )
+            form_attendees = DisplayAttendeesForm(request.POST)
             form_apply_recurring = ApplyRecurringChangesForm(request.POST)
-            if form_apply_recurring.is_valid():
+            # form sets
+            form_speaker = SpeakerFormSet(
+                request.POST,
+                request.FILES,
+                queryset=event.speaker_set.all(),
+                prefix='speaker'
+            )
+
+            conf_reg_form_required = False      # if reg_form is required on regconf
+            pricing_reg_form_required = False  # if reg_form is required on regconfpricing
+            if form_regconf.is_valid():
+                (use_custom_reg_form,
+                 reg_form_id,
+                 bind_reg_form_to_conf_only
+                 ) = form_regconf.cleaned_data['use_custom_reg'].split(',')
+                if use_custom_reg_form == '1':
+                    if bind_reg_form_to_conf_only == '1':
+                        conf_reg_form_required = True
+                    else:
+                        pricing_reg_form_required = True
+                    regconfpricing_params.update({'reg_form_required': pricing_reg_form_required})
+
+            form_regconfpricing = RegConfPricingSet(
+                request.POST,
+                queryset=RegConfPricing.objects.filter(
+                    reg_conf=event.registration_configuration,
+                    status=True,
+                ),
+                prefix='regconfpricing',
+                **regconfpricing_params
+            )
+
+            # label the form sets
+            form_speaker.label = "Speaker(s)"
+            form_regconfpricing.label = "Pricing(s)"
+
+            forms = [
+                form_event,
+                form_place,
+                form_speaker,
+                form_organizer,
+                form_regconf,
+                form_attendees,
+                form_apply_recurring,
+                form_regconfpricing
+            ]
+
+            if all([form.is_valid() for form in forms]):
                 if event.is_recurring_event and form_apply_recurring.cleaned_data['apply_to_all']:
                     for cur_event in event.recurring_event.event_set.all():
-                        eventform_params = {'edit_mode': True, 'recurring_mode': True}
-                        edit_util(request, cur_event, eventform_params)                        
+                        eventform_params2 = {'edit_mode': True, 'recurring_mode': True}
+                        handle_recurring_event_edit(request, cur_event, eventform_params2)
                     messages.add_message(request, messages.SUCCESS, 'Successfully updated the recurring events for %s' % event)
                 else:
-                    eventform_params = {'edit_mode': True}
-                    edit_util(request, event, eventform_params)
+                    params = {}
+                    params['place'] = form_place.save()
+                    params['regconf'] = form_regconf.save()
+                    params['speakers'] = form_speaker.save()
+                    params['organizer'] = form_organizer.save()
+                    params['regconf_pricing'] = form_regconfpricing.save()
+                    params['conf_reg_form_required'] = conf_reg_form_required
+                    params['pricing_reg_form_required'] = pricing_reg_form_required
+
+                    event = form_event.save(commit=False)
+                    event.display_event_registrants = form_attendees.cleaned_data['display_event_registrants']
+                    event.display_registrants_to = form_attendees.cleaned_data['display_registrants_to']
+
+                    # update all permissions and save the model
+                    event = update_perms_and_save(request, form_event, event)
+
+                    params['event'] = event
+                    event_update_util(request, form_event, params)
+
                     messages.add_message(request, messages.SUCCESS, 'Successfully updated %s' % event)
                 return HttpResponseRedirect(reverse('event', args=[event.pk]))
         else:
@@ -493,182 +573,6 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             context_instance=RequestContext(request))
     else:
         raise Http403
-
-def edit_util(request, event, params, form_class=EventForm):
-    reg_form_queryset = get_ACRF_queryset(event)
-    regconfpricing_params = {'reg_form_queryset': reg_form_queryset}
-
-    SpeakerFormSet = modelformset_factory(
-        Speaker,
-        form=SpeakerForm,
-        extra=1,
-        can_delete=True
-    )
-
-    if event.registration_configuration and\
-             event.registration_configuration.regconfpricing_set.all():
-        extra = 0
-    else:
-        extra = 1
-
-    RegConfPricingSet = modelformset_factory(
-        RegConfPricing,
-        formset=RegConfPricingBaseModelFormSet,
-        form=Reg8nConfPricingForm,
-        extra=extra,
-        can_delete=True
-    )
-
-    # tried get_or_create(); but get a keyword argument :(
-    try: # look for an organizer
-        organizer = event.organizer_set.all()[0]
-    except: # else: create an organizer
-        organizer = Organizer()
-        organizer.save()
-        organizer.event = [event]
-        organizer.save()
-
-    # single forms
-    form_event = form_class(request.POST, request.FILES, instance=event, user=request.user, **params)
-    form_place = PlaceForm(request.POST, instance=event.place, prefix='place')
-    form_organizer = OrganizerForm(
-        request.POST,
-        instance=organizer,
-        prefix='organizer'
-    )
-
-    form_regconf = Reg8nEditForm(
-         request.POST,
-         instance=event.registration_configuration,
-         reg_form_queryset=reg_form_queryset,
-         prefix='regconf'
-    )
-    form_attendees = DisplayAttendeesForm(request.POST)
-
-    # form sets
-    form_speaker = SpeakerFormSet(
-        request.POST,
-        request.FILES,
-        queryset=event.speaker_set.all(),
-        prefix='speaker'
-    )
-
-    conf_reg_form_required = False      # if reg_form is required on regconf
-    pricing_reg_form_required = False  # if reg_form is required on regconfpricing
-    if form_regconf.is_valid():
-         (use_custom_reg_form,
-         reg_form_id,
-         bind_reg_form_to_conf_only
-         ) = form_regconf.cleaned_data['use_custom_reg'].split(',')
-         if use_custom_reg_form == '1':
-            if bind_reg_form_to_conf_only == '1':
-                conf_reg_form_required = True
-            else:
-                pricing_reg_form_required = True
-            regconfpricing_params.update({'reg_form_required': pricing_reg_form_required})
-
-    form_regconfpricing = RegConfPricingSet(
-        request.POST,
-        queryset=RegConfPricing.objects.filter(
-            reg_conf=event.registration_configuration,
-            status=True,
-        ),
-        prefix='regconfpricing',
-        **regconfpricing_params
-    )
-
-           # label the form sets
-    form_speaker.label = "Speaker(s)"
-    form_regconfpricing.label = "Pricing(s)"
-    forms = [
-        form_event,
-        form_place,
-        form_speaker,
-        form_organizer,
-        form_regconf,
-        form_attendees,
-        form_regconfpricing
-    ]
-
-    if all([form.is_valid() for form in forms]):
-        # pks have to exist; before making relationships
-        place = form_place.save()
-        regconf = form_regconf.save()
-        speakers = form_speaker.save()
-        organizer = form_organizer.save()
-        regconf_pricing = form_regconfpricing.save()
-
-        event = form_event.save(commit=False)
-        event.display_event_registrants = form_attendees.cleaned_data['display_event_registrants']
-        event.display_registrants_to = form_attendees.cleaned_data['display_registrants_to']
-
-        # update all permissions and save the model
-        event = update_perms_and_save(request, form_event, event)
-
-        # handle image
-        f = form_event.cleaned_data['photo_upload']
-        if f:
-            image = EventPhoto()
-            image.object_id = event.id
-            image.creator = request.user
-            image.creator_username = request.user.username
-            image.owner = request.user
-            image.owner_username = request.user.username
-            filename = "%s-%s" % (event.id, f.name)
-            f.file.seek(0)
-            image.file.save(filename, f)
-            event.image = image
-
-            # make dict (i.e. speaker_bind); bind speaker with speaker image
-        pattern = re.compile('speaker-\d+-name')
-        speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
-        speaker_bind = {}
-        for speaker_key in speaker_keys:  # loop through speaker form items
-            speaker_name = request.POST.get(speaker_key)
-            if speaker_name:  # if speaker name found in request
-                speaker_file = request.FILES.get(speaker_key.replace('name','file'))
-                if speaker_file:  # if speaker file found in request
-                    # e.g. speaker_bind['eloy zuniga'] = <file>
-                    speaker_bind[speaker_name] = speaker_file
-
-        for speaker in speakers:
-            speaker.event = [event]
-            speaker.save()
-            # match speaker w/ speaker image
-            binary_files = []
-            if speaker.name in speaker_bind:
-                binary_files = [speaker_bind[speaker.name]]
-            files = File.objects.save_files_for_instance(request, speaker, files=binary_files)
-
-            for f in files:
-                f.allow_anonymous_view = event.allow_anonymous_view
-                f.allow_user_view = event.allow_user_view
-                f.allow_member_view = event.allow_member_view
-                f.save()
-
-        if not conf_reg_form_required and regconf.reg_form:
-            regconf.reg_form = None
-            regconf.save()
-        for regconf_price in regconf_pricing:
-            regconf_price.reg_conf = regconf
-            if not pricing_reg_form_required:
-                regconf_price.reg_form = None
-            regconf_price.save()
-
-        organizer.event = [event]
-        organizer.save() # save again
-
-        # update event
-        event.place = place
-        event.registration_configuration = regconf
-        event.save(log=False)
-        
-        # un-tie the reg_form from the pricing
-        if not pricing_reg_form_required:
-            for price in regconf.regconfpricing_set.all():
-                if price.reg_form:
-                    price.reg_form = None
-                price.save()
 
 
 @is_enabled('events')
@@ -817,11 +721,15 @@ def add(request, year=None, month=None, day=None, \
 
             if all([form.is_valid() for form in forms]):
                 # pks have to exist; before making relationships
-                place = form_place.save()
-                regconf = form_regconf.save()
-                speakers = form_speaker.save()
-                organizer = form_organizer.save()
-                regconf_pricing = form_regconfpricing.save()
+                params = {}
+                params['place'] = form_place.save()
+                params['regconf'] = form_regconf.save()
+                params['speakers'] = form_speaker.save()
+                params['organizer'] = form_organizer.save()
+                params['regconf_pricing'] = form_regconfpricing.save()
+                params['conf_reg_form_required'] = conf_reg_form_required
+                params['pricing_reg_form_required'] = pricing_reg_form_required
+                params['add_mode'] = True
 
                 if form_event.cleaned_data['is_recurring_event']:
                     init_date = datetime.strptime(form_event.cleaned_data['start_dt'], '%Y-%m-%d %H:%M')
@@ -842,11 +750,11 @@ def add(request, year=None, month=None, day=None, \
                                       description=form_event.cleaned_data['description'],
                                       on_weekend=form_event.cleaned_data['on_weekend'],
                                       timezone=form_event.cleaned_data['timezone'],
+                                      priority=form_event.cleaned_data['priority'],
                                       type=form_event.cleaned_data['type'],
                                       group=form_event.cleaned_data['group'],
                                       external_url=form_event.cleaned_data['external_url'],
                                       tags=form_event.cleaned_data['tags'])
-                        
                         event.start_dt = event_list[counter]
                         event.end_dt = event_list[counter] + event_length
                         event.is_recurring_event = True
@@ -858,53 +766,8 @@ def add(request, year=None, month=None, day=None, \
                         # update all permissions and save the model
                         event = update_perms_and_save(request, form_event, event)
 
-                        f = form_event.cleaned_data['photo_upload']
-                        if f:
-                            image = EventPhoto()
-                            image.object_id = event.id
-                            image.creator = request.user
-                            image.creator_username = request.user.username
-                            image.owner = request.user
-                            image.owner_username = request.user.username
-                            filename = "%s-%s" % (event.id, f.name)
-                            f.file.seek(0)
-                            image.file.save(filename, f)
-                            event.image = image
-
-                        for speaker in speakers:
-                            speaker.event.add(event)
-                            speaker.save()
-                            files = File.objects.save_files_for_instance(request, speaker)
-                            # set file permissions
-                            for f in files:
-                                f.allow_anonymous_view = event.allow_anonymous_view
-                                f.allow_user_view = event.allow_user_view
-                                f.allow_member_view = event.allow_member_view
-                                f.save()
-
-                        regconf.id = None
-                        regconf.save()
-                        if not conf_reg_form_required and regconf.reg_form:
-                            regconf.reg_form = None
-                            regconf.save()
-
-                        for regconf_price in regconf_pricing:
-                            regconf_price.id = None
-                            regconf_price.save()
-                            regconf_price.reg_conf = regconf
-
-                            if not pricing_reg_form_required:
-                                regconf_price.reg_form = None
-
-                            regconf_price.save()
-
-                        organizer.event.add(event)
-                        organizer.save() # save again
-
-                        # update event
-                        event.place = place
-                        event.registration_configuration = regconf
-                        event.save(log=False)
+                        params['event'] = event
+                        event_update_util(request, form_event, params)
 
                         # notification to administrator(s) and module recipient(s)
                         recipients = get_notice_recipients('site', 'global', 'allnoticerecipients')
@@ -928,50 +791,8 @@ def add(request, year=None, month=None, day=None, \
                     # update all permissions and save the model
                     event = update_perms_and_save(request, form_event, event)
 
-                    # handle image
-                    f = form_event.cleaned_data['photo_upload']
-                    if f:
-                        image = EventPhoto()
-                        image.object_id = event.id
-                        image.creator = request.user
-                        image.creator_username = request.user.username
-                        image.owner = request.user
-                        image.owner_username = request.user.username
-                        filename = "%s-%s" % (event.id, f.name)
-                        f.file.seek(0)
-                        image.file.save(filename, f)
-                        event.image = image
-
-                    for speaker in speakers:
-                        speaker.event = [event]
-                        speaker.save()
-                        files = File.objects.save_files_for_instance(request, speaker)
-                        # set file permissions
-                        for f in files:
-                            f.allow_anonymous_view = event.allow_anonymous_view
-                            f.allow_user_view = event.allow_user_view
-                            f.allow_member_view = event.allow_member_view
-                            f.save()
-
-                    if not conf_reg_form_required and regconf.reg_form:
-                        regconf.reg_form = None
-                        regconf.save()
-
-                    for regconf_price in regconf_pricing:
-                        regconf_price.reg_conf = regconf
-
-                        if not pricing_reg_form_required:
-                            regconf_price.reg_form = None
-
-                        regconf_price.save()
-
-                    organizer.event = [event]
-                    organizer.save() # save again
-
-                    # update event
-                    event.place = place
-                    event.registration_configuration = regconf
-                    event.save(log=False)
+                    params['event'] = event
+                    event_update_util(request, form_event, params)
 
                     messages.add_message(request, messages.SUCCESS, 'Successfully added %s' % event)
                     # notification to administrator(s) and module recipient(s)

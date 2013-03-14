@@ -498,13 +498,6 @@ class EventForm(TendenciBaseForm):
                       ('Event Information', {
                        'fields': ['on_weekend',
                                   'timezone',
-                                  'type',
-                                  'group',
-                                  'external_url',
-                                  'photo_upload',
-                                  'tags',
-                                  'on_weekend',
-                                  'timezone',
                                   'priority',
                                   'type',
                                   'group',
