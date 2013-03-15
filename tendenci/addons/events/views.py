@@ -553,17 +553,17 @@ def edit(request, id, form_class=EventForm, template_name="events/edit.html"):
             form_speaker.label = "Speaker(s)"
             form_regconfpricing.label = "Pricing(s)"
 
-            multi_event_forms = [
-                    form_event,
-                    form_place,
-                    form_organizer,
-                    form_speaker,
-                    form_regconf,
-                    form_attendees,
-                    form_regconfpricing
-                ]
-            if event.is_recurring_event:
-                multi_event_forms = multi_event_forms + [form_apply_recurring]
+        multi_event_forms = [
+            form_event,
+            form_place,
+            form_organizer,
+            form_speaker,
+            form_regconf,
+            form_attendees,
+            form_regconfpricing
+        ]
+        if event.is_recurring_event:
+            multi_event_forms = multi_event_forms + [form_apply_recurring]
 
         # response
         return render_to_response(template_name, {
@@ -919,6 +919,7 @@ def delete(request, id, template_name="events/delete.html"):
         raise Http403
 
 
+@is_enabled('events')
 @login_required
 def delete_recurring(request, id, template_name="events/delete_recurring.html"):
     event = get_object_or_404(Event, pk=id)
