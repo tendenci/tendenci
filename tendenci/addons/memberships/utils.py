@@ -146,23 +146,37 @@ def get_membership_type_choices(user, membership_app, corp_membership=None):
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
+    price_fmt = u'%s - %s%0.2f'
+    admin_fee_fmt = u' (+%s%s admin fee)'
+
     for mt in membership_types:
-        if not renew:
+
+        m_list = MembershipDefault.objects.filter(user=user, membership_type=mt)
+        renew_mode = any([m.can_renew() for m in m_list])
+
+        mt.renewal_price = mt.renewal_price or 0
+
+        if not renew_mode:
             if mt.admin_fee:
-                price_display = '%s - %s%0.2f (+ %s%s admin fee )' % (
-                                              mt.name,
-                                              currency_symbol,
-                                              mt.price,
-                                              currency_symbol,
-                                              mt.admin_fee)
+                price_display = (price_fmt + admin_fee_fmt) % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price,
+                    currency_symbol,
+                    mt.admin_fee
+                )
             else:
-                price_display = '%s - %s%0.2f' % (mt.name,
-                                                  currency_symbol,
-                                                  mt.price)
+                price_display = price_fmt % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price
+                )
         else:
-            price_display = '%s - %s%0.2f' % (mt.name,
-                                              currency_symbol,
-                                              mt.renewal_price)
+            price_display = price_fmt % (
+                mt.name,
+                currency_symbol,
+                mt.renewal_price
+            )
 
         price_display = mark_safe(price_display)
         mt_list.append((mt.id, price_display))
