@@ -119,11 +119,15 @@ def get_corporate_membership_choices():
     return cm_list
 
 
-def get_membership_type_choices(user, membership_app, renew=False,
-                                corp_membership=None):
+def get_membership_type_choices(user, membership_app, corp_membership=None):
+    """
+    Get membership type choices available in this application and to this user.
+
+    If corporate memberships:
+        Only show membership types available to this corporation.
+    """
+
     mt_list = []
-    # show only the membership type assiciated with this corp_membership
-    # when joining under a corporation.
     if corp_membership:
         membership_types = [corp_membership.corporate_membership_type.membership_type]
     else:
