@@ -128,8 +128,16 @@ def get_membership_type_choices(user, membership_app, renew=False,
         membership_types = [corp_membership.corporate_membership_type.membership_type]
     else:
         membership_types = membership_app.membership_types.all()
-        if not user or not user.profile.is_superuser:
+
+        # assume not superuser; get superuser status
+        is_superuser = False
+        if hasattr(user, 'profile'):
+            is_superuser = user.profile.is_superuser
+
+        # filter memberships types based on superuser status
+        if not is_superuser:
             membership_types = membership_types.filter(admin_only=False)
+
         membership_types = membership_types.order_by('position')
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
