@@ -1560,7 +1560,6 @@ def event_update_util(request, form_event, params):
 
     for speaker in speakers:
         speaker.event.add(event)
-        speaker.save()
 
         # match speaker w/ speaker image
         binary_files = []
@@ -1575,8 +1574,10 @@ def event_update_util(request, form_event, params):
             f.save()
 
     if add_mode:
-        regconf.id = None
-        regconf.save()
+        form_regconf = Reg8nEditForm(request.POST, prefix='regconf',
+                                     reg_form_queryset=get_ACRF_queryset(),)
+        if form_regconf.is_valid():
+            regconf = form_regconf.save()
 
     if not conf_reg_form_required and regconf.reg_form:
         regconf.reg_form = None
@@ -1592,7 +1593,6 @@ def event_update_util(request, form_event, params):
         regconf_price.save()
 
     organizer.event.add(event)
-    organizer.save() # save again
 
     # update event
     event.place = place
