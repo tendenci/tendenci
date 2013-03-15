@@ -1026,14 +1026,15 @@ class MembershipDefault(TendenciBaseModel):
     def get_price(self):
         """
         Returns price
-            Considers:
-                Join price
-                Renew price
-                Admin Price
-                Corporate price
 
-        Admin price is only included on joins.  Corporate price,
-        trumps all membership prices.
+        Considers:
+            Join price
+            Renew price
+            Admin Price
+            Corporate price
+
+        Admin price is only included on joins.
+        Corporate price, trumps all membership prices.
         """
         from tendenci.addons.corporate_memberships.models import CorporateMembership
 
