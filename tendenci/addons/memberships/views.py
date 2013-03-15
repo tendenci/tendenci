@@ -192,7 +192,7 @@ def download_template(request, slug=''):
 
 def application_detail_default(request, **kwargs):
     """
-    Returns default membership applicaiton response
+    Returns default membership application response
     """
 
     if request.method == 'POST':
