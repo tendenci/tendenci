@@ -517,7 +517,9 @@ class MembershipDefault(TendenciBaseModel):
         self.group_refresh()
 
         # new invoice; bound via ct and object_id
-        self.save_invoice(status_detail='tendered')
+        # commenting it out - calling save_invoice resets everything for paid invoices.
+        # the invoice should already have been created 
+        #self.save_invoice(status_detail='tendered')
 
         # archive other membership [of this type]
         self.archive_old_memberships()
