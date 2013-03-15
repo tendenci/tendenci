@@ -918,16 +918,18 @@ class MembershipDefault(TendenciBaseModel):
             return None
 
         if not isinstance(self.expire_dt, datetime):
-            return None
+            return None  # membership does not expire
 
         start_dt = self.expire_dt - timedelta(
-                days=self.membership_type.renewal_period_start)
+            days=self.membership_type.renewal_period_start
+        )
+
         # the end_dt should be the end of the end_dt not start of the end_dt
         # not datetime.datetime(2013, 2, 21, 0, 0),
         # but datetime.datetime(2013, 2, 21, 23, 59, 59)
         end_dt = self.expire_dt + timedelta(
-                days=self.membership_type.renewal_period_end + 1
-                ) - timedelta(seconds=1)
+            days=self.membership_type.renewal_period_end + 1
+        ) - timedelta(seconds=1)
 
         return (start_dt, end_dt)
 

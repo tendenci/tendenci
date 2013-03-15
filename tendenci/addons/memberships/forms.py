@@ -729,11 +729,14 @@ class MembershipDefault2Form(forms.ModelForm):
             self.corp_app_authentication_method = ''
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
+
         self.fields['membership_type'].widget = forms.widgets.RadioSelect(
-                    choices=get_membership_type_choices(request_user,
-                                        membership_app,
-                                        corp_membership=self.corp_membership),
-                    attrs=self.fields['membership_type'].widget.attrs)
+            choices=get_membership_type_choices(
+                request_user,
+                membership_app,
+                corp_membership=self.corp_membership
+            ), attrs=self.fields['membership_type'].widget.attrs)
+
         if self.corp_membership:
             memb_type = self.corp_membership.corporate_membership_type.membership_type
             self.fields['membership_type'].initial = memb_type
