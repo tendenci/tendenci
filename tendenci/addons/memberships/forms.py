@@ -806,10 +806,18 @@ class MembershipDefault2Form(forms.ModelForm):
         kwargs['commit'] = False
         membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
 
+        if request_user:
+            m_list = MembershipDefault.objects.filter(
+                user=request_user, membership_type=membership.membership_type
+            )
+
+            is_renewal = any([m.can_renew() for m in m_list])
+
         # assign corp_profile_id
         if membership.corporate_membership_id:
             corp_membership = CorpMembership.objects.get(
-                                    pk=membership.corporate_membership_id)
+                pk=membership.corporate_membership_id
+            )
             membership.corp_profile_id = corp_membership.corp_profile.id
 
         # set owner & creator
@@ -823,7 +831,7 @@ class MembershipDefault2Form(forms.ModelForm):
         membership.user = user
 
         # adding membership record
-        membership.renewal = membership.user.profile.can_renew2()
+        membership.renewal = is_renewal
 
         # assign member number
         membership.set_member_number()

@@ -1059,7 +1059,7 @@ class MembershipDefault(TendenciBaseModel):
                 if membership_count <= threshold_limit:
                     return threshold_price
 
-        if self.user.profile.can_renew2():
+        if self.renewal:
             return self.membership_type.renewal_price or 0
         else:
             return self.membership_type.price + (self.membership_type.admin_fee or 0)
