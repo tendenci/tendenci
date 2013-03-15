@@ -806,11 +806,11 @@ class MembershipDefault2Form(forms.ModelForm):
         kwargs['commit'] = False
         membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
 
+        is_renewal = False
         if request_user:
             m_list = MembershipDefault.objects.filter(
                 user=request_user, membership_type=membership.membership_type
             )
-
             is_renewal = any([m.can_renew() for m in m_list])
 
         # assign corp_profile_id
