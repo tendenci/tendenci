@@ -595,5 +595,3 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
     else:
         page_range = range(1, num_pages + 1)
     return page_range
-
-
