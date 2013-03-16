@@ -103,9 +103,10 @@ def user3_sqs(sqs, **kwargs):
 
     if groups:
         group_perm_q = Q(groups_can_view__in=groups)
-        return sqs.filter((status_q&(creator_q|owner_q))|(user_perm_q|group_perm_q))
+        return sqs.filter((status_q & (creator_q | owner_q)) | (user_perm_q | group_perm_q))
     else:
-        return sqs.filter((status_q&(creator_q|owner_q))|(user_perm_q))
+        return sqs.filter((status_q & (creator_q | owner_q)) | (user_perm_q))
+
 
 def anon3_sqs(sqs, **kwargs):
     status_detail = kwargs.get('status_detail', 'active')
@@ -113,10 +114,12 @@ def anon3_sqs(sqs, **kwargs):
     # sqs = sqs.filter(allow_anonymous_view=True)
     return sqs
 
+
 def anon2_sqs(sqs):
     sqs = sqs.filter(status=True).filter(status_detail='published')
     sqs = sqs.filter(allow_anonymous_view=True)
     return sqs
+
 
 def user2_sqs(sqs, **kwargs):
     """
@@ -136,6 +139,7 @@ def user2_sqs(sqs, **kwargs):
 
     return sqs.filter(q)
 
+
 def anon_sqs(sqs):
     sqs = sqs.filter(status=True).filter(status_detail='active')
     sqs = sqs.filter(allow_anonymous_view=True)
@@ -145,27 +149,29 @@ def anon_sqs(sqs):
         sqs = sqs.none()
 
     return sqs
-    
+
+
 def member_sqs(sqs, **kwargs):
     """
     users who are members
     (status+status_detail+(anon OR user OR member)) OR (who_can_view__exact)
     """
     user = kwargs.get('user')
-   
+
     anon_q = Q(allow_anonymous_view=True)
     user_q = Q(allow_user_view=True)
     member_q = Q(allow_member_view=True)
     status_q = Q(status=True, status_detail='active')
     perm_q = Q(users_can_view__in=user.username)
-    
+
     q = reduce(operator.or_, [anon_q, user_q, member_q])
     q = reduce(operator.and_, [status_q, q])
     q = reduce(operator.or_, [q, perm_q])
-    
+
     filtered_sqs = sqs.filter(q)
-        
+
     return filtered_sqs
+
 
 def user_sqs(sqs, **kwargs):
     """
@@ -252,7 +258,6 @@ class MembershipManager(Manager):
         Returns back list instead of query set.
         """
         from datetime import datetime
-        from dateutil.relativedelta import relativedelta
         from itertools import chain
         from django.db.models import Q
         from tendenci.addons.memberships.models import MembershipType
