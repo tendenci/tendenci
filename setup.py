@@ -163,7 +163,7 @@ setup(
         "django-pagination>=1.0.7",
         "django-photologue>=2.3",
         "django-picklefield>=0.1.6",
-        "django-simple-captcha>=0.1.7",
+        "django-simple-captcha==0.3.6",
         "django-tagging>=0.3.1",
         "django-tinymce==1.5.1.dev100",
         "django-haystack==1.2.7",
