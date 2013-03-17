@@ -1027,10 +1027,12 @@ class MembershipDefault(TendenciBaseModel):
         invoice.set_owner(self.user)
 
         # price information ----------
-        price = self.get_price()
-        invoice.subtotal = price
-        invoice.total = price
-        invoice.balance = price
+        # Only set for new invoices
+        if not invoice.pk:
+            price = self.get_price()
+            invoice.subtotal = price
+            invoice.total = price
+            invoice.balance = price
 
         invoice.due_date = invoice.due_date or datetime.now()
         invoice.ship_date = invoice.ship_date or datetime.now()
