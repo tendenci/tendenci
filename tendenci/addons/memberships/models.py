@@ -26,7 +26,7 @@ from tendenci.core.base.fields import DictField
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.user_groups.models import Group
 from tendenci.addons.memberships.managers import MembershipManager, \
-    MembershipDefaultManager, MembershipAppManager, MemberAppManager, MemberAppEntryManager
+    MembershipDefaultManager, MembershipAppManager, MemberAppEntryManager
 from tendenci.core.base.utils import fieldify
 from tinymce import models as tinymce_models
 from tendenci.core.payments.models import PaymentMethod
@@ -2037,8 +2037,6 @@ class App(TendenciBaseModel):
     payment_methods = models.ManyToManyField(PaymentMethod, verbose_name="Payment Methods")
 
     use_for_corp = models.BooleanField(_("Use for Corporate Individuals"), default=0)
-
-    objects = MemberAppManager()
 
     class Meta:
         verbose_name = "Membership Application"

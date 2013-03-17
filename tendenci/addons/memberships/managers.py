@@ -10,39 +10,6 @@ from tendenci.core.perms.managers import TendenciBaseManager
 from tendenci.core.site_settings.utils import get_setting
 
 
-class MemberAppManager(TendenciBaseManager):
-    def search(self, query=None, *args, **kwargs):
-        # """
-        # Uses haystack to query articles.
-        # Returns a SearchQuerySet
-        # """
-        # # update what the status detail should be instead of active
-        # kwargs.update({'status_detail': 'published'})
-        # return super(MemberAppManager, self).search(query=query, *args, **kwargs)
-
-        """
-        Use Django Haystack search index
-        Returns a SearchQuerySet object
-        """
-        sqs = SearchQuerySet()
-        user = kwargs.get('user', AnonymousUser())
-        user = impersonation(user)
-
-        if query:
-            sqs = sqs.auto_query(sqs.query.clean(query))
-
-        if user.profile.is_superuser:
-            sqs = sqs.all()  # admin
-        else:
-            if user.is_anonymous():
-                sqs = anon2_sqs(sqs)  # anonymous
-            else:
-                pass
-                sqs = user2_sqs(sqs, user=user)  # user
-
-        return sqs.models(self.model)
-
-
 class MemberAppEntryManager(TendenciBaseManager):
     """
     Model Manager
