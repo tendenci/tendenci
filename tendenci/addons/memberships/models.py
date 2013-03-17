@@ -359,7 +359,10 @@ class MembershipDefault(TendenciBaseModel):
         verbose_name_plural = u'Memberships'
 
     def __unicode__(self):
-        return "Membership %s for %s" % (self.pk, self.user.get_full_name())
+        if self.pk:
+            return "Membership %s for %s" % (self.pk, self.user.get_full_name())
+        else:
+            return "Membership object"
 
     @models.permalink
     def get_absolute_url(self):
@@ -751,6 +754,9 @@ class MembershipDefault(TendenciBaseModel):
         return self.get_expire_dt() < datetime.now()
 
     def is_pending(self):
+        """
+        Return boolean; The memberships pending state.
+        """
         if self.status and self.status_detail == 'pending':
             return True
         return False
@@ -787,20 +793,32 @@ class MembershipDefault(TendenciBaseModel):
         return self.status_detail.lower()
 
     def copy(self):
-        membership = self.__class__()
-        field_names = [field.name for field in self.__class__._meta.fields]
-        ignore_fields = ['id', 'renewal', 'renew_dt', 'status',
-                         'status_detail', 'application_approved',
-                         'application_approved_dt',
-                         'application_approved_user',
-                         'application_approved_denied_dt',
-                         'application_approved_denied_user',
-                         'application_denied']
-        for field in ignore_fields:
-            field_names.remove(field)
+        """
+        Return a copy of the membership object
+        """
+        membership = MembershipDefault()
+
+        ignore_fields = [
+            'id',
+            'renewal',
+            'renew_dt',
+            'status',
+            'status_detail',
+            'application_approved',
+            'application_approved_dt',
+            'application_approved_user',
+            'application_approved_denied_dt',
+            'application_approved_denied_user',
+            'application_denied'
+        ]
+
+        field_names = [field.name
+                      for field in self.__class__._meta.fields
+                      if field.name not in ignore_fields]
 
         for name in field_names:
-            setattr(membership, name, getattr(self, name))
+            if hasattr(self, name):
+                setattr(membership, name, getattr(self, name))
         return membership
 
     def archive_old_memberships(self):
