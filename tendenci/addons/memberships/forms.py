@@ -2150,8 +2150,8 @@ class MembershipDefaultForm(TendenciBaseForm):
 
             if not membership.approval_required():  # approval not required
 
-                # save invoice estimate
-                membership.save_invoice(status_detail='estimate')
+                # save invoice tendered
+                membership.save_invoice(status_detail='tendered')
 
                 # auto approve -------------------------
                 membership.application_approved = True
@@ -2170,8 +2170,8 @@ class MembershipDefaultForm(TendenciBaseForm):
                 membership.send_email(request, 'approve')
 
             else:  # approval required
-                # save invoice tendered
-                membership.save_invoice(status_detail='tendered')
+                # save invoice estimate
+                membership.save_invoice(status_detail='estimate')
 
             # application complete
             membership.application_complete_dt = NOW
