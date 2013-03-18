@@ -362,10 +362,14 @@ class MembershipDefault(TendenciBaseModel):
         verbose_name_plural = u'Memberships'
 
     def __unicode__(self):
+        """
+        Returns summary of membership object
+        """
+        u = "Membership object"
         if self.pk:
-            return "Membership %s for %s" % (self.pk, self.user.get_full_name())
-        else:
-            return "Membership object"
+            u = "Membership {} for {}".format(self.pk, self.user.get_full_name())
+
+        return u
 
     @models.permalink
     def get_absolute_url(self):
