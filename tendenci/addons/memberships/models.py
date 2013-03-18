@@ -1596,10 +1596,10 @@ class Membership(TendenciBaseModel):
 
     def clear_user_member_id(self):
         """
-        Clear the member ID (or member number) in user's profile.
+        Clear member number in profile.
         """
         if not self.is_active():
-            [profile] = Profile.objects.filter(user=self.user)[:1] or [None]
+            profile = Profile.objects.first(user=self.user)
             if profile and profile.member_number:
                 profile.member_number = u''
                 profile.save()
