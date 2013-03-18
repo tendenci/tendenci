@@ -147,8 +147,11 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
+        """
+        Save GUID if GUID is not set.
+        Save MembershipType instance.
+        """
+        self.guid = self.guid or uuid.uuid1().get_hex()
         super(MembershipType, self).save(*args, **kwargs)
 
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
