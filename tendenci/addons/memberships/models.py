@@ -1594,18 +1594,6 @@ class Membership(TendenciBaseModel):
                 if verbosity > 1:
                     print '***Membership (ID=%d) does NOT have a member number.' % self.id
 
-    def clear_user_member_id(self):
-        """
-        Clear member number in profile.
-        """
-        if not self.is_active():
-            profile = Profile.objects.first(user=self.user)
-            if profile and profile.member_number:
-                profile.member_number = u''
-                profile.save()
-
-                self.user.is_member = False
-
     def populate_or_clear_member_id(self):
         """
         If the membership is active, populate the member ID to profile.
