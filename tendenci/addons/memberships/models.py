@@ -1604,8 +1604,7 @@ class Membership(TendenciBaseModel):
                 profile.member_number = u''
                 profile.save()
 
-                # set the is_member attr to False for this user
-                setattr(self.user, 'is_member', False)
+                self.user.is_member = False
 
     def populate_or_clear_member_id(self):
         """
