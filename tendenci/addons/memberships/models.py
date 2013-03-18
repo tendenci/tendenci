@@ -387,7 +387,6 @@ class MembershipDefault(TendenciBaseModel):
         if hasattr(self, 'user') and self.user:
             if hasattr(self.user, 'demographics'):
                 return self.user.demographics
-        return None
 
     @classmethod
     def refresh_groups(cls):
