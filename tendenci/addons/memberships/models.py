@@ -404,8 +404,6 @@ class MembershipDefault(TendenciBaseModel):
                     status_detail__in=['active', 'pending', 'expired'],
                 ).values_list('status_detail', flat=True)
 
-                print user.username, membership_type.name,
-
                 status_details = list(status_details)
                 if status_details.count('active') > 1:
                     memberships = MembershipDefault.objects.filter(
@@ -421,8 +419,6 @@ class MembershipDefault(TendenciBaseModel):
 
                 if 'active' in status_details:
 
-                    print 'in'
-
                     exists = GroupMembership.objects.filter(
                         member=user,
                         group=membership_type.group,
@@ -434,9 +430,6 @@ class MembershipDefault(TendenciBaseModel):
                             group=membership_type.group,
                         )
                 else:
-
-                    print 'out'
-
                     # remove from group
                     GroupMembership.objects.filter(
                         member=user,
