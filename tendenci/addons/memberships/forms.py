@@ -1960,6 +1960,12 @@ class MembershipDefaultForm(TendenciBaseForm):
             self.fields['career_start_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
             self.fields['career_end_dt'].widget = forms.DateTimeInput(attrs={'class': 'datepicker'})
 
+        self.fields['corporate_membership_id'].widget = forms.widgets.Select(
+                                        choices=get_corporate_membership_choices())
+        self.fields['corporate_membership_id'].queryset = CorpMembership.objects.filter(
+                                        status=True).exclude(
+                                        status_detail__in=['archive', 'inactive'])
+
         mts = MembershipType.objects.filter(status=True, status_detail='active')
         mt_values = mts.values_list('pk', 'name', 'price', 'renewal_price', 'admin_fee')
 
@@ -2132,6 +2138,13 @@ class MembershipDefaultForm(TendenciBaseForm):
             'last_name': self.cleaned_data.get('last_name'),
             'email': self.cleaned_data.get('email')
         })
+
+        # assign corp_profile_id
+        if membership.corporate_membership_id:
+            corp_membership = CorpMembership.objects.get(
+                pk=membership.corporate_membership_id
+            )
+            membership.corp_profile_id = corp_membership.corp_profile.id
 
         if membership.pk:
             # changing membership record
