@@ -424,7 +424,7 @@ def phonenumber(value):
 
         # attach additional text extension
         ext = ''
-        for i in range(1, len(x)):
+        for i in xrange(1, len(x)):
             ext = ''.join((ext, x[i]))
         if ext:
             return ' '.join((number, ext))

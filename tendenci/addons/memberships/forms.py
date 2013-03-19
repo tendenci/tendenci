@@ -729,11 +729,14 @@ class MembershipDefault2Form(forms.ModelForm):
             self.corp_app_authentication_method = ''
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
+
         self.fields['membership_type'].widget = forms.widgets.RadioSelect(
-                    choices=get_membership_type_choices(request_user,
-                                        membership_app,
-                                        corp_membership=self.corp_membership),
-                    attrs=self.fields['membership_type'].widget.attrs)
+            choices=get_membership_type_choices(
+                request_user,
+                membership_app,
+                corp_membership=self.corp_membership
+            ), attrs=self.fields['membership_type'].widget.attrs)
+
         if self.corp_membership:
             memb_type = self.corp_membership.corporate_membership_type.membership_type
             self.fields['membership_type'].initial = memb_type
@@ -803,10 +806,18 @@ class MembershipDefault2Form(forms.ModelForm):
         kwargs['commit'] = False
         membership = super(MembershipDefault2Form, self).save(*args, **kwargs)
 
+        is_renewal = False
+        if request_user:
+            m_list = MembershipDefault.objects.filter(
+                user=request_user, membership_type=membership.membership_type
+            )
+            is_renewal = any([m.can_renew() for m in m_list])
+
         # assign corp_profile_id
         if membership.corporate_membership_id:
             corp_membership = CorpMembership.objects.get(
-                                    pk=membership.corporate_membership_id)
+                pk=membership.corporate_membership_id
+            )
             membership.corp_profile_id = corp_membership.corp_profile.id
 
         # set owner & creator
@@ -820,7 +831,7 @@ class MembershipDefault2Form(forms.ModelForm):
         membership.user = user
 
         # adding membership record
-        membership.renewal = membership.user.profile.can_renew2()
+        membership.renewal = is_renewal
 
         # assign member number
         membership.set_member_number()
@@ -2139,8 +2150,8 @@ class MembershipDefaultForm(TendenciBaseForm):
 
             if not membership.approval_required():  # approval not required
 
-                # save invoice estimate
-                membership.save_invoice(status_detail='estimate')
+                # save invoice tendered
+                membership.save_invoice(status_detail='tendered')
 
                 # auto approve -------------------------
                 membership.application_approved = True
@@ -2159,8 +2170,8 @@ class MembershipDefaultForm(TendenciBaseForm):
                 membership.send_email(request, 'approve')
 
             else:  # approval required
-                # save invoice tendered
-                membership.save_invoice(status_detail='tendered')
+                # save invoice estimate
+                membership.save_invoice(status_detail='estimate')
 
             # application complete
             membership.application_complete_dt = NOW

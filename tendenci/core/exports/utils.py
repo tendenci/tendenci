@@ -47,7 +47,7 @@ def render_csv(filename, title_list, data_list):
     csv_writer.writerow(title_list)
 
     for row_item_list in data_list:
-        for i in range(0, len(row_item_list)):
+        for i in xrange(0, len(row_item_list)):
             if row_item_list[i]:
                 if isinstance(row_item_list[i], datetime.datetime):
                     row_item_list[i] = row_item_list[i].strftime('%Y-%m-%d %H:%M:%S')

@@ -16,8 +16,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.addons.memberships.models import App, Membership
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.profiles.utils import (get_groups, get_memberships, 
-    group_choices, app_choices, update_user)
+from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year

@@ -192,7 +192,7 @@ def download_template(request, slug=''):
 
 def application_detail_default(request, **kwargs):
     """
-    Returns default membership applicaiton response
+    Returns default membership application response
     """
 
     if request.method == 'POST':
@@ -429,6 +429,8 @@ def application_details(request, template_name="memberships/applications/details
 
 
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
+    # redirect to the new system
+    return redirect(reverse('membership_default.corp_pre_add'))
 
     try:
         app = App.objects.get(slug=slug)
@@ -1509,7 +1511,8 @@ def membership_default_add(request,
         initial=profile_initial
     )
 
-    params = {'request_user': request.user,
+    params = {
+        'request_user': request.user,
         'membership_app': app,
         'join_under_corporate': join_under_corporate,
         'corp_membership': corp_membership,
@@ -1966,7 +1969,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
 
             table_data.append([
                 mem.user.username,
-                mem.user.get_full_name,
+                mem.user.get_full_name(),
                 mem.user.email,
                 mem.membership_type.name,
                 mem.join_dt,

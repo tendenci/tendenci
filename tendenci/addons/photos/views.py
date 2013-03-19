@@ -44,12 +44,13 @@ def search(request, template_name="photos/search.html"):
     """ Photos search """
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
-        photos = Image.objects.search(query, user=request.user).order_by('-create_dt')
+        photos = Image.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'photos.view_image')
         photos = Image.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             photos = photos.select_related()
+
     photos = photos.order_by('-create_dt')
 
     EventLog.objects.log()
