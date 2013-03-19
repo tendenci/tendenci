@@ -1594,6 +1594,9 @@ def membership_default_add(request,
                 user=user,
             )
 
+            # log an event
+            EventLog.objects.log(instance=membership)
+
             # redirect: payment gateway
             if membership.is_paid_online():
                 return HttpResponseRedirect(reverse(
