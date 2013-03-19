@@ -18,7 +18,9 @@ class Command(BaseCommand):
         from tendenci.addons.corporate_memberships.models import (
                                                   CorpProfile,
                                                   CorpMembership,
+                                                  CorpMembershipRep,
                                                   CorporateMembership)
+        from tendenci.addons.corporate_memberships.utils import corp_membership_update_perms
         from tendenci.addons.memberships.models import MembershipDefault
         verbosity = int(options['verbosity'])
 
@@ -123,6 +125,19 @@ class Command(BaseCommand):
 
                 if verbosity >= 2:
                     print 'Insert corp_membership (id=%d) for: ' % corp_membership.id, corp_profile
+
+            # dues reps
+            reps = corporate.reps.all()
+            if reps:
+                for rep in reps:
+                    if not corp_profile.reps.filter(user=rep.user).exists():
+                        CorpMembershipRep.objects.create(
+                                corp_profile=corp_profile,
+                                user=rep.user,
+                                is_dues_rep=rep.is_dues_rep,
+                                is_member_rep=rep.is_member_rep
+                                        )
+                        corp_membership_update_perms(corp_membership)
 
             # update individual membership entries
             memberships = MembershipDefault.objects.filter(
