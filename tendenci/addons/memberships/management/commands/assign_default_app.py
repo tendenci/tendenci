@@ -15,6 +15,7 @@ class Command(BaseCommand):
 
         from tendenci.addons.memberships.models import (
                                             MembershipApp,
+                                            MembershipType,
                                             MembershipDefault)
         from tendenci.addons.corporate_memberships.models import CorpMembershipApp
 
@@ -46,6 +47,18 @@ class Command(BaseCommand):
                     'run this command "assign_default_app" again.'
             sys.exit()
 
+        mts = MembershipType.objects.all()
+        # map types to a list of apps
+        type_to_apps_map = {}
+        for mt in mts:
+            membership_apps = MembershipApp.objects.filter(
+                                    membership_types__in=[mt]
+                                    ).order_by('id')
+            if membership_apps:
+                type_to_apps_map[mt.id] = membership_apps
+            else:
+                type_to_apps_map[mt.id] = [app]
+
         count = 0
         for membership in memberships:
             if membership.corporate_membership_id:
@@ -59,9 +72,9 @@ class Command(BaseCommand):
                         print 'Updated "%s" (ID: %d)' % (membership,
                                                          membership.id)
             else:
-                if not membership.app_id or \
-                        membership.app_id == corp_app.memb_app_id:
-                    membership.app_id = app.id
+                mt_id = membership.membership_type.id
+                if not membership.app in type_to_apps_map[mt_id]:
+                    membership.app = type_to_apps_map[mt_id][0]
                     membership.save()
                     count += 1
                     if verbosity > 1:
