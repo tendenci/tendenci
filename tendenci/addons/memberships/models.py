@@ -21,6 +21,7 @@ from django import forms
 from django.utils.importlib import import_module
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
+from django.core.urlresolvers import reverse
 
 from tendenci.core.base.utils import day_validate
 from tendenci.core.site_settings.utils import get_setting
@@ -1278,6 +1279,18 @@ class MembershipDefault(TendenciBaseModel):
                                              for item in value.all()])
 
         return items
+
+    def membership_type_link(self):
+        link = '<a href="%s">%s</a>' % (
+                reverse('admin:memberships_membershiptype_change',
+                        args=[self.membership_type.id]),
+                        self.membership_type.name)
+        if self.corporate_membership_id:
+            link = '%s (<a href="%s">view corp</a>)' % (
+                link, reverse('corpmembership.view',
+                        args=[self.corporate_membership_id]))
+        return link
+    membership_type_link.allow_tags = True
 
     def auto_update_paid_object(self, request, payment):
         """
