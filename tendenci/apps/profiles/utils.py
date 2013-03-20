@@ -128,14 +128,6 @@ def group_choices(user):
 
     return choices
 
-def app_choices(user):
-    """
-    returns a list of (app.pk, app.name) for apps viewable for a given user.
-    """
-    apps = App.objects.search(user=user)
-    choices = [(app.pk, app.name) for app in apps]
-    
-    return choices
 
 def update_user(user, **kwargs):
     for k, v in kwargs.iteritems():

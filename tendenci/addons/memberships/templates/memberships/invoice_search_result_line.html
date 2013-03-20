@@ -20,7 +20,11 @@
      	<td colspan="2">{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}</td>
         <td>{{ obj.payment_method.human_name }}</td>
      	<td>{{ invoice.total }}</td>
+        {% if invoice.balance %}
      	<td class="body-copy-yellow">{{ invoice.balance }}</td>
+        {% else %}
+        <td>{{ invoice.balance }}</td>
+        {% endif %}
      </tr>
      {% endif %}
 </table>

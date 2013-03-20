@@ -151,7 +151,7 @@
         		<tr>
         			<td>
                         {% if request.user.profile.is_superuser %}
-        				<a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.member_number }} {{ membership.membership_type }}
+        				{% trans "Member of" %} <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.membership_type }}
         				</a>
                         {% else %}
                         {{ membership.member_number }} {{ membership.membership_type }}
@@ -179,13 +179,13 @@
 
 	        		</td>
 	        		<td>
-	        			{% if membership.get_entry.invoice %}
-	        			<a href="{% url invoice.view membership.get_entry.invoice.pk %}">
-	        				Balance ${% firstof membership.get_entry.invoice.balance  0|intcomma %}
+	        		    {% with membership.get_invoice as invoice %}
+	        			{% if invoice %}
+	        			<a href="{% url invoice.view invoice.pk %}">
+	        				Balance {{ invoice.balance|format_currency }}
 	        			</a>
-	        			{% else %}
-	        				Balance ${{ 0|intcomma }}
 	        			{% endif %}
+	        			{% endwith %}
 	        		</td>
         		</tr>
         {% endfor %}

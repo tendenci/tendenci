@@ -515,7 +515,7 @@ def corpmembership_search(request, my_corps_only=False,
 
     query = request.GET.get('q')
     try:
-        cp_id = request.GET.get('cp_id')
+        cp_id = int(request.GET.get('cp_id'))
     except:
         cp_id = 0
 
@@ -539,7 +539,8 @@ def corpmembership_search(request, my_corps_only=False,
 
     if query:
         corp_members = corp_members.filter(
-                            corp_profile__name__icontains=query)
+                            Q(corp_profile__name__icontains=query
+                              ) | Q(corp_profile__zip=query))
 
     if cp_id:
         corp_members = corp_members.filter(corp_profile_id=cp_id)

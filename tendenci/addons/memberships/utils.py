@@ -119,38 +119,64 @@ def get_corporate_membership_choices():
     return cm_list
 
 
-def get_membership_type_choices(user, membership_app, renew=False,
-                                corp_membership=None):
+def get_membership_type_choices(user, membership_app, corp_membership=None):
+    """
+    Get membership type choices available in this application and to this user.
+
+    If corporate memberships:
+        Only show membership types available to this corporation.
+    """
+
     mt_list = []
-    # show only the membership type assiciated with this corp_membership
-    # when joining under a corporation.
     if corp_membership:
         membership_types = [corp_membership.corporate_membership_type.membership_type]
     else:
         membership_types = membership_app.membership_types.all()
-        if not user or not user.profile.is_superuser:
+
+        # assume not superuser; get superuser status
+        is_superuser = False
+        if hasattr(user, 'profile'):
+            is_superuser = user.profile.is_superuser
+
+        # filter memberships types based on superuser status
+        if not is_superuser:
             membership_types = membership_types.filter(admin_only=False)
+
         membership_types = membership_types.order_by('position')
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
+    price_fmt = u'%s - %s%0.2f'
+    admin_fee_fmt = u' (+%s%s admin fee)'
+
     for mt in membership_types:
-        if not renew:
+
+        m_list = MembershipDefault.objects.filter(user=user, membership_type=mt)
+        renew_mode = any([m.can_renew() for m in m_list])
+
+        mt.renewal_price = mt.renewal_price or 0
+
+        if not renew_mode:
             if mt.admin_fee:
-                price_display = '%s - %s%0.2f (+ %s%s admin fee )' % (
-                                              mt.name,
-                                              currency_symbol,
-                                              mt.price,
-                                              currency_symbol,
-                                              mt.admin_fee)
+                price_display = (price_fmt + admin_fee_fmt) % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price,
+                    currency_symbol,
+                    mt.admin_fee
+                )
             else:
-                price_display = '%s - %s%0.2f' % (mt.name,
-                                                  currency_symbol,
-                                                  mt.price)
+                price_display = price_fmt % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price
+                )
         else:
-            price_display = '%s - %s%0.2f' % (mt.name,
-                                              currency_symbol,
-                                              mt.renewal_price)
+            price_display = price_fmt % (
+                mt.name,
+                currency_symbol,
+                mt.renewal_price
+            )
 
         price_display = mark_safe(price_display)
         mt_list.append((mt.id, price_display))
