@@ -19,6 +19,7 @@ class Command(BaseCommand):
                                                   CorpProfile,
                                                   CorpMembership,
                                                   CorpMembershipRep,
+                                                  CorpMembershipAuthDomain,
                                                   CorporateMembership)
         from tendenci.addons.corporate_memberships.utils import corp_membership_update_perms
         from tendenci.addons.memberships.models import MembershipDefault
@@ -135,9 +136,18 @@ class Command(BaseCommand):
                                 corp_profile=corp_profile,
                                 user=rep.user,
                                 is_dues_rep=rep.is_dues_rep,
-                                is_member_rep=rep.is_member_rep
-                                        )
+                                is_member_rep=rep.is_member_rep)
                         corp_membership_update_perms(corp_membership)
+
+            # auth domains
+            auth_domains = corporate.auth_domains.all()
+            if auth_domains:
+                for auth_domain in auth_domains:
+                    if not corp_profile.authorized_domains.filter(
+                                name=auth_domain.name).exists():
+                        CorpMembershipAuthDomain.objects.create(
+                                corp_profile=corp_profile,
+                                name=auth_domain.name)
 
             # update individual membership entries
             memberships = MembershipDefault.objects.filter(
