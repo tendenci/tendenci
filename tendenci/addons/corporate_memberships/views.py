@@ -496,9 +496,12 @@ def corpmembership_view(request, id,
     EventLog.objects.log(instance=corp_membership)
 
     # all records for this corp_profile - use to display the timeline
-    all_records = CorpMembership.objects.filter(
-                            corp_profile=corp_membership.corp_profile
-                            ).order_by('-create_dt')
+    if is_superuser or corp_membership.is_rep(request.user):
+        all_records = CorpMembership.objects.filter(
+                                corp_profile=corp_membership.corp_profile
+                                ).order_by('-create_dt')
+    else:
+        all_records = []
     context = {"corporate_membership": corp_membership,
                'all_records': all_records,
                'app_fields': app_fields,
