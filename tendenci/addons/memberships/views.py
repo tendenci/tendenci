@@ -1402,6 +1402,22 @@ def membership_default_preview(request, slug,
     return render_to_response(template, context, RequestContext(request))
 
 
+def membership_default_add_legacy(request):
+    """
+    Handle the legacy default add - redirect it to an app
+    for non-corporate individuals.
+    """
+    [app] = MembershipApp.objects.filter(
+                           use_for_corp=False,
+                           status=True,
+                           status_detail__in=['active', 'published']
+                           ).order_by('id')[:1] or [None]
+    if not app:
+        raise Http404
+
+    return redirect(reverse('membership_default.add', args=[app.slug]))
+
+
 def membership_default_add(request, slug='',
                     template='memberships/applications/add.html',
                     **kwargs):

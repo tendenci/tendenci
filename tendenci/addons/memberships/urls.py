@@ -84,6 +84,10 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^applications/(?P<slug>[\w\-]+)/preview/$",
         "membership_default_preview",
         name="membership_default.preview"),
+    # legacy link for default add
+    url(r"^applications/add/$",
+        "membership_default_add_legacy",
+        name="membership_default.add"),
     # membership default add
     url(r"^applications/(?P<slug>[\w\-]+)/$",
         "membership_default_add",
