@@ -99,7 +99,12 @@ class Command(BaseCommand):
                 corp_membership = None
             else:
                 # check if corp_membership exists
-                corp_membership = corp_profile.corp_membership
+                [corp_membership] = corp_profile.corp_memberships.all(
+                                            ).exclude(
+                                            status_detail='archive'
+                                            ).order_by(
+                                            '-expiration_dt'
+                                            )[:1] or [None]
             if not corp_membership:
                 corp_membership = CorpMembership()
                 for field_name in corp_membership_field_names:
