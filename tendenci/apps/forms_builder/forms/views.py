@@ -448,12 +448,13 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 msg = EmailMessage(subject, admin_body, sender, email_copies, headers=email_headers)
                 msg.content_subtype = 'html'
                 for f in form_for_form.files.values():
-                    with open(f) as attachment:
-                        attachment.seek(0)
-                        try:
-                            msg.attach(attachment.name, attachment.read())
-                        except Exception:
-                            pass
+                    try:
+                        f.open()
+                        f.seek(0)
+                        msg.attach(f.name, f.read())
+                        f.close()
+                    except Exception:
+                        pass
                 msg.send()
 
             # payment redirect
