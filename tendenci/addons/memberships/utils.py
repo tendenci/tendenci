@@ -900,10 +900,10 @@ def get_user_by_email(email):
     if not email:
         return None
 
-    [user] = User.objects.filter(email__iexact=email).order_by(
+    users = User.objects.filter(email__iexact=email).order_by(
                     '-is_active', '-is_superuser', '-is_staff'
-                        )[:1] or [None]
-    return user
+                        )
+    return users
 
 
 def get_user_by_member_number(member_number):
@@ -913,14 +913,14 @@ def get_user_by_member_number(member_number):
     if not member_number:
         return None
 
-    [profile] = Profile.objects.filter(
+    profiles = Profile.objects.filter(
                 member_number=member_number).order_by(
                     '-user__is_active',
                     '-user__is_superuser',
                     '-user__is_staff'
-                        )[:1] or [None]
-    if profile:
-        return profile.user
+                        )
+    if profiles:
+        return [profile.user for profile in profiles]
     return None
 
 
@@ -931,16 +931,16 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
     if not first_name or last_name or phone:
         return None
 
-    [profile] = Profile.objects.filter(
+    profiles = Profile.objects.filter(
                 user__first_name=first_name,
                 user__last_name=last_name,
                 phone=phone).order_by(
                     '-user__is_active',
                     '-user__is_superuser',
                     '-user__is_staff'
-                        )[:1] or [None]
-    if profile:
-        return profile.user
+                        )
+    if profiles:
+        return [profile.user  for profile in profiles]
     return None
 
 
@@ -1219,58 +1219,66 @@ class ImportMembDefault(object):
                 idata.save()
         else:
             if self.key == 'member_number/email/fn_ln_phone':
-                user = get_user_by_member_number(
+                users = get_user_by_member_number(
                                     self.memb_data['member_number'])
-                if not user:
-                    user = get_user_by_email(self.memb_data['email'])
-                    if not user:
-                        user = get_user_by_fn_ln_phone(
+                if not users:
+                    users = get_user_by_email(self.memb_data['email'])
+                    if not users:
+                        users = get_user_by_fn_ln_phone(
                                            self.memb_data['first_name'],
                                            self.memb_data['last_name'],
                                            self.memb_data['phone']
                                            )
             elif self.key == 'email/member_number/fn_ln_phone':
-                user = get_user_by_email(self.memb_data['email'])
-                if not user:
-                    user = get_user_by_member_number(
+                users = get_user_by_email(self.memb_data['email'])
+                if not users:
+                    users = get_user_by_member_number(
                                 self.memb_data['member_number'])
-                    if not user:
-                        user = get_user_by_fn_ln_phone(
+                    if not users:
+                        users = get_user_by_fn_ln_phone(
                                            self.memb_data['first_name'],
                                            self.memb_data['last_name'],
                                            self.memb_data['phone'])
             elif self.key == 'member_number/email':
-                user = get_user_by_member_number(
+                users = get_user_by_member_number(
                                 self.memb_data['member_number'])
-                if not user:
-                    user = get_user_by_email(self.memb_data['email'])
+                if not users:
+                    users = get_user_by_email(self.memb_data['email'])
             elif self.key == 'email/member_number':
-                user = get_user_by_email(self.memb_data['email'])
-                if not user:
-                    user = get_user_by_member_number(
+                users = get_user_by_email(self.memb_data['email'])
+                if not users:
+                    users = get_user_by_member_number(
                                 self.memb_data['member_number'])
             elif self.key == 'member_number':
-                user = get_user_by_member_number(
+                users = get_user_by_member_number(
                                 self.memb_data['member_number'])
             else:  # email
-                user = get_user_by_email(self.memb_data['email'])
+                users = get_user_by_email(self.memb_data['email'])
 
-            if user:
+            if users:
                 user_display['user_action'] = 'update'
-                user_display['user'] = user
+
                 # pick the most recent one
-                [memb] = MembershipDefault.objects.filter(
-                        user=user,
-                        membership_type__id=self.memb_data['membership_type']
-                                          ).exclude(
-                          status_detail='archive'
-                                ).order_by('-id')[:1] or [None]
-                if memb:
-                    user_display['memb_action'] = 'update'
-                    user_display['action'] = 'update'
-                else:
+                memb = None
+                for user in users:
+                    memberships = MembershipDefault.objects.filter(
+                                    user=user,
+                                    membership_type__id=self.memb_data['membership_type']
+                                                      ).exclude(
+                                      status_detail='archive')
+                    if memberships.exists():
+
+                        [memb] = memberships.order_by('-id')[:1] or [None]
+                        user_display['user'] = user
+                        break
+
+                if not memb:
+                    user_display['user'] = users[0]
                     user_display['memb_action'] = 'insert'
                     user_display['action'] = 'mixed'
+                else:
+                    user_display['memb_action'] = 'update'
+                    user_display['action'] = 'update'
             else:
                 user_display['user_action'] = 'insert'
                 user_display['memb_action'] = 'insert'
