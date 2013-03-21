@@ -776,7 +776,7 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
 @staff_member_required
 def user_access_report(request):
     now = datetime.now()
-    logins_qs = EventLog.objects.filter(event_id=125200)
+    logins_qs = EventLog.objects.filter(application="accounts",action="login")
     
     total_users = User.objects.all().count()
     total_logins = logins_qs.count()
