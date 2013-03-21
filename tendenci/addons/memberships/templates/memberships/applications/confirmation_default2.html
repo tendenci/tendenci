@@ -25,8 +25,16 @@
         {% endif %}
 
         {% if membership.is_pending %}
-        <p><span style="background-color: #ECF716;">{% trans "Your membership is pending for admin approval." %}</span></p>
+        <p><span style="background-color: #ECF716;">{% trans "Your membership is pending for admin approval. You will be contacted shortly after your application is approved." %}</span></p>
         {% endif %}
+        
+        {% with membership.get_invoice as invoice %}
+        {% if invoice %}
+        <p>
+            <a href="{% url invoice.view invoice.id invoice.guid %}">View Invoice{% if invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} and Make Online Payment{% endif %}</a>
+        </p>
+        {% endif %}
+        {% endwith %}
         <p>&nbsp;</p>
 </div>
 </div>
