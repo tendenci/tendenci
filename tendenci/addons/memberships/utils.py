@@ -151,8 +151,10 @@ def get_membership_type_choices(user, membership_app, corp_membership=None):
 
     for mt in membership_types:
 
-        m_list = MembershipDefault.objects.filter(user=user, membership_type=mt)
-        renew_mode = any([m.can_renew() for m in m_list])
+        renew_mode = False
+        if isinstance(user, User):
+            m_list = MembershipDefault.objects.filter(user=user, membership_type=mt)
+            renew_mode = any([m.can_renew() for m in m_list])
 
         mt.renewal_price = mt.renewal_price or 0
 
