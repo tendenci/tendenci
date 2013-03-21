@@ -892,7 +892,7 @@ class MembershipExportForm(forms.Form):
     export_status_detail = forms.ChoiceField(
                 label=_('Export Status Detail'),
                 choices=STATUS_DETAIL_CHOICES,
-                initial=''
+                initial='active'
                 )
     export_type = forms.ChoiceField(
                 label=_('Export Type'),
