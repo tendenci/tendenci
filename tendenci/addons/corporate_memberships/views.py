@@ -1365,8 +1365,9 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
 def corp_reps_lookup(request):
     q = request.REQUEST['term']
-    use_search_index = get_setting('site', 'global', 'searchindex')
-
+    #use_search_index = get_setting('site', 'global', 'searchindex')
+    # TODO: figure out a way of assigning search permission to dues_reps.
+    use_search_index = False
     if use_search_index:
         profiles = Profile.objects.search(
                             q,
