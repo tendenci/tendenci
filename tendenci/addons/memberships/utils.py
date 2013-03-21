@@ -335,8 +335,7 @@ def process_export(export_type='all_fields',
         membership_field_list.remove('user')
 
     title_list = user_field_list + profile_field_list + \
-        membership_field_list + demographic_field_list + \
-        base_field_list
+        membership_field_list + demographic_field_list
 
     # list of foreignkey fields
     if export_type == 'main_fields':
@@ -1087,6 +1086,11 @@ class ImportMembDefault(object):
                                             name=value).exists():
                     is_valid = False
                     error_msg = 'Invalid membership type "%s"' % value
+                else:
+                    memb_data['membership_type'] = MembershipType.objects.filter(
+                                            name=value
+                                            ).values_list(
+                                            'id', flat=True)[0]
         else:
             # the spread sheet doesn't have the membership_type field,
             # assign the default one
@@ -1573,6 +1577,8 @@ class ImportMembDefault(object):
 
         elif field_type == 'BooleanField':
             try:
+                if value in [True, 1, 'TRUE']:
+                    value = True
                 value = field.to_python(value)
             except exceptions.ValidationError:
                 value = False
