@@ -783,7 +783,7 @@ def user_access_report(request):
     
     day_logins = []
     for days in [30, 60, 90, 120, 182, 365]:
-        count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).count()
+        count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).values('user_id').distinct().count()
         day_logins.append((days, count))
     
     return render_to_response('reports/user_access.html', {
