@@ -57,6 +57,10 @@
         {% endif %}
         {% endif %}
         
+        {% if membership.user.profile.is_active %}
+        <p><a href="{% url profile membership.user.username %}">View Profile</a></p>
+        {% endif %}
+        
         <p>&nbsp;</p>
 </div>
 </div>
