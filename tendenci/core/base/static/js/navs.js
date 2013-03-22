@@ -16,7 +16,7 @@ apply_delete = function(thing){
             for(j=0;j<inputs.length;j++){
                 updateElementIndex(inputs[j], 'form', i);
             }
-            $($(items[i]).find('#id_form-'+i+'-ordering')).val(i);
+            $($(items[i]).find('#id_form-'+i+'-position')).val(i);
         }
         $("#id_form-TOTAL_FORMS").val(total-1);
         return false;
@@ -83,7 +83,7 @@ function showResponse(response, status, xhr, $form)  {
             clone.find('.nav-item-label b').html("+ "+pages[i].label);
             clone.find('#id_form-0-page').val(pages[i].id);
             clone.find('#id_form-0-title').val(pages[i].label);
-            clone.find('#id_form-0-ordering').val(form_number);
+            clone.find('#id_form-0-position').val(form_number);
             clone.find('.url-field').attr('disabled', 'disabled');
             
             //relace the names and ids of the elements in the form
@@ -93,7 +93,7 @@ function showResponse(response, status, xhr, $form)  {
             clone.find('#id_form-0-title').attr('name', 'form-' + form_number + '-title');
             clone.find('#id_form-0-css').attr('name', 'form-' + form_number + '-css');
             clone.find('#id_form-0-page').attr('name', 'form-' + form_number + '-page');
-            clone.find('#id_form-0-ordering').attr('name', 'form-' + form_number + '-ordering');
+            clone.find('#id_form-0-position').attr('name', 'form-' + form_number + '-position');
             clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
             
             //clone.find('#id_form-0-id').attr('id', 'id_form-' + form_number + '-id');
@@ -102,7 +102,7 @@ function showResponse(response, status, xhr, $form)  {
             clone.find('#id_form-0-title').attr('id', 'id_form-' + form_number + '-title');
             clone.find('#id_form-0-css').attr('id', 'id_form-' + form_number + '-css');
             clone.find('#id_form-0-page').attr('id', 'id_form-' + form_number + '-page');
-            clone.find('#id_form-0-ordering').attr('id', 'id_form-' + form_number + '-ordering');
+            clone.find('#id_form-0-position').attr('id', 'id_form-' + form_number + '-position');
             clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
             
             //apply the click effects
@@ -167,7 +167,7 @@ $(document).ready(function(){
         clone.attr('id', '');
         clone.show();
         clone.find('.nav-item-detail').show();
-        clone.find('#id_form-0-ordering').val(form_number);
+        clone.find('#id_form-0-position').val(form_number);
         
         //relace the names and ids of the elements in the form
         //clone.find('#id_form-0-id').attr('name', 'form-' + form_number + '-id');
@@ -176,7 +176,7 @@ $(document).ready(function(){
         clone.find('#id_form-0-title').attr('name', 'form-' + form_number + '-title');
         clone.find('#id_form-0-css').attr('name', 'form-' + form_number + '-css');
         clone.find('#id_form-0-page').attr('name', 'form-' + form_number + '-page');
-        clone.find('#id_form-0-ordering').attr('name', 'form-' + form_number + '-ordering');
+        clone.find('#id_form-0-position').attr('name', 'form-' + form_number + '-position');
         clone.find('#id_form-0-level').attr('name', 'form-' + form_number + '-level');
         clone.find('#id_form-0-url').attr('name', 'form-' + form_number + '-url');
         
@@ -186,7 +186,7 @@ $(document).ready(function(){
         clone.find('#id_form-0-title').attr('id', 'id_form-' + form_number + '-title');
         clone.find('#id_form-0-css').attr('id', 'id_form-' + form_number + '-css');
         clone.find('#id_form-0-page').attr('id', 'id_form-' + form_number + '-page');
-        clone.find('#id_form-0-ordering').attr('id', 'id_form-' + form_number + '-ordering');
+        clone.find('#id_form-0-position').attr('id', 'id_form-' + form_number + '-position');
         clone.find('#id_form-0-level').attr('id', 'id_form-' + form_number + '-level');
         clone.find('#id_form-0-url').attr('id', 'id_form-' + form_number + '-url');
         
@@ -222,7 +222,7 @@ $(document).ready(function(){
         update: function(event, ui){
                 items = $(this).find('.nav-item');
                 for(i=0;i<items.length;i++){
-                    input = $($(items[i]).find('.ordering input'));
+                    input = $($(items[i]).find('.position input'));
                     input.attr('value', i);
                 }
             }
