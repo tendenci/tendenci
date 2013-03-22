@@ -372,7 +372,7 @@ class MembershipDefault(TendenciBaseModel):
         """
         u = "Membership object"
         if self.pk:
-            u = "Membership {} for {}".format(self.pk, self.user.get_full_name())
+            u = "Membership %d for %s" % (self.pk, self.user.get_full_name())
 
         return u
 
