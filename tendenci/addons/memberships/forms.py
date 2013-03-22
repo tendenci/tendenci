@@ -522,9 +522,15 @@ def assign_fields(form, app_field_objs):
     # update the field attrs - label, required...
     for obj in app_field_objs:
         if obj.field_name in field_names:
-            field = form.fields[obj.field_name]
-            field.label = obj.label
-            field.required = obj.required
+            if obj.field_type:
+                field = obj.get_field_class(
+                        initial=form.fields[obj.field_name].initial)
+                form.fields[obj.field_name] = field
+            else:
+                field = form.fields[obj.field_name]
+                field.label = obj.label
+                field.required = obj.required
+
             obj.field_stype = field.widget.__class__.__name__.lower()
 
             if obj.field_stype == 'textinput':
@@ -692,7 +698,8 @@ class DemographicsForm(forms.ModelForm):
         self.field_names = [name for name in self.fields.keys()]
         # change the default widget to TextInput instead of TextArea
         for field in self.fields.values():
-            field.widget = forms.widgets.TextInput({'size': 30})
+            if field.widget.__class__.__name__.lower() == 'textarea':
+                field.widget = forms.widgets.TextInput({'size': 30})
 
 
 class MembershipDefault2Form(forms.ModelForm):
@@ -714,7 +721,7 @@ class MembershipDefault2Form(forms.ModelForm):
 
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
-        membership_app = kwargs.pop('membership_app')
+        self.membership_app = kwargs.pop('membership_app')
         if 'join_under_corporate' in kwargs.keys():
             self.join_under_corporate = kwargs.pop('join_under_corporate')
         else:
@@ -731,11 +738,10 @@ class MembershipDefault2Form(forms.ModelForm):
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
 
         self.fields['membership_type'].widget = forms.widgets.RadioSelect(
-            choices=get_membership_type_choices(
-                request_user,
-                membership_app,
-                corp_membership=self.corp_membership
-            ), attrs=self.fields['membership_type'].widget.attrs)
+                choices=get_membership_type_choices(request_user,
+                                    self.membership_app,
+                                    corp_membership=self.corp_membership),
+                attrs=self.fields['membership_type'].widget.attrs)
 
         if self.corp_membership:
             memb_type = self.corp_membership.corporate_membership_type.membership_type
@@ -743,13 +749,13 @@ class MembershipDefault2Form(forms.ModelForm):
             require_payment = (memb_type.price > 0 or memb_type.admin_fee > 0)
         else:
             # if all membership types are free, no need to display payment method
-            require_payment = membership_app.membership_types.filter(
+            require_payment = self.membership_app.membership_types.filter(
                                     Q(price__gt=0) | Q(admin_fee__gt=0)).exists()
 
         if not require_payment:
             del self.fields['payment_method']
         else:
-            payment_method_choices = [(p.pk, p.human_name) for p in membership_app.payment_methods.all()]
+            payment_method_choices = [(p.pk, p.human_name) for p in self.membership_app.payment_methods.all()]
             self.fields['payment_method'].empty_label = None
             self.fields['payment_method'].widget = forms.widgets.RadioSelect(
                         choices=payment_method_choices,
@@ -836,6 +842,9 @@ class MembershipDefault2Form(forms.ModelForm):
         # assign member number
         membership.set_member_number()
 
+        # set app
+        membership.app = self.membership_app
+
         # create record in database
         # helps with associating invoice record
         membership.save()
@@ -883,7 +892,7 @@ class MembershipExportForm(forms.Form):
     export_status_detail = forms.ChoiceField(
                 label=_('Export Status Detail'),
                 choices=STATUS_DETAIL_CHOICES,
-                initial=''
+                initial='active'
                 )
     export_type = forms.ChoiceField(
                 label=_('Export Type'),
@@ -2050,7 +2059,10 @@ class MembershipDefaultForm(TendenciBaseForm):
                 del self.fields[field_name]
 
         demographics = self.instance.demographics
-        app = MembershipApp.objects.current_app()
+        if self.instance and self.instance.app:
+            app = self.instance.app
+        else:
+            app = MembershipApp.objects.current_app()
         demographic_fields = get_selected_demographic_fields(app, forms)
         self.demographic_field_names = [field_item[0] for field_item in demographic_fields]
         for field_name, field in demographic_fields:

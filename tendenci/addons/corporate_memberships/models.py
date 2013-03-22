@@ -633,7 +633,7 @@ class CorpMembership(TendenciBaseModel):
         field_names = [field.name for field in self.__class__._meta.fields]
         ignore_fields = ['id', 'renewal', 'renew_dt', 'status',
                          'status_detail', 'approved', 'approved_denied_dt',
-                         'approved_denied_user']
+                         'approved_denied_user', 'anonymous_creator']
         for field in ignore_fields:
             field_names.remove(field)
 
@@ -766,15 +766,19 @@ class CorpMembership(TendenciBaseModel):
                 # update the membership record with the renewal info
                 new_membership.renewal = True
                 new_membership.renew_dt = self.renew_dt
-                new_membership.expiration_dt = self.expiration_dt
+                new_membership.expire_dt = self.expiration_dt
                 new_membership.corporate_membership_id = self.id
                 new_membership.corp_profile_id = self.corp_profile.id
-                new_membership.membership_type = self.corporate_membership_type.membership_type
+                new_membership.membership_type = \
+                    self.corporate_membership_type.membership_type
                 new_membership.status = True
                 new_membership.status_detail = 'active'
+                new_membership.application_approved = True
+                new_membership.application_approved_dt = self.approved_denied_dt
                 if not request_user.is_anonymous():
                     new_membership.owner_id = request_user.id
                     new_membership.owner_username = request_user.username
+                    new_membership.application_approved_user = request_user
 
                 new_membership.save()
                 # archive old memberships
@@ -885,11 +889,18 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
-            corp_membership_update_perms(self)
 
-            # TODO:
-            # assign object permissions
-#            corp_memb_update_perms(self)
+            # assign creator to be dues_rep
+            if not CorpMembershipRep.objects.filter(
+                                    corp_profile=self.corp_profile,
+                                    user=self.creator).exists():
+                CorpMembershipRep.objects.create(
+                        corp_profile=self.corp_profile,
+                        user=self.creator,
+                        is_dues_rep=True
+                                )
+
+            corp_membership_update_perms(self)
 
             # update invoice creator/owner
             if self.invoice:
@@ -1089,7 +1100,7 @@ class CorpMembershipApp(TendenciBaseModel):
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
                             verbose_name=_("Membership Application"),
-                            null=True)
+                            default=1)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
 
@@ -1105,12 +1116,25 @@ class CorpMembershipApp(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("corpmembership_app.preview", [self.id])
+        return ("corpmembership_app.preview", [self.slug])
+
+    def is_current(self):
+        """
+        Check if this app is the current app.
+        Corporate memberships do not support multiple apps.
+        """
+        current_app = CorpMembershipApp.objects.current_app()
+
+        return current_app and current_app.id == self.id
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(CorpMembershipApp, self).save(*args, **kwargs)
+
+        if not self.memb_app.use_for_corp:
+            self.memb_app.use_for_corp = True
+            self.memb_app.save()
 
 
 class CorpMembershipAppField(models.Model):

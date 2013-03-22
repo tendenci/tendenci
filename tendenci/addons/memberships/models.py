@@ -1,3 +1,4 @@
+import os
 import re
 import hashlib
 import uuid
@@ -16,6 +17,11 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
+from django import forms
+from django.utils.importlib import import_module
+from django.core.files.storage import default_storage
+from django.utils.encoding import smart_str
+from django.core.urlresolvers import reverse
 
 from tendenci.core.base.utils import day_validate
 from tendenci.core.site_settings.utils import get_setting
@@ -35,11 +41,11 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.files.models import File
 from tendenci.libs.abstracts.models import OrderingBaseModel
-from tendenci.apps.entities.models import Entity
 from tendenci.apps.notifications import models as notification
 from tendenci.addons.directories.models import Directory
 from tendenci.addons.industries.models import Industry
 from tendenci.addons.regions.models import Region
+from tendenci.core.base.utils import UnicodeWriter
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^tinymce.models.HTMLField"])
@@ -84,7 +90,7 @@ PERIOD_UNIT_CHOICES = (
 FIELD_FUNCTIONS = (
     ("Group", _("Subscribe to Group")),
 )
-
+FIELD_MAX_LENGTH = 2000
 
 class MembershipType(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -334,10 +340,6 @@ class MembershipDefault(TendenciBaseModel):
     exported = models.BooleanField()
     chapter = models.CharField(max_length=150, blank=True)
     areas_of_expertise = models.CharField(max_length=1000, blank=True)
-    organization_entity = models.ForeignKey(Entity,
-        related_name='organization_set', editable=False, null=True)
-    corporate_entity = models.ForeignKey(Entity,
-        related_name='corporate_set', editable=False, null=True)
     corp_profile_id = models.IntegerField(blank=True, default=0)
     corporate_membership_id = models.IntegerField(_('Corporate Membership'),
                                                   blank=True, null=True)
@@ -355,6 +357,8 @@ class MembershipDefault(TendenciBaseModel):
     promotion_code = models.CharField(max_length=50, blank=True, default=u'')
     directory = models.ForeignKey(Directory, blank=True, null=True)
     groups = models.ManyToManyField(Group, null=True)
+
+    app = models.ForeignKey("MembershipApp", null=True)
 
     objects = MembershipDefaultManager()
 
@@ -1242,9 +1246,8 @@ class MembershipDefault(TendenciBaseModel):
         return all(good)
 
     def get_field_items(self):
-        app = MembershipApp.objects.current_app()
-        # to be updated if supports multiple apps
-        # app = self.app
+        app = self.app
+
         items = {}
         field_names = MembershipAppField.objects.filter(
                                         membership_app=app,
@@ -1277,6 +1280,27 @@ class MembershipDefault(TendenciBaseModel):
 
         return items
 
+    def corpmembership(self):
+        if not self.corporate_membership_id:
+            return None
+
+        from tendenci.addons.corporate_memberships.models import CorpMembership
+        [corp_memb] = CorpMembership.objects.filter(
+                    pk=self.corporate_membership_id)[:1] or [None]
+        return corp_memb
+
+    def membership_type_link(self):
+        link = '<a href="%s">%s</a>' % (
+                reverse('admin:memberships_membershiptype_change',
+                        args=[self.membership_type.id]),
+                        self.membership_type.name)
+        if self.corporate_membership_id:
+            link = '%s (<a href="%s">view corp</a>)' % (
+                link, reverse('corpmembership.view',
+                        args=[self.corporate_membership_id]))
+        return link
+    membership_type_link.allow_tags = True
+
     def auto_update_paid_object(self, request, payment):
         """
         Update membership status and dates. Created archives if
@@ -1284,48 +1308,44 @@ class MembershipDefault(TendenciBaseModel):
         """
         from tendenci.apps.notifications.utils import send_welcome_email
 
-        if self.renewal:
-            # if auto-approve renews
-            if not self.membership_type.renewal_require_approval:
-                self.user, created = self.get_or_create_user()
-                if created:
-                    send_welcome_email(self.user)
+        can_approve = False
 
-                # save invoice estimate
-                self.save_invoice(status_detail='tendered')
-
-                # auto approve -------------------------
-                self.application_approved = True
-                self.application_approved_user = self.user
-                self.application_approved_dt = datetime.now()
-                self.application_approved_denied_user = self.user
-
-                self.set_join_dt()
-                self.set_renew_dt()
-                self.set_expire_dt()
-
-                self.archive_old_memberships()
-
+        if request.user.profile.is_superuser:
+            can_approve = True
         else:
-            # if auto-approve joins
-            if not self.membership_type.require_approval:
-                self.user, created = self.get_or_create_user()
-                if created:
-                    send_welcome_email(self.user)
+            if (self.renewal and \
+                    not self.membership_type.renewal_require_approval) \
+                or (not self.renewal and \
+                    not self.membership_type.require_approval):
+                    can_approve = True
 
-                # auto approve -------------------------
-                self.application_approved = True
-                self.application_approved_user = self.user
-                self.application_approved_dt = datetime.now()
-                self.application_approved_denied_user = self.user
+        if can_approve:
 
-                self.set_join_dt()
+            self.user, created = self.get_or_create_user()
+            if created:
+                send_welcome_email(self.user)
+
+            # auto approve -------------------------
+            self.application_approved = True
+            self.application_approved_user = self.user
+            self.application_approved_dt = datetime.now()
+            self.application_approved_denied_user = self.user
+            self.status = True
+            self.status_detail = 'active'
+
+            self.set_join_dt()
+            if self.renewal:
                 self.set_renew_dt()
-                self.set_expire_dt()
+            self.set_expire_dt()
+            self.save()
 
-                self.archive_old_memberships()
+            self.archive_old_memberships()
 
-        if self.application_approved:
+            # user in [membership] group
+            self.group_refresh()
+
+            # show member number on profile
+            self.user.profile.refresh_member_number()
 
             Notice.send_notice(
                 request=request,
@@ -1633,6 +1653,12 @@ class MembershipImport(models.Model):
     upload_file = models.FileField(_("Upload File"), max_length=260,
                                    upload_to=UPLOAD_DIR,
                                    null=True)
+    recap_file = models.FileField(_("Recap File"), max_length=260,
+                                   upload_to=UPLOAD_DIR,
+                                   null=True)
+    # store the header line to assist in generating recap
+    header_line = models.CharField(_('Header Line'), max_length=3000,
+                           default='')
     # active users
     interactive = models.IntegerField(choices=INTERACTIVE_CHOICES, default=0)
     # overwrite already existing fields if match
@@ -1663,6 +1689,31 @@ class MembershipImport(models.Model):
     def __unicode__(self):
         return self.get_file().file.name
 
+    def generate_recap(self):
+        if not self.recap_file and self.header_line:
+            file_name = 'membership_import_%d_recap.csv' % self.id
+            file_path = '%s/%s' % (os.path.split(self.upload_file.name)[0],
+                                   file_name)
+            f = default_storage.open(file_path, 'wb')
+            recap_writer = UnicodeWriter(f, encoding='utf-8')
+            header_row = self.header_line.split(',')
+            header_row.extend(['action', 'error'])
+            recap_writer.writerow(header_row)
+            data_list = MembershipImportData.objects.filter(
+                                            mimport=self
+                                            ).order_by('row_num')
+            for idata in data_list:
+                data_dict = idata.row_data
+                row = [data_dict[k] for k in header_row if k not in [
+                                            'action', 'error']]
+                row.extend([idata.action_taken, idata.error])
+                row = [smart_str(s).decode('utf-8') for s in row]
+                recap_writer.writerow(row)
+
+            f.close()
+            self.recap_file.name = file_path
+            self.save()
+
 
 class MembershipImportData(models.Model):
     mimport = models.ForeignKey(MembershipImport, related_name="membership_import_data")
@@ -1672,6 +1723,7 @@ class MembershipImportData(models.Model):
     row_num = models.IntegerField(_('Row #'))
     # action_taken can be 'insert', 'update' or 'mixed'
     action_taken = models.CharField(_('Action Taken'), max_length=20, null=True)
+    error = models.CharField(_('Error'), max_length=500, default='')
 
 
 NOTICE_TYPES = (
@@ -1959,12 +2011,17 @@ class MembershipApp(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('membership_default.preview', [self.pk])
+        return ('membership_default.add', [self.slug])
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(MembershipApp, self).save(*args, **kwargs)
+
+    def application_form_link(self):
+        return '<a href="%s">%s</a>' % (
+                            self.get_absolute_url(), self.slug)
+    application_form_link.allow_tags = True
 
 
 class MembershipAppField(models.Model):
@@ -2026,6 +2083,38 @@ class MembershipAppField(models.Model):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+
+    def get_field_class(self, initial=None):
+        """
+            Generate the form field class for this field.
+        """
+        if self.field_type and self.id:
+            if "/" in self.field_type:
+                field_class, field_widget = self.field_type.split("/")
+            else:
+                field_class, field_widget = self.field_type, None
+            field_class = getattr(forms, field_class)
+            field_args = {"label": self.label,
+                          "required": self.required,
+                          'help_text': self.help_text}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if initial:
+                field_args['initial'] = initial
+            else:
+                if self.default_value:
+                    field_args['initial'] = self.default_value
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                if self.field_name not in ['membership_type', 'payment_method']:
+                    choices = self.choices.split(",")
+                    field_args["choices"] = zip(choices, choices)
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+
+            return field_class(**field_args)
+        return None
 
 
 class App(TendenciBaseModel):
