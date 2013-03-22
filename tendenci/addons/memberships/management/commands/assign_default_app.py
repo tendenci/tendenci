@@ -25,13 +25,13 @@ class Command(BaseCommand):
         if memberships.filter(corporate_membership_id__gt=0).exists():
             corp_app = CorpMembershipApp.objects.current_app()
             if not corp_app:
-                errors += 'Missing a corporate membership application.'
+                errors += 'Missing a corporate membership application.\n'
             else:
                 if not hasattr(corp_app, 'memb_app') \
                         or not corp_app.memb_app:
                     errors += 'No membership application is associated ' + \
                             'with the corporate membership application ' + \
-                            '"%s".' % corp_app.name
+                            '"%s".\n' % corp_app.name
         if memberships.exclude(corporate_membership_id__gt=0).exists():
             [app] = MembershipApp.objects.filter(
                            status=True,
@@ -40,12 +40,13 @@ class Command(BaseCommand):
                            ).order_by('id')[:1] or [None]
             if not app:
                 errors += 'Missing a membership application ' + \
-                          '(for non-corporate-individuals).'
+                          '(for non-corporate-individuals).\n'
         if errors:
+            print '\nWARNING:'
             print errors
-            print 'Exiting...Please correct the issue(s) then ' + \
-                    'run this command "assign_default_app" again.'
-            sys.exit()
+            print 'Please correct the issue(s) then ' + \
+                    'run this command "assign_default_app" again.\n'
+            return
 
         mts = MembershipType.objects.all()
         # map types to a list of apps
