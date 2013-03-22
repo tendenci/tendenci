@@ -1280,6 +1280,15 @@ class MembershipDefault(TendenciBaseModel):
 
         return items
 
+    def corpmembership(self):
+        if not self.corporate_membership_id:
+            return None
+
+        from tendenci.addons.corporate_memberships.models import CorpMembership
+        [corp_memb] = CorpMembership.objects.filter(
+                    pk=self.corporate_membership_id)[:1] or [None]
+        return corp_memb
+
     def membership_type_link(self):
         link = '<a href="%s">%s</a>' % (
                 reverse('admin:memberships_membershiptype_change',
