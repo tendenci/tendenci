@@ -201,6 +201,8 @@ class JobForm(TendenciBaseForm):
                     })]
 
     def __init__(self, *args, **kwargs):
+        if hasattr(self, 'user'):
+            kwargs.update({'user': self.user})
         super(JobForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
