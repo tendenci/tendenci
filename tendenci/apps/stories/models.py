@@ -92,6 +92,15 @@ class Story(OrderingBaseModel, TendenciBaseModel):
         self.guid = self.guid or unicode(uuid.uuid1())
         photo_upload = kwargs.pop('photo', None)
 
+        if self.pk is None:
+            # Append to top of the list on add
+            try:
+                last = Story.objects.all().order_by('-position')[0]
+                self.position = int(last.position) + 1
+            except IndexError:
+                # First row
+                pass
+
         super(Story, self).save(*args, **kwargs)
 
         if photo_upload and self.pk:
@@ -102,7 +111,7 @@ class Story(OrderingBaseModel, TendenciBaseModel):
                 creator_username=self.creator_username,
                 owner=self.owner,
                 owner_username=self.owner_username
-                    )
+            )
             photo_upload.file.seek(0)
             image.file.save(photo_upload.name, photo_upload)  # save file row
             image.save()  # save image row
@@ -113,16 +122,6 @@ class Story(OrderingBaseModel, TendenciBaseModel):
 
             self.save()
 
-        if self.position is None:
-            #Append
-            try:
-                last = Story.objects.all().exclude(pk=self.pk).order_by('-position')[0]
-                self.position = int(last.position) + 1
-            except:
-                #First row
-                self.position = 0
-
-            self.save()
 
     @property
     def category_set(self):
