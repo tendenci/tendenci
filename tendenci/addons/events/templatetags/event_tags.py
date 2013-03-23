@@ -1,5 +1,6 @@
 import random
 import hashlib
+import random
 from datetime import datetime, timedelta
 from operator import or_
 
@@ -276,8 +277,15 @@ class ListEventsNode(ListNode):
         order = 'next_upcoming'
         event_type = ''
         group = u''
+        start_dt = u''
 
         randomize = False
+
+        if 'start_dt' in self.kwargs:
+            try:
+                start_dt =  datetime.strptime(self.kwargs['start_dt'], '%m/%d/%Y-%H:%M')
+            except ValueError:
+                pass
 
         if 'random' in self.kwargs:
             randomize = bool(self.kwargs['random'])
@@ -357,6 +365,9 @@ class ListEventsNode(ListNode):
 
         if event_type:
             items = items.filter(type__name__iexact=event_type)
+
+        if start_dt:
+            items = items.filter(start_dt__gte=start_dt)
 
         if tags:  # tags is a comma delimited list
             # this is fast; but has one hole
