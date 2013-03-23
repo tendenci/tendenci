@@ -3,8 +3,7 @@ from datetime import datetime
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
-from django.template.defaultfilters import slugify
+from django.contrib.admin import widgets
 
 from captcha.fields import CaptchaField
 from tendenci.core.categories.models import Category
@@ -47,23 +46,31 @@ STATUS_CHOICES = (
 
 class JobForm(TendenciBaseForm):
 
-    description = forms.CharField(required=False,
-        widget=TinyMCE(attrs={'style': 'width:100%'},
-        mce_attrs={'storme_app_label': Job._meta.app_label,
-        'storme_model': Job._meta.module_name.lower()}))
+    description = forms.CharField(
+        required=False,
+        widget=TinyMCE(
+            attrs={'style': 'width:100%'},
+            mce_attrs={'storme_app_label': Job._meta.app_label, 'storme_model': Job._meta.module_name.lower()}
+        )
+    )
 
     captcha = CaptchaField()
-    
-    start_dt = SplitDateTimeField(required=False, label=_('Position starts on:'),
+
+    start_dt = SplitDateTimeField(
+        required=False,
+        label=_('Position starts on:'),
         initial=datetime.now())
 
-    activation_dt = SplitDateTimeField(label=_('Activation Date/Time'),
+    activation_dt = SplitDateTimeField(
+        label=_('Activation Date/Time'),
         initial=datetime.now())
 
-    post_dt = SplitDateTimeField(label=_('Post Date/Time'),
+    post_dt = SplitDateTimeField(
+        label=_('Post Date/Time'),
         initial=datetime.now())
 
-    expiration_dt = SplitDateTimeField(label=_('Expiration Date/Time'),
+    expiration_dt = SplitDateTimeField(
+        label=_('Expiration Date/Time'),
         initial=datetime.now())
 
     status_detail = forms.ChoiceField(
@@ -72,133 +79,136 @@ class JobForm(TendenciBaseForm):
     list_type = forms.ChoiceField(initial='regular', choices=(('regular', 'Regular'),
                                                               ('premium', 'Premium'),))
     payment_method = forms.CharField(error_messages={'required': 'Please select a payment method.'})
-    
+
     contact_email = EmailVerificationField(label=_("Contact email"), required=False)
 
     group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
 
-    pricing = forms.ModelChoiceField(label=_('Requested Duration'), 
-                    queryset=JobPricing.objects.filter(status=True).order_by('duration'))
+    pricing = forms.ModelChoiceField(
+        label=_('Requested Duration'),
+        queryset=JobPricing.objects.filter(status=True).order_by('duration'))
 
     class Meta:
         model = Job
         fields = (
-        'title',
-        'slug',
-        'description',
-        'group',
-        'code',
-        'location',
-        'skills',
-        'experience',
-        'education',
-        'level',
-        'period',
-        'is_agency',
-        'contact_method',
-        'position_reports_to',
-        'salary_from',
-        'salary_to',
-        'computer_skills',
-        'tags',
-        'pricing',
-        'list_type',
-        'start_dt',
-        'activation_dt',
-        'post_dt',
-        'expiration_dt',
-        'job_url',
-        'entity',
-        'contact_company',
-        'contact_name',
-        'contact_address',
-        'contact_address2',
-        'contact_city',
-        'contact_state',
-        'contact_zip_code',
-        'contact_country',
-        'contact_phone',
-        'contact_fax',
-        'contact_email',
-        'contact_website',
-        'tags',
-        'allow_anonymous_view',
-        'syndicate',
-        'status',
-        'status_detail',
-        'payment_method',
-       )
+            'title',
+            'slug',
+            'description',
+            'group',
+            'code',
+            'location',
+            'skills',
+            'experience',
+            'education',
+            'level',
+            'period',
+            'is_agency',
+            'contact_method',
+            'position_reports_to',
+            'salary_from',
+            'salary_to',
+            'computer_skills',
+            'tags',
+            'pricing',
+            'list_type',
+            'start_dt',
+            'activation_dt',
+            'post_dt',
+            'expiration_dt',
+            'job_url',
+            'entity',
+            'contact_company',
+            'contact_name',
+            'contact_address',
+            'contact_address2',
+            'contact_city',
+            'contact_state',
+            'contact_zip_code',
+            'contact_country',
+            'contact_phone',
+            'contact_fax',
+            'contact_email',
+            'contact_website',
+            'tags',
+            'allow_anonymous_view',
+            'syndicate',
+            'status',
+            'status_detail',
+            'payment_method',
+        )
 
-        fieldsets = [('Job Information', {
-                      'fields': ['title',
-                                'slug',
-                                'description',
-                                'group',
-                                'job_url',
-                                'start_dt',
-                                'code',
-                                'location',
-                                'skills',
-                                'computer_skills',
-                                'experience',
-                                'education',
-                                'level',
-                                'period',
-                                'contact_method',
-                                'position_reports_to',
-                                'salary_from',
-                                'salary_to',
-                                'is_agency',
-                                'tags',
-                                'pricing',
-                                'activation_dt',
-                                'expiration_dt',
-                                'post_dt',
-                                'entity'
-                                 ],
-                      'legend': ''
-                      }),
-                      ('Payment', {
-                      'fields': ['list_type',
-                                 'payment_method'
-                                 ],
-                        'classes': ['payment_method'],
-                      }),
-                      ('Contact', {
-                      'fields': ['contact_company',
-                                'contact_name',
-                                'contact_address',
-                                'contact_address2',
-                                'contact_city',
-                                'contact_state',
-                                'contact_zip_code',
-                                'contact_country',
-                                'contact_phone',
-                                'contact_fax',
-                                'contact_email',
-                                'contact_website'
-                                 ],
-                        'classes': ['contact'],
-                      }),
-                     ('Security Code', {
-                      'fields': ['captcha',
-                                 ],
-                        'classes': ['captcha'],
-                      }),
-                      ('Permissions', {
-                      'fields': ['allow_anonymous_view',
-                                 'user_perms',
-                                 'member_perms',
-                                 'group_perms',
-                                 ],
-                      'classes': ['permissions'],
-                      }),
-                     ('Administrator Only', {
-                      'fields': ['syndicate',
-                                 'status',
-                                 'status_detail'],
-                      'classes': ['admin-only'],
-                    })]
+        fieldsets = [
+            ('Job Information', {
+                'fields': [
+                    'title',
+                    'slug',
+                    'description',
+                    'group',
+                    'job_url',
+                    'start_dt',
+                    'code',
+                    'location',
+                    'skills',
+                    'computer_skills',
+                    'experience',
+                    'education',
+                    'level',
+                    'period',
+                    'contact_method',
+                    'position_reports_to',
+                    'salary_from',
+                    'salary_to',
+                    'is_agency',
+                    'tags',
+                    'pricing',
+                    'activation_dt',
+                    'expiration_dt',
+                    'post_dt',
+                    'entity'
+                ],
+                'legend': ''
+            }),
+            ('Payment', {
+                'fields': ['list_type',
+                           'payment_method'],
+                'classes': ['payment_method'],
+            }),
+            ('Contact', {
+                'fields': [
+                    'contact_company',
+                    'contact_name',
+                    'contact_address',
+                    'contact_address2',
+                    'contact_city',
+                    'contact_state',
+                    'contact_zip_code',
+                    'contact_country',
+                    'contact_phone',
+                    'contact_fax',
+                    'contact_email',
+                    'contact_website'
+                ],
+                'classes': ['contact'],
+            }),
+            ('Security Code', {
+                'fields': ['captcha'],
+                'classes': ['captcha'],
+            }),
+            ('Permissions', {
+                'fields': [
+                    'allow_anonymous_view',
+                    'user_perms',
+                    'member_perms',
+                    'group_perms',
+                ],
+                'classes': ['permissions'],
+            }),
+            ('Administrator Only', {
+                'fields': ['syndicate',
+                           'status',
+                           'status_detail'],
+                'classes': ['admin-only'],
+            })]
 
     def __init__(self, *args, **kwargs):
         if hasattr(self, 'user'):
@@ -211,12 +221,17 @@ class JobForm(TendenciBaseForm):
                 self.fields['status_detail'].choices = STATUS_DETAIL_CHOICES
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
-            
+
         self.fields['pricing'].choices = pricing_choices(self.user)
 
         if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
-        
+
+        if hasattr(self, 'user'):
+            self.fields['activation_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime())
+            self.fields['expiration_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime())
+            self.fields['post_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime())
+
         # adjust fields depending on user status
         fields_to_pop = []
         if not self.user.is_authenticated():
@@ -235,7 +250,7 @@ class JobForm(TendenciBaseForm):
             ]
         else:
             fields_to_pop += [
-               'captcha'
+                'captcha'
             ]
 
         if not self.user.profile.is_superuser:
@@ -258,14 +273,14 @@ class JobForm(TendenciBaseForm):
         for f in list(set(fields_to_pop)):
             if f in self.fields:
                 self.fields.pop(f)
-                
+
     def save(self, *args, **kwargs):
         """
         Assigns the requested_duration of a job based on the
         chosen pricing.
         """
         job = super(JobForm, self).save(commit=False)
-        if self.cleaned_data.has_key('pricing'):
+        if 'pricing' in self.cleaned_data:
             job.requested_duration = self.cleaned_data['pricing'].duration
         if kwargs['commit']:
             job.save()
@@ -287,17 +302,18 @@ class JobPricingForm(forms.ModelForm):
             'premium_price_member',
             'show_member_pricing',
             'status',
-         )
+        )
+
 
 class JobSearchForm(forms.Form):
     q = forms.CharField(label=_("Search"), required=False, max_length=200,)
     categories = forms.ChoiceField(required=False)
     subcategories = forms.ChoiceField(required=False)
-    
+
     def __init__(self, *args, **kwargs):
         super(JobSearchForm, self).__init__(*args, **kwargs)
-        
-        #setup categories        
+
+        # setup categories
         (categories, sub_categories) = Category.objects.get_for_model(Job)
         cat_length = len(categories)
         cat_choices = [('', 'Categories (%s)' % cat_length)]

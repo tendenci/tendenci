@@ -17,8 +17,30 @@ class JobAdmin(TendenciBaseModelAdmin):
                 'slug',
                 'description',
                 'group',
-                'skills',
                 'location',
+                'skills',
+                'experience',
+                'education',
+                'level',
+                'period',
+                'is_agency',
+                'contact_method',
+                'position_reports_to',
+                'salary_from',
+                'salary_to',
+                'computer_skills',
+                'job_url',
+                'entity',
+                'contact_company',
+                'contact_name',
+                'contact_address',
+                'contact_address2',
+                'contact_city',
+                'contact_state',
+                'contact_zip_code',
+                'contact_country',
+                'contact_phone',
+                'contact_fax',
                 'contact_email',
                 'contact_website',
                 'tags',
@@ -26,6 +48,8 @@ class JobAdmin(TendenciBaseModelAdmin):
                 'post_dt',
                 'activation_dt',
                 'expiration_dt',
+                'payment_method',
+                'list_type',
             )
         }),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
@@ -47,4 +71,5 @@ class JobAdmin(TendenciBaseModelAdmin):
         form.user = request.user
         return form
 
-#admin.site.register(Job, JobAdmin)
+
+admin.site.register(Job, JobAdmin)
