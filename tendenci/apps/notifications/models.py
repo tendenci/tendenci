@@ -30,16 +30,12 @@ from django.utils.translation import ugettext, get_language, activate
 
 from tendenci.core.site_settings.utils import get_setting
 
-# favour django-mailer but fall back to django.core.mail
-if 'mailer' in settings.INSTALLED_APPS:
-    from mailer import send_mail
-else:
-    from django.core.mail import send_mail
-
 QUEUE_ALL = getattr(settings, "NOTIFICATION_QUEUE_ALL", False)
+
 
 class LanguageStoreNotAvailable(Exception):
     pass
+
 
 class NoticeType(models.Model):
 
@@ -65,8 +61,9 @@ NOTICE_MEDIA = (
 
 # how spam-sensitive is the medium
 NOTICE_MEDIA_DEFAULTS = {
-    "1": 2 # email
+    "1": 2  # email
 }
+
 
 class NoticeSetting(models.Model):
     """
@@ -84,6 +81,7 @@ class NoticeSetting(models.Model):
         verbose_name_plural = _("notice settings")
         unique_together = ("user", "notice_type", "medium")
 
+
 def get_notification_setting(user, notice_type, medium, *args, **kwargs):
     try:
         return NoticeSetting.objects.get(user=user, notice_type=notice_type, medium=medium)
@@ -91,10 +89,11 @@ def get_notification_setting(user, notice_type, medium, *args, **kwargs):
         send = kwargs.get('send', False)
 
         # default = (NOTICE_MEDIA_DEFAULTS[medium] <= notice_type.default)
-        default = send # for now default it to false, they have to opt in to get emails
+        default = send  # for now default it to false, they have to opt in to get emails
         setting = NoticeSetting(user=user, notice_type=notice_type, medium=medium, send=default)
         setting.save()
         return setting
+
 
 def should_send(user, notice_type, medium, *args, **kwargs):
     return get_notification_setting(user, notice_type, medium, *args, **kwargs).send
@@ -129,6 +128,7 @@ class NoticeManager(models.Manager):
         mark them seen
         """
         return self.notices_for(user, unseen=True, **kwargs).count()
+
 
 class Notice(models.Model):
 
@@ -171,13 +171,15 @@ class Notice(models.Model):
         return ("notification_notice", [str(self.pk)])
     get_absolute_url = models.permalink(get_absolute_url)
 
+
 class NoticeQueueBatch(models.Model):
     """
     A queued notice.
     Denormalized data for a notice.
     """
     pickled_data = models.TextField()
-    
+
+
 class NoticeEmail(models.Model):
     """Saved Emails
     """
@@ -192,10 +194,10 @@ class NoticeEmail(models.Model):
     content = models.TextField(blank=True)
     content_type = models.CharField(max_length=10)
     date_sent = models.DateTimeField(auto_now_add=True)
-    
+
     def __unicode__(self):
         return self.title
-        
+
     @models.permalink
     def get_absolute_url(self):
         return ('notification_email', [self.guid])
@@ -210,20 +212,28 @@ class NoticeEmail(models.Model):
             headers['Reply-To'] = self.reply_to
         if self.from_display:
             headers['From'] = self.from_display
-        
+
         email_list = []
         for email in self.emails.split(','):
             email_list.append(email)
 
         if self.bcc:
-            email = EmailMessage(self.title, self.content, self.sender,
-                        email_list, self.recipient_bcc, headers=headers)
+            email = EmailMessage(self.title,
+                                 self.content,
+                                 self.sender,
+                                 email_list,
+                                 self.recipient_bcc,
+                                 headers=headers)
         else:
-            email = EmailMessage(self.title, self.content, self.sender, 
-                        email_list, headers=headers)
+            email = EmailMessage(self.title,
+                                 self.content,
+                                 self.sender,
+                                 email_list,
+                                 headers=headers)
 
         email.content_subtype = self.content_type or 'html'
         return email.send()
+
 
 def create_notice_type(label, display, description, default=2, verbosity=1):
     """
@@ -252,6 +262,7 @@ def create_notice_type(label, display, description, default=2, verbosity=1):
         if verbosity > 1:
             print "Created %s NoticeType" % label
 
+
 def get_notification_language(user):
     """
     Returns site-specific notification language for this user. Raises
@@ -269,6 +280,7 @@ def get_notification_language(user):
             raise LanguageStoreNotAvailable
     raise LanguageStoreNotAvailable
 
+
 def get_formatted_messages(formats, label, context):
     """
     Returns a dictionary with the format identifier as the key. The values are
@@ -278,17 +290,18 @@ def get_formatted_messages(formats, label, context):
     for format in formats:
         template_name = splitext(format)[0]
         template_ext = splitext(format)[1]
-        
+
         # conditionally turn off autoescaping for .txt extensions in format
         if format.endswith(".txt"):
             context.autoescape = False
         else:
             context.autoescape = True
-        
+
         format_templates[template_name] = (render_to_string((
             'notification/%s/%s' % (label, format),
             'notification/%s' % format), context_instance=context),template_ext)
     return format_templates
+
 
 def send_emails(emails, label, extra_context=None, on_site=True):
     """
@@ -327,8 +340,8 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         'full.html',
         'short.txt',
         'notice.html',
-    ) # TODO make formats configurable
-    
+    )  # TODO make formats configurable
+
     # test for request in the extra_context
     if 'request' in extra_context.keys():
         context = RequestContext(extra_context['request'])
@@ -358,27 +371,27 @@ def send_emails(emails, label, extra_context=None, on_site=True):
     body = render_to_string('notification/email_body.txt', {
         'message': messages['full'][0],
     }, context)
-    
+
     if 'reply_to' in extra_context.keys():
         reply_to = extra_context['reply_to']
         headers['Reply-To'] = reply_to
     else:
         reply_to = ''
-        
+
     sender = extra_context.get('sender', '')
     if not sender:
         sender = get_setting('site', 'global', 'siteemailnoreplyaddress')
         if not sender:
             sender = settings.DEFAULT_FROM_EMAIL
-        
+
     sender_display = extra_context.get('sender_display', '')
     from_display = '%s<%s>' % (sender_display, sender)
 
     if sender_display:
         headers['From'] = from_display
-    
+
     recipient_bcc = extra_context.get('recipient_bcc') or []
-        
+
     if messages['full'][1] == '.html':
         # commented out for Amazon SES
         # headers = {'Content-Type': 'text/html'}
@@ -387,15 +400,15 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         # commented out for Amazon SES
         # headers = {'Content-Type': 'text/plain'}
         content_type = 'text'
-    
+
     for email_addr in emails:
         recipients = [email_addr]
-        
+
         if recipient_bcc:
-            email = EmailMessage(subject, body, sender, 
+            email = EmailMessage(subject, body, sender,
                                  recipients, recipient_bcc, headers=headers)
         else:
-            email = EmailMessage(subject, body, sender, 
+            email = EmailMessage(subject, body, sender,
                                  recipients, headers=headers)
         email.content_subtype = content_type
         email.send(fail_silently=True)  # should we raise exception or not?
@@ -415,6 +428,7 @@ def send_emails(emails, label, extra_context=None, on_site=True):
         notice_type=notice_type
     )
 
+
 def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
     """
     Creates a new notice.
@@ -425,7 +439,7 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
         'spam': 'eggs',
         'foo': 'bar',
     )
-    
+
     You can pass in on_site=False to prevent the notice emitted from being
     displayed on the site.
     """
@@ -435,92 +449,100 @@ def send_now(users, label, extra_context=None, on_site=True, *args, **kwargs):
     if extra_context is None:
         extra_context = {}
 
-    notice_type = NoticeType.objects.get(label=label)
+    try:
+        notice_type = NoticeType.objects.get(label=label)
+    except (NoticeType.DoesNotExist, NoticeType.MultipleObjectsReturned):
+        notice_type = None
 
-    protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
-    current_site = Site.objects.get_current()
+    if notice_type:
 
-    notices_url = u"%s://%s%s" % (
-        protocol,
-        unicode(current_site),
-        reverse("notification_notices"),
-    )
+        protocol = getattr(settings, "DEFAULT_HTTP_PROTOCOL", "http")
+        current_site = Site.objects.get_current()
 
-    current_language = get_language()
+        notices_url = u"%s://%s%s" % (
+            protocol,
+            unicode(current_site),
+            reverse("notification_notices"),
+        )
 
-    formats = (
-        'full.txt',
-        'full.html',
-        'short.txt',
-        'notice.html',
-    ) # TODO make formats configurable
+        current_language = get_language()
 
-    for user in users:
-        recipients = []
-        headers = {}
-        # get user language for user from language store defined in
-        # NOTIFICATION_LANGUAGE_MODULE setting
-        try:
-            language = get_notification_language(user)
-        except LanguageStoreNotAvailable:
-            language = None
+        formats = (
+            'full.txt',
+            'full.html',
+            'short.txt',
+            'notice.html',
+        )  # TODO make formats configurable
 
-        if language is not None:
-            # activate the user's language
-            activate(language)
+        for user in users:
+            recipients = []
+            headers = {}
+            # get user language for user from language store defined in
+            # NOTIFICATION_LANGUAGE_MODULE setting
+            try:
+                language = get_notification_language(user)
+            except LanguageStoreNotAvailable:
+                language = None
 
-        # test for request in the extra_context
-        if 'request' in extra_context.keys():
-            context = RequestContext(extra_context['request'])
-            extra_context.update({
-                "user": user,
-                "notice": ugettext(notice_type.display),
-                "notices_url": notices_url,
-                "current_site": current_site,
-            })
-            context.update(extra_context)
-        else:
-            # update context with user specific translations
-            context = Context({
-                "user": user,
-                "notice": ugettext(notice_type.display),
-                "notices_url": notices_url,
-                "current_site": current_site,
-            })
-            context.update(extra_context)
+            if language is not None:
+                # activate the user's language
+                activate(language)
 
-        # get prerendered format messages
-        messages = get_formatted_messages(formats, label, context)
+            # test for request in the extra_context
+            if 'request' in extra_context.keys():
+                context = RequestContext(extra_context['request'])
+                extra_context.update({
+                    "user": user,
+                    "notice": ugettext(notice_type.display),
+                    "notices_url": notices_url,
+                    "current_site": current_site,
+                })
+                context.update(extra_context)
+            else:
+                # update context with user specific translations
+                context = Context({
+                    "user": user,
+                    "notice": ugettext(notice_type.display),
+                    "notices_url": notices_url,
+                    "current_site": current_site,
+                })
+                context.update(extra_context)
 
-        # Strip newlines from subject
-        subject = ''.join(render_to_string('notification/email_subject.txt', {
-            'message': messages['short'][0],
-        }, context).splitlines())
+            # get prerendered format messages
+            messages = get_formatted_messages(formats, label, context)
 
-        body = render_to_string('notification/email_body.txt', {
-            'message': messages['full'][0],
-        }, context)
+            # Strip newlines from subject
+            subject = ''.join(render_to_string('notification/email_subject.txt', {
+                'message': messages['short'][0],
+            }, context).splitlines())
 
-        notice = Notice.objects.create(user=user, message=messages['notice'][0],
-            notice_type=notice_type, on_site=on_site)
-        if should_send(user, notice_type, "1", send=send) and user.email: # Email
-            recipients.append(user.email)
+            body = render_to_string('notification/email_body.txt', {
+                'message': messages['full'][0],
+            }, context)
 
-        recipients.append('eloyz.email@gmail.com')
-        
-        if messages['full'][1] == '.html':
-            # headers = {'Content-Type': 'text/html'} 
-            content_type = 'html'
-        else:
-            # headers = {'Content-Type': 'text/plain'}
-            content_type = 'text'  
-            
-        email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
-        email.content_subtype = content_type
-        email.send()
+            Notice.objects.create(user=user,
+                                  message=messages['notice'][0],
+                                  notice_type=notice_type,
+                                  on_site=on_site)
+            if should_send(user, notice_type, "1", send=send) and user.email:  # Email
+                recipients.append(user.email)
 
-    # reset environment to original language
-    activate(current_language)
+            recipients.append('eloyz.email@gmail.com')
+
+            if messages['full'][1] == '.html':
+                # headers = {'Content-Type': 'text/html'}
+                content_type = 'html'
+            else:
+                # headers = {'Content-Type': 'text/plain'}
+                content_type = 'text'
+
+            email = EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients, headers=headers)
+            email.content_subtype = content_type
+            email.send()
+
+        # reset environment to original language
+        activate(current_language)
+
 
 def send(*args, **kwargs):
     """
@@ -541,7 +563,8 @@ def send(*args, **kwargs):
             return queue(*args, **kwargs)
         else:
             return send_now(*args, **kwargs)
-        
+
+
 def queue(users, label, extra_context=None, on_site=True):
     """
     Queue the notification in NoticeQueueBatch. This allows for large amounts
@@ -558,6 +581,7 @@ def queue(users, label, extra_context=None, on_site=True):
     for user in users:
         notices.append((user, label, extra_context, on_site))
     NoticeQueueBatch(pickled_data=pickle.dumps(notices).encode("base64")).save()
+
 
 class ObservedItemManager(models.Manager):
 
@@ -615,12 +639,14 @@ def observe(observed, observer, notice_type_label, signal='post_save'):
     observed_item.save()
     return observed_item
 
+
 def stop_observing(observed, observer, signal='post_save'):
     """
     Remove an observed item.
     """
     observed_item = ObservedItem.objects.get_for(observed, observer, signal)
     observed_item.delete()
+
 
 def send_observation_notices_for(observed, signal='post_save'):
     """
@@ -630,6 +656,7 @@ def send_observation_notices_for(observed, signal='post_save'):
     for observed_item in observed_items:
         observed_item.send_notice()
     return observed_items
+
 
 def is_observing(observed, observer, signal='post_save'):
     if isinstance(observer, AnonymousUser):
@@ -641,6 +668,7 @@ def is_observing(observed, observer, signal='post_save'):
         return False
     except ObservedItem.MultipleObjectsReturned:
         return True
+
 
 def handle_observations(sender, instance, *args, **kw):
     send_observation_notices_for(instance)
