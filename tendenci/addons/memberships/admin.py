@@ -253,6 +253,14 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         return instance.get_status().capitalize()
     get_status.short_description = u'Status'
 
+    def get_invoice(self, instance):
+        return '<a href="%s">Invoice %s</a>' % (
+            instance.get_invoice().get_absolute_url(),
+            instance.get_invoice().pk
+        )
+    get_invoice.short_description = u'Invoice'
+    get_invoice.allow_tags = True
+
     def get_create_dt(self, instance):
         return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
     get_create_dt.short_description = u'Created On'
@@ -284,6 +292,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'membership_type_link',
         'get_approve_dt',
         'get_status',
+        'get_invoice',
     ]
 
     list_filter = [
