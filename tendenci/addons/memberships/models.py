@@ -97,8 +97,14 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
-    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
-        help_text="Set 0 for free membership.")
+    price = models.DecimalField(
+        _('Price'),
+        max_digits=15,
+        decimal_places=2,
+        blank=True,
+        default=0,
+        help_text="Set 0 for free membership."
+    )
     renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2,
         blank=True, default=0, null=True, help_text="Set 0 for free membership.")
     # for first time processing
@@ -385,11 +391,18 @@ class MembershipDefault(TendenciBaseModel):
         return ('admin:memberships_membershipdefault_change', [self.pk])
 
     def save(self, *args, **kwargs):
+        """
+        Set GUID if not already set.
+        """
         self.guid = self.guid or uuid.uuid1().get_hex()
         super(MembershipDefault, self).save(*args, **kwargs)
 
     @property
     def demographics(self):
+        """
+        Binds demographic-table which holds
+        user-defined information.
+        """
         if hasattr(self, 'user') and self.user:
             if hasattr(self.user, 'demographics'):
                 return self.user.demographics
@@ -815,9 +828,11 @@ class MembershipDefault(TendenciBaseModel):
             'application_denied'
         ]
 
-        field_names = [field.name
-                      for field in self.__class__._meta.fields
-                      if field.name not in ignore_fields]
+        field_names = [
+            field.name
+            for field in self.__class__._meta.fields
+            if field.name not in ignore_fields
+        ]
 
         for name in field_names:
             if hasattr(self, name):
@@ -1247,6 +1262,8 @@ class MembershipDefault(TendenciBaseModel):
         return all(good)
 
     def get_field_items(self):
+        """
+        """
         app = self.app
 
         items = {}
