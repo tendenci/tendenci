@@ -192,7 +192,7 @@
                 2,
                 3
             ],
-            "use_for_corp": true,
+            "use_for_corp": false,
             "allow_member_edit": false
         }
     },
