@@ -1108,13 +1108,19 @@ class Event(TendenciBaseModel):
         Return a tuple of (spots_taken, spots_available) for this event.
         """
         limit = self.get_limit()
-        spots_taken = Registrant.objects.filter(
-            registration__event=self, cancel_dt__isnull=True).count()
-
         payment_required = self.registration_configuration.payment_required
 
-        if limit == 0:
-            # no limit
+        params = {
+            'registration__event': self,
+            'cancel_dt__isnull': True
+        }
+
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        spots_taken = Registrant.objects.filter(**params).count()
+
+        if limit == 0:  # no limit
             return (spots_taken, -1)
 
         if spots_taken >= limit:
