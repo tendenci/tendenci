@@ -11,6 +11,7 @@ from django.contrib.contenttypes import generic
 from tendenci.core.categories.models import CategoryItem
 from tagging.fields import TagField
 from tendenci.core.base.fields import SlugField
+from tendenci.core.base.utils import now_localized
 from tendenci.core.perms.models import TendenciBaseModel
 from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.addons.jobs.managers import JobManager
@@ -143,6 +144,8 @@ class BaseJob(TendenciBaseModel):
         """
         if not request.user.profile.is_superuser:
             self.status_detail = 'paid - pending approval'
+
+        self.activation_dt = now_localized()
         self.expiration_dt = self.activation_dt + timedelta(days=self.requested_duration)
         self.save()
 
