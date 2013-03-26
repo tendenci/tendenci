@@ -32,7 +32,10 @@ class Invoice(models.Model):
     tender_date = models.DateTimeField(null=True)
     arrival_date_time = models.DateTimeField(blank=True, null=True)
     #payment status
-    status_detail = models.CharField(max_length=50, default='estimate')
+    status_detail = models.CharField(max_length=50,
+                                     choices=(('estimate', _('Estimate')),
+                                              ('tendered', _('Tendered'))),
+                                     default='estimate')
     status = models.BooleanField(default=True)
     estimate = models.BooleanField(default=1)
     payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
