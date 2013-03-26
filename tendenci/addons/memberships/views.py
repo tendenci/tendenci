@@ -52,7 +52,7 @@ from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, MembershipImport, MembershipDefault,
-    MembershipImportData, MembershipApp)
+    MembershipImportData, MembershipApp, MembershipAppField)
 from tendenci.addons.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
@@ -1367,14 +1367,29 @@ def get_app_fields_json(request):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    app_fields = render_to_string('memberships/app_fields.json',
-                               {}, context_instance=None)
+    complete_list = simplejson.loads(
+        render_to_string('memberships/app_fields.json'))
+    return HttpResponse(simplejson.dumps(complete_list))
 
-    return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
+
+@csrf_exempt
+@login_required
+def get_taken_fields(request):
+    """
+    Returns a list of json fields no longer available.
+    Data type returned is JSON.
+    """
+    app_pk = request.POST.get('app_pk') or 0
+    taken_list = MembershipAppField.objects.filter(
+        field_name__startswith='ud', display=True).exclude(
+            membership_app=app_pk).values_list(
+                'field_name', flat=True)
+
+    return HttpResponse(simplejson.dumps(list(taken_list)))
 
 
-def membership_default_preview(request, slug,
-                           template='memberships/applications/preview.html'):
+def membership_default_preview(
+        request, slug, template='memberships/applications/preview.html'):
     """
     Membership default preview.
     """

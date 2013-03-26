@@ -59,6 +59,10 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
         "get_app_fields_json",
         name="memberships.get_app_fields"),
 
+    url(r"^get_taken_fields/$",
+        "get_taken_fields",
+        name="memberships.get_taken_fields"),
+
     # corp individual add pre
     url(r"^applications/corp-pre-add/(?P<cm_id>\d+)?/?$",
         "membership_default_corp_pre_add",
