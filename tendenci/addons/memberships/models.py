@@ -280,6 +280,82 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 
                 return expiration_dt
 
+class MembershipSet(models.Model):
+    invoice = models.ForeignKey(Invoice)
+
+    def save_invoice(self, memberships):
+        invoice = Invoice()
+        invoice.estimate = True
+        invoice.status_detail = "estimate"
+
+        invoice.bill_to_user(memberships[0].user)
+        invoice.ship_to_user(memberships[0].user)
+        invoice.set_creator(memberships[0].user)
+        invoice.set_owner(memberships[0].user)
+
+        # price information ----------
+        price = 0
+        for membership in memberships:
+            price += membership.get_price()
+
+        invoice.subtotal = price
+        invoice.total = price
+        invoice.balance = price
+
+        invoice.due_date = datetime.now()
+        invoice.ship_date = datetime.now()
+
+        invoice.save()
+        self.invoice = invoice
+        self.save()
+
+        self.invoice.object_type = ContentType.objects.get(
+                        app_label=self._meta.app_label,
+                        model=self._meta.module_name)
+        self.invoice.object_id = self.pk
+        self.invoice.save()
+
+        return self.invoice
+
+    def is_paid_online(self):
+        for membership in self.membershipdefault_set.all():
+            if membership.is_paid_online():
+                return True
+        return False
+
+    def auto_update_paid_object(self, request, payment):
+        """
+        Update all membership status and dates in the set. Created archives if
+        necessary.  Send out notices.  Log approval event.
+        """
+        for membership in self.membershipdefault_set.all():
+            membership.auto_update_paid_object(request, payment)
+
+    # Called by payments_pop_by_invoice_user in Payment model.
+    def get_payment_description(self, inv):
+        """
+        The description will be sent to payment gateway and displayed on invoice.
+        If not supplied, the default description will be generated.
+        """
+        id_list = []
+        for membership in self.membershipdefault_set.order_by('-pk'):
+            id_list.append("#%d" % membership.id)
+
+        if membership.renewal:
+            description = '%s Invoice %d for Online Membership Renewal Application - Submission ' % (
+                get_setting('site', 'global', 'sitedisplayname'),
+                inv.id,
+            )
+        else:
+            description = '%s Invoice %d for Online Membership Application - Submission ' % (
+                get_setting('site', 'global', 'sitedisplayname'),
+                inv.id,
+            )
+
+        description += ', '.join(id_list)
+
+        return description
+
 
 class MembershipDefault(TendenciBaseModel):
     """
@@ -365,6 +441,7 @@ class MembershipDefault(TendenciBaseModel):
     directory = models.ForeignKey(Directory, blank=True, null=True)
     groups = models.ManyToManyField(Group, null=True)
 
+    membership_set = models.ForeignKey(MembershipSet, blank=True, null=True)
     app = models.ForeignKey("MembershipApp", null=True)
 
     objects = MembershipDefaultManager()
@@ -1000,7 +1077,11 @@ class MembershipDefault(TendenciBaseModel):
         Get invoice object.  The invoice object is not
         associated via ForeignKey, it's associated via ContentType.
         """
+        # Get invoice from membership set
+        if self.membership_set:
+            return self.membership_set.invoice 
 
+        # Check if there is an invoice bound to by content_type
         content_type = ContentType.objects.get(
             app_label=self._meta.app_label, model=self._meta.module_name)
 
@@ -1030,11 +1111,6 @@ class MembershipDefault(TendenciBaseModel):
         if not invoice:
             invoice = Invoice()
 
-        # bind invoice to membership ------
-        invoice.object_type = content_type
-        invoice.object_id = self.pk
-        # ---------------------------------
-
         if status_detail == 'estimate':
             invoice.estimate = True
             invoice.status_detail = status_detail
@@ -1044,13 +1120,16 @@ class MembershipDefault(TendenciBaseModel):
         invoice.set_creator(creator)
         invoice.set_owner(self.user)
 
-        # price information ----------
+        # price information and bind invoice to membership ----------
         # Only set for new invoices
         if not invoice.pk:
             price = self.get_price()
             invoice.subtotal = price
             invoice.total = price
             invoice.balance = price
+
+            invoice.object_type = content_type
+            invoice.object_id = self.pk
 
         invoice.due_date = invoice.due_date or datetime.now()
         invoice.ship_date = invoice.ship_date or datetime.now()
@@ -2008,6 +2087,8 @@ class MembershipApp(TendenciBaseModel):
     confirmation_text = tinymce_models.HTMLField()
     notes = models.TextField(blank=True, default='')
     use_captcha = models.BooleanField(_("Use Captcha"), default=True)
+    allow_multiple_membership = models.BooleanField(_("Allow Multiple Membership Types"),
+                            default=False)
     membership_types = models.ManyToManyField(MembershipType,
                                               verbose_name="Membership Types")
     payment_methods = models.ManyToManyField(PaymentMethod,

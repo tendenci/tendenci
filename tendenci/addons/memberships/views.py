@@ -39,6 +39,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
+from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification,
@@ -51,7 +52,7 @@ from tendenci.core.perms.utils import get_notice_recipients
 
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
-    MembershipType, Notice, MembershipImport, MembershipDefault,
+    MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
     MembershipImportData, MembershipApp, MembershipAppField)
 from tendenci.addons.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipForm, MembershipDefaultForm,
@@ -1525,6 +1526,8 @@ def membership_default_add(request, slug='',
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
+    user_form = UserForm(app_fields, request.POST or None)
+    profile_form = ProfileForm(app_fields, request.POST or None)
     user_initial = {}
     if user:
         user_initial = {
@@ -1612,64 +1615,103 @@ def membership_default_add(request, slug='',
             'license_number': membership.license_number,
             'license_state': membership.license_state,
         }
+    multiple_membership = app.allow_multiple_membership
+    if membership or join_under_corporate:
+        multiple_membership = False
 
     membership_form = MembershipDefault2Form(app_fields,
-        request.POST or None, initial=membership_initial, **params)
+        request.POST or None, initial=membership_initial,
+        multiple_membership=multiple_membership, **params)
 
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
     if request.method == 'POST':
+        membership_types = request.POST.getlist('membership_type')
+        post_values = request.POST.copy()
+        memberships = []
+        for type in membership_types:
+            post_values['membership_type'] = type
+            membership_form2 = MembershipDefault2Form(
+                app_fields, post_values, initial=membership_initial, **params)
 
-        # tuple with boolean items
-        good = (
-            user_form.is_valid(),
-            profile_form.is_valid(),
-            demographics_form.is_valid(),
-            membership_form.is_valid(),
-            captcha_form.is_valid()
-        )
-
-        # form is valid
-        if all(good):
-
-            user = user_form.save()
-
-            profile_form.instance = user.profile
-            profile_form.save(
-                request_user=request.user
+            # tuple with boolean items
+            good = (
+                user_form.is_valid(),
+                profile_form.is_valid(),
+                demographics_form.is_valid(),
+                membership_form2.is_valid(),
+                captcha_form.is_valid()
             )
 
-            # save demographics
-            demographics = demographics_form.save(commit=False)
-            if hasattr(user, 'demographics'):
-                demographics.pk = user.demographics.pk
+            # form is valid
+            if all(good):
 
-            demographics.user = user
-            demographics.save()
+                user = user_form.save()
 
-            membership = membership_form.save(
-                request=request,
-                user=user,
-            )
+                profile_form.instance = user.profile
+                profile_form.save(
+                    request_user=request.user
+                )
 
-            # log an event
-            EventLog.objects.log(instance=membership)
+                # save demographics
+                demographics = demographics_form.save(commit=False)
+                if hasattr(user, 'demographics'):
+                    demographics.pk = user.demographics.pk
+
+                demographics.user = user
+                demographics.save()
+
+                membership = membership_form2.save(
+                    request=request,
+                    user=user,
+                )
+                memberships.append(membership)
+
+        if memberships:
+            membership_set = MembershipSet()
+            invoice = membership_set.save_invoice(memberships)
+
+            for membership in memberships:
+                membership.membership_set = membership_set
+                if membership.approval_required() or (
+                        join_under_corporate and authentication_method == 'admin'):
+                    membership.pend()
+                else:
+                    membership.approve(request_user=request.user)
+                    membership.send_email(request, 'approve')
+
+                # application complete
+                membership.application_complete_dt = datetime.now()
+                membership.application_complete_user = membership.user
+
+                # save application fields
+                membership.save()
+
+                if membership.application_approved:
+                    membership.archive_old_memberships()
+                    membership.save_invoice(status_detail='tendered')
+                else:
+                    membership.save_invoice(status_detail='estimate')
+
+                membership.user.profile.refresh_member_number()
+
+                # log an event
+                EventLog.objects.log(instance=membership)
 
             # redirect: payment gateway
-            if membership.is_paid_online():
+            if membership_set.is_paid_online():
                 return HttpResponseRedirect(reverse(
                     'payment.pay_online',
-                    args=[membership.get_invoice().pk,
-                        membership.get_invoice().guid]
+                    args=[invoice.pk, invoice.guid]
                 ))
 
             # redirect: membership edit page
             if request.user.profile.is_superuser:
                 return HttpResponseRedirect(reverse(
                     'admin:memberships_membershipdefault_change',
-                    args=[membership.pk],
+                    args=[memberships[0].pk],
                 ))
 
             # send email notification to admin
@@ -1687,7 +1729,7 @@ def membership_default_add(request, slug='',
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
                 'membership.application_confirmation_default',
-                args=[membership.guid]
+                args=[memberships[0].guid]
             ))
 
     context = {

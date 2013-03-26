@@ -449,7 +449,7 @@ class MembershipAppAdmin(admin.ModelAdmin):
     search_fields = ('name', 'status', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
-                           'confirmation_text', 'notes',
+                           'confirmation_text', 'notes', 'allow_multiple_membership',
                            'membership_types', 'payment_methods',
                            'use_for_corp', 'use_captcha',)},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),

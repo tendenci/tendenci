@@ -449,6 +449,7 @@ class MembershipAppForm(TendenciBaseForm):
             'group_perms',
             'status',
             'status_detail',
+            'allow_multiple_membership',
 #            'app_field_selection',
             )
 
@@ -722,6 +723,8 @@ class MembershipDefault2Form(forms.ModelForm):
     def __init__(self, app_field_objs, *args, **kwargs):
         request_user = kwargs.pop('request_user')
         self.membership_app = kwargs.pop('membership_app')
+        multiple_membership = kwargs.pop('multiple_membership', False)
+
         if 'join_under_corporate' in kwargs.keys():
             self.join_under_corporate = kwargs.pop('join_under_corporate')
         else:
@@ -737,11 +740,18 @@ class MembershipDefault2Form(forms.ModelForm):
 
         super(MembershipDefault2Form, self).__init__(*args, **kwargs)
 
-        self.fields['membership_type'].widget = forms.widgets.RadioSelect(
-                choices=get_membership_type_choices(request_user,
-                                    self.membership_app,
-                                    corp_membership=self.corp_membership),
-                attrs=self.fields['membership_type'].widget.attrs)
+        if multiple_membership:
+            self.fields['membership_type'].widget = forms.widgets.CheckboxSelectMultiple(
+                    choices=get_membership_type_choices(request_user,
+                                        self.membership_app,
+                                        corp_membership=self.corp_membership),
+                    attrs=self.fields['membership_type'].widget.attrs)
+        else:
+            self.fields['membership_type'].widget = forms.widgets.RadioSelect(
+                    choices=get_membership_type_choices(request_user,
+                                        self.membership_app,
+                                        corp_membership=self.corp_membership),
+                    attrs=self.fields['membership_type'].widget.attrs)
 
         if self.corp_membership:
             memb_type = self.corp_membership.corporate_membership_type.membership_type
@@ -851,27 +861,6 @@ class MembershipDefault2Form(forms.ModelForm):
         # save many-to-many data for the form
         self.save_m2m()
 
-        if membership.approval_required() or \
-                self.corp_app_authentication_method == 'admin':
-            membership.pend()
-        else:
-            membership.approve(request_user=request_user)
-            membership.send_email(request, 'approve')
-
-        # application complete
-        membership.application_complete_dt = datetime.now()
-        membership.application_complete_user = membership.user
-
-        # save application fields
-        membership.save()
-
-        if membership.application_approved:
-            membership.archive_old_memberships()
-            membership.save_invoice(status_detail='tendered')
-        else:
-            membership.save_invoice(status_detail='estimate')
-
-        membership.user.profile.refresh_member_number()
         return membership
 
 
