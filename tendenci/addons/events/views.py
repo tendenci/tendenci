@@ -1709,7 +1709,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         entry_ids = reg8n.registrant_set.filter(cancel_dt__isnull=True
                                                 ).values_list('custom_reg_form_entry',
                                                               flat=True).order_by('id')
-        entries = [CustomRegFormEntry.objects.get(id=id) for id in entry_ids]
+
+        entries = CustomRegFormEntry.objects.filter(pk__in=entry_ids)
+
         params = {'prefix': 'registrant',
                   'custom_reg_form': custom_reg_form,
                   'entries': entries,
