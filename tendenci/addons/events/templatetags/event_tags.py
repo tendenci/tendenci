@@ -358,9 +358,6 @@ class ListEventsNode(ListNode):
         if event_type:
             items = items.filter(type__name__iexact=event_type)
 
-        if start_dt:
-            items = items.filter(start_dt__gte=start_dt)
-
         if tags:  # tags is a comma delimited list
             # this is fast; but has one hole
             # it finds words inside of other words
@@ -379,16 +376,21 @@ class ListEventsNode(ListNode):
 
         objects = []
 
+        if start_dt:
+            items = items.filter(start_dt__gte=start_dt)
+
         # if order is not specified it sorts by relevance
         if order:
             if order == "next_upcoming":
-                # Removed seconds and microseconds so we can cache the query better
-                now = datetime.now().replace(second=0, microsecond=0)
-                items = items.filter(start_dt__gt=now)
+                if not start_dt:
+                    # Removed seconds and microseconds so we can cache the query better
+                    now = datetime.now().replace(second=0, microsecond=0)
+                    items = items.filter(start_dt__gt=now)
                 items = items.order_by("start_dt")
             elif order == "current_and_upcoming":
-                now = datetime.now().replace(second=0, microsecond=0)
-                items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
+                if not start_dt:
+                    now = datetime.now().replace(second=0, microsecond=0)
+                    items = items.filter(Q(start_dt__gt=now) | Q(end_dt__gt=now))
                 items = items.order_by("start_dt")
             elif order == "current_and_upcoming_by_hour":
                 now = datetime.now().replace(second=0, microsecond=0)
