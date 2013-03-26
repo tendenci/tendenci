@@ -1381,7 +1381,7 @@ def get_taken_fields(request):
     """
     app_pk = request.POST.get('app_pk') or 0
     taken_list = MembershipAppField.objects.filter(
-        field_name__startswith='ud', display=True).exclude(
+        Q(field_name__startswith='ud'), (Q(display=True) | Q(admin_only=True))).exclude(
             membership_app=app_pk).values_list(
                 'field_name', flat=True)
 
