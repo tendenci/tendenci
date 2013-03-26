@@ -1660,10 +1660,30 @@ def membership_default_add(request, slug='',
 
             for membership in memberships:
                 membership.membership_set = membership_set
+                if membership.approval_required() or (
+                        join_under_corporate and authentication_method == 'admin'):
+                    membership.pend()
+                else:
+                    membership.approve(request_user=request.user)
+                    membership.send_email(request, 'approve')
+
+                # application complete
+                membership.application_complete_dt = datetime.now()
+                membership.application_complete_user = membership.user
+
+                # save application fields
                 membership.save()
 
-            # log an event
-            EventLog.objects.log(instance=membership)
+                if membership.application_approved:
+                    membership.archive_old_memberships()
+                    membership.save_invoice(status_detail='tendered')
+                else:
+                    membership.save_invoice(status_detail='estimate')
+
+                membership.user.profile.refresh_member_number()
+
+                # log an event
+                EventLog.objects.log(instance=membership)
 
             # redirect: payment gateway
             if membership_set.is_paid_online():

@@ -861,27 +861,6 @@ class MembershipDefault2Form(forms.ModelForm):
         # save many-to-many data for the form
         self.save_m2m()
 
-        if membership.approval_required() or \
-                self.corp_app_authentication_method == 'admin':
-            membership.pend()
-        else:
-            membership.approve(request_user=request_user)
-            membership.send_email(request, 'approve')
-
-        # application complete
-        membership.application_complete_dt = datetime.now()
-        membership.application_complete_user = membership.user
-
-        # save application fields
-        membership.save()
-
-        if membership.application_approved:
-            membership.archive_old_memberships()
-            membership.save_invoice(status_detail='tendered')
-        else:
-            membership.save_invoice(status_detail='estimate')
-
-        membership.user.profile.refresh_member_number()
         return membership
 
 
