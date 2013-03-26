@@ -27,10 +27,8 @@ class Command(BaseCommand):
         imd = ImportMembDefault(request_user, mimport, dry_run=False)
 
         for idata in data_list:
-            memb_data = idata.row_data
-
             try:
-                imd.process_default_membership(memb_data)
+                imd.process_default_membership(idata)
             except Exception, e:
                 print e
 
@@ -49,3 +47,7 @@ class Command(BaseCommand):
         mimport.status = 'completed'
         mimport.complete_dt = datetime.now()
         mimport.save()
+
+        # generate a recap file
+        mimport.generate_recap()
+

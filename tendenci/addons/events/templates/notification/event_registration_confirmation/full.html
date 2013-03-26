@@ -140,7 +140,7 @@
 {% endif %}
 
 {% if event.registration_configuration.registration_email_text %}
-{{ event.registration_configuration.registration_email_text|safe }}
+{{ event.registration_configuration.registration_email_text|relative_to_absolute_urls|safe }}
 {% endif %}
 
 <h3 style="margin-bottom:3px;">{% trans "Helpful Links" %}</h3>

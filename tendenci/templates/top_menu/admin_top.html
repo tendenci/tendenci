@@ -120,7 +120,9 @@
                         <li><a href="{% url reports-contacts-referral %}">{% trans "Contacts Report" %}</a></li>
                         <li><a href="{% url reports-memberships %}">{% trans "Membership Reports" %}</a></li>
                         <!--<li><a href="{# url reports-corp-mems-over-time #}">{% trans "Corporate Memberships Over Time" %}</a></li> -->
+                        {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
                         <li><a href="{% url corp_membership.summary_report %}">{% trans "Corporate Membership Summary" %}</a></li>
+                        {% endif %}
                         <li><a href="{% url reports-top-spenders %}">{% trans "Top Spenders" %}</a></li>
                         <li><a href="{% url reports-users-not-in-groups %}">{% trans "Users not in Groups" %}</a></li>
                         <li><a href="{% url reports-404-count %}">{% trans "404 Tracker" %}</a></li>

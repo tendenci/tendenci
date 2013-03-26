@@ -320,7 +320,7 @@ def bulk_add(request, template_name="files/bulk-add.html"):
         formset_edit = True
 
         # Handle existing files.  Instance returned by file_formset.save() is not enough
-        for num in range(file_formset.total_form_count()):
+        for num in xrange(file_formset.total_form_count()):
             key = 'form-' + str(num) + '-id'
             if request.POST.get(key):
                 file_list.append(request.POST.get(key))

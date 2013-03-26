@@ -37,6 +37,9 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^import_default/check_encode_status/(?P<mimport_id>\d+)/$",
         "membership_default_import_check_preprocess_status",
         name="memberships.default_import_check_preprocess_status"),
+    url(r"^import_default/download_recap/(?P<mimport_id>\d+)/$",
+        "membership_default_import_download_recap",
+        name="memberships.default_import_download_recap"),
 
     # export membership default
     url(r"^export/$",
@@ -56,10 +59,6 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
         "get_app_fields_json",
         name="memberships.get_app_fields"),
 
-    # membership default application preview
-    url(r"^applications/(?P<app_id>\d+)/preview/$",
-        "membership_default_preview",
-        name="membership_default.preview"),
     # corp individual add pre
     url(r"^applications/corp-pre-add/(?P<cm_id>\d+)?/?$",
         "membership_default_corp_pre_add",
@@ -70,10 +69,7 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^verifyemail/(?P<id>\d+)/(?P<guid>[\d\w-]+)/$",
         "verify_email",
         name="membership.verify_email"),
-    # membership default add
-    url(r"^applications/add/$",
-        "membership_default_add",
-        name="membership_default.add"),
+    
     url(r"^applications/add/(?P<cm_id>\d+)/$",
         "membership_default_add", {'join_under_corporate': True},
         name="membership_default.add_under_corp"),
@@ -83,6 +79,20 @@ urlpatterns = patterns("tendenci.addons.memberships.views",
     url(r"^applications/add/(?P<cm_id>\d+)/(?P<secret_hash>[\d\w]+)$",
         "membership_default_add", {'join_under_corporate': True},
         name="membership.add_via_corp_secret_code"),
+
+    # membership default application preview
+    url(r"^applications/(?P<slug>[\w\-]+)/preview/$",
+        "membership_default_preview",
+        name="membership_default.preview"),
+    # legacy link for default add
+    url(r"^applications/add/$",
+        "membership_default_add_legacy",
+        name="membership_default.add"),
+    # membership default add
+    url(r"^applications/(?P<slug>[\w\-]+)/$",
+        "membership_default_add",
+        name="membership_default.add"),
+
 
     # reports
     url(r'^reports/$', 'report_list', name='reports-memberships'),

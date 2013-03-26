@@ -127,6 +127,20 @@ def index(request, username='', template_name="profiles/index.html"):
     if not can_edit:
         can_edit = request.user == user_this
 
+    multiple_apps = False
+    if get_setting('module', 'memberships', 'enabled'):
+        from tendenci.addons.memberships.models import MembershipApp
+        membership_apps = MembershipApp.objects.filter(
+                               status=True,
+                               status_detail__in=['published',
+                                                  'active']
+                                ).values('id', 'name', 'slug'
+                                         ).order_by('name')
+        if len(membership_apps) > 1:
+            multiple_apps = True
+    else:
+        membership_apps = None
+
     return render_to_response(template_name, {
         'can_edit': can_edit,
         "user_this": user_this,
@@ -138,6 +152,8 @@ def index(request, username='', template_name="profiles/index.html"):
         'group_memberships': group_memberships,
         'memberships': memberships,
         'registrations': registrations,
+        'membership_apps': membership_apps,
+        'multiple_apps': multiple_apps
         }, context_instance=RequestContext(request))
 
 
@@ -776,14 +792,14 @@ def admin_users_report(request, template_name='reports/admin_users.html'):
 @staff_member_required
 def user_access_report(request):
     now = datetime.now()
-    logins_qs = EventLog.objects.filter(event_id=125200)
+    logins_qs = EventLog.objects.filter(application="accounts",action="login")
     
     total_users = User.objects.all().count()
     total_logins = logins_qs.count()
     
     day_logins = []
     for days in [30, 60, 90, 120, 182, 365]:
-        count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).count()
+        count = logins_qs.filter(create_dt__gte=now-timedelta(days=days)).values('user_id').distinct().count()
         day_logins.append((days, count))
     
     return render_to_response('reports/user_access.html', {

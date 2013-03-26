@@ -221,14 +221,16 @@ class Profile(Person):
         return [membership.group for membership in memberships]
 
     def refresh_member_number(self):
-        memberships = self.user.membershipdefault_set.filter(
+        """
+        Adds or removes member number from profile.
+        """
+        membership = self.user.membershipdefault_set.first(
             status=True, status_detail__iexact='active'
         )
 
-        if memberships:
-            self.member_number = memberships[0].member_number
-        else:
-            self.member_number = u''
+        self.member_number = u''
+        if membership:
+            self.member_number = membership.member_number
 
         self.save()
         return self.member_number

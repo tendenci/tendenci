@@ -1,10 +1,16 @@
 h1 {
 	color:#204177;
 	font-family:Arial,Helvetica,sans-serif;
-	font-size:18px;
+	font-size:20px;
 	font-weight:bold;
 }
 
+h2 {
+  color:#204177;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:16px;
+  font-weight:bold;
+}
 
 .events-summary-chart {
 	height: 300px;
@@ -18,7 +24,6 @@ h1 {
   padding: 1px;
   border: none;
 }
-
 
 .users-added-chart {
 	height: 100px;
@@ -107,7 +112,7 @@ tr.odd {
     width: 100%;
     margin-bottom: 20px;
 }
-.membership-list-report th, td {
+.membership-list-report th, .membership-list-report td {
     padding: 10px;
     border: 1px solid silver;
     text-align: left;
@@ -131,4 +136,11 @@ tr.odd {
   padding: 10px;
 }
 
+.user-access-report th {
+  border: 1px solid silver;
+  padding: 6px;
+}
 
+.user-access-report td {
+  text-align: center;
+}

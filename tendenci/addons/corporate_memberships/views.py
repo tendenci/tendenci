@@ -115,12 +115,12 @@ def get_app_fields_json(request):
 
 
 @login_required
-def app_preview(request, app_id,
+def app_preview(request, slug,
                     template='corporate_memberships/applications/preview.html'):
     """
     Corporate membership application preview.
     """
-    app = get_object_or_404(CorpMembershipApp, pk=app_id)
+    app = get_object_or_404(CorpMembershipApp, slug=slug)
     is_superuser = request.user.profile.is_superuser
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
@@ -160,7 +160,8 @@ def corpmembership_add_pre(request,
             EventLog.objects.log(instance=creator)
 
             # redirect to add
-            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add'),
+            return HttpResponseRedirect('%s%s' % (reverse('corpmembership.add',
+                                                          args=[app.slug]),
                                               '?hash=%s' % hash))
 
     context = {"form": form,
@@ -168,15 +169,11 @@ def corpmembership_add_pre(request,
     return render_to_response(template, context, RequestContext(request))
 
 
-def corpmembership_add(request,
+def corpmembership_add(request, slug='',
                        template='corporate_memberships/applications/add.html'):
     """
     Corporate membership add.
     """
-    app = CorpMembershipApp.objects.current_app()
-    if not app:
-        raise Http404
-    is_superuser = request.user.profile.is_superuser
     creator = None
     hash = request.GET.get('hash', '')
     if not request.user.is_authenticated():
@@ -186,6 +183,19 @@ def corpmembership_add(request,
             # anonymous user - redirect them to enter their
             # contact email before processing
             return HttpResponseRedirect(reverse('corpmembership.add_pre'))
+
+    if not slug:
+        app = CorpMembershipApp.objects.current_app()
+        if not app:
+            raise Http404
+    else:
+        app = get_object_or_404(CorpMembershipApp, slug=slug)
+        current_app = CorpMembershipApp.objects.current_app()
+
+        if app.id != current_app.id:
+            return HttpResponseRedirect(reverse('corpmembership_app.preview',
+                                                args=[app.slug]))
+    is_superuser = request.user.profile.is_superuser
 
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
@@ -484,7 +494,16 @@ def corpmembership_view(request, id,
             app_field.short_label = False
 
     EventLog.objects.log(instance=corp_membership)
+
+    # all records for this corp_profile - use to display the timeline
+    if is_superuser or corp_membership.is_rep(request.user):
+        all_records = CorpMembership.objects.filter(
+                                corp_profile=corp_membership.corp_profile
+                                ).order_by('-create_dt')
+    else:
+        all_records = []
     context = {"corporate_membership": corp_membership,
+               'all_records': all_records,
                'app_fields': app_fields,
                'app': app}
     return render_to_response(template, context, RequestContext(request))
@@ -505,7 +524,7 @@ def corpmembership_search(request, my_corps_only=False,
 
     query = request.GET.get('q')
     try:
-        cp_id = request.GET.get('cp_id')
+        cp_id = int(request.GET.get('cp_id'))
     except:
         cp_id = 0
 
@@ -529,7 +548,8 @@ def corpmembership_search(request, my_corps_only=False,
 
     if query:
         corp_members = corp_members.filter(
-                            corp_profile__name__icontains=query)
+                            Q(corp_profile__name__icontains=query
+                              ) | Q(corp_profile__zip=query))
 
     if cp_id:
         corp_members = corp_members.filter(corp_profile_id=cp_id)
@@ -685,7 +705,6 @@ def corpmembership_approve(request, id,
 def corp_renew(request, id,
                template='corporate_memberships/renewal.html'):
     corp_membership = get_object_or_404(CorpMembership, id=id)
-    new_corp_membership = corp_membership.copy()
 
     if not has_perm(request.user,
                     'corporate_memberships.change_corpmembership',
@@ -701,6 +720,7 @@ def corp_renew(request, id,
         return HttpResponseRedirect(reverse('corpmembership.view',
                                         args=[corp_membership.id]))
     corpmembership_app = CorpMembershipApp.objects.current_app()
+    new_corp_membership = corp_membership.copy()
     form = CorpMembershipRenewForm(
                             request.POST or None,
                             instance=new_corp_membership,
@@ -1226,6 +1246,7 @@ def download_template(request):
                                if not name in base_field_list]
     corp_memb_field_list.remove('guid')
     corp_memb_field_list.remove('corp_profile')
+    corp_memb_field_list.remove('anonymous_creator')
 
     title_list = corp_profile_field_list + corp_memb_field_list \
                      + base_field_list
@@ -1263,6 +1284,7 @@ def corpmembership_export(request,
                              if not field.__class__ == AutoField]
             corp_memb_field_list.remove('guid')
             corp_memb_field_list.remove('corp_profile')
+            corp_memb_field_list.remove('anonymous_creator')
 
             title_list = corp_profile_field_list + corp_memb_field_list
 
@@ -1343,8 +1365,9 @@ def edit_corp_reps(request, id, form_class=CorpMembershipRepForm,
 
 def corp_reps_lookup(request):
     q = request.REQUEST['term']
-    use_search_index = get_setting('site', 'global', 'searchindex')
-
+    #use_search_index = get_setting('site', 'global', 'searchindex')
+    # TODO: figure out a way of assigning search permission to dues_reps.
+    use_search_index = False
     if use_search_index:
         profiles = Profile.objects.search(
                             q,

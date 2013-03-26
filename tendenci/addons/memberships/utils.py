@@ -119,38 +119,66 @@ def get_corporate_membership_choices():
     return cm_list
 
 
-def get_membership_type_choices(user, membership_app, renew=False,
-                                corp_membership=None):
+def get_membership_type_choices(user, membership_app, corp_membership=None):
+    """
+    Get membership type choices available in this application and to this user.
+
+    If corporate memberships:
+        Only show membership types available to this corporation.
+    """
+
     mt_list = []
-    # show only the membership type assiciated with this corp_membership
-    # when joining under a corporation.
     if corp_membership:
         membership_types = [corp_membership.corporate_membership_type.membership_type]
     else:
         membership_types = membership_app.membership_types.all()
-        if not user or not user.profile.is_superuser:
+
+        # assume not superuser; get superuser status
+        is_superuser = False
+        if hasattr(user, 'profile'):
+            is_superuser = user.profile.is_superuser
+
+        # filter memberships types based on superuser status
+        if not is_superuser:
             membership_types = membership_types.filter(admin_only=False)
+
         membership_types = membership_types.order_by('position')
 
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
+    price_fmt = u'%s - %s%0.2f'
+    admin_fee_fmt = u' (+%s%s admin fee)'
+
     for mt in membership_types:
-        if not renew:
+
+        renew_mode = False
+        if isinstance(user, User):
+            m_list = MembershipDefault.objects.filter(user=user, membership_type=mt)
+            renew_mode = any([m.can_renew() for m in m_list])
+
+        mt.renewal_price = mt.renewal_price or 0
+
+        if not renew_mode:
             if mt.admin_fee:
-                price_display = '%s - %s%0.2f (+ %s%s admin fee )' % (
-                                              mt.name,
-                                              currency_symbol,
-                                              mt.price,
-                                              currency_symbol,
-                                              mt.admin_fee)
+                price_display = (price_fmt + admin_fee_fmt) % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price,
+                    currency_symbol,
+                    mt.admin_fee
+                )
             else:
-                price_display = '%s - %s%0.2f' % (mt.name,
-                                                  currency_symbol,
-                                                  mt.price)
+                price_display = price_fmt % (
+                    mt.name,
+                    currency_symbol,
+                    mt.price
+                )
         else:
-            price_display = '%s - %s%0.2f' % (mt.name,
-                                              currency_symbol,
-                                              mt.renewal_price)
+            price_display = price_fmt % (
+                mt.name,
+                currency_symbol,
+                mt.renewal_price
+            )
 
         price_display = mark_safe(price_display)
         mt_list.append((mt.id, price_display))
@@ -307,8 +335,7 @@ def process_export(export_type='all_fields',
         membership_field_list.remove('user')
 
     title_list = user_field_list + profile_field_list + \
-        membership_field_list + demographic_field_list + \
-        base_field_list
+        membership_field_list + demographic_field_list
 
     # list of foreignkey fields
     if export_type == 'main_fields':
@@ -833,11 +860,12 @@ def memb_import_parse_csv(mimport):
     return fieldnames, data_list
 
 
-def check_missing_fields(memb_data, key):
+def check_missing_fields(memb_data, key, **kwargs):
     """
     Check if we have enough data to process for this row.
     """
     missing_field_msg = ''
+    is_valid = True
     if key in ['member_number/email/fn_ln_phone',
                'email/member_number/fn_ln_phone']:
         if not any([memb_data['member_number'],
@@ -859,7 +887,10 @@ def check_missing_fields(memb_data, key):
         if not memb_data['email']:
             missing_field_msg = "Missing key 'email'"
 
-    return missing_field_msg
+    if missing_field_msg:
+        is_valid = False
+
+    return is_valid, missing_field_msg
 
 
 def get_user_by_email(email):
@@ -869,10 +900,10 @@ def get_user_by_email(email):
     if not email:
         return None
 
-    [user] = User.objects.filter(email__iexact=email).order_by(
+    users = User.objects.filter(email__iexact=email).order_by(
                     '-is_active', '-is_superuser', '-is_staff'
-                        )[:1] or [None]
-    return user
+                        )
+    return users
 
 
 def get_user_by_member_number(member_number):
@@ -882,14 +913,14 @@ def get_user_by_member_number(member_number):
     if not member_number:
         return None
 
-    [profile] = Profile.objects.filter(
+    profiles = Profile.objects.filter(
                 member_number=member_number).order_by(
                     '-user__is_active',
                     '-user__is_superuser',
                     '-user__is_staff'
-                        )[:1] or [None]
-    if profile:
-        return profile.user
+                        )
+    if profiles:
+        return [profile.user for profile in profiles]
     return None
 
 
@@ -900,16 +931,16 @@ def get_user_by_fn_ln_phone(first_name, last_name, phone):
     if not first_name or last_name or phone:
         return None
 
-    [profile] = Profile.objects.filter(
+    profiles = Profile.objects.filter(
                 user__first_name=first_name,
                 user__last_name=last_name,
                 phone=phone).order_by(
                     '-user__is_active',
                     '-user__is_superuser',
                     '-user__is_staff'
-                        )[:1] or [None]
-    if profile:
-        return profile.user
+                        )
+    if profiles:
+        return [profile.user  for profile in profiles]
     return None
 
 
@@ -935,6 +966,11 @@ class ImportMembDefault(object):
                             for field in Profile._meta.fields \
                             if field.get_internal_type() != 'AutoField' and \
                             field.name not in ['user', 'guid']])
+        self.membershipdemographic_fields = dict([(field.name, field) \
+                            for field in MembershipDemographic._meta.fields \
+                            if field.get_internal_type() != 'AutoField' and \
+                            field.name not in ['user']])
+        self.should_handle_demographic = False
         self.membership_fields = dict([(field.name, field) \
                             for field in MembershipDefault._meta.fields \
                             if field.get_internal_type() != 'AutoField' and \
@@ -949,6 +985,57 @@ class ImportMembDefault(object):
                              'GMT': 'UTC'
                              }
         self.t4_timezone_map_keys = self.t4_timezone_map.keys()
+        # all membership types
+        self.all_membership_type_ids = MembershipType.objects.values_list(
+                                        'id', flat=True)
+        self.all_membership_type_names = MembershipType.objects.values_list(
+                                        'name', flat=True)
+        # membership types associated membership apps
+        self.membership_type_ids = [mt.id for mt in MembershipType.objects.all(
+                                    )
+                                    if mt.membershipapp_set.all().exists()
+                                    ]
+        self.membership_apps = MembershipApp.objects.all()
+        self.membership_app_ids_dict = dict([(app.id, app
+                                    ) for app in self.membership_apps])
+        self.membership_app_names_dict = dict([(app.name, app
+                                    ) for app in self.membership_apps])
+        # membership_type to app map
+        # the two lists are: apps and apps for corp individuals
+        self.membership_types_to_apps_map = dict([(mt_id, ([], [])
+                                    ) for mt_id in self.membership_type_ids])
+        for app in self.membership_apps:
+            mt_ids = app.membership_types.all().values_list('id', flat=True)
+            for mt_id in self.membership_type_ids:
+                if mt_id in mt_ids:
+                    if app.use_for_corp:
+                        self.membership_types_to_apps_map[
+                                    mt_id][1].append(app.id)
+                    else:
+                        self.membership_types_to_apps_map[
+                                    mt_id][0].append(app.id)
+        [self.default_membership_type_id] = [key for key in \
+                    self.membership_types_to_apps_map.keys() \
+            if self.membership_types_to_apps_map[key][0] != []][:1] or [None]
+        [self.default_membership_type_id_for_corp_indiv] = [key for key in \
+                    self.membership_types_to_apps_map.keys() \
+            if self.membership_types_to_apps_map[key][1] != []][:1] or [None]
+
+        apps = MembershipApp.objects.filter(
+                                    status=True,
+                                    status_detail__in=['active',
+                                                        'published']
+                                    ).order_by('id')
+        [self.default_app_id] = apps.filter(
+                                    use_for_corp=False
+                                    ).values_list('id',
+                                                  flat=True
+                                    )[:1] or [None]
+        [self.default_app_id_for_corp_indiv] = apps.filter(
+                                    use_for_corp=True
+                                    ).values_list('id',
+                                                  flat=True
+                                    )[:1] or [None]
 
     def init_summary(self):
         return {
@@ -977,81 +1064,221 @@ class ImportMembDefault(object):
             d['allow_member_view'] = True
         return d
 
-    def process_default_membership(self, memb_data, **kwargs):
+    def clean_membership_type(self, memb_data, **kwargs):
+        """
+        Ensure we have a valid membership type.
+        """
+        is_valid = True
+        error_msg = ''
+
+        if 'membership_type' in memb_data and memb_data['membership_type']:
+            value = memb_data['membership_type']
+
+            if value.isdigit():
+                value = int(value)
+                if not value in self.all_membership_type_ids:
+                    is_valid = False
+                    error_msg = 'Invalid membership type "%d"' % value
+                else:
+                    memb_data['membership_type'] = value
+            else:
+                if not MembershipType.objects.filter(
+                                            name=value).exists():
+                    is_valid = False
+                    error_msg = 'Invalid membership type "%s"' % value
+                else:
+                    memb_data['membership_type'] = MembershipType.objects.filter(
+                                            name=value
+                                            ).values_list(
+                                            'id', flat=True)[0]
+        else:
+            # the spread sheet doesn't have the membership_type field,
+            # assign the default one
+            if memb_data.get('corporate_membership_id'):
+                if self.default_membership_type_id_for_corp_indiv:
+                    memb_data['membership_type'] = self.default_membership_type_id_for_corp_indiv
+                else:
+                    is_valid = False
+                    error_msg = 'Membership type for corp. individuals not available.'
+            else:
+                if self.default_membership_type_id:
+                    memb_data['membership_type'] = self.default_membership_type_id
+                else:
+                    is_valid = False
+                    error_msg = 'No membership type. Please add one to the site.'
+
+        return is_valid, error_msg
+
+    def clean_app(self, memb_data):
+        """
+        Ensure the app field has the right data.
+        """
+        is_valid = True
+        error_msg = ''
+
+        if 'app' in memb_data and memb_data['app'] and memb_data['app']:
+            value = memb_data['app']
+
+            if value.isdigit():
+                value = int(value)
+                if not value in self.membership_app_ids_dict:
+                    is_valid = False
+                    error_msg = 'Invalid app "%d"' % value
+                else:
+                    memb_data['app'] = value
+            else:
+                # check for app name
+                if not value in self.membership_app_names_dict:
+                    is_valid = False
+                    error_msg = 'Invalid app "%s"' % value
+        else:
+            # no app specified, assign the default one
+            membership_type_id = memb_data['membership_type']
+
+            app_id = None
+            if self.membership_types_to_apps_map and \
+                membership_type_id in self.membership_types_to_apps_map:
+                if memb_data.get('corporate_membership_id'):
+                    [app_id] = self.membership_types_to_apps_map[
+                                        membership_type_id][1][:1] or [None]
+                    if not app_id:
+                        app_id = self.default_app_id_for_corp_indiv
+                        if not app_id:
+                            app_id = self.default_app_id
+                else:
+                    [app_id] = self.membership_types_to_apps_map[
+                                        membership_type_id][0][:1] or [None]
+
+            if app_id:
+                memb_data['app'] = app_id
+            else:
+                if self.default_app_id:
+                    memb_data['app'] = self.default_app_id
+                else:
+                    is_valid = False
+                    error_msg = 'No membership app. Please add one to the site.'
+
+        return is_valid, error_msg
+
+    def clean_corporate_membership(self, memb_data):
+        if 'corporate_membership_id' in memb_data:
+            try:
+                memb_data['corporate_membership_id'] = int(memb_data['corporate_membership_id'])
+            except:
+                memb_data['corporate_membership_id'] = 0
+
+        if 'corp_profile_id' in memb_data:
+            try:
+                memb_data['corp_profile_id'] = int(memb_data['corp_profile_id'])
+            except:
+                memb_data['corp_profile_id'] = 0
+
+    def has_demographic_fields(self, field_names):
+        """
+        Check if import has demographic fields.
+        """
+        for field_name in self.membershipdemographic_fields.keys():
+            if field_name in field_names:
+                return True
+
+        return False
+
+    def process_default_membership(self, idata, **kwargs):
         """
         Check if it's insert or update. If dry_run is False,
         do the import to the membership_default.
 
         :param memb_data: a dictionary that includes the info of a membership
         """
-        self.memb_data = memb_data
-        self.field_names = memb_data.keys()
+        self.memb_data = idata.row_data
         user = None
         memb = None
         user_display = {
             'error': u'',
             'user': None,
+            'action': ''
         }
 
-        missing_fields_msg = check_missing_fields(self.memb_data, self.key)
+        is_valid, error_msg = check_missing_fields(self.memb_data,
+                                                  self.key)
+        if is_valid:
+            self.clean_corporate_membership(self.memb_data)
+            is_valid, error_msg = self.clean_membership_type(
+                                                self.memb_data)
+            if is_valid:
+                is_valid, error_msg = self.clean_app(self.memb_data)
 
         # don't process if we have missing value of required fields
-        if missing_fields_msg:
-            user_display['error'] = missing_fields_msg
+        if not is_valid:
+            user_display['error'] = error_msg
             user_display['action'] = 'skip'
             if not self.dry_run:
                 self.summary_d['invalid'] += 1
+                idata.action_taken = 'skipped'
+                idata.error = user_display['error']
+                idata.save()
         else:
             if self.key == 'member_number/email/fn_ln_phone':
-                user = get_user_by_member_number(
+                users = get_user_by_member_number(
                                     self.memb_data['member_number'])
-                if not user:
-                    user = get_user_by_email(self.memb_data['email'])
-                    if not user:
-                        user = get_user_by_fn_ln_phone(
+                if not users:
+                    users = get_user_by_email(self.memb_data['email'])
+                    if not users:
+                        users = get_user_by_fn_ln_phone(
                                            self.memb_data['first_name'],
                                            self.memb_data['last_name'],
                                            self.memb_data['phone']
                                            )
             elif self.key == 'email/member_number/fn_ln_phone':
-                user = get_user_by_email(self.memb_data['email'])
-                if not user:
-                    user = get_user_by_member_number(
+                users = get_user_by_email(self.memb_data['email'])
+                if not users:
+                    users = get_user_by_member_number(
                                 self.memb_data['member_number'])
-                    if not user:
-                        user = get_user_by_fn_ln_phone(
+                    if not users:
+                        users = get_user_by_fn_ln_phone(
                                            self.memb_data['first_name'],
                                            self.memb_data['last_name'],
                                            self.memb_data['phone'])
             elif self.key == 'member_number/email':
-                user = get_user_by_member_number(
+                users = get_user_by_member_number(
                                 self.memb_data['member_number'])
-                if not user:
-                    user = get_user_by_email(self.memb_data['email'])
+                if not users:
+                    users = get_user_by_email(self.memb_data['email'])
             elif self.key == 'email/member_number':
-                user = get_user_by_email(self.memb_data['email'])
-                if not user:
-                    user = get_user_by_member_number(
+                users = get_user_by_email(self.memb_data['email'])
+                if not users:
+                    users = get_user_by_member_number(
                                 self.memb_data['member_number'])
             elif self.key == 'member_number':
-                user = get_user_by_member_number(
+                users = get_user_by_member_number(
                                 self.memb_data['member_number'])
             else:  # email
-                user = get_user_by_email(self.memb_data['email'])
+                users = get_user_by_email(self.memb_data['email'])
 
-            if user:
+            if users:
                 user_display['user_action'] = 'update'
-                user_display['user'] = user
+
                 # pick the most recent one
-                [memb] = MembershipDefault.objects.filter(user=user).exclude(
-                          status_detail='archive'
-                                ).order_by('-id')[:1] or [None]
-                if memb:
-                    user_display['memb_action'] = 'update'
-                    user_display['action'] = 'update'
-                else:
+                memb = None
+                for user in users:
+                    memberships = MembershipDefault.objects.filter(
+                                    user=user,
+                                    membership_type__id=self.memb_data['membership_type']
+                                                      ).exclude(
+                                      status_detail='archive')
+                    if memberships.exists():
+
+                        [memb] = memberships.order_by('-id')[:1] or [None]
+                        user_display['user'] = user
+                        break
+
+                if not memb:
+                    user_display['user'] = users[0]
                     user_display['memb_action'] = 'insert'
                     user_display['action'] = 'mixed'
+                else:
+                    user_display['memb_action'] = 'update'
+                    user_display['action'] = 'update'
             else:
                 user_display['user_action'] = 'insert'
                 user_display['memb_action'] = 'insert'
@@ -1063,16 +1290,21 @@ class ImportMembDefault(object):
                         user_display['memb_action'] == 'insert'
                         ]):
                     self.summary_d['insert'] += 1
+                    idata.action_taken = 'insert'
                 elif all([
                         user_display['user_action'] == 'update',
                         user_display['memb_action'] == 'update'
                         ]):
                     self.summary_d['update'] += 1
+                    idata.action_taken = 'update'
                 else:
                     self.summary_d['update_insert'] += 1
+                    idata.action_taken = 'update_insert'
 
+                self.field_names = self.memb_data.keys()
                 # now do the update or insert
                 self.do_import_membership_default(user, memb, user_display)
+                idata.save()
                 return
 
         user_display.update({
@@ -1091,6 +1323,7 @@ class ImportMembDefault(object):
         """
         Database import here - insert or update
         """
+        from tendenci.addons.corporate_memberships.models import CorpMembership
         # handle user
         if not user:
             user = User()
@@ -1151,17 +1384,37 @@ class ImportMembDefault(object):
 
         profile.save()
 
+        # membership_demographic
+        if self.mimport.num_processed == 0:
+            self.should_handle_demographic = self.has_demographic_fields(
+                                        self.memb_data.keys())
+
+        if self.should_handle_demographic:
+            # process only if we have demographic fields in the import.
+            demographic = MembershipDemographic.objects.get_or_create(
+                                    user=user)[0]
+            self.assign_import_values_from_dict(demographic,
+                                                action_info['user_action'])
+            demographic.save()
+
         # membership
         if not memb:
             memb = MembershipDefault(
-                    user=user,
-                    creator=self.request_user,
-                    creator_username=self.request_user.username,
-                    owner=self.request_user,
-                    owner_username=self.request_user.username,
-                                     )
+                    user=user)
 
         self.assign_import_values_from_dict(memb, action_info['memb_action'])
+        if not memb.creator:
+            memb.creator = self.request_user
+        if not memb.creator_username:
+            memb.creator_username = self.request_user.username
+        if not memb.owner:
+            memb.owner = self.request_user
+        if not memb.owner_username:
+            memb.owner_username = self.request_user.username
+        if not memb.entity:
+            memb.entity_id = 1
+        if not memb.lang:
+            memb.lang = 'eng'
 
         if memb.status == None or memb.status == '' or \
             self.memb_data.get('status', '') == '':
@@ -1188,6 +1441,18 @@ class ImportMembDefault(object):
                 expire_dt = memb.membership_type.get_expiration_dt(
                                             join_dt=memb.join_dt)
                 setattr(memb, 'expire_dt', expire_dt)
+
+        # check corp_profile_id
+        if memb.corporate_membership_id:
+            if not memb.corp_profile_id:
+                [corp_profile_id] = CorpMembership.objects.filter(
+                                    id=memb.corporate_membership_id
+                                    ).values_list(
+                                'corp_profile_id',
+                                flat=True)[:1] or [None]
+                if corp_profile_id:
+                    memb.corp_profile_id = corp_profile_id
+
         memb.save()
 
         memb.is_active = self.is_active(memb)
@@ -1197,6 +1462,7 @@ class ImportMembDefault(object):
         if not memb.member_number:
             if memb.is_active:
                 memb.member_number = 5100 + memb.pk
+                memb.save()
         if memb.member_number:
             if not profile.member_number:
                 profile.member_number = memb.member_number
@@ -1319,6 +1585,8 @@ class ImportMembDefault(object):
 
         elif field_type == 'BooleanField':
             try:
+                if value in [True, 1, 'TRUE']:
+                    value = True
                 value = field.to_python(value)
             except exceptions.ValidationError:
                 value = False
@@ -1392,7 +1660,7 @@ def get_membership_type_by_value(value):
         value = int(value)
     if isinstance(value, int):
         return get_membership_type_by_id(value)
-    elif isinstance(value, str):
+    elif isinstance(value, basestring):
         return get_membership_type_by_name(value)
 
 

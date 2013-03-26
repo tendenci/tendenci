@@ -7,8 +7,10 @@
   <ul class="object-tools">
     {% block object-tools-items %}
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-    <li><a href="{% url "membership_default.preview" original.slug %}" class="viewsitelink">{% trans "Preview" %}</a></li>
-    {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+    <li><a href="{% url "corpmembership_app.preview" original.slug %}" class="viewsitelink">{% trans "Preview" %}</a></li>
+    {% if original.is_current %}
+    <li><a href="{% url "corpmembership.add" original.slug %}" class="viewsitelink">{% trans "View on site" %}</a></li>
+    {% endif %}
     {% endblock %}
   </ul>
 {% endif %}{% endif %}
