@@ -424,10 +424,7 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
 class MembershipAppFieldAdmin(admin.TabularInline):
     model = MembershipAppField
-    fields = ('label', 'field_name', 'display',
-              'required', 'admin_only', 'order',
-              )
-#    readonly_fields = ('field_name',)
+    fields = ('label', 'field_name', 'display', 'required', 'admin_only', 'order',)
     extra = 0
     can_delete = False
     verbose_name = 'Section Break'
@@ -455,11 +452,6 @@ class MembershipAppAdmin(admin.ModelAdmin):
             'status',
             'status_detail',
         )}),
-#        ('Add fields to your form', {'fields': ('app_field_selection',),
-#                                     'classes': ('mapped-fields', ),
-#                                     'description': 'The fields you ' + \
-#                                     'selected will be automatically ' + \
-#                                     'added to your form.'}),
     )
 
     form = MembershipAppForm
