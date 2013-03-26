@@ -15,6 +15,7 @@ from django.http import HttpResponseRedirect
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
+from tendenci.core.base.utils import tcurrency
 from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.addons.memberships.models import (Membership, MembershipDefault,
                                                 MembershipType, Notice,
@@ -254,10 +255,19 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     get_status.short_description = u'Status'
 
     def get_invoice(self, instance):
-        return '<a href="%s">Invoice %s</a>' % (
-            instance.get_invoice().get_absolute_url(),
-            instance.get_invoice().pk
-        )
+        if instance.get_invoice():
+            if instance.get_invoice().balance > 0:
+                return '<a href="%s">Invoice %s (%s)</a>' % (
+                    instance.get_invoice().get_absolute_url(),
+                    instance.get_invoice().pk,
+                    tcurrency(instance.get_invoice().balance)
+                )
+            else:
+                return '<a href="%s">Invoice %s</a>' % (
+                    instance.get_invoice().get_absolute_url(),
+                    instance.get_invoice().pk
+                )
+        return ""
     get_invoice.short_description = u'Invoice'
     get_invoice.allow_tags = True
 
