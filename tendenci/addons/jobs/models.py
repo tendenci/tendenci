@@ -80,12 +80,16 @@ class BaseJob(TendenciBaseModel):
     non_member_price = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     non_member_count = models.IntegerField(blank=True, null=True)
 
-    categories = generic.GenericRelation(CategoryItem,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
-    perms = generic.GenericRelation(ObjectPermission,
-                                          object_id_field="object_id",
-                                          content_type_field="content_type")
+    categories = generic.GenericRelation(
+        CategoryItem,
+        object_id_field="object_id",
+        content_type_field="content_type"
+    )
+    perms = generic.GenericRelation(
+        ObjectPermission,
+        object_id_field="object_id",
+        content_type_field="content_type"
+    )
 
     objects = JobManager()
 
