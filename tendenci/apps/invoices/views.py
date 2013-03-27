@@ -264,38 +264,49 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    allowed_list = (
+        request.user.profile.is_superuser,
+        has_perm(request.user, 'invoices.change_invoice')
+    )
+
+    if not any(allowed_list):
+        raise Http403
 
     from tendenci.apps.accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)
+
     # to be calculated in accounts_tags
-    total_debit = 0
-    total_credit = 0
+    total_debit, total_credit = 0, 0
 
     from django.db import connection
     cursor = connection.cursor()
     cursor.execute("""
-                SELECT DISTINCT account_number, description, sum(amount) as total 
-                FROM accountings_acct 
-                INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id 
-                INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id 
-                WHERE accountings_acctentry.object_id = %d 
-                GROUP BY account_number, description 
-                ORDER BY account_number  """ % (invoice.id)) 
+        SELECT DISTINCT account_number, description, sum(amount) as total
+        FROM accountings_acct
+        INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id
+        INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id
+        WHERE accountings_acctentry.object_id = %d
+        GROUP BY account_number, description
+        ORDER BY account_number  """ % (invoice.id))
+
     account_numbers = []
     for row in cursor.fetchall():
-        account_numbers.append({"account_number":row[0],
-                                "description":row[1],
-                                "total":abs(row[2])})
+        account_numbers.append({
+            "account_number": row[0],
+            "description": row[1],
+            "total": abs(row[2])})
 
     EventLog.objects.log(instance=invoice)
 
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'account_numbers': account_numbers,
-                                              'acct_entries':acct_entries,
-                                              'total_debit':total_debit,
-                                              'total_credit':total_credit}, 
-                                              context_instance=RequestContext(request))
+    print 'here'
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'account_numbers': account_numbers,
+        'acct_entries': acct_entries,
+        'total_debit': total_debit,
+        'total_credit': total_credit},
+        context_instance=RequestContext(request))
 
 
 @login_required
