@@ -1,13 +1,16 @@
 import operator
+import time
 import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from functools import partial
 
 from django import forms
 from django.utils.importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
@@ -15,7 +18,6 @@ from django.db.models import Q
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
-from tendenci.core.base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
 from tendenci.core.site_settings.utils import get_setting
@@ -37,7 +39,8 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.base.fields import DictField
 
-from tendenci.core.base.utils import send_email_notification
+from tendenci.apps.notifications import models as notification
+from tendenci.core.base.utils import send_email_notification, day_validate, fieldify
 from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.addons.corporate_memberships.utils import (
                                             corp_membership_update_perms,
@@ -81,6 +84,13 @@ SIZE_CHOICES = (
                 ('m', _('Medium')),
                 ('l', _('Large')),
                 )
+NOTICE_TYPES = (
+    ('approve_join', 'Approval Date'),
+    ('disapprove_join', 'Disapproval Date'),
+    ('approve_renewal', 'Renewal Approval Date'),
+    ('disapprove_renewal', 'Renewal Disapproval Date'),
+    ('expiration', 'Expiration Date'),
+)
 
 
 class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
@@ -572,6 +582,32 @@ class CorpMembership(TendenciBaseModel):
         else:
             return 406800
 
+    def get_field_items(self):
+        app = CorpMembershipApp.objects.current_app()
+        # to be updated if supports multiple apps
+        # app = self.app
+        items = {}
+        field_names = CorpMembershipAppField.objects.filter(
+                                        corp_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).values_list('field_name',
+                                                      flat=True)
+        if field_names:
+            profile = self.corp_profile
+            for field_name in field_names:
+                if hasattr(profile, field_name):
+                    items[field_name] = getattr(profile, field_name)
+                elif hasattr(self, field_name):
+                    items[field_name] = getattr(self, field_name)
+
+            for name, value in items.iteritems():
+                if hasattr(value, 'all'):
+                    items[name] = ', '.join([item.__unicode__() \
+                                             for item in value.all()])
+        return items
+
     def auto_update_paid_object(self, request, payment):
         """
         Update the object after online payment is received.
@@ -713,6 +749,7 @@ class CorpMembership(TendenciBaseModel):
         }
         send_email_notification('corp_memb_join_approved',
                                 recipients, extra_context)
+        self.send_notice_email(request, 'approve_join')
 
     def disapprove_join(self, request, **kwargs):
         self.approved = False
@@ -726,6 +763,7 @@ class CorpMembership(TendenciBaseModel):
                                     self.admin_notes
                                     )
         self.save()
+        self.send_notice_email(request, 'disapprove_join')
 
     def approve_renewal(self, request, **kwargs):
         """
@@ -826,6 +864,7 @@ class CorpMembership(TendenciBaseModel):
             }
             send_email_notification('corp_memb_renewal_approved',
                                     recipients, extra_context)
+            self.send_notice_email(request, 'approve_renewal')
 
     def disapprove_renewal(self, request, **kwargs):
         """
@@ -842,6 +881,8 @@ class CorpMembership(TendenciBaseModel):
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
+
+            self.send_notice_email(request, 'disapprove_renewal')
 
         ind_memb_renew_entries = IndivMembershipRenewEntry.objects.filter(
                                             corp_membership=self)
@@ -994,6 +1035,20 @@ class CorpMembership(TendenciBaseModel):
 
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
+
+    def send_notice_email(self, request, notice_type):
+        """
+        Convenience method for sending
+            typical corporate membership emails.
+        Returns outcome via boolean.
+        """
+        return Notice.send_notice(
+            request=request,
+            emails=self.corp_profile.email,
+            notice_type=notice_type,
+            corporate_membership=self,
+            corporate_membership_type=self.corporate_membership_type,
+        )
 
     @property
     def is_join_pending(self):
@@ -2131,3 +2186,217 @@ class CorpField(OrderingBaseModel):
                 if entry:
                     return entry[0]
         return None
+
+
+class Notice(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_name = models.CharField(_("Name"), max_length=250)
+    num_days = models.IntegerField(default=0)
+    notice_time = models.CharField(_("Notice Time"), max_length=20,
+                                   choices=(('before', 'Before'),
+                                            ('after', 'After'),
+                                            ('attimeof', 'At Time Of')))
+    notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
+    system_generated = models.BooleanField(_("System Generated"), default=0)
+    corporate_membership_type = models.ForeignKey(
+        "CorporateMembershipType",
+        blank=True,
+        null=True,
+        help_text=_("Note that if you \
+            don't select a corporate membership type, \
+            the notice will go out to all members."
+        ))
+
+    subject = models.CharField(max_length=255)
+    content_type = models.CharField(_("Content Type"),
+                                    choices=(('html', 'HTML'),
+                                            ('text', 'Plain Text')),
+                                    max_length=10)
+    sender = models.EmailField(max_length=255, blank=True, null=True)
+    sender_display = models.CharField(max_length=255, blank=True, null=True)
+    email_content = tinymce_models.HTMLField(_("Email Content"))
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(
+        User, related_name="corporate_membership_notice_creator",
+        null=True, on_delete=models.SET_NULL)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(
+        User, related_name="corporate_membership_notice_owner",
+        null=True, on_delete=models.SET_NULL)
+    owner_username = models.CharField(max_length=50, null=True)
+    status_detail = models.CharField(
+        choices=(('active', 'Active'), ('admin_hold', 'Admin Hold')),
+        default='active', max_length=50)
+    status = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.notice_name
+
+    @property
+    def footer(self):
+        return """
+        This e-mail was generated by Tendenci&reg; Software - a
+        web based membership management software solution
+        www.tendenci.com developed by Schipul - The Web Marketing Company
+        """
+
+    def get_default_context(self, corporate_membership=None):
+        """
+        Returns a dictionary with default context items.
+        """
+        global_setting = partial(get_setting, 'site', 'global')
+
+        context = {}
+
+        context.update({
+            'site_contact_name': global_setting('sitecontactname'),
+            'site_contact_email': global_setting('sitecontactemail'),
+            'site_display_name': global_setting('sitedisplayname'),
+            'time_submitted': time.strftime("%d-%b-%y %I:%M %p", datetime.now().timetuple()),
+        })
+
+        # return basic context
+        if not corporate_membership:
+            return context
+
+        if corporate_membership.expiration_dt:
+            context.update({
+                'expire_dt': time.strftime(
+                "%d-%b-%y %I:%M %p",
+                corporate_membership.expiration_dt.timetuple()),
+            })  
+
+        if corporate_membership.payment_method:
+            context.update({
+                'payment_method': corporate_membership.payment_method.human_name,
+            })
+
+        context.update({
+            'name': corporate_membership.corp_profile.name,
+            'email': corporate_membership.corp_profile.email,
+            'corporate_membership_type': corporate_membership.corporate_membership_type.name,
+        })
+
+        return context
+
+    def get_subject(self, corporate_membership=None):
+        """
+        Return self.subject replace shortcode (context) variables
+        The corporate membership object takes priority over entry object
+        """
+        return self.build_notice(self.subject, context={})
+
+    def get_content(self, corporate_membership=None):
+        """
+        Return self.email_content with self.footer appended
+        and replace shortcode (context) variables
+        """
+        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
+        context = self.get_default_context(corporate_membership)
+
+        return self.build_notice(content, context=context)
+
+    def build_notice(self, content, *args, **kwargs):
+        """
+        Replace values in a string and return the updated content
+        Values are pulled from corporate_membership, and site_settings
+        In the future, maybe we can pull from the membership application entry
+        """
+        content = fieldify(content)
+        template = Template(content)
+
+        context = kwargs.get('context') or {}
+        context = Context(context)
+
+        return template.render(context)
+
+    @classmethod
+    def send_notice(cls, **kwargs):
+        """
+        Send notice to notice_type specified
+        within corporate_membership_type specified
+        to email addresses specified
+        Returns boolean.
+
+        Allowed Notice Types: approve_join, approve_renewal,
+        disapprove_join, disapprove_renewal, expiration
+        """
+
+        notice_type = kwargs.get('notice_type') or 'joined'
+        corp_membership_type = kwargs.get('corporate_membership_type')
+        corporate_membership = kwargs.get('corporate_membership')
+        emails = kwargs.get('emails') or []
+        request = kwargs.get('request')
+
+        if not isinstance(corporate_membership, CorpMembership):
+            return False
+
+        if isinstance(emails, basestring):
+            emails = [emails]  # expecting list of emails
+
+        # allowed notice types
+        allowed_notice_types = [
+            'approve_join',
+            'approve_renewal',
+            'disapprove_join',
+            'disapprove_renewal',
+            'expiration']
+
+        if not notice_type in allowed_notice_types:
+            return False
+
+        # email list required
+        if not emails:
+            return False
+
+        field_dict = {
+            'notice_time': 'attimeof',
+            'notice_type': notice_type,
+            'status': True,
+            'status_detail': 'active',
+        }
+
+        # send to applicant
+        for notice in Notice.objects.filter(**field_dict):
+
+            notice_requirments = (
+                notice.corporate_membership_type == corp_membership_type,
+                notice.corporate_membership_type == None
+            )
+
+            if any(notice_requirments):
+                notification.send_emails(
+                    emails,
+                    'corp_memb_notice_email', {
+                    'subject': notice.get_subject(corporate_membership=corporate_membership),
+                    'content': notice.get_content(corporate_membership=corporate_membership),
+                    'corporate_membership_total': CorpMembership.objects.count(),
+                    'reply_to': notice.sender,
+                    'sender': notice.sender,
+                    'sender_display': notice.sender_display,
+                })
+        return True
+
+    def save(self, *args, **kwargs):
+        self.guid = self.guid or unicode(uuid.uuid1())
+        super(Notice, self).save(*args, **kwargs)
+
+
+class NoticeLog(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice = models.ForeignKey(Notice, related_name="logs")
+    notice_sent_dt = models.DateTimeField(auto_now_add=True)
+    num_sent = models.IntegerField()
+
+
+class NoticeLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog,
+                                   related_name="log_records")
+    corp_membership = models.ForeignKey(CorpMembership,
+                                   related_name="log_records")
+    action_taken = models.BooleanField(default=0)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)

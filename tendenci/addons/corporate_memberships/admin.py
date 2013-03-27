@@ -4,18 +4,23 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from tendenci.addons.corporate_memberships.models import (
-                                            CorporateMembershipType,
-                                            CorpMembershipApp,
-                                            CorpMembershipAppField,
-                                            CorpMembership,
-                                            CorporateMembership)
+    CorporateMembershipType,
+    CorpMembershipApp,
+    CorpMembershipAppField,
+    CorpMembership,
+    CorporateMembership,
+    Notice)
 from tendenci.addons.corporate_memberships.models import CorpApp, CorpField
 from tendenci.addons.corporate_memberships.forms import (
-                                            CorporateMembershipTypeForm,
-                                            CorpMembershipAppForm,
-                                            CorpFieldForm,
-                                            CorpAppForm)
-from tendenci.addons.corporate_memberships.utils import get_corpapp_default_fields_list, update_authenticate_fields, edit_corpapp_update_memb_app
+    CorporateMembershipTypeForm,
+    CorpMembershipAppForm,
+    CorpFieldForm,
+    CorpAppForm,
+    NoticeForm)
+from tendenci.addons.corporate_memberships.utils import (
+    get_corpapp_default_fields_list,
+    update_authenticate_fields,
+    edit_corpapp_update_memb_app)
 
 from tendenci.core.event_logs.models import EventLog
 
@@ -281,7 +286,47 @@ class CorpMembershipAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(reverse('corpmembership.view',
                                             args=[object_id]))
 
+
+class NoticeAdmin(admin.ModelAdmin):
+    list_display = ['notice_name', 'content_type',
+                     'corporate_membership_type', 'status', 'status_detail']
+    list_filter = ['notice_type', 'status_detail']
+
+    fieldsets = (
+        (None, {'fields': ('notice_name', 'notice_time_type', 'corporate_membership_type')}),
+        ('Email Fields', {'fields': ('subject', 'content_type', 'sender', 'sender_display', 'email_content')}),
+        ('Other Options', {'fields': ('status', 'status_detail')}),
+    )
+
+    form = NoticeForm
+
+    class Media:
+        js = (
+            "%sjs/jquery-1.4.2.min.js" % settings.STATIC_URL,
+            '%sjs/global/tinymce.event_handlers.js' % settings.STATIC_URL,
+        )
+
+    def save_model(self, request, object, form, change):
+        instance = form.save(commit=False)
+
+        # save the expiration method fields
+        notice_time_type = form.cleaned_data['notice_time_type']
+        notice_time_type_list = notice_time_type.split(",")
+        instance.num_days = notice_time_type_list[0]
+        instance.notice_time = notice_time_type_list[1]
+        instance.notice_type = notice_time_type_list[2]
+
+        if not change:
+            instance.creator = request.user
+            instance.creator_username = request.user.username
+            instance.owner = request.user
+            instance.owner_username = request.user.username
+
+        instance.save()
+
+        return instance
+
 admin.site.register(CorpMembership, CorpMembershipAdmin)
 admin.site.register(CorporateMembershipType, CorporateMembershipTypeAdmin)
 admin.site.register(CorpMembershipApp, CorpMembershipAppAdmin)
-
+admin.site.register(Notice, NoticeAdmin)
