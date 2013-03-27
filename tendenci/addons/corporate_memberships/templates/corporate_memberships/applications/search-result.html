@@ -39,6 +39,7 @@
                 {% if corporate_membership.status and corporate_membership.real_time_status_detail == 'active' %}
                     <div class="indiv-join-link">
                     <a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a>
+                    <span class="small">({% individual_pricing_desp corporate_membership %})</span>
                     </div>
                 {% endif %}
             </div>
