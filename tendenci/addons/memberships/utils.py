@@ -35,7 +35,7 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipAppField)
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.profiles.utils import make_username_unique
+from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 
@@ -1272,7 +1272,7 @@ class ImportMembDefault(object):
 
                 self.field_names = self.memb_data.keys()
                 # now do the update or insert
-                self.do_import_membership_default(user, memb, user_display)
+                self.do_import_membership_default(user, self.memb_data, memb, user_display)
                 idata.save()
                 return
 
@@ -1288,23 +1288,25 @@ class ImportMembDefault(object):
 
         return user_display
 
-    def do_import_membership_default(self, user, memb, action_info):
+    def do_import_membership_default(self, user, memb_data, memb, action_info):
         """
         Database import here - insert or update
         """
         from tendenci.addons.corporate_memberships.models import CorpMembership
-        # handle user
-        if not user:
-            user = User()
-            username_before_assign = ''
-        else:
-            username_before_assign = user.username
+
+        user = user or User()
+        username_before_assign = user.username
 
         # always remove user column
         if 'user' in self.field_names:
             self.field_names.remove('user')
 
         self.assign_import_values_from_dict(user, action_info['user_action'])
+
+        user.username = user.username or spawn_username(
+            fn=memb_data.get('first_name', u''),
+            ln=memb_data.get('last_name', u''),
+            em=memb_data.get('email', u''))
 
         # clean username
         user.username = re.sub('[^\w+-.@]', u'', user.username)
@@ -1332,13 +1334,13 @@ class ImportMembDefault(object):
         try:  # get or create
             profile = user.get_profile()
         except Profile.DoesNotExist:
-            profile = Profile.objects.create(user=user,
-               creator=self.request_user,
-               creator_username=self.request_user.username,
-               owner=self.request_user,
-               owner_username=self.request_user.username,
-               **self.private_settings
-            )
+            profile = Profile.objects.create(
+                user=user,
+                creator=self.request_user,
+                creator_username=self.request_user.username,
+                owner=self.request_user,
+                owner_username=self.request_user.username,
+                **self.private_settings)
 
         self.assign_import_values_from_dict(profile, action_info['user_action'])
         profile.user = user
