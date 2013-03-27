@@ -1,4 +1,5 @@
 # encoding: utf-8
+import traceback
 from south.v2 import DataMigration
 from django.core.management import call_command
 
@@ -6,7 +7,11 @@ from django.core.management import call_command
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        call_command('assign_default_app', verbosity=0)
+        try:
+            call_command('assign_default_app', verbosity=0)
+        except:
+            print traceback.format_exc()
+            print 'Please re-run the management command "assign_default_app".'
 
     def backwards(self, orm):
         pass
