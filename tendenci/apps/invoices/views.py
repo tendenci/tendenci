@@ -27,43 +27,48 @@ from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, Invoic
 
 @is_enabled('invoices')
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
-    #if not id: return HttpResponseRedirect(reverse('invoice.search'))
+    """
+    Invoice information, payment attempts (successful and unsuccessful).
+    """
     invoice = get_object_or_404(Invoice, pk=id)
+    if not invoice.allow_view_by(request.user, guid):
+        raise Http403
 
-    if not invoice.allow_view_by(request.user, guid): raise Http403
-    
-    if request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice'):
+    allowed_tuple = (
+        request.user.profile.is_superuser,
+        has_perm(request.user, 'invoices.change_invoice'))
+
+    form = None
+    if any(allowed_tuple):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
                 invoice = form.save()
-                # log an event here for invoice edit
-                EventLog.objects.log(instance=invoice)  
+                EventLog.objects.log(instance=invoice)
         else:
-            form = form_class(initial={'admin_notes':invoice.admin_notes})
-    else:
-        form = None
-    
-    notify = request.GET.get('notify', '')
-    if guid==None: guid=''
-    
-    merchant_login = False
-    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
-        merchant_login = True
-      
+            form = form_class(initial={'admin_notes': invoice.admin_notes})
+
+    notify = request.GET.get('notify', u'')
+    guid = guid or u''
+
+    merchant_login = (  # boolean value
+        hasattr(settings, 'MERCHANT_LOGIN') and
+        settings.MERCHANT_LOGIN)
+
     obj = invoice.get_object()
-    
-    obj_name = ""
+    obj_name = u''
+
     if obj:
         obj_name = obj._meta.verbose_name
-    
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'obj': obj,
-                                              'obj_name': obj_name,
-                                              'guid':guid, 
-                                              'notify': notify, 
-                                              'form':form,
-                                              'merchant_login': merchant_login}, 
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'obj': obj,
+        'obj_name': obj_name,
+        'guid': guid,
+        'notify': notify,
+        'form': form,
+        'merchant_login': merchant_login},
         context_instance=RequestContext(request))
 
 
