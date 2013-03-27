@@ -1403,11 +1403,17 @@ class MembershipDefault(TendenciBaseModel):
                         args=[self.membership_type.id]),
                         self.membership_type.name)
         if self.corporate_membership_id:
-            link = '%s (<a href="%s">view corp</a>)' % (
-                link, reverse('corpmembership.view',
-                        args=[self.corporate_membership_id]))
+            from tendenci.addons.corporate_memberships.models import CorpMembership
+            corp_member = CorpMembership.objects.filter(id=self.corporate_membership_id)[:1] or [None]
+            if corp_member:
+                link = '%s (<a href="%s">corp</a> %s)' % (
+                    link,
+                    reverse('corpmembership.view',
+                            args=[self.corporate_membership_id]),
+                    corp_member[0].status_detail)
         return link
     membership_type_link.allow_tags = True
+    membership_type_link.short_description = u'Membership Type'
 
     def auto_update_paid_object(self, request, payment):
         """
