@@ -87,7 +87,7 @@ class RunDetailView(DetailView):
 
     def get_object(self, **kwargs):
         invalidate('reports_run')
-        obj = get_object_or_404(Run, pk=self.kwargs['pk'])
+        obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
         if obj.status == "unstarted":
             subprocess.Popen(["python", "manage.py", "process_report_run", str(obj.pk)])
         return obj
@@ -100,3 +100,8 @@ class RunOutputView(DetailView):
     @method_decorator(superuser_required)
     def dispatch(self, *args, **kwargs):
         return super(RunOutputView, self).dispatch(*args, **kwargs)
+
+    def get_object(self, **kwargs):
+        invalidate('reports_run')
+        obj = get_object_or_404(Run, pk=self.kwargs['pk'], report_id=self.kwargs['report_id'])
+        return obj

@@ -26,7 +26,6 @@
             <th width="66px">{% trans "Status" %}</th>
             <th width="170px">{% trans "Date Range" %}</th>
             <th width="50px">{% trans "Result" %}</th>
-            <th>{% trans "Report Runner" %}</th>
         </tr>
     {% for run in report.runs %}
         <tr>
@@ -35,9 +34,6 @@
             <td>{{ run.status }}</td>
             <td>{{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans "to" %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}</td>
             <td>{% if run.status == "complete" %}<a href="{{ run.get_output_url }}">{{ run.output_type }}</a>{% endif %}</td>
-            <td>{% if run.creator_username %}
-                <a href="{% url profile run.creator_username %}">{{ run.creator_username }}</a>
-                {% endif %}</td>
         </tr>
     {% endfor %}
     </table>

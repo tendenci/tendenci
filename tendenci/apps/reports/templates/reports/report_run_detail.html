@@ -9,10 +9,6 @@
 <p>
     <strong>{% trans 'Range' %}:</strong> {{ run.range_start_dt|date:"SHORT_DATE_FORMAT" }} {% trans 'to' %} {{ run.range_end_dt|date:"SHORT_DATE_FORMAT" }}<br />
 
-    {% if run.creator_username %}
-    <strong>{% trans 'Report Runner'%}:</strong> <a href="{% url profile run.creator_username %}">{{ run.creator_username }}</a><br />
-    {% endif %}
-
     <strong>{% trans 'Status' %}:</strong> {{ run.status }}<br />
 {% if not run.complete_dt %}* this page auto-reloads until the report is complete{% endif %}
 </p>

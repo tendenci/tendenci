@@ -19,10 +19,10 @@
         </table>
     </div> <!-- /.span6 -->
     <div class="span6">
-        <p>The following apps are included in this report:</p>
+        <p>The following apps are included in this report. Click to jump to their section:</p>
         <ol>
             {% for item in results %}
-            <li>{{ item.object_type }}</li>
+            <li><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></li>
             {% endfor %}
         </ol>
     </div>
@@ -31,7 +31,7 @@
 {% for item in results %}
 <div class="row invoice-resultset{% if forloop.last %} last{% endif %}">
     <div class="span12">
-        <h3>{{ forloop.counter }}. {{ item.object_type }}</h3>
+        <h3 id="app-{{ forloop.counter }}">{{ forloop.counter }}. {{ item.object_type }}</h3>
 
         <table class="">
             <tr>
