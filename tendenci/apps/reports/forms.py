@@ -4,7 +4,9 @@ from django import forms
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import simplejson as json
 
+from tendenci.apps.invoices.models import Invoice
 from tendenci.core.perms.utils import update_perms_and_save
+from tendenci.apps.reports.utils import get_ct_nice_name
 from tendenci.apps.reports.models import Report, Run, REPORT_TYPE_CHOICES, CONFIG_OPTIONS
 
 
@@ -28,6 +30,12 @@ class ReportForm(forms.ModelForm):
                 (k, v['label']) for k, v in CONFIG_OPTIONS[item]['options'].items()],
                 label=CONFIG_OPTIONS[item]['label'])
 
+        self.fields['invoice_object_type'] = forms.MultipleChoiceField(
+            label="Which apps to include?",
+            choices=[(i['object_type'], get_ct_nice_name(i['object_type'])) for i in Invoice.objects.values('object_type').distinct()],
+            widget=forms.widgets.CheckboxSelectMultiple(),
+            initial=[i['object_type'] for i in Invoice.objects.values('object_type').distinct()])
+
     def save(self, *args, **kwargs):
         request = kwargs.get('request')
         if request:
@@ -38,8 +46,10 @@ class ReportForm(forms.ModelForm):
             update_perms_and_save(request, self, report)
 
         config_dict = {}
-        if "invoice_display" in self.cleaned_data:
-            config_dict.update({'invoice_display': self.cleaned_data['invoice_display']})
+        if self.cleaned_data['type'] == "invoices":
+            for k, v in self.cleaned_data.items():
+                if "invoice" in k:
+                    config_dict.update({k: v})
 
         config_json = json.dumps(config_dict, cls=DjangoJSONEncoder)
         report.config = config_json

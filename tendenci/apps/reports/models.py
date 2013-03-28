@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils import simplejson as json
 
 from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.reports.utils import get_ct_nice_name
 
 
 REPORT_TYPE_CHOICES = (
@@ -73,12 +74,20 @@ class Report(TendenciBaseModel):
                         'value': config_option['options'][opt_val]['label']
                     }
                     output.append(config_dict)
+
+                elif opt_key == "invoice_object_type":
+                    config_dict = {
+                        'label': "Which apps",
+                        'value': ", ".join([get_ct_nice_name(i) for i in opt_val])
+                    }
+                    output.append(config_dict)
+
             return output
         return u''
 
     def config_options_string(self):
         if self.config_options():
-            return ','.join([i['value'] for i in self.config_options()])
+            return '; '.join([i['value'] for i in self.config_options()])
         return u''
 
 RUN_STATUS_CHOICES = (

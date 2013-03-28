@@ -19,7 +19,7 @@
         </table>
     </div> <!-- /.span6 -->
     <div class="span6">
-        <p>The following apps are included in this report. Click to jump to their section:</p>
+        <p>The following apps had data for the selected date range and are included in this report. Click to jump to a specific section:</p>
         <ol>
             {% for item in results %}
             <li><a href="#app-{{ forloop.counter }}">{{ item.object_type }}</a></li>

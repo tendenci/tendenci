@@ -2,19 +2,12 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Sum, Q
-from django.contrib.contenttypes.models import ContentType
 from django.template import TemplateDoesNotExist, Context
 from django.template.loader import get_template
 
 from johnny.cache import invalidate
 
-
-def get_ct_nice_name(ct):
-    if ct.model == "appentry":
-        name = "Old Memberships"
-    else:
-        name = ct.app_label
-    return name.replace('_', ' ').title()
+from tendenci.apps.reports.utils import get_ct_nice_name
 
 
 class Command(BaseCommand):
@@ -46,6 +39,8 @@ class Command(BaseCommand):
                     filter_kwarg = CONFIG_OPTIONS[k]['options'][v]['filter']
                     if filter_kwarg:
                         filters = (filters & Q(**filter_kwarg))
+                elif k == "invoice_object_type":
+                    filters = (filters & Q(object_type__in=v))
 
         distinct_object_types = Invoice.objects.filter(filters).values('object_type').distinct()
 
@@ -54,7 +49,7 @@ class Command(BaseCommand):
             invoices = Invoice.objects.filter(filters).filter(
                 object_type=ot['object_type'])
             ot_dict['invoices'] = invoices.order_by('create_dt')
-            ot_dict['object_type'] = get_ct_nice_name(ContentType.objects.get(pk=ot['object_type']))
+            ot_dict['object_type'] = get_ct_nice_name(ot['object_type'])
             ot_dict['count'] = invoices.count()
             aggregates = invoices.aggregate(Sum('total'), Sum('payments_credits'), Sum('balance'))
             ot_dict.update(aggregates)
