@@ -49,8 +49,6 @@ class RegistrationCustomForm(RegistrationForm):
 
     def __init__(self, *args, **kwargs):
         self.allow_same_email = kwargs.pop('allow_same_email', False)
-        print 'In Form'
-        print self.allow_same_email
         super(RegistrationCustomForm, self).__init__(*args, **kwargs)
 
     def clean_password1(self):
