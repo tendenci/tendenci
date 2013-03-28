@@ -13,8 +13,6 @@
     	<td>{% trans "Balance" %}</td>
     </tr>
 
-    <div>obj {{ obj.payment_method }}</div>
-
     {% if obj %}
       <tr>
      	<td><a href="{% url admin:memberships_membershipdefault_change obj.pk %}">
