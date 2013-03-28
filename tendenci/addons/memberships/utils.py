@@ -1485,18 +1485,18 @@ class ImportMembDefault(object):
                         getattr(instance, field_name) == None
                         ]):
                     value = self.memb_data[field_name]
-                    value = self.clean_data(value,
-                                            assign_to_fields[field_name])
+                    value = self.clean_data(value, assign_to_fields[field_name])
+
                     setattr(instance, field_name, value)
 
         # if insert, set defaults for the fields not in csv.
         for field_name in assign_to_fields_names:
             if field_name not in self.field_names and action == 'insert':
                 if field_name not in self.private_settings.keys():
-                    value = self.get_default_value(
-                                    assign_to_fields[field_name])
+                    value = self.get_default_value(assign_to_fields[field_name])
+
                     if value != None:
-                        setattr(instance, field_name, value)
+                        setattr(instance, field_name, getattr(instance, field_name) or value)
 
     def get_default_value(self, field):
         # if allows null or has default, return None
