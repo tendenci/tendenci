@@ -9,7 +9,7 @@ def get_ct_nice_name(ct_id):
         elif ct.model == "membership":
             name = "T4 Memberships"
         elif ct.model == "event":
-            name == "T4 Events"
+            name = "T4 Events"
         else:
             name = ct.app_label
     else:
