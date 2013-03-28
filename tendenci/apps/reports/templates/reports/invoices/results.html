@@ -58,6 +58,7 @@
                 <th>Last Name</th>
                 <th>Phone</th>
                 <th>Email</th>
+                <th>Title</th>
                 <th>Total</th>
                 <th>Payments</th>
                 <th>Balance</th>
@@ -70,6 +71,14 @@
                 <td>{{ invoice.bill_to_last_name }}</td>
                 <td>{{ invoice.bill_to_phone }}</td>
                 <td>{{ invoice.bill_to_email }}</td>
+                <td>
+                    {% if invoice.get_object.event.pk %}
+                    <a href="{% url event invoice.get_object.event.pk %}">{{ invoice.get_object.event.pk }}</a> - {{ invoice.get_object.event.title|truncatewords:"3" }}
+
+                    {% elif invoice.get_object.membership_type.pk %}
+                    {{ invoice.get_object.membership_type.name }}
+
+                    {% elif invoice.title %}{{ invoice.title }}{% endif %}</td>
                 <td class="inv-total">{{ invoice.total|format_currency }}</td>
                 <td class="inv-payments-credits">{{ invoice.payments_credits|format_currency }}</td>
                 <td class="inv-balance">{{ invoice.balance|format_currency }}</td>
