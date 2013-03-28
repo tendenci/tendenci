@@ -15,11 +15,12 @@ from django.conf import settings
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm, update_perms_and_save
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.notifications.utils import send_notifications
 
+from tendenci.core.payments.forms import OfflinePaymentForm
 from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
@@ -70,6 +71,50 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         'form': form,
         'merchant_login': merchant_login},
         context_instance=RequestContext(request))
+
+
+def make_offline_payment(request, id, template_name='invoices/make-offline-payment.html'):
+    """
+    Makes a payment-record with a specified date/time
+    payment method and payment amount.
+    """
+    invoice = get_object_or_404(Invoice, pk=id)
+
+    if not has_perm(request.user, 'payments.change_payment'):
+        raise Http403
+
+    if request.method == 'POST':
+        form = OfflinePaymentForm(request.POST)
+
+        if form.is_valid():
+
+            # make payment record
+            payment = form.save(
+                user=request.user,
+                invoice=invoice,
+                commit=False)
+
+            payment = update_perms_and_save(request, form, payment)
+
+            # update invoice; make accounting entries
+            invoice.make_payment(payment.creator, payment.amount)
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Payment successfully made')
+
+            return redirect(invoice)
+
+    else:
+        form = OfflinePaymentForm(initial={
+            'amount': invoice.balance, 'submit_dt': datetime.now()})
+
+    return render_to_response(
+        template_name, {
+            'invoice': invoice,
+            'form': form,
+        }, context_instance=RequestContext(request))
 
 
 def mark_as_paid(request, id):

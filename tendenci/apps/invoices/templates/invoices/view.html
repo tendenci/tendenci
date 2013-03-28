@@ -1,4 +1,4 @@
-{% extends "invoices/base.html" %}
+{% extends "invoices/base-wide.html" %}
 {% load invoice_tags %}
 {% load perm_tags %}
 {% load base_filters %}
@@ -33,6 +33,12 @@
   </ul>
 </div>
 {% endif %}
+
+<div class="invoice-options">
+    <ul>
+        <li><a class="admin-options" href="{% url invoice.make_offline_payment invoice.pk %}">{% trans "Make Offline Payment" %}</a></li>
+    </ul>
+</div>
 
 {% if request.user.is_superuser %}
 <div class="invoice-options">

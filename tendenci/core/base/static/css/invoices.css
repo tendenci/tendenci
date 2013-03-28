@@ -341,3 +341,20 @@ div.payment-details {
 #total-by-account{
 	margin-top: 1em;
 }
+
+#offline-payment-form-wrap .field-label {
+    width: 150px;
+    text-align: right;
+    padding-right: 10px;
+    vertical-align: middle;
+}
+
+#offline-payment-form-wrap .field-widget .datepicker,
+#offline-payment-form-wrap .field-widget .timepicker {
+    width: 80px;
+}
+
+#offline-payment-form-wrap .field-submit {
+    margin-top: 10px;
+}
+
