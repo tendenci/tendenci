@@ -40,7 +40,11 @@ class Command(BaseCommand):
                     if filter_kwarg:
                         filters = (filters & Q(**filter_kwarg))
                 elif k == "invoice_object_type":
-                    filters = (filters & Q(object_type__in=v))
+                    if "None" in v:
+                        v.pop(v.index("None"))
+                        filters = (filters & (Q(object_type__in=v) | Q(object_type__isnull=True)))
+                    else:
+                        filters = (filters & Q(object_type__in=v))
 
         distinct_object_types = Invoice.objects.filter(filters).values('object_type').distinct()
 
