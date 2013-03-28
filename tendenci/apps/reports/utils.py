@@ -8,6 +8,12 @@ def get_ct_nice_name(ct_id):
             name = "Memberships - Old"
         elif ct.model == "membership":
             name = "Memberships - T4"
+        elif ct.model == "membershipdefault":
+            name = "Memberships - Ind"
+        elif ct.model == "corporatemembership":
+            name = "Corp Memberships - Old"
+        elif ct.model == "corpmembrenewentry":
+            name = "Corp Memberships - Old Renew"
         elif ct.model == "event":
             name = "Events - T4"
         else:
