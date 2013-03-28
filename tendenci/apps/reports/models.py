@@ -78,7 +78,7 @@ class Report(TendenciBaseModel):
                 elif opt_key == "invoice_object_type":
                     config_dict = {
                         'label': "Which apps",
-                        'value': ", ".join([get_ct_nice_name(i) for i in opt_val])
+                        'value': ", ".join(sorted([get_ct_nice_name(i) for i in opt_val]))
                     }
                     output.append(config_dict)
 

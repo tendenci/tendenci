@@ -32,7 +32,7 @@ class ReportForm(forms.ModelForm):
 
         self.fields['invoice_object_type'] = forms.MultipleChoiceField(
             label="Which apps to include?",
-            choices=[(i['object_type'], get_ct_nice_name(i['object_type'])) for i in Invoice.objects.values('object_type').distinct()],
+            choices=sorted([(i['object_type'], get_ct_nice_name(i['object_type'])) for i in Invoice.objects.values('object_type').distinct()], key=lambda t: t[1]),
             widget=forms.widgets.CheckboxSelectMultiple(),
             initial=[i['object_type'] for i in Invoice.objects.values('object_type').distinct()])
 

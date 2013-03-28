@@ -5,11 +5,11 @@ def get_ct_nice_name(ct_id):
     if ct_id and ct_id != "None":
         ct = ContentType.objects.get(pk=ct_id)
         if ct.model == "appentry":
-            name = "Old Memberships"
+            name = "Memberships - Old"
         elif ct.model == "membership":
-            name = "T4 Memberships"
+            name = "Memberships - T4"
         elif ct.model == "event":
-            name = "T4 Events"
+            name = "Events - T4"
         else:
             name = ct.app_label
     else:

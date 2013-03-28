@@ -63,6 +63,8 @@ class Command(BaseCommand):
             totals['payments_credits'] = totals['payments_credits'] + aggregates['payments_credits__sum']
             totals['balance'] = totals['balance'] + aggregates['balance__sum']
 
+        results = sorted(results, key=lambda k: k['object_type'])
+
         try:
             t = get_template("reports/invoices/results.html")
         except TemplateDoesNotExist:
