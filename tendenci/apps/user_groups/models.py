@@ -100,8 +100,6 @@ class Group(TendenciBaseModel):
         add a user to the group; check for duplicates
         return (user, created)
         """
-        from django.db import IntegrityError
-        from django.db import transaction, connection
 
         try:
             GroupMembership.objects.create(**{
@@ -115,11 +113,7 @@ class Group(TendenciBaseModel):
                 'status_detail': kwargs.get('status_detail') or 'active',
             })
             return user, True  # created
-        except IntegrityError:
-            connection._rollback()
-            return user, False
         except Exception:
-            transaction.rollback()
             return user, False
 
 
