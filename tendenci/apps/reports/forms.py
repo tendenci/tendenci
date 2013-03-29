@@ -23,7 +23,7 @@ class ReportForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ReportForm, self).__init__(*args, **kwargs)
 
-        fields_to_append = ['invoice_display']
+        fields_to_append = ['invoice_display', 'invoice_status']
 
         for item in fields_to_append:
             self.fields[item] = forms.ChoiceField(choices=[

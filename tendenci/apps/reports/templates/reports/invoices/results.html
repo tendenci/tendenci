@@ -1,4 +1,5 @@
 {% load base_filters %}
+{% load i18n %}
 
 <div class="row invoice-resultset">
     <div class="span6">
@@ -54,6 +55,7 @@
             <tr>
                 <th>ID</th>
                 <th>Date</th>
+                <th>Status</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Phone</th>
@@ -67,6 +69,7 @@
             <tr class="{% cycle "even" "odd" %} {% if invoice.payments_credits > invoice.total %} pay-extra{% endif %} {% if invoice.payments_credits == invoice.total and invoice.balance == invoice.total and invoice.total > 0 %} all-match{% endif %}">
                 <td><a href="{{ invoice.get_absolute_url }}">{{ invoice.id }}</a></td>
                 <td>{{ invoice.create_dt|date:"SHORT_DATE_FORMAT" }}</td>
+                <td>{% if invoice.is_tendered %}{% trans 'tendered' %}{% else %}{% trans 'estimate' %}{% endif %}</td>
                 <td>{{ invoice.bill_to_first_name }}</td>
                 <td>{{ invoice.bill_to_last_name }}</td>
                 <td>{{ invoice.bill_to_phone }}</td>
@@ -87,6 +90,7 @@
             <tr>
                 <th>ID</th>
                 <th>Date</th>
+                <th>Status</th>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Phone</th>
@@ -97,7 +101,7 @@
                 <th>Balance</th>
             </tr>
             <tr class="summary-labels">
-                <th colspan="7">Summary of {{ item.count }} invoices for {{ item.object_type }}</th>
+                <th colspan="8">Summary of {{ item.count }} invoices for {{ item.object_type }}</th>
                 <th>{{ item.total__sum|format_currency }}</th>
                 <th>{{ item.payments_credits__sum|format_currency }}</th>
                 <th>{{ item.balance__sum|format_currency }}</th>

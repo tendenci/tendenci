@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.utils import simplejson as json
 
 from tendenci.core.perms.models import TendenciBaseModel
+from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.reports.utils import get_ct_nice_name
 
 
@@ -19,7 +20,7 @@ CONFIG_OPTIONS = {
         "label": "Which invoices",
         "options": OrderedDict(sorted({
             'all': {
-                "label": 'All',
+                "label": 'All Invoices',
                 "filter": {}
             },
             'no-balance': {
@@ -29,6 +30,23 @@ CONFIG_OPTIONS = {
             'has-balance': {
                 "label": 'Has an Open Balance',
                 "filter": {"balance__gt": 0}
+            }
+        }.items()))
+    },
+    'invoice_status': {
+        "label": "What Status",
+        "options": OrderedDict(sorted({
+            'all': {
+                "label": 'All Statuses',
+                "filter": {}
+            },
+            'no-balance': {
+                "label": 'Only Estimates',
+                "filter": {"status_detail__iexact": "estimate"}
+            },
+            'has-balance': {
+                "label": 'Only Tendered',
+                "filter": {"status_detail__iexact": "tendered"}
             }
         }.items()))
     }
@@ -76,9 +94,14 @@ class Report(TendenciBaseModel):
                     output.append(config_dict)
 
                 elif opt_key == "invoice_object_type":
+                    value = ", ".join(sorted([get_ct_nice_name(i) for i in opt_val]))
+                    print "1: ", sorted(opt_val)
+                    print "2: ", [unicode(i['object_type']) for i in Invoice.objects.values('object_type').distinct()]
+                    if sorted(opt_val) == sorted([unicode(i['object_type']) for i in Invoice.objects.values('object_type').distinct()]):
+                        value = "All Apps"
                     config_dict = {
-                        'label': "Which apps",
-                        'value': ", ".join(sorted([get_ct_nice_name(i) for i in opt_val]))
+                        'label': "Which Apps",
+                        'value': value
                     }
                     output.append(config_dict)
 
