@@ -611,18 +611,23 @@ class ExportForm(forms.Form):
 
 
 class ProfileMergeForm(forms.Form):
-    master_record = forms.ModelChoiceField(queryset=Profile.objects.none(),
-                        empty_label=None,
-                        label=_("Choose the master record"),
-                        widget=forms.RadioSelect())
-
     user_list = forms.ModelMultipleChoiceField(queryset=Profile.objects.none(),
                     label=_("Choose the users to merge"),
                     widget=forms.CheckboxSelectMultiple())
+
+    master_record = forms.ModelChoiceField(queryset=Profile.objects.none(),
+                        empty_label=None,
+                        label=_("Choose the master record of the users you are merging above"),
+                        widget=forms.RadioSelect())
 
     def __init__(self, *args, **kwargs):
         choices = kwargs.pop('list', None)
         super(ProfileMergeForm, self).__init__(*args, **kwargs)
 
-        self.fields["master_record"].queryset = Profile.objects.filter(user__in=choices)
-        self.fields["user_list"].queryset = Profile.objects.filter(user__in=choices)
+        queryset = Profile.objects.filter(user__in=choices).order_by('-user__last_login')
+
+        self.fields["master_record"].queryset = queryset
+        self.fields["user_list"].queryset = queryset
+
+        if queryset.count() == 2:
+            self.fields['user_list'].initial = queryset

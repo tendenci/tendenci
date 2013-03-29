@@ -39,6 +39,7 @@
         {% endif %}
         <b>{% trans "Create Date:" %}</b> {{ profile.create_dt }}<br />
         <b>{% trans "Last Login:" %}</b> {{ profile.user.last_login }}<br />
+        <b>{% trans "Invoice Count:" %}</b> {{ profile.user|invoice_count }}<br />
         <b>{% trans "Number of Contributions:" %}</b> {{ profile.user.contributions_contribution_owner.count }}<br />
         <b>{% trans "Number of Group Memberships:" %}</b> {{ profile.get_groups|length }}<br />
     </div>
