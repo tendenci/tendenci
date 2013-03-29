@@ -253,6 +253,7 @@ INSTALLED_APPS = (
     'tendenci.addons.events.ics',
     'tendenci.core.imports',
     'tendenci.core.handler404',
+    'tendenci.apps.reports',
     # celery task system, must stay at the bottom of installed apps
     'djkombu',
     'djcelery',

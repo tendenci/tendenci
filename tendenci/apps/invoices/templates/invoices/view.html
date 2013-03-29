@@ -1,4 +1,4 @@
-{% extends "invoices/base.html" %}
+{% extends "invoices/base-wide.html" %}
 {% load invoice_tags %}
 {% load perm_tags %}
 {% load base_filters %}
@@ -34,6 +34,12 @@
 </div>
 {% endif %}
 
+<div class="invoice-options">
+    <ul>
+        <li><a class="admin-options" href="{% url invoice.make_offline_payment invoice.pk %}">{% trans "Make Offline Payment" %}</a></li>
+    </ul>
+</div>
+
 {% if request.user.is_superuser %}
 <div class="invoice-options">
     <ul>
@@ -52,7 +58,7 @@
 
 <div class="invoice-options">
     <ul>
-      <li><a href="{% url invoice.print_view invoice.id guid%}">Print Invoice</a></li>
+      <li><a href="{% url invoice.print_view invoice.id guid %}">Print Invoice</a></li>
     </ul>
 </div>
 

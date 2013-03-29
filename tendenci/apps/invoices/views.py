@@ -15,11 +15,12 @@ from django.conf import settings
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
 from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm, update_perms_and_save
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.notifications.utils import send_notifications
 
+from tendenci.core.payments.forms import OfflinePaymentForm
 from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
@@ -27,44 +28,93 @@ from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, Invoic
 
 @is_enabled('invoices')
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
-    #if not id: return HttpResponseRedirect(reverse('invoice.search'))
+    """
+    Invoice information, payment attempts (successful and unsuccessful).
+    """
     invoice = get_object_or_404(Invoice, pk=id)
+    if not invoice.allow_view_by(request.user, guid):
+        raise Http403
 
-    if not invoice.allow_view_by(request.user, guid): raise Http403
-    
-    if request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice'):
+    allowed_tuple = (
+        request.user.profile.is_superuser,
+        has_perm(request.user, 'invoices.change_invoice'))
+
+    form = None
+    if any(allowed_tuple):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
                 invoice = form.save()
-                # log an event here for invoice edit
-                EventLog.objects.log(instance=invoice)  
+                EventLog.objects.log(instance=invoice)
         else:
-            form = form_class(initial={'admin_notes':invoice.admin_notes})
-    else:
-        form = None
-    
-    notify = request.GET.get('notify', '')
-    if guid==None: guid=''
-    
-    merchant_login = False
-    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
-        merchant_login = True
-      
+            form = form_class(initial={'admin_notes': invoice.admin_notes})
+
+    notify = request.GET.get('notify', u'')
+    guid = guid or u''
+
+    merchant_login = (  # boolean value
+        hasattr(settings, 'MERCHANT_LOGIN') and
+        settings.MERCHANT_LOGIN)
+
     obj = invoice.get_object()
-    
-    obj_name = ""
+    obj_name = u''
+
     if obj:
         obj_name = obj._meta.verbose_name
-    
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'obj': obj,
-                                              'obj_name': obj_name,
-                                              'guid':guid, 
-                                              'notify': notify, 
-                                              'form':form,
-                                              'merchant_login': merchant_login}, 
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'obj': obj,
+        'obj_name': obj_name,
+        'guid': guid,
+        'notify': notify,
+        'form': form,
+        'merchant_login': merchant_login},
         context_instance=RequestContext(request))
+
+
+def make_offline_payment(request, id, template_name='invoices/make-offline-payment.html'):
+    """
+    Makes a payment-record with a specified date/time
+    payment method and payment amount.
+    """
+    invoice = get_object_or_404(Invoice, pk=id)
+
+    if not has_perm(request.user, 'payments.change_payment'):
+        raise Http403
+
+    if request.method == 'POST':
+        form = OfflinePaymentForm(request.POST)
+
+        if form.is_valid():
+
+            # make payment record
+            payment = form.save(
+                user=request.user,
+                invoice=invoice,
+                commit=False)
+
+            payment = update_perms_and_save(request, form, payment)
+
+            # update invoice; make accounting entries
+            invoice.make_payment(payment.creator, payment.amount)
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Payment successfully made')
+
+            return redirect(invoice)
+
+    else:
+        form = OfflinePaymentForm(initial={
+            'amount': invoice.balance, 'submit_dt': datetime.now()})
+
+    return render_to_response(
+        template_name, {
+            'invoice': invoice,
+            'form': form,
+        }, context_instance=RequestContext(request))
 
 
 def mark_as_paid(request, id):
@@ -264,38 +314,49 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    allowed_list = (
+        request.user.profile.is_superuser,
+        has_perm(request.user, 'invoices.change_invoice')
+    )
+
+    if not any(allowed_list):
+        raise Http403
 
     from tendenci.apps.accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)
+
     # to be calculated in accounts_tags
-    total_debit = 0
-    total_credit = 0
+    total_debit, total_credit = 0, 0
 
     from django.db import connection
     cursor = connection.cursor()
     cursor.execute("""
-                SELECT DISTINCT account_number, description, sum(amount) as total 
-                FROM accountings_acct 
-                INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id 
-                INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id 
-                WHERE accountings_acctentry.object_id = %d 
-                GROUP BY account_number, description 
-                ORDER BY account_number  """ % (invoice.id)) 
+        SELECT DISTINCT account_number, description, sum(amount) as total
+        FROM accountings_acct
+        INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id
+        INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id
+        WHERE accountings_acctentry.object_id = %d
+        GROUP BY account_number, description
+        ORDER BY account_number  """ % (invoice.id))
+
     account_numbers = []
     for row in cursor.fetchall():
-        account_numbers.append({"account_number":row[0],
-                                "description":row[1],
-                                "total":abs(row[2])})
+        account_numbers.append({
+            "account_number": row[0],
+            "description": row[1],
+            "total": abs(row[2])})
 
     EventLog.objects.log(instance=invoice)
 
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'account_numbers': account_numbers,
-                                              'acct_entries':acct_entries,
-                                              'total_debit':total_debit,
-                                              'total_credit':total_credit}, 
-                                              context_instance=RequestContext(request))
+    print 'here'
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'account_numbers': account_numbers,
+        'acct_entries': acct_entries,
+        'total_debit': total_debit,
+        'total_credit': total_credit},
+        context_instance=RequestContext(request))
 
 
 @login_required

@@ -35,7 +35,7 @@ from tendenci.addons.memberships.models import (App,
                                                 MembershipAppField)
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.profiles.utils import make_username_unique
+from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 
@@ -705,37 +705,6 @@ def get_notice_token_help_text(notice=None):
     return help_text
 
 
-def spawn_username(*args):
-    """
-    Join arguments to create username [string].
-    Find similiar usernames; auto-increment newest username.
-    Return new username [string].
-    """
-    if not args:
-        raise Exception('spawn_username() requires atleast 1 argument; 0 were given')
-
-    max_length = 8
-
-    un = ' '.join(args)             # concat args into one string
-    un = re.sub('\s+', '_', un)       # replace spaces w/ underscores
-    un = re.sub('[^\w.-]+', '', un)   # remove non-word-characters
-    un = un.strip('_.- ')           # strip funny-characters from sides
-    un = un[:max_length].lower()    # keep max length and lowercase username
-
-    others = []  # find similiar usernames
-    for u in User.objects.filter(username__startswith=un):
-        if u.username.replace(un, '0').isdigit():
-            others.append(int(u.username.replace(un, '0')))
-
-    if others and 0 in others:
-        # the appended digit will compromise the username length
-        # there would have to be more than 99,999 duplicate usernames
-        # to kill the database username max field length
-        un = '%s%s' % (un, str(max(others) + 1))
-
-    return un.lower()
-
-
 def get_user(**kwargs):
     """
     Returns first user that matches filters.
@@ -1303,7 +1272,7 @@ class ImportMembDefault(object):
 
                 self.field_names = self.memb_data.keys()
                 # now do the update or insert
-                self.do_import_membership_default(user, memb, user_display)
+                self.do_import_membership_default(user, self.memb_data, memb, user_display)
                 idata.save()
                 return
 
@@ -1319,23 +1288,25 @@ class ImportMembDefault(object):
 
         return user_display
 
-    def do_import_membership_default(self, user, memb, action_info):
+    def do_import_membership_default(self, user, memb_data, memb, action_info):
         """
         Database import here - insert or update
         """
         from tendenci.addons.corporate_memberships.models import CorpMembership
-        # handle user
-        if not user:
-            user = User()
-            username_before_assign = ''
-        else:
-            username_before_assign = user.username
+
+        user = user or User()
+        username_before_assign = user.username
 
         # always remove user column
         if 'user' in self.field_names:
             self.field_names.remove('user')
 
         self.assign_import_values_from_dict(user, action_info['user_action'])
+
+        user.username = user.username or spawn_username(
+            fn=memb_data.get('first_name', u''),
+            ln=memb_data.get('last_name', u''),
+            em=memb_data.get('email', u''))
 
         # clean username
         user.username = re.sub('[^\w+-.@]', u'', user.username)
@@ -1363,13 +1334,13 @@ class ImportMembDefault(object):
         try:  # get or create
             profile = user.get_profile()
         except Profile.DoesNotExist:
-            profile = Profile.objects.create(user=user,
-               creator=self.request_user,
-               creator_username=self.request_user.username,
-               owner=self.request_user,
-               owner_username=self.request_user.username,
-               **self.private_settings
-            )
+            profile = Profile.objects.create(
+                user=user,
+                creator=self.request_user,
+                creator_username=self.request_user.username,
+                owner=self.request_user,
+                owner_username=self.request_user.username,
+                **self.private_settings)
 
         self.assign_import_values_from_dict(profile, action_info['user_action'])
         profile.user = user
@@ -1514,18 +1485,18 @@ class ImportMembDefault(object):
                         getattr(instance, field_name) == None
                         ]):
                     value = self.memb_data[field_name]
-                    value = self.clean_data(value,
-                                            assign_to_fields[field_name])
+                    value = self.clean_data(value, assign_to_fields[field_name])
+
                     setattr(instance, field_name, value)
 
         # if insert, set defaults for the fields not in csv.
         for field_name in assign_to_fields_names:
             if field_name not in self.field_names and action == 'insert':
                 if field_name not in self.private_settings.keys():
-                    value = self.get_default_value(
-                                    assign_to_fields[field_name])
+                    value = self.get_default_value(assign_to_fields[field_name])
+
                     if value != None:
-                        setattr(instance, field_name, value)
+                        setattr(instance, field_name, getattr(instance, field_name) or value)
 
     def get_default_value(self, field):
         # if allows null or has default, return None
