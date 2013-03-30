@@ -879,7 +879,6 @@ def corp_renew_conf(request, id,
                }
     return render_to_response(template, context, RequestContext(request))
 
-
 @login_required
 def roster_search(request,
                   template_name='corporate_memberships/roster_search.html'):

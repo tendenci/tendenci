@@ -28,6 +28,7 @@ class Command(BaseCommand):
             CorpMembership,
             NoticeLog,
             NoticeLogRecord)
+        from tendenci.addons.corporate_memberships.utils import dues_rep_emails_list
         from tendenci.core.base.utils import fieldify
         from tendenci.core.emails.models import Email
         from tendenci.core.site_settings.utils import get_setting
@@ -154,17 +155,16 @@ class Command(BaseCommand):
 
                 for membership in memberships:
                     try:
-                        if membership.corp_profile.email:
-                            email_member(notice, membership, global_context)
-                            if memberships_count <= 50:
-                                notice.members_sent.append(membership)
-                            num_sent += 1
+                        email_member(notice, membership, global_context)
+                        if memberships_count <= 50:
+                            notice.members_sent.append(membership)
+                        num_sent += 1
 
-                            # log record
-                            notice_log_record = NoticeLogRecord(
-                                                    notice_log=notice_log,
-                                                    corp_membership=membership)
-                            notice_log_record.save()
+                        # log record
+                        notice_log_record = NoticeLogRecord(
+                            notice_log=notice_log,
+                            corp_membership=membership)
+                        notice_log_record.save()
                     except:
                         # catch the exception and email
                         notice.err += traceback.format_exc()
@@ -192,10 +192,11 @@ class Command(BaseCommand):
             else:
                 body = body.replace("[expirationdatetime]", '')
 
-            context.update({'corporatemembershiptypeid':
-                                str(membership.corporate_membership_type.id),
-                            'corporatemembershiptype': membership.corporate_membership_type.name,
-                            })
+            context.update({
+                'corporatemembershiptypeid': str(membership.corporate_membership_type.id),
+                'corporatemembershiptype': membership.corporate_membership_type.name,
+                'view_link': "%s%s" % (site_url, membership.get_absolute_url()),
+                'renew_link': "%s%s" % (site_url, membership.get_renewal_url()),})
 
             body = fieldify(body)
 
@@ -205,7 +206,7 @@ class Command(BaseCommand):
             template = Template(body)
             body = template.render(context)
 
-            email.recipient = corp_profile.email
+            email.recipient = ','.join(dues_rep_emails_list(membership))
             email.subject = notice.subject.replace('(name)',
                                                    corp_profile.name)
             email.body = body

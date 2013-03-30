@@ -193,3 +193,30 @@ div.forms div.form-field input.timepicker{
 .small{
     font-size: 0.8em;
 }
+
+/* Notice logs */
+.notice-log-view {
+    background-color: white;
+    margin-bottom: 20px;
+    padding: 10px;
+    line-height: 20px;
+    }
+#log-records-wrap{
+	border-top: 1px dashed #ccc;
+	margin-top: 2em;
+	padding-top: 1em;
+}
+
+.notice-log-wrap {
+    background-color: white;
+    border: 1px solid #CCCCCC;
+    margin-bottom: 20px;
+    padding: 10px;
+    }
+.notice-log{
+	margin-left: 2em;
+	line-height: 20px;
+}
+.notice-log-form{
+	margin-bottom: 1em;
+}

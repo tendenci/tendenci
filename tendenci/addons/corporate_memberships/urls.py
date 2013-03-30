@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
     url(r'^$', 'search', name="corp_memb"),
@@ -82,6 +82,9 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         name="corp_membership.reps_lookup"),
     url(r'^delete_corp_rep/(?P<id>\d+)/$', 'delete_corp_rep',
         name="corp_membership.delete_rep"),
+
+    # notice
+    (r'^notices/', include('tendenci.addons.corporate_memberships.notices.urls')),
 
     # report
     url(r"^reports/summary/$", "summary_report",

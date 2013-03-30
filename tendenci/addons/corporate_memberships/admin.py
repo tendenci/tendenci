@@ -23,6 +23,7 @@ from tendenci.addons.corporate_memberships.utils import (
     edit_corpapp_update_memb_app)
 
 from tendenci.core.event_logs.models import EventLog
+from tendenci.core.site_settings.utils import get_setting
 
 
 class CorporateMembershipTypeAdmin(admin.ModelAdmin):
@@ -288,7 +289,14 @@ class CorpMembershipAdmin(admin.ModelAdmin):
 
 
 class NoticeAdmin(admin.ModelAdmin):
-    list_display = ['notice_name', 'content_type',
+    def notice_log(self):
+        if self.notice_time == 'attimeof':
+            return '--'
+        return '<a href="%s%s?notice_id=%d">View logs</a>' % (get_setting('site', 'global', 'siteurl'),
+                         reverse('corporate_membership.notice.log.search'), self.id)
+    notice_log.allow_tags = True
+
+    list_display = ['notice_name', notice_log, 'content_type',
                      'corporate_membership_type', 'status', 'status_detail']
     list_filter = ['notice_type', 'status_detail']
 

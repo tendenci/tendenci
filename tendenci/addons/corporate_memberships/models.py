@@ -434,6 +434,20 @@ class CorpMembership(TendenciBaseModel):
     def __unicode__(self):
         return "%s" % (self.corp_profile.name)
 
+    @models.permalink
+    def get_absolute_url(self):
+        """
+        Returns admin change_form page.
+        """
+        return ('corpmembership.view', [self.pk])
+
+    @models.permalink
+    def get_renewal_url(self):
+        """
+        Returns admin change_form page.
+        """
+        return ('corpmembership.renew', [self.pk])
+
     def save(self, *args, **kwargs):
         if not self.guid:
             self.guid = str(uuid.uuid1())
@@ -768,19 +782,6 @@ class CorpMembership(TendenciBaseModel):
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
 
-        # send an email to dues reps
-        recipients = dues_rep_emails_list(self)
-        recipients.append(self.creator.email)
-        extra_context = {
-            'object': self,
-            'request': request,
-            'invoice': self.invoice,
-            'created': created,
-            'username': username,
-            'password': password
-        }
-        send_email_notification('corp_memb_join_approved',
-                                recipients, extra_context)
         self.send_notice_email(request, 'approve_join')
 
     def disapprove_join(self, request, **kwargs):
@@ -884,18 +885,7 @@ class CorpMembership(TendenciBaseModel):
 
             # mark invoice as paid
             self.mark_invoice_as_paid(request.user)
-            # email dues reps that corporate membership has been approved
-            recipients = dues_rep_emails_list(self)
-            if not recipients and self.creator:
-                recipients = [self.creator.email]
-            extra_context = {
-                'object': self,
-                'request': request,
-                'invoice': self.invoice,
-                'total_individuals_renewed': total_individuals_renewed
-            }
-            send_email_notification('corp_memb_renewal_approved',
-                                    recipients, extra_context)
+
             self.send_notice_email(request, 'approve_renewal')
 
     def disapprove_renewal(self, request, **kwargs):
@@ -1076,7 +1066,7 @@ class CorpMembership(TendenciBaseModel):
         """
         return Notice.send_notice(
             request=request,
-            emails=self.corp_profile.email,
+            emails=dues_rep_emails_list(self),
             notice_type=notice_type,
             corporate_membership=self,
             corporate_membership_type=self.corporate_membership_type,
@@ -2293,12 +2283,21 @@ class Notice(models.Model):
         if not corporate_membership:
             return context
 
+        # get corp_profile field context
+        for field in corporate_membership.corp_profile._meta.fields:
+            field_name = field.name
+            if hasattr(corporate_membership.corp_profile, field_name):
+                value = getattr(corporate_membership.corp_profile, field_name)
+                if isinstance(value, datetime):
+                    value = time.strftime("%d-%b-%y %I:%M %p", value.timetuple())
+                context[field_name] = value
+
         if corporate_membership.expiration_dt:
             context.update({
                 'expire_dt': time.strftime(
                 "%d-%b-%y %I:%M %p",
                 corporate_membership.expiration_dt.timetuple()),
-            })  
+            })
 
         if corporate_membership.payment_method:
             context.update({
@@ -2308,7 +2307,8 @@ class Notice(models.Model):
         context.update({
             'name': corporate_membership.corp_profile.name,
             'email': corporate_membership.corp_profile.email,
-            'corporate_membership_type': corporate_membership.corporate_membership_type.name,
+            'view_link': "%s%s" % (global_setting('siteurl'), corporate_membership.get_absolute_url()),
+            'renew_link': "%s%s" % (global_setting('siteurl'), corporate_membership.get_renewal_url()),
         })
 
         return context
@@ -2318,7 +2318,9 @@ class Notice(models.Model):
         Return self.subject replace shortcode (context) variables
         The corporate membership object takes priority over entry object
         """
-        return self.build_notice(self.subject, context={})
+        context = self.get_default_context(corporate_membership)
+
+        return self.build_notice(self.subject, context=context)
 
     def get_content(self, corporate_membership=None):
         """

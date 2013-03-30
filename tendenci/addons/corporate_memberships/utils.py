@@ -820,10 +820,7 @@ def get_notice_token_help_text(notice=None):
                 information.
                 A token is a field name wrapped in
                 {{ }} or [ ]. <br />
-                For example, token for first_name field: {{ first_name }}.
-                Please note that tokens for member number, membership link,
-                and expiration date/time are not available until the membership
-                is approved.
+                For example, token for name field: {{ name }}.
                 </div>
                 """
 
@@ -851,11 +848,14 @@ def get_notice_token_help_text(notice=None):
         help_text += '<div>No field tokens because there is no ' + \
                     'applications.</div>'
 
-    other_labels = ['corporate_membership_type',
-                    'site_contact_name',
+    other_labels = ['site_contact_name',
                     'site_contact_email',
                     'site_display_name',
                     'time_submitted',
+                    'view_link',
+                    'renew_link',
+                    'rep_first_name',
+                    'renewed_individuals_list',
                     ]
     help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
     help_text += "<ul>"
