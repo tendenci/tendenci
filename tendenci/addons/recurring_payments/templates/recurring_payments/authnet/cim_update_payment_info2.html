@@ -87,25 +87,22 @@
 
 			$.ajax({
 				   type: "POST",
-				   url: "{% url recurring_payment.authnet.update_payment_profile_local%}",
+				   url: "{% url recurring_payment.authnet.update_payment_profile_local %}",
 				   data: {rpid : {{ rp.id }}{% if payment_profile %}, ppid : {{ payment_profile.id }}{% endif %} },
 				   success: function(result_data){
-				   	
-				        var obj = $.parseJSON(result_data);
-				   		if (obj.valid_cpp_id){
-				   			$('#dnotes').show();
-				   			$('#dnotes').html("<p>Your payment information has been saved. Thank you!</p>");
-				   			$('#dnotes').css({'color':'green', 'font-size':'1.2em', 'padding': '5px'});
-				   			$('#dnotes').css({'border':'1px solid #DDAC2B', 'background-color': '#F9F6CA', 'width': '80%'});
-				   		}else{
-				   			$('.AuthorizeNetPopupOuter').show();
-				   			if (obj.invalid_cpp_id){
-				   				AuthorizeNetPopup.openEditPaymentPopup(obj.invalid_cpp_id);
-				   			}else{
-				   				AuthorizeNetPopup.openAddPaymentPopup();
-				   			}
-				   			$('#dnotes').html('<p style="color:yellow;">The card you entered is not valid, please try again.</p>');
-				   		}
+                        		$('#dnotes').show();
+                        		$('#dnotes').html("<p>Thank you. Your information has been saved.</p>");
+                        		$('#dnotes').css({'color':'green', 'font-size':'1.2em', 'padding': '5px'});
+                        		$('#dnotes').css({'border':'1px solid #DDAC2B', 'background-color': '#F9F6CA', 'width': '80%'});
+                        		var obj = $.parseJSON(result_data);
+                        		if (!obj.valid_cpp_id){
+                            			$('.AuthorizeNetPopupOuter').show();
+                            			if (obj.invalid_cpp_id){
+                                			AuthorizeNetPopup.openEditPaymentPopup(obj.invalid_cpp_id);
+                            			}else{
+                                			AuthorizeNetPopup.openAddPaymentPopup();
+                            			}
+                        		}
 				   }
 				 });
 		}else{
