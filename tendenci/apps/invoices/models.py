@@ -9,7 +9,6 @@ from django.contrib.contenttypes import generic
 
 from tendenci.core.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
-from tendenci.core.event_logs.models import EventLog
 
 
 class Invoice(models.Model):
@@ -99,14 +98,17 @@ class Invoice(models.Model):
     class Meta:
         permissions = (("view_invoice", "Can view invoice"), )
 
-    # def __unicode__(self):
-    #     return u'%s' % (self.title)
-
     def set_creator(self, user):
+        """
+        Sets creator fields.
+        """
         self.creator = user
         self.creator_username = user.username
 
     def set_owner(self, user):
+        """
+        Sets owner fields.
+        """
         self.owner = user
         self.owner_username = user.username
 
