@@ -162,19 +162,20 @@ class Invoice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('invoice.view', [self.id])
-    
+
     def save(self, user=None):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
-            if user and user.id:
-                self.creator=user
-                self.creator_username=user.username
-        if user and user.id:
-            self.owner=user
-            self.owner_username=user.username
-            
+        """
+        Set guid, creator and owner if any of
+        these fields are missing.
+        """
+        self.guid = self.guid or uuid.uuid1().get_hex()
+
+        if hasattr(user, 'pk'):
+            self.set_creator(user)
+            self.set_owner(user)
+
         super(Invoice, self).save()
-        
+
     def get_object(self):
         _object = None
         try:
@@ -182,7 +183,7 @@ class Invoice(models.Model):
         except:
             pass
         return _object
-    
+
     @property
     def is_tendered(self):
         boo = False
