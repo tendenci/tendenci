@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
 from django.db.models import Q
@@ -1064,9 +1065,11 @@ class CorpMembership(TendenciBaseModel):
             typical corporate membership emails.
         Returns outcome via boolean.
         """
+        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
+
         return Notice.send_notice(
             request=request,
-            emails=dues_rep_emails_list(self),
+            recipients=representatives,
             notice_type=notice_type,
             corporate_membership=self,
             corporate_membership_type=self.corporate_membership_type,
@@ -2264,7 +2267,7 @@ class Notice(models.Model):
         www.tendenci.com developed by Schipul - The Web Marketing Company
         """
 
-    def get_default_context(self, corporate_membership=None):
+    def get_default_context(self, corporate_membership=None, recipient=None):
         """
         Returns a dictionary with default context items.
         """
@@ -2284,13 +2287,7 @@ class Notice(models.Model):
             return context
 
         # get corp_profile field context
-        for field in corporate_membership.corp_profile._meta.fields:
-            field_name = field.name
-            if hasattr(corporate_membership.corp_profile, field_name):
-                value = getattr(corporate_membership.corp_profile, field_name)
-                if isinstance(value, datetime):
-                    value = time.strftime("%d-%b-%y %I:%M %p", value.timetuple())
-                context[field_name] = value
+        context.update(corporate_membership.get_field_items())
 
         if corporate_membership.expiration_dt:
             context.update({
@@ -2304,6 +2301,16 @@ class Notice(models.Model):
                 'payment_method': corporate_membership.payment_method.human_name,
             })
 
+        if recipient:
+            context.update({
+                'rep_first_name':recipient.user.first_name,
+            })
+
+        context.update({
+            'renewed_individuals_list': render_to_string(('notification/corp_memb_notice_email/renew_list.html'),
+                                                         {'corp_membership': corporate_membership, }),
+        })
+
         context.update({
             'name': corporate_membership.corp_profile.name,
             'email': corporate_membership.corp_profile.email,
@@ -2313,22 +2320,22 @@ class Notice(models.Model):
 
         return context
 
-    def get_subject(self, corporate_membership=None):
+    def get_subject(self, corporate_membership=None, recipient=None):
         """
         Return self.subject replace shortcode (context) variables
         The corporate membership object takes priority over entry object
         """
-        context = self.get_default_context(corporate_membership)
+        context = self.get_default_context(corporate_membership, recipient)
 
         return self.build_notice(self.subject, context=context)
 
-    def get_content(self, corporate_membership=None):
+    def get_content(self, corporate_membership=None, recipient=None):
         """
         Return self.email_content with self.footer appended
         and replace shortcode (context) variables
         """
         content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
-        context = self.get_default_context(corporate_membership)
+        context = self.get_default_context(corporate_membership, recipient)
 
         return self.build_notice(content, context=context)
 
@@ -2361,14 +2368,14 @@ class Notice(models.Model):
         notice_type = kwargs.get('notice_type') or 'joined'
         corp_membership_type = kwargs.get('corporate_membership_type')
         corporate_membership = kwargs.get('corporate_membership')
-        emails = kwargs.get('emails') or []
+        recipients = kwargs.get('recipients') or []
         request = kwargs.get('request')
 
         if not isinstance(corporate_membership, CorpMembership):
             return False
 
-        if isinstance(emails, basestring):
-            emails = [emails]  # expecting list of emails
+        if isinstance(recipients, basestring):
+            recipients = [recipients]  # expecting list of emails
 
         # allowed notice types
         allowed_notice_types = [
@@ -2381,8 +2388,8 @@ class Notice(models.Model):
         if not notice_type in allowed_notice_types:
             return False
 
-        # email list required
-        if not emails:
+        # recipients list required
+        if not recipients:
             return False
 
         field_dict = {
@@ -2401,16 +2408,17 @@ class Notice(models.Model):
             )
 
             if any(notice_requirments):
-                notification.send_emails(
-                    emails,
-                    'corp_memb_notice_email', {
-                    'subject': notice.get_subject(corporate_membership=corporate_membership),
-                    'content': notice.get_content(corporate_membership=corporate_membership),
-                    'corporate_membership_total': CorpMembership.objects.count(),
-                    'reply_to': notice.sender,
-                    'sender': notice.sender,
-                    'sender_display': notice.sender_display,
-                })
+                for recipient in recipients:
+                    notification.send_emails(
+                        [recipient.user.email],
+                        'corp_memb_notice_email', {
+                        'subject': notice.get_subject(corporate_membership=corporate_membership, recipient=recipient),
+                        'content': notice.get_content(corporate_membership=corporate_membership, recipient=recipient),
+                        'corporate_membership_total': CorpMembership.objects.count(),
+                        'reply_to': notice.sender,
+                        'sender': notice.sender,
+                        'sender_display': notice.sender_display,
+                    })
         return True
 
     def save(self, *args, **kwargs):
