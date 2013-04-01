@@ -2409,16 +2409,23 @@ class Notice(models.Model):
 
             if any(notice_requirments):
                 for recipient in recipients:
-                    notification.send_emails(
-                        [recipient.user.email],
-                        'corp_memb_notice_email', {
-                        'subject': notice.get_subject(corporate_membership=corporate_membership, recipient=recipient),
-                        'content': notice.get_content(corporate_membership=corporate_membership, recipient=recipient),
+                    extra_context = {
+                        'subject': notice.get_subject(
+                                    corporate_membership=corporate_membership,
+                                    recipient=recipient),
+                        'content': notice.get_content(
+                                    corporate_membership=corporate_membership,
+                                    recipient=recipient),
                         'corporate_membership_total': CorpMembership.objects.count(),
-                        'reply_to': notice.sender,
                         'sender': notice.sender,
                         'sender_display': notice.sender_display,
-                    })
+                    }
+                    if notice.sender:
+                        extra_context.update({'reply_to': notice.sender})
+
+                    notification.send_emails(
+                        [recipient.user.email],
+                        'corp_memb_notice_email', extra_context)
         return True
 
     def save(self, *args, **kwargs):
