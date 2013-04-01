@@ -783,7 +783,26 @@ class CorpMembership(TendenciBaseModel):
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
 
-        self.send_notice_email(request, 'approve_join')
+        if Notice.objects.filter(notice_time='attimeof',
+                                 notice_type='approve_join',
+                                 status=True,
+                                 status_detail='active'
+                                 ).exists():
+            self.send_notice_email(request, 'approve_join')
+        else:
+            # send an email to dues reps
+            recipients = dues_rep_emails_list(self)
+            recipients.append(self.creator.email)
+            extra_context = {
+                'object': self,
+                'request': request,
+                'invoice': self.invoice,
+                'created': created,
+                'username': username,
+                'password': password
+            }
+            send_email_notification('corp_memb_join_approved',
+                                recipients, extra_context)
 
     def disapprove_join(self, request, **kwargs):
         self.approved = False
