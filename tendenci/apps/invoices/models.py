@@ -191,7 +191,7 @@ class Invoice(models.Model):
             if self.status_detail.lower() == 'tendered':
                 boo = True
         return boo
-    
+
     def tender(self, user):
         from tendenci.apps.accountings.utils import make_acct_entries
         """ mark it as tendered if we have records """ 
@@ -247,16 +247,18 @@ class Invoice(models.Model):
                     if self.status == 1 and not self.is_tendered:  
                         boo = True
         return boo
-        
-     
-    # this function is to make accounting entries    
+
     def make_payment(self, user, amount):
+        """
+        Updates the invoice balance by adding
+        accounting entries.
+        """
         from tendenci.apps.accountings.utils import make_acct_entries
         if self.is_tendered:
             self.balance -= amount
             self.payments_credits += amount
             self.save()
-            
+
             # Make the accounting entries here
             make_acct_entries(user, self, amount)
 
