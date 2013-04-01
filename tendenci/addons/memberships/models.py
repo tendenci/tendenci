@@ -283,6 +283,13 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
 
+    class Meta:
+        verbose_name = _("Membership")
+        verbose_name_plural = _("Memberships")
+
+    def memberships(self):
+        return MembershipDefault.objects.filter(membership_set=self).order_by('create_dt')
+
     def save_invoice(self, memberships):
         invoice = Invoice()
         invoice.estimate = True
