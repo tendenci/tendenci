@@ -906,7 +906,25 @@ class CorpMembership(TendenciBaseModel):
             # mark invoice as paid
             self.mark_invoice_as_paid(request.user)
 
-            self.send_notice_email(request, 'approve_renewal')
+            if Notice.objects.filter(notice_time='attimeof',
+                                 notice_type='approve_renewal',
+                                 status=True,
+                                 status_detail='active'
+                                 ).exists():
+                self.send_notice_email(request, 'approve_renewal')
+            else:
+                # email dues reps that corporate membership has been approved
+                recipients = dues_rep_emails_list(self)
+                if not recipients and self.creator:
+                    recipients = [self.creator.email]
+                extra_context = {
+                    'object': self,
+                    'request': request,
+                    'invoice': self.invoice,
+                    'total_individuals_renewed': total_individuals_renewed
+                }
+                send_email_notification('corp_memb_renewal_approved',
+                                        recipients, extra_context)
 
     def disapprove_renewal(self, request, **kwargs):
         """
