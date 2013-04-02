@@ -93,7 +93,11 @@ class Group(TendenciBaseModel):
     def is_member(self, user):
         # impersonation
         user = getattr(user, 'impersonated_user', user)
-        return user in self.members.all()
+
+        if isinstance(user, User):
+            return self.members.filter(id=user.id).exists()
+
+        return False
 
     def add_user(self, user, **kwargs):
         """
@@ -101,10 +105,9 @@ class Group(TendenciBaseModel):
         return (user, created)
         """
         if isinstance(user, User):
+
             # first check if user exists
-            if not GroupMembership.objects.filter(
-                    group=self,
-                    member=user).exists():
+            if not self.is_member(user):
 
                 params = {
                         'group': self,
