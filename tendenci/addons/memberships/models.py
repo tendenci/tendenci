@@ -10,6 +10,8 @@ from dateutil.relativedelta import relativedelta
 
 from django.db import models
 from django.db.models.query_utils import Q
+from django.db import transaction
+from django.db import DatabaseError, IntegrityError
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -960,7 +962,12 @@ class MembershipDefault(TendenciBaseModel):
             self.membership_type.group.add_user(self.user)
 
             # add user to groups selected by user
-            groups = self.groups.all()
+            try:
+                groups = self.groups.all()
+            except DatabaseError, IntegrityError:
+                # trap the transaction aborted error
+                transaction.rollback()
+                groups = self.groups.all()
             if groups:
                 for group in groups:
                     if not group.is_member(self.user):
