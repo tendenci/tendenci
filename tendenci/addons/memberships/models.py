@@ -964,6 +964,8 @@ class MembershipDefault(TendenciBaseModel):
             # add user to groups selected by user
             try:
                 groups = self.groups.all()
+                if groups:
+                    groups = list(groups)
             except DatabaseError, IntegrityError:
                 # trap the transaction aborted error
                 transaction.rollback()
