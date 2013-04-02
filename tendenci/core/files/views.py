@@ -172,16 +172,22 @@ def search(request, template_name="files/search.html"):
         sub_category = form.cleaned_data['sub_category']
         group = form.cleaned_data['group']
 
-    if has_index and query:
+    if has_index:
         files = File.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'files.view_file')
         files = File.objects.filter(filters).distinct()
 
-    if category:
-        files = files.filter(category=category)
-    if sub_category:
-        files = files.filter(sub_category=sub_category)
+    if has_index:
+        if category:
+            files = files.filter(category=category)
+        if sub_category:
+            files = files.filter(sub_category=sub_category)
+    else:
+        if category:
+            files = files.filter(categories__category__name=category)
+        if sub_category:
+            files = files.filter(categories__parent__name=sub_category)
     if group:
         files = files.filter(group_id=group)
 
