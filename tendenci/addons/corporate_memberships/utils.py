@@ -855,7 +855,12 @@ def get_notice_token_help_text(notice=None):
                     'view_link',
                     'renew_link',
                     'rep_first_name',
+                    'total_individuals_renewed',
                     'renewed_individuals_list',
+                    'invoice_link',
+                    'individuals_join_url',
+                    'anonymous_join_login_info',
+                    'authentication_info'
                     ]
     help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
     help_text += "<ul>"
