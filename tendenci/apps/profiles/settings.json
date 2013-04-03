@@ -270,5 +270,22 @@
         "scope_category": "users", 
         "store": true, 
         "updated_by": ""
+    }, 
+    {
+        "default_value": "false", 
+        "description": "Display a link to the Corporate Memberships module in the tabs next to the Profile tab.", 
+        "data_type": "boolean", 
+        "update_dt": "2013-04-03 11:35:10", 
+        "input_type": "select", 
+        "client_editable": false, 
+        "name": "showcorpmemtab", 
+        "value": "false", 
+        "label": "Show Corporate Memberships tab", 
+        "input_value": "true,false", 
+        "parent_id": 0, 
+        "scope": "module", 
+        "scope_category": "users", 
+        "store": true, 
+        "updated_by": ""
     }
 ]

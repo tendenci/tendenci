@@ -79,5 +79,6 @@
         </div>
     </li>
     <li><a href="{% url groups %}">{% firstof MODULE_GROUPS_LABEL trans "Groups" %}</a></li>
+    {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED and MODULE_USERS_SHOWCORPMEMTAB %}<li><a href="{% url corp_memb.search %}">{% firstof MODULE_CORPORATEMEMBERSHIPS_LABEL trans 'Corp. Memberships' %}</a></li>{% endif %}
 </ul>
 
