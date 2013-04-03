@@ -347,19 +347,23 @@ class MembershipSet(models.Model):
         If not supplied, the default description will be generated.
         """
         id_list = []
-        for membership in self.membershipdefault_set.order_by('-pk'):
+        description = ''
+
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        for i, membership in enumerate(self.membershipdefault_set.order_by('-pk')):
             id_list.append("#%d" % membership.id)
 
-        if membership.renewal:
-            description = '%s Invoice %d for Online Membership Renewal Application - Submission ' % (
-                get_setting('site', 'global', 'sitedisplayname'),
-                inv.id,
-            )
-        else:
-            description = '%s Invoice %d for Online Membership Application - Submission ' % (
-                get_setting('site', 'global', 'sitedisplayname'),
-                inv.id,
-            )
+            if i == 0:
+                if membership.renewal:
+                    description = '%s Invoice %d for Online Membership Renewal Application - Submission ' % (
+                        site_display_name,
+                        inv.id,
+                    )
+                else:
+                    description = '%s Invoice %d for Online Membership Application - Submission ' % (
+                        site_display_name,
+                        inv.id,
+                    )
 
         description += ', '.join(id_list)
 
