@@ -162,32 +162,31 @@ def search(request, template_name="files/search.html"):
     query = u''
     category = u''
     sub_category = u''
-    
+    group = None
+
     has_index = get_setting('site', 'global', 'searchindex')
     form = FileSearchForm(request.GET)
-    
+
     if form.is_valid():
         query = form.cleaned_data['q']
         category = form.cleaned_data['category']
         sub_category = form.cleaned_data['sub_category']
         group = form.cleaned_data['group']
 
-    if has_index:
+    if has_index and query:
         files = File.objects.search(query, user=request.user)
-    else:
-        filters = get_query_filters(request.user, 'files.view_file')
-        files = File.objects.filter(filters).distinct()
-
-    if has_index:
         if category:
             files = files.filter(category=category)
         if sub_category:
             files = files.filter(sub_category=sub_category)
     else:
+        filters = get_query_filters(request.user, 'files.view_file')
+        files = File.objects.filter(filters).distinct()
         if category:
             files = files.filter(categories__category__name=category)
         if sub_category:
             files = files.filter(categories__parent__name=sub_category)
+
     if group:
         files = files.filter(group_id=group)
 
@@ -195,11 +194,11 @@ def search(request, template_name="files/search.html"):
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, 
+    return render_to_response(template_name,
             {
-                'files':files,
-                'form':form,
-            }, 
+                'files': files,
+                'form': form,
+            },
         context_instance=RequestContext(request))
 
 
