@@ -197,14 +197,20 @@ def search(request, template_name="profiles/search.html"):
     profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
 
     if query:
-        profiles = profiles.filter(
-            Q(user__first_name__icontains=query) | \
-            Q(user__last_name__icontains=query) | \
-            Q(user__email__icontains=query) | \
-            Q(user__username__icontains=query) | \
-            Q(display_name__icontains=query) | \
-            Q(company__icontains=query)
-        )
+        db_filters = (
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(user__email__icontains=query) |
+            Q(user__username__icontains=query) |
+            Q(display_name__icontains=query) |
+            Q(company__icontains=query))
+
+        full_name_filter = Q()
+
+        if " " in query:
+            full_name_filter = (Q(user__first_name__icontains=query.split(' ', 1)[0]) & Q(user__last_name__icontains=query.split(' ', 1)[1]))
+
+        profiles = profiles.filter(db_filters | full_name_filter)
 
     # if non-superuser
         # if is member
