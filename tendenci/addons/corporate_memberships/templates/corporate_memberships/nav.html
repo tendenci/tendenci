@@ -57,8 +57,9 @@
             <li><a href="{% url corpmembership.search %}?q=is_pending:true">{% trans "Pending Corp. Members" %}</a></li>
             <li class="divider"></li>
             <li><a href="/admin/corporate_memberships/">Admin Backend</a></li>
-            <li><a href="{% url admin:corporate_memberships_corpmembershipapp_changelist %}">{% trans "Corp. Membership Application" %}</a></li>
-            <li><a href="{% url admin:corporate_memberships_corporatemembershiptype_changelist %}">{% trans "Corp. Membership Types" %}</a></li>
+            <li><a href="{% url admin:corporate_memberships_corpmembershipapp_changelist %}">{% trans "Application" %}</a></li>
+            <li><a href="{% url admin:corporate_memberships_corporatemembershiptype_changelist %}">{% trans "Types" %}</a></li>
+            <li><a href="{% url admin:corporate_memberships_notice_changelist %}">{% trans "Notices" %}</a></li>
             <li class="divider"></li>
             <li><a href="{% url corp_membership.summary_report %}">{% trans "Summary Report" %}</a></li>
             <li><a href="{% url corpmembership.import %}">{% trans "Import" %}</a></li>
