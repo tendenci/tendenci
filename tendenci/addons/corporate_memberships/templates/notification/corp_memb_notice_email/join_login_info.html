@@ -8,6 +8,6 @@
     Your login username: <strong>{{ corp_membership.creator_username }}</strong>
     {% endif %}
     <br />
-    To log into the site, visit <a href="{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}">{{ SITE_GLOBAL_SITEURL }}{% url auth_login %}</a>
+    To log into the site, visit <a href="{{ login_url }}">{{ login_url }}</a>
 </p>
 {% endif %}

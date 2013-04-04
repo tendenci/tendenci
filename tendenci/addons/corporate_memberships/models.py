@@ -791,6 +791,9 @@ class CorpMembership(TendenciBaseModel):
                                  ).exists():
 
             if self.anonymous_creator:
+                login_url = '%s%s' % (
+                        get_setting('site', 'global', 'siteurl'),
+                        reverse('auth_login'))
                 login_info = \
                 render_to_string(
                     'notification/corp_memb_notice_email/join_login_info.html',
@@ -798,7 +801,9 @@ class CorpMembership(TendenciBaseModel):
                      'created': created,
                      'username': username,
                      'password': password,
+                     'login_url': login_url,
                      'request': request})
+
             self.send_notice_email(request, 'approve_join',
                                 anonymous_join_login_info=login_info)
         else:
@@ -2414,7 +2419,7 @@ class Notice(models.Model):
         and replace shortcode (context) variables
         """
         content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
-        context = self.get_default_context(corporate_membership, recipient)
+        context = self.get_default_context(corporate_membership, recipient, **kwargs)
 
         return self.build_notice(content, context=context, **kwargs)
 
@@ -2496,8 +2501,7 @@ class Notice(models.Model):
                         'content': notice.get_content(
                                     corporate_membership=corporate_membership,
                                     recipient=recipient,
-                                    **{'anonymous_join_login_info':
-                                     anonymous_join_login_info}),
+                                    anonymous_join_login_info=anonymous_join_login_info),
                         'corporate_membership_total': CorpMembership.objects.count(),
                         'sender': notice.sender,
                         'sender_display': notice.sender_display,
