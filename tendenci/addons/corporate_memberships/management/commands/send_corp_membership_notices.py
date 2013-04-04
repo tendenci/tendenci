@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.template import TemplateDoesNotExist
 from django.template import Context, Template
+from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -23,10 +24,19 @@ class Command(BaseCommand):
         verbosity = 1
         if 'verbosity' in options:
             verbosity = options['verbosity']
+        # first test if we have notices set up
+        from tendenci.addons.corporate_memberships.models import Notice
+        if not Notice.objects.filter(status=True,
+                                     status_detail='active'
+                                    ).exclude(
+                                    notice_time='attimeof'
+                                    ).exists():
+            if verbosity > 1:
+                print('No notices set up...existing...')
+            # no active notices to process. stop here
+            return
 
-        from django.conf import settings
         from tendenci.addons.corporate_memberships.models import (
-            Notice,
             CorpMembership,
             NoticeLog,
             NoticeLogRecord)
