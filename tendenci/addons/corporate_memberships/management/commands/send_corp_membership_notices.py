@@ -12,10 +12,11 @@ from django.template import Context, Template
 
 class Command(BaseCommand):
     """
-    Get a list of membership notices from the notice table,
-    and send each notice to members who meet the criteria.
+    Get a list of corporate membership notices from the notice table,
+    and send each notice to representatives of corporate memberships
+    that meet the criteria.
 
-    Usage: python manage.py send_membership_notices --verbosity 1
+    Usage: python manage.py send_corp_membership_notices --verbosity 1
     """
 
     def handle(self, *args, **options):
