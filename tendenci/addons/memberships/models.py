@@ -15,7 +15,7 @@ from django.db import DatabaseError, IntegrityError
 from django.template import Context, Template
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.contrib.contenttypes import generic
@@ -573,7 +573,7 @@ class MembershipDefault(TendenciBaseModel):
             membership_type=self.membership_type,
         )
 
-    def approve(self, request_user=None):
+    def approve(self, request_user=AnonymousUser()):
         """
         Approve this membership.
             - Assert user is in group.
@@ -604,19 +604,19 @@ class MembershipDefault(TendenciBaseModel):
         self.application_approved = True
         self.application_approved_dt = \
             self.application_approved_dt or NOW
-        if request_user:  # else: don't set
+        if request_user.is_authenticated():  # else: don't set
             self.application_approved_user = request_user
 
         # application approved/denied ---------------
         self.application_approved_denied_dt = \
             self.application_approved_denied_dt or NOW
-        if request_user:  # else: don't set
+        if request_user.is_authenticated():  # else: don't set
             self.application_approved_denied_user = request_user
 
         # action_taken ------------------------------
         self.action_taken = True
         self.action_taken_dt = self.action_taken_dt or NOW
-        if request_user:  # else: don't set
+        if request_user.is_authenticated():  # else: don't set
             self.action_taken_user = request_user
 
         self.set_join_dt()
