@@ -1,0 +1,13 @@
+{% if corp_membership.anonymous_creator %}
+<p>
+    {% if created %}
+    Your login account:<br />
+    Username: <strong>{{ username }}</strong><br />
+    Password: <strong>{{ password }}</strong>
+    {% else %}
+    Your login username: <strong>{{ corp_membership.creator_username }}</strong>
+    {% endif %}
+    <br />
+    To log into the site, visit <a href="{{ login_url }}">{{ login_url }}</a>
+</p>
+{% endif %}

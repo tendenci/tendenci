@@ -12,6 +12,28 @@ h2 {
   font-weight:bold;
 }
 
+.report_list_wrap .report_column {
+    float: left;
+    width: 49%;
+    margin-right: 2%;
+}
+
+.report_list_wrap .report_column.end {
+    margin-right: 0;
+}
+
+.report_list_wrap ol {
+    counter-reset: item;
+    margin-left: 0;
+}
+.report_list_wrap ol li {
+    display: block;
+}
+.report_list_wrap ol li:before {
+    content: counters(item, ".") ". ";
+    counter-increment: item;
+}
+
 .events-summary-chart {
 	height: 300px;
 	margin-bottom: 5px;

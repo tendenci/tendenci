@@ -867,7 +867,7 @@ def corp_renew_conf(request, id,
     if not has_perm(request.user,
                     'corporate_memberships.change_corporatemembership',
                     corp_membership):
-        if not corp_membership.allow_edit_by(request.user):
+        if not corp_membership.allow_view_by(request.user):
             raise Http403
 
     corpmembership_app = CorpMembershipApp.objects.current_app()
@@ -878,7 +878,6 @@ def corp_renew_conf(request, id,
                'corp_app': corpmembership_app,
                }
     return render_to_response(template, context, RequestContext(request))
-
 
 @login_required
 def roster_search(request,
