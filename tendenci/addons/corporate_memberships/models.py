@@ -2289,9 +2289,9 @@ class Notice(models.Model):
 
     subject = models.CharField(max_length=255)
     content_type = models.CharField(_("Content Type"),
-                                    choices=(('html', 'HTML'),
-                                            ('text', 'Plain Text')),
-                                    max_length=10)
+                                    choices=(('html', 'HTML'),),
+                                    max_length=10,
+                                    default='html')
     sender = models.EmailField(max_length=255, blank=True, null=True)
     sender_display = models.CharField(max_length=255, blank=True, null=True)
     email_content = tinymce_models.HTMLField(_("Email Content"))
