@@ -96,9 +96,13 @@ class Story(OrderingBaseModel, TendenciBaseModel):
             # Append to top of the list on add
             try:
                 last = Story.objects.all().order_by('-position')[0]
-                self.position = int(last.position) + 1
+                if last.position:
+                    self.position = int(last.position) + 1
+                else:
+                    self.position = 1
             except IndexError:
                 # First row
+                self.position = 1
                 pass
 
         super(Story, self).save(*args, **kwargs)
