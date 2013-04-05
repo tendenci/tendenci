@@ -803,6 +803,8 @@ class CorpMembership(TendenciBaseModel):
                      'password': password,
                      'login_url': login_url,
                      'request': request})
+            else:
+                login_info = ''
 
             self.send_notice_email(request, 'approve_join',
                                 anonymous_join_login_info=login_info)
