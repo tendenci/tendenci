@@ -2152,7 +2152,7 @@ class MembershipApp(TendenciBaseModel):
     application_form_link.allow_tags = True
 
 
-class MembershipAppField(models.Model):
+class MembershipAppField(OrderingBaseModel):
     LABEL_MAX_LENGTH = 2000
     FIELD_TYPE_CHOICES = (
                     ("CharField", _("Text")),
@@ -2200,12 +2200,10 @@ class MembershipAppField(models.Model):
                                  blank=True,
                                  default='')
 
-    order = models.IntegerField(default=0)
-
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        ordering = ('order',)
+        ordering = ('position',)
 
     def __unicode__(self):
         if self.field_name:

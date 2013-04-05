@@ -12,6 +12,8 @@ from django.http import HttpResponse
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import SimpleListFilter
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
@@ -434,11 +436,11 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
 class MembershipAppFieldAdmin(admin.TabularInline):
     model = MembershipAppField
-    fields = ('label', 'field_name', 'display', 'required', 'admin_only', 'order',)
+    fields = ('label', 'field_name', 'display', 'required', 'admin_only', 'position',)
     extra = 0
     can_delete = False
     verbose_name = 'Section Break'
-    ordering = ("order",)
+    ordering = ("position",)
     template = "memberships/admin/membershipapp/tabular.html"
 
 
