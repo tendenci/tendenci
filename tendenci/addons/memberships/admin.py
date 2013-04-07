@@ -858,6 +858,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
     list_display = ['label', 'field_name', 'display',
               'required', 'admin_only', 'position',
               ]
+    readonly_fields = ('membership_app', 'field_name')
     fieldsets = (
         (None, {'fields': ('membership_app', 'label',
                            'field_name',
