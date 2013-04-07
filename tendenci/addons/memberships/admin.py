@@ -858,6 +858,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
     list_display = ['label', 'field_name', 'display',
               'required', 'admin_only', 'position',
               ]
+
     readonly_fields = ('membership_app', 'field_name')
     fieldsets = (
         (None, {'fields': ('membership_app', 'label',
@@ -866,6 +867,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
                            'field_type', 'description', 'help_text',
                            'choices', 'default_value', 'css_class')
                 }),)
+
     list_editable = ['position']
     ordering = ("position",)
     list_filter = (AppListFilter,)
@@ -877,6 +879,12 @@ class MembershipAppField2Admin(admin.ModelAdmin):
             'js/jquery-ui-1.8.17.custom.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
 
 
 admin.site.register(MembershipDefault, MembershipDefaultAdmin)
