@@ -26,7 +26,8 @@ from tendenci.addons.memberships.models import (Membership, MembershipDefault,
                                                 MembershipApp)
 from tendenci.addons.memberships.forms import (MembershipDefaultForm, AppForm,
                             NoticeForm, AppFieldForm, AppEntryForm,
-                            MembershipAppForm)
+                            MembershipAppForm,
+                            MembershipAppFieldAdminForm)
 from tendenci.addons.memberships.utils import (get_default_membership_fields,
                                                edit_app_update_corp_fields,
                                                get_selected_demographic_field_names)
@@ -832,8 +833,54 @@ class AppEntryAdmin(admin.ModelAdmin):
         self.list_display_links = (None, )
 
 
+class AppListFilter(SimpleListFilter):
+    title = _('Membership App')
+    parameter_name = 'membership_app__id'
+
+    def lookups(self, request, model_admin):
+        apps_list = MembershipApp.objects.filter(
+                        status=True,
+                        status_detail__in=['active', 'published']
+                        ).values_list('id', 'name'
+                        ).order_by('id')
+        return [(app_tuple[0], app_tuple[1]) for app_tuple in apps_list]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(
+                    membership_app__id=int(self.value()),
+                    display=True)
+        return queryset
+
+
+class MembershipAppField2Admin(admin.ModelAdmin):
+    model = MembershipAppField
+    list_display = ['label', 'field_name', 'display',
+              'required', 'admin_only', 'position',
+              ]
+    fieldsets = (
+        (None, {'fields': ('membership_app', 'label',
+                           'field_name',
+                           ('required', 'display', 'admin_only'),
+                           'field_type', 'description', 'help_text',
+                           'choices', 'default_value', 'css_class')
+                }),)
+    list_editable = ['position']
+    ordering = ("position",)
+    list_filter = (AppListFilter,)
+    form = MembershipAppFieldAdminForm
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            'js/jquery-ui-1.8.17.custom.min.js',
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+        )
+
+
 admin.site.register(MembershipDefault, MembershipDefaultAdmin)
 admin.site.register(MembershipApp, MembershipAppAdmin)
+admin.site.register(MembershipAppField, MembershipAppField2Admin)
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(Notice, NoticeAdmin)
 #admin.site.register(App, AppAdmin)

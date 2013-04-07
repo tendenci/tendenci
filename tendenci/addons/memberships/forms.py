@@ -24,7 +24,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.addons.memberships.models import (Membership,
-    MembershipDefault, MembershipDemographic,
+    MembershipDefault, MembershipDemographic, MembershipAppField,
     MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
     MembershipImport, MembershipApp)
 from tendenci.addons.memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
@@ -468,6 +468,24 @@ class MembershipAppForm(TendenciBaseForm):
             self.fields['confirmation_text'].widget.mce_attrs[
                                     'app_instance_id'] = 0
 
+
+class MembershipAppFieldAdminForm(forms.ModelForm):
+    class Meta:
+        model = MembershipAppField
+        fields = (
+                'membership_app',
+                'label',
+                'field_name',
+                'required',
+                'display',
+                'admin_only',
+                'field_type',
+                'description',
+                'help_text',
+                'choices',
+                'default_value',
+                'css_class'
+                  )
 
 field_size_dict = {
         'initials': 12,
