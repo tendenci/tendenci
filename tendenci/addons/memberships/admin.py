@@ -863,7 +863,7 @@ class MembershipAppField2Admin(admin.ModelAdmin):
     fieldsets = (
         (None, {'fields': ('membership_app', 'label',
                            'field_name',
-                           ('required', 'display', 'admin_only'),
+                           ('display', 'required', 'admin_only'),
                            'field_type', 'description', 'help_text',
                            'choices', 'default_value', 'css_class')
                 }),)
