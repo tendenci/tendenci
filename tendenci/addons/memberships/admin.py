@@ -886,6 +886,9 @@ class MembershipAppField2Admin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    def get_actions(self, request):
+        return None
+
 
 admin.site.register(MembershipDefault, MembershipDefaultAdmin)
 admin.site.register(MembershipApp, MembershipAppAdmin)
