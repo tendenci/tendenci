@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from tendenci.core.base.http import Http403
 from tendenci.apps.redirects.models import Redirect
 from tendenci.core.site_settings.utils import get_setting
+from tendenci.core.perms.utils import has_perm
 
 
 class PageSecurityCheck(object):
@@ -75,6 +76,28 @@ def is_enabled(*module_names):
                 if not get_setting('module', module_name, 'enabled'):
                     r = get_object_or_404(Redirect, from_app=module_name)
                     return HttpResponseRedirect('/' + r.to_url)
+
+            return fn(request, *args, **kwargs)
+
+        return wraps(fn)(wrapped)
+
+    return inner_render
+
+
+def staff_with_perm(perm):
+    """
+    Checks if user is a staff and has the
+    specified permission before returning
+    method, else raises 403 exception.
+    """
+    def inner_render(fn):
+
+        def wrapped(request, *args, **kwargs):
+            if not request.user.profile.is_staff:
+                raise Http403
+
+            if not has_perm(request.user, perm):
+                raise Http403
 
             return fn(request, *args, **kwargs)
 
