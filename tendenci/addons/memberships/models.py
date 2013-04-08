@@ -2167,7 +2167,6 @@ class MembershipAppField(OrderingBaseModel):
                     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
                     ("DateTimeField", _("Date/time")),
                     ("section_break", _("Section Break")),
-                    ("page_break", _("Page Break")),
                 )
 
     membership_app = models.ForeignKey("MembershipApp", related_name="fields")
