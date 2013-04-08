@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin import SimpleListFilter
+from django.utils.encoding import force_unicode
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
@@ -896,6 +897,33 @@ class MembershipAppField2Admin(admin.ModelAdmin):
 
     def get_actions(self, request):
         return None
+
+    def response_change(self, request, obj):
+        """
+        If the 'Save' button is clicked, redirect to fields list
+        with the selected app.
+        """
+        if "_save" in request.POST:
+            opts = obj._meta
+            verbose_name = opts.verbose_name
+            module_name = opts.module_name
+            if obj._deferred:
+                opts_ = opts.proxy_for_model._meta
+                verbose_name = opts_.verbose_name
+                module_name = opts_.module_name
+
+            msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
+                        'name': force_unicode(verbose_name),
+                        'obj': force_unicode(obj)}
+            self.message_user(request, msg)
+            post_url = '%s?membership_app_id=%d' % (
+                            reverse('admin:%s_%s_changelist' %
+                                   (opts.app_label, module_name),
+                                   current_app=self.admin_site.name),
+                            obj.membership_app_id)
+            return HttpResponseRedirect(post_url)
+        else:
+            return super(MembershipAppField2Admin, self).response_change(request, obj)
 
 
 admin.site.register(MembershipDefault, MembershipDefaultAdmin)
