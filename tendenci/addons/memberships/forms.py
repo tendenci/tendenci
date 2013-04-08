@@ -487,6 +487,15 @@ class MembershipAppFieldAdminForm(forms.ModelForm):
                 'css_class'
                   )
 
+    def save(self, *args, **kwargs):
+        self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        if self.instance and not self.instance.field_name:
+            if self.instance.field_type != 'section_break':
+                self.instance.field_type = 'section_break'
+                self.instance.save()
+        return self.instance
+
+
 field_size_dict = {
         'initials': 12,
         'displayname': 36,

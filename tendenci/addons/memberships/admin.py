@@ -869,13 +869,6 @@ class MembershipAppField2Admin(admin.ModelAdmin):
               ]
 
     readonly_fields = ('membership_app', 'field_name')
-    fieldsets = (
-        (None, {'fields': ('membership_app', 'label',
-                           'field_name',
-                           ('display', 'required', 'admin_only'),
-                           'field_type', 'description', 'help_text',
-                           'choices', 'default_value', 'css_class')
-                }),)
 
     list_editable = ['position']
     ordering = ("position",)
@@ -888,6 +881,32 @@ class MembershipAppField2Admin(admin.ModelAdmin):
             'js/jquery-ui-1.8.17.custom.min.js',
             '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
         )
+
+    def get_fieldsets(self, request, obj=None):
+        extra_fields = ['description', 'help_text',
+                        'choices', 'default_value', 'css_class']
+        if obj:
+            if obj.field_name:
+                extra_fields.remove('description')
+            else:
+                extra_fields.remove('help_text')
+                extra_fields.remove('choices')
+                extra_fields.remove('default_value')
+        fields = ('membership_app', 'label', 'field_name', 'field_type',
+                    ('display', 'required', 'admin_only'),
+                             ) + tuple(extra_fields)
+
+        return ((None, {'fields': fields
+                        }),)
+
+    def get_object(self, request, object_id):
+        obj = super(MembershipAppField2Admin, self).get_object(request, object_id)
+
+        if obj and not obj.field_name:
+            if not obj.field_type:
+                obj.field_type = 'section_break'
+
+        return obj
 
     def has_delete_permission(self, request, obj=None):
         return False
