@@ -835,7 +835,15 @@ class AppEntryAdmin(admin.ModelAdmin):
 
 class AppListFilter(SimpleListFilter):
     title = _('Membership App')
-    parameter_name = 'membership_app__id'
+    parameter_name = 'membership_app_id'
+
+    def value(self):
+        value = super(AppListFilter, self).value()
+        try:
+            value = int(value)
+        except:
+            value = 0
+        return value
 
     def lookups(self, request, model_admin):
         apps_list = MembershipApp.objects.filter(
@@ -848,7 +856,7 @@ class AppListFilter(SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             return queryset.filter(
-                    membership_app__id=int(self.value()),
+                    membership_app_id=int(self.value()),
                     display=True)
         return queryset
 
