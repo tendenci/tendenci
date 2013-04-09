@@ -11,6 +11,7 @@ ENTITY_TYPES = (
     ('Reporting', 'Reporting'),
     ('Study Group', 'Study Group'),
     ('Technical Interest Group', 'Technical Interest Group'),
+    ('Other', 'Other'),
 )
 
 
