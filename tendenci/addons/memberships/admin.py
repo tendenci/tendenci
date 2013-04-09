@@ -894,9 +894,17 @@ class MembershipAppField2Admin(admin.ModelAdmin):
     def get_object(self, request, object_id):
         obj = super(MembershipAppField2Admin, self).get_object(request, object_id)
 
-        if obj and not obj.field_name:
+        # assign default field_type
+        if obj:
             if not obj.field_type:
-                obj.field_type = 'section_break'
+                if not obj.field_name:
+                    obj.field_type = 'section_break'
+                else:
+                    if obj.field_name in ['payment_method',
+                                          'membership_type']:
+                        obj.field_type = 'ChoiceField/django.forms.RadioSelect'
+                    else:
+                        obj.field_type = 'CharField'
 
         return obj
 
