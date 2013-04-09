@@ -2241,6 +2241,51 @@ class MembershipAppField(OrderingBaseModel):
             return field_class(**field_args)
         return None
 
+    @staticmethod
+    def get_default_field_type(field_name):
+        """
+        Get the default field type for the ``field_name``.
+        If the ``field_name`` is the name of one of the fields
+        in User, Profile, MembershipDefault and MembershipDemographic
+        models, the field type is determined via the field.
+        Otherwise, default to 'CharField'.
+        """
+        available_field_types = [choice[0] for choice in
+                                 MembershipAppField.FIELD_TYPE_CHOICES]
+        user_fields = dict([(field.name, field) \
+                        for field in User._meta.fields \
+                        if field.get_internal_type() != 'AutoField'])
+        fld = None
+        field_type = 'CharField'
+
+        if field_name in user_fields:
+            fld = user_fields[field_name]
+        if not fld:
+            profile_fields = dict([(field.name, field) \
+                            for field in Profile._meta.fields])
+            if field_name in profile_fields:
+                fld = profile_fields[field_name]
+        if not fld:
+            membership_fields = dict([(field.name, field) \
+                            for field in MembershipDefault._meta.fields])
+            if field_name in membership_fields:
+                fld = membership_fields[field_name]
+        if not fld:
+            membershipdemographic_fields = dict([(field.name, field) \
+                            for field in MembershipDemographic._meta.fields])
+            if field_name in membershipdemographic_fields:
+                fld = membershipdemographic_fields[field_name]
+        if fld:
+            field_type = fld.get_internal_type()
+            if not field_type in available_field_types:
+                if field_type in ['ForeignKey', 'OneToOneField']:
+                    field_type = 'ChoiceField'
+                elif field_type in ['ManyToManyField']:
+                    field_type = 'MultipleChoiceField'
+                else:
+                    field_type = 'CharField'
+        return field_type
+
 
 class App(TendenciBaseModel):
     guid = models.CharField(max_length=50, editable=False)

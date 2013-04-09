@@ -899,6 +899,8 @@ class MembershipAppField2Admin(admin.ModelAdmin):
             if not obj.field_type:
                 if not obj.field_name:
                     obj.field_type = 'section_break'
+                else:
+                    obj.field_type = MembershipAppField.get_default_field_type(obj.field_name)
 
         return obj
 
