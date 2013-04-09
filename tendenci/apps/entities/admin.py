@@ -5,9 +5,9 @@ from tendenci.apps.entities.models import Entity
 
 
 class EntityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'entity_name', 'entity_parent', 'status', 'status_detail']
-    list_editable = ['entity_name']
-    list_filter = ['status', 'status_detail']
+    list_display = ['id', 'entity_name', 'entity_type', 'entity_parent', 'status', 'status_detail']
+    list_editable = ['entity_name', 'entity_type']
+    list_filter = ['entity_type', 'status', 'status_detail']
     search_fields = ['entity_name']
     fieldsets = (
         (None, {
