@@ -4,6 +4,9 @@
     {% if field_obj.field_name == '' %}
         <div class="section-break{% if field_obj.admin_only %} admin-only-header{% endif %}{% if field_obj.css_class %} {{ field_obj.css_class  }}{% endif %}">
             <h2>{{ field_obj.label  }}</h2>
+            {% if field_obj.description %}
+            <div>{{ field_obj.description }}</div>
+            {% endif %}
         </div>
     {% endif %}
 {% else %}
