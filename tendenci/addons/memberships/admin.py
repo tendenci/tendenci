@@ -899,12 +899,6 @@ class MembershipAppField2Admin(admin.ModelAdmin):
             if not obj.field_type:
                 if not obj.field_name:
                     obj.field_type = 'section_break'
-                else:
-                    if obj.field_name in ['payment_method',
-                                          'membership_type']:
-                        obj.field_type = 'ChoiceField/django.forms.RadioSelect'
-                    else:
-                        obj.field_type = 'CharField'
 
         return obj
 
