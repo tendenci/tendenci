@@ -15,7 +15,15 @@ ENTITY_TYPES = (
 )
 
 
+class EntityAdminForm(forms.ModelForm):
+    entity_type = forms.ChoiceField(choices=ENTITY_TYPES)
+
+    class Meta:
+        model = Entity
+
+
 class EntityAdmin(admin.ModelAdmin):
+    form = EntityAdminForm
     list_display = ['id', 'entity_name', 'entity_type', 'entity_parent', 'status', 'status_detail']
     list_editable = ['entity_name', 'entity_type']
     list_filter = ['entity_parent', 'status', 'status_detail']
@@ -49,12 +57,5 @@ class EntityAdmin(admin.ModelAdmin):
     def get_changelist_form(self, request, **kwargs):
         kwargs.setdefault('form', EntityAdminForm)
         return super(EntityAdmin, self).get_changelist_form(request, **kwargs)
-
-
-class EntityAdminForm(forms.ModelForm):
-    class Meta:
-        model = Entity
-
-    entity_type = forms.ChoiceField(choices=ENTITY_TYPES)
 
 admin.site.register(Entity, EntityAdmin)
