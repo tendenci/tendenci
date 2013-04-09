@@ -550,7 +550,16 @@ def assign_fields(form, app_field_objs):
     # update the field attrs - label, required...
     for obj in app_field_objs:
         if obj.field_name in field_names:
-            if obj.field_type:
+            if obj.field_type and obj.field_name not in [
+                                    'payment_method',
+                                    'membership_type',
+                                    'groups',
+                                    'status',
+                                    'status_detail',
+                                    'directory',
+                                    'industry',
+                                    'region']:
+                # create form field with customized behavior
                 field = obj.get_field_class(
                         initial=form.fields[obj.field_name].initial)
                 form.fields[obj.field_name] = field
