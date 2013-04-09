@@ -569,7 +569,10 @@ def assign_fields(form, app_field_objs):
             label_type = []
             if obj.field_name not in ['payment_method',
                                       'membership_type',
-                                      'groups']:
+                                      'groups'] \
+                    and obj.field_stype not in [
+                        'radioselect',
+                        'checkboxselectmultiple']:
                 obj.field_div_class = 'inline-block'
                 label_type.append('inline-block')
                 if len(obj.label) < 16:
