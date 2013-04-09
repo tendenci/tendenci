@@ -1521,7 +1521,7 @@ def membership_default_add(request, slug='',
     if not request.user.profile.is_superuser:
         app_fields = app_fields.filter(admin_only=False)
 
-    app_fields = app_fields.order_by('order')
+    app_fields = app_fields.order_by('position')
     if not join_under_corporate:
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
