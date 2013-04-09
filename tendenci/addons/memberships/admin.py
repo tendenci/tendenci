@@ -856,9 +856,9 @@ class AppListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(
-                    membership_app_id=int(self.value()),
-                    display=True)
+            queryset = queryset.filter(
+                    membership_app_id=int(self.value()))
+        queryset = queryset.filter(display=True)
         return queryset
 
 
