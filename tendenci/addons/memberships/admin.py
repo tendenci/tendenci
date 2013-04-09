@@ -838,14 +838,6 @@ class AppListFilter(SimpleListFilter):
     title = _('Membership App')
     parameter_name = 'membership_app_id'
 
-    def value(self):
-        value = super(AppListFilter, self).value()
-        try:
-            value = int(value)
-        except:
-            value = 0
-        return value
-
     def lookups(self, request, model_admin):
         apps_list = MembershipApp.objects.filter(
                         status=True,
