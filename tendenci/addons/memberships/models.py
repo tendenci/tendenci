@@ -285,6 +285,11 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
 
+    discount_amount = models.DecimalField(_('Discount Amount'), 
+                                          max_digits=10, 
+                                          decimal_places=2,
+                                          default=0)
+
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
@@ -306,6 +311,7 @@ class MembershipSet(models.Model):
         price = 0
         for membership in memberships:
             price += membership.get_price()
+        price -= self.discount_amount
 
         invoice.subtotal = price
         invoice.total = price
@@ -433,10 +439,6 @@ class MembershipDefault(TendenciBaseModel):
     payment_method = models.ForeignKey(PaymentMethod, null=True)
     override = models.BooleanField(default=False)
     override_price = models.FloatField(null=True)
-    discount_amount = models.DecimalField(_('Discount Amount'), 
-                                          max_digits=10, 
-                                          decimal_places=2,
-                                          default=0)
     exported = models.BooleanField()
     chapter = models.CharField(max_length=150, blank=True)
     areas_of_expertise = models.CharField(max_length=1000, blank=True)
@@ -1183,7 +1185,7 @@ class MembershipDefault(TendenciBaseModel):
         if self.renewal:
             return self.membership_type.renewal_price or 0
         else:
-            return self.membership_type.price + (self.membership_type.admin_fee or 0) - self.discount_amount
+            return self.membership_type.price + (self.membership_type.admin_fee or 0)
 
     def get_corp_memb_threshold_price(self, corporate_membership_id):
         """

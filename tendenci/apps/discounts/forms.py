@@ -69,7 +69,7 @@ class DiscountForm(TendenciBaseForm):
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
 
         MODELS_WITH_DISCOUNT = ['registrationconfiguration',
-                                'membershipdefault']
+                                'membershipset']
         content_types = ContentType.objects.filter(model__in=MODELS_WITH_DISCOUNT)
         self.fields['apps'].choices = ((c.id, c.app_label) for c in content_types)
             

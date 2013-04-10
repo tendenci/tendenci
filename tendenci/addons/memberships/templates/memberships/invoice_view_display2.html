@@ -30,7 +30,18 @@
 	    <td class="td-right">
 	        {{ membership.get_price|format_currency }}
 	    </td>
-    </td>
+    </tr>
         {% endfor %}
     {% endif %}
 {% endwith %}
+
+{% if obj.discount_amount > 0 %}
+    <tr>
+        <td>
+            {% trans "Discount amount applied" %}
+        </td>
+        <td class="td-right">
+            - {{ obj.discount_amount|format_currency }}
+        </td>
+    </tr>
+{% endif %}

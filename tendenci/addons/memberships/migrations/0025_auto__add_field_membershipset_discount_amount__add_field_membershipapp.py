@@ -8,8 +8,8 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding field 'MembershipDefault.discount_amount'
-        db.add_column('memberships_membershipdefault', 'discount_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=10, decimal_places=2), keep_default=False)
+        # Adding field 'MembershipSet.discount_amount'
+        db.add_column('memberships_membershipset', 'discount_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=10, decimal_places=2), keep_default=False)
 
         # Adding field 'MembershipApp.discount_eligible'
         db.add_column('memberships_membershipapp', 'discount_eligible', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
@@ -17,8 +17,8 @@ class Migration(SchemaMigration):
 
     def backwards(self, orm):
         
-        # Deleting field 'MembershipDefault.discount_amount'
-        db.delete_column('memberships_membershipdefault', 'discount_amount')
+        # Deleting field 'MembershipSet.discount_amount'
+        db.delete_column('memberships_membershipset', 'discount_amount')
 
         # Deleting field 'MembershipApp.discount_eligible'
         db.delete_column('memberships_membershipapp', 'discount_eligible')
@@ -40,7 +40,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 4, 10, 4, 14, 49, 232179)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 4, 10, 5, 26, 58, 797296)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -48,7 +48,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 4, 10, 4, 14, 49, 232072)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 4, 10, 5, 26, 58, 797161)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -475,7 +475,6 @@ class Migration(SchemaMigration):
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'directory': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['directories.Directory']", 'null': 'True', 'blank': 'True'}),
             'directory_type': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'discount_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '10', 'decimal_places': '2'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'memberships_membershipdefault_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'expire_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'exported': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -585,6 +584,7 @@ class Migration(SchemaMigration):
         },
         'memberships.membershipset': {
             'Meta': {'object_name': 'MembershipSet'},
+            'discount_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '10', 'decimal_places': '2'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'invoice': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['invoices.Invoice']"})
         },

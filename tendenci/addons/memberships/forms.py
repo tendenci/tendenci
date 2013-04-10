@@ -1,6 +1,5 @@
 from uuid import uuid4
 from captcha.fields import CaptchaField
-from decimal import Decimal
 from os.path import join
 from datetime import datetime
 from hashlib import md5
@@ -42,8 +41,6 @@ from tendenci.apps.notifications.utils import send_welcome_email
 from tendenci.addons.educations.models import Education
 from tendenci.addons.careers.models import Career
 from tendenci.apps.entities.models import Entity
-from tendenci.apps.discounts.models import Discount, DiscountUse
-from tendenci.apps.discounts.utils import assign_discount
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
