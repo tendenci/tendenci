@@ -2270,11 +2270,7 @@ class MembershipAppField(OrderingBaseModel):
                             for field in MembershipDefault._meta.fields])
             if field_name in membership_fields:
                 fld = membership_fields[field_name]
-        if not fld:
-            membershipdemographic_fields = dict([(field.name, field) \
-                            for field in MembershipDemographic._meta.fields])
-            if field_name in membershipdemographic_fields:
-                fld = membershipdemographic_fields[field_name]
+
         if fld:
             field_type = fld.get_internal_type()
             if not field_type in available_field_types:
