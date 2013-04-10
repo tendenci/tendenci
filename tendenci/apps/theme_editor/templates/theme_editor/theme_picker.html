@@ -14,21 +14,24 @@
 {% block body %}
 <h1>{% trans "Theme Picker" %}</h1>
 
-{% if themes %}
 {% for theme in themes %}
     {% theme_detail theme current_theme%}
 {% endfor %}
-
-{% endif %}
 
 {% endblock %}
 {% block extra_body %}
 {{ block.super }}
 <script type="text/javascript" src="{{ STATIC_URL }}js/lightbox/jquery.lightbox_me.js"></script>
 <script type="text/javascript">
+    $(".theme-info").each(function(){
+        if ( $(this).attr('data') == "{{ current_theme }}" ){
+            $(this).addClass('selected');
+        }
+    });
+
     $('.screenshot img').click(function(){
-        var data = $(this).parents('.theme-info').attr('data')
-        console.log(data)
+        var data = $(this).parents('.theme-info').attr('data');
+
         $('.lightbox').each(function(){
             if ( $(this).attr('data') == data ){
                 $(this).lightbox_me({
@@ -38,14 +41,6 @@
             }
         });
     });
-    $(".theme-info").each(function(){
-        if ( $(this).attr('data') == "{{ current_theme }}" ){
-            $(this).addClass('selected');
-        }
-    });
-    $(".theme-info").click(function(){
-        $(".theme-info").removeClass('selected');
-        $(this).addClass('selected');
-    });
+
 </script>
 {% endblock %}

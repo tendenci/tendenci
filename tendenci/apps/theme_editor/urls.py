@@ -10,4 +10,3 @@ urlpatterns = patterns('tendenci.apps.theme_editor.views',
     url(r'^upload/$', 'upload_file', name="theme_editor.upload"),
     url(r'^theme_picker/$', 'theme_picker', name='theme_editor.picker'),
 )
-

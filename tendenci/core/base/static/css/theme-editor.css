@@ -324,61 +324,66 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 /* Theme Picker styles */
 
 .theme-info {
-	border: 1px solid #CCC;
+  overflow: hidden;
+	border: 1px solid gray;
 	padding: 10px;
 	margin: 10px 0;
 	background-color: white;
-    position: relative;
+  position: relative;
+
+  float: left;
+  width: 400px;
+  margin: 8px;
+  height: 160px;
+
 }
 .theme-info.selected {
-    border: 4px solid #01437D;
+    background-color: lightyellow;
+    box-shadow: 0px 0px 20px #d9d9d9;
 }
 .theme-info table {
 	width: 100%;
-    cursor: pointer
 }
 .theme-info table td {
 	vertical-align: top;
 }
 .theme-info table td.screenshot {
-	width: 1%;
-    padding-right: 20px;
+  background: white;
 }
 .theme-info table td.screenshot img {
-	padding: 5px;
+  cursor: pointer;
+
+  padding: 5px;
 	border: 1px solid gray;
-    width: 122px;
+
+  width: 200px;
+  position: absolute;
+  top: -10px;
+  left: -40px;
+  box-shadow: 10px 0px 20px #d9d9d9;
 }
 .lightbox img{
-    max-width: 800px;
-    max-height: 600px;
+  max-width: 800px;
+  max-height: 600px;
 }
-
 .theme-info table td.info {
-    font-size: 12px;
-    line-height: 16px;
+  padding-left: 170px;
+  font-size: 12px;
+  line-height: 16px;
 }
 .theme-info table td.info h2 {
-	margin: 0 0 10px;
-    font-size: 16px;
+  font-size: 16px;
+  margin: 0 0 7px;
 }
 .theme-info table td.info .author-info {
-    margin: 10px 0;
+    margin: 7px 0;
 }
 .theme-info table td.info .extra-info {
-    font-size: 12px;
-    height: 35px;
+  margin-top: 10px;
 }
 .theme-info table td.info .version {
-    font-size: 12px;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
 }
 .theme-info table td.info .tags {
-    font-size: 12px;
-    position: absolute;
-    bottom: 10px;
 }
 .theme_picker_form .theme_picker_submit {
 	overflow: visible; /* ie7 and below: remove extra padding on button */
