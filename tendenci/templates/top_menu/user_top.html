@@ -83,6 +83,9 @@
                     <ul>
                         <li><a href="{% url profile request.user.username %}">{% trans "My User Profile" %}</a></li>
                         <li><a href="{% url invoice.search %}?bill_to_email={{ request.user.email }}">{% trans "My Invoices" %}</a></li>
+                        {% if MODULE_CORPORATE_MEMBERSHIPS_ENABLED %}
+                            <li><a href="{% url corpmembership.mycorps %}">{% trans "My Corporate Memberships" %}</a></li>
+                        {% endif %}
                         <li><a href="{% url profile request.user.username %}">{% trans "My Memberships" %}</a></li>
                         <li><a href="{% url contribution.search %}">{% trans "My Content" %}</a></li>
                     </ul>

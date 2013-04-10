@@ -40,6 +40,10 @@ if "tendenci.apps.notifications" in settings.INSTALLED_APPS:
                     "corp_memb_paid",
                     _("Payment Received for Corporate Membership"),
                     _("Payment for a corporate membership has been received."))
+        notification.create_notice_type(
+                    "corp_memb_notice_email",
+                    _("Corporate Membership Notice Email"),
+                    _("Custom Notice for Corporate Memberships"))
 
     post_syncdb.connect(create_notice_types, sender=notification)
 else:

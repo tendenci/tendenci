@@ -1,28 +1,20 @@
 # encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+import traceback
+from south.v2 import DataMigration
+from django.core.management import call_command
 
-class Migration(SchemaMigration):
+
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        
-        # Adding field 'MembershipDefault.discount_amount'
-        db.add_column('memberships_membershipdefault', 'discount_amount', self.gf('django.db.models.fields.DecimalField')(default=0, max_digits=10, decimal_places=2), keep_default=False)
-
-        # Adding field 'MembershipApp.discount_eligible'
-        db.add_column('memberships_membershipapp', 'discount_eligible', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
-
+        try:
+            call_command('assign_default_app', verbosity=0)
+        except:
+            print traceback.format_exc()
+            print 'Please re-run the management command "assign_default_app".'
 
     def backwards(self, orm):
-        
-        # Deleting field 'MembershipDefault.discount_amount'
-        db.delete_column('memberships_membershipdefault', 'discount_amount')
-
-        # Deleting field 'MembershipApp.discount_eligible'
-        db.delete_column('memberships_membershipapp', 'discount_eligible')
-
+        pass
 
     models = {
         'auth.group': {
@@ -40,7 +32,7 @@ class Migration(SchemaMigration):
         },
         'auth.user': {
             'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 12, 4, 33, 21, 568615)'}),
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 28, 9, 15, 59, 986607)'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -48,7 +40,7 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 3, 12, 4, 33, 21, 568508)'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 2, 28, 9, 15, 59, 986387)'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
@@ -402,7 +394,6 @@ class Migration(SchemaMigration):
             'creator': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'memberships_membershipapp_creator'", 'null': 'True', 'to': "orm['auth.User']"}),
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'discount_eligible': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'memberships_membershipapp_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'guid': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -449,6 +440,7 @@ class Migration(SchemaMigration):
             'allow_member_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_edit': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'allow_user_view': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'app': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['memberships.MembershipApp']", 'null': 'True'}),
             'application_abandoned': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'application_abandoned_dt': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
             'application_abandoned_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'application_abandond_set'", 'null': 'True', 'to': "orm['auth.User']"}),
@@ -474,7 +466,6 @@ class Migration(SchemaMigration):
             'creator_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'directory': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['directories.Directory']", 'null': 'True', 'blank': 'True'}),
             'directory_type': ('django.db.models.fields.CharField', [], {'max_length': '50', 'blank': 'True'}),
-            'discount_amount': ('django.db.models.fields.DecimalField', [], {'default': '0', 'max_digits': '10', 'decimal_places': '2'}),
             'entity': ('django.db.models.fields.related.ForeignKey', [], {'default': 'None', 'related_name': "'memberships_membershipdefault_entity'", 'null': 'True', 'blank': 'True', 'to': "orm['entities.Entity']"}),
             'expire_dt': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'exported': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),

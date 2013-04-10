@@ -42,9 +42,9 @@ urlpatterns = patterns('tendenci.addons',
     url(r'^$', 'photos.views.photoset_view_latest', name='photoset_latest'),
     url(r'^search/$', 'photos.views.search', name='photos_search'),
     # /photos/batch-add/
-    url(r'^batch-add/$', 'photos.views.photos_batch_add', name='photos_batch_add'),
+    url(r'^batch-add/$', 'photos.views.photos_batch_add', {'SSL':False}, name='photos_batch_add'),
     # /photos/batch-add/36/
-    url(r'^batch-add/(?P<photoset_id>\d+)$', 'photos.views.photos_batch_add', name='photos_batch_add'),
+    url(r'^batch-add/(?P<photoset_id>\d+)$', 'photos.views.photos_batch_add', {'SSL':False}, name='photos_batch_add'),
     # /photos/batch-edit/
     url(r'^batch-edit/$', 'photos.views.photos_batch_edit', name='photos.views.photos_batch_edit'),
     # /photos/batch-edit/36

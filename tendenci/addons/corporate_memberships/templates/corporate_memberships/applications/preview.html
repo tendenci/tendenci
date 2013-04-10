@@ -54,9 +54,9 @@
             <a class="close" href="#">×</a>
             <p>
                 This is the preview{% if current_app.id == app.id%}
-                of the <a href="{% url corpmembership.add %}">current application</a>.
+                of the <a href="{% url corpmembership.add current_app.slug %}">current application</a>.
                 {% else %}
-                - Not the current application.
+               . This application is NOT the current application. <a href="{% url corpmembership.add current_app.slug %}">Click here to view current application</a>.
                 {% endif %}
             </p>
         </div>

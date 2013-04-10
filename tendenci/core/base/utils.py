@@ -3,10 +3,14 @@ import re
 from datetime import datetime
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
+import codecs
+import cStringIO
+import csv
 
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.files.storage import default_storage
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.template.loader import get_template
 from django.template import TemplateDoesNotExist
 
@@ -68,23 +72,23 @@ def localize_date(date, from_tz=None, to_tz=None):
         
     return adjust_datetime_to_timezone(date,from_tz=from_tz,to_tz=to_tz)
 
+
 def tcurrency(mymoney):
     """
         format currency - GJQ
         ex: 30000.232 -> $30,000.23
             -30000.232 -> $(30,000.23)
     """
-    import locale
-    locale.setlocale(locale.LC_ALL, '')
     currency_symbol = get_setting("site", "global", "currencysymbol")
-   
-    if not currency_symbol: currency_symbol = "$"
+
+    if not currency_symbol:
+        currency_symbol = "$"
 
     if not isinstance(mymoney, str):
         if mymoney >= 0:
-            return currency_symbol + locale.format('%.2f', mymoney, True)
+            return currency_symbol + intcomma(mymoney)
         else:
-            return currency_symbol + '(%s)' % (locale.format('%.2f', abs(mymoney), True))
+            return currency_symbol + '(%s)' % intcomma(mymoney)
     else:
         return mymoney
     
@@ -597,3 +601,63 @@ def get_pagination_page_range(num_pages, max_num_in_group=10,
     return page_range
 
 
+class UTF8Recoder:
+    """
+    Iterator that reads an encoded stream and reencodes the input to UTF-8
+    """
+    def __init__(self, f, encoding):
+        self.reader = codecs.getreader(encoding)(f)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self.reader.next().encode("utf-8")
+
+
+class UnicodeReader:
+    """
+    A CSV reader which will iterate over lines in the CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        f = UTF8Recoder(f, encoding)
+        self.reader = csv.reader(f, dialect=dialect, **kwds)
+
+    def next(self):
+        row = self.reader.next()
+        return [unicode(s, "utf-8") for s in row]
+
+    def __iter__(self):
+        return self
+
+
+class UnicodeWriter:
+    """
+    A CSV writer which will write rows to CSV file "f",
+    which is encoded in the given encoding.
+    """
+
+    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+        # Redirect output to a queue
+        self.queue = cStringIO.StringIO()
+        self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
+        self.stream = f
+        self.encoder = codecs.getincrementalencoder(encoding)()
+
+    def writerow(self, row):
+        self.writer.writerow([s.encode("utf-8") for s in row])
+        # Fetch UTF-8 output from the queue ...
+        data = self.queue.getvalue()
+        data = data.decode("utf-8")
+        # ... and reencode it into the target encoding
+        data = self.encoder.encode(data)
+        # write to the target stream
+        self.stream.write(data)
+        # empty queue
+        self.queue.truncate(0)
+
+    def writerows(self, rows):
+        for row in rows:
+            self.writerow(row)

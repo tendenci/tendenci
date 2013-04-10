@@ -1,3 +1,4 @@
+import os
 import math
 import hashlib
 from hashlib import md5
@@ -38,6 +39,7 @@ from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
+from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification,
@@ -51,8 +53,8 @@ from tendenci.core.perms.utils import get_notice_recipients
 from tendenci.apps.discounts.models import Discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
-    MembershipType, Notice, MembershipImport, MembershipDefault,
-    MembershipImportData, MembershipApp)
+    MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
+    MembershipImportData, MembershipApp, MembershipAppField)
 from tendenci.addons.memberships.forms import (
     MembershipExportForm, AppCorpPreForm, MembershipForm, MembershipDefaultForm,
     MemberApproveForm, ReportForm, EntryEditForm, ExportForm,
@@ -193,7 +195,7 @@ def download_template(request, slug=''):
 
 def application_detail_default(request, **kwargs):
     """
-    Returns default membership applicaiton response
+    Returns default membership application response
     """
 
     if request.method == 'POST':
@@ -430,6 +432,8 @@ def application_details(request, template_name="memberships/applications/details
 
 
 def application_details_corp_pre(request, slug, cmb_id=None, template_name="memberships/applications/details_corp_pre.html"):
+    # redirect to the new system
+    return redirect(reverse('membership_default.corp_pre_add'))
 
     try:
         app = App.objects.get(slug=slug)
@@ -539,7 +543,7 @@ def application_confirmation_default(request, hash):
             raise Http404
         app = corp_app.memb_app
     else:
-        app = MembershipApp.objects.current_app()
+        app = membership.app
 
     return render_to_response(
         template_name, {
@@ -964,9 +968,13 @@ def membership_default_import_upload(request,
     if not request.user.profile.is_superuser:
         raise Http403
 
+    # make sure the site has membership types set up
+    memb_type_exists = MembershipType.objects.all().exists()
+    memb_app_exists = MembershipApp.objects.all().exists()
+
     form = MembershipDefaultUploadForm(request.POST or None,
                                        request.FILES or None)
-    if request.method == 'POST':
+    if request.method == 'POST' and memb_type_exists and memb_app_exists:
         if form.is_valid():
             memb_import = form.save(commit=False)
             memb_import.creator = request.user
@@ -975,10 +983,6 @@ def membership_default_import_upload(request,
             # redirect to preview page.
             return redirect(reverse('memberships.default_import_preview',
                                      args=[memb_import.id]))
-
-    # make sure the site has membership types set up
-    memb_type_exists = MembershipType.objects.all(
-                                    ).exists()
 
     # list of foreignkey fields
     user_fks = [field.name for field in User._meta.fields \
@@ -998,6 +1002,7 @@ def membership_default_import_upload(request,
     return render_to_response(template_name, {
         'form': form,
         'memb_type_exists': memb_type_exists,
+        'memb_app_exists': memb_app_exists,
         'foreign_keys': foreign_keys
         }, context_instance=RequestContext(request))
 
@@ -1077,7 +1082,8 @@ def membership_default_import_preview(request, mimport_id,
         # to be efficient, we only process memberships on the current page
         fieldnames = None
         for idata in data_list:
-            user_display = imd.process_default_membership(idata.row_data)
+            user_display = imd.process_default_membership(idata)
+
             user_display['row_num'] = idata.row_num
             users_list.append(user_display)
             if not fieldnames:
@@ -1154,6 +1160,29 @@ def membership_default_import_status(request, mimport_id,
     return render_to_response(template_name, {
         'mimport': mimport,
         }, context_instance=RequestContext(request))
+
+
+@login_required
+def membership_default_import_download_recap(request, mimport_id):
+    """
+    Download import recap.
+    """
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+    invalidate('memberships_membershipimport')
+    mimport = get_object_or_404(MembershipImport,
+                                    pk=mimport_id)
+    filename = os.path.split(mimport.recap_file.name)[1]
+
+    recap_path = mimport.recap_file.name
+    if default_storage.exists(recap_path):
+        response = HttpResponse(default_storage.open(recap_path).read(),
+                                mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
+    else:
+        raise Http404
 
 
 @csrf_exempt
@@ -1340,18 +1369,33 @@ def get_app_fields_json(request):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    app_fields = render_to_string('memberships/app_fields.json',
-                               {}, context_instance=None)
+    complete_list = simplejson.loads(
+        render_to_string('memberships/app_fields.json'))
+    return HttpResponse(simplejson.dumps(complete_list))
 
-    return HttpResponse(simplejson.dumps(simplejson.loads(app_fields)))
+
+@csrf_exempt
+@login_required
+def get_taken_fields(request):
+    """
+    Returns a list of json fields no longer available.
+    Data type returned is JSON.
+    """
+    app_pk = request.POST.get('app_pk') or 0
+    taken_list = MembershipAppField.objects.filter(
+        Q(field_name__startswith='ud'), (Q(display=True) | Q(admin_only=True))).exclude(
+            membership_app=app_pk).values_list(
+                'field_name', flat=True)
+
+    return HttpResponse(simplejson.dumps(list(taken_list)))
 
 
-def membership_default_preview(request, app_id,
-                           template='memberships/applications/preview.html'):
+def membership_default_preview(
+        request, slug, template='memberships/applications/preview.html'):
     """
     Membership default preview.
     """
-    app = get_object_or_404(MembershipApp, pk=app_id)
+    app = get_object_or_404(MembershipApp, slug=slug)
     is_superuser = request.user.profile.is_superuser
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
@@ -1375,7 +1419,23 @@ def membership_default_preview(request, app_id,
     return render_to_response(template, context, RequestContext(request))
 
 
-def membership_default_add(request,
+def membership_default_add_legacy(request):
+    """
+    Handle the legacy default add - redirect it to an app
+    for non-corporate individuals.
+    """
+    [app] = MembershipApp.objects.filter(
+                           use_for_corp=False,
+                           status=True,
+                           status_detail__in=['active', 'published']
+                           ).order_by('id')[:1] or [None]
+    if not app:
+        raise Http404
+
+    return redirect(reverse('membership_default.add', args=[app.slug]))
+
+
+def membership_default_add(request, slug='',
                     template='memberships/applications/add.html',
                     **kwargs):
     """
@@ -1409,7 +1469,7 @@ def membership_default_add(request,
             raise Http404
 
         #app = corp_app.memb_app
-        app = MembershipApp.objects.current_app()
+        app = corp_app.memb_app
 
         cm_id = kwargs.get('cm_id')
         if not cm_id:
@@ -1445,7 +1505,10 @@ def membership_default_add(request,
                                     args=[cm_id]))
 
     else:
-        app = MembershipApp.objects.current_app()
+        app = get_object_or_404(MembershipApp, slug=slug)
+
+        if app.use_for_corp:
+            return redirect(reverse('membership_default.corp_pre_add'))
 
     if not app:
         raise Http404
@@ -1459,11 +1522,13 @@ def membership_default_add(request,
     if not request.user.profile.is_superuser:
         app_fields = app_fields.filter(admin_only=False)
 
-    app_fields = app_fields.order_by('order')
+    app_fields = app_fields.order_by('position')
     if not join_under_corporate:
         # exclude the corp memb field if not join under corporate
         app_fields = app_fields.exclude(field_name='corporate_membership_id')
 
+    user_form = UserForm(app_fields, request.POST or None)
+    profile_form = ProfileForm(app_fields, request.POST or None)
     user_initial = {}
     if user:
         user_initial = {
@@ -1510,7 +1575,8 @@ def membership_default_add(request,
         initial=profile_initial
     )
 
-    params = {'request_user': request.user,
+    params = {
+        'request_user': request.user,
         'membership_app': app,
         'join_under_corporate': join_under_corporate,
         'corp_membership': corp_membership,
@@ -1550,9 +1616,13 @@ def membership_default_add(request,
             'license_number': membership.license_number,
             'license_state': membership.license_state,
         }
+    multiple_membership = app.allow_multiple_membership
+    if membership or join_under_corporate:
+        multiple_membership = False
 
     membership_form = MembershipDefault2Form(app_fields,
-        request.POST or None, initial=membership_initial, **params)
+        request.POST or None, initial=membership_initial,
+        multiple_membership=multiple_membership, **params)
 
     captcha_form = CaptchaForm(request.POST or None)
     if request.user.is_authenticated() or not app.use_captcha:
@@ -1563,52 +1633,90 @@ def membership_default_add(request,
         del membership_form.fields['discount_code']
 
     if request.method == 'POST':
+        membership_types = request.POST.getlist('membership_type')
+        post_values = request.POST.copy()
+        memberships = []
+        for type in membership_types:
+            post_values['membership_type'] = type
+            membership_form2 = MembershipDefault2Form(
+                app_fields, post_values, initial=membership_initial, **params)
 
-        # tuple with boolean items
-        good = (
-            user_form.is_valid(),
-            profile_form.is_valid(),
-            demographics_form.is_valid(),
-            membership_form.is_valid(),
-            captcha_form.is_valid()
-        )
-
-        # form is valid
-        if all(good):
-
-            user = user_form.save()
-
-            profile_form.instance = user.profile
-            profile_form.save(
-                request_user=request.user
+            # tuple with boolean items
+            good = (
+                user_form.is_valid(),
+                profile_form.is_valid(),
+                demographics_form.is_valid(),
+                membership_form2.is_valid(),
+                captcha_form.is_valid()
             )
 
-            # save demographics
-            demographics = demographics_form.save(commit=False)
-            if hasattr(user, 'demographics'):
-                demographics.pk = user.demographics.pk
+            # form is valid
+            if all(good):
 
-            demographics.user = user
-            demographics.save()
+                user = user_form.save()
 
-            membership = membership_form.save(
-                request=request,
-                user=user,
-            )
+                profile_form.instance = user.profile
+                profile_form.save(
+                    request_user=request.user
+                )
+
+                # save demographics
+                demographics = demographics_form.save(commit=False)
+                if hasattr(user, 'demographics'):
+                    demographics.pk = user.demographics.pk
+
+                demographics.user = user
+                demographics.save()
+
+                membership = membership_form2.save(
+                    request=request,
+                    user=user,
+                )
+                memberships.append(membership)
+
+        if memberships:
+            membership_set = MembershipSet()
+            invoice = membership_set.save_invoice(memberships)
+
+            for membership in memberships:
+                membership.membership_set = membership_set
+                if membership.approval_required() or (
+                        join_under_corporate and authentication_method == 'admin'):
+                    membership.pend()
+                else:
+                    membership.approve(request_user=request.user)
+                    membership.send_email(request, 'approve')
+
+                # application complete
+                membership.application_complete_dt = datetime.now()
+                membership.application_complete_user = membership.user
+
+                # save application fields
+                membership.save()
+
+                if membership.application_approved:
+                    membership.archive_old_memberships()
+                    membership.save_invoice(status_detail='tendered')
+                else:
+                    membership.save_invoice(status_detail='estimate')
+
+                membership.user.profile.refresh_member_number()
+
+                # log an event
+                EventLog.objects.log(instance=membership)
 
             # redirect: payment gateway
-            if membership.is_paid_online():
+            if membership_set.is_paid_online():
                 return HttpResponseRedirect(reverse(
                     'payment.pay_online',
-                    args=[membership.get_invoice().pk,
-                        membership.get_invoice().guid]
+                    args=[invoice.pk, invoice.guid]
                 ))
 
             # redirect: membership edit page
             if request.user.profile.is_superuser:
                 return HttpResponseRedirect(reverse(
                     'admin:memberships_membershipdefault_change',
-                    args=[membership.pk],
+                    args=[memberships[0].pk],
                 ))
 
             # send email notification to admin
@@ -1626,7 +1734,7 @@ def membership_default_add(request,
             # redirect: confirmation page
             return HttpResponseRedirect(reverse(
                 'membership.application_confirmation_default',
-                args=[membership.guid]
+                args=[memberships[0].guid]
             ))
 
     context = {
@@ -1656,7 +1764,7 @@ def membership_default_corp_pre_add(request, cm_id=None,
 #    if not app.corp_app:
 #        raise Http404
     corp_app = CorpMembershipApp.objects.current_app()
-    app = MembershipApp.objects.current_app()
+    app = corp_app.memb_app
     if not app:
         raise Http404
 
@@ -1971,7 +2079,7 @@ def report_active_members(request, template_name='reports/membership_list.html')
 
             table_data.append([
                 mem.user.username,
-                mem.user.get_full_name,
+                mem.user.get_full_name(),
                 mem.user.email,
                 mem.membership_type.name,
                 mem.join_dt,

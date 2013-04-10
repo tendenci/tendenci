@@ -12,9 +12,13 @@ from django.http import HttpResponse
 from django.utils.html import escape
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import SimpleListFilter
+from django.utils.encoding import force_unicode
 
 from tendenci.addons.memberships.forms import MembershipTypeForm
 from tendenci.apps.user_groups.models import Group
+from tendenci.core.base.utils import tcurrency
 from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.addons.memberships.models import (Membership, MembershipDefault,
                                                 MembershipType, Notice,
@@ -23,7 +27,8 @@ from tendenci.addons.memberships.models import (Membership, MembershipDefault,
                                                 MembershipApp)
 from tendenci.addons.memberships.forms import (MembershipDefaultForm, AppForm,
                             NoticeForm, AppFieldForm, AppEntryForm,
-                            MembershipAppForm)
+                            MembershipAppForm,
+                            MembershipAppFieldAdminForm)
 from tendenci.addons.memberships.utils import (get_default_membership_fields,
                                                edit_app_update_corp_fields,
                                                get_selected_demographic_field_names)
@@ -216,7 +221,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
     )
 
     def get_fieldsets(self, request, instance=None):
-        demographics_fields = get_selected_demographic_field_names()
+        demographics_fields = get_selected_demographic_field_names(
+                                        instance and instance.app)
 
         if demographics_fields:
             demographics = (
@@ -252,6 +258,23 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         return instance.get_status().capitalize()
     get_status.short_description = u'Status'
 
+    def get_invoice(self, instance):
+        if instance.get_invoice():
+            if instance.get_invoice().balance > 0:
+                return '<a href="%s">Invoice %s (%s)</a>' % (
+                    instance.get_invoice().get_absolute_url(),
+                    instance.get_invoice().pk,
+                    tcurrency(instance.get_invoice().balance)
+                )
+            else:
+                return '<a href="%s">Invoice %s</a>' % (
+                    instance.get_invoice().get_absolute_url(),
+                    instance.get_invoice().pk
+                )
+        return ""
+    get_invoice.short_description = u'Invoice'
+    get_invoice.allow_tags = True
+
     def get_create_dt(self, instance):
         return instance.create_dt.strftime('%b %d, %Y, %I:%M %p')
     get_create_dt.short_description = u'Created On'
@@ -280,9 +303,10 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         'name',
         'email',
         'member_number',
-        'membership_type',
+        'membership_type_link',
         'get_approve_dt',
         'get_status',
+        'get_invoice',
     ]
 
     list_filter = [
@@ -307,9 +331,26 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         Intercept add page and redirect to form.
         """
-        return HttpResponseRedirect(
-            reverse('membership_default.add')
-        )
+        apps = MembershipApp.objects.filter(
+                                status=True,
+                                status_detail__in=['published',
+                                                   'active']
+                                            )
+        count = apps.count()
+        if count == 1:
+            app = apps[0]
+            if app.use_for_corp:
+                return HttpResponseRedirect(
+                    reverse('membership_default.corp_pre_add')
+                )
+            else:
+                return HttpResponseRedirect(
+                    reverse('membership_default.add', args=[app.slug])
+                )
+        else:
+            return HttpResponseRedirect(
+                reverse('admin:memberships_membershipapp_changelist')
+            )
 
     def queryset(self, request):
         qs = super(MembershipDefaultAdmin, self).queryset(request)
@@ -397,25 +438,22 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
 
 class MembershipAppFieldAdmin(admin.TabularInline):
     model = MembershipAppField
-    fields = ('label', 'field_name', 'display',
-              'required', 'admin_only', 'order',
-              )
-#    readonly_fields = ('field_name',)
+    fields = ('label', 'field_name', 'display', 'required', 'admin_only', 'position',)
     extra = 0
     can_delete = False
     verbose_name = 'Section Break'
-    ordering = ("order",)
+    ordering = ("position",)
     template = "memberships/admin/membershipapp/tabular.html"
 
 
 class MembershipAppAdmin(admin.ModelAdmin):
     inlines = (MembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'status', 'status_detail')
+    list_display = ('name', 'application_form_link', 'status', 'status_detail')
     search_fields = ('name', 'status', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'description',
-                           'confirmation_text', 'notes',
+                           'confirmation_text', 'notes', 'allow_multiple_membership',
                            'membership_types', 'payment_methods',
                            'use_for_corp', 'use_captcha', 'discount_eligible')},),
         ('Permissions', {'fields': ('allow_anonymous_view',)}),
@@ -428,11 +466,6 @@ class MembershipAppAdmin(admin.ModelAdmin):
             'status',
             'status_detail',
         )}),
-#        ('Add fields to your form', {'fields': ('app_field_selection',),
-#                                     'classes': ('mapped-fields', ),
-#                                     'description': 'The fields you ' + \
-#                                     'selected will be automatically ' + \
-#                                     'added to your form.'}),
     )
 
     form = MembershipAppForm
@@ -801,8 +834,116 @@ class AppEntryAdmin(admin.ModelAdmin):
         self.list_display_links = (None, )
 
 
+class AppListFilter(SimpleListFilter):
+    title = _('Membership App')
+    parameter_name = 'membership_app_id'
+
+    def lookups(self, request, model_admin):
+        apps_list = MembershipApp.objects.filter(
+                        status=True,
+                        status_detail__in=['active', 'published']
+                        ).values_list('id', 'name'
+                        ).order_by('id')
+        return [(app_tuple[0], app_tuple[1]) for app_tuple in apps_list]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = queryset.filter(
+                    membership_app_id=int(self.value()))
+        queryset = queryset.filter(display=True)
+        return queryset
+
+
+class MembershipAppField2Admin(admin.ModelAdmin):
+    model = MembershipAppField
+    list_display = ['label', 'field_name', 'display',
+              'required', 'admin_only', 'position',
+              ]
+
+    readonly_fields = ('membership_app', 'field_name')
+
+    list_editable = ['position']
+    ordering = ("position",)
+    list_filter = (AppListFilter,)
+    form = MembershipAppFieldAdminForm
+
+    class Media:
+        js = (
+            '%sjs/jquery-1.6.2.min.js' % settings.STATIC_URL,
+            'js/jquery-ui-1.8.17.custom.min.js',
+            '%sjs/admin/admin-list-reorder.js' % settings.STATIC_URL,
+        )
+
+    def get_fieldsets(self, request, obj=None):
+        extra_fields = ['description', 'help_text',
+                        'choices', 'default_value', 'css_class']
+        if obj:
+            if obj.field_name:
+                extra_fields.remove('description')
+            else:
+                extra_fields.remove('help_text')
+                extra_fields.remove('choices')
+                extra_fields.remove('default_value')
+        fields = ('membership_app', 'label', 'field_name', 'field_type',
+                    ('display', 'required', 'admin_only'),
+                             ) + tuple(extra_fields)
+
+        return ((None, {'fields': fields
+                        }),)
+
+    def get_object(self, request, object_id):
+        obj = super(MembershipAppField2Admin, self).get_object(request, object_id)
+
+        # assign default field_type
+        if obj:
+            if not obj.field_type:
+                if not obj.field_name:
+                    obj.field_type = 'section_break'
+                else:
+                    obj.field_type = MembershipAppField.get_default_field_type(obj.field_name)
+
+        return obj
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_actions(self, request):
+        return None
+
+    def response_change(self, request, obj):
+        """
+        If the 'Save' button is clicked, redirect to fields list
+        with the selected app.
+        """
+        if "_save" in request.POST:
+            opts = obj._meta
+            verbose_name = opts.verbose_name
+            module_name = opts.module_name
+            if obj._deferred:
+                opts_ = opts.proxy_for_model._meta
+                verbose_name = opts_.verbose_name
+                module_name = opts_.module_name
+
+            msg = _('The %(name)s "%(obj)s" was changed successfully.') % {
+                        'name': force_unicode(verbose_name),
+                        'obj': force_unicode(obj)}
+            self.message_user(request, msg)
+            post_url = '%s?membership_app_id=%d' % (
+                            reverse('admin:%s_%s_changelist' %
+                                   (opts.app_label, module_name),
+                                   current_app=self.admin_site.name),
+                            obj.membership_app_id)
+            return HttpResponseRedirect(post_url)
+        else:
+            return super(MembershipAppField2Admin, self).response_change(request, obj)
+
+
 admin.site.register(MembershipDefault, MembershipDefaultAdmin)
 admin.site.register(MembershipApp, MembershipAppAdmin)
+admin.site.register(MembershipAppField, MembershipAppField2Admin)
 admin.site.register(MembershipType, MembershipTypeAdmin)
 admin.site.register(Notice, NoticeAdmin)
 #admin.site.register(App, AppAdmin)

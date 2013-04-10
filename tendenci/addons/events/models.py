@@ -29,10 +29,8 @@ from tendenci.core.files.models import File
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.payments.models import PaymentMethod as GlobalPaymentMethod
 
-from tendenci.addons.events.settings import (FIELD_MAX_LENGTH, 
-                             LABEL_MAX_LENGTH, 
-                             FIELD_TYPE_CHOICES, 
-                             USER_FIELD_CHOICES)
+from tendenci.addons.events.settings import (
+    FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, FIELD_TYPE_CHOICES, USER_FIELD_CHOICES)
 from tendenci.core.base.utils import localize_date
 from tendenci.core.emails.models import Email
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
@@ -610,14 +608,14 @@ class Registration(models.Model):
         self.save()
 
         return invoice
-    
+
     @property
     def has_overridden(self):
         if self.is_table:
             return self.override_table
 
         return self.registrant_set.filter(override=True).exists()
-    
+
 class Registrant(models.Model):
     """
     Event registrant.
@@ -630,13 +628,11 @@ class Registrant(models.Model):
     registration = models.ForeignKey('Registration')
     user = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     amount = models.DecimalField(_('Amount'), max_digits=21, decimal_places=2, blank=True, default=0)
-    # this is a field used for dynamic pricing registrations only
-    pricing = models.ForeignKey('RegConfPricing', null=True)
-    
-    custom_reg_form_entry = models.ForeignKey("CustomRegFormEntry", 
-                                              related_name="registrants", 
-                                              null=True)
-    
+    pricing = models.ForeignKey('RegConfPricing', null=True)  # used for dynamic pricing
+
+    custom_reg_form_entry = models.ForeignKey(
+        "CustomRegFormEntry", related_name="registrants", null=True)
+
     name = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -653,27 +649,32 @@ class Registrant(models.Model):
 
     position_title = models.CharField(max_length=100)
     company_name = models.CharField(max_length=100)
-    
+
     meal_option = models.CharField(max_length=200, default='')
     comments = models.TextField(default='')
-    
+
     is_primary = models.BooleanField(_('Is primary registrant'), default=False)
     override = models.BooleanField(_('Admin Price Override?'), default=False)
-    override_price = models.DecimalField(_('Override Price'), max_digits=21, 
-                                         decimal_places=2, 
-                                         blank=True, 
-                                         default=0)
-    discount_amount = models.DecimalField(_('Discount Amount'), 
-                                          max_digits=10, 
-                                          decimal_places=2,
-                                          default=0)
+    override_price = models.DecimalField(
+        _('Override Price'), max_digits=21,
+        decimal_places=2,
+        blank=True,
+        default=0
+    )
+
+    discount_amount = models.DecimalField(
+        _('Discount Amount'),
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
 
     cancel_dt = models.DateTimeField(editable=False, null=True)
     memberid = models.CharField(_('Member ID'), max_length=50, blank=True, null=True)
-    
+
     checked_in = models.BooleanField(_('Is Checked In?'), default=False)
     checked_in_dt = models.DateTimeField(null=True)
-    
+
     reminder = models.BooleanField(_('Receive event reminders'), default=False)
 
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -1101,22 +1102,29 @@ class Event(TendenciBaseModel):
         if start_dt and not end_dt:
             same_date = start_dt.date() == self.end_dt.date()
             yield {'start_dt':start_dt, 'end_dt':self.end_dt, 'same_date':same_date}
-            
+
     def get_spots_status(self):
         """
         Return a tuple of (spots_taken, spots_available) for this event.
         """
         limit = self.get_limit()
-        spots_taken = Registrant.objects.filter(
-                                    registration__event=self, 
-                                    cancel_dt__isnull=True).count()
-                                    
-        if limit == 0:
-            # no limit
+        payment_required = self.registration_configuration.payment_required
+
+        params = {
+            'registration__event': self,
+            'cancel_dt__isnull': True
+        }
+
+        if payment_required:
+            params['registration__invoice__balance'] = 0
+
+        spots_taken = Registrant.objects.filter(**params).count()
+
+        if limit == 0:  # no limit
             return (spots_taken, -1)
-        
+
         if spots_taken >= limit:
-            return  (spots_taken, 0)
+            return (spots_taken, 0)
 
         return (spots_taken, limit-spots_taken)
 

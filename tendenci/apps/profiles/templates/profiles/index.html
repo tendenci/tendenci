@@ -17,6 +17,12 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/iconrow.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/profiles.css">
 <link type="text/css" href="{{ STATIC_URL }}css/jquery-ui/tabs/ui-1.8.tabs.css" rel="stylesheet" />	
+<style>
+    .app-links{
+        margin: 3px 5em 1em 5em;
+    }
+    
+</style>
 {% endblock %}
 
 {% block body %}
@@ -117,11 +123,27 @@
     {% endif %} 
 
     {% if request.user == user_this or request.user.profile.is_superuser %}
+    {% if MODULE_MEMBERSHIPS_ENABLED %}
     <div class="membership info">
 
 		<h2>Memberships 
-		<a title="Join membership" href="{% url membership_default.add %}?username={{ user_this.username }}" class="glyph plus">+</a>
+		{% if membership_apps %}
+    		<a title="Join membership" href="{% url membership_default.add membership_apps.0.slug %}?username={{ user_this.username }}" class="glyph plus{% if multiple_apps %} toggle-app-links{% endif %}">+</a>
+    	{% else %}
+    	    <a title="Create a membership application" href="{% url admin:memberships_membershipapp_add %}" class="glyph plus">+</a>
+		{% endif %}
 		</h2>
+		
+		{% if multiple_apps %}
+		  <div class="app-links">
+		  {% for app in membership_apps %}
+		      <div>
+		          <a title="Join membership" href="{% url membership_default.add app.slug %}">Join</a>
+		          {{ app.name }}
+		      </div>
+		  {% endfor %}
+		  </div>
+		{% endif %}
 
 		{% if memberships %}
     	<table>
@@ -129,33 +151,41 @@
         		<tr>
         			<td>
                         {% if request.user.profile.is_superuser %}
-        				<a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.member_number }} {{ membership.membership_type }}
+        				{% trans "Member of" %} <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.membership_type }}
         				</a>
                         {% else %}
                         {{ membership.member_number }} {{ membership.membership_type }}
                         {% endif %}
         			</td>
         			<td>
-                        {{ membership.join_dt|date:"M j, Y" }} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
+                        {{ membership.join_dt|date:"M j, Y" }}
+                        
+                        {% if not membership.is_pending %} - {% firstof membership.expire_dt|date:"M j, Y" "Forever" %}
 
                         (grace period: 
                         {{ membership.membership_type.expiration_grace_period }} days)
+                        
+                        {% endif %}
 
                         <span class="inner-mitm">{{ membership.get_status|capfirst}}</span>
 
                         {% if membership.can_renew %}
-                        <a href="{% url membership_default.add %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                        {% if not membership.corporate_membership_id %}
+                        <a href="{% url membership_default.add membership.app.slug %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                        {% else %}
+                        <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}?username={{ membership.user.username }}&membership_type_id={{ membership.membership_type.pk }}">Renew</a>
+                        {% endif %}
                         {% endif %}
 
 	        		</td>
 	        		<td>
-	        			{% if membership.get_entry.invoice %}
-	        			<a href="{% url invoice.view membership.get_entry.invoice.pk %}">
-	        				Balance ${% firstof membership.get_entry.invoice.balance  0|intcomma %}
+	        		    {% with membership.get_invoice as invoice %}
+	        			{% if invoice %}
+	        			<a href="{% url invoice.view invoice.pk %}">
+	        				Balance {{ invoice.balance|format_currency }}
 	        			</a>
-	        			{% else %}
-	        				Balance ${{ 0|intcomma }}
 	        			{% endif %}
+	        			{% endwith %}
 	        		</td>
         		</tr>
         {% endfor %}
@@ -165,6 +195,7 @@
     	{% endif %}
 
     </div>
+     {% endif  %}  
         
 {% endif %}
 
@@ -277,6 +308,14 @@ var iconrow = new dropdown({
 	trigger:	'more-options-trigger',
 	target:		'more-options-target'
 });
+</script>
+<script type="text/javascript">
+    $(".app-links").hide();
+    
+    $(".toggle-app-links").click(function(e){
+        $(".app-links").toggle('slow');
+        e.preventDefault();
+    })
 </script>
 
 {% endblock %}

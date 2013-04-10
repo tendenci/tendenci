@@ -93,34 +93,37 @@ class Group(TendenciBaseModel):
     def is_member(self, user):
         # impersonation
         user = getattr(user, 'impersonated_user', user)
-        return user in self.members.all()
+
+        if isinstance(user, User):
+            return self.members.filter(id=user.id).exists()
+
+        return False
 
     def add_user(self, user, **kwargs):
         """
         add a user to the group; check for duplicates
         return (user, created)
         """
-        from django.db import IntegrityError
-        from django.db import transaction, connection
+        if isinstance(user, User):
 
-        try:
-            GroupMembership.objects.create(**{
-                'group': self,
-                'member': user,
-                'creator_id': kwargs.get('creator_id') or user.pk,
-                'creator_username': kwargs.get('creator_username') or user.username,
-                'owner_id': kwargs.get('owner_id') or user.pk,
-                'owner_username': kwargs.get('owner_username') or user.username,
-                'status': kwargs.get('status') or True,
-                'status_detail': kwargs.get('status_detail') or 'active',
-            })
-            return user, True  # created
-        except IntegrityError:
-            connection._rollback()
-            return user, False
-        except Exception:
-            transaction.rollback()
-            return user, False
+            # first check if user exists
+            if not self.is_member(user):
+
+                params = {
+                        'group': self,
+                        'member': user,
+                        'creator_id': kwargs.get('creator_id') or user.pk,
+                        'creator_username': kwargs.get('creator_username') or user.username,
+                        'owner_id': kwargs.get('owner_id') or user.pk,
+                        'owner_username': kwargs.get('owner_username') or user.username,
+                        'status': kwargs.get('status') or True,
+                        'status_detail': kwargs.get('status_detail') or 'active'
+                        }
+                GroupMembership.objects.create(**params)
+
+                return user, True  # created
+
+        return user, False
 
 
 class GroupMembership(models.Model):

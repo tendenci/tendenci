@@ -216,7 +216,7 @@ def copy_to_theme(request, app=None):
         chosen_file = chosen_file.replace('///', '/')
         chosen_file = chosen_file.replace('//', '/')
 
-    root = os.path.join(settings.PROJECT_ROOT, "templates")
+    root = os.path.join(settings.TENDENCI_ROOT, "templates")
     if app:
         root = app_templates[app]
 

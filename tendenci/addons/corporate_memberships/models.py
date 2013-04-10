@@ -1,21 +1,25 @@
 import operator
+import time
 import uuid
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from functools import partial
 
 from django import forms
 from django.utils.importlib import import_module
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.template import Context, Template
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
 from django.db.models import Q
+from django.core.urlresolvers import reverse
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
-from tendenci.core.base.utils import day_validate
 
 #from completion import AutocompleteProvider, site
 from tendenci.core.site_settings.utils import get_setting
@@ -25,7 +29,8 @@ from tendenci.addons.memberships.models import (MembershipType, App,
                                                 MembershipApp,
                                                 MembershipDefault,
                                                 Membership)
-from tendenci.apps.forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from tendenci.apps.forms_builder.forms.settings import (FIELD_MAX_LENGTH,
+                                                        LABEL_MAX_LENGTH)
 from tendenci.addons.corporate_memberships.managers import (
                                                 CorporateMembershipManager,
                                                 CorpMembershipManager,
@@ -37,7 +42,8 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.base.fields import DictField
 
-from tendenci.core.base.utils import send_email_notification
+from tendenci.apps.notifications import models as notification
+from tendenci.core.base.utils import send_email_notification, day_validate, fieldify
 from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.addons.corporate_memberships.utils import (
                                             corp_membership_update_perms,
@@ -54,12 +60,15 @@ FIELD_CHOICES = (
                     ("CharField/django.forms.Textarea", _("Paragraph Text")),
                     ("BooleanField", _("Checkbox")),
                     ("ChoiceField", _("Select One from a list (Drop Down)")),
-                    ("ChoiceField/django.forms.RadioSelect", _("Select One from a list (Radio Buttons)")),
+                    ("ChoiceField/django.forms.RadioSelect",
+                        _("Select One from a list (Radio Buttons)")),
                     ("MultipleChoiceField", _("Multi select (Drop Down)")),
-                    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", _("Multi select (Checkboxes)")),
+                    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple",
+                        _("Multi select (Checkboxes)")),
                     ("EmailField", _("Email")),
                     ("FileField", _("File upload")),
-                    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
+                    ("DateField/django.forms.extras.SelectDateWidget",
+                        _("Date")),
                     ("DateTimeField", _("Date/time")),
                     ("section_break", _("Section Break")),
                     ("page_break", _("Page Break")),
@@ -81,38 +90,55 @@ SIZE_CHOICES = (
                 ('m', _('Medium')),
                 ('l', _('Large')),
                 )
+NOTICE_TYPES = (
+    ('approve_join', 'Approval Date'),
+    ('disapprove_join', 'Disapproval Date'),
+    ('approve_renewal', 'Renewal Approval Date'),
+    ('disapprove_renewal', 'Renewal Disapproval Date'),
+    ('expiration', 'Expiration Date'),
+)
 
 
 class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
     guid = models.CharField(max_length=50)
     name = models.CharField(_('Name'), max_length=255, unique=True)
     description = models.CharField(_('Description'), max_length=500)
-    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2, blank=True, default=0,
+    price = models.DecimalField(_('Price'), max_digits=15, decimal_places=2,
+                                blank=True, default=0,
                                 help_text="Set 0 for free membership.")
-    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15, decimal_places=2, 
+    renewal_price = models.DecimalField(_('Renewal Price'), max_digits=15,
+                                        decimal_places=2,
                                         blank=True, default=0, null=True,
                                         help_text="Set 0 for free membership.")
-    membership_type = models.ForeignKey(MembershipType, 
-                                        help_text=_("Bind individual memberships to this membership type.")) 
-    
-    admin_only = models.BooleanField(_('Admin Only'), default=0)  # from allowuseroption
-    
-    apply_threshold = models.BooleanField(_('Allow Threshold'), default=0)
-    individual_threshold = models.IntegerField(_('Threshold Limit'), default=0, blank=True, null=True)
-    individual_threshold_price = models.DecimalField(_('Threshold Price'), max_digits=15, 
-                                                     decimal_places=2, blank=True, null=True, default=0,
-                                                     help_text=_("All individual members applying under or " + \
-                                                                 "equal to the threashold limit receive the " + \
-                                                                 "threshold prices."))
-    
+    membership_type = models.ForeignKey(MembershipType,
+        help_text=_("Bind individual memberships to this membership type."))
+    admin_only = models.BooleanField(_('Admin Only'), default=0)
+
+    apply_threshold = models.BooleanField(_('Allow Threshold'), default=False)
+    individual_threshold = models.IntegerField(_('Threshold Limit'),
+                                               default=0,
+                                               blank=True,
+                                               null=True)
+    individual_threshold_price = models.DecimalField(
+                                 _('Threshold Price'),
+                                 max_digits=15,
+                                 decimal_places=2,
+                                 blank=True,
+                                 null=True,
+                                 default=0,
+                                 help_text=_(
+                                 "All individual members applying " + \
+                                 "under or equal to the threashold " + \
+                                 "limit receive the threshold prices."))
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(CorporateMembershipType, self).save(*args, **kwargs)
-      
+
     # added here temporarily because i cannot use the one in memberships now
     # switch later if the function in memberships is restored.
     def get_expiration_dt(self, renewal=False, join_dt=None, renew_dt=None):
@@ -120,47 +146,54 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
         Calculate the expiration date - for join or renew (renewal=True)
         Examples:
             For join:
-                expiration_dt = corporate_membership_type.get_expiration_dt(join_dt=membership.join_dt)
+                expiration_dt = corporate_membership_type.get_expiration_dt(
+                                    join_dt=membership.join_dt)
             For renew:
-                expiration_dt = corporate_membership_type.get_expiration_dt(renewal=1,
-                join_dt=membership.join_dt,
-                renew_dt=membership.renew_dt)
+                expiration_dt = corporate_membership_type.get_expiration_dt(
+                                        renewal=1,
+                                        join_dt=membership.join_dt,
+                                        renew_dt=membership.renew_dt)
         """
         mt = self.membership_type
         now = datetime.now()
-        
+
         if not join_dt or not isinstance(join_dt, datetime):
             join_dt = now
         if renewal and (not renew_dt or not isinstance(renew_dt, datetime)):
             renew_dt = now
-        
+
         if mt.never_expires:
             return None
-        
+
         if mt.period_type == 'rolling':
             if mt.period_unit == 'days':
                 return now + timedelta(days=mt.period)
-            
+
             elif mt.period_unit == 'months':
                 return now + relativedelta(months=mt.period)
-            
-            else: # if self.period_unit == 'years':
+
+            else:  # if self.period_unit == 'years':
                 if not renewal:
                     if mt.rolling_option == '0':
                         # expires on end of full period
                         return join_dt + relativedelta(years=mt.period)
-                    else: # self.expiration_method == '1':
+                    else:   # self.expiration_method == '1':
                         # expires on ? days at signup (join) month
                         if not mt.rolling_option1_day:
                             mt.rolling_option1_day = 1
-                        expiration_dt = join_dt + relativedelta(years=mt.period)
-                        mt.rolling_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1),
-                                                                    mt.rolling_option1_day)
-                        
+                        expiration_dt = join_dt + relativedelta(
+                                                    years=mt.period)
+                        mt.rolling_option1_day = day_validate(
+                                                datetime(expiration_dt.year,
+                                                         join_dt.month, 1),
+                                                mt.rolling_option1_day)
+
                         return datetime(expiration_dt.year, join_dt.month,
-                                                 mt.rolling_option1_day, expiration_dt.hour,
-                                                 expiration_dt.minute, expiration_dt.second)
-                else: # renewal = True
+                                                 mt.rolling_option1_day,
+                                                 expiration_dt.hour,
+                                                 expiration_dt.minute,
+                                                 expiration_dt.second)
+                else:   # renewal = True
                     if mt.rolling_renew_option == '0':
                         # expires on the end of full period
                         return renew_dt + relativedelta(years=mt.period)
@@ -168,25 +201,34 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                         # expires on the ? days at signup (join) month
                         if not mt.rolling_renew_option1_day:
                             mt.rolling_renew_option1_day = 1
-                        expiration_dt = renew_dt + relativedelta(years=mt.period)
-                        mt.rolling_renew_option1_day = day_validate(datetime(expiration_dt.year, join_dt.month, 1),
-                                                                    mt.rolling_renew_option1_day)
+                        expiration_dt = renew_dt + relativedelta(
+                                                    years=mt.period)
+                        mt.rolling_renew_option1_day = day_validate(
+                                            datetime(expiration_dt.year,
+                                                     join_dt.month, 1),
+                                            mt.rolling_renew_option1_day)
                         return datetime(expiration_dt.year, join_dt.month,
-                                                 mt.rolling_renew_option1_day, expiration_dt.hour,
-                                                 expiration_dt.minute, expiration_dt.second)
+                                                 mt.rolling_renew_option1_day,
+                                                 expiration_dt.hour,
+                                                 expiration_dt.minute, 
+                                                 expiration_dt.second)
                     else:
                         # expires on the ? days at renewal month
                         if not mt.rolling_renew_option2_day:
                             mt.rolling_renew_option2_day = 1
-                        expiration_dt = renew_dt + relativedelta(years=mt.period)
-                        mt.rolling_renew_option2_day = day_validate(datetime(expiration_dt.year, renew_dt.month, 1),
-                                                                    mt.rolling_renew_option2_day)
+                        expiration_dt = renew_dt + relativedelta(
+                                                    years=mt.period)
+                        mt.rolling_renew_option2_day = day_validate(
+                                                datetime(expiration_dt.year,
+                                                         renew_dt.month, 1),
+                                                mt.rolling_renew_option2_day)
                         return datetime(expiration_dt.year, renew_dt.month,
-                                                 mt.rolling_renew_option2_day, expiration_dt.hour,
-                                                 expiration_dt.minute, expiration_dt.second)
-                    
-                    
-        else: #self.period_type == 'fixed':
+                                                 mt.rolling_renew_option2_day,
+                                                 expiration_dt.hour,
+                                                 expiration_dt.minute,
+                                                 expiration_dt.second)
+
+        else:    # self.period_type == 'fixed':
             if mt.fixed_option == '0':
                 # expired on the fixed day, fixed month, fixed year
                 if not mt.fixed_option1_day:
@@ -197,14 +239,15 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                     mt.fixed_option1_month = 12
                 if not mt.fixed_option1_year:
                     mt.fixed_option1_year = now.year
-                    
-                mt.fixed_option1_day = day_validate(datetime(mt.fixed_option1_year,
-                                                                  mt.fixed_option2_month, 1),
-                                                                    mt.fixed_option2_day)
-                    
+
+                mt.fixed_option1_day = day_validate(
+                                    datetime(mt.fixed_option1_year,
+                                          mt.fixed_option2_month, 1),
+                                    mt.fixed_option2_day)
+
                 return datetime(mt.fixed_option1_year, mt.fixed_option1_month,
                                 mt.fixed_option1_day)
-            else: # self.fixed_option == '1'
+            else:   # self.fixed_option == '1'
                 # expired on the fixed day, fixed month of current year
                 if not mt.fixed_option2_day:
                     mt.fixed_option2_day = 1
@@ -212,11 +255,12 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                     mt.fixed_option2_month = 1
                 if mt.fixed_option2_month > 12:
                     mt.fixed_option2_month = 12
-                
-                mt.fixed_expiration_day2 = day_validate(datetime(now.year,
-                                                                mt.fixed_option2_month, 1),
-                                                                mt.fixed_option2_day)
-                
+
+                mt.fixed_expiration_day2 = day_validate(
+                                                datetime(now.year,
+                                                mt.fixed_option2_month, 1),
+                                                mt.fixed_option2_day)
+
                 expiration_dt = datetime(now.year, mt.fixed_option2_month,
                                         mt.fixed_option2_day)
                 if mt.fixed_option2_can_rollover:
@@ -224,7 +268,7 @@ class CorporateMembershipType(OrderingBaseModel, TendenciBaseModel):
                         mt.fixed_option2_rollover_days = 0
                     if (now - expiration_dt).days <= mt.fixed_option2_rollover_days:
                         expiration_dt = expiration_dt + relativedelta(years=1)
-                        
+
                 return expiration_dt
 
 
@@ -391,6 +435,20 @@ class CorpMembership(TendenciBaseModel):
 
     def __unicode__(self):
         return "%s" % (self.corp_profile.name)
+
+    @models.permalink
+    def get_absolute_url(self):
+        """
+        Returns admin change_form page.
+        """
+        return ('corpmembership.view', [self.pk])
+
+    @models.permalink
+    def get_renewal_url(self):
+        """
+        Returns admin change_form page.
+        """
+        return ('corpmembership.renew', [self.pk])
 
     def save(self, *args, **kwargs):
         if not self.guid:
@@ -572,6 +630,32 @@ class CorpMembership(TendenciBaseModel):
         else:
             return 406800
 
+    def get_field_items(self):
+        app = CorpMembershipApp.objects.current_app()
+        # to be updated if supports multiple apps
+        # app = self.app
+        items = {}
+        field_names = CorpMembershipAppField.objects.filter(
+                                        corp_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).values_list('field_name',
+                                                      flat=True)
+        if field_names:
+            profile = self.corp_profile
+            for field_name in field_names:
+                if hasattr(profile, field_name):
+                    items[field_name] = getattr(profile, field_name)
+                elif hasattr(self, field_name):
+                    items[field_name] = getattr(self, field_name)
+
+            for name, value in items.iteritems():
+                if hasattr(value, 'all'):
+                    items[name] = ', '.join([item.__unicode__() \
+                                             for item in value.all()])
+        return items
+
     def auto_update_paid_object(self, request, payment):
         """
         Update the object after online payment is received.
@@ -633,7 +717,7 @@ class CorpMembership(TendenciBaseModel):
         field_names = [field.name for field in self.__class__._meta.fields]
         ignore_fields = ['id', 'renewal', 'renew_dt', 'status',
                          'status_detail', 'approved', 'approved_denied_dt',
-                         'approved_denied_user']
+                         'approved_denied_user', 'anonymous_creator']
         for field in ignore_fields:
             field_names.remove(field)
 
@@ -700,18 +784,43 @@ class CorpMembership(TendenciBaseModel):
 
         created, username, password = self.handle_anonymous_creator(**kwargs)
 
-        # send an email to dues reps
-        recipients = dues_rep_emails_list(self)
-        recipients.append(self.creator.email)
-        extra_context = {
-            'object': self,
-            'request': request,
-            'invoice': self.invoice,
-            'created': created,
-            'username': username,
-            'password': password
-        }
-        send_email_notification('corp_memb_join_approved',
+        if Notice.objects.filter(notice_time='attimeof',
+                                 notice_type='approve_join',
+                                 status=True,
+                                 status_detail='active'
+                                 ).exists():
+
+            if self.anonymous_creator:
+                login_url = '%s%s' % (
+                        get_setting('site', 'global', 'siteurl'),
+                        reverse('auth_login'))
+                login_info = \
+                render_to_string(
+                    'notification/corp_memb_notice_email/join_login_info.html',
+                    {'corp_membership': self,
+                     'created': created,
+                     'username': username,
+                     'password': password,
+                     'login_url': login_url,
+                     'request': request})
+            else:
+                login_info = ''
+
+            self.send_notice_email(request, 'approve_join',
+                                anonymous_join_login_info=login_info)
+        else:
+            # send an email to dues reps
+            recipients = dues_rep_emails_list(self)
+            recipients.append(self.creator.email)
+            extra_context = {
+                'object': self,
+                'request': request,
+                'invoice': self.invoice,
+                'created': created,
+                'username': username,
+                'password': password
+            }
+            send_email_notification('corp_memb_join_approved',
                                 recipients, extra_context)
 
     def disapprove_join(self, request, **kwargs):
@@ -726,6 +835,7 @@ class CorpMembership(TendenciBaseModel):
                                     self.admin_notes
                                     )
         self.save()
+        self.send_notice_email(request, 'disapprove_join')
 
     def approve_renewal(self, request, **kwargs):
         """
@@ -766,15 +876,19 @@ class CorpMembership(TendenciBaseModel):
                 # update the membership record with the renewal info
                 new_membership.renewal = True
                 new_membership.renew_dt = self.renew_dt
-                new_membership.expiration_dt = self.expiration_dt
+                new_membership.expire_dt = self.expiration_dt
                 new_membership.corporate_membership_id = self.id
                 new_membership.corp_profile_id = self.corp_profile.id
-                new_membership.membership_type = self.corporate_membership_type.membership_type
+                new_membership.membership_type = \
+                    self.corporate_membership_type.membership_type
                 new_membership.status = True
                 new_membership.status_detail = 'active'
+                new_membership.application_approved = True
+                new_membership.application_approved_dt = self.approved_denied_dt
                 if not request_user.is_anonymous():
                     new_membership.owner_id = request_user.id
                     new_membership.owner_username = request_user.username
+                    new_membership.application_approved_user = request_user
 
                 new_membership.save()
                 # archive old memberships
@@ -810,18 +924,26 @@ class CorpMembership(TendenciBaseModel):
 
             # mark invoice as paid
             self.mark_invoice_as_paid(request.user)
-            # email dues reps that corporate membership has been approved
-            recipients = dues_rep_emails_list(self)
-            if not recipients and self.creator:
-                recipients = [self.creator.email]
-            extra_context = {
-                'object': self,
-                'request': request,
-                'invoice': self.invoice,
-                'total_individuals_renewed': total_individuals_renewed
-            }
-            send_email_notification('corp_memb_renewal_approved',
-                                    recipients, extra_context)
+
+            if Notice.objects.filter(notice_time='attimeof',
+                                 notice_type='approve_renewal',
+                                 status=True,
+                                 status_detail='active'
+                                 ).exists():
+                self.send_notice_email(request, 'approve_renewal')
+            else:
+                # email dues reps that corporate membership has been approved
+                recipients = dues_rep_emails_list(self)
+                if not recipients and self.creator:
+                    recipients = [self.creator.email]
+                extra_context = {
+                    'object': self,
+                    'request': request,
+                    'invoice': self.invoice,
+                    'total_individuals_renewed': total_individuals_renewed
+                }
+                send_email_notification('corp_memb_renewal_approved',
+                                        recipients, extra_context)
 
     def disapprove_renewal(self, request, **kwargs):
         """
@@ -838,6 +960,8 @@ class CorpMembership(TendenciBaseModel):
                 self.owner = request_user
                 self.owner_username = request_user.username
             self.save()
+
+            self.send_notice_email(request, 'disapprove_renewal')
 
         ind_memb_renew_entries = IndivMembershipRenewEntry.objects.filter(
                                             corp_membership=self)
@@ -885,11 +1009,18 @@ class CorpMembership(TendenciBaseModel):
             self.owner = assign_to_user
             self.owner_username = assign_to_user.username
             self.save()
-            corp_membership_update_perms(self)
 
-            # TODO:
-            # assign object permissions
-#            corp_memb_update_perms(self)
+            # assign creator to be dues_rep
+            if not CorpMembershipRep.objects.filter(
+                                    corp_profile=self.corp_profile,
+                                    user=self.creator).exists():
+                CorpMembershipRep.objects.create(
+                        corp_profile=self.corp_profile,
+                        user=self.creator,
+                        is_dues_rep=True
+                                )
+
+            corp_membership_update_perms(self)
 
             # update invoice creator/owner
             if self.invoice:
@@ -983,6 +1114,23 @@ class CorpMembership(TendenciBaseModel):
 
         now = datetime.now()
         return (now >= renewal_period_start_dt and now <= renewal_period_end_dt)
+
+    def send_notice_email(self, request, notice_type, **kwargs):
+        """
+        Convenience method for sending
+            typical corporate membership emails.
+        Returns outcome via boolean.
+        """
+        representatives = self.corp_profile.reps.filter(Q(is_dues_rep=True)|(Q(is_member_rep=True)))
+
+        return Notice.send_notice(
+            request=request,
+            recipients=representatives,
+            notice_type=notice_type,
+            corporate_membership=self,
+            corporate_membership_type=self.corporate_membership_type,
+            **kwargs
+        )
 
     @property
     def is_join_pending(self):
@@ -1089,7 +1237,7 @@ class CorpMembershipApp(TendenciBaseModel):
                             help_text=_("App for individual memberships."),
                             related_name='corp_app',
                             verbose_name=_("Membership Application"),
-                            null=True)
+                            default=1)
     payment_methods = models.ManyToManyField(PaymentMethod,
                                              verbose_name="Payment Methods")
 
@@ -1105,12 +1253,25 @@ class CorpMembershipApp(TendenciBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("corpmembership_app.preview", [self.id])
+        return ("corpmembership_app.preview", [self.slug])
+
+    def is_current(self):
+        """
+        Check if this app is the current app.
+        Corporate memberships do not support multiple apps.
+        """
+        current_app = CorpMembershipApp.objects.current_app()
+
+        return current_app and current_app.id == self.id
 
     def save(self, *args, **kwargs):
         if not self.id:
             self.guid = str(uuid.uuid1())
         super(CorpMembershipApp, self).save(*args, **kwargs)
+
+        if not self.memb_app.use_for_corp:
+            self.memb_app.use_for_corp = True
+            self.memb_app.save()
 
 
 class CorpMembershipAppField(models.Model):
@@ -2107,3 +2268,276 @@ class CorpField(OrderingBaseModel):
                 if entry:
                     return entry[0]
         return None
+
+
+class Notice(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_name = models.CharField(_("Name"), max_length=250)
+    num_days = models.IntegerField(default=0)
+    notice_time = models.CharField(_("Notice Time"), max_length=20,
+                                   choices=(('before', 'Before'),
+                                            ('after', 'After'),
+                                            ('attimeof', 'At Time Of')))
+    notice_type = models.CharField(_("For Notice Type"), max_length=20, choices=NOTICE_TYPES)
+    system_generated = models.BooleanField(_("System Generated"), default=0)
+    corporate_membership_type = models.ForeignKey(
+        "CorporateMembershipType",
+        blank=True,
+        null=True,
+        help_text=_("Note that if you \
+            don't select a corporate membership type, \
+            the notice will go out to all members."
+        ))
+
+    subject = models.CharField(max_length=255)
+    content_type = models.CharField(_("Content Type"),
+                                    choices=(('html', 'HTML'),),
+                                    max_length=10,
+                                    default='html')
+    sender = models.EmailField(max_length=255, blank=True, null=True)
+    sender_display = models.CharField(max_length=255, blank=True, null=True)
+    email_content = tinymce_models.HTMLField(_("Email Content"))
+
+    create_dt = models.DateTimeField(auto_now_add=True)
+    update_dt = models.DateTimeField(auto_now=True)
+    creator = models.ForeignKey(
+        User, related_name="corporate_membership_notice_creator",
+        null=True, on_delete=models.SET_NULL)
+    creator_username = models.CharField(max_length=50, null=True)
+    owner = models.ForeignKey(
+        User, related_name="corporate_membership_notice_owner",
+        null=True, on_delete=models.SET_NULL)
+    owner_username = models.CharField(max_length=50, null=True)
+    status_detail = models.CharField(
+        choices=(('active', 'Active'), ('admin_hold', 'Admin Hold')),
+        default='active', max_length=50)
+    status = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.notice_name
+
+    @property
+    def footer(self):
+        return """
+        This e-mail was generated by Tendenci&reg; Software - a
+        web based membership management software solution
+        www.tendenci.com developed by Schipul - The Web Marketing Company
+        """
+
+    def get_default_context(self, corporate_membership=None,
+                            recipient=None, **kwargs):
+        """
+        Returns a dictionary with default context items.
+        """
+        global_setting = partial(get_setting, 'site', 'global')
+        site_url = global_setting('siteurl')
+
+        context = {}
+
+        context.update({
+            'site_contact_name': global_setting('sitecontactname'),
+            'site_contact_email': global_setting('sitecontactemail'),
+            'site_display_name': global_setting('sitedisplayname'),
+            'time_submitted': time.strftime("%d-%b-%y %I:%M %p",
+                                            datetime.now().timetuple()),
+        })
+
+        # return basic context
+        if not corporate_membership:
+            return context
+
+        # get corp_profile field context
+        context.update(corporate_membership.get_field_items())
+
+        if corporate_membership.expiration_dt:
+            expire_dt = time.strftime(
+                "%d-%b-%y %I:%M %p",
+                corporate_membership.expiration_dt.timetuple())
+        else:
+            expire_dt = ''
+
+        if corporate_membership.payment_method:
+            payment_method = corporate_membership.payment_method.human_name
+        else:
+            payment_method = ''
+
+        if corporate_membership.renewal:
+            renewed_individuals_list = \
+              render_to_string(
+                        'notification/corp_memb_notice_email/renew_list.html',
+                        {'corp_membership': corporate_membership})
+            total_individuals_renewed = \
+                corporate_membership.indivmembershiprenewentry_set.count()
+        else:
+            renewed_individuals_list = ''
+            total_individuals_renewed = ''
+
+        if corporate_membership.invoice:
+            invoice_link = '%s%s' % (site_url,
+                                     corporate_membership.invoice.get_absolute_url())
+        else:
+            invoice_link = ''
+
+        corp_app = CorpMembershipApp.objects.current_app()
+        authentication_info = render_to_string(
+                        'notification/corp_memb_notice_email/auth_info.html',
+                        {'corp_membership': corporate_membership,
+                         'corp_app': corp_app})
+
+        context.update({
+            'expire_dt': expire_dt,
+            'payment_method': payment_method,
+            'rep_first_name': recipient.user.first_name,
+            'renewed_individuals_list': renewed_individuals_list,
+            'total_individuals_renewed': total_individuals_renewed,
+            'name': corporate_membership.corp_profile.name,
+            'email': corporate_membership.corp_profile.email,
+            'view_link': "%s%s" % (site_url,
+                                   corporate_membership.get_absolute_url()),
+            'renew_link': "%s%s" % (site_url,
+                                    corporate_membership.get_renewal_url()),
+            'invoice_link': invoice_link,
+            'individuals_join_url': '%s%s' % (site_url,
+                                reverse('membership_default.corp_pre_add',
+                                        args=[corporate_membership.id])),
+            'authentication_info': authentication_info,
+            'anonymous_join_login_info': kwargs.get('anonymous_join_login_info', '')
+        })
+
+        return context
+
+    def get_subject(self, corporate_membership=None, recipient=None):
+        """
+        Return self.subject replace shortcode (context) variables
+        The corporate membership object takes priority over entry object
+        """
+        context = self.get_default_context(corporate_membership, recipient)
+        # autoescape off for subject to avoid HTML escaping
+        self.subject = '%s%s%s' % (
+                        "{% autoescape off %}",
+                        self.subject,
+                        "{% endautoescape %}")
+        return self.build_notice(self.subject, context=context)
+
+    def get_content(self, corporate_membership=None, recipient=None, **kwargs):
+        """
+        Return self.email_content with self.footer appended
+        and replace shortcode (context) variables
+        """
+        content = "%s\n<br /><br />\n%s" % (self.email_content, self.footer)
+        context = self.get_default_context(corporate_membership, recipient, **kwargs)
+
+        return self.build_notice(content, context=context, **kwargs)
+
+    def build_notice(self, content, *args, **kwargs):
+        """
+        Replace values in a string and return the updated content
+        Values are pulled from corporate_membership, and site_settings
+        In the future, maybe we can pull from the membership application entry
+        """
+        content = fieldify(content)
+        template = Template(content)
+
+        context = kwargs.get('context') or {}
+        context = Context(context)
+
+        return template.render(context)
+
+    @classmethod
+    def send_notice(cls, **kwargs):
+        """
+        Send notice to notice_type specified
+        within corporate_membership_type specified
+        to email addresses specified
+        Returns boolean.
+
+        Allowed Notice Types: approve_join, approve_renewal,
+        disapprove_join, disapprove_renewal, expiration
+        """
+
+        notice_type = kwargs.get('notice_type') or 'joined'
+        corp_membership_type = kwargs.get('corporate_membership_type')
+        corporate_membership = kwargs.get('corporate_membership')
+        recipients = kwargs.get('recipients') or []
+        anonymous_join_login_info = kwargs.get('anonymous_join_login_info', '')
+        request = kwargs.get('request')
+
+        if not isinstance(corporate_membership, CorpMembership):
+            return False
+
+        if isinstance(recipients, basestring):
+            recipients = [recipients]  # expecting list of emails
+
+        # allowed notice types
+        allowed_notice_types = [
+            'approve_join',
+            'approve_renewal',
+            'disapprove_join',
+            'disapprove_renewal',
+            'expiration']
+
+        if not notice_type in allowed_notice_types:
+            return False
+
+        # recipients list required
+        if not recipients:
+            return False
+
+        field_dict = {
+            'notice_time': 'attimeof',
+            'notice_type': notice_type,
+            'status': True,
+            'status_detail': 'active',
+        }
+
+        # send to applicant
+        for notice in Notice.objects.filter(**field_dict):
+
+            notice_requirments = (
+                notice.corporate_membership_type == corp_membership_type,
+                notice.corporate_membership_type == None
+            )
+
+            if any(notice_requirments):
+                for recipient in recipients:
+                    extra_context = {
+                        'subject': notice.get_subject(
+                                    corporate_membership=corporate_membership,
+                                    recipient=recipient),
+                        'content': notice.get_content(
+                                    corporate_membership=corporate_membership,
+                                    recipient=recipient,
+                                    anonymous_join_login_info=anonymous_join_login_info),
+                        'corporate_membership_total': CorpMembership.objects.count(),
+                        'sender': notice.sender,
+                        'sender_display': notice.sender_display,
+                    }
+                    if notice.sender:
+                        extra_context.update({'reply_to': notice.sender})
+
+                    notification.send_emails(
+                        [recipient.user.email],
+                        'corp_memb_notice_email', extra_context)
+        return True
+
+    def save(self, *args, **kwargs):
+        self.guid = self.guid or unicode(uuid.uuid1())
+        super(Notice, self).save(*args, **kwargs)
+
+
+class NoticeLog(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice = models.ForeignKey(Notice, related_name="logs")
+    notice_sent_dt = models.DateTimeField(auto_now_add=True)
+    num_sent = models.IntegerField()
+
+
+class NoticeLogRecord(models.Model):
+    guid = models.CharField(max_length=50, editable=False)
+    notice_log = models.ForeignKey(NoticeLog,
+                                   related_name="log_records")
+    corp_membership = models.ForeignKey(CorpMembership,
+                                   related_name="log_records")
+    action_taken = models.BooleanField(default=0)
+    action_taken_dt = models.DateTimeField(blank=True, null=True)
+    create_dt = models.DateTimeField(auto_now_add=True)

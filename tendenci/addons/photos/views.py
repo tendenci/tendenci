@@ -44,12 +44,13 @@ def search(request, template_name="photos/search.html"):
     """ Photos search """
     query = request.GET.get('q', None)
     if get_setting('site', 'global', 'searchindex') and query:
-        photos = Image.objects.search(query, user=request.user).order_by('-create_dt')
+        photos = Image.objects.search(query, user=request.user)
     else:
         filters = get_query_filters(request.user, 'photos.view_image')
         photos = Image.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             photos = photos.select_related()
+
     photos = photos.order_by('-create_dt')
 
     EventLog.objects.log()
@@ -585,7 +586,7 @@ def photos_batch_add(request, photoset_id=0):
             HttpResponseRedirect(reverse('photoset_latest'))
         photo_set = get_object_or_404(PhotoSet, id=photoset_id)
         # current limit for photo set images is hard coded to 50
-        image_slot_left = 50 - photo_set.image_set.count()
+        image_slot_left = 150 - photo_set.image_set.count()
 
         # show the upload UI
         return render_to_response('photos/batch-add.html', {
@@ -607,7 +608,6 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
 
     PhotoFormSet = modelformset_factory(
         Image,
-        can_delete=True,
         exclude=(
             'title_slug',
             'creator_username',
@@ -629,6 +629,10 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
         form = PhotoBatchEditForm(request.POST, instance=photo)
 
         if form.is_valid():
+            delete_photo = request.POST.get('delete')
+            if delete_photo:
+                photo.delete()
+
             photo = form.save()
             EventLog.objects.log(instance=photo)
             # set album cover if specified
@@ -650,6 +654,9 @@ def photos_batch_edit(request, photoset_id=0, template_name="photos/batch-edit.h
                     cover.save()
 
             return HttpResponse('Success')
+
+        else:
+            return HttpResponse('Failed')
 
     else:  # if request.method != POST
 

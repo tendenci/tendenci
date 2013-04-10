@@ -44,6 +44,11 @@
         float: right;
         margin-right: 1em;
     }
+    div.corp-timeline{
+        background-color: #F7F7F9;
+        border: 1px solid #E1E1E8;
+        padding: 8px;
+        margin: 2em 0px;
 
 </style>
 {% endblock %}
@@ -59,7 +64,9 @@
             {% corpmemb_options request.user corporate_membership %}        
          </div>
          {% if corporate_membership.is_active %}
-        <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a></div>
+        <div><a href="{% url membership_default.add_under_corp corporate_membership.id %}">{% trans "Join under this corporation" %}</a>
+           <br /> <span class="small">({% individual_pricing_desp corporate_membership %})</span>
+        </div>
         {% endif %}
     </div>
      
@@ -144,8 +151,39 @@
                      </div>       
         {% endif %}
 
-    {% endfor %}      
+    {% endfor %}
     
+    {% if all_records|length > 1 %}
+    <div class="corp-timeline">
+        <h3>Timeline:</h3>
+        <ul>
+           {% for corp_memb in all_records %} 
+           <li>
+               {% if not corp_memb.renewal %}
+               <strong>Joined</strong> on {{ corp_memb.join_dt|date:'N d, Y' }}, 
+               {% else %}
+               <strong>Renewed</strong> on {{ corp_memb.renew_dt|date:'N d, Y' }}, 
+               {% endif %}
+               
+               {% if corp_memb.is_archive or corp_memb.is_expired %} 
+               <strong>expired</strong> on {{ corp_memb.expiration_dt|date:'N d, Y' }}.
+               {% else %}
+               <strong>expires</strong> on {{ corp_memb.expiration_dt|date:'N d, Y' }}.
+               {% endif %}
+               {% if corp_memb.status_detail != 'archive' %}
+               status: <span class="status-{{ corp_memb.status_detail }}">{{ corp_memb.real_time_status_detail }}</span>
+               {% else %}
+               status: <strong>{{ corp_memb.real_time_status_detail }}</strong>
+               {% endif %}
+               {% if corp_memb.id != corporate_membership.id %}
+               <a href="{% url corpmembership.view corp_memb.id %}">View</a>
+               {% endif %}
+           </li>
+           {% endfor %}
+        </ul>
+        
+    </div>      
+    {% endif %}
 </div>
 <div class="clear"></div>
 </div>

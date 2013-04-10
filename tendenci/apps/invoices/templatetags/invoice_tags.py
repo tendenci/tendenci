@@ -21,7 +21,12 @@ def invoices_search_results_line(request, invoice):
         from django.template import TemplateDoesNotExist
         
         app_label = invoice.object_type.app_label
-        template_name = "%s/invoice_search_result_line.html" % (app_label)
+        model = invoice.object_type.model
+        # since membership app has 2 different associated invoices
+        if app_label == 'memberships' and model == 'membershipset':
+            template_name = "%s/invoice_search_result_line2.html" % (app_label)
+        else:
+            template_name = "%s/invoice_search_result_line.html" % (app_label)
 
         try:
             search_line_display = render_to_string(
@@ -59,7 +64,12 @@ def invoice_object_display(request, invoice):
         from django.template import TemplateDoesNotExist
 
         app_label = invoice.object_type.app_label
-        template_name = "%s/invoice_view_display.html" % (app_label)
+        model = invoice.object_type.model
+        # since membership app has 2 different associated invoices
+        if app_label == 'memberships' and model == 'membershipset':
+            template_name = "%s/invoice_view_display2.html" % (app_label)
+        else:
+            template_name = "%s/invoice_view_display.html" % (app_label)
         try:
             object_display = render_to_string(
                 template_name,

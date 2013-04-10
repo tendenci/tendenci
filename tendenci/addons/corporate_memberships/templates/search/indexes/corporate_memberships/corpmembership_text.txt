@@ -10,10 +10,10 @@
 {{ object.corp_profile.email }}   
 {{ object.corp_profile.secret_code }}
 {{ object.status_detail }}
-{% for authorized_domain in object.authorized_domains.all %}
+{% for authorized_domain in object.corp_profile.authorized_domains.all %}
 authorized domain:{{ authorized_domain }} 
 {% endfor %}
-{% for rep in object.reps.all %}
+{% for rep in object.corp_profile.reps.all %}
 rep:{{ rep.user.username }} {{ rep.user.first_name }} {{ rep.user.last_name }}
 {% endfor %}
 is_join_pending:{{ object.is_join_pending }}

@@ -786,3 +786,99 @@ def last_n_month(n):
     now = datetime.now()
     last = now - relativedelta(months=n)
     return datetime(day=1, month=last.month, year=last.year)
+
+
+def get_notice_token_help_text(notice=None):
+    """Get the help text for how to add the token in the email content,
+        and display a list of available token.
+    """
+    from tendenci.addons.corporate_memberships.models import (
+        CorporateMembershipType, CorpMembershipApp, CorpMembershipAppField)
+    help_text = ''
+    if notice and notice.corporate_membership_type:
+        membership_types = [notice.corporate_membership_type]
+    else:
+        membership_types = CorporateMembershipType.objects.filter(
+                                             status=True,
+                                             status_detail='active')
+
+    # get a list of apps from membership types
+    apps_list = []
+    for mt in membership_types:
+        apps = CorpMembershipApp.objects.filter(corp_memb_type=mt)
+        if apps:
+            apps_list.extend(apps)
+
+    apps_list = set(apps_list)
+    apps_len = len(apps_list)
+
+    # render the tokens
+    help_text += '<div style="margin: 1em 10em;">'
+    help_text += """
+                <div style="margin-bottom: 1em;">
+                You can use tokens to display member info or site specific
+                information.
+                A token is a field name wrapped in
+                {{ }} or [ ]. <br />
+                For example, token for name field: {{ name }}.
+                </div>
+                """
+
+    help_text += '<div id="toggle_token_view"><a href="javascript:;">' + \
+                'Click to view available tokens</a></div>'
+    help_text += '<div id="notice_token_list">'
+    if apps_list:
+        for app in apps_list:
+            if apps_len > 1:
+                help_text += '<div style="font-weight: bold;">%s</div>' % (
+                                                            app.name)
+            fields = CorpMembershipAppField.objects.filter(
+                                        corp_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).order_by('order')
+            help_text += "<ul>"
+            for field in fields:
+                help_text += '<li>{{ %s }} - (for %s)</li>' % (
+                                                       field.field_name,
+                                                       field.label)
+            help_text += "</ul>"
+    else:
+        help_text += '<div>No field tokens because there is no ' + \
+                    'applications.</div>'
+
+    other_labels = ['site_contact_name',
+                    'site_contact_email',
+                    'site_display_name',
+                    'time_submitted',
+                    'view_link',
+                    'renew_link',
+                    'rep_first_name',
+                    'total_individuals_renewed',
+                    'renewed_individuals_list',
+                    'invoice_link',
+                    'individuals_join_url',
+                    'anonymous_join_login_info',
+                    'authentication_info'
+                    ]
+    help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
+    help_text += "<ul>"
+    for label in other_labels:
+        help_text += '<li>{{ %s }}</li>' % label
+    help_text += "</ul>"
+    help_text += "</div>"
+    help_text += "</div>"
+
+    help_text += """
+                <script>
+                    $(document).ready(function() {
+                        $('#notice_token_list').hide();
+                         $('#toggle_token_view').click(function () {
+                        $('#notice_token_list').toggle();
+                         });
+                    });
+                </script>
+                """
+
+    return help_text

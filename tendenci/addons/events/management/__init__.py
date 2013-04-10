@@ -1,5 +1,5 @@
+from django.db.models.signals import post_syncdb
 from django.utils.translation import ugettext_noop as _
-from south.signals import post_migrate
 
 from tendenci.apps.notifications import models as notification
 
@@ -35,4 +35,4 @@ def create_notice_types(app, **kwargs):
         _('Recap of end of event registration'),
         _('Notify administrators that registration for the event has ended.'))
 
-post_migrate.connect(create_notice_types, sender=notification)
+post_syncdb.connect(create_notice_types, sender=notification)

@@ -66,7 +66,7 @@ def search(request, template_name="jobs/search.html"):
         jobs = Job.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             jobs = jobs.select_related()
-            
+
     form = JobSearchForm(request.GET)
     if form.is_valid():
         query = form.cleaned_data.get('q')
@@ -77,21 +77,24 @@ def search(request, template_name="jobs/search.html"):
         jobs = jobs.filter(categories__category=category)
     if subcategory:
         jobs = jobs.filter(categories__parent=subcategory)
-    
+
     # filter for "my pending jobs"
     if my_pending_jobs and not request.user.is_anonymous():
         template_name = "jobs/my_pending_jobs.html"
         jobs = jobs.filter(
             creator_username=request.user.username,
             status_detail__contains='pending'
-            )
+        )
 
     jobs = jobs.order_by('status_detail', 'list_type', '-post_dt')
 
     EventLog.objects.log()
 
-    return render_to_response(template_name, {'jobs': jobs, 'form': form},
-        context_instance=RequestContext(request))
+    return render_to_response(
+        template_name,
+        {'jobs': jobs, 'form': form},
+        context_instance=RequestContext(request)
+    )
 
 
 def search_redirect(request):

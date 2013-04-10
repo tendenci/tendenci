@@ -18,7 +18,7 @@
          {% if corp_app %}
             <ol>
                 <li>
-                    <a href="{% url corpmembership_app.preview corp_app.pk %}">{{ corp_app.name }}</a> 
+                    <a href="{% url corpmembership_app.preview corp_app.slug %}">{{ corp_app.name }}</a> 
                     (<a href="{% url admin:corporate_memberships_corpmembershipapp_change corp_app.id %}">{% trans "Edit" %}</a>)
                    
                     

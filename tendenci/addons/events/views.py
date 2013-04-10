@@ -803,11 +803,28 @@ def add(request, year=None, month=None, day=None, \
                     image.file.save(filename, f)
                     event.image = image
 
+                # make dict (i.e. speaker_bind); bind speaker with speaker image
+                pattern = re.compile('speaker-\d+-name')
+                speaker_keys = list(set(re.findall(pattern, ' '.join(request.POST))))
+                speaker_bind = {}
+                for speaker_key in speaker_keys:  # loop through speaker form items
+                    speaker_name = request.POST.get(speaker_key)
+                    if speaker_name:  # if speaker name found in request
+                        speaker_file = request.FILES.get(speaker_key.replace('name','file'))
+                        if speaker_file:  # if speaker file found in request
+                            # e.g. speaker_bind['eloy zuniga'] = <file>
+                            speaker_bind[speaker_name] = speaker_file
+
                 for speaker in speakers:
                     speaker.event = [event]
                     speaker.save()
-                    files = File.objects.save_files_for_instance(request, speaker)
-                    # set file permissions
+
+                    # match speaker w/ speaker image
+                    binary_files = []
+                    if speaker.name in speaker_bind:
+                        binary_files = [speaker_bind[speaker.name]]
+                    files = File.objects.save_files_for_instance(request, speaker, files=binary_files)
+
                     for f in files:
                         f.allow_anonymous_view = event.allow_anonymous_view
                         f.allow_user_view = event.allow_user_view
@@ -1708,7 +1725,9 @@ def registration_edit(request, reg8n_id=0, hash='', template_name="events/reg8n/
         entry_ids = reg8n.registrant_set.filter(cancel_dt__isnull=True
                                                 ).values_list('custom_reg_form_entry',
                                                               flat=True).order_by('id')
-        entries = [CustomRegFormEntry.objects.get(id=id) for id in entry_ids]
+
+        entries = CustomRegFormEntry.objects.filter(pk__in=entry_ids)
+
         params = {'prefix': 'registrant',
                   'custom_reg_form': custom_reg_form,
                   'entries': entries,

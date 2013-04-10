@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import *
 
 urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
     url(r'^$', 'search', name="corp_memb"),
@@ -6,13 +6,16 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         "get_app_fields_json",
         name="corpmemberships.get_app_fields"),
 
-    url(r"^applications/(?P<app_id>\d+)/preview/$",
+    url(r"^applications/(?P<slug>[\w\-]+)/preview/$",
         "app_preview",
         name="corpmembership_app.preview"),
     url(r"^applications/add_pre/$",
         "corpmembership_add_pre",
         name="corpmembership.add_pre"),
     url(r"^applications/add/$",
+        "corpmembership_add",
+        name="corpmembership.add"),
+    url(r"^(?P<slug>[\w\-]+)/add/$",
         "corpmembership_add",
         name="corpmembership.add"),
     url(r"^applications/add_conf/(?P<id>\d+)/$",
@@ -80,13 +83,16 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
     url(r'^delete_corp_rep/(?P<id>\d+)/$', 'delete_corp_rep',
         name="corp_membership.delete_rep"),
 
+    # notice
+    (r'^notices/', include('tendenci.addons.corporate_memberships.notices.urls')),
+
     # report
     url(r"^reports/summary/$", "summary_report",
         name="corp_membership.summary_report"),
 
 # To Be Deleted
     url(r"^(?P<slug>.*)/add_pre/$", "add_pre", name="corp_memb.add_pre"),
-    url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),
+    #url(r"^(?P<slug>.*)/add/$", "add", name="corp_memb.add"),
     url(r"^(?P<slug>.*)/add/(?P<hash>[\d\w]+)$", "add",
         name="corp_memb.anonymous_add"),
     url(r"^add_conf/(?P<id>\d+)/$", "add_conf", name="corp_memb.add_conf"),

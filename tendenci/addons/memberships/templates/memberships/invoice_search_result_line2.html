@@ -1,0 +1,26 @@
+{% load base_filters %}
+{% load invoice_tags %}
+{% load i18n %}
+
+<table style="width:100%;">
+    {% invoices_search_line_header request invoice '#ff6600' %}
+
+    <tr>
+    	<td>{% trans "Membership" %}</td>
+    	<td colspan="2">{% trans "Name" %}</td>
+        <td>{% trans "Email" %}</td>
+    	<td>{% trans "Balance" %}</td>
+    </tr>
+    {% if obj %}
+      <tr>
+        <td>{% for membership in obj.memberships %}
+           <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">
+            {{ membership.pk }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </td>
+     	<td colspan="2">{{ invoice.bill_to_first_name }} {{ invoice.bill_to_last_name }}</td>
+        <td>{{ invoice.bill_to_email }}</td>
+     	<td {% if invoice.balance %}class="body-copy-yellow"{% endif %}>{{ invoice.balance }}</td>
+     </tr>
+     {% endif %}
+</table>

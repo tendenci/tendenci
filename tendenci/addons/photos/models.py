@@ -730,9 +730,15 @@ class Image(OrderingBaseModel, ImageModel, TendenciBaseModel):
         cache_path = self.cache_path()
 
         # delete cached [resized] versions
-        filename_list = default_storage.listdir(cache_path)[1]
-        for filename in filename_list:
-            default_storage.delete(os.path.join(cache_path, filename))
+        try:
+            filename_list = default_storage.listdir(cache_path)[1]
+            for filename in filename_list:
+                try:
+                    default_storage.delete(os.path.join(cache_path, filename))
+                except OSError:
+                    pass
+        except OSError:
+            pass
 
         # delete actual image; do not save() self.instance
         self.image.delete(save=False)
