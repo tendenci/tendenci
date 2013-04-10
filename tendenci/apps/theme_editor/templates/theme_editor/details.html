@@ -12,11 +12,7 @@
     </td>
 
     <td class="info">
-        <h2>{{ theme.name }}
-            {% if theme.orig_name == current_theme %}
-                ({% trans "Active Theme" %})
-            {% endif %}
-        </h2>
+        <h2>{{ theme.name }}</h2>
         <div class="description">
             {% if theme.description %}
                 {{ theme.description }}

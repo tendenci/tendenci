@@ -341,6 +341,7 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
     background-color: lightyellow;
     box-shadow: 0px 0px 20px #d9d9d9;
 }
+
 .theme-info table {
 	width: 100%;
 }
@@ -351,6 +352,7 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
   background: white;
 }
 .theme-info table td.screenshot img {
+  background-color: white;
   cursor: pointer;
 
   padding: 5px;
@@ -358,10 +360,15 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 
   width: 200px;
   position: absolute;
-  top: -10px;
+  top: 15px;
   left: -40px;
   box-shadow: 10px 0px 20px #d9d9d9;
 }
+
+.theme-info.selected table td.screenshot img {
+  box-shadow: 10px 0 20px #F4F0DD;
+}
+
 .lightbox img{
   max-width: 800px;
   max-height: 600px;
