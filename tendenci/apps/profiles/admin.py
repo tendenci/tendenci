@@ -55,6 +55,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
         (_('Administrator Information'), {'fields': ('admin_notes',
                                                      'security_level',)}),)
     form = ProfileAdminForm
+    ordering = ('user__last_name', 'user__first_name')
 
     def save_model(self, request, obj, form, change):
         if not change:
