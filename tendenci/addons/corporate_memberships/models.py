@@ -1305,6 +1305,10 @@ class CorpMembershipAppField(OrderingBaseModel):
                                      max_length=100, blank=True, default='')
     css_class = models.CharField(_("CSS Class Name"),
                                  max_length=50, blank=True, default='')
+    description = models.TextField(_("Description"),
+                                   max_length=200,
+                                   blank=True,
+                                   default='')
 
     class Meta:
         verbose_name = _("Field")
