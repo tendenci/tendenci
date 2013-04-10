@@ -49,7 +49,7 @@ def details(request, slug=None, template_name="directories/view.html"):
 def search(request, template_name="directories/search.html"):
     query = request.GET.get('q')
     category = request.GET.get('category')
-    subcategory = request.GET.get('subcategory')
+    subcategory = request.GET.get('sub_category')
 
     if get_setting('site', 'global', 'searchindex') and query:
         if category:
