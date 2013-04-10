@@ -196,3 +196,16 @@ def spawn_username(fn=u'', ln=u'', em=u''):
 
     int_string = ''.join([choice(digits) for x in xrange(10)])
     return 'user.%s' % int_string
+
+
+def clean_username(username):
+    """
+    Removes improper characters from a username
+    """
+    bad_characters = " !#$%^&*()[]'\""
+
+    for char in bad_characters:
+        if char in username:
+            username = username.replace(char, '')
+
+    return username

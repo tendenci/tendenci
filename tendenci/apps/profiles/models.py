@@ -81,6 +81,11 @@ class Profile(Person):
 
     @models.permalink
     def get_absolute_url(self):
+        from tendenci.apps.profiles.utils import clean_username
+        cleaned_username = clean_username(self.user.username)
+        if cleaned_username != self.user.username:
+            self.user.username = cleaned_username
+            self.user.save()
         return ('profile', [self.user.username])
 
     def _can_login(self):

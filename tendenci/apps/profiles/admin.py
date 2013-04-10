@@ -3,11 +3,14 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
+from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 
-class ProfileAdmin(admin.ModelAdmin):
+
+class ProfileAdmin(TendenciBaseModelAdmin):
     list_display = ('get_user', 'display_name', 'get_email')
+    search_fields = ('display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
     fieldsets = (
         (_('Name Information'), {'fields': ('salutation',
                                             'first_name',
@@ -64,7 +67,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def get_email(self, obj):
         return obj.user.email
-    get_email.admin_order_field  = 'user__email'
+    get_email.admin_order_field = 'user__email'
     get_email.short_description = 'Email'
 
     def get_user(self, obj):
