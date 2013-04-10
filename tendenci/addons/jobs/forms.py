@@ -227,11 +227,6 @@ class JobForm(TendenciBaseForm):
         if 'payment_method' in self.fields:
             self.fields['payment_method'].widget = forms.RadioSelect(choices=get_payment_method_choices(self.user))
 
-        if hasattr(self, 'user'):
-            self.fields['activation_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime())
-            self.fields['expiration_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime())
-            self.fields['post_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime())
-
         # adjust fields depending on user status
         fields_to_pop = []
         if not self.user.is_authenticated():
@@ -285,6 +280,19 @@ class JobForm(TendenciBaseForm):
         if kwargs['commit']:
             job.save()
         return job
+
+
+class JobAdminForm(JobForm):
+
+    def __init__(self, *args, **kwargs):
+        if hasattr(self, 'user'):
+            kwargs.update({'user': self.user})
+        super(JobAdminForm, self).__init__(*args, **kwargs)
+
+        if hasattr(self, 'user'):
+            self.fields['activation_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['expiration_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
+            self.fields['post_dt'] = forms.DateTimeField(widget=widgets.AdminSplitDateTime(), initial=datetime.now())
 
 
 class JobPricingForm(forms.ModelForm):
