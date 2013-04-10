@@ -99,10 +99,13 @@
             <div class="sub">
                 <div class="column">
                     <ul>
-                        <li><a href="/settings/module/theme_editor/">{% trans "Current Theme: " %}{{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
-                        <li><a href="/settings/module/theme/">{% trans "Theme Settings" %}</a></li>
-                        <li><a href="{% url theme_editor.editor %}">{% trans "Theme Editor" %}</a></li>
-                        <li><a href="/settings/module/theme_editor/">{% trans "Change my Theme" %}</a></li>
+                        <li><a href="{% url theme_editor.picker %}">
+                            {% trans "Current Theme: " %}
+                            {{ MODULE_THEME_EDITOR_THEME|title }}</a></li>
+                        <li><a href="/settings/module/theme/">
+                            {% trans "Theme Settings" %}</a></li>
+                        <li><a href="{% url theme_editor.editor %}">
+                            {% trans "Theme Editor" %}</a></li>
                     </ul>
                 </div>
             </div>
