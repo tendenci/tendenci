@@ -22,6 +22,7 @@ from tendenci.addons.corporate_memberships.models import (
     CorpMembership,
     CorpProfile,
     CorpMembershipApp,
+    CorpMembershipAppField,
     CorpMembershipRep,
     CorpMembershipImport,
     CorpApp,
@@ -140,6 +141,34 @@ class CorpMembershipAppForm(TendenciBaseForm):
             self.fields['confirmation_text'].widget.mce_attrs[
                                         'app_instance_id'] = 0
 
+
+class CorpMembershipAppFieldAdminForm(forms.ModelForm):
+    class Meta:
+        model = CorpMembershipAppField
+        fields = (
+                'corp_app',
+                'label',
+                'field_name',
+                'required',
+                'display',
+                'admin_only',
+                'field_type',
+                'description',
+                'help_text',
+                'choices',
+                'default_value',
+                'css_class'
+                  )
+
+    def save(self, *args, **kwargs):
+        self.instance = super(CorpMembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        if self.instance and not self.instance.field_name:
+            if self.instance.field_type != 'section_break':
+                self.instance.field_type = 'section_break'
+                self.instance.save()
+        return self.instance
+
+
 field_size_dict = {
         'name': 36,
         'city': 24,
@@ -192,9 +221,24 @@ def assign_fields(form, app_field_objs, instance=None):
                 continue
 
         if obj.field_name in field_names:
-            field = form.fields[obj.field_name]
-            field.label = obj.label
-            field.required = obj.required
+            if obj.field_type and obj.field_name not in [
+                                    'payment_method',
+                                    'corporate_membership_type',
+                                    'status',
+                                    'status_detail',
+                                    'industry',
+                                    'region']:
+                # create form field with customized behavior
+                field = obj.get_field_class(
+                        initial=form.fields[obj.field_name].initial)
+                form.fields[obj.field_name] = field
+            else:
+                field = form.fields[obj.field_name]
+                field.label = obj.label
+                field.required = obj.required
+                if obj.help_text:
+                    field.help_text = obj.help_text
+
             obj.field_stype = field.widget.__class__.__name__.lower()
 
             if obj.field_stype == 'textinput':
@@ -205,7 +249,10 @@ def assign_fields(form, app_field_objs, instance=None):
             label_type = []
             if obj.field_name not in ['payment_method',
                                       'corporate_membership_type',
-                                      ]:
+                                      ] \
+                    and obj.field_stype not in [
+                        'radioselect',
+                        'checkboxselectmultiple']:
                 obj.field_div_class = 'inline-block'
                 label_type.append('inline-block')
                 if len(obj.label) < 16:

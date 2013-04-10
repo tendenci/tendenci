@@ -1288,7 +1288,7 @@ class CorpMembershipAppField(OrderingBaseModel):
     display = models.BooleanField(_("Show"), default=True)
     admin_only = models.BooleanField(_("Admin Only"), default=False)
 
-    help_text = models.CharField(_("Instruction for User"),
+    help_text = models.CharField(_("Help Text"),
                                  max_length=2000, blank=True, default='')
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
                     null=True,
@@ -1301,7 +1301,7 @@ class CorpMembershipAppField(OrderingBaseModel):
     size = models.CharField(_("Field Size"), choices=SIZE_CHOICES,
                             max_length=1,
                             blank=True, null=True, default='m')
-    default_value = models.CharField(_("Predefined Value"),
+    default_value = models.CharField(_("Default Value"),
                                      max_length=100, blank=True, default='')
     css_class = models.CharField(_("CSS Class Name"),
                                  max_length=50, blank=True, default='')
@@ -1319,6 +1319,77 @@ class CorpMembershipAppField(OrderingBaseModel):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+
+    def get_field_class(self, initial=None):
+        """
+            Generate the form field class for this field.
+        """
+        if self.field_type and self.id:
+            if "/" in self.field_type:
+                field_class, field_widget = self.field_type.split("/")
+            else:
+                field_class, field_widget = self.field_type, None
+            field_class = getattr(forms, field_class)
+            field_args = {"label": self.label,
+                          "required": self.required,
+                          'help_text': self.help_text}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if initial:
+                field_args['initial'] = initial
+            else:
+                if self.default_value:
+                    field_args['initial'] = self.default_value
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                if self.field_name not in [
+                            'corporate_membership_type',
+                            'payment_method']:
+                    choices = self.choices.split(",")
+                    field_args["choices"] = zip(choices, choices)
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+
+            return field_class(**field_args)
+        return None
+
+    @staticmethod
+    def get_default_field_type(field_name):
+        """
+        Get the default field type for the ``field_name``.
+        If the ``field_name`` is the name of one of the fields
+        in User, Profile, MembershipDefault and MembershipDemographic
+        models, the field type is determined via the field.
+        Otherwise, default to 'CharField'.
+        """
+        available_field_types = [choice[0] for choice in
+                                FIELD_CHOICES]
+        corp_profile_fields = dict([(field.name, field) \
+                        for field in CorpProfile._meta.fields \
+                        if field.get_internal_type() != 'AutoField'])
+        fld = None
+        field_type = 'CharField'
+
+        if field_name in corp_profile_fields:
+            fld = corp_profile_fields[field_name]
+        if not fld:
+            corp_memb_fields = dict([(field.name, field) \
+                            for field in CorpMembership._meta.fields])
+
+            if field_name in corp_memb_fields:
+                fld = corp_memb_fields[field_name]
+
+        if fld:
+            field_type = fld.get_internal_type()
+            if not field_type in available_field_types:
+                if field_type in ['ForeignKey', 'OneToOneField']:
+                    field_type = 'ChoiceField'
+                elif field_type in ['ManyToManyField']:
+                    field_type = 'MultipleChoiceField'
+                else:
+                    field_type = 'CharField'
+        return field_type
 
 
 class CorpMembershipAuthDomain(models.Model):
