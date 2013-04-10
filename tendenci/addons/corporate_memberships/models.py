@@ -1274,7 +1274,7 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.save()
 
 
-class CorpMembershipAppField(models.Model):
+class CorpMembershipAppField(OrderingBaseModel):
     corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_name = models.CharField(_("Field Name"), max_length=30, blank=True,
@@ -1305,12 +1305,11 @@ class CorpMembershipAppField(models.Model):
                                      max_length=100, blank=True, default='')
     css_class = models.CharField(_("CSS Class Name"),
                                  max_length=50, blank=True, default='')
-    order = models.IntegerField(_("Order"), default=0)
 
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        ordering = ('order',)
+        ordering = ('position',)
 
     def __unicode__(self):
         if self.field_name:

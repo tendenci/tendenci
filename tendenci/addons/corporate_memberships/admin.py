@@ -70,13 +70,13 @@ class CorporateMembershipTypeAdmin(admin.ModelAdmin):
 class CorpMembershipAppFieldAdmin(admin.TabularInline):
     model = CorpMembershipAppField
     fields = ('label', 'field_name', 'display',
-              'required', 'admin_only', 'order',
+              'required', 'admin_only', 'position',
               )
 #    readonly_fields = ('field_name',)
     extra = 0
     can_delete = False
     verbose_name = 'Section Break'
-    ordering = ("order",)
+    ordering = ("position",)
     template = "corporate_memberships/admin/corpmembershipapp/tabular.html"
 
 
