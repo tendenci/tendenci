@@ -32,8 +32,6 @@ SITE_ADDONS_PATH = os.path.join(PROJECT_ROOT, 'addons')
 
 DATABASES = env('DATABASES', {'default': dj_database_url.config(default='postgres://localhost')})
 
-DATABASES['default']['OPTIONS'] = {'autocommit': True}
-
 
 # -------------------------------------- #
 # DATABASES - EXAMPLE FROM DJANGO 1.4
@@ -70,12 +68,15 @@ DATABASES = {
 }
 """
 
+if "postgresql" in DATABASES['default']['ENGINE']:
+    DATABASES['default']['OPTIONS'] = {'autocommit': True}
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = env('TIME_ZONE', 'America/Chicago')
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -103,16 +104,6 @@ if env('DEBUG_TOOLBAR', None):
         "INTERCEPT_REDIRECTS": False,
         "SHOW_TOOLBAR_CALLBACK": always_show_toolbar,
     }
-
-
-# -------------------------------------- #
-# SOLR
-# -------------------------------------- #
-
-HAYSTACK_URL = env('WEBSOLR_URL', 'http://localhost')
-
-HAYSTACK_SEARCH_ENGINE = env('HAYSTACK_SEARCH_ENGINE', 'solr')
-HAYSTACK_SOLR_URL = HAYSTACK_URL
 
 
 # -------------------------------------- #
@@ -177,24 +168,26 @@ AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', '')
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', '')
 
-USE_S3_STORAGE = all([AWS_LOCATION,
-                    AWS_ACCESS_KEY_ID,
-                    AWS_SECRET_ACCESS_KEY,
-                    AWS_STORAGE_BUCKET_NAME])
+USE_S3_STORAGE = all([
+    AWS_LOCATION,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_STORAGE_BUCKET_NAME
+])
 
 if USE_S3_STORAGE:
 
     INSTALLED_APPS += (
-                       'storages',
-                       's3_folder_storage',
-                       )
+        'storages',
+        's3_folder_storage',
+    )
     # media
     DEFAULT_S3_PATH = "%s/media" % AWS_LOCATION
-    DEFAULT_FILE_STORAGE = 's3_folder_storage.s3.DefaultStorage'
+    DEFAULT_FILE_STORAGE = 'tendenci.libs.boto_s3.utils.DefaultStorage'
 
     # static
     STATIC_S3_PATH = "%s/static" % AWS_LOCATION
-    STATICFILES_STORAGE = 's3_folder_storage.s3.StaticStorage'
+    STATICFILES_STORAGE = 'tendenci.libs.boto_s3.utils.StaticStorage'
 
     # themes
     THEME_S3_PATH = "%s/themes" % AWS_LOCATION
@@ -231,6 +224,24 @@ else:
 
 
 SSL_ENABLED = env('SSL_ENABLED', False)
+
+# celery
+CELERY_IS_ACTIVE = env('CELERY_IS_ACTIVE', False)
+
+
+# -------------------------------------- #
+# HAYSTACK SEARCH INDEX
+# -------------------------------------- #
+
+HAYSTACK_SEARCH_ENGINE = env('HAYSTACK_SEARCH_ENGINE', 'solr')
+HAYSTACK_URL = env('WEBSOLR_URL', 'http://localhost')
+
+if HAYSTACK_SEARCH_ENGINE == "solr":
+    HAYSTACK_SOLR_URL = HAYSTACK_URL
+
+if HAYSTACK_SEARCH_ENGINE == 'whoosh':
+    HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, 'index.whoosh')
+
 
 # ---------------------------------------#
 # PAYMENT GATEWAY
@@ -314,7 +325,7 @@ if MEMCACHIER_SERVERS:
 
 # Caching defaults
 
-CACHES['default']['TIMEOUT'] = 604800  # 1 week
+CACHES['default']['TIMEOUT'] = 60 * 60 * 24 * 30  # 30 days
 CACHES['default']['JOHNNY_CACHE'] = True
 
 
@@ -351,10 +362,12 @@ MAILGUN_SMTP_LOGIN = env('MAILGUN_SMTP_LOGIN', '')
 MAILGUN_SMTP_PASSWORD = env('MAILGUN_SMTP_PASSWORD', '')
 MAILGUN_SMTP_PORT = env('MAILGUN_SMTP_PORT', '')
 
-USE_MAILGUN = all([MAILGUN_SMTP_SERVER,
-                MAILGUN_SMTP_LOGIN,
-                MAILGUN_SMTP_PASSWORD,
-                MAILGUN_SMTP_PORT])
+USE_MAILGUN = all([
+    MAILGUN_SMTP_SERVER,
+    MAILGUN_SMTP_LOGIN,
+    MAILGUN_SMTP_PASSWORD,
+    MAILGUN_SMTP_PORT
+])
 
 if USE_MAILGUN:
     EMAIL_USE_TLS = True
@@ -389,6 +402,15 @@ CAMPAIGNMONITOR_API_CLIENT_ID = env('CAMPAIGNMONITOR_API_CLIENT_ID', '')
 #   BLACKBAUD
 #   ETC...
 # -------------------------------------- #
+
+# ------------------------------------ #
+# IMPERSONATION ADDON
+# ------------------------------------ #
+
+if os.path.exists(os.path.join(PROJECT_ROOT, 'addons/impersonation/')):
+    MIDDLEWARE_CLASSES += (
+        'addons.impersonation.middleware.ImpersonationMiddleware',
+    )
 
 
 # THIS MUST BE AT THE END!

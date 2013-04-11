@@ -22,7 +22,7 @@
      
     {% autopaginate stories 10 %}
     {% stories_search %}
-    <span><em>{{ paginator.count }} {% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %} {% trans "Found" %}</em></span>
+    <span><em>{{ paginator.count }} {% firstof MODULE_STORIES_LABEL_PLURAL "Stories" %} {% trans "Found" %}</em> - {% trans 'Ordered by latest added' %}</span>
     
     <div class="stories-wrap">
     {% for story in stories %}  

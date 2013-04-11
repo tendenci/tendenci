@@ -99,17 +99,11 @@ class Command(BaseCommand):
                     m_default.user = e.membership.user
 
             if not hasattr(m_default, 'user'):
-                continue
-
-            if not m_default.user:
                 m_default.user, user_created = m_default.get_or_create_user(
                     email=e.email, first_name=e.first_name, last_name=e.last_name
                 )
 
             if not hasattr(m_default, 'membership_type'):
-                if e.membership_type:
-                    m_default.membership_type = e.membership_type
-
                 if verbosity:
                     self.echo(
                         m_default, e,
@@ -192,45 +186,25 @@ class Command(BaseCommand):
 
     def set_invoice(self, m_default, e):
         """
-        Make copy of entry invoice if it does not exist
+        If AppEntry has invoice then associate
+        Invoice with MembershipDefault.
         """
         from tendenci.apps.invoices.models import Invoice
 
-        invoice_ct = ContentType.objects.get(
-            app_label=e._meta.app_label,
-            model=e._meta.module_name,
-        )
+        entry_ct = ContentType.objects.get_for_model(e)
+        m_default_ct = ContentType.objects.get_for_model(m_default)
 
-        # get entry invoice
-        entry_invoice = Invoice.objects.first(
-            object_type=invoice_ct,
+        # get invoice [associated w/ entry]
+        invoice = Invoice.objects.first(
+            object_type=entry_ct,
             object_id=e.pk
         )
 
-        # check if m_default invoice already exists
-        m_default_invoice = Invoice.objects.first(
-            object_type=invoice_ct,
-            object_id=m_default.pk
-        )
-
-        if m_default_invoice:
-            # the work has already been done
-            # nothing more to do here
-            return False
-        else:
-            if entry_invoice and entry_invoice.pk:
-                # copy invoice over
-                entry_invoice.pk = None
-                entry_invoice.object_id = m_default.pk
-                entry_invoice.save()
-            else:
-                # create brand-spankin new invoice
-                if m_default.application_approved:
-                    m_default.save_invoice(status_detail='tendered')
-                else:
-                    m_default.save_invoice()
-
-        return True
+        # associate invoice w/ m_default
+        if invoice:
+            invoice.object_type = m_default_ct
+            invoice.object_id = m_default.pk
+            invoice.save()
 
     def set_owner_creator_fields(self, m_default, entry):
         """

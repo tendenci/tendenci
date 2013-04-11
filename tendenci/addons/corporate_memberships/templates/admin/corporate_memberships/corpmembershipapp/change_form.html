@@ -1,0 +1,17 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+    <li><a href="{% url "corpmembership_app.preview" original.slug %}" class="viewsitelink">{% trans "Preview" %}</a></li>
+    {% if original.is_current %}
+    <li><a href="{% url "corpmembership.add" original.slug %}" class="viewsitelink">{% trans "View on site" %}</a></li>
+    {% endif %}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}

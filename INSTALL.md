@@ -1,6 +1,25 @@
 # Tendenci Installation
 
-You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs.
+You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs. From the Terminal prompt on a Mac or Linux follow these steps.
+
+## Pre-config
+
+Install pip [http://www.pip-installer.org/](http://www.pip-installer.org/):
+    
+    sudo easy_install pip
+
+Install virtualenv [http://www.virtualenv.org/](http://www.virtualenv.org/):
+
+    pip install virtualenv
+
+If you are using OS X, you may need to sudo that command with:
+
+    sudo pip install virtualenv
+
+You'll also need to have Git set up: [https://help.github.com/articles/set-up-git](https://help.github.com/articles/set-up-git).
+
+On Mac OS X 10.7 or higher you will need Xcode 4.4.1 or higher (in app store) and will need to install the Command Line tools it comes with. To install these, open Xcode, click the "Xcode" menu item in the top left of the screen near the Apple logo, then click "Preferences", then click "Downloads". Then click install on the line next to Command Line Tools.
+
 
 ## Setting up the database
 
@@ -36,7 +55,7 @@ Once this is done, you can setup django project with the following:
 
     create-tendenci-project
 
-If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the `.env` file that is created.
+If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the `.env` file that is created. The .env file is in the root of your site and is a hidden file. Do a "ls -a" to see it. And type "nano .env" to edit it.
 
 Next, we install requirements for the project. We add tendenci videos as an example to use.
 

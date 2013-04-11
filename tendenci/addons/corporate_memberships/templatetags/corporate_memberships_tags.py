@@ -1,4 +1,5 @@
 from django.template import Node, Variable, Library
+from tendenci.core.base.utils import tcurrency
 
 register = Library()
 
@@ -25,6 +26,45 @@ def render_corpmembership_field(request, field_obj,
             'field': field}
 
 
+@register.simple_tag
+def individual_pricing_desp(corp_membership):
+    """
+    Return the description of pricing for the individual memberships
+    joining under this corp_membership.
+    """
+    description = ''
+    if corp_membership:
+        corporate_type = corp_membership.corporate_membership_type
+        membership_type = corporate_type.membership_type
+
+        if not (membership_type.price + membership_type.admin_fee):
+            membership_price = 'free'
+        else:
+            membership_price = tcurrency(membership_type.price)
+            if membership_type.admin_fee:
+                membership_price = '%s + %s' % (
+                                    membership_price,
+                                    tcurrency(membership_type.admin_fee))
+
+        threshold = corporate_type.apply_threshold
+        threshold_limit = corporate_type.individual_threshold
+        threshold_price = corporate_type.individual_threshold_price
+        if not threshold_price:
+            threshold_price = 'free'
+        else:
+            threshold_price = tcurrency(threshold_price)
+
+        if threshold and threshold_limit > 0:
+            description += 'first %d %s, ' % (
+                                    threshold_limit,
+                                    threshold_price
+                                    )
+            description += 'then %s ' % membership_price
+        else:
+            description += '%s ' % membership_price
+    return description
+
+
 @register.inclusion_tag("corporate_memberships/render_corp_field.html")
 def render_corp_field(request, field_obj, form):
     if field_obj.field_type == "section_break" or field_obj.field_type == "page_break":
@@ -45,8 +85,6 @@ def render_corp_field(request, field_obj, form):
 
 @register.inclusion_tag("corporate_memberships/nav.html", takes_context=True)
 def corpmemb_nav(context, user, corp_memb=None):
-    if corp_memb:
-        print corp_memb.corp_profile.name
     context.update({
         'nav_object': corp_memb,
         "user": user

@@ -89,6 +89,7 @@ urlpatterns += patterns('',
     (r'^wp_exporter/', include('tendenci.apps.wp_exporter.urls')),
     (r'^discounts/', include('tendenci.apps.discounts.urls')),
     (r'^versions/', include('tendenci.core.versions.urls')),
+    (r'^reports/', include('tendenci.apps.reports.urls')),
     url(r'social_auth/', include('tendenci.addons.social_auth.urls')),
     url(r'navs/', include('tendenci.apps.navs.urls')),
     url(r'tendenci/', include('tendenci.addons.tendenci_guide.urls')),
@@ -100,6 +101,7 @@ urlpatterns += patterns('',
 
     url(r'^sitemap/$', direct_to_template, {"template": "site_map.html", }, name="site_map"),
     url(r'^robots.txt', 'tendenci.core.base.views.robots_txt', name="robots"),
+    url(r'^(?P<file_name>[\w-]+\.[\w]{2,4})$', 'tendenci.core.base.views.base_file'),
 
     # legacy redirects
     url(r'^login/$', redirect_to, {'url': '/accounts/login/'}),

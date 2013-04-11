@@ -1,6 +1,7 @@
 import re
 import os
 import Image
+from dateutil.parser import parse
 
 from decimal import Decimal
 from django.template import Library
@@ -99,6 +100,14 @@ date_long.is_safe = False
 def order_by(queryset, args):
     args = [x.strip() for x in args.split(',')]
     return queryset.order_by(*args)
+
+@register.filter_function
+def str_to_date(string, args=None):
+    """Takes a string and converts it to a datetime object"""
+    date = parse(string)
+    if date:
+        return date
+    return ''
 
 @register.filter_function
 def in_group(user, group):
@@ -415,7 +424,7 @@ def phonenumber(value):
 
         # attach additional text extension
         ext = ''
-        for i in range(1, len(x)):
+        for i in xrange(1, len(x)):
             ext = ''.join((ext, x[i]))
         if ext:
             return ' '.join((number, ext))

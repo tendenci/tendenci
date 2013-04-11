@@ -13,6 +13,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}css/events-day-view.css">
+<link type="text/css" href="{{ STATIC_URL }}css/jquery_ui_all_custom/jquery-ui-1.8.5.custom.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
@@ -22,17 +23,63 @@
 	{% event_nav user %}
 
 	<h2>{{ date|date:"l, F j Y" }}</h2>
-    
-    {% event_list date type as events %}
 
+<form class="search-form" action="{% url event.today %}" method="get">
+
+<div class="form-field clearfix">
+    <div class="id_start_dt">
+            <div class="label">
+                <label for="today_date">{% trans 'Event List for' %} </label>
+                <input style="width: 70px;" type="text" class="datepicker" name="today_date" value="{{ date|date:"Y-m-d" }}" />
+                <input class="btn" type="submit" value="Jump to Date" />
+            </div>
+     </div>
+</div>
+
+</form>
+
+    <div class="days-nav">
+        <div class="yesterday-link">
+            <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
+        </div>
+        <div class="tomorrow-link">
+            <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+    {% event_list date type 'single_day' as events %}
 	{% for event in events %}
 		<div class="event-wrap">
-			<div class="time-stamp">{{ event.start_dt|date:"f A" }}</div>
+			<div class="event-sidebar">
+                <div class="time-stamp">{{ event.start_dt|date:"f A" }}</div>
+            {% if event.start_dt|date:"D, M. j, Y" != event.end_dt|date:"D, M. j, Y" %}
+                <div class="ongoing-event">{% trans 'Multi-day Event' %}</div>
+            {% endif %}
+            {% if event.type %}
+                <style type="text/css">
+                    .event-type-label {
+                        margin: 5px;
+                        padding: 3px 5px;
+                        font-size: 11px;
+                    }
+                </style>
+                <div class="event-type-label"
+                style="color:#{{ event.type.color_set.fg_color }}; 
+                background-color:#{{ event.type.color_set.bg_color }}"
+                title="{{ event.type.name }}">
+                {{ event.type.name|truncatewords:3 }}
+                </div>
+            {% endif %}
+            </div>
 			<div class="event-info">
 
 				<div class="options">{% event_options user event %}</div>
 				
-				<h3><a href="{% url event event.pk %}">{{ event.title }}</a></h3>
+				<h3>{% if event.priority %}
+                        <div class="event-priority"></div>
+                    {% endif %}
+                    <a href="{% url event event.pk %}">{{ event.title }}</a></h3>
 				<div class="description">{{ event.description|safe }}</div>
 
 				{% if event.registration_configuration.enabled %}
@@ -77,6 +124,18 @@
 			{% trans "I would like to add one." %}</a></div>
 	{% endfor %}
 
+    {% if events %}
+    <div class="days-nav">
+        <div class="yesterday-link">
+            <a href="{{ yesterday_url }}">&laquo; {{ yesterday|date:"SHORT_DATE_FORMAT" }}</a>
+        </div>
+        <div class="tomorrow-link">
+            <a href="{{ tomorrow_url }}">{{ tomorrow|date:"SHORT_DATE_FORMAT" }} &raquo;</a>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}
@@ -101,4 +160,10 @@
 			target:		'more-options-target'
 		});
 	</script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery_ui_all_custom/jquery-ui-1.8.5.custom.min.js"></script>
+    <script type="text/javascript">
+       $(".datepicker").live('focus', function() {
+            $(this).datepicker({ dateFormat: 'yy-mm-dd' });
+       });
+    </script>
 {% endblock %}

@@ -8,5 +8,5 @@ urlpatterns = patterns('tendenci.apps.theme_editor.views',
     url(r'^get-version/(\d+)/$', 'get_version', name="theme_editor.get_version"),
     url(r'^delete/$', 'delete_file', name="theme_editor.delete"),
     url(r'^upload/$', 'upload_file', name="theme_editor.upload"),
+    url(r'^theme_picker/$', 'theme_picker', name='theme_editor.picker'),
 )
-

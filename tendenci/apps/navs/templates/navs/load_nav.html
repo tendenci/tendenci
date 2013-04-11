@@ -1,5 +1,5 @@
 {% load nav_tags %}
-<ul>
+<ul id="nav-ul-{{ nav.id }}">
 {% for item in items %}
     {% nav_item item %}
 {% endfor %}

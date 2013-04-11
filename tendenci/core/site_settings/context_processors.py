@@ -1,6 +1,7 @@
 from django.core.cache import cache
 from django.conf import settings as d_settings
 
+from tendenci import __version__ as version
 from tendenci.core.site_settings.models import Setting
 from tendenci.core.site_settings.cache import SETTING_PRE_KEY
 
@@ -32,5 +33,7 @@ def settings(request):
             else: value = 0 # default to 0
 
         contexts[context_key.upper()] = value
-        
+
+    contexts['TENDENCI_VERSION'] = version
+
     return contexts

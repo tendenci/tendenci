@@ -9,7 +9,6 @@ from django.contrib.contenttypes import generic
 
 from tendenci.core.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
-from tendenci.core.event_logs.models import EventLog
 
 
 class Invoice(models.Model):
@@ -32,7 +31,10 @@ class Invoice(models.Model):
     tender_date = models.DateTimeField(null=True)
     arrival_date_time = models.DateTimeField(blank=True, null=True)
     #payment status
-    status_detail = models.CharField(max_length=50, default='estimate')
+    status_detail = models.CharField(max_length=50,
+                                     choices=(('estimate', _('Estimate')),
+                                              ('tendered', _('Tendered'))),
+                                     default='estimate')
     status = models.BooleanField(default=True)
     estimate = models.BooleanField(default=1)
     payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
@@ -96,14 +98,17 @@ class Invoice(models.Model):
     class Meta:
         permissions = (("view_invoice", "Can view invoice"), )
 
-    # def __unicode__(self):
-    #     return u'%s' % (self.title)
-
     def set_creator(self, user):
+        """
+        Sets creator fields.
+        """
         self.creator = user
         self.creator_username = user.username
 
     def set_owner(self, user):
+        """
+        Sets owner fields.
+        """
         self.owner = user
         self.owner_username = user.username
 
@@ -157,19 +162,20 @@ class Invoice(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('invoice.view', [self.id])
-    
+
     def save(self, user=None):
-        if not self.id:
-            self.guid = str(uuid.uuid1())
-            if user and user.id:
-                self.creator=user
-                self.creator_username=user.username
-        if user and user.id:
-            self.owner=user
-            self.owner_username=user.username
-            
+        """
+        Set guid, creator and owner if any of
+        these fields are missing.
+        """
+        self.guid = self.guid or uuid.uuid1().get_hex()
+
+        if hasattr(user, 'pk'):
+            self.set_creator(user)
+            self.set_owner(user)
+
         super(Invoice, self).save()
-        
+
     def get_object(self):
         _object = None
         try:
@@ -177,7 +183,7 @@ class Invoice(models.Model):
         except:
             pass
         return _object
-    
+
     @property
     def is_tendered(self):
         boo = False
@@ -185,7 +191,7 @@ class Invoice(models.Model):
             if self.status_detail.lower() == 'tendered':
                 boo = True
         return boo
-    
+
     def tender(self, user):
         from tendenci.apps.accountings.utils import make_acct_entries
         """ mark it as tendered if we have records """ 
@@ -241,16 +247,18 @@ class Invoice(models.Model):
                     if self.status == 1 and not self.is_tendered:  
                         boo = True
         return boo
-        
-     
-    # this function is to make accounting entries    
+
     def make_payment(self, user, amount):
+        """
+        Updates the invoice balance by adding
+        accounting entries.
+        """
         from tendenci.apps.accountings.utils import make_acct_entries
         if self.is_tendered:
             self.balance -= amount
             self.payments_credits += amount
             self.save()
-            
+
             # Make the accounting entries here
             make_acct_entries(user, self, amount)
 

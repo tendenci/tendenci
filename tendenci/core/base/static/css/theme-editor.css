@@ -320,3 +320,79 @@ input[type="submit"].btn::-moz-focus-inner, a.btn::-moz-focus-inner {
 
 #right_files_list ul { margin-left: 12px; }
 #right_files_list a.folder { font-weight: bold; }
+
+/* Theme Picker styles */
+
+.theme-info {
+  overflow: hidden;
+	border: 1px solid gray;
+	padding: 10px;
+	margin: 10px 0;
+	background-color: white;
+  position: relative;
+
+  float: left;
+  width: 400px;
+  margin: 8px;
+  height: 160px;
+
+}
+.theme-info.selected {
+    background-color: lightyellow;
+    box-shadow: 0px 0px 20px #d9d9d9;
+}
+
+.theme-info table {
+	width: 100%;
+}
+.theme-info table td {
+	vertical-align: top;
+}
+.theme-info table td.screenshot {
+  background: white;
+}
+.theme-info table td.screenshot img {
+  background-color: white;
+  cursor: pointer;
+
+  padding: 5px;
+	border: 1px solid gray;
+
+  width: 200px;
+  position: absolute;
+  top: 15px;
+  left: -40px;
+  box-shadow: 10px 0px 20px #d9d9d9;
+}
+
+.theme-info.selected table td.screenshot img {
+  box-shadow: 10px 0 20px #F4F0DD;
+}
+
+.lightbox img{
+  max-width: 800px;
+  max-height: 600px;
+}
+.theme-info table td.info {
+  padding-left: 170px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.theme-info table td.info h2 {
+  font-size: 16px;
+  margin: 0 0 7px;
+}
+.theme-info table td.info .author-info {
+    margin: 7px 0;
+}
+.theme-info table td.info .extra-info {
+  margin-top: 10px;
+}
+.theme-info table td.info .version {
+}
+.theme-info table td.info .tags {
+}
+.theme_picker_form .theme_picker_submit {
+	overflow: visible; /* ie7 and below: remove extra padding on button */
+	*padding: 0 10px; /* ie7 and below: custom padding */
+}

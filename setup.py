@@ -2,9 +2,10 @@ import os
 import sys
 
 from fnmatch import fnmatchcase
-
 from distutils.util import convert_path
 from setuptools import setup, find_packages
+
+from tendenci import __version__ as version
 
 
 def read(*path):
@@ -111,7 +112,7 @@ except:
 
 setup(
     name='tendenci',
-    version='5.1.9',
+    version=version,
     packages=find_packages(),
     package_data=package_data,
     author='Schipul',
@@ -141,6 +142,7 @@ setup(
     entry_points="""
             [console_scripts]
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
+            update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     include_package_data=True,
     dependency_links=[
@@ -148,11 +150,11 @@ setup(
         "http://g.pypi.python.org/",
     ],
     install_requires=[
-        "Django==1.4.2",
+        "Django==1.4.3",
         "pisa",
         "Reportlab==2.5",
         "html5lib",
-        "PIL==1.1.7",
+        "PIL>=1.1.6",
         "South==0.7.5",
         "anyjson>=0.2.4",
         "django-authority>=0.4",
@@ -161,13 +163,13 @@ setup(
         "django-pagination>=1.0.7",
         "django-photologue>=2.3",
         "django-picklefield>=0.1.6",
-        "django-simple-captcha>=0.1.7",
+        "django-simple-captcha==0.3.6",
         "django-tagging>=0.3.1",
         "django-tinymce==1.5.1.dev100",
         "django-haystack==1.2.7",
         "feedparser>=4.1",
         "httplib2>=0.4.0",
-        "pytz>=2010h",
+        "pytz==2012j",
         "simplejson>=2.0.9",
         "webcolors>=1.3.1",
         "xlrd==0.7.3",
@@ -178,9 +180,9 @@ setup(
         "oauth2>=1.5.167",
         "python_openid>=2.2",
         "ordereddict==1.1",
-        "createsend>=2.3.0",
-        "celery==2.4.6",
-        "django-celery==2.3.0",
+        "createsend==2.4.1",
+        "celery==2.2.7",
+        "django-celery==2.2.7",
         "django-kombu>=0.9.4",
         "mimeparse>=0.1.3",
         "python-dateutil==1.5",
@@ -192,16 +194,16 @@ setup(
         "django-timezones==0.2",
         "django-ses==0.4.1",
         "Geraldo==0.4.16",
-        "django-tastypie",
+        "django-tastypie==0.9.12",
         "johnny-cache==1.4",
         "docutils==0.9.1",
         'chardet==2.1.1',
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
         "gunicorn==0.16.1",
-        "gevent==0.13.8",
         "django-s3-folder-storage==0.1",
         "django-storages==1.1.5",
         "python-memcached==1.48",
+        "Whoosh==2.4.1",
     ],
 )

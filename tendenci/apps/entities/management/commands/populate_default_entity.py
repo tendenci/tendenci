@@ -32,39 +32,39 @@ class Command(BaseCommand):
                                         'sitedisplayname')
         if not site_display_name:
             site_display_name = 'Default'
+
         site_contact_name = get_setting('site',
                                         'global',
                                         'sitecontactname')
         site_contact_email = get_setting('site',
-                                        'global',
-                                        'sitecontactemail')
+                                         'global',
+                                         'sitecontactemail')
         site_phone_number = get_setting('site',
                                         'global',
                                         'sitephonenumber')
         site_url = get_setting('site',
-                                'global',
-                                'siteurl')
+                               'global',
+                               'siteurl')
         # if there is no entity, create one.
         if not entity:
-            entity = Entity(
-                    entity_name=site_display_name,
-                    entity_type='',
-                    contact_name=site_contact_name,
-                    phone=site_phone_number,
-                    email=site_contact_email,
-                    fax='',
-                    website=site_url,
-                    summary='',
-                    notes='',
-                    admin_notes='system auto created',
-                    allow_anonymous_view=True,
-                    creator=user,
-                    creator_username=user.username,
-                    owner=user,
-                    owner_username=user.username,
-                    status=True,
-                    status_detail='active',
-                    id=1)
+            entity = Entity(entity_name=site_display_name,
+                            entity_type='',
+                            contact_name=site_contact_name,
+                            phone=site_phone_number,
+                            email=site_contact_email,
+                            fax='',
+                            website=site_url,
+                            summary='',
+                            notes='',
+                            admin_notes='system auto created',
+                            allow_anonymous_view=True,
+                            creator=user,
+                            creator_username=user.username,
+                            owner=user,
+                            owner_username=user.username,
+                            status=True,
+                            status_detail='active',
+                            id=1)
 
             entity.save()
             print 'entity created: ', entity.entity_name
@@ -91,10 +91,9 @@ class Command(BaseCommand):
 
         # GROUP - check if we have a group associated with
         group_exists = Group.objects.filter(
-                                name=site_display_name).exists()
+            name=site_display_name).exists()
         if not group_exists:
-            group = Group(
-                          name=site_display_name,
+            group = Group(name=site_display_name,
                           entity=entity,
                           type='distribution',
                           email_recipient=site_contact_email,
@@ -104,8 +103,7 @@ class Command(BaseCommand):
                           owner=user,
                           owner_username=user.username,
                           status=True,
-                          status_detail='active'
-                          )
+                          status_detail='active')
 
             group.save()
             print 'Group created: ', group.name

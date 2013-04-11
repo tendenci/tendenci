@@ -62,7 +62,9 @@ class Command(BaseCommand):
                 # dump data to the table membershipimportdata
                 # note that row_num starts with 2 because the first row
                 # is the header row.
-                data_list = memb_import_parse_csv(mimport)[1]
+                header_line, data_list = memb_import_parse_csv(mimport)
+                mimport.header_line = ','.join(header_line)
+
                 for i, memb_data in enumerate(data_list):
 
                     import_data = MembershipImportData(

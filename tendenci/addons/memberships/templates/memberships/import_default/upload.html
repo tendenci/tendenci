@@ -66,7 +66,13 @@
     
     {% if not memb_type_exists %}
     <div class="alert">
-        Please <a href="{% url admin:memberships_membershiptype_add %}">set up membership types</a> before proceeding.  
+        Please <a href="{% url admin:memberships_membershiptype_add %}">set up membership types</a> before proceeding.
+    </div>
+    {% endif %}
+
+    {% if not memb_app_exists %}
+    <div class="alert">
+        Please <a href="{% url admin:memberships_membershipapp_add %}">set up membership applications</a> before proceeding.
     </div>
     {% endif %}
 

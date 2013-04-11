@@ -29,9 +29,8 @@ def get_corpmembership_type_choices(user, corpmembership_app, renew=False):
     corporate_membership_types = corpmembership_app.corp_memb_type.all()
 
     if not user.profile.is_superuser:
-        corporate_membership_types = corporate_membership_types.filter(
-                                                        admin_only=False)
-    corporate_membership_types = corporate_membership_types.order_by('order', 'id')
+        corporate_membership_types = corporate_membership_types.filter(admin_only=False)
+    corporate_membership_types = corporate_membership_types.order_by('position')
     currency_symbol = get_setting("site", "global", "currencysymbol")
 
     for cmt in corporate_membership_types:
@@ -121,8 +120,9 @@ def get_indiv_memberships_choices(corp_membership):
     im_list = []
     indiv_memberships = MembershipDefault.objects.filter(
                             corp_profile_id=corp_membership.corp_profile.id,
-                            status_detail__in=['active', 'expired'],
-                            status=True)
+                            status=True).exclude(
+                            status_detail='archive'
+                                )
 
     for membership in indiv_memberships:
         indiv_memb_display = '<a href="%s" target="_blank">%s</a>' % (
@@ -221,9 +221,16 @@ def corp_memb_inv_add(user, corp_memb, **kwargs):
         inv.status_detail = 'estimate'
         inv.save(user)
 
+        if not corp_memb.payment_method:
+            is_online = True
+            if inv.balance <= 0:
+                is_online = False
+            corp_memb.payment_method = corp_memb.get_payment_method(
+                                            is_online=is_online)
+
         if user.profile.is_superuser:
             # if offline payment method
-            if not corp_memb.get_payment_method().is_online:
+            if not corp_memb.payment_method.is_online:
                 inv.tender(user)  # tendered the invoice for admin if offline
 
                 # mark payment as made
@@ -288,29 +295,56 @@ def get_corp_memb_summary():
     total_active = 0
     total_pending = 0
     total_expired = 0
+    total_in_grace_period = 0
     total_total = 0
     for corp_memb_type in corp_memb_types:
+        membership_type = corp_memb_type.membership_type
+        grace_period = membership_type.expiration_grace_period
+        now = datetime.now()
+        date_to_expire = now - relativedelta(days=grace_period)
         mems = CorpMembership.objects.filter(
                     corporate_membership_type=corp_memb_type)
-        active = mems.filter(status=True, status_detail='active')
-        expired = mems.filter(status=True, status_detail='expired')
+        active = mems.filter(status=True, status_detail='active',
+                             expiration_dt__gt=now
+                             )
+        expired = mems.filter(status=True,
+                              status_detail__in=('expired', 'active'),
+                              expiration_dt__lt=date_to_expire)
+        in_grace_period = mems.filter(status=True,
+                              status_detail='active',
+                              expiration_dt__lte=now,
+                              expiration_dt__gt=date_to_expire)
         pending = mems.filter(status=True, status_detail__contains='ending')
-        total_active += active.count()
-        total_pending += pending.count()
-        total_expired += expired.count()
-        total_total += mems.count()
+
+        active_count = active.count()
+        pend_count = pending.count()
+        expired_count = expired.count()
+        in_grace_period_count = in_grace_period.count()
+        type_total = sum([active_count,
+                            pend_count,
+                            expired_count,
+                            in_grace_period_count
+                            ])
+
+        total_active += active_count
+        total_pending += pend_count
+        total_expired += expired_count
+        total_in_grace_period += in_grace_period_count
+        total_total += type_total
         summary.append({
             'type': corp_memb_type,
-            'active': active.count(),
-            'pending': pending.count(),
-            'expired': expired.count(),
-            'total': mems.count(),
+            'active': active_count,
+            'pending': pend_count,
+            'expired': expired_count,
+            'in_grace_period': in_grace_period_count,
+            'total': type_total,
         })
 
     return (sorted(summary, key=lambda x: x['type'].name),
         {'total_active': total_active,
          'total_pending': total_pending,
          'total_expired': total_expired,
+         'total_in_grace_period': total_in_grace_period,
          'total_total': total_total})
 
 
@@ -336,7 +370,7 @@ def get_corporate_membership_type_choices(user, corpapp, renew=False):
     
     if not user.profile.is_superuser:
         corporate_membership_types = corporate_membership_types.filter(admin_only=False)
-    corporate_membership_types = corporate_membership_types.order_by('order')
+    corporate_membership_types = corporate_membership_types.order_by('position')
     currency_symbol = get_setting("site", "global", "currencysymbol")
     
     for cmt in corporate_membership_types:
@@ -752,3 +786,99 @@ def last_n_month(n):
     now = datetime.now()
     last = now - relativedelta(months=n)
     return datetime(day=1, month=last.month, year=last.year)
+
+
+def get_notice_token_help_text(notice=None):
+    """Get the help text for how to add the token in the email content,
+        and display a list of available token.
+    """
+    from tendenci.addons.corporate_memberships.models import (
+        CorporateMembershipType, CorpMembershipApp, CorpMembershipAppField)
+    help_text = ''
+    if notice and notice.corporate_membership_type:
+        membership_types = [notice.corporate_membership_type]
+    else:
+        membership_types = CorporateMembershipType.objects.filter(
+                                             status=True,
+                                             status_detail='active')
+
+    # get a list of apps from membership types
+    apps_list = []
+    for mt in membership_types:
+        apps = CorpMembershipApp.objects.filter(corp_memb_type=mt)
+        if apps:
+            apps_list.extend(apps)
+
+    apps_list = set(apps_list)
+    apps_len = len(apps_list)
+
+    # render the tokens
+    help_text += '<div style="margin: 1em 10em;">'
+    help_text += """
+                <div style="margin-bottom: 1em;">
+                You can use tokens to display member info or site specific
+                information.
+                A token is a field name wrapped in
+                {{ }} or [ ]. <br />
+                For example, token for name field: {{ name }}.
+                </div>
+                """
+
+    help_text += '<div id="toggle_token_view"><a href="javascript:;">' + \
+                'Click to view available tokens</a></div>'
+    help_text += '<div id="notice_token_list">'
+    if apps_list:
+        for app in apps_list:
+            if apps_len > 1:
+                help_text += '<div style="font-weight: bold;">%s</div>' % (
+                                                            app.name)
+            fields = CorpMembershipAppField.objects.filter(
+                                        corp_app=app,
+                                        display=True,
+                                        ).exclude(
+                                        field_name=''
+                                        ).order_by('order')
+            help_text += "<ul>"
+            for field in fields:
+                help_text += '<li>{{ %s }} - (for %s)</li>' % (
+                                                       field.field_name,
+                                                       field.label)
+            help_text += "</ul>"
+    else:
+        help_text += '<div>No field tokens because there is no ' + \
+                    'applications.</div>'
+
+    other_labels = ['site_contact_name',
+                    'site_contact_email',
+                    'site_display_name',
+                    'time_submitted',
+                    'view_link',
+                    'renew_link',
+                    'rep_first_name',
+                    'total_individuals_renewed',
+                    'renewed_individuals_list',
+                    'invoice_link',
+                    'individuals_join_url',
+                    'anonymous_join_login_info',
+                    'authentication_info'
+                    ]
+    help_text += '<div style="font-weight: bold;">Non-field Tokens</div>'
+    help_text += "<ul>"
+    for label in other_labels:
+        help_text += '<li>{{ %s }}</li>' % label
+    help_text += "</ul>"
+    help_text += "</div>"
+    help_text += "</div>"
+
+    help_text += """
+                <script>
+                    $(document).ready(function() {
+                        $('#notice_token_list').hide();
+                         $('#toggle_token_view').click(function () {
+                        $('#notice_token_list').toggle();
+                         });
+                    });
+                </script>
+                """
+
+    return help_text

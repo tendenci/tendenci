@@ -2,10 +2,10 @@
 
 <p>{% blocktrans with object.corp_profile.name as bname %}Thank you for applying for the corporate membership "{{ bname }}" on {{ SITE_GLOBAL_SITEDISPLAYNAME }}.{% endblocktrans %}
 </p>
-{% if object.corp_app.authentication_method == 'secret_code' %}
+{% if object.authentication_method == 'secret_code' %}
 <p>
 {% blocktrans %}For individuals to join under your corporate membership, use the following <b>secret code</b>:{% endblocktrans %}<br />
-<b>{{ object.secret_code }}</b>
+<b>{{ object.corp_profile.secret_code }}</b>
 </p>
 {% endif %}
 

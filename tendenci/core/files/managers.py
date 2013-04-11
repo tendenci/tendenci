@@ -126,6 +126,8 @@ class FileManager(TendenciBaseManager):
         files_saved = []
         for file in files:
 
+            # what to save; where to save it
+            file.file.seek(0)
             file_path = save_to_disk(file, instance)
 
             # update file record; or create new file record

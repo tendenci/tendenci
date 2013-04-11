@@ -16,8 +16,7 @@ from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.addons.memberships.models import App, Membership
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.profiles.utils import (get_groups, get_memberships, 
-    group_choices, app_choices, update_user)
+from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
 
 attrs_dict = {'class': 'required' }
 THIS_YEAR = datetime.date.today().year
@@ -191,6 +190,9 @@ class ProfileForm(TendenciBaseForm):
                 del self.fields['status']
                 del self.fields['status_detail']
 
+            if self.user_current.profile.is_superuser and self.user_current == self.user_this:
+                self.fields['security_level'].choices = (('superuser','Superuser'),)
+
         if not self.user_current.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
@@ -262,7 +264,186 @@ class ProfileForm(TendenciBaseForm):
         self.instance.owner_username = request.user.username
             
         return super(ProfileForm, self).save(*args, **kwargs)
-    
+
+
+class ProfileAdminForm(TendenciBaseForm):
+
+    first_name = forms.CharField(label=_("First Name"), max_length=100,
+                                 error_messages={'required': 'First Name is a required field.'})
+    last_name = forms.CharField(label=_("Last Name"), max_length=100,
+                                error_messages={'required': 'Last Name is a required field.'})
+    email = EmailVerificationField(label=_("Email"),
+                                error_messages={'required': 'Email is a required field.'})
+    email2 = EmailVerificationField(label=_("Email 2"), required=False)
+
+    username = forms.RegexField(regex=r'^[\w.@+-]+$',
+                                max_length=30,
+                                widget=forms.TextInput(attrs=attrs_dict),
+                                label=_(u'Username'),
+                                help_text = _("Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."))
+    password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(attrs=attrs_dict))
+    password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(attrs=attrs_dict),
+        help_text = _("Enter the same password as above, for verification."))
+
+    security_level = forms.ChoiceField(initial="user", choices=(('user','User'),
+                                                                ('staff','Staff'),
+                                                                ('superuser','Superuser'),))
+    interactive = forms.ChoiceField(initial=1, choices=((1,'Interactive'),
+                                                          (0,'Not Interactive (no login)'),))
+
+    language = forms.ChoiceField(initial="en-us", choices=(('en-us', u'English'),))
+
+    status_detail = forms.ChoiceField(
+        choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
+
+    class Meta:
+        model = Profile
+        fields = ('salutation', 
+                  'first_name',
+                  'last_name',
+                  'username',
+                  'password1',
+                  'password2',
+                  'phone',
+                  'phone2',
+                  'fax',
+                  'work_phone',
+                  'home_phone',
+                  'mobile_phone',
+                  'email',
+                  'email2',
+                  'company',
+                  'position_title',
+                  'position_assignment',
+                  'display_name',
+                  'hide_in_search',
+                  'hide_phone',
+                  'hide_email',
+                  'hide_address',
+                  'initials',
+                  'sex',
+                  'mailing_name',
+                  'address',
+                  'address2',
+                  'city',
+                  'state',
+                  'zipcode',
+                  'county',
+                  'country',
+                  'url',
+                  'dob',
+                  'ssn',
+                  'spouse',
+                  'time_zone',
+                  'department',
+                  'education',
+                  'student',
+                  'direct_mail',
+                  'notes',
+                  'interactive', 
+                  'allow_anonymous_view',
+                  'admin_notes',
+                  'security_level',
+                  'status',
+                  'status_detail',
+                )
+        
+    def __init__(self, *args, **kwargs):
+        super(ProfileAdminForm, self).__init__(*args, **kwargs)
+        
+        if self.instance.id:
+            self.fields['first_name'].initial = self.instance.user.first_name
+            self.fields['last_name'].initial = self.instance.user.last_name
+            self.fields['username'].initial = self.instance.user.username
+            self.fields['email'].initial = self.instance.user.email
+
+            self.fields['password1'].required = False
+            self.fields['password2'].required = False
+            self.fields['password1'].widget.attrs['readonly'] = True
+            self.fields['password2'].widget.attrs['readonly'] = True
+
+            if self.instance.user.is_superuser:
+                self.fields['security_level'].initial = "superuser"
+            elif self.instance.user.is_staff:
+                self.fields['security_level'].initial = "staff"
+            else:
+                self.fields['security_level'].initial = "user"
+            if self.instance.user.is_active == 1:
+                self.fields['interactive'].initial = 1
+            else:
+                self.fields['interactive'].initial = 0
+
+    def clean_username(self):
+        """
+        Validate that the username is alphanumeric and is not already
+        in use.
+        
+        """
+        try:
+            user = User.objects.get(username__iexact=self.cleaned_data['username'])
+            if self.instance.id and user.id==self.instance.user.id:
+                return self.cleaned_data['username']
+        except User.DoesNotExist:
+            return self.cleaned_data['username']
+        raise forms.ValidationError(_(u'This username is already taken. Please choose another.'))
+
+    def clean(self):
+        """
+        Verifiy that the values entered into the two password fields
+        match. Note that an error here will end up in
+        ``non_field_errors()`` because it doesn't apply to a single
+        field.
+        
+        """
+        if not self.instance.id:
+            if 'password1' in self.cleaned_data and 'password2' in self.cleaned_data:
+                if self.cleaned_data['password1'] != self.cleaned_data['password2']:
+                    raise forms.ValidationError(_(u'You must type the same password each time'))
+        return self.cleaned_data
+        
+    def save(self, *args, **kwargs):
+        """
+        Create a new user then create the user profile
+        """
+        username = self.cleaned_data['username']
+        email = self.cleaned_data['email']
+        params = {'first_name': self.cleaned_data['first_name'],
+                  'last_name': self.cleaned_data['last_name'],
+                  'email': self.cleaned_data['email'], }
+        
+        if not self.instance.id:
+            password = self.cleaned_data['password1']
+            new_user = User.objects.create_user(username, email, password)
+            self.instance.user = new_user 
+            update_user(new_user, **params)
+        else:
+            self.instance.old_email = self.instance.user.email
+            
+            params.update({'username': username})
+            update_user(self.instance.user, **params)
+
+        security_level = self.cleaned_data['security_level']
+        if security_level == 'superuser':
+            self.instance.user.is_superuser = 1
+            self.instance.user.is_staff = 1
+        elif security_level == 'staff':
+            self.instance.user.is_superuser = 0
+            self.instance.user.is_staff = 1
+        else:
+            self.instance.user.is_superuser = 0
+            self.instance.user.is_staff = 0
+
+        interactive = self.cleaned_data['interactive']
+        try:
+            interactive = int(interactive)
+        except:
+            interactive = 0
+        self.instance.user.is_active = interactive
+
+        self.instance.user.save()
+            
+        return super(ProfileAdminForm, self).save(*args, **kwargs)
+
         
 class UserForm(forms.ModelForm):
     is_superuser = forms.BooleanField(label=_("Is Admin"), 
@@ -270,14 +451,14 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields= ('is_superuser', 'user_permissions')
-        
+
+
 class UserPermissionForm(forms.ModelForm):
-    is_superuser = forms.BooleanField(required=False, label=_("Is Admin"), 
-                                      help_text = _("If selected, admin has all permissions without explicitly assigning them."))
+
     class Meta:
         model = User
-        fields= ('is_superuser', 'user_permissions',)
-        
+        fields = ('user_permissions',)
+
     def __init__(self, *args, **kwargs):
         super(UserPermissionForm, self).__init__(*args, **kwargs)
         # filter out the unwanted permissions,
@@ -285,9 +466,10 @@ class UserPermissionForm(forms.ModelForm):
         from django.contrib.contenttypes.models import ContentType
         from django.contrib.auth.models import Permission
         content_types = ContentType.objects.exclude(app_label='auth')
-        
+
         self.fields['user_permissions'].queryset = Permission.objects.filter(content_type__in=content_types)
-    
+
+
 class UserGroupsForm(forms.Form):
     groups = forms.ModelMultipleChoiceField(queryset = Group.objects.all(), required=False)
     
@@ -426,3 +608,26 @@ class ExportForm(forms.Form):
         if not self.user.check_password(value):
             raise forms.ValidationError(_("Invalid password."))
         return value
+
+
+class ProfileMergeForm(forms.Form):
+    user_list = forms.ModelMultipleChoiceField(queryset=Profile.objects.none(),
+                    label=_("Choose the users to merge"),
+                    widget=forms.CheckboxSelectMultiple())
+
+    master_record = forms.ModelChoiceField(queryset=Profile.objects.none(),
+                        empty_label=None,
+                        label=_("Choose the master record of the users you are merging above"),
+                        widget=forms.RadioSelect())
+
+    def __init__(self, *args, **kwargs):
+        choices = kwargs.pop('list', None)
+        super(ProfileMergeForm, self).__init__(*args, **kwargs)
+
+        queryset = Profile.objects.filter(user__in=choices).order_by('-user__last_login')
+
+        self.fields["master_record"].queryset = queryset
+        self.fields["user_list"].queryset = queryset
+
+        if queryset.count() == 2:
+            self.fields['user_list'].initial = queryset

@@ -1,7 +1,9 @@
 {% load i18n %}
 
 <p>{% trans "Thank you for your payment!" %}</p>
+{% if obj.user and obj.user.username %}
 <h3>{% trans "What would you like to do now?" %}</h3>
 <ul>
-	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url membership.application_entries obj.pk %}" class="links">{% trans "View Your Application Entry" %}</a></li>
+	<li><a href="{{ SITE_GLOBAL_SITEURL }}{% url profile obj.user.username %}" class="links">{% trans "Go to my profile" %}</a></li>
 </ul>
+{% endif %}

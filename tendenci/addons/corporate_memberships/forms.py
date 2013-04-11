@@ -15,30 +15,34 @@ from tinymce.widgets import TinyMCE
 
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.addons.memberships.fields import PriceInput
+from tendenci.addons.memberships.fields import NoticeTimeTypeField
+from tendenci.addons.corporate_memberships.widgets import NoticeTimeTypeWidget
 from tendenci.addons.corporate_memberships.models import (
-                    CorporateMembershipType,
-                    CorpMembership,
-                    CorpProfile,
-                    CorpMembershipApp,
-                    CorpMembershipRep,
-                    CorpMembershipImport,
-                    CorpApp,
-                    CorpField,
-                    CorporateMembership,
-                    Creator,
-                    CorporateMembershipRep,
-                    CorpMembRenewEntry)
+    CorporateMembershipType,
+    CorpMembership,
+    CorpProfile,
+    CorpMembershipApp,
+    CorpMembershipRep,
+    CorpMembershipImport,
+    CorpApp,
+    CorpField,
+    CorporateMembership,
+    Creator,
+    CorporateMembershipRep,
+    CorpMembRenewEntry,
+    Notice)
 from tendenci.addons.corporate_memberships.utils import (
-                 get_corpmembership_type_choices,
-                 get_corp_memberships_choices,
-                 get_indiv_memberships_choices,
-                 update_authorized_domains,
-                 get_corpapp_default_fields_list,
-                 update_auth_domains,
-                 get_payment_method_choices,
-                 get_indiv_membs_choices,
-                 get_corporate_membership_type_choices,
-                 csv_to_dict)
+    get_corpmembership_type_choices,
+    get_corp_memberships_choices,
+    get_indiv_memberships_choices,
+    update_authorized_domains,
+    get_corpapp_default_fields_list,
+    update_auth_domains,
+    get_payment_method_choices,
+    get_indiv_membs_choices,
+    get_corporate_membership_type_choices,
+    get_notice_token_help_text,
+    csv_to_dict)
 from tendenci.addons.corporate_memberships.settings import UPLOAD_ROOT
 from tendenci.core.base.fields import SplitDateTimeField
 from tendenci.core.payments.models import PaymentMethod
@@ -75,7 +79,7 @@ class CorporateMembershipTypeForm(forms.ModelForm):
                   'individual_threshold',
                   'individual_threshold_price',
                   'admin_only',
-                  'order',
+                  'position',
                   'status',
                   'status_detail',
                   )
@@ -234,12 +238,29 @@ class CorpProfileForm(forms.ModelForm):
                 self.fields['authorized_domain'].initial = auth_domains
         if not self.corpmembership_app.authentication_method == 'secret_code':
             del self.fields['secret_code']
+        else:
+            self.fields['secret_code'].help_text = 'This is the code that ' + \
+                'your members will need to enter to join under your corporate'
 
         del self.fields['status']
         del self.fields['status_detail']
 
         assign_fields(self, app_field_objs)
         self.field_names = [name for name in self.fields.keys()]
+
+    def clean_secret_code(self):
+        secret_code = self.cleaned_data['secret_code']
+        if secret_code:
+            # check if this secret_code is available to ensure the uniqueness
+            corp_profiles = CorpProfile.objects.filter(
+                                secret_code=secret_code)
+            if self.instance:
+                corp_profiles = corp_profiles.exclude(id=self.instance.id)
+            if corp_profiles:
+                raise forms.ValidationError(
+            _("This secret code is already taken. Please use a different one.")
+            )
+        return self.cleaned_data['secret_code']
 
     def save(self, *args, **kwargs):
         if not self.instance.id:
@@ -265,10 +286,8 @@ class CorpMembershipForm(forms.ModelForm):
     STATUS_DETAIL_CHOICES = (
             ('active', 'Active'),
             ('pending', 'Pending'),
-            ('admin_hold', 'Admin Hold'),
-            ('inactive', 'Inactive'),
+            ('paid - pending approval', 'Paid - Pending Approval'),
             ('expired', 'Expired'),
-            ('archive', 'Archive'),
                              )
     STATUS_CHOICES = (
                       (1, 'Active'),
@@ -294,8 +313,9 @@ class CorpMembershipForm(forms.ModelForm):
         else:
             self.fields['payment_method'].empty_label = None
             self.fields['payment_method'].widget = forms.widgets.RadioSelect(
-                        choices=self.fields['payment_method'].widget.choices,
-                        attrs=self.fields['payment_method'].widget.attrs)
+                        choices=get_payment_method_choices(
+                                    self.request_user,
+                                    self.corpmembership_app))
         self_fields_keys = self.fields.keys()
         if 'status_detail' in self_fields_keys:
             self.fields['status_detail'].widget = forms.widgets.Select(
@@ -397,7 +417,6 @@ class RosterSearchAdvancedForm(forms.Form):
                              ('exact', _('Exact')),
                              )
     cm_id = forms.ChoiceField(label=_('Company Name'),
-                                  choices=get_corp_memberships_choices(),
                                   required=False)
     first_name = forms.CharField(label=_('First Name'),
                                  max_length=100,
@@ -413,12 +432,15 @@ class RosterSearchAdvancedForm(forms.Form):
                                         required=False)
 
     def __init__(self, *args, **kwargs):
+        request_user = kwargs.pop('request_user')
         super(RosterSearchAdvancedForm, self).__init__(*args, **kwargs)
+        choices = CorpMembership.get_my_corporate_profiles_choices(request_user)
+        self.fields['cm_id'].choices = choices
 
 
 class CorpMembershipSearchForm(forms.Form):
-    cm_id = forms.ChoiceField(label=_('Company Name'),
-                                  choices=get_corp_memberships_choices(),
+    cp_id = forms.ChoiceField(label=_('Company Name'),
+                                  choices=(),
                                   required=False)
     q = forms.CharField(max_length=100,
                                  required=False)
@@ -556,7 +578,7 @@ class CorpFieldForm(forms.ModelForm):
                   'default_value',
                   'admin_only',
                   'css_class',
-                  'order'
+                  'position'
                   )
 
     def __init__(self, *args, **kwargs):
@@ -1093,4 +1115,57 @@ class ExportForm(forms.Form):
 
         if not self.user.check_password(value):
             raise forms.ValidationError(_("Invalid password."))
+        return value
+
+
+class NoticeForm(forms.ModelForm):
+    notice_time_type = NoticeTimeTypeField(
+        label='When to Send', widget=NoticeTimeTypeWidget)
+    email_content = forms.CharField(
+        widget=TinyMCE(attrs={'style':'width:70%'}, 
+                       mce_attrs={'storme_app_label': Notice._meta.app_label, 
+                                  'storme_model':Notice._meta.module_name.lower()}),
+        help_text="Click here to view available tokens")
+
+    class Meta:
+        model = Notice
+        fields = (
+            'notice_name',
+            'notice_time_type',
+            'corporate_membership_type',
+            'subject',
+            'content_type',
+            'sender',
+            'sender_display',
+            'email_content',
+            'status',
+            'status_detail',)
+
+    def __init__(self, *args, **kwargs): 
+        super(NoticeForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['email_content'].widget.mce_attrs['app_instance_id'] = self.instance.pk
+        else:
+            self.fields['email_content'].widget.mce_attrs['app_instance_id'] = 0
+        
+        initial_list = []
+        if self.instance.pk:
+            initial_list.append(str(self.instance.num_days))
+            initial_list.append(str(self.instance.notice_time))
+            initial_list.append(str(self.instance.notice_type))
+        
+        self.fields['notice_time_type'].initial = initial_list
+        
+        self.fields['email_content'].help_text = get_notice_token_help_text(self.instance)
+        
+    def clean_notice_time_type(self):
+        value = self.cleaned_data['notice_time_type']
+        
+        data_list = value.split(',')
+        d = dict(zip(['num_days', 'notice_time', 'notice_type'], data_list))
+        
+        try:
+            d['num_days'] = int(d['num_days'])
+        except:
+            raise forms.ValidationError(_("Num days must be a numeric number."))
         return value

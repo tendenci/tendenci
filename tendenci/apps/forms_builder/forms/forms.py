@@ -185,7 +185,7 @@ class FormForForm(forms.ModelForm):
         """
         for field in self.form_fields:
             field_class = field.field_type.split("/")[0]
-            if field_class == "EmailField":
+            if field_class == "EmailVerificationField":
                 return self.cleaned_data["field_%s" % field.id]
         return None
         

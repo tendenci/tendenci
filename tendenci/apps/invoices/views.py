@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 
 from django.template import RequestContext
 from django.db.models import Sum, Q
@@ -14,69 +14,126 @@ from django.conf import settings
 
 from tendenci.core.base.http import Http403
 from tendenci.core.theme.shortcuts import themed_response as render_to_response
-
 from tendenci.core.perms.decorators import is_enabled
-from tendenci.core.perms.utils import has_perm
+from tendenci.core.perms.utils import has_perm, update_perms_and_save
 from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
-from tendenci.core.exports.utils import run_export_task
 from tendenci.apps.notifications.utils import send_notifications
+
+from tendenci.core.payments.forms import OfflinePaymentForm
+from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
 
 
 @is_enabled('invoices')
 def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoices/view.html"):
-    #if not id: return HttpResponseRedirect(reverse('invoice.search'))
+    """
+    Invoice information, payment attempts (successful and unsuccessful).
+    """
     invoice = get_object_or_404(Invoice, pk=id)
+    if not invoice.allow_view_by(request.user, guid):
+        raise Http403
 
-    if not invoice.allow_view_by(request.user, guid): raise Http403
-    
-    if request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice'):
+    allowed_tuple = (
+        request.user.profile.is_superuser,
+        has_perm(request.user, 'invoices.change_invoice'))
+
+    form = None
+    if any(allowed_tuple):
         if request.method == "POST":
             form = form_class(request.POST, instance=invoice)
             if form.is_valid():
                 invoice = form.save()
-                # log an event here for invoice edit
-                EventLog.objects.log(instance=invoice)  
+                EventLog.objects.log(instance=invoice)
         else:
-            form = form_class(initial={'admin_notes':invoice.admin_notes})
-    else:
-        form = None
-    
-    notify = request.GET.get('notify', '')
-    if guid==None: guid=''
-    
-    merchant_login = False
-    if hasattr(settings, 'MERCHANT_LOGIN') and settings.MERCHANT_LOGIN:
-        merchant_login = True
-      
+            form = form_class(initial={'admin_notes': invoice.admin_notes})
+
+    notify = request.GET.get('notify', u'')
+    guid = guid or u''
+
+    merchant_login = (  # boolean value
+        hasattr(settings, 'MERCHANT_LOGIN') and
+        settings.MERCHANT_LOGIN)
+
     obj = invoice.get_object()
-    
-    obj_name = ""
+    obj_name = u''
+
     if obj:
         obj_name = obj._meta.verbose_name
-    
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'obj': obj,
-                                              'obj_name': obj_name,
-                                              'guid':guid, 
-                                              'notify': notify, 
-                                              'form':form,
-                                              'merchant_login': merchant_login}, 
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'obj': obj,
+        'obj_name': obj_name,
+        'guid': guid,
+        'notify': notify,
+        'form': form,
+        'merchant_login': merchant_login},
         context_instance=RequestContext(request))
 
 
-def mark_as_paid(request, id):
-    
+def make_offline_payment(request, id, template_name='invoices/make-offline-payment.html'):
+    """
+    Makes a payment-record with a specified date/time
+    payment method and payment amount.
+    """
     invoice = get_object_or_404(Invoice, pk=id)
-    
-    if not (request.user.profile.is_superuser): raise Http403    
-    
-    balance = invoice.balance
-    invoice.make_payment(request.user, balance)
-    
-    messages.add_message(request, messages.SUCCESS, 'Successfully marked invoice %s as paid.' % invoice.id)
+
+    if not has_perm(request.user, 'payments.change_payment'):
+        raise Http403
+
+    if request.method == 'POST':
+        form = OfflinePaymentForm(request.POST)
+
+        if form.is_valid():
+
+            # make payment record
+            payment = form.save(
+                user=request.user,
+                invoice=invoice,
+                commit=False)
+
+            payment = update_perms_and_save(request, form, payment)
+
+            # update invoice; make accounting entries
+            invoice.make_payment(payment.creator, payment.amount)
+
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                'Payment successfully made')
+
+            return redirect(invoice)
+
+    else:
+        form = OfflinePaymentForm(initial={
+            'amount': invoice.balance, 'submit_dt': datetime.now()})
+
+    return render_to_response(
+        template_name, {
+            'invoice': invoice,
+            'form': form,
+        }, context_instance=RequestContext(request))
+
+
+def mark_as_paid(request, id):
+    """
+    Sets invoice balance to 0 and adds
+    accounting entries
+    """
+    invoice = get_object_or_404(Invoice, pk=id)
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    invoice.make_payment(request.user, invoice.balance)
+
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        'Successfully marked invoice %s as paid.' % invoice.pk)
+
     return redirect(invoice)
 
 
@@ -93,7 +150,6 @@ def void_payment(request, id):
     return redirect(invoice)
 
 
-@is_enabled('discounts')
 @login_required
 def search(request, template_name="invoices/search.html"):
     query = u''
@@ -265,128 +321,89 @@ def adjust(request, id, form_class=AdminAdjustForm, template_name="invoices/adju
 def detail(request, id, template_name="invoices/detail.html"):
     invoice = get_object_or_404(Invoice, pk=id)
 
-    if not (request.user.profile.is_superuser or has_perm(request.user, 'invoices.change_invoice')): raise Http403
+    allowed_list = (
+        request.user.profile.is_superuser,
+        has_perm(request.user, 'invoices.change_invoice')
+    )
+
+    if not any(allowed_list):
+        raise Http403
 
     from tendenci.apps.accountings.models import AcctEntry
     acct_entries = AcctEntry.objects.filter(object_id=id)
+
     # to be calculated in accounts_tags
-    total_debit = 0
-    total_credit = 0
+    total_debit, total_credit = 0, 0
 
     from django.db import connection
     cursor = connection.cursor()
     cursor.execute("""
-                SELECT DISTINCT account_number, description, sum(amount) as total 
-                FROM accountings_acct 
-                INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id 
-                INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id 
-                WHERE accountings_acctentry.object_id = %d 
-                GROUP BY account_number, description 
-                ORDER BY account_number  """ % (invoice.id)) 
+        SELECT DISTINCT account_number, description, sum(amount) as total
+        FROM accountings_acct
+        INNER JOIN accountings_accttran on accountings_accttran.account_id =accountings_acct.id
+        INNER JOIN accountings_acctentry on accountings_acctentry.id =accountings_accttran.acct_entry_id
+        WHERE accountings_acctentry.object_id = %d
+        GROUP BY account_number, description
+        ORDER BY account_number  """ % (invoice.id))
+
     account_numbers = []
     for row in cursor.fetchall():
-        account_numbers.append({"account_number":row[0],
-                                "description":row[1],
-                                "total":abs(row[2])})
+        account_numbers.append({
+            "account_number": row[0],
+            "description": row[1],
+            "total": abs(row[2])})
 
     EventLog.objects.log(instance=invoice)
 
-    return render_to_response(template_name, {'invoice': invoice,
-                                              'account_numbers': account_numbers,
-                                              'acct_entries':acct_entries,
-                                              'total_debit':total_debit,
-                                              'total_credit':total_credit}, 
-                                              context_instance=RequestContext(request))
+    print 'here'
+
+    return render_to_response(template_name, {
+        'invoice': invoice,
+        'account_numbers': account_numbers,
+        'acct_entries': acct_entries,
+        'total_debit': total_debit,
+        'total_credit': total_credit},
+        context_instance=RequestContext(request))
 
 
-@is_enabled('discounts')
 @login_required
 def export(request, template_name="invoices/export.html"):
     """Export Invoices"""
-    
+
     if not request.user.is_superuser:
         raise Http403
-    
+
     if request.method == 'POST':
-        # initilize initial values
-        file_name = "invoices.csv"
-        fields = [
-            'id',
-            'guid',
-            'object_type',
-            'title',
-            'tender_date',
-            'bill_to',
-            'bill_to_first_name',
-            'bill_to_last_name',
-            'bill_to_company',
-            'bill_to_address',
-            'bill_to_city',
-            'bill_to_state',
-            'bill_to_zip_code',
-            'bill_to_country',
-            'bill_to_phone',
-            'bill_to_fax',
-            'bill_to_email',
-            'ship_to',
-            'ship_to_first_name',
-            'ship_to_last_name',
-            'ship_to_company',
-            'ship_to_address',
-            'ship_to_city',
-            'ship_to_state',
-            'ship_to_zip_code',
-            'ship_to_country',
-            'ship_to_phone',
-            'ship_to_fax',
-            'ship_to_email',
-            'ship_to_address_type',
-            'receipt',
-            'gift',
-            'arrival_date_time',
-            'greeting',
-            'instructions',
-            'po',
-            'terms',
-            'due_date',
-            'ship_date',
-            'ship_via',
-            'fob',
-            'project',
-            'other',
-            'message',
-            'subtotal',
-            'shipping',
-            'shipping_surcharge',
-            'box_and_packing',
-            'tax_exempt',
-            'tax_exemptid',
-            'tax_rate',
-            'taxable',
-            'tax',
-            'variance',
-            'total',
-            'payments_credits',
-            'balance',
-            'estimate',
-            'disclaimer',
-            'variance_notes',
-            'admin_notes',
-            'create_dt',
-            'update_dt',
-            'creator',
-            'creator_username',
-            'owner',
-            'owner_username',
-            'status_detail',
-            'status',
-        ]
-        
-        export_id = run_export_task('invoices', 'invoice', fields)
+        end_dt = request.POST.get('end_dt', None)
+        start_dt = request.POST.get('start_dt', None)
+
+        # First, convert our strings into datetime objects
+        # in case we need to do a timedelta
+        try:
+            end_dt = datetime.strptime(end_dt, '%Y-%m-%d')
+        except:
+            end_dt = datetime.now()
+
+        try:
+            start_dt = datetime.strptime(start_dt, '%Y-%m-%d')
+        except:
+            start_dt = end_dt - timedelta(days=30)
+
+        # convert our datetime objects back to strings
+        # so we can pass them on to the task
+        end_dt = end_dt.strftime("%Y-%m-%d")
+        start_dt = start_dt.strftime("%Y-%m-%d")
+
+        export_id = run_invoice_export_task('invoices', 'invoice', start_dt, end_dt)
         EventLog.objects.log()
         return redirect('export.status', export_id)
-        
+    else:
+        end_dt = datetime.now()
+        start_dt = end_dt - timedelta(days=30)
+
     return render_to_response(template_name, {
+        'start_dt': start_dt,
+        'end_dt': end_dt,
     }, context_instance=RequestContext(request))
 
 

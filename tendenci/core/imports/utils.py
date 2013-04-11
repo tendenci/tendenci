@@ -53,17 +53,19 @@ def get_user_import_settings(request, id):
         return d
 
     d['file_name'] = (request.session[id]).get('file_name', u'')
-    d['interactive'] = request.session[id].get('interactive', u'')
-    d['override'] = request.session[id].get('override', u'')
+    d['interactive'] = request.session[id].get('interactive', False)
+    d['override'] = request.session[id].get('override', False)
     d['key'] = request.session[id].get('key', u'')
     d['group'] = request.session[id].get('group', u'')
     d['clear_group_membership'] = request.session[id].get(
-                                'clear_group_membership', u''
+                                'clear_group_membership', False
                                 )
 
-    d['interactive'] = d.get('interactive') or False
-    d['override'] = d.get('override') or False
-    d['clear_group_membership'] = d.get('clear_group_membership') or False
+    if d['override'] == "False":
+        d['override'] = False
+
+    if d['interactive'] == "False":
+        d['interactive'] = False
 
     if d['override']:
         d['str_update'] = 'Override All Fields'
@@ -82,7 +84,7 @@ def render_excel(filename, title_list, data_list, file_extension='.xls'):
         csv_writer.writerow(title_list)
 
         for row_item_list in data_list:
-            for i in range(0, len(row_item_list)):
+            for i in xrange(0, len(row_item_list)):
                 if row_item_list[i]:
                     if isinstance(row_item_list[i], datetime.datetime):
                         row_item_list[i] = row_item_list[i].strftime(
@@ -184,7 +186,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
     else:
         finish = data_dict_list_len
 
-    for r in range(start, finish):
+    for r in xrange(start, finish):
         user_object_dict = {}
         if not preview:
             user_import_dict = {}
@@ -260,7 +262,7 @@ def user_import_process(request, setting_dict, preview=True, id=''):
 
             setting_dict['is_completed'] = False
 
-            for r in range(start, finish):
+            for r in xrange(start, finish):
                 # remove those already processed rows
                 data_dict_list.remove(data_dict_list[0])
 
@@ -462,7 +464,7 @@ def get_header_list(file_path):
     header_list = []
     book = xlrd.open_workbook(file_path)
     sheet = book.sheet_by_index(0)
-    for col in range(0, sheet.ncols):
+    for col in xrange(0, sheet.ncols):
         col_item = sheet.cell_value(rowx=0, colx=col)
         header_list.append(col_item)
     return header_list
@@ -480,9 +482,9 @@ def get_header_list_from_content(file_content, file_name):
         else:
             book = xlrd.open_workbook(file_contents=file_content)
             nsheets = book.nsheets
-            for i in range(0, nsheets):
+            for i in xrange(0, nsheets):
                 sh = book.sheet_by_index(i)
-                for c in range(0, sh.ncols):
+                for c in xrange(0, sh.ncols):
                     col_item = sh.cell_value(rowx=0, colx=c)
                     header_list.append(col_item)
     return header_list
@@ -528,18 +530,18 @@ def extract_from_excel(file_path):
         nrows = book.sheet_by_index(0).nrows
 
         # get the fields from the first row
-        for i in range(0, nsheets):
+        for i in xrange(0, nsheets):
             sh = book.sheet_by_index(i)
-            for c in range(0, sh.ncols):
+            for c in xrange(0, sh.ncols):
                 col_item = sh.cell_value(rowx=0, colx=c)
                 fields.append(smart_str(col_item))
 
         # get the data - skip the first row
-        for r in  range(1, nrows):
+        for r in  xrange(1, nrows):
             row = []
-            for i in range(0, nsheets):
+            for i in xrange(0, nsheets):
                 sh = book.sheet_by_index(i)
-                for c in range(0, sh.ncols):
+                for c in xrange(0, sh.ncols):
                     cell = sh.cell(r, c)
                     cell_value = cell.value
                     if cell.ctype == xlrd.XL_CELL_DATE:

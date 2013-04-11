@@ -11,6 +11,7 @@ from django.template import Library, Node, Variable, TemplateSyntaxError
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
+from django.conf import settings
 
 from tendenci.core.base.template_tags import parse_tag_kwargs
 from tendenci.core.base.utils import url_exists
@@ -468,7 +469,7 @@ class PhotoImageURL(Node):
 
         # return empty unicode string
         if not photo.pk:
-            return unicode()
+            return "%s%s" % (getattr(settings, 'STATIC_URL'), getattr(settings, 'DEFAULT_IMAGE_URL'))
 
         cache_key = generate_image_cache_key(file=str(photo.pk), size=self.size, pre_key="photo", crop=self.crop, unique_key=str(photo.pk), quality=self.quality, constrain=self.constrain)
         cached_image_url = cache.get(cache_key)
@@ -554,8 +555,9 @@ class ImageURL(Node):
                 args.append(self.quality)
             url = reverse('file', args=args)
             return url
-        # return empty unicode string
-        return unicode('')
+
+        # return the default image url
+        return "%s%s" % (getattr(settings, 'STATIC_URL'), getattr(settings, 'DEFAULT_IMAGE_URL'))
 
 
 @register.tag

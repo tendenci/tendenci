@@ -23,31 +23,31 @@ class Command(BaseCommand):
 
         mimport = get_object_or_404(MembershipImport, pk=args[0])
         request_user = User.objects.get(pk=args[1])
-
-        data_list = MembershipImportData.objects.filter(
-                                mimport=mimport).order_by('pk')
-
+        data_list = MembershipImportData.objects.filter(mimport=mimport).order_by('pk')
         imd = ImportMembDefault(request_user, mimport, dry_run=False)
 
         for idata in data_list:
-            memb_data = idata.row_data
-
             try:
-                imd.process_default_membership(memb_data)
+                imd.process_default_membership(idata)
             except Exception, e:
                 print e
 
             mimport.num_processed += 1
-            # save the status
+
+            # save the status -----------------------------------------------
             summary = 'insert:%d,update:%d,update_insert:%d,invalid:%d' % (
-                                        imd.summary_d['insert'],
-                                        imd.summary_d['update'],
-                                        imd.summary_d['update_insert'],
-                                        imd.summary_d['invalid']
-                                        )
+                imd.summary_d['insert'],
+                imd.summary_d['update'],
+                imd.summary_d['update_insert'],
+                imd.summary_d['invalid'],
+            )
             mimport.summary = summary
             mimport.save()
 
         mimport.status = 'completed'
         mimport.complete_dt = datetime.now()
         mimport.save()
+
+        # generate a recap file
+        mimport.generate_recap()
+

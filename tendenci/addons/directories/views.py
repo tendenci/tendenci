@@ -13,6 +13,7 @@ from django.conf import settings
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
 from tendenci.core.base.views import file_display
+from tendenci.core.categories.models import Category
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
@@ -46,27 +47,39 @@ def details(request, slug=None, template_name="directories/view.html"):
 
 @is_enabled('directories')
 def search(request, template_name="directories/search.html"):
-    get = dict(request.GET)
-    query = get.pop('q', [])
-    get.pop('page', None)  # pop page query string out; page ruins pagination
-    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
-    query = ' '.join(query)
-    if query_extra:
-        query = '%s %s' % (''.join(query), ' '.join(query_extra))
+    query = request.GET.get('q')
+    category = request.GET.get('category')
+    subcategory = request.GET.get('sub_category')
 
     if get_setting('site', 'global', 'searchindex') and query:
+        if category:
+            try:
+                query = '%s category:%s' % (query, Category.objects.get(id=int(category)).name)
+            except (Category.DoesNotExist, ValueError):
+                pass
+
+        if subcategory:
+            try:
+                query = '%s subcategory:%s' % (query, Category.objects.get(id=int(subcategory)).name)
+            except (Category.DoesNotExist, ValueError):
+                pass
+
         directories = Directory.objects.search(query, user=request.user).order_by('headline_exact')
     else:
         filters = get_query_filters(request.user, 'directories.view_directory')
         directories = Directory.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             directories = directories.select_related()
-    
+
+        if category:
+            directories = directories.filter(categories__category=category)
+        if subcategory:
+            directories = directories.filter(categories__parent=subcategory)
+
         directories = directories.order_by('headline')
 
-
     EventLog.objects.log()
-    category = request.GET.get('category')
+
     try:
         category = int(category)
     except:
@@ -74,11 +87,10 @@ def search(request, template_name="directories/search.html"):
     categories, sub_categories = Directory.objects.get_categories(category=category)
 
     return render_to_response(template_name, {
-        'directories':directories,
-        'categories':categories,
-        'sub_categories':sub_categories,
-        }, 
-        context_instance=RequestContext(request))
+        'directories': directories,
+        'categories': categories,
+        'sub_categories': sub_categories,
+    }, context_instance=RequestContext(request))
 
 
 def search_redirect(request):
@@ -145,13 +157,22 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
                 # set the expiration date
                 directory.expiration_dt = directory.activation_dt + timedelta(days=directory.requested_duration)
 
+            # We set the logo to None temporarily because we need
+            # the PK when we save to get the filepath of the file
+            logo = directory.logo
+            directory.logo = None
+
+            directory = update_perms_and_save(request, form, directory)
+
+            # directory now has a pk, so we can reassign the logo
+            # and resave
+            directory.logo = logo
+
             if directory.logo:
                 directory.logo.file.seek(0)
-            # update all permissions and save the model
-            directory = update_perms_and_save(request, form, directory)
-            
-            # resize the image that has been uploaded
-            if directory.logo:
+
+                directory.save(log=False)
+
                 if settings.USE_S3_STORAGE:
                     resize_s3_image(directory.logo.name)
                 else:

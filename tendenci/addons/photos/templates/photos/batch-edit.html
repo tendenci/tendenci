@@ -65,7 +65,7 @@
             </div>
     
                 {{ photo_formset.management_form }}
-            <div class="sortable-photos">
+            <div class="sortable-photos clearfix">
                 {% for photo_form in photo_formset.forms %}
 
                 <div class="edit-wrap">
@@ -92,8 +92,8 @@
                         <div class="field">{{ photo_form.caption }}</div>
                     </div>
                     <div class="position-wrap">
-                        <div class="label">{{ photo_form.photoset_position.label_tag }}</div>
-                        <div class="field">{{ photo_form.photoset_position }}</div>
+                        <div class="label">{{ photo_form.position.label_tag }}</div>
+                        <div class="field">{{ photo_form.position }}</div>
                     </div>
     
                     <div style="position:relative;">
@@ -117,8 +117,8 @@
                             </div>
                         </div>
                         <div class="delete-wrap">
-                            <div class="field">{{ photo_form.DELETE }}</div>
-                            <div class="label">{{ photo_form.DELETE.label_tag }}</div>
+                            <div class="field"><input name="delete" type="checkbox" /></div>
+                            <div class="label"> Delete</div>
                         </div>
                     </div>
                 </div>
@@ -193,18 +193,6 @@
                 }
             }
         });
-    });
-
-    $(window).scroll(function(){
-	    if  ($(window).scrollTop() > $(".float-anchor").offset().top){
-		    $(".float-window").css("position", "fixed");
-		    $(".float-window").css("top", "40px");
-	    }
-	
-	    if  ($(window).scrollTop() <= $(".float-anchor").offset().top){
-		    $(".float-window").css("position", "relative");
-		    $(".float-window").css("top", $(".float-anchor").offset);
-	    }
     });
 
     function save_changes(path) { 

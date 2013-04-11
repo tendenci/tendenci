@@ -8,3 +8,11 @@ def folder_structure(context, value):
         "value": value,
     })
     return context
+
+@register.inclusion_tag("theme_editor/details.html", takes_context=True)
+def theme_detail(context, theme, current_theme):
+    context.update({
+        "theme": theme,
+        "current_theme": current_theme,
+    })
+    return context

@@ -2,6 +2,8 @@ import inspect
 from operator import or_
 
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
+from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.conf import settings

@@ -20,14 +20,14 @@ from tendenci.addons.events.models import (
     Event, Place, RegistrationConfiguration, Payment,
     Sponsor, Organizer, Speaker, Type, TypeColorSet,
     RegConfPricing, Addon, AddonOption, CustomRegForm,
-    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry
+    CustomRegField, CustomRegFormEntry, CustomRegFieldEntry,
+    Registrant
 )
 
 from form_utils.forms import BetterModelForm
 from tinymce.widgets import TinyMCE
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.core.perms.forms import TendenciBaseForm
-from tinymce.widgets import TinyMCE
 from tendenci.core.base.fields import SplitDateTimeField, EmailVerificationField
 from tendenci.core.emails.models import Email
 from tendenci.core.site_settings.utils import get_setting
@@ -84,7 +84,6 @@ class CustomRegFormAdminForm(forms.ModelForm):
             'meal_option',
             'comments',
         )
-
 
 class CustomRegFormForField(forms.ModelForm):
     class Meta:
@@ -223,7 +222,7 @@ class FormForCustomRegForm(forms.ModelForm):
             email = self.cleaned_data.get('email', '')
 
         if email:
-            [profile] = Profile.objects.filter(user__email=email,
+            [profile] = Profile.objects.filter(user__email__iexact=email,
                                              user__is_active=True,
                                              status=True,
                                              status_detail='active'
@@ -609,6 +608,7 @@ class PlaceForm(forms.ModelForm):
         widget=TinyMCE(attrs={'style': 'width:100%'},
         mce_attrs={'storme_app_label': Place._meta.app_label,
         'storme_model': Place._meta.module_name.lower()}))
+
     label = 'Location Information'
 
     class Meta:
@@ -638,6 +638,10 @@ class PlaceForm(forms.ModelForm):
             'country',
             'url',
         ]
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
     def save(self, *args, **kwargs):
         place = super(PlaceForm, self).save(commit=False)
@@ -695,6 +699,12 @@ class SpeakerForm(BetterModelForm):
           })
         ]
 
+    def __init__(self, *args, **kwargs):
+        super(SpeakerForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 class OrganizerForm(forms.ModelForm):
     description = forms.CharField(required=False,
@@ -710,6 +720,13 @@ class OrganizerForm(forms.ModelForm):
             'name',
             'description',
         )
+
+    def __init__(self, *args, **kwargs):
+        super(OrganizerForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
 
 
 class PaymentForm(forms.ModelForm):
@@ -728,7 +745,8 @@ class Reg8nConfPricingForm(BetterModelForm):
         self.reg_form_required = kwargs.pop('reg_form_required', False)
         super(Reg8nConfPricingForm, self).__init__(*args, **kwargs)
         kwargs.update({'initial': {'start_dt':datetime.now(),
-                                   'end_dt': datetime.now()+timedelta(days=30,hours=2)}})
+                        'end_dt': (datetime(datetime.now().year, datetime.now().month, datetime.now().day, 17, 0, 0)
+                        + timedelta(days=29))}})
         self.fields['dates'].build_widget_reg8n_dict(*args, **kwargs)
         self.fields['allow_anonymous'].initial = True
 
@@ -769,7 +787,7 @@ class Reg8nConfPricingForm(BetterModelForm):
             'allow_anonymous',
             'allow_user',
             'allow_member',
-            'display_order'
+            'position'
          ]
 
         fieldsets = [('Registration Pricing', {
@@ -782,7 +800,7 @@ class Reg8nConfPricingForm(BetterModelForm):
                     'allow_anonymous',
                     'allow_user',
                     'allow_member',
-                    'display_order'
+                    'position'
                     ],
           'legend': '',
           'classes': ['boxy-grey'],
@@ -827,6 +845,10 @@ class Reg8nEditForm(BetterModelForm):
         initial=[1,2,3]) # first three items (inserted via fixture)
     use_custom_reg = UseCustomRegField(label="Custom Registration Form")
 
+    registration_email_text = forms.CharField(required=False,
+        widget=TinyMCE(attrs={'style':'width:100%'},
+        mce_attrs={'storme_app_label':RegistrationConfiguration._meta.app_label,
+        'storme_model':RegistrationConfiguration._meta.module_name.lower()}))
 
     class Meta:
         model = RegistrationConfiguration
@@ -838,6 +860,7 @@ class Reg8nEditForm(BetterModelForm):
             'payment_required',
             'require_guests_info',
             'discount_eligible',
+            'display_registration_stats',
             'use_custom_reg',
             'send_reminder',
             'reminder_days',
@@ -851,6 +874,7 @@ class Reg8nEditForm(BetterModelForm):
                     'payment_required',
                     'require_guests_info',
                     'discount_eligible',
+                    'display_registration_stats',
                     'use_custom_reg',
                     'send_reminder',
                     'reminder_days',
@@ -899,12 +923,14 @@ class Reg8nEditForm(BetterModelForm):
                                           str(self.instance.bind_reg_form_to_conf_only)
                                           )
             reminder_edit_link = '<a href="%s" target="_blank">Edit Reminder Email</a>' % \
-                                reverse('event.edit.email', args=[self.instance.event.id])                            
+                                reverse('event.edit.email', args=[self.instance.event.id])
             self.fields['reminder_days'].help_text = '%s<br /><br />%s' % \
                                         (self.fields['reminder_days'].help_text,
                                          reminder_edit_link)
+            self.fields['registration_email_text'].widget.mce_attrs['app_instance_id'] = self.instance.id
         else:
             self.fields['use_custom_reg'].initial =',0,1'
+            self.fields['registration_email_text'].widget.mce_attrs['app_instance_id'] = 0
 
         #.short_text_input
         self.fields['reminder_days'].initial = '7,1'
@@ -1254,7 +1280,7 @@ class RegistrantForm(forms.Form):
             email = self.cleaned_data.get('email', '')
 
         if email:
-            [profile] = Profile.objects.filter(user__email=email,
+            [profile] = Profile.objects.filter(user__email__iexact=email,
                                              user__is_active=True,
                                              status=True,
                                              status_detail='active'
@@ -1469,6 +1495,7 @@ class RegConfPricingBaseModelFormSet(BaseModelFormSet):
 
 class MessageAddForm(forms.ModelForm):
     #events = forms.CharField()
+    subject = forms.CharField(widget=forms.TextInput(attrs={'style':'width:100%;padding:5px 0;'}))
     body = forms.CharField(widget=TinyMCE(attrs={'style':'width:100%'},
         mce_attrs={'storme_app_label':Email._meta.app_label,
         'storme_model':Email._meta.module_name.lower()}),
@@ -1485,10 +1512,14 @@ class MessageAddForm(forms.ModelForm):
 
     class Meta:
         model = Email
-        fields = ('body',)
+        fields = ('subject', 'body',)
 
     def __init__(self, event_id=None, *args, **kwargs):
         super(MessageAddForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 class EmailForm(forms.ModelForm):
     #events = forms.CharField()
@@ -1507,6 +1538,10 @@ class EmailForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(EmailForm, self).__init__(*args, **kwargs)
+        if self.instance.id:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = self.instance.id
+        else:
+            self.fields['body'].widget.mce_attrs['app_instance_id'] = 0
 
 class PendingEventForm(EventForm):
     class Meta:
@@ -1590,3 +1625,30 @@ class AddonOptionForm(forms.ModelForm):
 
 class EventICSForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.all())
+
+
+class RegistrantSearchForm(forms.Form):
+    event = forms.ModelChoiceField(queryset=Event.objects.filter(registration__isnull=False).distinct('pk'),
+                                   label=_("Event"),
+                                   required=False,
+                                   empty_label='All Events')
+    start_dt = forms.DateField(label=_('Start Date'), required=False)
+    end_dt = forms.DateField(label=_('End Date'), required=False)
+
+    user_id = forms.CharField(label=_('User ID'), required=False)
+    first_name = forms.CharField(label=('First Name'), required=False)
+    last_name = forms.CharField(label=('Last Name'), required=False)
+    email = forms.CharField(label=('Email'), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(RegistrantSearchForm, self).__init__(*args, **kwargs)
+
+        # Set start date and end date
+        if self.fields.get('start_dt'):
+            self.fields.get('start_dt').widget.attrs = {
+                'class': 'datepicker',
+            }
+        if self.fields.get('end_dt'):
+            self.fields.get('end_dt').widget.attrs = {
+                'class': 'datepicker',
+            }

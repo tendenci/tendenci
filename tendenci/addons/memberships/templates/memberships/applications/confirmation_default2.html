@@ -23,6 +23,44 @@
         {% else %}
         <p>Thank you for your submission!</p>
         {% endif %}
+
+        {% if membership.is_pending %}
+        <p><span style="background-color: #ECF716;">{% trans "Your membership is pending for admin approval." %}</span>
+          <br />{% trans "You will be notified shortly after your application is approved." %} 
+        </p>
+        {% endif %}
+        
+        {% with membership.get_invoice as invoice %}
+        {% if invoice and invoice.total > 0 %}
+        <p>
+            <a href="{% url invoice.view invoice.id invoice.guid %}">View Invoice{% if invoice.balance > 0 and SITE_GLOBAL_MERCHANTACCOUNT %} and Make Online Payment{% endif %}</a>
+        </p>
+        {% endif %}
+        {% endwith %}
+        
+        {% if membership.corporate_membership_id %}
+        {% with membership.corpmembership as corpmembership %}
+        {% if corpmembership %}
+        <p>&nbsp;</p>
+        <p>
+            <a href="{% url membership_default.add_under_corp membership.corporate_membership_id %}">Add More Members Under "{{ corpmembership.corp_profile.name }}" &raquo; </a>
+        </p>
+        {% endif %}
+        {% endwith %}
+        
+        {% if request.user.is_superuser %}
+        <p><a href="{% url corpmembership.search %}">Back to Corporate Memberships &raquo;</a></p>
+        {% else %}
+            {% if request.user.is_authenticated %}
+            <p><a href="{% url corpmembership.mycorps %}">Back to My Corporate Memberships &raquo;</a></p>
+            {% endif %}
+        {% endif %}
+        {% endif %}
+        
+        {% if membership.user.profile.is_active %}
+        <p><a href="{% url profile membership.user.username %}">View Profile</a></p>
+        {% endif %}
+        
         <p>&nbsp;</p>
 </div>
 </div>

@@ -11,7 +11,7 @@ def encrypt(value):
     cipher = AES.new(settings.SITE_SETTINGS_KEY, AES.MODE_ECB)
     value = unicode(value)
     padding = cipher.block_size - len(value) % cipher.block_size
-    for i in range(padding):
+    for i in xrange(padding):
         value += '\0'
     ciphertext = cipher.encrypt(value)
     ciphertext = base64.b64encode(ciphertext) # make it database friendly
