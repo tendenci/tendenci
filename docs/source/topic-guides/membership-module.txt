@@ -1,0 +1,30 @@
+Membership Module
+==================
+
+#. The membership module handles a person's membership.  It allows people to become a member of your website and with that membership may come special privileges.  Such as discounts on attending an event or when posting a job.
+
+#. Memberships are capable of expiring and people may be allowed to renew their membership and regain their privileges.
+
+#. Every time someone becomes a member, a new membership record is created and this set of memberships is recorded. A new membership record can be created by joining the organization for the first time or renewing your membership.
+
+#. This allows you to view the history of a person and the length of their membership with an organization.
+
+#. It also helps determine gaps in a persons membershipship with the organization and how much they've contributed to the organization through membership fees
+
+
+Membership
+------------------
+
+#. A membership record is an agreement between a user and your website.  This agreement may come at a cost to the user or be free.  Having a membership record on your website means that this person is now considered a "member."
+
+#. A membership record mostly tells your website that this person is a "member."  A membership record could also hold custom information about that member.
+
+#. All members have a membership of a specific type.  In fact a person can have multiple memberships all of different types.  A person cannot have multiple memberships of the same "membership type."
+
+.. Membership Type
+.. ----------------
+
+
+
+.. Membership Application
+.. ------------------------

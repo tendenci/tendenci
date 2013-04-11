@@ -36,10 +36,42 @@ Templating
 
    templating/*
 
-.. Indices and tables
-.. ------------------
 
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+.. Tutorials
+.. ----------
 
+.. .. toctree::
+..    :maxdepth: 1
+..    :glob:
+
+..    tutorials/*
+
+
+Topic Guides
+----------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   topic-guides/*
+
+
+.. Reference
+.. ----------
+
+.. .. toctree::
+..    :maxdepth: 1
+..    :glob:
+
+..    reference/*
+
+
+.. Trouble Shooting
+.. ----------
+
+.. .. toctree::
+..    :maxdepth: 1
+..    :glob:
+
+..    trouble-shooting/*
