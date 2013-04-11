@@ -200,7 +200,7 @@ setup(
         'chardet==2.1.1',
         "dj-database-url==0.2.1",
         "psycopg2==2.4.5",
-        "gunicorn==0.16.1",
+        "gunicorn==0.17.2",
         "django-s3-folder-storage==0.1",
         "django-storages==1.1.5",
         "python-memcached==1.48",
