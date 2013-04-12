@@ -21,6 +21,7 @@ from tendenci.addons.corporate_memberships.forms import (
     CorpAppForm,
     NoticeForm,
     CorpMembershipAppFieldAdminForm)
+
 from tendenci.addons.corporate_memberships.utils import (
     get_corpapp_default_fields_list,
     update_authenticate_fields,
