@@ -109,18 +109,26 @@ def job_set_inv_payment(user, job, pricing):
                     
             
 def get_job_price(user, job, pricing):
-    if user.profile.is_member:
-        if job.list_type == 'regular':
-            return pricing.regular_price_member
-        else:
-            return pricing.premium_price_member
-    else:
-        if job.list_type == 'regular':
-            return pricing.regular_price
-        else:
-            return pricing.premium_price
-    
-    
+    return pricing.get_price_for_user(
+                      user=user,
+                      list_type=job.list_type)
+
+
+def is_free_listing(user, pricing_id, list_type):
+    """
+    Check if a directory listing with the specified pricing and list type is free.
+    """
+    try:
+        pricing_id = int(pricing_id)
+    except:
+        pricing_id = 0
+    [pricing] = pricing_id and JobPricing.objects.filter(pk=pricing_id)[:1] or [None]
+
+    if pricing:
+        return pricing.get_price_for_user(user, list_type=list_type) <= 0
+    return False
+
+
 def pricing_choices(user):
     """
     Since the list type of a job cannot be determined without the job,
