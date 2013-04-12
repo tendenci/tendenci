@@ -27,6 +27,37 @@ ALLOWED_EXTENSIONS = (
     '.less',
 )
 
+DEFAULT_THEME_INFO = 'theme.info'
+
+# Class to hold theme info details
+class ThemeInfo(object):
+    def __init__(self, theme):
+        self.orig_name = theme
+        self.name = theme
+        self.description = ''
+        self.tags = ''
+        self.screenshot = ''
+        self.author = ''
+        self.author_uri = ''
+        self.version = ''
+
+        theme_root = get_theme_root(theme)
+        # check if theme info file exists
+        is_file = qstr_is_file(DEFAULT_THEME_INFO, ROOT_DIR=theme_root)
+        if is_file:
+            theme_file = file(os.path.join(theme_root, DEFAULT_THEME_INFO))
+            data = theme_file.readlines()
+            theme_file.close()
+            # set attributes according to data in info file
+            for datum in data:
+                datum = datum.replace('\n', '')
+                label, value = datum.split('=')
+                label = label.strip().replace(' ', '_').lower()
+                value = value.strip()
+                if label == 'screenshot':
+                    value = '/themes/' + theme + '/' + value
+                self.__setattr__(label, value)
+
 # At compile time, cache the directories to search.
 fs_encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
 app_templates = {}

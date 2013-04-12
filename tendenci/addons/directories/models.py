@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.contenttypes import generic
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import AnonymousUser
 
 from tagging.fields import TagField
 from timezones.fields import TimeZoneField
@@ -237,3 +238,16 @@ class DirectoryPricing(models.Model):
         if not self.premium_price: self.premium_price = 0
             
         super(DirectoryPricing, self).save(*args, **kwargs)
+
+    def get_price_for_user(self, user=AnonymousUser(), list_type='regular'):
+        if not user.is_anonymous() and user.profile.is_member:
+            if list_type == 'regular':
+                return self.regular_price_member
+            else:
+                return self.premium_price_member
+        else:
+            if list_type == 'regular':
+                return self.regular_price
+            else:
+                return self.premium_price
+

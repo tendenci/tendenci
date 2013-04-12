@@ -118,15 +118,22 @@ def make_offline_payment(request, id, template_name='invoices/make-offline-payme
 
 
 def mark_as_paid(request, id):
-    
+    """
+    Sets invoice balance to 0 and adds
+    accounting entries
+    """
     invoice = get_object_or_404(Invoice, pk=id)
-    
-    if not (request.user.profile.is_superuser): raise Http403    
-    
-    balance = invoice.balance
-    invoice.make_payment(request.user, balance)
-    
-    messages.add_message(request, messages.SUCCESS, 'Successfully marked invoice %s as paid.' % invoice.id)
+
+    if not request.user.profile.is_superuser:
+        raise Http403
+
+    invoice.make_payment(request.user, invoice.balance)
+
+    messages.add_message(
+        request,
+        messages.SUCCESS,
+        'Successfully marked invoice %s as paid.' % invoice.pk)
+
     return redirect(invoice)
 
 

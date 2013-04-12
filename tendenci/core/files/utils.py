@@ -125,9 +125,10 @@ def aspect_ratio(image_size, new_size, constrain=False):
 
     # check if file size is 0, which means there's an exception
     if orig_w != 0 and orig_h != 0:
-        if orig_w < w or orig_h < h:
-            # prevent upscaling of images
-            return orig_w, orig_h
+        if not constrain:
+            if orig_w < w or orig_h < h:
+                # prevent upscaling of images
+                return orig_w, orig_h
 
     if not constrain and (w and h):
         return w, h
@@ -152,6 +153,21 @@ def aspect_ratio(image_size, new_size, constrain=False):
         h2 = w2
     if w2 == 0:
         w2 = h2
+
+    if constrain:
+        # check if h1,w1 breaks the boundaries of the constrain
+        if h1 > h or w1 > w:
+            # check for upscaling
+            if orig_w < w2 or orig_h < h2:
+                return orig_w, orig_h
+            else:
+                return w2, h2
+        else:
+            # check for upscaling
+            if orig_w < w1 or orig_h < h1:
+                return orig_w, orig_h
+            else:
+                return w1, h1
 
     if h1 <= h:
         return w1, h1

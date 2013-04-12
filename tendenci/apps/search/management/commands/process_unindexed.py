@@ -2,9 +2,9 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.contrib.contenttypes.models import ContentType
 
 from tendenci.apps.search.models import UnindexedItem
+
 
 class Command(BaseCommand):
     """

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
 from tendenci.addons.jobs.models import Job
-from tendenci.addons.jobs.forms import JobForm
+from tendenci.addons.jobs.forms import JobAdminForm
 
 
 class JobAdmin(TendenciBaseModelAdmin):
@@ -63,7 +63,7 @@ class JobAdmin(TendenciBaseModelAdmin):
             'status_detail',
         )}),
     )
-    form = JobForm
+    form = JobAdminForm
     ordering = ['-update_dt']
 
     def get_form(self, request, obj=None, **kwargs):

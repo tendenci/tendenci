@@ -4,15 +4,18 @@ from PIL import Image
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.template.defaultfilters import slugify
 from django.conf import settings
+from django.utils import simplejson
+from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.base.http import Http403
 from tendenci.core.base.views import file_display
+from tendenci.core.categories.models import Category
 from tendenci.core.perms.decorators import is_enabled
 from tendenci.core.perms.utils import (get_notice_recipients,
     has_perm, has_view_perm, get_query_filters, update_perms_and_save)
@@ -24,7 +27,7 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.directories.models import Directory, DirectoryPricing
 from tendenci.addons.directories.forms import DirectoryForm, DirectoryPricingForm, DirectoryRenewForm
-from tendenci.addons.directories.utils import directory_set_inv_payment
+from tendenci.addons.directories.utils import directory_set_inv_payment, is_free_listing
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification
 from tendenci.addons.directories.utils import resize_s3_image
@@ -46,27 +49,39 @@ def details(request, slug=None, template_name="directories/view.html"):
 
 @is_enabled('directories')
 def search(request, template_name="directories/search.html"):
-    get = dict(request.GET)
-    query = get.pop('q', [])
-    get.pop('page', None)  # pop page query string out; page ruins pagination
-    query_extra = ['%s:%s' % (k,v[0]) for k,v in get.items() if v[0].strip()]
-    query = ' '.join(query)
-    if query_extra:
-        query = '%s %s' % (''.join(query), ' '.join(query_extra))
+    query = request.GET.get('q')
+    category = request.GET.get('category')
+    subcategory = request.GET.get('sub_category')
 
     if get_setting('site', 'global', 'searchindex') and query:
+        if category:
+            try:
+                query = '%s category:%s' % (query, Category.objects.get(id=int(category)).name)
+            except (Category.DoesNotExist, ValueError):
+                pass
+
+        if subcategory:
+            try:
+                query = '%s subcategory:%s' % (query, Category.objects.get(id=int(subcategory)).name)
+            except (Category.DoesNotExist, ValueError):
+                pass
+
         directories = Directory.objects.search(query, user=request.user).order_by('headline_exact')
     else:
         filters = get_query_filters(request.user, 'directories.view_directory')
         directories = Directory.objects.filter(filters).distinct()
         if not request.user.is_anonymous():
             directories = directories.select_related()
-    
+
+        if category:
+            directories = directories.filter(categories__category=category)
+        if subcategory:
+            directories = directories.filter(categories__parent=subcategory)
+
         directories = directories.order_by('headline')
 
-
     EventLog.objects.log()
-    category = request.GET.get('category')
+
     try:
         category = int(category)
     except:
@@ -74,11 +89,10 @@ def search(request, template_name="directories/search.html"):
     categories, sub_categories = Directory.objects.get_categories(category=category)
 
     return render_to_response(template_name, {
-        'directories':directories,
-        'categories':categories,
-        'sub_categories':sub_categories,
-        }, 
-        context_instance=RequestContext(request))
+        'directories': directories,
+        'categories': categories,
+        'sub_categories': sub_categories,
+    }, context_instance=RequestContext(request))
 
 
 def search_redirect(request):
@@ -122,12 +136,21 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
         del form.fields['payment_method']
         del form.fields['list_type']
 
-    if request.method == "POST":   
-        if form.is_valid():           
+    if request.method == "POST":
+        if require_payment:
+            is_free = is_free_listing(request.user,
+                               request.POST.get('pricing', 0),
+                               request.POST.get('list_type'))
+            if is_free:
+                del form.fields['payment_method']
+
+        if form.is_valid():
             directory = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
-            
-            if directory.payment_method: 
+
+            if require_payment and is_free:
+                directory.payment_method = 'paid - cc'
+            if directory.payment_method:
                 directory.payment_method = directory.payment_method.lower()
             if not directory.requested_duration:
                 directory.requested_duration = 30
@@ -195,8 +218,23 @@ def add(request, form_class=DirectoryForm, template_name="directories/add.html")
             else:
                 return HttpResponseRedirect(reverse('directory.thank_you'))             
 
-    return render_to_response(template_name, {'form':form}, 
+    return render_to_response(template_name,
+                              {'form': form,
+                               'require_payment': require_payment},
         context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def query_price(request):
+    """
+    Get the price for user with the selected list type.
+    """
+    pricing_id = request.POST.get('pricing_id', 0)
+    list_type = request.POST.get('list_type', '')
+    pricing = get_object_or_404(DirectoryPricing, pk=pricing_id)
+    price = pricing.get_price_for_user(request.user, list_type=list_type)
+    return HttpResponse(simplejson.dumps({'price': price}))
 
 
 @is_enabled('directories')

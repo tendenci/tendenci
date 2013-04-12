@@ -3,13 +3,15 @@ from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.utils import simplejson
+from django.views.decorators.csrf import csrf_exempt
 
 from tendenci.core.base.http import Http403
 from tendenci.core.base.utils import now_localized
@@ -27,7 +29,9 @@ from tendenci.core.exports.utils import run_export_task
 
 from tendenci.addons.jobs.models import Job, JobPricing
 from tendenci.addons.jobs.forms import JobForm, JobPricingForm, JobSearchForm
-from tendenci.addons.jobs.utils import job_set_inv_payment, get_job_unique_slug
+from tendenci.addons.jobs.utils import (is_free_listing,
+                                        job_set_inv_payment,
+                                        get_job_unique_slug)
 
 try:
     from tendenci.apps.notifications import models as notification
@@ -158,21 +162,31 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
     else:
         category_form_class = CategoryForm2
 
+    form = form_class(request.POST or None, request.FILES or None, user=request.user)
+    # adjust the fields depending on user type
+    if not require_payment:
+        del form.fields['payment_method']
+        del form.fields['list_type']
+
     if request.method == "POST":
-        form = form_class(request.POST, user=request.user)
+        if require_payment:
+            is_free = is_free_listing(request.user,
+                               request.POST.get('pricing', 0),
+                               request.POST.get('list_type'))
+            if is_free:
+                del form.fields['payment_method']
+
         categoryform = category_form_class(
                         content_type,
                         request.POST,
                         prefix='category')
 
-        # adjust the fields depending on user type
-        if not require_payment:
-            del form.fields['payment_method']
-            del form.fields['list_type']
-
         if form.is_valid() and categoryform.is_valid():
             job = form.save(commit=False)
             pricing = form.cleaned_data['pricing']
+
+            if require_payment and is_free:
+                job.payment_method = 'paid - cc'
 
             # set it to pending if the user is anonymous or not an admin
             if not can_add_active:
@@ -271,7 +285,6 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
             messages.add_message(request, messages.WARNING, 'You need to add a %s Pricing before you can add a %s.' % (get_setting('module', 'jobs', 'label_plural'),get_setting('module', 'jobs', 'label')))
             return HttpResponseRedirect(reverse('job_pricing.add'))
 
-        form = form_class(user=request.user)
         initial_category_form_data = {
             'app_label': 'jobs',
             'model': 'job',
@@ -282,14 +295,24 @@ def add(request, form_class=JobForm, template_name="jobs/add.html",
                         initial=initial_category_form_data,
                         prefix='category')
 
-        # adjust the fields depending on user type
-        if not require_payment:
-            del form.fields['payment_method']
-            del form.fields['list_type']
-
     return render_to_response(template_name,
-            {'form': form, 'categoryform':categoryform},
+            {'form': form,
+             'require_payment': require_payment,
+             'categoryform': categoryform},
             context_instance=RequestContext(request))
+
+
+@csrf_exempt
+@login_required
+def query_price(request):
+    """
+    Get the price for user with the selected list type.
+    """
+    pricing_id = request.POST.get('pricing_id', 0)
+    list_type = request.POST.get('list_type', '')
+    pricing = get_object_or_404(JobPricing, pk=pricing_id)
+    price = pricing.get_price_for_user(request.user, list_type=list_type)
+    return HttpResponse(simplejson.dumps({'price': price}))
 
 
 @is_enabled('jobs')

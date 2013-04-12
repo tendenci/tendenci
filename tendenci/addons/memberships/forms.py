@@ -24,7 +24,7 @@ from tendenci.apps.user_groups.models import Group
 from tendenci.apps.profiles.models import Profile
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.addons.memberships.models import (Membership,
-    MembershipDefault, MembershipDemographic,
+    MembershipDefault, MembershipDemographic, MembershipAppField,
     MembershipType, Notice, App, AppEntry, AppField, AppFieldEntry,
     MembershipImport, MembershipApp)
 from tendenci.addons.memberships.fields import TypeExpMethodField, PriceInput, NoticeTimeTypeField
@@ -469,6 +469,33 @@ class MembershipAppForm(TendenciBaseForm):
                                     'app_instance_id'] = 0
 
 
+class MembershipAppFieldAdminForm(forms.ModelForm):
+    class Meta:
+        model = MembershipAppField
+        fields = (
+                'membership_app',
+                'label',
+                'field_name',
+                'required',
+                'display',
+                'admin_only',
+                'field_type',
+                'description',
+                'help_text',
+                'choices',
+                'default_value',
+                'css_class'
+                  )
+
+    def save(self, *args, **kwargs):
+        self.instance = super(MembershipAppFieldAdminForm, self).save(*args, **kwargs)
+        if self.instance and not self.instance.field_name:
+            if self.instance.field_type != 'section_break':
+                self.instance.field_type = 'section_break'
+                self.instance.save()
+        return self.instance
+
+
 field_size_dict = {
         'initials': 12,
         'displayname': 36,
@@ -523,7 +550,16 @@ def assign_fields(form, app_field_objs):
     # update the field attrs - label, required...
     for obj in app_field_objs:
         if obj.field_name in field_names:
-            if obj.field_type:
+            if obj.field_type and obj.field_name not in [
+                                    'payment_method',
+                                    'membership_type',
+                                    'groups',
+                                    'status',
+                                    'status_detail',
+                                    'directory',
+                                    'industry',
+                                    'region']:
+                # create form field with customized behavior
                 field = obj.get_field_class(
                         initial=form.fields[obj.field_name].initial)
                 form.fields[obj.field_name] = field
@@ -542,7 +578,10 @@ def assign_fields(form, app_field_objs):
             label_type = []
             if obj.field_name not in ['payment_method',
                                       'membership_type',
-                                      'groups']:
+                                      'groups'] \
+                    and obj.field_stype not in [
+                        'radioselect',
+                        'checkboxselectmultiple']:
                 obj.field_div_class = 'inline-block'
                 label_type.append('inline-block')
                 if len(obj.label) < 16:

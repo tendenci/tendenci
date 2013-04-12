@@ -201,7 +201,7 @@ def corpmembership_add(request, slug='',
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
     app_fields = app_fields.exclude(field_name='expiration_dt')
-    app_fields = app_fields.order_by('order')
+    app_fields = app_fields.order_by('position')
 
     corpprofile_form = CorpProfileForm(app_fields,
                                      request.POST or None,
@@ -347,7 +347,7 @@ def corpmembership_edit(request, id,
         # if it is expired, remove the expiration_dt field so they can
         # renew this corporate membership
         app_fields = app_fields.exclude(field_name='expiration_dt')
-    app_fields = app_fields.order_by('order')
+    app_fields = app_fields.order_by('position')
 
     corpprofile_form = CorpProfileForm(app_fields,
                                      request.POST or None,
@@ -450,7 +450,7 @@ def corpmembership_view(request, id,
             fields_to_exclude = ['authorized_domain']
         app_fields = app_fields.exclude(field_name__in=fields_to_exclude)
 
-    app_fields = list(app_fields.order_by('order'))
+    app_fields = list(app_fields.order_by('position'))
 
     if can_edit:
         app_field = CorpMembershipAppField(label='Join Date',

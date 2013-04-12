@@ -54,4 +54,6 @@ def theme_choices():
 
     for theme in os.listdir(themes_dir):
         if os.path.isdir(os.path.join(themes_dir, theme)):
-            yield theme
+            # catch hidden directories
+            if not theme.startswith('.'):
+                yield theme

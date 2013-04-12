@@ -1,6 +1,6 @@
 # Tendenci Installation
 
-You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs.
+You can use the following installation instructions to install a local Tendenci site. This Django project is intended to help create a Tendenci site that you can deploy on a public hosting, but it's recommended that you install locally first in order to test your themes and designs. From the Terminal prompt on a Mac or Linux follow these steps.
 
 ## Pre-config
 
@@ -55,7 +55,7 @@ Once this is done, you can setup django project with the following:
 
     create-tendenci-project
 
-If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the `.env` file that is created.
+If you created a database with a name other than 'tendenci', you will need to edit the database name 'tendenci' inside the `.env` file that is created. The .env file is in the root of your site and is a hidden file. Do a "ls -a" to see it. And type "nano .env" to edit it.
 
 Next, we install requirements for the project. We add tendenci videos as an example to use.
 
