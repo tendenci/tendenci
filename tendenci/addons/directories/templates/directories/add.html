@@ -62,4 +62,44 @@
 		  step: 15
 		});
 	</script>
+	
+	{% if require_payment %}
+	<script type="text/javascript">
+	$(document).ready(function() {
+	    var payment_method_block =  $('.id_payment_method');
+        var pricing_select = $('#id_pricing');
+        var list_type_select = $('#id_list_type');
+            
+	    var toggle_payment_method = function(){
+	        var pricing_id = pricing_select.val();
+	        var list_type = list_type_select.val();
+	        
+	        if (pricing_id && list_type){
+	            $.ajax({
+                   type: "POST",
+                   url: "{% url directory.query_price %}",
+                   data: {'pricing_id': pricing_id, 'list_type': list_type},
+                   success: function(ret_data){
+                       var obj = $.parseJSON(ret_data);
+                       var price = obj.price;
+                       if (!isNaN(price) && parseFloat(price) <= 0){
+                           payment_method_block.hide();
+                       }else{
+                           payment_method_block.show();
+                       }
+                     }
+                });
+	        }
+	    };
+	    toggle_payment_method();
+	    $('#id_pricing').change(function(){
+	        toggle_payment_method();
+	    })
+	    $('#id_list_type').change(function(){
+            toggle_payment_method();
+        })
+	    
+	 });
+	</script>
+	{% endif %}
 {% endblock %}
