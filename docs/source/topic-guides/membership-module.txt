@@ -15,14 +15,23 @@ Membership Module
 Membership
 ------------------
 
-#. A membership record is an agreement between a user and your website.  This agreement may come at a cost to the user or be free.  Having a membership record on your website means that this person is now considered a "member."
+#. A membership record is an agreement between a user and your website.  This agreement may be offered at a price or for free.  Having a membership record on your website means that this person is now considered a "member."
 
 #. A membership record mostly tells your website that this person is a "member."  A membership record could also hold custom information about that member.
 
 #. All members have a membership of a specific type.  In fact a person can have multiple memberships all of different types.  A person cannot have multiple memberships of the same "membership type."
 
-.. Membership Type
-.. ----------------
+Membership Type
+----------------
+
+#. A membership type holds meta information about a membership record.
+
+    #. The length of a membership (e.g. expiration date/time, renewal period)
+    #. Prices; join, renew, and admin fees
+    #. Used for grouping and managing of members
+
+#. Membership types are powerful because they allow you to group members into specific sets and target these groups specifically.  You can offer discounts or invite them to privileged information or events.  As well as send targeted emails to these specific types of members.
+
 
 
 
