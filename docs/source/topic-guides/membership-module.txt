@@ -32,8 +32,29 @@ Membership Type
 
 #. Membership types are powerful because they allow you to group members into specific sets and target these groups specifically.  You can offer discounts or invite them to privileged information or events.  As well as send targeted emails to these specific types of members.
 
+Membership Application
+------------------------
+
+#. A membership application is literally the form that someone fills out in order to become a member or to renew their membership.
+
+#. A membership application collects basic information about a person such as who they are, where they work, and contact information.  It can also collect custom information.
+
+#. Common information is collected in the person's profile.
+
+#. Custom information is located within the membership record.
+
+#. All information can be exported.
+
+#. Detailed reports and graphs are created from profile information.  Detailed reports and graphs are not created from custom information.  Because custom information is custom, it's difficult for us to know how to report on that information.
+
+#. Your website can have as many applications as you would like.
+
+#. Visiblity of an application can be limited to any group or type of person.
+
+#. An application can allow you to sign up for one or many membership types.
+
+#. You decide the different ways of paying for a membership.
+
+#. You can fill out the application for someone else and have them receive the confirmation.
 
 
-
-.. Membership Application
-.. ------------------------
