@@ -405,6 +405,7 @@ class ProfileAdminForm(TendenciBaseForm):
         """
         Create a new user then create the user profile
         """
+        request = kwargs.pop('request', None)
         username = self.cleaned_data['username']
         email = self.cleaned_data['email']
         params = {'first_name': self.cleaned_data['first_name'],
@@ -422,25 +423,33 @@ class ProfileAdminForm(TendenciBaseForm):
             params.update({'username': username})
             update_user(self.instance.user, **params)
 
-        security_level = self.cleaned_data['security_level']
-        if security_level == 'superuser':
-            self.instance.user.is_superuser = 1
-            self.instance.user.is_staff = 1
-        elif security_level == 'staff':
-            self.instance.user.is_superuser = 0
-            self.instance.user.is_staff = 1
-        else:
-            self.instance.user.is_superuser = 0
-            self.instance.user.is_staff = 0
+        if not (request.user == self.instance.user and request.user.is_superuser):
+            security_level = self.cleaned_data['security_level']
+            if security_level == 'superuser':
+                self.instance.user.is_superuser = 1
+                self.instance.user.is_staff = 1
+            elif security_level == 'staff':
+                self.instance.user.is_superuser = 0
+                self.instance.user.is_staff = 1
+            else:
+                self.instance.user.is_superuser = 0
+                self.instance.user.is_staff = 0
 
-        interactive = self.cleaned_data['interactive']
-        try:
-            interactive = int(interactive)
-        except:
-            interactive = 0
-        self.instance.user.is_active = interactive
+            interactive = self.cleaned_data['interactive']
+            try:
+                interactive = int(interactive)
+            except:
+                interactive = 0
+            self.instance.user.is_active = interactive
+
+        if not self.instance.id:
+            self.instance.creator = request.user
+            self.instance.creator_username = request.user.username
+        self.instance.owner = request.user
+        self.instance.owner_username = request.user.username
 
         self.instance.user.save()
+        self.instance.save()
             
         return super(ProfileAdminForm, self).save(*args, **kwargs)
 
