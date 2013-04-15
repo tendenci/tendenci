@@ -79,7 +79,7 @@ def sync_campaigns():
         campaign.preview_url = c.PreviewURL
         campaign.save()
 
-def sync_templates(request):
+def sync_templates(request=None):
     if hasattr(cl,'templates'): templates = cl.templates()
     else: templates = []
     for t in templates:
@@ -114,11 +114,19 @@ def sync_templates(request):
             t = CST(template_id = template.template_id)
             t.update(unicode(template.name), html_url, zip_url)
         except BadRequest, e:
-            messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
-            return redirect('campaign_monitor.template_index')
+            if request:
+                messages.add_message(request, messages.ERROR, 'Bad Request %s: %s' % (e.data.Code, e.data.Message))
+                return redirect('campaign_monitor.template_index')
+            else:
+                print e.data.Code, e.data.Message
+                return
         except Exception, e:
-            messages.add_message(request, messages.ERROR, 'Error: %s' % e)
-            return redirect('campaign_monitor.template_index')
+            if request:
+                messages.add_message(request, messages.ERROR, 'Error: %s' % e)
+                return redirect('campaign_monitor.template_index')
+            else:
+                print e.data.Code, e.data.Message
+                return
         #get campaign monitor details
         t = t.details()
         template.name = t.Name
