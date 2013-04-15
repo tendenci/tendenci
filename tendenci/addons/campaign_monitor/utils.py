@@ -23,8 +23,8 @@ from tendenci.core.site_settings.utils import get_setting
 api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 api_password = getattr(settings, 'CAMPAIGNMONITOR_API_PASSWORD', None)
 client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
-CreateSend.api_key = api_key
-cl = Client(client_id)
+auth = {'api_key': api_key}
+cl = Client(auth, client_id)
 
 def random_string(n=32):
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for x in range(n))

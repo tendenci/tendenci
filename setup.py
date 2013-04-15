@@ -180,7 +180,7 @@ setup(
         "oauth2>=1.5.167",
         "python_openid>=2.2",
         "ordereddict==1.1",
-        "createsend==2.4.1",
+        "createsend==3.1.0",
         "celery==2.2.7",
         "django-celery==2.2.7",
         "django-kombu>=0.9.4",
