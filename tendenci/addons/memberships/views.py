@@ -2182,7 +2182,8 @@ def report_expired_members(request, template_name='reports/membership_list.html'
 
         table_header = [
             'username',
-            'full name',
+            'first name',
+            'last name',
             'email',
             'type',
             'join',
@@ -2199,7 +2200,8 @@ def report_expired_members(request, template_name='reports/membership_list.html'
 
             table_data.append([
                 mem.user.username,
-                mem.user.get_full_name(),
+                mem.user.first_name,
+                mem.user.last_name,
                 mem.user.email,
                 mem.membership_type.name,
                 mem.join_dt,
