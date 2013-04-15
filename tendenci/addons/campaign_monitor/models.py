@@ -151,9 +151,10 @@ class Campaign(models.Model):
  
 cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
 cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
+auth = {'api_key': cm_api_key}
 if cm_api_key and cm_client_id:
     from createsend import CreateSend, List, Client, Subscriber, BadRequest, Unauthorized
-    CreateSend.api_key = cm_api_key
+    #CreateSend.api_key = cm_api_key
 
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
         """Check if sync_newsletters. Do nothing if false.
@@ -171,7 +172,7 @@ if cm_api_key and cm_client_id:
                     add an entry to listmap
         """
 
-        cl = Client(cm_client_id)
+        cl = Client(auth, cm_client_id)
         lists = cl.lists()
         list_ids = [list.ListID for list in lists]
         list_names = [list.Name for list in lists]
@@ -190,7 +191,7 @@ if cm_api_key and cm_client_id:
                 listmap_insert(instance, list_id)
 
                 # custom fields setup
-                cm_list = List(list_id)
+                cm_list = List(auth, list_id)
                 setup_custom_fields(cm_list)
 
         elif instance.sync_newsletters:  # update
@@ -210,7 +211,7 @@ if cm_api_key and cm_client_id:
 
             if list_id and list_id in list_ids:
                 list = list_d[list_id]
-                cm_list = List(list_id)
+                cm_list = List(auth, list_id)
                 # setup custom fields
                 setup_custom_fields(cm_list)
                 # if the list title doesn't match with the group name, update the list title
@@ -230,7 +231,7 @@ if cm_api_key and cm_client_id:
             try:
                 list_map = ListMap.objects.get(group=instance)
                 list_id = list_map.list_id
-                list = List(list_id)
+                list = List(auth, list_id)
                 
                 if list:
                     try:
@@ -275,11 +276,11 @@ if cm_api_key and cm_client_id:
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
-                list = List(list_id)
+                list = List(auth, list_id)
                 
                 if list:
                     # subscriber setup
-                    subscriber_obj = Subscriber(list_id)
+                    subscriber_obj = Subscriber(auth, list_id)
                     
                     try:
                         list_stats = list.stats()
@@ -293,10 +294,10 @@ if cm_api_key and cm_client_id:
                         except BadRequest as br:
                             pass
                     except Unauthorized as e:
-                        list = List()
+                        list = List(auth)
                         add_list = True
             except ListMap.DoesNotExist:
-                list = List()
+                list = List(auth)
                 add_list = True
 
             try:
@@ -305,7 +306,7 @@ if cm_api_key and cm_client_id:
                     list_id = list.create(cm_client_id, instance.group.name, "", False, "")
                     # custom fields setup
                     setup_custom_fields(list)
-                    subscriber_obj = Subscriber(list_id)
+                    subscriber_obj = Subscriber(auth, list_id)
                     if not list_map:
                         list_map = ListMap()
                         list_map.group = instance.group
@@ -327,10 +328,10 @@ if cm_api_key and cm_client_id:
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
-                list = List(list_id)
+                list = List(auth, list_id)
                 
                 if list:
-                    subscriber_obj = Subscriber(list_id, email)
+                    subscriber_obj = Subscriber(auth, list_id, email)
                     try:
                         subscriber_obj.unsubscribe()
                     except:
@@ -351,7 +352,7 @@ if cm_api_key and cm_client_id:
         """
         try:
             # add the list with the group name to campaign monitor
-            cm_list = List()
+            cm_list = List(auth)
             list_id = cm_list.create(client_id, group.name, "", False, "")
         except:
             # add group to the queue for later process
