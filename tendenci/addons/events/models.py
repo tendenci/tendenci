@@ -387,12 +387,6 @@ class Registration(models.Model):
                                          decimal_places=2, 
                                          blank=True, 
                                          default=0)
-    discount_code = models.CharField(_('Discount Code'), max_length=100,
-                                     blank=True, null=True)
-    discount_amount = models.DecimalField(_('Discount Amount'), 
-                                          max_digits=10, 
-                                          decimal_places=2,
-                                          default=0)
     canceled = models.BooleanField(_('Canceled'), default=False)
 
     creator = models.ForeignKey(User, related_name='created_registrations', null=True, on_delete=models.SET_NULL)

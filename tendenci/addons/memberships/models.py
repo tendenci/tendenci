@@ -285,11 +285,6 @@ class MembershipType(OrderingBaseModel, TendenciBaseModel):
 class MembershipSet(models.Model):
     invoice = models.ForeignKey(Invoice)
 
-    discount_amount = models.DecimalField(_('Discount Amount'), 
-                                          max_digits=10, 
-                                          decimal_places=2,
-                                          default=0)
-
     class Meta:
         verbose_name = _("Membership")
         verbose_name_plural = _("Memberships")
@@ -311,7 +306,6 @@ class MembershipSet(models.Model):
         price = 0
         for membership in memberships:
             price += membership.get_price()
-        price -= self.discount_amount
 
         invoice.subtotal = price
         invoice.total = price

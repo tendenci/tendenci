@@ -749,6 +749,7 @@ def add_registration(*args, **kwargs):
                         apps__model=RegistrationConfiguration._meta.module_name)[:1] or [None]
         if discount and discount.available_for(1):
             amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
+    invoice_discount_amount = discount_amount
 
     reg8n_attrs = {
         "event": event,
@@ -759,10 +760,6 @@ def add_registration(*args, **kwargs):
         'override_table': override_table,
         'override_price_table': override_price_table
     }
-    if discount_code and discount_amount:
-        reg8n_attrs.update({'discount_code': discount_code,
-                            'discount_amount': discount_amount})
-
     if event.is_table:
         reg8n_attrs['quantity'] = price.quantity
     if request.user.is_authenticated():
@@ -834,6 +831,11 @@ def add_registration(*args, **kwargs):
 
     # create invoice
     invoice = reg8n.save_invoice(admin_notes=admin_notes)
+    if discount_code and invoice_discount_amount:
+        invoice.discount_code = discount_code
+        invoice.discount_amount = invoice_discount_amount
+        invoice.save()
+
     if discount_code and discount:
         for dmount in discount_list:
             if dmount > 0:

@@ -35,13 +35,13 @@
     {% endif %}
 {% endwith %}
 
-{% if obj.discount_amount > 0 %}
+{% if invoice.discount_amount > 0 %}
     <tr>
         <td>
-            {% trans "Discount amount applied" %}
+            {% trans "Discount applied (discount code: " %}{{ invoice.discount_code }} )
         </td>
         <td class="td-right">
-            - {{ obj.discount_amount|format_currency }}
+            - {{ invoice.discount_amount|format_currency }}
         </td>
     </tr>
 {% endif %}

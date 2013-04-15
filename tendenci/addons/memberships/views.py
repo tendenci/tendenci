@@ -1680,6 +1680,8 @@ def membership_default_add(request, slug='',
 
         if memberships:
             membership_set = MembershipSet()
+            invoice = membership_set.save_invoice(memberships)
+
             discount_code = membership_form2.cleaned_data.get('discount_code', None)
             discount_amount = Decimal(0)
             discount_list = [Decimal(0) for i in range(len(amount_list))]
@@ -1688,8 +1690,13 @@ def membership_default_add(request, slug='',
                                 apps__model=MembershipSet._meta.module_name)[:1] or [None]
                 if discount and discount.available_for(1):
                     amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
-            membership_set.discount_amount = discount_amount
-            invoice = membership_set.save_invoice(memberships)
+                    # apply discount to invoice
+                    invoice.discount_code = discount_code
+                    invoice.discount_amount = discount_amount
+                    invoice.subtotal -= discount_amount
+                    invoice.total -= discount_amount
+                    invoice.balance -= discount_amount
+                    invoice.save()
 
             if discount_code and discount:
                 for dmount in discount_list:
