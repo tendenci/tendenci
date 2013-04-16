@@ -145,7 +145,6 @@ setup(
             create-tendenci-project=tendenci.bin.create_tendenci_project:create_project
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
-    include_package_data=True,
     dependency_links=[
         "http://b.pypi.python.org/",
         "http://g.pypi.python.org/",
