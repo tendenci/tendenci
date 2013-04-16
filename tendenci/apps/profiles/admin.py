@@ -3,7 +3,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
+from tendenci.core.event_logs.models import EventLog
 from tendenci.core.perms.admin import TendenciBaseModelAdmin
+from tendenci.core.perms.utils import update_perms_and_save
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.forms import ProfileAdminForm
 
@@ -59,14 +61,22 @@ class ProfileAdmin(TendenciBaseModelAdmin):
 
     ordering = ('user__last_name', 'user__first_name')
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.creator = request.user
-            obj.creator_username = request.user.username
-        obj.owner = request.user
-        obj.owner_username = request.user.username
+    def save_model(self, request, object, form, change):
+        instance = form.save(request=request, commit=False)
+        instance = update_perms_and_save(request, form, instance, log=False)
 
-        obj.save()
+        log_defaults = {
+            'instance': object,
+            'action': "edit"
+        }
+        if not change:
+            log_defaults['action'] = "add"
+
+        EventLog.objects.log(**log_defaults)
+        return instance
+
+    def save_form(self, request, form, change):
+        return form.save(request=request, commit=False)
 
     def get_email(self, obj):
         return obj.user.email
