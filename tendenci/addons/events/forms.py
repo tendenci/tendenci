@@ -427,7 +427,12 @@ class EventForm(TendenciBaseForm):
 
     photo_upload = forms.FileField(label=_('Photo'), required=False)
     remove_photo = forms.BooleanField(label=_('Remove the current photo'), required=False)
-    group = forms.ModelChoiceField(queryset=Group.objects.filter(status=True, status_detail="active"), required=True, empty_label=None)
+    group = forms.ModelChoiceField(
+                queryset=Group.objects.filter(
+                        status=True,
+                        status_detail="active").order_by('name'),
+                required=True,
+                empty_label=None)
 
     status_detail = forms.ChoiceField(
         choices=(('active','Active'),('inactive','Inactive'), ('pending','Pending'),))
@@ -492,6 +497,9 @@ class EventForm(TendenciBaseForm):
             self.fields['description'].widget.mce_attrs['app_instance_id'] = self.instance.pk
         else:
             self.fields['description'].widget.mce_attrs['app_instance_id'] = 0
+            group = Group.objects.first(**{'entity_id': 1})
+            if group:
+                self.fields['group'].initial = group.pk
 
         if self.instance.image:
             self.fields['photo_upload'].help_text = '<input name="remove_photo" id="id_remove_photo" type="checkbox"/> Remove current image: <a target="_blank" href="/files/%s/">%s</a>' % (self.instance.image.pk, basename(self.instance.image.file.name))

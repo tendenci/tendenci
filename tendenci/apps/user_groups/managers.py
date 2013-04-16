@@ -7,8 +7,18 @@ from django.contrib.auth.models import User
 
 from tendenci.core.perms.managers import TendenciBaseManager
 
+
 class GroupManager(TendenciBaseManager):
-    pass
+    def first(self, **fiters):
+        groups = self.filter(status=True,
+                             status_detail='active'
+                            ).order_by('id')
+        if fiters:
+            groups = groups.filter(**fiters)
+        [group] = groups[:1] or [None]
+
+        return group
+
 
 class OldGroupManager(Manager):
     def search(self, query=None, *args, **kwargs):
