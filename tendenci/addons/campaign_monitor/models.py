@@ -1,7 +1,5 @@
-from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.db.models.signals import post_save, pre_delete
 from tendenci.apps.user_groups.models import Group, GroupMembership
@@ -10,6 +8,7 @@ from tendenci.apps.subscribers.models import GroupSubscription
 from tendenci.core.files.models import file_directory
 from tendenci.libs.boto_s3.utils import set_s3_file_permission
 
+
 class ListMap(models.Model):
     group = models.ForeignKey(Group)
     # list id for campaign monitor
@@ -17,130 +16,133 @@ class ListMap(models.Model):
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     last_sync_dt = models.DateTimeField(null=True)
-    
+
     def __unicode__(self):
         if self.group:
             return self.group.name
         return ''
-    
+
+
 class GroupQueue(models.Model):
     group = models.ForeignKey(Group)
-    
+
+
 class SubscriberQueue(models.Model):
     group = models.ForeignKey(Group)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     subscriber = models.ForeignKey(FormEntry, null=True)
-    
+
+
 class Template(models.Model):
     """
     This represents a Template in Campaign Monitor.
     """
     class Meta:
-        permissions = (("view_template","Can view template"),)
-    
+        permissions = (("view_template", "Can view template"),)
+
     template_id = models.CharField(max_length=100, unique=True, null=True)
     name = models.CharField(max_length=100)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
-    
+
     #get only
     cm_preview_url = models.URLField(null=True)
     cm_screenshot_url = models.URLField(null=True)
-    
+
     #post only
     html_file = models.FileField(upload_to=file_directory, null=True)
     zip_file = models.FileField(upload_to=file_directory, null=True)
-    
+
     @property
     def content_type(self):
         return 'template'
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("campaign_monitor.template_view", [self.template_id])
-    
+
     @models.permalink
     def get_html_url(self):
         return ("campaign_monitor.template_html", [self.template_id])
-    
+
     @models.permalink
     def get_html_original_url(self):
         return ("campaign_monitor.template_html_original", [self.template_id])
-    
+
     @models.permalink
     def get_render_url(self):
         return ("campaign_monitor.template_render", [self.template_id])
-    
+
     @models.permalink
     def get_text_url(self):
         return ("campaign_monitor.template_text", [self.template_id])
-    
+
     def get_zip_url(self):
         if self.zip_file:
             return self.zip_file.url
         return ''
-        
+
     def get_media_url(self):
         if self.zip_file:
             return "%scampaign_monitor/%s" % (settings.MEDIA_URL, self.template_id)
         return ''
-        
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         super(Template, self).save(*args, **kwargs)
         if self.html_file:
             set_s3_file_permission(self.html_file.file, public=True)
         if self.zip_file:
             set_s3_file_permission(self.zip_file.file, public=True)
-        
-    
+
+
 class Campaign(models.Model):
     """
     This represents a Campaign. It is considered as a "Draft" if it is 
     not yet sent.
     """
-    
+
     class Meta:
-        permissions = (("view_campaign","Can view campaign"),)
-    
+        permissions = (("view_campaign", "Can view campaign"),)
+
     STATUS_CHOICES = (
-        ('S','Sent'),
+        ('S', 'Sent'),
         ('C', 'Scheduled'),
         ('D', 'Draft'),
     )
-    
+
     campaign_id = models.CharField(max_length=100, unique=True)
     create_dt = models.DateTimeField(auto_now_add=True)
     update_dt = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='D')
-    
+
     #fields for sync
     name = models.CharField(max_length=100)
-    subject =  models.CharField(max_length=100)
+    subject = models.CharField(max_length=100)
     lists = models.ManyToManyField(ListMap)
-    
+
     #fields for sent campaigns
     sent_date = models.DateTimeField(null=True, blank=True)
     web_version_url = models.URLField(null=True, blank=True)
     total_recipients = models.IntegerField(default=0)
-    
+
     #fields for scheduled campaigns
     scheduled_date = models.DateTimeField(null=True, blank=True)
     scheduled_time_zone = models.CharField(max_length=100, null=True, blank=True)
     preview_url = models.URLField(null=True, blank=True)
-    
+
     #fields for post only
     from_name = models.CharField(max_length=100, null=True, blank=True)
     from_email = models.EmailField(null=True, blank=True)
     reply_to = models.EmailField(null=True, blank=True)
     template = models.ForeignKey(Template, null=True, blank=True)
-    
+
     @models.permalink
     def get_absolute_url(self):
         return ("campaign_monitor.campaign_view", [self.campaign_id])
-        
+
     def __unicode__(self):
         return self.name
 
@@ -148,12 +150,13 @@ class Campaign(models.Model):
 # http://www.campaignmonitor.com/api/getting-started/
 # http://tendenci.createsend.com/subscribers/
 # https://github.com/campaignmonitor/createsend-python/blob/master/createsend/list.py
- 
-cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None) 
+
+cm_api_key = getattr(settings, 'CAMPAIGNMONITOR_API_KEY', None)
 cm_client_id = getattr(settings, 'CAMPAIGNMONITOR_API_CLIENT_ID', None)
+auth = {'api_key': cm_api_key}
 if cm_api_key and cm_client_id:
-    from createsend import CreateSend, List, Client, Subscriber, BadRequest, Unauthorized
-    CreateSend.api_key = cm_api_key
+    from createsend import List, Client, Subscriber, BadRequest, Unauthorized
+    #CreateSend.api_key = cm_api_key
 
     def sync_cm_list(sender, instance=None, created=False, **kwargs):
         """Check if sync_newsletters. Do nothing if false.
@@ -171,10 +174,10 @@ if cm_api_key and cm_client_id:
                     add an entry to listmap
         """
 
-        cl = Client(cm_client_id)
+        cl = Client(auth, cm_client_id)
         lists = cl.lists()
-        list_ids = [list.ListID for list in lists]
-        list_names = [list.Name for list in lists]
+        list_ids = [alist.ListID for alist in lists]
+        list_names = [alist.Name for alist in lists]
         list_ids_d = dict(zip(list_names, list_ids))
         list_d = dict(zip(list_ids, lists))
 
@@ -190,7 +193,7 @@ if cm_api_key and cm_client_id:
                 listmap_insert(instance, list_id)
 
                 # custom fields setup
-                cm_list = List(list_id)
+                cm_list = List(auth, list_id)
                 setup_custom_fields(cm_list)
 
         elif instance.sync_newsletters:  # update
@@ -209,12 +212,12 @@ if cm_api_key and cm_client_id:
                     listmap_insert(instance, list_id)
 
             if list_id and list_id in list_ids:
-                list = list_d[list_id]
-                cm_list = List(list_id)
+                alist = list_d[list_id]
+                cm_list = List(auth, list_id)
                 # setup custom fields
                 setup_custom_fields(cm_list)
                 # if the list title doesn't match with the group name, update the list title
-                if instance.name != list.Name:
+                if instance.name != alist.Name:
                     try:
                         # trap the error for now
                         # TODO: update only if the list title does not exist
@@ -230,24 +233,24 @@ if cm_api_key and cm_client_id:
             try:
                 list_map = ListMap.objects.get(group=instance)
                 list_id = list_map.list_id
-                list = List(list_id)
-                
-                if list:
+                alist = List(auth, list_id)
+
+                if alist:
                     try:
-                        list.delete()
+                        alist.delete()
                     except:
                         pass
                 list_map.delete()
-                
+
             except ListMap.DoesNotExist:
                 pass
-            
+
     def sync_cm_subscriber(sender, instance=None, created=False, **kwargs):
         """Subscribe the subscriber to the campaign monitor list
            Check if sync_newsletters is True. Do nothing if False.
         """
         from django.core.validators import email_re
-        
+
         if instance and instance.group and not instance.group.sync_newsletters:
             return
 
@@ -263,7 +266,8 @@ if cm_api_key and cm_client_id:
                 profile = instance.member.profile
             custom_data = []
             if profile:
-                fields = ['city', 'state', 'zipcode', 'country', 'sex', 'member_number']
+                fields = ['city', 'state', 'zipcode', 'country',
+                          'sex', 'member_number']
                 for field in fields:
                     data = {}
                     data['Key'] = field
@@ -275,83 +279,86 @@ if cm_api_key and cm_client_id:
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
-                list = List(list_id)
-                
-                if list:
+                alist = List(auth, list_id)
+
+                if alist:
                     # subscriber setup
-                    subscriber_obj = Subscriber(list_id)
-                    
+                    subscriber_obj = Subscriber(auth, list_id)
+
                     try:
-                        list_stats = list.stats()
-                    
+                        list_stats = alist.stats()
+
                         # check if this user has already subscribed, if not, subscribe it
                         try:
                             subscriber = subscriber_obj.get(list_id, email)
                             if str(subscriber.State).lower() == 'active':
-                                subscriber = subscriber_obj.update(email, name, custom_data, True)
+                                subscriber = subscriber_obj.update(email, name,
+                                                        custom_data, True)
                                 add_subscriber = False
-                        except BadRequest as br:
+                        except BadRequest:
                             pass
-                    except Unauthorized as e:
-                        list = List()
+                    except Unauthorized:
+                        alist = List(auth)
                         add_list = True
             except ListMap.DoesNotExist:
-                list = List()
+                alist = List(auth)
                 add_list = True
 
             try:
                 if add_list:
                     # this list might be deleted on campaign monitor, add it back
-                    list_id = list.create(cm_client_id, instance.group.name, "", False, "")
+                    list_id = list.create(cm_client_id, instance.group.name,
+                                          "", False, "")
                     # custom fields setup
                     setup_custom_fields(list)
-                    subscriber_obj = Subscriber(list_id)
+                    subscriber_obj = Subscriber(auth, list_id)
                     if not list_map:
                         list_map = ListMap()
                         list_map.group = instance.group
                     list_map.list_id = list_id
                     list_map.save()
-                        
+
                 if add_subscriber:
-                    email_address = subscriber_obj.add(list_id, email, name, custom_data, True)
-            except BadRequest as br:
+                    email_address = subscriber_obj.add(list_id, email, name,
+                                                       custom_data, True)
+            except BadRequest:
                 pass
-    
+
     def delete_cm_subscriber(sender, instance=None, **kwargs):
         """Delete the subscriber from the campaign monitor list
         """
         from django.core.validators import email_re
 
-        (name, email) = get_name_email(instance)        
+        (name, email) = get_name_email(instance)
         if email and email_re.match(email):
             try:
                 list_map = ListMap.objects.get(group=instance.group)
                 list_id = list_map.list_id
-                list = List(list_id)
-                
-                if list:
-                    subscriber_obj = Subscriber(list_id, email)
+                alist = List(auth, list_id)
+
+                if alist:
+                    subscriber_obj = Subscriber(auth, list_id, email)
                     try:
                         subscriber_obj.unsubscribe()
                     except:
                         pass
-                   
+
             except ListMap.DoesNotExist:
                 pass
-            
+
     def listmap_insert(group, list_id, **kwargs):
         """Add an entry to the listmap
         """
         list_map = ListMap(group=group,
                            list_id=list_id)
         list_map.save()
-        
+
     def get_or_create_cm_list(client_id, group):
         """Get or create the list on compaign monitor
         """
         try:
             # add the list with the group name to campaign monitor
-            cm_list = List()
+            cm_list = List(auth)
             list_id = cm_list.create(client_id, group.name, "", False, "")
         except:
             # add group to the queue for later process
@@ -359,7 +366,7 @@ if cm_api_key and cm_client_id:
             gq = GroupQueue(group=group)
             gq.save()
             list_id = None
-            
+
         return list_id
 
     def setup_custom_fields(cm_list):
@@ -381,16 +388,14 @@ if cm_api_key and cm_client_id:
         elif isinstance(instance, GroupSubscription):
             name = instance.name
             email = instance.email
-            
+
         return (name, email)
-            
-        
-            
-    post_save.connect(sync_cm_list, sender=Group)   
+
+    post_save.connect(sync_cm_list, sender=Group)
     pre_delete.connect(delete_cm_list, sender=Group)
-    
-    post_save.connect(sync_cm_subscriber, sender=GroupMembership)   
+
+    post_save.connect(sync_cm_subscriber, sender=GroupMembership)
     pre_delete.connect(delete_cm_subscriber, sender=GroupMembership)
-    
-    post_save.connect(sync_cm_subscriber, sender=GroupSubscription)   
+
+    post_save.connect(sync_cm_subscriber, sender=GroupSubscription)
     pre_delete.connect(delete_cm_subscriber, sender=GroupSubscription)
