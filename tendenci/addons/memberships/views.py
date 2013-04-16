@@ -1,6 +1,7 @@
 import os
 import math
 import hashlib
+from decimal import Decimal
 from hashlib import md5
 from datetime import datetime, timedelta
 import time as ttime
@@ -50,6 +51,8 @@ from tendenci.core.files.models import File
 from tendenci.core.exports.utils import render_csv, run_export_task
 from tendenci.core.perms.utils import get_notice_recipients
 
+from tendenci.apps.discounts.models import Discount, DiscountUse
+from tendenci.apps.discounts.utils import assign_discount
 from tendenci.apps.profiles.models import Profile
 from tendenci.addons.memberships.models import (App, AppEntry, Membership,
     MembershipType, Notice, MembershipImport, MembershipDefault, MembershipSet,
@@ -1627,10 +1630,15 @@ def membership_default_add(request, slug='',
     if request.user.is_authenticated() or not app.use_captcha:
         del captcha_form.fields['captcha']
 
+    if (not app.discount_eligible or 
+        not Discount.has_valid_discount(model=MembershipSet._meta.module_name)):
+        del membership_form.fields['discount_code']
+
     if request.method == 'POST':
         membership_types = request.POST.getlist('membership_type')
         post_values = request.POST.copy()
         memberships = []
+        amount_list = []
         for type in membership_types:
             post_values['membership_type'] = type
             membership_form2 = MembershipDefault2Form(
@@ -1668,10 +1676,32 @@ def membership_default_add(request, slug='',
                     user=user,
                 )
                 memberships.append(membership)
+                amount_list.append(membership.membership_type.price)
 
         if memberships:
             membership_set = MembershipSet()
             invoice = membership_set.save_invoice(memberships)
+
+            discount_code = membership_form2.cleaned_data.get('discount_code', None)
+            discount_amount = Decimal(0)
+            discount_list = [Decimal(0) for i in range(len(amount_list))]
+            if discount_code:
+                [discount] = Discount.objects.filter(discount_code=discount_code,
+                                apps__model=MembershipSet._meta.module_name)[:1] or [None]
+                if discount and discount.available_for(1):
+                    amount_list, discount_amount, discount_list, msg = assign_discount(amount_list, discount)
+                    # apply discount to invoice
+                    invoice.discount_code = discount_code
+                    invoice.discount_amount = discount_amount
+                    invoice.subtotal -= discount_amount
+                    invoice.total -= discount_amount
+                    invoice.balance -= discount_amount
+                    invoice.save()
+
+            if discount_code and discount:
+                for dmount in discount_list:
+                    if dmount > 0:
+                        DiscountUse.objects.create(discount=discount, invoice=invoice)
 
             for membership in memberships:
                 membership.membership_set = membership_set

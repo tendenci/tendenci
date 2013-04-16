@@ -4,6 +4,8 @@ from decimal import Decimal
 
 from django.utils.translation import ugettext_lazy as _
 from django import forms
+from django.contrib.contenttypes.models import ContentType
+
 from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.apps.discounts.models import Discount
 from tendenci.core.base.fields import SplitDateTimeField
@@ -21,6 +23,7 @@ class DiscountForm(TendenciBaseForm):
             'end_dt',
             'never_expires',
             'cap',
+            'apps',
             'allow_anonymous_view',
             'user_perms',
             'group_perms',
@@ -33,6 +36,7 @@ class DiscountForm(TendenciBaseForm):
                                  'value',
                                  'cap',
                                  'never_expires',
+                                 'apps',
                                  'start_dt',
                                  'end_dt',
                                  ],
@@ -63,6 +67,11 @@ class DiscountForm(TendenciBaseForm):
         if not self.user.profile.is_superuser:
             if 'status' in self.fields: self.fields.pop('status')
             if 'status_detail' in self.fields: self.fields.pop('status_detail')
+
+        MODELS_WITH_DISCOUNT = ['registrationconfiguration',
+                                'membershipset']
+        content_types = ContentType.objects.filter(model__in=MODELS_WITH_DISCOUNT)
+        self.fields['apps'].choices = ((c.id, c.app_label) for c in content_types)
             
     def clean_discount_code(self):
         data = self.cleaned_data['discount_code']
@@ -90,13 +99,16 @@ class DiscountForm(TendenciBaseForm):
 class DiscountCodeForm(forms.Form):
     price = forms.DecimalField(decimal_places=2)
     code = forms.CharField()
+    model = forms.CharField()
     count = forms.IntegerField()
     
     def clean(self):
         code = self.cleaned_data.get('code', '')
         count = self.cleaned_data.get('count', 1)
+        model = self.cleaned_data.get('model', '')
+
         try:
-            discount = Discount.objects.get(discount_code=code)
+            discount = Discount.objects.get(discount_code=code, apps__model=model)
         except Discount.DoesNotExist:
             raise forms.ValidationError('This is not a valid discount code.')
         if not discount.available_for(count):
@@ -120,10 +132,12 @@ class DiscountHandlingForm(forms.Form):
     """
     prices = forms.CharField()
     code = forms.CharField()
+    model = forms.CharField()
     
     def clean(self):
         code = self.cleaned_data.get('code', '')
-        [self.discount] = Discount.objects.filter(discount_code=code)[:1] or [None]
+        model = self.cleaned_data.get('model', '')
+        [self.discount] = Discount.objects.filter(discount_code=code, apps__model=model)[:1] or [None]
         if not self.discount:
             raise forms.ValidationError('This is not a valid discount code.')
         
@@ -147,10 +161,3 @@ class DiscountHandlingForm(forms.Form):
         price_list = [Decimal(price) for price in prices.split(';')]
         
         return assign_discount(price_list, self.discount)
-        
-            
-            
-        
-        
-        
-
