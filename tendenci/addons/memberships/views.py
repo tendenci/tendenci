@@ -1402,7 +1402,7 @@ def membership_default_preview(
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
-    app_fields = app_fields.order_by('order')
+    app_fields = app_fields.order_by('position')
 
     user_form = UserForm(app_fields)
     profile_form = ProfileForm(app_fields)
