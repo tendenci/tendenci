@@ -77,7 +77,8 @@
                     {% endfor %}
     
                     <div class="photo-wrap">
-                        <img src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" />
+                        <img class="full" src="{% photo_image_url photo_form.instance size=422x700 constrain=True %}" />
+                        <img class="square" src="{% photo_image_url photo_form.instance size=102x78 crop=True %}" />
                     </div>
                     <div class="set-wrap">
                         {{ photo_form.photoset }}
