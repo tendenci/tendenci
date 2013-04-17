@@ -146,7 +146,7 @@ setup(
             update-tendenci-project=tendenci.bin.update_tendenci_project:update_project
         """,
     dependency_links=[
-        "http://b.pypi.python.org/",
+        "http://a.pypi.python.org/",
         "http://g.pypi.python.org/",
     ],
     install_requires=[
