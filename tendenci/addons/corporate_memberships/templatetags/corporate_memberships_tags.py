@@ -36,8 +36,11 @@ def individual_pricing_desp(corp_membership):
     if corp_membership:
         corporate_type = corp_membership.corporate_membership_type
         membership_type = corporate_type.membership_type
+        admin_fee = membership_type.admin_fee
+        if not admin_fee:
+            admin_fee = 0
 
-        if not (membership_type.price + membership_type.admin_fee):
+        if not (membership_type.price + admin_fee):
             membership_price = 'free'
         else:
             membership_price = tcurrency(membership_type.price)

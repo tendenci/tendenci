@@ -3,8 +3,7 @@
 from __future__ import with_statement
 from optparse import OptionParser
 import os
-from shutil import move, copy
-from uuid import uuid4
+from shutil import copy
 
 from django.utils.importlib import import_module
 
@@ -43,10 +42,9 @@ def update_project():
         ]
         for file_path in files_to_copy:
             copy(os.path.join(package_path, "project_template", file_path),
-            os.path.join(project_path, file_path))
+                 os.path.join(project_path, file_path))
 
-    # Clean up pyc files.
-    for (root, dirs, files) in os.walk(project_path, False):
+    for (root, dirs, files) in os.walk(os.path.join(project_path, 'conf'), False):
         for f in files:
             if f.endswith(".pyc"):
                 os.remove(os.path.join(root, f))

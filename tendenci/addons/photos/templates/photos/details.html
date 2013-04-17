@@ -34,6 +34,7 @@
         <div class="photo-traverse">
             <ul>
 				{% if photo_prev_url %}<li><a id="photo-prev" href="{{ photo_prev_url }}">&laquo; {% trans "Prev" %}</a></li>{% endif %}
+                {% if photo_set_count %}<li>({{ photo_position }} {% trans "of" %} {{ photo_set_count }})</li>{% endif %}
                 {% if photo_next_url %}<li><a id="photo-next" href="{{ photo_next_url }}">{% trans "Next" %} &raquo;</a></li>
                 {% else %}
                     {% if photo_first_url %}<li><a id="photo-next" href="{{ photo_first_url }}">{% trans "Go to First" %} &raquo;</a></li>{% endif %}
