@@ -739,8 +739,14 @@ def get_membership_stats():
             'total': total_all,
         })
 
-    return (sorted(summary, key=lambda x: x['type'].name),
-        (total_active, total_pending, total_expired, total_total))
+    total_dict = {
+        'active': total_active,
+        'pending': total_pending,
+        'expired': total_expired,
+        'total': total_total,
+    }
+
+    return (sorted(summary, key=lambda x: x['type'].name), total_dict)
 
 
 def make_csv(**kwargs):
