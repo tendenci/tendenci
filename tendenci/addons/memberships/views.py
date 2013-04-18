@@ -1789,6 +1789,10 @@ def membership_default_corp_pre_add(request, cm_id=None,
 #    if not app.corp_app:
 #        raise Http404
     corp_app = CorpMembershipApp.objects.current_app()
+
+    if not hasattr(corp_app, 'memb_app'):
+        raise Http404
+
     app = corp_app.memb_app
     if not app:
         raise Http404
