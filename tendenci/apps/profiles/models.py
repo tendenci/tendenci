@@ -115,6 +115,15 @@ class Profile(Person):
     def is_superuser(self):
         return all([self._can_login(), self.user.is_superuser])
 
+    def first_name(self):
+        return self.user.first_name
+
+    def last_name(self):
+        return self.user.last_name
+
+    def username(self):
+        return self.user.username
+
     def get_name(self):
 
         user = self.user

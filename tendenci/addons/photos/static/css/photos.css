@@ -311,7 +311,7 @@ table.photo-form select {
 	width: 300px;
 }
 
-.bulk-license {
+.bulk-license, .bulk-group {
 	border: 1px solid silver;
 	background-color: #FDFDFD;
 	padding: 10px;

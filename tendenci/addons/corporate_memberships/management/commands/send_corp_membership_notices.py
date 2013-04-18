@@ -119,22 +119,31 @@ class Command(BaseCommand):
             else:
                 start_dt = now - timedelta(days=notice.num_days)
 
+            if notice.notice_type == 'disapprove':
+                status_detail_list = ['inactive']
+            else:
+                status_detail_list = ['active', 'expired']
+
             memberships = CorpMembership.objects.filter(
                                     status=True,
-                                    status_detail__in=['active', 'expired']
+                                    status_detail__in=status_detail_list
                                     )
-            if notice.notice_type in ['approve_join', 'disapprove_join']:
-                memberships = memberships.filter(
-                    approved_denied_dt__year=start_dt.year,
-                    approved_denied_dt__month=start_dt.month,
-                    approved_denied_dt__day=start_dt.day,
-                    renewal=False)
-            elif notice.notice_type in ['approve_renewal', 'disapprove_renewal']:
-                memberships = memberships.filter(
-                    approved_denied_dt__year=start_dt.year,
-                    approved_denied_dt__month=start_dt.month,
-                    approved_denied_dt__day=start_dt.day,
-                    renewal=True)
+            if notice.notice_type in ['approve_join', 'disapprove_join'
+                                      'approve_renewal', 'disapprove_renewal']:
+                filters = {'approved_denied_dt__year': start_dt.year,
+                           'approved_denied_dt__month': start_dt.month,
+                           'approved_denied_dt__day': start_dt.day,
+                           'renewal': False,
+                           'approved': True
+                           }
+                if notice.notice_type in ['approve_renewal',
+                                          'disapprove_renewal']:
+                    filters.update({'renewal': True})
+                if notice.notice_type in ['disapprove_join',
+                                          'disapprove_renewal']:
+                    filters.update({'approved': False})
+
+                memberships = memberships.filter(**filters)
             else:  # 'expire'
                 memberships = memberships.filter(
                     expiration_dt__year=start_dt.year,
@@ -228,8 +237,12 @@ class Command(BaseCommand):
                 body = template.render(context)
 
                 email.recipient = recipient.user.email
-                email.subject = notice.subject.replace('(name)',
-                                                       corp_profile.name)
+                subject = notice.subject.replace('(name)',
+                                            corp_profile.name)
+                template = Template(subject)
+                subject = template.render(context)
+
+                email.subject = subject
                 email.body = body
                 if notice.sender:
                     email.sender = notice.sender

@@ -84,11 +84,12 @@ class File(TendenciBaseModel):
             set_s3_file_permission(self.file, public=True)
         else:
             set_s3_file_permission(self.file, public=False)
-            cache_set = cache.get("files_cache_set.%s" % self.pk)
-            if cache_set is not None:
-                # TODO remove cached images
-                cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
-                cache.delete("files_cache_set.%s" % self.pk)
+
+        cache_set = cache.get("files_cache_set.%s" % self.pk)
+        if cache_set is not None:
+            # TODO remove cached images
+            cache.delete_many(cache.get("files_cache_set.%s" % self.pk))
+            cache.delete("files_cache_set.%s" % self.pk)
 
     def delete(self, *args, **kwargs):
         # Related objects

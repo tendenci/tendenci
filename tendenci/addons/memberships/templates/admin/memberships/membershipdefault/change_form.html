@@ -20,7 +20,12 @@
 
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
 
+    {% comment %}
+    {# link removed since it points to this admin page #}
+    {# The Go to Profile link above is a good replacement #}
     {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+    {% endcomment %}
+
     {% endblock %}
   </ul>
 {% endif %}{% endif %}
