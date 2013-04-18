@@ -81,7 +81,7 @@ class ProfileAdmin(TendenciBaseModelAdmin):
     def get_email(self, obj):
         return obj.user.email
 
-    get_email.admin_order_field  = 'user__email'
+    get_email.admin_order_field = 'user__email'
     get_email.short_description = 'Email'
 
     def get_user(self, obj):
@@ -105,4 +105,4 @@ class MyUserAdmin(UserAdmin):
     )
 
 admin.site.unregister(User)
-#admin.site.register(User, MyUserAdmin)
+admin.site.register(User, MyUserAdmin)
