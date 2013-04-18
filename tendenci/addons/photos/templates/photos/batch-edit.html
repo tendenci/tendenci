@@ -48,15 +48,15 @@
                             <option value="{{ l.pk }}">{{ l.name }}</option>
                             {% endfor %}
                         </select>
-                        <div class="bulk-group">
-                            <div>{% trans "Update all Groups" %}</div>
-                            <select>
-                                <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
-                                {% for g in groups %}
-                                <option value="{{ g.pk }}">{{ g }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                    </div>
+                    <div class="bulk-group">
+                        <div>{% trans "Update all Groups" %}</div>
+                        <select>
+                            <option value=""> {% trans "--- SELECT A GROUP ---" %} </option>
+                            {% for g in groups %}
+                            <option value="{{ g.pk }}">{{ g }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="save-wrap">
                         <input type="submit" value="Save all changes to these photos" onclick="event.preventDefault(); save_changes('{% url photoset_details photo_set.id %}');"/>
