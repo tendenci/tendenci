@@ -1086,6 +1086,26 @@ class MembershipDefault(TendenciBaseModel):
         start_dt, end_dt = renewal_period
         return (datetime.now() >= start_dt and datetime.now() <= end_dt)
 
+    def past_renewal(self):
+        """
+        Check if the membership is past renewal.
+        Returns boolean value.
+        """
+        renewal_period = self.get_renewal_period_dt()
+
+        # renewal not allowed; or no renewal period
+        if not renewal_period:
+            return False
+
+        # can only renew from approved state
+        if not self.get_status() in ['active', 'expired']:
+            return False
+
+        # assert that we're within the renewal period
+        start_dt, end_dt = renewal_period
+
+        return datetime.now() > end_dt
+
     def get_invoice(self):
         """
         Get invoice object.  The invoice object is not
