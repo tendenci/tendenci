@@ -118,9 +118,13 @@ class Command(BaseCommand):
             else:
                 start_dt = now - timedelta(days=notice.num_days)
 
+            if notice.notice_type == 'disapprove':
+                status_detail_list = ['disapproved']
+            else:
+                status_detail_list = ['active', 'expired']
             memberships = MembershipDefault.objects.filter(
                                     status=True,
-                                    status_detail__in=['active', 'expired']
+                                    status_detail__in=status_detail_list
                                     )
             if notice.notice_type == 'join':
                 memberships = memberships.filter(
@@ -128,12 +132,24 @@ class Command(BaseCommand):
                                     join_dt__month=start_dt.month,
                                     join_dt__day=start_dt.day,
                                     renewal=False)
-            elif notice.notice_type == 'renew':
+            elif notice.notice_type == 'renewal':
                 memberships = memberships.filter(
                                     renew_dt__year=start_dt.year,
                                     renew_dt__month=start_dt.month,
                                     renew_dt__day=start_dt.day,
                                     renewal=True)
+            elif notice.notice_type == 'approve':
+                memberships = memberships.filter(
+                                    application_approved_denied_dt__year=start_dt.year,
+                                    application_approved_denied_dt__month=start_dt.month,
+                                    application_approved_denied_dt__day=start_dt.day,
+                                    application_approved=True)
+            elif notice.notice_type == 'disapprove':
+                memberships = memberships.filter(
+                                    application_approved_denied_dt__year=start_dt.year,
+                                    application_approved_denied_dt__month=start_dt.month,
+                                    application_approved_denied_dt__day=start_dt.day,
+                                    application_approved=False)
             else:  # 'expire'
                 memberships = memberships.filter(
                                     expire_dt__year=start_dt.year,
@@ -254,8 +270,12 @@ class Command(BaseCommand):
             body = template.render(context)
 
             email.recipient = user.email
-            email.subject = notice.subject.replace('(name)',
-                                                   user.get_full_name())
+            subject = notice.subject.replace('(name)',
+                                        user.get_full_name())
+            template = Template(subject)
+            subject = template.render(context)
+
+            email.subject = subject
             email.body = body
             if notice.sender:
                 email.sender = notice.sender
