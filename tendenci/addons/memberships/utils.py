@@ -662,7 +662,7 @@ def get_notice_token_help_text(notice=None):
                                         display=True,
                                         ).exclude(
                                         field_name=''
-                                        ).order_by('order')
+                                        ).order_by('position')
             help_text += "<ul>"
             for field in fields:
                 help_text += '<li>{{ %s }} - (for %s)</li>' % (
