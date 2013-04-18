@@ -11,7 +11,7 @@ from tendenci.apps.profiles.forms import ProfileAdminForm
 
 
 class ProfileAdmin(TendenciBaseModelAdmin):
-    list_display = ('get_user', 'display_name', 'get_email')
+    list_display = ('username', 'first_name', 'last_name', 'get_email', 'is_active', 'is_superuser')
     search_fields = ('display_name', 'user__first_name', 'user__last_name', 'user__username', 'user__email')
 
     fieldsets = (
@@ -83,6 +83,14 @@ class ProfileAdmin(TendenciBaseModelAdmin):
 
     get_email.admin_order_field = 'user__email'
     get_email.short_description = 'Email'
+
+    def is_superuser(self, obj):
+        return obj.is_superuser
+    is_superuser.boolean = True
+
+    def is_active(self, obj):
+        return obj.is_active
+    is_active.boolean = True
 
     def get_user(self, obj):
         name = "%s %s" % (obj.user.first_name, obj.user.last_name)
