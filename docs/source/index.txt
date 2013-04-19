@@ -12,19 +12,20 @@ Setup and Installation
 ----------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :glob:
 
    installation/*
 
-.. App Guides
-.. ----------
 
-.. .. toctree::
-..    :maxdepth: 1
-..    :glob:
+Topic Guides
+------------
 
-..    app_guides/*
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   topic-guides/*
 
 
 Templating
@@ -45,16 +46,6 @@ Templating
 ..    :glob:
 
 ..    tutorials/*
-
-
-Topic Guides
-----------
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   topic-guides/*
 
 
 .. Reference
