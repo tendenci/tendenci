@@ -75,8 +75,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     except IOError:  # no such file or directory
         raise Http404
 
-    # log downloads and views
-    if download:
+    if download:  # log download
         attachment = u'attachment;'
         EventLog.objects.log(**{
             'event_id': 185000,
@@ -86,10 +85,9 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             'request': request,
             'instance': file,
         })
-    else:
+    else:  # log view
         attachment = u''
         if file.type() != 'image':
-            # log file view
             EventLog.objects.log(**{
                 'event_id': 186000,
                 'event_data': '%s %s (%d) viewed by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
