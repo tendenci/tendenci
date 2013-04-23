@@ -57,7 +57,6 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     """
     Builds a resized image based off of the original image.
     """
-
     try:
         quality = int(quality)
     except TypeError:
@@ -74,17 +73,19 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     # handle infamous error
     # IOError: cannot write mode P as JPEG
-    if image.mode != "RGB":
-        image = image.convert("RGB")
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
 
     if crop:
         image = image_rescale(image, size)  # thumbnail image
     else:
+        format = image.format
         image = image.resize(size, Image.ANTIALIAS)  # resize image
+        image.format = format
 
     # mission: get binary
     output = StringIO()
-    image.save(output, "JPEG", quality=quality)
+    image.save(output, image.format, quality=quality)
     binary = output.getvalue()  # mission accomplished
     output.close()
 

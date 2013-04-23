@@ -112,7 +112,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
         response = HttpResponse(mimetype='image/jpeg')
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
-        image.save(response, "JPEG", quality=quality)
+        image.save(response, image.format, quality=quality)
 
         if file.is_public_file():
             file_name = "%s%s" % (file.get_name(), ".jpg")
