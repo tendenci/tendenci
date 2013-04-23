@@ -77,7 +77,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
     # log downloads and views
     if download:
-        attachment = 'attachment;'
+        attachment = u'attachment;'
         EventLog.objects.log(**{
             'event_id': 185000,
             'event_data': '%s %s (%d) dowloaded by %s' % (file.type(), file._meta.object_name, file.pk, request.user),
@@ -87,7 +87,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
             'instance': file,
         })
     else:
-        attachment = ''
+        attachment = u''
         if file.type() != 'image':
             # log file view
             EventLog.objects.log(**{
