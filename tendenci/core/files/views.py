@@ -53,10 +53,7 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     if cached_image:
         return redirect(cached_image)
 
-    try:
-        file = File.objects.get(pk=id)
-    except:
-        raise Http404
+    file = get_object_or_404(File, pk=id)
 
     # basic permissions
     if not has_view_perm(request.user, 'files.view_file', file):
