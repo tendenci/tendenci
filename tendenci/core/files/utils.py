@@ -60,7 +60,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     try:
         quality = int(quality)
-    except:
+    except TypeError:
         quality = 90
 
     if settings.USE_S3_STORAGE:
