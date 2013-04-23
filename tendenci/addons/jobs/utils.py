@@ -136,12 +136,17 @@ def pricing_choices(user):
     """
     choices = []
     pricings = JobPricing.objects.all()
-    for pricing in pricings:
+    member = False
+    if user.profile:
         if user.profile.is_member:
+            member = True
+
+    for pricing in pricings:
+        if member:
             prices = "%s/%s" % (pricing.regular_price_member, pricing.premium_price_member)
         else:
             prices = "%s/%s" % (pricing.regular_price, pricing.premium_price)
-            
+
         label = "%s: %s Days for %s" % (pricing.get_title(), pricing.duration, prices)
         choices.append((pricing.pk, label))
     return choices

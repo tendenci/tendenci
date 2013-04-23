@@ -1,6 +1,7 @@
 Events
 ======
 
+
 Tendenci offers robust Event management and registration capabilities. You can add events to your website to be displayed on a calendar or a list view.
 
 Events can allow for registration. Different pricing options can be set for different levels of registration. For example, you may have

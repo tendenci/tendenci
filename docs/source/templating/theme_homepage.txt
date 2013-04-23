@@ -1,5 +1,5 @@
-Homepage Template
-=================
+Theme: Homepage Template
+========================
 
 The ``homepage.html`` template is rendered for the homepage. The following blocks are available.
 

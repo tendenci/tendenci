@@ -1,7 +1,7 @@
 .. highlight:: django
 
-Mobile Templates
-================
+Theme: Mobile Templates
+=======================
 
 Tendenci detects mobile browsers and allows you to use that information within your templates. Tendenci will assign a cookie to these visitors. This cookie can be toggled using code below to allow visitors to switch between the mobile and standard versions of a theme.
 
