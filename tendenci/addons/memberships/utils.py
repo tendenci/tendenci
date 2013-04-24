@@ -235,7 +235,8 @@ def membership_rows(user_field_list,
                     demographic_field_list,
                     membership_field_list,
                     foreign_keys,
-                    export_status_detail=''):
+                    export_status_detail='',
+                    cp_id=0):
     # grab all except the archived
     memberships = MembershipDefault.objects.filter(
                                 status=True
@@ -250,6 +251,10 @@ def membership_rows(user_field_list,
         else:
             memberships = memberships.filter(
                         status_detail=export_status_detail)
+    if cp_id:
+        memberships = memberships.filter(
+                        corp_profile_id=cp_id
+                                         )
 
     for membership in memberships:
         row_dict = {}
@@ -286,7 +291,8 @@ def get_obj_field_value(field_name, obj, is_foreign_key=False):
 
 def process_export(export_type='all_fields',
                    export_status_detail='active',
-                   identifier=''):
+                   identifier='',
+                   cp_id=0):
     from tendenci.core.perms.models import TendenciBaseModel
     if export_type == 'main_fields':
         base_field_list = []
@@ -354,7 +360,9 @@ def process_export(export_type='all_fields',
 
     if not identifier:
         identifier = int(ttime.time())
-    file_name_temp = 'export/memberships/%s_temp.csv' % identifier
+    file_name_temp = 'export/memberships/%s_%d_temp.csv' % (
+                                            identifier, cp_id)
+
     with default_storage.open(file_name_temp, 'wb') as csvfile:
         csv_writer = csv.writer(csvfile)
         csv_writer.writerow(title_list)
@@ -364,7 +372,8 @@ def process_export(export_type='all_fields',
                                         demographic_field_list,
                                         membership_field_list,
                                         fks,
-                                        export_status_detail):
+                                        export_status_detail,
+                                        cp_id):
             items_list = []
             for field_name in title_list:
                 item = row_dict.get(field_name)
@@ -382,7 +391,7 @@ def process_export(export_type='all_fields',
                 items_list.append(item)
             csv_writer.writerow(items_list)
     # rename the file name
-    file_name = 'export/memberships/%s.csv' % identifier
+    file_name = 'export/memberships/%s_%d.csv' % (identifier, cp_id)
     default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
     # delete the temp file
     default_storage.delete(file_name_temp)

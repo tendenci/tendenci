@@ -42,6 +42,7 @@ from tendenci.core.base.utils import send_email_notification
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
+                                                          CorpProfile,
                                                           CorpMembershipApp,
                                                           IndivEmailVerification,
                                                           CorporateMembership,
@@ -1276,8 +1277,18 @@ def membership_default_export(request,
     """
     Export memberships as .csv
     """
+    try:
+        cp_id = int(request.GET.get('cp_id', 0))
+    except:
+        cp_id = 0
+    if cp_id:
+        corp_profile = get_object_or_404(CorpProfile,
+                                    pk=cp_id)
+    else:
+        corp_profile = None
     if not request.user.profile.is_superuser:
-        raise Http403
+        if not (corp_profile and corp_profile.is_rep(request.user)):
+            raise Http403
 
     form = MembershipExportForm(request.POST or None)
 
@@ -1287,7 +1298,8 @@ def membership_default_export(request,
             export_status_detail = export_status_detail.strip()
             export_type = form.cleaned_data['export_type']
             identifier = int(ttime.time())
-            temp_file_path = 'export/memberships/%s_temp.csv' % identifier
+            temp_file_path = 'export/memberships/%s_%d_temp.csv' % (
+                                                        identifier, cp_id)
             default_storage.save(temp_file_path, ContentFile(''))
 
             # start the process
@@ -1296,13 +1308,18 @@ def membership_default_export(request,
                           '--export_type=%s' % export_type,
                           '--export_status_detail=%s' % export_status_detail,
                           '--identifier=%s' % identifier,
-                          '--user=%s' % request.user.id])
+                          '--user=%s' % request.user.id,
+                          '--cp_id=%d' % cp_id])
             # log an event
             EventLog.objects.log()
-            return redirect(reverse('memberships.default_export_status',
-                                     args=[identifier]))
+            status_url = reverse('memberships.default_export_status',
+                                     args=[identifier])
+            if cp_id:
+                status_url = '%s?cp_id=%d' % (status_url, cp_id)
+            return redirect(status_url)
 
-    context = {"form": form}
+    context = {"form": form,
+               'corp_profile': corp_profile}
     return render_to_response(template, context, RequestContext(request))
 
 
@@ -1313,21 +1330,35 @@ def membership_default_export_status(request, identifier,
     """
     Display export status.
     """
-    if not request.user.profile.is_superuser:
-        raise Http403
+    try:
+        cp_id = int(request.GET.get('cp_id', 0))
+    except:
+        cp_id = 0
 
-    export_path = 'export/memberships/%s.csv' % identifier
+    if cp_id:
+        corp_profile = get_object_or_404(CorpProfile,
+                                    pk=cp_id)
+    else:
+        corp_profile = None
+    if not request.user.profile.is_superuser:
+        if not (corp_profile and corp_profile.is_rep(request.user)):
+            raise Http403
+
+    export_path = 'export/memberships/%s_%d.csv' % (identifier, cp_id)
     download_ready = False
     if default_storage.exists(export_path):
         download_ready = True
     else:
-        temp_export_path = 'export/memberships/%s_temp.csv' % identifier
+        temp_export_path = 'export/memberships/%s_%d_temp.csv' % (
+                                            identifier, cp_id)
+
         if not default_storage.exists(temp_export_path) and \
                 not default_storage.exists(export_path):
             raise Http404
 
     context = {'identifier': identifier,
-               'download_ready': download_ready}
+               'download_ready': download_ready,
+               'corp_profile': corp_profile}
     return render_to_response(template, context, RequestContext(request))
 
 
@@ -1337,10 +1368,21 @@ def membership_default_export_check_status(request, identifier):
     """
     Check and get the export status.
     """
+    try:
+        cp_id = int(request.GET.get('cp_id', 0))
+    except:
+        cp_id = 0
+    if cp_id:
+        corp_profile = get_object_or_404(CorpProfile,
+                                    pk=cp_id)
+    else:
+        corp_profile = None
+
     status = ''
     if not request.user.profile.is_superuser:
-        raise Http403
-    export_path = 'export/memberships/%s.csv' % identifier
+        if not (corp_profile and corp_profile.is_rep(request.user)):
+            raise Http403
+    export_path = 'export/memberships/%s_%d.csv' % (identifier, cp_id)
     if default_storage.exists(export_path):
         status = 'done'
     return HttpResponse(status)
@@ -1349,9 +1391,21 @@ def membership_default_export_check_status(request, identifier):
 @login_required
 @password_required
 def membership_default_export_download(request, identifier):
+    try:
+        cp_id = int(request.GET.get('cp_id', 0))
+    except:
+        cp_id = 0
+    if cp_id:
+        corp_profile = get_object_or_404(CorpProfile,
+                                    pk=cp_id)
+    else:
+        corp_profile = None
+
     if not request.user.profile.is_superuser:
-        raise Http403
-    file_name = '%s.csv' % identifier
+        if not (corp_profile and corp_profile.is_rep(request.user)):
+            raise Http403
+
+    file_name = '%s_%s.csv' % (identifier, cp_id)
     file_path = 'export/memberships/%s' % file_name
     if not default_storage.exists(file_path):
         raise Http404
