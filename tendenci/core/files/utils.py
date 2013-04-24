@@ -71,10 +71,11 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         else:
             raise Http404
 
+    format = image.format
     if image.format in ('GIF', 'PNG'):
         if image.mode != "RGBA":
             image = image.convert("RGBA")
-        image.format = 'GIF'  # this is lost in conversion
+        image.format = format  # this is lost in conversion
 
     elif image.format == 'JPEG':
         # handle infamous error
@@ -89,9 +90,13 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         image = image.resize(size, Image.ANTIALIAS)  # resize image
         image.format = format
 
+    params = {'quality': quality}
+    if image.format == 'GIF':
+        params['transparency'] = 0
+
     # mission: get binary
     output = StringIO()
-    image.save(output, image.format, transparency=0, quality=quality)
+    image.save(output, image.format, **params)
     binary = output.getvalue()  # mission accomplished
     output.close()
 
