@@ -30,6 +30,16 @@
        <div>
            <a href="{% url memberships.default_export_download identifier %}{% if corp_profile %}?cp_id={{ corp_profile.id }}{% endif %}">Download Now</a>  
        </div>
+       <div>&nbsp;</div>
+       {% if corp_profile %}
+       <div>
+       {% if request.user.profile.is_superuser %}
+           <a href="{% url corpmembership.search %}">{% trans "Back to Corp. Memberships" %} &raquo;</a>
+       {% else %}
+            <a href="{% url corpmembership.mycorps %}">{% trans "Back to Corp. Memberships" %} &raquo;</a>
+       {% endif %}
+       </div>
+        {% endif %}
        </div>
        {% if not download_ready %}
        <div id="display-loading" style="margin: 5em;">
