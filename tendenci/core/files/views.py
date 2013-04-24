@@ -100,6 +100,9 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
     # if image size specified
     if file.type() == 'image' and size:  # if size specified
 
+        if file.ext() in ('.tif', '.tiff'):
+            raise Http404  # tifs cannot (currently) be viewed via browsers
+
         size = [int(s) if s.isdigit() else 0 for s in size.split('x')]
         size = aspect_ratio(file.image_dimensions(), size, constrain)
 
@@ -110,9 +113,9 @@ def details(request, id, size=None, crop=False, quality=90, download=False, cons
 
         # gets resized image from cache or rebuilds
         image = get_image(file.file, size, FILE_IMAGE_PRE_KEY, cache=True, crop=crop, quality=quality, unique_key=None)
-        response = HttpResponse(mimetype='image/jpeg')
+        response = HttpResponse(mimetype=file.mime_type())
         response['Content-Disposition'] = '%s filename=%s' % (attachment, file.get_name())
-        image.save(response, image.format, quality=quality)
+        image.save(response, image.format, transparency=0, quality=quality)
 
         if file.is_public_file():
             file_name = "%s%s" % (file.get_name(), ".jpg")

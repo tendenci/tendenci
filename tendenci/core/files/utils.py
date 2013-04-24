@@ -71,10 +71,16 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         else:
             raise Http404
 
-    # handle infamous error
-    # IOError: cannot write mode P as JPEG
-    if image.mode != "RGBA":
-        image = image.convert("RGBA")
+    if image.format in ('GIF', 'PNG'):
+        if image.mode != "RGBA":
+            image = image.convert("RGBA")
+        image.format = 'GIF'  # this is lost in conversion
+
+    elif image.format == 'JPEG':
+        # handle infamous error
+        # IOError: cannot write mode P as JPEG
+        if image.mode != "RGB":
+            image = image.convert("RGB")
 
     if crop:
         image = image_rescale(image, size)  # thumbnail image
@@ -85,7 +91,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
 
     # mission: get binary
     output = StringIO()
-    image.save(output, image.format, quality=quality)
+    image.save(output, image.format, transparency=0, quality=quality)
     binary = output.getvalue()  # mission accomplished
     output.close()
 
