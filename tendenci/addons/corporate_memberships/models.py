@@ -384,6 +384,19 @@ class CorpProfile(TendenciBaseModel):
                                             )[:1] or [None]
         return corp_membership
 
+    def is_rep(self, this_user):
+        """
+        Check if this user is one of the representatives of
+        # this corp profile.
+        """
+        if this_user.is_anonymous():
+            return False
+        reps = self.reps.all()
+        for rep in reps:
+            if rep.user.id == this_user.id:
+                return True
+        return False
+
 
 class CorpMembership(TendenciBaseModel):
     guid = models.CharField(max_length=50)
@@ -516,10 +529,7 @@ class CorpMembership(TendenciBaseModel):
                 if user.is_authenticated():
                     filter_or = {'creator': user,
                                  'owner': user}
-                    if use_search_index:
-                        filter_or.update({'corp_profile__reps': user})
-                    else:
-                        filter_or.update({'corp_profile__reps__user': user})
+                    filter_or.update({'corp_profile__reps__user': user})
                 else:
                     filter_and = {'allow_anonymous_view': True}
 
@@ -1038,15 +1048,9 @@ class CorpMembership(TendenciBaseModel):
     def is_rep(self, this_user):
         """
         Check if this user is one of the representatives of
-        # this corporate membership.
+        this corporate membership.
         """
-        if this_user.is_anonymous():
-            return False
-        reps = self.corp_profile.reps.all()
-        for rep in reps:
-            if rep.user.id == this_user.id:
-                return True
-        return False
+        return self.corp_profile.is_rep(this_user)
 
     def allow_view_by(self, this_user):
         if this_user.profile.is_superuser:
@@ -1409,6 +1413,9 @@ class CorpMembershipRep(models.Model):
 
     class Meta:
         unique_together = (("corp_profile", "user"),)
+
+    def __unicode__(self):
+        return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
 
 
 class IndivEmailVerification(models.Model):
