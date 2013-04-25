@@ -1414,6 +1414,9 @@ class CorpMembershipRep(models.Model):
     class Meta:
         unique_together = (("corp_profile", "user"),)
 
+    def __unicode__(self):
+        return 'Rep: %s for "%s"' % (self.user, self.corp_profile.name)
+
 
 class IndivEmailVerification(models.Model):
     guid = models.CharField(max_length=50)
