@@ -529,10 +529,7 @@ class CorpMembership(TendenciBaseModel):
                 if user.is_authenticated():
                     filter_or = {'creator': user,
                                  'owner': user}
-                    if use_search_index:
-                        filter_or.update({'corp_profile__reps': user})
-                    else:
-                        filter_or.update({'corp_profile__reps__user': user})
+                    filter_or.update({'corp_profile__reps__user': user})
                 else:
                     filter_and = {'allow_anonymous_view': True}
 
