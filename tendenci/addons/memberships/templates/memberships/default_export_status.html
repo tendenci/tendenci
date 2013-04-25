@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block body %}
-<div id="membership-export-wrap">
+
     {% if corp_profile %}
     <h1>{% trans "Roster Export for Corp. Membership: " %}{{ corp_profile.name }} {% trans " - Status" %}</h1>
     {% else %}
@@ -42,51 +42,17 @@
        </div>
         {% endif %}
        </div>
-       {% if not download_ready %}
-       <div id="display-loading" style="margin: 5em;">
-            <img src="{{ STATIC_URL }}images/loadingicon.gif" alt="loading">
-            <div style="color: #0D4C83;"><small>Please wait while we're processing...</small></div>
-        </div>
-       {% endif %}
+       
     </div>
-</div>
+    
+    {% if not download_ready %}
+       <p>
+          Your request is being processed. Please check later by <strong>refreshing this page</strong>. <br /><br />
+          In the meantime, we'll notify you via email once the export is ready. Thank you for your patience!
+          
+        </p>
+   {% endif %}
+
 {% endblock %}
 
-
-{% block extra_body %}
-<script type="text/javascript">
-{% if not download_ready  %}
-
-  $(document).ready(function() {
-    var value;
-    var status_check_intval;
-    
-    var status_check = function(){
-        $.ajax({
-           type: "POST",
-           url: "{% url memberships.default_export_check_status identifier %}{% if corp_profile %}?cp_id={{ corp_profile.id }}{% endif %}",
-           success: function(status_data){
-               if (status_data == 'done'){
-                   clearInterval(status_check_intval);
-                   $('#display-loading').hide();
-                   $('#display-content').show();
-               }
-             },
-             error: function(data){
-               clearInterval(status_check_intval);
-             }
-         });
-     }
-    
-    status_check();
-    status_check_intval = setInterval(function() {
-        status_check();  // check every 60 seconds
-    }, 60000);
-    
-  });
-  
-{% endif %}
-</script>
-
-{% endblock %}
 
