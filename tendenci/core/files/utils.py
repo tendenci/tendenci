@@ -107,6 +107,18 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
     return binary
 
 
+def get_image_binary(image, **options):
+    """
+    Returns image binary
+    """
+    output = StringIO()
+    image.save(output, image.format, **options)
+    binary = output.getvalue()
+    output.close()
+
+    return binary
+
+
 def validate_image_size(size):
     """
     We cap our image sizes to avoid processor overload
