@@ -71,6 +71,10 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         else:
             raise Http404
 
+    image_options = {'quality': quality}
+    if image.format == 'GIF':
+        image_options['transparency'] = 0
+
     format = image.format
     if image.format in ('GIF', 'PNG'):
         if image.mode != "RGBA":
@@ -90,15 +94,7 @@ def build_image(file, size, pre_key, crop=False, quality=90, cache=False, unique
         image = image.resize(size, Image.ANTIALIAS)  # resize image
         image.format = format
 
-    params = {'quality': quality}
-    if image.format == 'GIF':
-        params['transparency'] = 0
-
-    # mission: get binary
-    output = StringIO()
-    image.save(output, image.format, **params)
-    binary = output.getvalue()  # mission accomplished
-    output.close()
+    binary = get_image_binary(image, **image_options)
 
     if cache:
         key = generate_image_cache_key(file, size, pre_key, crop, unique_key, quality, constrain)
