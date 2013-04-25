@@ -123,7 +123,7 @@ def validate_image_size(size):
         else:
             new_size.append(item[0])
 
-    return new_size
+    return tuple(new_size)
 
 
 def aspect_ratio(image_size, new_size, constrain=False):
