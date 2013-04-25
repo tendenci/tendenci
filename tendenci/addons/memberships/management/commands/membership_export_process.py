@@ -61,10 +61,11 @@ class Command(BaseCommand):
         except:
             cp_id = 0
 
-        #user = options['user']
+        user_id = options['user']
         process_export(export_type=export_type,
                        export_status_detail=export_status_detail,
                        identifier=identifier,
+                       user_id=user_id,
                        cp_id=cp_id)
         print 'Membership export done %s.' % identifier
 #        print 'URL to download: ', '%s%s' % (get_setting('site', 'global',
