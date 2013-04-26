@@ -2,6 +2,7 @@
 {% load i18n %}
 
 {% block content %}
+
 	<h1>{% trans "Membership Joins Report Summary" %}</h1>
     <form action="" method="post">{% csrf_token %}
         {% trans "Filter By:" %} {{ form.membership_type.label }} {{ form.membership_type }} 
