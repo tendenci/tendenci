@@ -107,6 +107,8 @@ def get_image_binary(image, **options):
     """
     Returns image binary
     """
+    image.format = image.format or 'JPEG'
+
     output = StringIO()
     image.save(output, image.format, **options)
     binary = output.getvalue()
