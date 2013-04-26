@@ -27,6 +27,12 @@
         
         <form method="post" action="">{% csrf_token %}
         {{ form.as_p }}
+        
+        {% if request.user.email %}
+        <div style="color:#880000; padding: 1em 0;">
+            ***An email notification will be sent to <strong>{{ request.user.email }}</strong> once the export is ready.
+        </div>
+        {% endif %}
         <input class="btn" type='submit' value='Export'>
         </form>
     

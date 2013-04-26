@@ -21,6 +21,7 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
+from django.core.urlresolvers import reverse
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
@@ -36,6 +37,8 @@ from tendenci.addons.memberships.models import (App,
 from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
+from tendenci.core.emails.models import Email
+from django.template.loader import render_to_string
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 
@@ -292,6 +295,7 @@ def get_obj_field_value(field_name, obj, is_foreign_key=False):
 def process_export(export_type='all_fields',
                    export_status_detail='active',
                    identifier='',
+                   user_id=0,
                    cp_id=0):
     from tendenci.core.perms.models import TendenciBaseModel
     if export_type == 'main_fields':
@@ -395,6 +399,41 @@ def process_export(export_type='all_fields',
     default_storage.save(file_name, default_storage.open(file_name_temp, 'rb'))
     # delete the temp file
     default_storage.delete(file_name_temp)
+
+    # notify user that export is ready to download
+    [user] = User.objects.filter(id=user_id)[:1] or [None]
+    if user and user.email:
+        corp_profile = None
+        if cp_id:
+            from tendenci.addons.corporate_memberships.models import CorpProfile
+            [corp_profile] = CorpProfile.objects.filter(pk=cp_id)[:1] or [None]
+        download_url = reverse('memberships.default_export_download',
+                                     args=[identifier])
+        if cp_id:
+            download_url = '%s?cp_id=%s' % (download_url, cp_id)
+        site_url = get_setting('site', 'global', 'siteurl')
+        site_display_name = get_setting('site', 'global', 'sitedisplayname')
+        parms = {
+                 'download_url': download_url,
+                 'user': user,
+                 'site_url': site_url,
+                 'site_display_name': site_display_name,
+                 'export_status_detail': export_status_detail,
+                 'export_type': export_type,
+                 'corp_profile': corp_profile
+                 }
+
+        subject = render_to_string(
+                        'memberships/notices/export_ready_subject.html',
+                        parms)
+        subject = subject.strip('\n').strip('\r')
+        body = render_to_string('memberships/notices/export_ready_body.html',
+                                   parms)
+
+        email = Email(recipient=user.email,
+                      subject=subject,
+                      body=body)
+        email.send()
 
 
 def has_null_byte(file_path):
