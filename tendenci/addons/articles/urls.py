@@ -2,10 +2,8 @@ from django.conf.urls.defaults import patterns, url
 from tendenci.addons.articles.feeds import LatestEntriesFeed
 from tendenci.core.site_settings.utils import get_setting
 
-urlpath = get_setting('module', 'articles', 'url')
-if not urlpath:
-    urlpath = "articles"
 
+urlpath = get_setting('module', 'articles', 'url') or 'articles'
 urlpatterns = patterns('tendenci.addons.articles.views',
     url(r'^%s/$'        % urlpath, 'search', name="articles"),
     url(r'^%s/search/$' % urlpath, 'search_redirect', name="article.search"),
