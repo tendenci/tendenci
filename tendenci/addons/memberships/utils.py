@@ -362,6 +362,9 @@ def process_export(export_type='all_fields',
 
         fks = Set(user_fks + profile_fks + demographic_fks + membership_fks)
 
+    membership_ids_dict = dict(MembershipType.objects.all(
+                                    ).values_list('id', 'name'))
+
     if not identifier:
         identifier = int(ttime.time())
     file_name_temp = 'export/memberships/%s_%d_temp.csv' % (
@@ -392,6 +395,9 @@ def process_export(export_type='all_fields',
                         item = item.strftime('%H:%M:%S')
                     elif isinstance(item, basestring):
                         item = item.encode("utf-8")
+                    elif field_name == 'membership_type':
+                        # display membership type name instead of id
+                        item = membership_ids_dict[item]
                 items_list.append(item)
             csv_writer.writerow(items_list)
     # rename the file name
