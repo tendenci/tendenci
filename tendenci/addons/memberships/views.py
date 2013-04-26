@@ -1980,8 +1980,9 @@ def verify_email(request,
 def membership_join_report(request):
     now = datetime.now()
     mems = MembershipDefault.objects.all()
-    mem_type = ''
-    mem_stat = ''
+    mem_type = u''
+    mem_stat = u''
+
     if request.method == 'POST':
         form = ReportForm(request.POST)
         if form.is_valid():
@@ -1996,6 +1997,7 @@ def membership_join_report(request):
                     mems = mems.exclude(expire_dt__gte=now, subscribe_dt__lte=now)
     else:
         form = ReportForm()
+
     mems30days = mems.filter(join_dt__gte=now - timedelta(days=30))
     mems60days = mems.filter(join_dt__gte=now - timedelta(days=60))
     mems90days = mems.filter(join_dt__gte=now - timedelta(days=90))
@@ -2003,15 +2005,14 @@ def membership_join_report(request):
     EventLog.objects.log()
 
     return render_to_response(
-                'reports/membership_joins.html', {
-                    'mems30days': mems30days,
-                    'mems60days': mems60days,
-                    'mems90days': mems90days,
-                    'form': form,
-                    'mem_type': mem_type,
-                    'mem_stat': mem_stat,
-                },
-                context_instance=RequestContext(request))
+        'reports/membership_joins.html', {
+        'mems30days': mems30days,
+        'mems60days': mems60days,
+        'mems90days': mems90days,
+        'form': form,
+        'mem_type': mem_type,
+        'mem_stat': mem_stat,
+        }, context_instance=RequestContext(request))
 
 
 @staff_member_required
