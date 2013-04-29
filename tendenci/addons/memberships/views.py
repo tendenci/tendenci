@@ -4,7 +4,7 @@ import hashlib
 from decimal import Decimal
 from hashlib import md5
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import time as ttime
 import subprocess
 from sets import Set
@@ -1980,11 +1980,15 @@ def verify_email(request,
 @staff_member_required
 def membership_join_report(request):
     NOW = datetime.now()
+    TODAY = date.today()
     mems = MembershipDefault.objects.all()
     mem_type = u''
     mem_stat = u''
     start_date = u''
     end_date = u''
+
+    start_date = TODAY - timedelta(days=30)
+    end_date = TODAY
 
     if request.method == 'POST':
         form = ReportForm(request.POST)
@@ -2007,10 +2011,9 @@ def membership_join_report(request):
             # else:
             #     mems = mems.exclude(expire_dt__gte=NOW, subscribe_dt__lte=NOW)
     else:
-        form = ReportForm()
-
-    # selected start-date; default to 30 days before today
-    start_date = start_date or NOW - timedelta(days=30)
+        form = ReportForm(initial={
+            'start_date': start_date.strftime('%m/%d/%Y'),
+            'end_date': end_date.strftime('%m/%d/%Y')})
 
     mems = mems.filter(join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
 
@@ -2018,10 +2021,12 @@ def membership_join_report(request):
 
     return render_to_response(
         'reports/membership_joins.html', {
-        'mems': mems,
-        'form': form,
         'mem_type': mem_type,
         'mem_stat': mem_stat,
+        'start_date': start_date,
+        'end_date': end_date,
+        'mems': mems,
+        'form': form,
         }, context_instance=RequestContext(request))
 
 
