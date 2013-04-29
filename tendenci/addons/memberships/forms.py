@@ -1817,7 +1817,7 @@ class ExportForm(forms.Form):
 
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
-        ('', '----------'),
+        ('', 'All Statuses'),
         ('ACTIVE', 'ACTIVE'),
         ('EXPIRED', 'EXPIRED'),
     )
