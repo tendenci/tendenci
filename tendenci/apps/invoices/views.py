@@ -145,7 +145,9 @@ def void_payment(request, id):
     
     amount = invoice.payments_credits
     invoice.void_payment(request.user, amount)
-    
+
+    EventLog.objects.log(instance=invoice)
+
     messages.add_message(request, messages.SUCCESS, 'Successfully voided payment for Invoice %s.' % invoice.id)
     return redirect(invoice)
 

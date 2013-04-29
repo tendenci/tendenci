@@ -24,6 +24,8 @@ from django.utils.importlib import import_module
 from django.core.files.storage import default_storage
 from django.utils.encoding import smart_str
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
+from django.template import RequestContext
 
 from tendenci.core.base.utils import day_validate
 from tendenci.core.site_settings.utils import get_setting
@@ -33,6 +35,7 @@ from tendenci.core.perms.object_perms import ObjectPermission
 from tendenci.core.base.fields import DictField
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.user_groups.models import Group
+from tendenci.core.emails.models import Email
 from tendenci.addons.memberships.managers import MembershipManager, \
     MembershipDefaultManager, MembershipAppManager, MemberAppEntryManager
 from tendenci.core.base.utils import fieldify
@@ -572,6 +575,38 @@ class MembershipDefault(TendenciBaseModel):
             membership=self,
             membership_type=self.membership_type,
         )
+
+    def email_corp_reps(self, request):
+        """
+        Notify corp reps when individuals joined/renewed under a corporation.
+        """
+        if self.corporate_membership_id:
+            from tendenci.addons.corporate_memberships.models import CorpMembership
+            [corp_membership] = CorpMembership.objects.filter(
+                                pk=self.corporate_membership_id
+                                )[:1] or [None]
+            if corp_membership:
+                reps = corp_membership.corp_profile.reps.all()
+                params = {
+                        'corp_membership': corp_membership,
+                        'membership': self
+                          }
+                for rep in reps:
+                    params.update({'user': rep.user})
+                    subject = render_to_string(
+                        'memberships/notices/email_corp_reps_subject.html',
+                        params,
+                        context_instance=RequestContext(request))
+                    subject = subject.strip('\n').strip('\r')
+                    body = render_to_string(
+                                'memberships/notices/email_corp_reps_body.html',
+                                params,
+                                context_instance=RequestContext(request))
+
+                    email = Email(recipient=rep.user.email,
+                                  subject=subject,
+                                  body=body)
+                    email.send()
 
     def approve(self, request_user=AnonymousUser()):
         """
@@ -1512,6 +1547,10 @@ class MembershipDefault(TendenciBaseModel):
                 instance=self,
                 action='membership_approved'
             )
+
+            if self.corporate_membership_id:
+                # notify corp reps
+                self.email_corp_reps(request)
 
     def make_acct_entries(self, user, inv, amount, **kwargs):
         """
