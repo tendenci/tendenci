@@ -3,7 +3,6 @@ import math
 import hashlib
 from decimal import Decimal
 from hashlib import md5
-from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
 import subprocess
@@ -1979,7 +1978,6 @@ def verify_email(request,
 
 @staff_member_required
 def membership_join_report(request):
-    NOW = datetime.now()
     TODAY = date.today()
     mems = MembershipDefault.objects.all()
     mem_type = u''
