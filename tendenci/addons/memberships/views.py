@@ -2057,6 +2057,10 @@ def membership_join_report_pdf(request):
         else:
             mems = mems.exclude(expire_dt__gte=now, join_dt__lte=now)
     mems = mems.filter(join_dt__gte=now - timedelta(days=int(days)))
+
+    if not mems:
+        raise Http404
+
     report = ReportNewMems(queryset=mems)
     resp = HttpResponse(mimetype='application/pdf')
     report.generate_by(PDFGenerator, filename=resp)
