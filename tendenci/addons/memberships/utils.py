@@ -22,6 +22,7 @@ from django.utils.encoding import smart_str
 from django.db.models.fields import AutoField
 from django.db.models import ForeignKey, OneToOneField
 from django.core.urlresolvers import reverse
+from django.template.loader import render_to_string
 
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.core.perms.utils import has_perm
@@ -38,7 +39,6 @@ from tendenci.core.base.utils import normalize_newline
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import make_username_unique, spawn_username
 from tendenci.core.emails.models import Email
-from django.template.loader import render_to_string
 from tendenci.core.payments.models import PaymentMethod
 from tendenci.apps.entities.models import Entity
 

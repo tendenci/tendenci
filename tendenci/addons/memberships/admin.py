@@ -73,6 +73,9 @@ def approve_selected(modeladmin, request, queryset):
     for membership in memberships:
         membership.approve(request_user=request.user)
         membership.send_email(request, 'approve')
+        if membership.corporate_membership_id:
+            # notify corp reps
+            membership.email_corp_reps(request)
 
 approve_selected.short_description = u'Approve selected'
 
@@ -388,6 +391,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.approve(request_user=request.user)
         m.send_email(request, 'approve')
+        if m.corporate_membership_id:
+            # notify corp reps
+            m.email_corp_reps(request)
 
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
