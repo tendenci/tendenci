@@ -3,6 +3,7 @@ import math
 import hashlib
 from decimal import Decimal
 from hashlib import md5
+from dateutil.parser import parse
 from datetime import datetime, timedelta
 import time as ttime
 import subprocess
@@ -1978,37 +1979,46 @@ def verify_email(request,
 
 @staff_member_required
 def membership_join_report(request):
-    now = datetime.now()
+    NOW = datetime.now()
     mems = MembershipDefault.objects.all()
     mem_type = u''
     mem_stat = u''
+    start_date = u''
+    end_date = u''
 
     if request.method == 'POST':
         form = ReportForm(request.POST)
+
         if form.is_valid():
-            if form.cleaned_data['membership_type']:
-                mem_type = form.cleaned_data['membership_type']
-                mems = mems.filter(membership_type=form.cleaned_data['membership_type'])
-            if form.cleaned_data['membership_status']:
-                mem_stat = form.cleaned_data['membership_status']
-                if form.cleaned_data['membership_status'] == 'ACTIVE':
-                    mems = mems.filter(expire_dt__gte=now, subscribe_dt__lte=now)
-                else:
-                    mems = mems.exclude(expire_dt__gte=now, subscribe_dt__lte=now)
+
+            mem_type = form.cleaned_data.get('membership_type', u'')
+            mem_status = form.cleaned_data.get('membership_status', u'')
+            start_date = form.cleaned_data.get('start_date', u'')
+            end_date = form.cleaned_data.get('end_date', u'')
+
+            if mem_type:
+                mems = mems.filter(membership_type=mem_type)
+
+            if mem_status:
+                mems = mems.filter(membership_status=mem_status)
+
+            # if mem_status.lower() == 'active':
+            #     mems = mems.filter(expire_dt__gte=NOW, subscribe_dt__lte=NOW)
+            # else:
+            #     mems = mems.exclude(expire_dt__gte=NOW, subscribe_dt__lte=NOW)
     else:
         form = ReportForm()
 
-    mems30days = mems.filter(join_dt__gte=now - timedelta(days=30))
-    mems60days = mems.filter(join_dt__gte=now - timedelta(days=60))
-    mems90days = mems.filter(join_dt__gte=now - timedelta(days=90))
+    # selected start-date; default to 30 days before today
+    start_date = start_date or NOW - timedelta(days=30)
+
+    mems = mems.filter(join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
 
     EventLog.objects.log()
 
     return render_to_response(
         'reports/membership_joins.html', {
-        'mems30days': mems30days,
-        'mems60days': mems60days,
-        'mems90days': mems90days,
+        'mems': mems,
         'form': form,
         'mem_type': mem_type,
         'mem_stat': mem_stat,
