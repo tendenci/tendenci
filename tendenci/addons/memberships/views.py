@@ -2004,12 +2004,7 @@ def membership_join_report(request):
                 mems = mems.filter(membership_type=mem_type)
 
             if mem_status:
-                mems = mems.filter(membership_status=mem_status)
-
-            # if mem_status.lower() == 'active':
-            #     mems = mems.filter(expire_dt__gte=NOW, subscribe_dt__lte=NOW)
-            # else:
-            #     mems = mems.exclude(expire_dt__gte=NOW, subscribe_dt__lte=NOW)
+                mems = mems.filter(status_detail=mem_status)
     else:
         form = ReportForm(initial={
             'start_date': start_date.strftime('%m/%d/%Y'),

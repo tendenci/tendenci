@@ -1818,8 +1818,8 @@ class ExportForm(forms.Form):
 class ReportForm(forms.Form):
     STATUS_CHOICES = (
         ('', 'All Statuses'),
-        ('ACTIVE', 'ACTIVE'),
-        ('EXPIRED', 'EXPIRED'),
+        ('active', 'Active'),
+        ('expired', 'Expired'),
     )
 
     start_date = forms.DateField(
