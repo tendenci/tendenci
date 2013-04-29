@@ -273,6 +273,9 @@ class Invoice(models.Model):
         self.balance += amount
         self.payments_credits -= amount
         self.save()
-        for payment in self.payment_set.all():
+        # only void approved and non-zero payments
+        for payment in self.payment_set.filter(
+                                status_detail='approved',
+                                amount__gt=0):
             payment.status_detail = 'void'
             payment.save()
