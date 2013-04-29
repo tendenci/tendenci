@@ -438,7 +438,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 # Send message to the person who submitted the form.
                 msg = EmailMessage(subject, submitter_body, sender, [email_to], headers=email_headers)
                 msg.content_subtype = 'html'
-                msg.send(fail_silently=True)
+
+                try:
+                    msg.send(fail_silently=True)
+                except:
+                    pass
 
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
@@ -459,7 +463,11 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                         f.close()
                     except Exception:
                         pass
-                msg.send(fail_silently=True)
+
+                try:
+                    msg.send(fail_silently=True)
+                except:
+                    pass
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:
