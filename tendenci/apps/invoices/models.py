@@ -279,3 +279,4 @@ class Invoice(models.Model):
                                 amount__gt=0):
             payment.status_detail = 'void'
             payment.save()
+
