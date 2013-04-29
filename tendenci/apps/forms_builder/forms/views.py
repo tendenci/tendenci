@@ -418,6 +418,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 entry.creator = request.user
             entry.save()
 
+            # Special encoding for sending the email messsages with
+            # non-ascii characters.
+            from __future__ import unicode_literals
+
             # Email
             subject = generate_email_subject(form, entry)
             email_headers = {}  # content type specified below
@@ -434,7 +438,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 # Send message to the person who submitted the form.
                 msg = EmailMessage(subject, submitter_body, sender, [email_to], headers=email_headers)
                 msg.content_subtype = 'html'
-                msg.send()
+                msg.send(fail_silently=True)
 
             # Email copies to admin
             admin_body = generate_admin_email_body(entry, form_for_form)
@@ -455,7 +459,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                         f.close()
                     except Exception:
                         pass
-                msg.send()
+                msg.send(fail_silently=True)
 
             # payment redirect
             if (form.custom_payment or form.recurring_payment) and entry.pricing:
