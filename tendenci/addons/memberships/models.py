@@ -890,6 +890,13 @@ class MembershipDefault(TendenciBaseModel):
 
         return False
 
+    def is_archived(self):
+        """
+        self.is_active()
+        self.status_detail = 'archived'
+        """
+        return self.status and self.status_detail.lower() == 'archive'
+
     def get_status(self):
         """
         Returns status of membership
