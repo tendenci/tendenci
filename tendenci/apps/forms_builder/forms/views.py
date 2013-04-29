@@ -1,3 +1,7 @@
+# Special encoding for sending the email messsages with
+# non-ascii characters.
+# from __future__ import must occur at the beginning of the file
+from __future__ import unicode_literals
 import datetime, random, string
 
 from django.conf import settings
@@ -417,10 +421,6 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             else:
                 entry.creator = request.user
             entry.save()
-
-            # Special encoding for sending the email messsages with
-            # non-ascii characters.
-            from __future__ import unicode_literals
 
             # Email
             subject = generate_email_subject(form, entry)
