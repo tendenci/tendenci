@@ -80,44 +80,6 @@ class MakePayment(models.Model):
                 self.comments,
             )
         return
-    
-    def make_acct_entries(self, user, inv, amount, **kwargs):
-        """
-        Make the accounting entries for the general sale
-        """
-        ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
-        if not inv.is_tendered:
-            make_acct_entries_initial(user, ae, amount)
-        else:
-            # payment has now been received
-            make_acct_entries_closing(user, ae, amount)
-            
-            # #CREDIT makepayment SALES
-            acct_number = self.get_acct_number()
-            acct = Acct.objects.get(account_number=acct_number)
-            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
-
-    def make_acct_entries_reversing(self, user, invoice, amount, **kwargs):
-        """
-            Make accounting transactions for the void payment.
-
-            CREDIT to unearned revenue
-            DEBIT to accounts receivables
-            CREDIT to checking or merchant account
-            DEBIT to void payment
-        """
-        [ae] = AcctEntry.objects.filter(source='invoice',
-                                      object_id=invoice.id,
-                                      status=True)[:1] or [None]
-        if ae:
-            make_acct_entries_closing_reversing(user,
-                                                ae,
-                                                amount,
-                                                **kwargs)
-            # DEBIT makepayment SALES
-            acct_number = self.get_acct_number()
-            acct = Acct.objects.get(account_number=acct_number)
-            AcctTran.objects.create_acct_tran(user, ae, acct, amount)
 
     def get_acct_number(self, discount=False):
         if discount:
