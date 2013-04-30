@@ -909,3 +909,39 @@ def get_notice_token_help_text(notice=None):
                 """
 
     return help_text
+
+
+def create_salesforce_lead(sf, corporate_profile):
+    if corporate_profile.ud1:
+        # Update Salesforce Lead object
+        try:
+            sf.Lead.update(corporate_profile.ud1, {
+                'LastName':corporate_profile.name,
+                'Company':corporate_profile.name,
+                'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
+                'City':corporate_profile.city,
+                'State':corporate_profile.state,
+                'PostalCode':corporate_profile.zip,
+                'Country':corporate_profile.country,
+                'Phone':corporate_profile.phone,
+                'Email':corporate_profile.email,
+                'Website':corporate_profile.url})
+        except:
+            print 'Salesforce lead not found'
+
+    else:
+        # Create a new Salesforce Lead object
+        result = sf.Lead.create({
+            'LastName':corporate_profile.name,
+            'Company':corporate_profile.name,
+            'Street':'%s %s' %(corporate_profile.address, corporate_profile.address2),
+            'City':corporate_profile.city,
+            'State':corporate_profile.state,
+            'PostalCode':corporate_profile.zip,
+            'Country':corporate_profile.country,
+            'Phone':corporate_profile.phone,
+            'Email':corporate_profile.email,
+            'Website':corporate_profile.url})
+
+        corporate_profile.ud1 = result['id']
+        corporate_profile.save()

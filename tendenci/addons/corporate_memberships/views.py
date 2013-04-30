@@ -88,14 +88,15 @@ from tendenci.addons.corporate_memberships.utils import (
                                          new_corp_mems_from_csv,
                                          get_over_time_stats,
                                          get_indiv_membs_choices,
-                                         get_summary)
+                                         get_summary,
+                                         create_salesforce_lead)
 from tendenci.addons.corporate_memberships.import_processor import CorpMembershipImportProcessor
 #from tendenci.addons.memberships.models import MembershipType
 from tendenci.addons.memberships.models import (Membership,
                                                 MembershipDefault)
 
 from tendenci.core.perms.utils import get_notice_recipients
-from tendenci.core.base.utils import send_email_notification
+from tendenci.core.base.utils import send_email_notification, get_salesforce_access
 from tendenci.core.files.models import File
 from tendenci.apps.profiles.models import Profile
 #from tendenci.addons.corporate_memberships.settings import use_search_index
@@ -304,6 +305,11 @@ def corpmembership_add(request, slug='',
             # assign object permissions
             corp_membership_update_perms(corp_membership)
 
+            # create salesforce lead if applicable
+            sf = get_salesforce_access()
+            if sf:
+                create_salesforce_lead(sf, corp_membership.corp_profile)
+
             # email to user who created the corporate membership
             # include the secret code in the email
             # if authentication_method == 'secret_code'
@@ -422,6 +428,11 @@ def corpmembership_edit(request, id,
 
             # assign object permissions
             corp_membership_update_perms(corp_membership)
+
+            # update salesforce lead if applicable
+            sf = get_salesforce_access()
+            if sf:
+                create_salesforce_lead(sf, corp_membership.corp_profile)
 
             # send notification to administrators
             if not is_superuser:
