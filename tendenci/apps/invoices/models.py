@@ -22,9 +22,13 @@ class Invoice(models.Model):
 
     title = models.CharField(max_length=150, blank=True, null=True)
     #user
-    creator = models.ForeignKey(User, related_name="invoice_creator",  null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(User, related_name="invoice_creator",
+                                null=True,
+                                on_delete=models.SET_NULL)
     creator_username = models.CharField(max_length=50, null=True)
-    owner = models.ForeignKey(User, related_name="invoice_owner", null=True, on_delete=models.SET_NULL)
+    owner = models.ForeignKey(User, related_name="invoice_owner",
+                              null=True,
+                              on_delete=models.SET_NULL)
     owner_username = models.CharField(max_length=50, null=True)
     #dates
     create_dt = models.DateTimeField(auto_now_add=True)
@@ -39,14 +43,23 @@ class Invoice(models.Model):
                                      default='estimate')
     status = models.BooleanField(default=True)
     estimate = models.BooleanField(default=1)
-    payments_credits = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    balance = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
-    total = models.DecimalField(max_digits=15, decimal_places=2, blank=True)
+    payments_credits = models.DecimalField(max_digits=15,
+                                           decimal_places=2,
+                                           blank=True,
+                                           default=0)
+    balance = models.DecimalField(max_digits=15,
+                                  decimal_places=2,
+                                  blank=True,
+                                  default=0)
+    total = models.DecimalField(max_digits=15,
+                                decimal_places=2,
+                                blank=True)
     #discount info
-    discount_code = models.CharField(_('Discount Code'), max_length=100,
+    discount_code = models.CharField(_('Discount Code'),
+                                     max_length=100,
                                      blank=True, null=True)
-    discount_amount = models.DecimalField(_('Discount Amount'), 
-                                          max_digits=10, 
+    discount_amount = models.DecimalField(_('Discount Amount'),
+                                          max_digits=10,
                                           decimal_places=2,
                                           default=0)
     #other
@@ -72,7 +85,9 @@ class Invoice(models.Model):
     tax = models.DecimalField(max_digits=6, decimal_places=4, default=0)
     #bill/ ship
     bill_to = models.CharField(max_length=120, blank=True)
-    bill_to_first_name = models.CharField(max_length=100, blank=True, null=True)
+    bill_to_first_name = models.CharField(max_length=100,
+                                          blank=True,
+                                          null=True)
     bill_to_last_name = models.CharField(max_length=100, blank=True, null=True)
     bill_to_company = models.CharField(max_length=100, blank=True, null=True)
     bill_to_address = models.CharField(max_length=250, blank=True, null=True)
@@ -98,9 +113,14 @@ class Invoice(models.Model):
     ship_to_address_type = models.CharField(max_length=50, blank=True, null=True)
     ship_date = models.DateTimeField()
     ship_via = models.CharField(max_length=50, blank=True)
-    shipping = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    shipping_surcharge = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    box_and_packing = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    shipping = models.DecimalField(max_digits=6, decimal_places=2,
+                                   default=0)
+    shipping_surcharge = models.DecimalField(max_digits=6,
+                                             decimal_places=2,
+                                             default=0)
+    box_and_packing = models.DecimalField(max_digits=6,
+                                          decimal_places=2,
+                                          default=0)
 
     objects = InvoiceManager()
 
@@ -202,25 +222,23 @@ class Invoice(models.Model):
         return boo
 
     def tender(self, user):
-        from tendenci.apps.accountings.utils import make_acct_entries
-        """ mark it as tendered if we have records """ 
+        """ mark it as tendered if we have records """
         if not self.is_tendered:
             # make accounting entry
             make_acct_entries(user, self, self.total)
-            
+
             self.estimate = False
             self.status_detail = 'tendered'
             self.status = 1
             self.tender_date = datetime.now()
             self.save()
         return True
-            
-    
+
     # if this invoice allows view by user2_compare
     def allow_view_by(self, user2_compare, guid=''):
         if user2_compare.profile.is_superuser:
             return True
-        
+
         if has_perm(user2_compare, 'invoices.view_invoice'):
             return True
 
@@ -235,25 +253,26 @@ class Invoice(models.Model):
 
     def allow_payment_by(self, user2_compare,  guid=''):
         return self.allow_view_by(user2_compare,  guid)
-    
+
     # if this invoice allows edit by user2_compare
     def allow_edit_by(self, user2_compare, guid=''):
         boo = False
         if user2_compare.is_superuser:
             boo = True
         else:
-            if user2_compare and user2_compare.id > 0: 
+            if user2_compare and user2_compare.id > 0:
                 if has_perm(user2_compare, 'invoices.change_invoice'):
                     return True
-        
-                if self.creator == user2_compare or self.owner == user2_compare:
+
+                if self.creator == user2_compare or \
+                        self.owner == user2_compare:
                     if self.status == 1:
                         # user can only edit a non-tendered invoice
                         if not self.is_tendered:
                             boo = True
             else:
-                if self.guid and self.guid == guid: # for anonymous user
-                    if self.status == 1 and not self.is_tendered:  
+                if self.guid and self.guid == guid:  # for anonymous user
+                    if self.status == 1 and not self.is_tendered:
                         boo = True
         return boo
 
