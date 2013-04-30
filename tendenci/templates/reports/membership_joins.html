@@ -45,7 +45,7 @@
             <td>{{ membership.user.first_name }}</td>
             <td>{{ membership.user.last_name }}</td>
             <td style="font-size: .9em;">{{ membership.user.email }}</td>
-            <td>{{ membership.membershipbership_type }}</td>
+            <td>{{ membership.membership_type }}</td>
             <td><a href="{{ membership.get_invoice.get_absolute_url }}">{{ membership.get_invoice.total }}</a></td>
             <td style="white-space: nowrap;">{{ membership.payment_method.human_name }}</td>
             <td style="white-space: nowrap;">{{ membership.join_dt|date:"N j, Y" }}</td>
