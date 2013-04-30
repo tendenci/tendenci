@@ -3,6 +3,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
+from tendenci.apps.accountings.utils import (make_acct_entries_initial,
+                                             make_acct_entries_closing,
+                                             make_acct_entries_closing_reversing)
+
 class MakePayment(models.Model):
     guid = models.CharField(max_length=50)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -80,9 +85,6 @@ class MakePayment(models.Model):
         """
         Make the accounting entries for the general sale
         """
-        from tendenci.apps.accountings.models import Acct, AcctEntry, AcctTran
-        from tendenci.apps.accountings.utils import make_acct_entries_initial, make_acct_entries_closing
-        
         ae = AcctEntry.objects.create_acct_entry(user, 'invoice', inv.id)
         if not inv.is_tendered:
             make_acct_entries_initial(user, ae, amount)
@@ -93,8 +95,30 @@ class MakePayment(models.Model):
             # #CREDIT makepayment SALES
             acct_number = self.get_acct_number()
             acct = Acct.objects.get(account_number=acct_number)
-            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1)) 
-            
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount*(-1))
+
+    def make_acct_entries_reversing(self, user, invoice, amount, **kwargs):
+        """
+            Make accounting transactions for the void payment.
+
+            CREDIT to unearned revenue
+            DEBIT to accounts receivables
+            CREDIT to checking or merchant account
+            DEBIT to void payment
+        """
+        [ae] = AcctEntry.objects.filter(source='invoice',
+                                      object_id=invoice.id,
+                                      status=True)[:1] or [None]
+        if ae:
+            make_acct_entries_closing_reversing(user,
+                                                ae,
+                                                amount,
+                                                **kwargs)
+            # DEBIT makepayment SALES
+            acct_number = self.get_acct_number()
+            acct = Acct.objects.get(account_number=acct_number)
+            AcctTran.objects.create_acct_tran(user, ae, acct, amount)
+
     def get_acct_number(self, discount=False):
         if discount:
             return 466700
