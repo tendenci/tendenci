@@ -282,7 +282,7 @@ class Invoice(models.Model):
         accounting entries.
         """
 
-        if self.is_tendered:
+        if self.is_tendered and self.balance > 0:
             self.balance -= amount
             self.payments_credits += amount
             self.save()
