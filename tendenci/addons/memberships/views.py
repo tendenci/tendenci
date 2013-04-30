@@ -2047,8 +2047,8 @@ def membership_export(request):
 def membership_join_report_pdf(request):
     now = datetime.now()
     days = request.GET.get('days', 30)
-    mem_type = request.GET.get('mem_type', None)
-    mem_stat = request.GET.get('mem_stat', None)
+    mem_type = request.GET.get('mem_type')
+    mem_stat = request.GET.get('mem_stat')
     mems = MembershipDefault.objects.all()
     if mem_type:
         mems = mems.filter(membership_type=mem_type)
