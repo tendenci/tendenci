@@ -34,6 +34,7 @@
 </div>
 {% endif %}
 
+{% if invoice.balance > 0 %}
 <div class="invoice-options">
     <ul>
         <li><a class="admin-options" href="{% url invoice.make_offline_payment invoice.pk %}">{% trans "Make Offline Payment" %}</a></li>
@@ -46,6 +47,7 @@
         <li><a class="admin-option" href="{% url invoice.mark_as_paid invoice.id %}"> {% trans "Mark as Paid" %}</a></li>
     </ul>
 </div>
+{% endif %}
 {% endif %}
 
 {% if request.user.is_superuser and invoice.payments_credits > 0 %}
