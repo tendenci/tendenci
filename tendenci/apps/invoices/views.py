@@ -127,12 +127,15 @@ def mark_as_paid(request, id):
     if not request.user.profile.is_superuser:
         raise Http403
 
-    invoice.make_payment(request.user, invoice.balance)
+    action_taken = invoice.make_payment(request.user, invoice.balance)
 
-    messages.add_message(
-        request,
-        messages.SUCCESS,
-        'Successfully marked invoice %s as paid.' % invoice.pk)
+    if action_taken:
+        EventLog.objects.log(instance=invoice)
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully marked invoice %s as paid.' % invoice.pk)
 
     return redirect(invoice)
 

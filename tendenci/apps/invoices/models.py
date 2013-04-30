@@ -290,6 +290,10 @@ class Invoice(models.Model):
             # Make the accounting entries here
             make_acct_entries(user, self, amount)
 
+            return True
+
+        return False
+
     def void_payment(self, user, amount):
         self.balance += amount
         self.payments_credits -= amount
