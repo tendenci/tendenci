@@ -16,7 +16,7 @@ def make_acct_entries(user, invoice, amount, **kwargs):
             make_acct_entries_closing(user, ae, amount)
 
             #CREDIT SALES
-            make_acct_entries_general_sale(user, ae, amount)
+            make_acct_entries_sale(user, obj, ae, amount)
 
 
 def make_acct_entries_initial(user, acct_entry, amount, **kwargs):
@@ -69,14 +69,23 @@ def make_acct_entries_closing(user, acct_entry, amount, **kwargs):
     AcctTran.objects.create_acct_tran(user, acct_entry, acct, amount)
 
 
-def make_acct_entries_general_sale(user, acct_entry, amount, **kwargs):
+def make_acct_entries_sale(user, obj, acct_entry, amount, **kwargs):
     """
         Payment has now been received and we want to update the accounting
     """
     #CREDIT SALES
-    acct_number = 400100
+    acct_number = ''
+    if obj and hasattr(obj, 'get_acct_number'):
+        acct_number = obj.get_acct_number
+        if not Acct.objects.filter(account_number=acct_number).exists():
+            acct_number = ''
+
+    if not acct_number:
+        # general sale
+        acct_number = 400100
 
     acct = Acct.objects.get(account_number=acct_number)
+
     AcctTran.objects.create_acct_tran(user,
                                       acct_entry,
                                       acct,
@@ -152,10 +161,11 @@ def make_acct_entries_reversing(user, invoice, amount, **kwargs):
                                                 ae,
                                                 amount,
                                                 **kwargs)
-            make_acct_entries_general_sale_reversing(user,
-                                                     ae,
-                                                     amount,
-                                                     **kwargs)
+            make_acct_entries_sale_reversing(user,
+                                             obj,
+                                             ae,
+                                             amount,
+                                             **kwargs)
 
 
 def make_acct_entries_closing_reversing(user, acct_entry, amount, **kwargs):
@@ -193,17 +203,27 @@ def make_acct_entries_closing_reversing(user, acct_entry, amount, **kwargs):
                                       amount * (-1))
 
 
-def make_acct_entries_general_sale_reversing(user,
-                                             acct_entry,
-                                             amount,
-                                             **kwargs):
+def make_acct_entries_sale_reversing(user,
+                                     obj,
+                                     acct_entry,
+                                     amount,
+                                     **kwargs):
     """
         Payment has now been void and we want to update the accounting
     """
     # DEBIT SALES
-    acct_number = 400100
+    acct_number = ''
+    if obj and hasattr(obj, 'get_acct_number'):
+        acct_number = obj.get_acct_number
+        if not Acct.objects.filter(account_number=acct_number).exists():
+            acct_number = ''
+
+    if not acct_number:
+        # general sale
+        acct_number = 400100
 
     acct = Acct.objects.get(account_number=acct_number)
+
     AcctTran.objects.create_acct_tran(user,
                                       acct_entry,
                                       acct,
