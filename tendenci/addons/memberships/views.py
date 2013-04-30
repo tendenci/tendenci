@@ -1980,8 +1980,8 @@ def verify_email(request,
 def membership_join_report(request):
     TODAY = date.today()
     memberships = MembershipDefault.objects.all()
-    mem_type = u''
-    mem_stat = u''
+    membership_type = u''
+    membership_status = u''
     start_date = u''
     end_date = u''
 
@@ -1993,16 +1993,16 @@ def membership_join_report(request):
 
         if form.is_valid():
 
-            mem_type = form.cleaned_data.get('membership_type', u'')
-            mem_status = form.cleaned_data.get('membership_status', u'')
+            membership_type = form.cleaned_data.get('membership_type', u'')
+            membership_status = form.cleaned_data.get('membership_status', u'')
             start_date = form.cleaned_data.get('start_date', u'')
             end_date = form.cleaned_data.get('end_date', u'')
 
-            if mem_type:
-                memberships = memberships.filter(membership_type=mem_type)
+            if membership_type:
+                memberships = memberships.filter(membership_type=membership_type)
 
-            if mem_status:
-                memberships = memberships.filter(status_detail=mem_status)
+            if membership_status:
+                memberships = memberships.filter(status_detail=membership_status)
     else:
         form = ReportForm(initial={
             'start_date': start_date.strftime('%m/%d/%Y'),
@@ -2015,8 +2015,8 @@ def membership_join_report(request):
 
     return render_to_response(
         'reports/membership_joins.html', {
-        'mem_type': mem_type,
-        'mem_stat': mem_stat,
+        'membership_type': membership_type,
+        'membership_status': membership_status,
         'start_date': start_date,
         'end_date': end_date,
         'memberships': memberships,
