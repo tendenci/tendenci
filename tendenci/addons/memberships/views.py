@@ -1979,7 +1979,7 @@ def verify_email(request,
 @staff_member_required
 def membership_join_report(request):
     TODAY = date.today()
-    mems = MembershipDefault.objects.all()
+    memberships = MembershipDefault.objects.all()
     mem_type = u''
     mem_stat = u''
     start_date = u''
@@ -1999,16 +1999,17 @@ def membership_join_report(request):
             end_date = form.cleaned_data.get('end_date', u'')
 
             if mem_type:
-                mems = mems.filter(membership_type=mem_type)
+                memberships = memberships.filter(membership_type=mem_type)
 
             if mem_status:
-                mems = mems.filter(status_detail=mem_status)
+                memberships = memberships.filter(status_detail=mem_status)
     else:
         form = ReportForm(initial={
             'start_date': start_date.strftime('%m/%d/%Y'),
             'end_date': end_date.strftime('%m/%d/%Y')})
 
-    mems = mems.filter(join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
+    memberships = memberships.filter(
+        join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
 
     EventLog.objects.log()
 
@@ -2018,7 +2019,7 @@ def membership_join_report(request):
         'mem_stat': mem_stat,
         'start_date': start_date,
         'end_date': end_date,
-        'mems': mems,
+        'memberships': memberships,
         'form': form,
         }, context_instance=RequestContext(request))
 

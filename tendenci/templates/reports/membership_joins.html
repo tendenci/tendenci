@@ -14,7 +14,7 @@
         <button type="submit" class="btn">Filter Memberships</button>
     </form>
 
-    <a href="{% url reports-memberships-joins-pdf %}?days=30&mem_type={{ mem_type }}&mem_stat={{ mem_stat }}">{% trans "Generate PDF" %}</a>
+    <a href="{% url reports-memberships-joins-pdf %}?days=30&amp;mem_type={{ mem_type }}&amp;mem_stat={{ mem_stat }}">{% trans "Generate PDF" %}</a>
 
     <table class="table table-striped table-bordered table-hover table-condensed">
         <tr style="font-size: .9em;">
@@ -29,27 +29,28 @@
             <th>{% trans "Expire Date" %}</th>
             <th>{% trans "Status" %}</th>
         </tr>
-        {% for mem in mems %}
 
-        {% if mem.is_active %}
+        {% for membership in memberships %}
+
+        {% if membership.is_active %}
             <tr class="success">
-        {% elif mem.is_pending %}
+        {% elif membership.is_pending %}
             <tr class="warning">
-        {% elif mem.is_expired %}
+        {% elif membership.is_expired %}
             <tr class="error">
-        {% elif mem.is_archived %}
+        {% elif membership.is_archived %}
             <tr class="info">
         {% endif %}
             <td>{{ forloop.counter }}</td>
-            <td>{{ mem.user.first_name }}</td>
-            <td>{{ mem.user.last_name }}</td>
-            <td style="font-size: .9em;">{{ mem.user.email }}</td>
-            <td>{{ mem.membership_type }}</td>
-            <td><a href="{{ mem.get_invoice.get_absolute_url }}">{{ mem.get_invoice.total }}</a></td>
-            <td style="white-space: nowrap;">{{ mem.payment_method.human_name }}</td>
-            <td style="white-space: nowrap;">{{ mem.join_dt|date:"N j, Y" }}</td>
-            <td style="white-space: nowrap;">{{ mem.expire_dt|date:"N j, Y" }}</td>
-            <td>{{ mem.status_detail|title }}</td>
+            <td>{{ membership.user.first_name }}</td>
+            <td>{{ membership.user.last_name }}</td>
+            <td style="font-size: .9em;">{{ membership.user.email }}</td>
+            <td>{{ membership.membershipbership_type }}</td>
+            <td><a href="{{ membership.get_invoice.get_absolute_url }}">{{ membership.get_invoice.total }}</a></td>
+            <td style="white-space: nowrap;">{{ membership.payment_method.human_name }}</td>
+            <td style="white-space: nowrap;">{{ membership.join_dt|date:"N j, Y" }}</td>
+            <td style="white-space: nowrap;">{{ membership.expire_dt|date:"N j, Y" }}</td>
+            <td>{{ membership.status_detail|title }}</td>
         </tr>
         {% endfor %}
     </table>
