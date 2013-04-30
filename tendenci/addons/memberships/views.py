@@ -3,6 +3,7 @@ import math
 import hashlib
 from decimal import Decimal
 from hashlib import md5
+from dateutil.parser import parse
 from datetime import datetime, timedelta, date
 import time as ttime
 import subprocess
@@ -2045,30 +2046,43 @@ def membership_export(request):
 
 @staff_member_required
 def membership_join_report_pdf(request):
-    now = datetime.now()
-    days = request.GET.get('days', 30)
-    mem_type = request.GET.get('mem_type')
-    mem_stat = request.GET.get('mem_stat')
+    TODAY = date.today()
+    mem_type = request.GET.get('mem_type', u'')
+    mem_stat = request.GET.get('mem_stat', u'')
+    start_date = request.GET.get('start_date', u'')
+    end_date = request.GET.get('end_date', u'')
+
     mems = MembershipDefault.objects.all()
+
     if mem_type:
         mems = mems.filter(membership_type=mem_type)
+
     if mem_stat:
-        if mem_stat == 'ACTIVE':
-            mems = mems.filter(expire_dt__gte=now, join_dt__lte=now)
-        else:
-            mems = mems.exclude(expire_dt__gte=now, join_dt__lte=now)
-    mems = mems.filter(join_dt__gte=now - timedelta(days=int(days)))
+        mems = mems.filter(status_detail=mem_stat.lower())
+
+    if start_date:
+        start_date = parse(start_date)  # make date object
+    else:
+        start_date = TODAY - timedelta(days=30)
+
+    if end_date:
+        end_date = parse(end_date)  # make date object
+    else:
+        end_date = TODAY
+
+    mems = mems.filter(
+        join_dt__gte=start_date, join_dt__lte=end_date).order_by('join_dt')
 
     if not mems:
         raise Http404
 
     report = ReportNewMems(queryset=mems)
-    resp = HttpResponse(mimetype='application/pdf')
-    report.generate_by(PDFGenerator, filename=resp)
+    response = HttpResponse(mimetype='application/pdf')
+    report.generate_by(PDFGenerator, filename=response)
 
     EventLog.objects.log()
 
-    return resp
+    return response
 
 
 @staff_member_required

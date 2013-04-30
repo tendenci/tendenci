@@ -677,3 +677,8 @@ form.connect-with li {
 .totals-row {
     background: #ccc;
 }
+
+.download-pdf-version {
+    float: right;
+    margin-bottom: 3px;
+}
