@@ -50,7 +50,7 @@
             <td style="white-space: nowrap;">{{ membership.payment_method.human_name }}</td>
             <td style="white-space: nowrap;">{{ membership.join_dt|date:"N j, Y" }}</td>
             <td style="white-space: nowrap;">{{ membership.expire_dt|date:"N j, Y" }}</td>
-            <td>{{ membership.status_detail|title }}</td>
+            <td><a href="{{ membership.get_absolute_url }}">{{ membership.status_detail|title }}</a></td>
         </tr>
         {% endfor %}
     </table>
