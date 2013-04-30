@@ -129,3 +129,82 @@ def make_acct_entries_discount(user, invoice, acct_entry, d, **kwargs):
                                           acct_entry,
                                           acct,
                                           myamount * (-1))
+
+
+def make_acct_entries_reversing(user, invoice, amount, **kwargs):
+    """
+        Make accounting transactions for the void payment.
+
+        CREDIT to unearned revenue
+        DEBIT to accounts receivables
+        CREDIT to checking or merchant account
+        DEBIT to void payment
+    """
+    obj = invoice.get_object()
+    if obj and hasattr(obj, 'make_acct_entries_reversing'):
+        obj.make_acct_entries_reversing(user, invoice, amount)
+    else:
+        [ae] = AcctEntry.objects.filter(source='invoice',
+                                      object_id=invoice.id,
+                                      status=True)[:1] or [None]
+        if ae:
+            make_acct_entries_closing_reversing(user,
+                                                ae,
+                                                amount,
+                                                **kwargs)
+            make_acct_entries_general_sale_reversing(user,
+                                                     ae,
+                                                     amount,
+                                                     **kwargs)
+
+
+def make_acct_entries_closing_reversing(user, acct_entry, amount, **kwargs):
+    """Make the last set of accounting entries when the invoice
+        is receiving payment.
+
+        DEBIT Unearned Revenue (L)
+        CREDIT Accounts Receviable (A)
+        DEBIT Checking or Merchant Account (A)
+        CREDIT Sales (L)  ***sales credit is done through the
+            select case in make_acct_entries
+
+     NOTE - For the purpose of storing the amounts in tendenci,
+         all credits will be a negative number.
+    """
+    # CREDIT to unearned revenue
+    acct = Acct.objects.get(account_number=220000)
+    AcctTran.objects.create_acct_tran(user,
+                                      acct_entry,
+                                      acct,
+                                      amount * (-1))
+
+    # DEBIT to accounts receivable
+    acct = Acct.objects.get(account_number=120000)
+    AcctTran.objects.create_acct_tran(user,
+                                      acct_entry,
+                                      acct,
+                                      amount)
+
+    # CREDIT CHECKING OR MERCHANT ACCOUNT
+    acct = Acct.objects.get(account_number=106000)
+    AcctTran.objects.create_acct_tran(user,
+                                      acct_entry,
+                                      acct,
+                                      amount * (-1))
+
+
+def make_acct_entries_general_sale_reversing(user,
+                                             acct_entry,
+                                             amount,
+                                             **kwargs):
+    """
+        Payment has now been void and we want to update the accounting
+    """
+    # DEBIT SALES
+    acct_number = 400100
+
+    acct = Acct.objects.get(account_number=acct_number)
+    AcctTran.objects.create_acct_tran(user,
+                                      acct_entry,
+                                      acct,
+                                      amount)

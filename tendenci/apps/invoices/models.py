@@ -9,6 +9,8 @@ from django.contrib.contenttypes import generic
 
 from tendenci.core.perms.utils import has_perm
 from tendenci.apps.invoices.managers import InvoiceManager
+from tendenci.apps.accountings.utils import (make_acct_entries,
+                                    make_acct_entries_reversing)
 
 
 class Invoice(models.Model):
@@ -260,7 +262,7 @@ class Invoice(models.Model):
         Updates the invoice balance by adding
         accounting entries.
         """
-        from tendenci.apps.accountings.utils import make_acct_entries
+
         if self.is_tendered:
             self.balance -= amount
             self.payments_credits += amount
@@ -280,3 +282,5 @@ class Invoice(models.Model):
             payment.status_detail = 'void'
             payment.save()
 
+        # reverse accounting entries
+        make_acct_entries_reversing(user, self, amount)
