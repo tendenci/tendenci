@@ -477,6 +477,9 @@ class RosterSearchAdvancedForm(forms.Form):
     search_text = forms.CharField(max_length=100, required=False)
     search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
                                         required=False)
+    active_only = forms.BooleanField(label=_('Show Active Only'),
+                                     widget=forms.CheckboxInput(),
+                                     initial=True, required=False)
 
     def __init__(self, *args, **kwargs):
         request_user = kwargs.pop('request_user')
