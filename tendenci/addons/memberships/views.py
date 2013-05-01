@@ -40,6 +40,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.base.http import Http403
 from tendenci.core.base.decorators import password_required
 from tendenci.core.base.utils import send_email_notification
+from tendenci.core.perms.decorators import superuser_required
 from tendenci.core.perms.utils import has_perm, update_perms_and_save, get_query_filters
 from tendenci.apps.invoices.models import Invoice
 from tendenci.addons.corporate_memberships.models import (CorpMembership,
@@ -111,6 +112,7 @@ def membership_search(request, template_name="memberships/search.html"):
 
 
 @login_required
+@superuser_required
 def membership_details(request, id=0, template_name="memberships/details.html"):
     """
     Membership details.
