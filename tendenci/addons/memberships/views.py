@@ -122,8 +122,10 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
 
     EventLog.objects.log(instance=membership)
 
-    return render_to_response(template_name, {'membership': membership},
-        context_instance=RequestContext(request))
+    return render_to_response(
+        template_name, {
+            'membership': membership
+        }, context_instance=RequestContext(request))
 
 
 @login_required
