@@ -1573,10 +1573,7 @@ class MembershipDefault(TendenciBaseModel):
 
     # to lookup for the number, go to /accountings/account_numbers/
     def get_acct_number(self, discount=False):
-        if discount:
-            return 464700
-        else:
-            return 404700
+        return 464700 if discount else 404700
 
 
 class Membership(TendenciBaseModel):
