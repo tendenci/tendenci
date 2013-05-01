@@ -968,6 +968,9 @@ def roster_search(request,
                                search_text})
     if filter_and:
         memberships = memberships.filter(**filter_and)
+    memberships = memberships.order_by('status_detail',
+                                       'user__last_name',
+                                       'user__first_name')
 
     if corp_membership:
         form.fields['cm_id'].initial = corp_membership.id
