@@ -533,8 +533,10 @@ def corpmembership_search(request, my_corps_only=False,
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
     else:
-        corp_members = CorpMembership.get_my_corporate_memberships(request.user,
+        corp_members = CorpMembership.get_my_corporate_memberships(
+                                                request.user,
                                                 my_corps_only=my_corps_only)
+        corp_members = corp_members.exclude(status_detail='archive')
     corp_members = corp_members.order_by('corp_profile__name')
 
     # generate the choices for the cp_id field
