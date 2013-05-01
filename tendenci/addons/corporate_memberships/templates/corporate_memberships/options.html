@@ -42,7 +42,7 @@
 
     {% if can_edit or allow_edit %}
     	{% if request.user.is_authenticated %}
-    		<a class="opt-link" href="{% url corpmembership.roster_search %}?cm_id={{opt_object.id}}" title="Roster">{% trans "Roster" %}</a>
+    		<a class="opt-link" href="{% url corpmembership.roster_search %}?cm_id={{opt_object.id}}&active_only=1" title="Roster">{% trans "Roster" %}</a>
     	{% endif %}
     	{% if can_delete %}
     		<a class="opt-link" href="{% url corpmembership.delete opt_object.pk %}" title="delete">{% trans "Delete" %}</a>

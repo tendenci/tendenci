@@ -97,12 +97,14 @@ def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
             payment = update_perms_and_save(request, form, payment)
 
             # update invoice; make accounting entries
-            invoice.make_payment(payment.creator, payment.amount)
-
-            messages.add_message(
-                request,
-                messages.SUCCESS,
-                'Payment successfully made')
+            action_taken = invoice.make_payment(payment.creator,
+                                                payment.amount)
+            if action_taken:
+                EventLog.objects.log(instance=invoice)
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    'Payment successfully made')
 
             return redirect(invoice)
 

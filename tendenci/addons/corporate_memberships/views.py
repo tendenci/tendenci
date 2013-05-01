@@ -533,8 +533,10 @@ def corpmembership_search(request, my_corps_only=False,
         q_obj = Q(status_detail__in=['pending', 'paid - pending approval'])
         corp_members = CorpMembership.objects.filter(q_obj)
     else:
-        corp_members = CorpMembership.get_my_corporate_memberships(request.user,
+        corp_members = CorpMembership.get_my_corporate_memberships(
+                                                request.user,
                                                 my_corps_only=my_corps_only)
+        corp_members = corp_members.exclude(status_detail='archive')
     corp_members = corp_members.order_by('corp_profile__name')
 
     # generate the choices for the cp_id field
@@ -895,6 +897,7 @@ def roster_search(request,
         search_criteria = form.cleaned_data['search_criteria']
         search_text = form.cleaned_data['search_text']
         search_method = form.cleaned_data['search_method']
+        active_only = form.cleaned_data['active_only']
     else:
         cm_id = None
         first_name = None
@@ -903,6 +906,8 @@ def roster_search(request,
         search_criteria = None
         search_text = None
         search_method = None
+        active_only = False
+
     if cm_id:
         [corp_membership] = CorpMembership.objects.filter(
                                     id=cm_id).exclude(
@@ -911,7 +916,6 @@ def roster_search(request,
     else:
         corp_membership = None
 
-    # check for membership permissions
     memberships = MembershipDefault.objects.filter(
                         status=True
                             ).exclude(
@@ -925,6 +929,7 @@ def roster_search(request,
         (corp_membership and corp_membership.allow_edit_by(request.user)):
         pass
     else:
+        # the function get_membership_search_filter checks for permissions
         filter_and, filter_or = CorpMembership.get_membership_search_filter(
                                                             request.user)
         q_obj = None
@@ -949,6 +954,8 @@ def roster_search(request,
         filter_and.update({'user__last_name': last_name})
     if email:
         filter_and.update({'user__email': email})
+    if active_only:
+        filter_and.update({'status_detail': 'active'})
     search_type = ''
     if search_method == 'starts_with':
         search_type = '__startswith'
@@ -966,6 +973,9 @@ def roster_search(request,
                                search_text})
     if filter_and:
         memberships = memberships.filter(**filter_and)
+    memberships = memberships.order_by('status_detail',
+                                       'user__last_name',
+                                       'user__first_name')
 
     if corp_membership:
         form.fields['cm_id'].initial = corp_membership.id
@@ -978,6 +988,7 @@ def roster_search(request,
                                   'corp_membership': corp_membership,
                                   'corp_profile': corp_profile,
                                   'memberships': memberships,
+                                  'active_only': active_only,
                                   'form': form},
             context_instance=RequestContext(request))
 
