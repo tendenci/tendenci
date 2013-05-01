@@ -20,7 +20,7 @@ from tendenci.core.event_logs.models import EventLog
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.notifications.utils import send_notifications
 
-from tendenci.core.payments.forms import OfflinePaymentForm
+from tendenci.core.payments.forms import MarkAsPaidForm
 from tendenci.apps.invoices.utils import run_invoice_export_task
 from tendenci.apps.invoices.models import Invoice
 from tendenci.apps.invoices.forms import AdminNotesForm, AdminAdjustForm, InvoiceSearchForm
@@ -73,7 +73,7 @@ def view(request, id, guid=None, form_class=AdminNotesForm, template_name="invoi
         context_instance=RequestContext(request))
 
 
-def make_offline_payment(request, id, template_name='invoices/make-offline-payment.html'):
+def mark_as_paid(request, id, template_name='invoices/mark-as-paid.html'):
     """
     Makes a payment-record with a specified date/time
     payment method and payment amount.
@@ -84,7 +84,7 @@ def make_offline_payment(request, id, template_name='invoices/make-offline-payme
         raise Http403
 
     if request.method == 'POST':
-        form = OfflinePaymentForm(request.POST)
+        form = MarkAsPaidForm(request.POST)
 
         if form.is_valid():
 
@@ -107,7 +107,7 @@ def make_offline_payment(request, id, template_name='invoices/make-offline-payme
             return redirect(invoice)
 
     else:
-        form = OfflinePaymentForm(initial={
+        form = MarkAsPaidForm(initial={
             'amount': invoice.balance, 'submit_dt': datetime.now()})
 
     return render_to_response(
@@ -117,7 +117,7 @@ def make_offline_payment(request, id, template_name='invoices/make-offline-payme
         }, context_instance=RequestContext(request))
 
 
-def mark_as_paid(request, id):
+def mark_as_paid_old(request, id):
     """
     Sets invoice balance to 0 and adds
     accounting entries
