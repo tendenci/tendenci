@@ -1625,9 +1625,12 @@ class MembershipDefault(TendenciBaseModel):
             acct = Acct.objects.get(account_number=acct_number)
             AcctTran.objects.create_acct_tran(user, ae, acct, amount * (-1))
 
-    # to lookup for the number, go to /accountings/account_numbers/
     def get_acct_number(self, discount=False):
+        # reference: /accountings/account_numbers/
         return 464700 if discount else 404700
+
+    # def custom_fields(self):
+    #     return self.membershipfield_set.order_by('field__position')
 
 
 class Membership(TendenciBaseModel):

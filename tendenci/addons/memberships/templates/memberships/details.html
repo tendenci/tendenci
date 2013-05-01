@@ -1,4 +1,4 @@
-{% extends "memberships/base.html" %}
+{% extends "memberships/base-wide.html" %}
 {% load membership_tags %}
 {% load base_tags %}
 {% load base_filters %}
@@ -12,37 +12,140 @@
 {% block extra_head %}
 {{ block.super }}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/memberships.css">
+<link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-navbar.css">
 {% endblock %}
 
 {% block body %}
 <div class="t">
 {% membership_nav request.user membership %}
-    <h1>{% blocktrans with membership.user.get_full_name as memname %}Membership for {{ memname }}{% endblocktrans %}</h1>
-    <div class="membership-wrap">
-        <p><a href="{{ membership.user.get_absolute_url }}">{% trans "View profile" %}</a> | <a href="{% url membership.application_entries membership.get_entry.id %}">{% trans "View Membership App Entry" %}</a></p>
-        <p>
-        {% blocktrans with membership.subscribe_dt|date as memjoin and membership.subscribe_dt|timesince as memtimesince%}
-        Subscribed since {{ memjoin }} ({{ memtimesince }}){% endblocktrans %}
-        </p>
-        <p>
-        {% if membership.expire_dt %}
-            <p>
-                {% blocktrans with membership.expire_dt as membexpdate %}Expires {{ membexpdate }}{% endblocktrans %}
-            </p>
-            <p>
-                {% blocktrans with membership.membership_type.expiration_grace_period as grace_period %}Expiration Grace Period: {{ grace_period }} days{% endblocktrans %}
-            </p>
-        {% else %}
-            <p>
-            {% if request.user == membership.user or admin %}
-                {% if membership.can_renew and membership.ma %}
-                    <p><a href="{{ membership.ma.get_absolute_url }}?username={{ membership.user.username }}">Renew Membership Now</a></p>
-                {% endif %}
-            {% endif %}
 
-        {% endif %}
-        <p><strong>{% trans "Membership Type" %}:</strong> {{ membership.membership_type }}</p>
-        <p><strong>{% trans "Member Number" %}:</strong> {{ membership.member_number }}</p>
+    <div class="membership-detail-wrap">
+
+        <fieldset>
+            <label>Membership Details</label>
+            <div class="membership-details-inner-wrap">
+                <div class="membership-details-name">
+                    <h1>{% blocktrans with membership.user.get_full_name as memname %}
+                    {{ memname }}{% endblocktrans %}</h1>
+
+                    <div class="membership-detail-nav">
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url profile membership.user.username %}">
+                            {% trans "Profile" %}</a>
+                        {% endif %}
+
+                        {% if membership.get_invoice %}
+                        <a href="{% url invoice.view membership.get_invoice.pk membership.get_invoice.guid %}">
+                            {% trans "Invoice" %}</a>
+                        {% endif %}
+
+                        {% if user.is_superuser %}
+                        <a href="{% url membership.edit membership.pk %}">
+                            {% trans "Edit Membership" %}</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="membership-details-info">
+                    <p>Member <strong>{{ membership.member_number }}</strong></p>
+
+                    <p><strong>{{ membership.membership_type }}</strong></p>
+
+                    <p title="{{ membership.get_since_dt|timesince }} ago">
+                        Since <strong>{{ membership.get_since_dt|date:"N j, Y" }}</strong></p>
+
+                    {% if membership.renewal %}
+                    <p title="{{ membership.subscribe_dt|timesince }} ago">
+                        Renewed <strong>{{ membership.subscribe_dt|date:"N j, Y" }}</strong></p>
+                    {% endif %}                        
+
+                    {% if membership.is_approved %}
+                        {% if membership.is_forever %}
+                            <p>{% trans "Never expires" %}</p>
+                        {% else %}
+                            <p>Expires <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>    
+                        {% endif %}
+
+                    {% else %}
+                        {% if membership.is_expired %}
+                            <p>Expired <strong>{{ membership.expire_dt|date:"N j, Y" }}</strong> (grace period: {{ membership.membership_type.expiration_grace_period }} days)</p>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if membership.get_renewal_period_dt %}
+                        <p>Renew between {{ membership.get_renewal_period_dt.0|date:"N j, Y" }} and {{ membership.get_renewal_period_dt.1|date:"N j, Y" }}</p>
+                    {% else %}
+                        <p>Membership type does not allow renewals.</p>
+                    {% endif %}
+
+                    <div class="membership-details-status">
+                        
+                        <div class="status-label {{ membership.get_status }}">
+                            {{ membership.get_status|capfirst }} Membership</div>
+
+                        {% if user.is_superuser %}
+                        <div class="status-action">
+                            <ul class="nav nav-pills nav-stacked">
+                                {% for address, label in membership|get_actions:request.user %}
+                                    {% if address %}
+                                    <li><a href="{{ address }}">{{ label }}</a></li>
+                                    {% else %}
+                                    <li>{{ label }}</li>
+                                    {% endif %}
+                                {% empty %}
+                                    <li>{{ membership.status_note }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% else %}
+                            <div class="status-action">
+                            {% if membership.user == request.user %}
+                            {% if membership.can_renew %}
+                                <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Renew your membership.</a>
+                            {% else %}
+                                {% if membership.ma %}
+                                {% if membership.is_expired %}
+                                <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Aww you're expired, sign up for membership.</a>
+                                {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- <fieldset> -->
+            <!-- <label>More Details</label> -->
+        {% for field in membership.custom_fields %}
+            {% if field.field.field_type == 'FileField' %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+                <div class="value">
+                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="field">
+                <div class="label">{{ field.field.label }}</div>
+                <div class="value">
+                {% with field.corporate_membership_name as cm_name %}
+                {% if cm_name %}
+                    {{ cm_name }} (ID:{{ field.value }})
+                {% else %}
+                    {{ field.value }}
+                {% endif %}
+                {% endwith %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        <!-- </fieldset> -->
+
     </div>
 </div>
 {% endblock %}
