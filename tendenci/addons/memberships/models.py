@@ -1147,6 +1147,60 @@ class MembershipDefault(TendenciBaseModel):
 
         return datetime.now() > end_dt
 
+    def get_since_dt(self):
+        memberships = MembershipDefault.objects.filter(
+            user=self.user,
+            status=True,
+            join_dt__isnull=False
+        ).order_by('pk')
+
+        return memberships[0].join_dt if memberships else self.create_dt
+
+    def get_actions(self, **kwargs):
+        """
+        Returns dictionary of actions (key) with label (value)
+
+        Possible actions:
+            approve
+            disapprove
+            make pending
+            archive
+        """
+        from collections import OrderedDict
+        actions = OrderedDict()
+        status = self.get_status()
+
+        is_superuser = kwargs.get('is_superuser', False)
+
+        renew_link = u''
+
+        if self.user.profile.can_renew():
+            renew = {renew_link: u'Renew membership'}
+        elif is_superuser:
+            renew = {renew_link: u'Admin: Renew membership'}
+        else:
+            renew = {}
+
+        if status == 'active':
+            actions.update(renew)
+            actions.update({
+                    '?action=pend': u'Make Pending',
+                    '?action=archive': u'Permenantly Archive',
+                })
+        elif status == 'disapproved':
+            actions.update({
+                    '?action=pend': u'Make Pending',
+                    '?action=archive': u'Permenantly Archive',
+                })
+        elif status == 'pending':
+            actions.update({
+                    '?action=approve': u'Approve',
+                    '?action=disapprove': u'Disapprove',
+                    '?action=archive': u'Permenantly Archive',
+                })
+
+        return actions
+
     def get_invoice(self):
         """
         Get invoice object.  The invoice object is not
