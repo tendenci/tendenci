@@ -17,7 +17,7 @@ except ImportError:
     from haystack.utils import importlib
 
 
-DEFAULT_BATCH_SIZE = getattr(settings, 'HAYSTACK_BATCH_SIZE', 100000)
+DEFAULT_BATCH_SIZE = getattr(settings, 'HAYSTACK_BATCH_SIZE', 100)
 DEFAULT_AGE = None
 
 
