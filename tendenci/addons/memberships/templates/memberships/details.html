@@ -217,24 +217,10 @@
             </div>
             {% endif %}
 
-            {% if membership.application_abandoned %}
+            {% if membership.app %}
             <div class="field">
-                <div class="label">Application Abandoned</div>
-                <div class="value">{{ membership.application_abandoned }}</div>
-            </div>
-            {% endif %}
-
-            {% if membership.application_abandoned_dt %}
-            <div class="field">
-                <div class="label">Application Abandoned Date</div>
-                <div class="value">{{ membership.application_abandoned_dt }}</div>
-            </div>
-            {% endif %}
-
-            {% if membership.application_abandoned_user %}
-            <div class="field">
-                <div class="label">Application Abandoned User</div>
-                <div class="value">{{ membership.application_abandoned_user }}</div>
+                <div class="label">Application</div>
+                <div class="value">{{ membership.app }}</div>
             </div>
             {% endif %}
 
@@ -245,13 +231,6 @@
             </div>
             {% endif %}
 
-            {% if membership.application_complete_user %}
-            <div class="field">
-                <div class="label">Application Complete User</div>
-                <div class="value">{{ membership.application_complete_user }}</div>
-            </div>
-            {% endif %}
-
             {% if membership.application_approved_dt %}
             <div class="field">
                 <div class="label">Application Approved Date &amp; Time</div>
@@ -259,10 +238,10 @@
             </div>
             {% endif %}
 
-            {% if membership.application_approved_user %}
+            {% if membership.membership_type.group %}
             <div class="field">
-                <div class="label">Application Approved User</div>
-                <div class="value">{{ membership.application_approved_user }}</div>
+                <div class="label">Group</div>
+                <div class="value">{{ membership.membership_type.group.label }}</div>
             </div>
             {% endif %}
 
@@ -424,20 +403,6 @@
             <div class="field">
                 <div class="label">Directory</div>
                 <div class="value">{{ membership.directory }}</div>
-            </div>
-            {% endif %}
-
-            {% if membership.membership_type.group %}
-            <div class="field">
-                <div class="label">Group</div>
-                <div class="value">{{ membership.membership_type.group.label }}</div>
-            </div>
-            {% endif %}
-
-            {% if membership.app %}
-            <div class="field">
-                <div class="label">Application</div>
-                <div class="value">{{ membership.app }}</div>
             </div>
             {% endif %}
 
