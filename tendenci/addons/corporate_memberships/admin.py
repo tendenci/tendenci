@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.admin import SimpleListFilter
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
+from django.conf.urls.defaults import patterns, url
+from django.shortcuts import get_object_or_404, redirect
 
 from tendenci.addons.corporate_memberships.models import (
     CorporateMembershipType,
@@ -364,6 +366,44 @@ class NoticeAdmin(admin.ModelAdmin):
         instance.save()
 
         return instance
+
+    def get_urls(self):
+        urls = super(NoticeAdmin, self).get_urls()
+        extra_urls = patterns('',
+            url("^clone/(?P<pk>\d+)/$",
+                self.admin_site.admin_view(self.clone),
+                name='corporate_membership_notice.admin_clone'),
+        )
+        return extra_urls + urls
+
+    def clone(self, request, pk):
+        """
+        Make a clone of this notice.
+        """
+        notice = get_object_or_404(Notice, pk=pk)
+        notice_clone = Notice()
+
+        ignore_fields = ['guid', 'id', 'create_dt', 'update_dt',
+                         'creator', 'creator_username',
+                         'owner', 'owner_username']
+        field_names = [field.name
+                        for field in notice.__class__._meta.fields
+                        if field.name not in ignore_fields]
+
+        for name in field_names:
+            setattr(notice_clone, name, getattr(notice, name))
+
+        notice_clone.notice_name = 'Clone of %s' % notice_clone.notice_name
+        notice_clone.creator = request.user
+        notice_clone.creator_username = request.user.username
+        notice_clone.owner = request.user
+        notice_clone.owner_username = request.user.username
+        notice_clone.save()
+
+        return redirect(reverse(
+            'admin:corporate_memberships_notice_change',
+            args=[notice_clone.pk],
+        ))
 
 
 class AppListFilter(SimpleListFilter):

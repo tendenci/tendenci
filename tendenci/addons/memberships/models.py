@@ -885,11 +885,16 @@ class MembershipDefault(TendenciBaseModel):
         status=True, status_detail='active' and has expired,
         includes the grace period.
         """
+        if not self.get_expire_dt():
+            # there is no grace period, so the member isn't in it
+            in_grace_period = False
+        else:
+            in_grace_period = self.get_expire_dt() < datetime.now()
         is_good = (
             self.status,
             self.status_detail.lower() == 'expired',
             self.get_expire_dt(),
-            self.get_expire_dt() < datetime.now())
+            in_grace_period)
 
         return all(is_good)
 
