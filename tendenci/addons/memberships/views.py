@@ -1632,7 +1632,9 @@ def membership_default_add(request, slug='',
             'department': user.profile.department,
         }
 
-    profile_form = ProfileForm(app_fields, request.POST or None,
+    profile_form = ProfileForm(
+        app_fields,
+        request.POST or None,
         initial=profile_initial
     )
 
@@ -1717,10 +1719,9 @@ def membership_default_add(request, slug='',
 
                 user = user_form.save()
 
-                profile_form.instance = user.profile
-                profile_form.save(
-                    request_user=request.user
-                )
+                if hasattr(user, 'profile'):
+                    profile_form.instance = user.profile
+                    profile_form.save(request_user=request.user)
 
                 # save demographics
                 demographics = demographics_form.save(commit=False)
