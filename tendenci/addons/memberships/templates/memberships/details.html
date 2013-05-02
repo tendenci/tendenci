@@ -311,7 +311,13 @@
             {% if membership.get_corporate_membership %}
             <div class="field">
                 <div class="label">Corporate Membership</div>
-                <div class="value">{{ membership.get_corporate_membership.name }}</div>
+                {% if request.user.profile.is_superuser %}
+                <div class="value"><a href="{{ membership.get_corporate_membership.get_absolute_url }}">
+                    {{ membership.get_corporate_membership.corporate_membership_type.name }}</a></div>
+                {% else %}
+                <div class="value">
+                    {{ membership.get_corporate_membership.corporate_membership_type.name }}</div>
+                {% endif %}
             </div>
             {% endif %}
 

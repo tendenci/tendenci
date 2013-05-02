@@ -578,8 +578,8 @@ class MembershipDefault(TendenciBaseModel):
         Returns corporate membership object
         else returns None type object.
         """
-        from tendenci.addons.corporate_memberships.models import CorporateMembership
-        [corporate_membership] = CorporateMembership.objects.filter(
+        from tendenci.addons.corporate_memberships.models import CorpMembership
+        [corporate_membership] = CorpMembership.objects.filter(
             pk=self.corp_profile_id) or [None]
 
         return corporate_membership
