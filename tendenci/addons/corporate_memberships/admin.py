@@ -272,17 +272,43 @@ class CorpAppAdmin(admin.ModelAdmin):
         super(CorpAppAdmin, self).log_addition(request, object)
 
 
+class StatusDetailFilter(SimpleListFilter):
+    title = _('status detail')
+    parameter_name = 'status_detail'
+
+    def lookups(self, request, model_admin):
+        status_detail_list = CorpMembership.objects.exclude(
+                        status_detail='archive'
+                        ).distinct('status_detail'
+                        ).values_list('status_detail',
+                        flat=True).order_by('status_detail')
+        return [(status_detail, status_detail
+                 ) for status_detail in status_detail_list]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = queryset.filter(
+                    status_detail=self.value())
+        return queryset
+
+
 class CorpMembershipAdmin(admin.ModelAdmin):
     list_display = ['corp_profile', 'join_dt',
                     'renewal', 'renew_dt',
                     'expiration_dt',
                     'approved', 'status_detail']
-    list_filter = ['status_detail', 'join_dt', 'expiration_dt']
+    list_filter = [StatusDetailFilter, 'join_dt', 'expiration_dt']
     search_fields = ['corp_profile__name']
 
     fieldsets = (
         (None, {'fields': ()}),
     )
+
+    def queryset(self, request):
+        return super(CorpMembershipAdmin, self).queryset(request
+                    ).exclude(status_detail='archive'
+                              ).order_by('status_detail',
+                                         'corp_profile__name')
 
     def add_view(self, request, form_url='', extra_context=None):
         return HttpResponseRedirect(reverse('corpmembership.add'))
