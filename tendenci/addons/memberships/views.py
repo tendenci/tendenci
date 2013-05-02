@@ -112,14 +112,17 @@ def membership_search(request, template_name="memberships/search.html"):
 
 
 @login_required
-@superuser_required
 def membership_details(request, id=0, template_name="memberships/details.html"):
     """
     Membership details.
     """
     membership = get_object_or_404(MembershipDefault, pk=id)
 
-    if not has_perm(request.user, 'memberships.view_membership', membership):
+    super_user_or_owner = (
+        request.user.profile.is_superuser,
+        request.user == membership.user)
+
+    if not any(super_user_or_owner):
         raise Http403
 
     EventLog.objects.log(instance=membership)

@@ -1177,35 +1177,39 @@ class MembershipDefault(TendenciBaseModel):
 
         is_superuser = kwargs.get('is_superuser', False)
 
-        renew_link = '%s?username=%s&amp;membership_type=%s' % (
+        form_link = '%s?username=%s&amp;membership_type=%s' % (
             reverse('membership_default.add', kwargs={'slug': self.app.slug}),
             self.user.username,
             self.membership_type.pk)
 
+        approve_link = reverse('admin:membership.admin_approve', args=[self.pk])
+        disapprove_link = reverse('admin:membership.admin_disapprove', args=[self.pk])
+        expire_link = reverse('admin:membership.admin_expire', args=[self.pk])
+
         if self.user.profile.can_renew():
-            renew = {renew_link: u'Renew membership'}
+            renew = {form_link: u'Renew Membership'}
         elif is_superuser:
-            renew = {renew_link: u'Admin: Renew membership'}
+            renew = {form_link: u'Renew Membership'}
         else:
             renew = {}
 
         if status == 'active':
             actions.update(renew)
             actions.update({
-                    '?action=pend': u'Make Pending',
-                    '?action=archive': u'Permenantly Archive',
-                })
+                # '?action=pend': u'Make Pending',
+                expire_link: u'Expire Membership'})
         elif status == 'disapproved':
             actions.update({
-                    '?action=pend': u'Make Pending',
-                    '?action=archive': u'Permenantly Archive',
-                })
+                # '?action=pend': u'Make Pending',
+                expire_link: u'Expire Membership'})
         elif status == 'pending':
             actions.update({
-                    '?action=approve': u'Approve',
-                    '?action=disapprove': u'Disapprove',
-                    '?action=archive': u'Permenantly Archive',
-                })
+                approve_link: u'Approve',
+                disapprove_link: u'Disapprove',
+                expire_link: u'Expire Membership'})
+        elif status == 'expired':
+            actions.update({
+                approve_link: u'Approve Membership'})
 
         return actions
 
