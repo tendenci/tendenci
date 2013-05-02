@@ -1177,7 +1177,10 @@ class MembershipDefault(TendenciBaseModel):
 
         is_superuser = kwargs.get('is_superuser', False)
 
-        renew_link = u''
+        renew_link = '%s?username=%s&amp;membership_type=%s' % (
+            reverse('membership_default.add', kwargs={'slug': self.app.slug}),
+            self.user.username,
+            self.membership_type.pk)
 
         if self.user.profile.can_renew():
             renew = {renew_link: u'Renew membership'}

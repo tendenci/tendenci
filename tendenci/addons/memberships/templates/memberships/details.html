@@ -40,7 +40,7 @@
                         {% endif %}
 
                         {% if user.is_superuser %}
-                        <a href="{% url membership.edit membership.pk %}">
+                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">
                             {% trans "Edit Membership" %}</a>
                         {% endif %}
                     </div>
@@ -98,19 +98,21 @@
                             </ul>
                         </div>
                         {% else %}
-                            <div class="status-action">
-                            {% if membership.user == request.user %}
-                            {% if membership.can_renew %}
-                                <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Renew your membership.</a>
-                            {% else %}
-                                {% if membership.ma %}
+                        <div class="status-action">
+                        {% if membership.user == request.user %}
+                        {% if membership.can_renew %}
+                            <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Renew your membership.</a>
+                        {% else %}
+                            {% if membership.app %}
                                 {% if membership.is_expired %}
-                                <a href="{% url membership.application_details membership.ma.slug %}?username={{ membership.user.username }}">Aww you're expired, sign up for membership.</a>
-                                {% endif %}
+                                <a href="{% url membership.application_details membership.app.slug %}?username={{ membership.user.username }}">Aww you're expired, sign up for membership.</a>
+                                {% else %}
+                                    <div>No pending actions required, nice!</div>
                                 {% endif %}
                             {% endif %}
-                            {% endif %}
-                            </div>
+                        {% endif %}
+                        {% endif %}
+                        </div>
                         {% endif %}
                     </div>
 
