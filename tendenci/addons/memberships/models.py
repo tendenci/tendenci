@@ -440,8 +440,8 @@ class MembershipDefault(TendenciBaseModel):
     chapter = models.CharField(max_length=150, blank=True)
     areas_of_expertise = models.CharField(max_length=1000, blank=True)
     corp_profile_id = models.IntegerField(blank=True, default=0)
-    corporate_membership_id = models.IntegerField(_('Corporate Membership'),
-                                                  blank=True, null=True)
+    corporate_membership_id = models.IntegerField(
+        _('Corporate Membership'), blank=True, null=True)
     home_state = models.CharField(max_length=50, blank=True, default=u'')
     year_left_native_country = models.IntegerField(blank=True, null=True)
     network_sectors = models.CharField(max_length=250, blank=True, default=u'')
@@ -561,6 +561,31 @@ class MembershipDefault(TendenciBaseModel):
         Returns memberships of status_detail='pending'
         """
         return MembershipDefault.objects.filter(status_detail__iexact='pending')
+
+    def get_corporate_profile(self):
+        """
+        Returns corporate profile object
+        else returns None type object.
+        """
+        from tendenci.addons.corporate_memberships.models import CorpProfile
+        [corporate_profile] = CorpProfile.objects.filter(
+            pk=self.corp_profile_id) or [None]
+
+        return corporate_profile
+
+    def get_corporate_membership(self):
+        """
+        Returns corporate membership object
+        else returns None type object.
+        """
+        from tendenci.addons.corporate_memberships.models import CorporateMembership
+        [corporate_membership] = CorporateMembership.objects.filter(
+            pk=self.corp_profile_id) or [None]
+
+        return corporate_membership
+
+
+
 
     def send_email(self, request, notice_type):
         """
