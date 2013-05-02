@@ -105,9 +105,9 @@
                         {% else %}
                             {% if membership.app %}
                                 {% if membership.is_expired %}
-                                <a href="{% url membership.application_details membership.app.slug %}?username={{ membership.user.username }}">Aww you're expired, sign up for membership.</a>
+                                <a href="{% url membership.application_details membership.app.slug %}?username={{ membership.user.username }}">Oh no you're expired, sign up for membership.</a>
                                 {% else %}
-                                    <div>No pending actions required, nice!</div>
+                                    <div>No pending actions required, good job!</div>
                                 {% endif %}
                             {% endif %}
                         {% endif %}
