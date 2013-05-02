@@ -119,32 +119,328 @@
             </div>
         </fieldset>
 
-        <!-- <fieldset> -->
-            <!-- <label>More Details</label> -->
-        {% for field in membership.custom_fields %}
-            {% if field.field.field_type == 'FileField' %}
+    <!-- renewal = models.BooleanField(blank=True, default=False) -->
+
+        <fieldset>
+            <label>More Details</label>
+
+            {% if membership.certifications %}
             <div class="field">
-                <div class="label">{{ field.field.label }}</div>
-                <div class="value">
-                    <a href="{{ MEDIA_URL }}{{ field.value }}">{{ field.value|basename }}</a>
-                </div>
-            </div>
-            {% else %}
-            <div class="field">
-                <div class="label">{{ field.field.label }}</div>
-                <div class="value">
-                {% with field.corporate_membership_name as cm_name %}
-                {% if cm_name %}
-                    {{ cm_name }} (ID:{{ field.value }})
-                {% else %}
-                    {{ field.value }}
-                {% endif %}
-                {% endwith %}
-                </div>
+                <div class="label">Certifications</div>
+                <div class="value">{{ membership.certifications }}</div>
             </div>
             {% endif %}
-        {% endfor %}
-        <!-- </fieldset> -->
+
+            {% if membership.work_experience %}
+            <div class="field">
+                <div class="label">Work Experience</div>
+                <div class="value">{{ membership.work_experience }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source %}
+            <div class="field">
+                <div class="label">Referral Source</div>
+                <div class="value">{{ membership.referral_source }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source_other %}
+            <div class="field">
+                <div class="label">Referral Source (other)</div>
+                <div class="value">{{ membership.referral_source_other }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source_member_name %}
+            <div class="field">
+                <div class="label">Referral Source Member Name</div>
+                <div class="value">{{ membership.referral_source_member_name }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.referral_source_member_number %}
+            <div class="field">
+                <div class="label">Referral Source Member Number</div>
+                <div class="value">{{ membership.referral_source_member_number }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.affiliation_member_number %}
+            <div class="field">
+                <div class="label">Affiliation Member Number</div>
+                <div class="value">{{ membership.affiliation_member_number }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.primary_practice %}
+            <div class="field">
+                <div class="label">Primary Practice</div>
+                <div class="value">{{ membership.primary_practice }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.how_long_in_practice %}
+            <div class="field">
+                <div class="label">How Long in Practice</div>
+                <div class="value">{{ membership.how_long_in_practice }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.notes %}
+            <div class="field">
+                <div class="label">Notes</div>
+                <div class="value">{{ membership.notes|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.admin_notes %}
+            <div class="field">
+                <div class="label">Admin Notes</div>
+                <div class="value">{{ membership.admin_notes|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.newsletter_type %}
+            <div class="field">
+                <div class="label">Newsletter Type</div>
+                <div class="value">{{ membership.newsletter_type }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.directory_type %}
+            <div class="field">
+                <div class="label">Directory Type</div>
+                <div class="value">{{ membership.directory_type }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_abandoned %}
+            <div class="field">
+                <div class="label">Application Abandoned</div>
+                <div class="value">{{ membership.application_abandoned }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_abandoned_dt %}
+            <div class="field">
+                <div class="label">Application Abandoned Date</div>
+                <div class="value">{{ membership.application_abandoned_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_abandoned_user %}
+            <div class="field">
+                <div class="label">Application Abandoned User</div>
+                <div class="value">{{ membership.application_abandoned_user }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_complete_dt %}
+            <div class="field">
+                <div class="label">Application Complete Date &amp; Time</div>
+                <div class="value">{{ membership.application_complete_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_complete_user %}
+            <div class="field">
+                <div class="label">Application Complete User</div>
+                <div class="value">{{ membership.application_complete_user }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_approved_dt %}
+            <div class="field">
+                <div class="label">Application Approved Date &amp; Time</div>
+                <div class="value">{{ membership.application_approved_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.application_approved_user %}
+            <div class="field">
+                <div class="label">Application Approved User</div>
+                <div class="value">{{ membership.application_approved_user }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.personnel_notified_dt %}
+            <div class="field">
+                <div class="label">Personnel Notified Date</div>
+                <div class="value">{{ membership.personnel_notified_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.payment_received_dt %}
+            <div class="field">
+                <div class="label">Payment Received Date &amp; Time</div>
+                <div class="value">{{ membership.payment_received_dt }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.payment_method %}
+            <div class="field">
+                <div class="label">Payment Method</div>
+                <div class="value">{{ membership.payment_method }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.override %}
+            <div class="field">
+                <div class="label">Override</div>
+                <div class="value">{{ membership.override }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.override_price %}
+            <div class="field">
+                <div class="label">Override Price</div>
+                <div class="value">{{ membership.override_price }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.exported %}
+            <div class="field">
+                <div class="label">Exported</div>
+                <div class="value">{{ membership.exported }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.chapter %}
+            <div class="field">
+                <div class="label">Chapter</div>
+                <div class="value">{{ membership.chapter }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.areas_of_expertise %}
+            <div class="field">
+                <div class="label">Areas of Expertise</div>
+                <div class="value">{{ membership.areas_of_expertise }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.corp_profile_id %}
+            <div class="field">
+                <div class="label">Corporate Profile ID</div>
+                <div class="value">{{ membership.corp_profile_id }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.corporate_membership_id %}
+            <div class="field">
+                <div class="label">Corporate Membership ID</div>
+                <div class="value">{{ membership.corporate_membership_id }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.home_state %}
+            <div class="field">
+                <div class="label">Home State</div>
+                <div class="value">{{ membership.home_state }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.year_left_native_country %}
+            <div class="field">
+                <div class="label">Year Left Native Country</div>
+                <div class="value">{{ membership.year_left_native_country }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.network_sectors %}
+            <div class="field">
+                <div class="label">Network Sectors</div>
+                <div class="value">{{ membership.network_sectors }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.networking %}
+            <div class="field">
+                <div class="label">Networking</div>
+                <div class="value">{{ membership.networking }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.government_worker %}
+            <div class="field">
+                <div class="label">Government Worker</div>
+                <div class="value">{{ membership.government_worker }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.government_agency %}
+            <div class="field">
+                <div class="label">Government Agency</div>
+                <div class="value">{{ membership.government_agency }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.license_number %}
+            <div class="field">
+                <div class="label">License Number</div>
+                <div class="value">{{ membership.license_number }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.license_state %}
+            <div class="field">
+                <div class="label">License State</div>
+                <div class="value">{{ membership.license_state }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.industry %}
+            <div class="field">
+                <div class="label">Industry</div>
+                <div class="value">{{ membership.industry }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.region %}
+            <div class="field">
+                <div class="label">Region</div>
+                <div class="value">{{ membership.region }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.company_size %}
+            <div class="field">
+                <div class="label">Company Size</div>
+                <div class="value">{{ membership.company_size }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.promotion_code %}
+            <div class="field">
+                <div class="label">Promotion Code</div>
+                <div class="value">{{ membership.promotion_code }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.directory %}
+            <div class="field">
+                <div class="label">Directory</div>
+                <div class="value">{{ membership.directory }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.membership_type.group %}
+            <div class="field">
+                <div class="label">Group</div>
+                <div class="value">{{ membership.membership_type.group.label }}</div>
+            </div>
+            {% endif %}
+
+            {% if membership.app %}
+            <div class="field">
+                <div class="label">Application</div>
+                <div class="value">{{ membership.app }}</div>
+            </div>
+            {% endif %}
+
+            </div>
+        </fieldset>
 
     </div>
 </div>
