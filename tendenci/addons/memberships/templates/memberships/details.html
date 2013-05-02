@@ -301,17 +301,17 @@
             </div>
             {% endif %}
 
-            {% if membership.corp_profile_id %}
+            {% if membership.get_corporate_profile %}
             <div class="field">
-                <div class="label">Corporate Profile ID</div>
-                <div class="value">{{ membership.corp_profile_id }}</div>
+                <div class="label">Corporate Profile</div>
+                <div class="value">{{ membership.get_corporate_profile.name }}</div>
             </div>
             {% endif %}
 
-            {% if membership.corporate_membership_id %}
+            {% if membership.get_corporate_membership %}
             <div class="field">
-                <div class="label">Corporate Membership ID</div>
-                <div class="value">{{ membership.corporate_membership_id }}</div>
+                <div class="label">Corporate Membership</div>
+                <div class="value">{{ membership.get_corporate_membership.name }}</div>
             </div>
             {% endif %}
 
