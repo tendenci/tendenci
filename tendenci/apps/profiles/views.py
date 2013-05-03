@@ -43,10 +43,12 @@ from tendenci.apps.user_groups.models import GroupMembership
 from tendenci.apps.user_groups.forms import GroupMembershipEditForm
 
 from tendenci.apps.profiles.models import Profile
-from tendenci.apps.profiles.forms import (ProfileForm, ExportForm, UserPermissionForm, 
-UserGroupsForm, ValidatingPasswordChangeForm, UserMembershipForm, ProfileMergeForm)
+from tendenci.apps.profiles.forms import (ProfileForm, ExportForm,
+UserPermissionForm, UserGroupsForm, ValidatingPasswordChangeForm,
+UserMembershipForm, ProfileMergeForm, ProfileSearchForm)
 from tendenci.apps.profiles.tasks import ExportProfilesTask
 from tendenci.addons.events.models import Registrant
+from tendenci.addons.memberships.models import MembershipType, MembershipDefault
 
 try:
     notification = get_app('notifications')
@@ -162,16 +164,6 @@ def search(request, template_name="profiles/search.html"):
     allow_anonymous_search = get_setting('module', 'users', 'allowanonymoususersearchuser')
     allow_user_search = get_setting('module', 'users', 'allowusersearch')
     membership_view_perms = get_setting('module', 'memberships', 'memberprotection')
-    only_members = request.GET.get('members', None)
-
-    # hide "only members" checkbox
-    # special occasion when box does nothing
-    show_checkbox = not all((
-        not allow_user_search,
-        membership_view_perms in ['all-members', 'member-type'],
-        not request.user.profile.is_superuser,
-    ))
-
 
     if not request.user.profile.is_superuser:
         # block anon
@@ -191,64 +183,124 @@ def search(request, template_name="profiles/search.html"):
                 if not allow_user_search:
                     raise Http403
 
-    query = request.GET.get('q', None)
+    # decide whether or not to display the membership types drop down
+    display_membership_type = False
+    if membership_view_perms == 'public' or request.user.profile.is_superuser:
+        display_membership_type = True
+    else:
+        if membership_view_perms in ['all-members', 'member-type']:
+            if request.user.is_authenticated() and \
+                request.user.profile.is_member:
+                display_membership_type = True
+    mt_ids_list = None
+    if display_membership_type:
+        if membership_view_perms == 'member-type':
+            mt_ids_list = request.user.membershipdefault_set.filter(
+                                            status=True,
+                                               status_detail='active'
+                                               ).values_list(
+                                            'membership_type_id',
+                                            flat=True)
+            if mt_ids_list:
+                mts = MembershipType.objects.filter(id__in=mt_ids_list
+                                                    ).order_by('name')
+            else:
+                mts = None
+        else:
+            mts = MembershipType.objects.all().order_by('name')
+    else:
+        mts = None
+
+    show_member_option = not mts is None
+
+    form = ProfileSearchForm(request.GET, mts=mts)
+    if form.is_valid():
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        email = form.cleaned_data['email']
+        search_criteria = form.cleaned_data['search_criteria']
+        search_text = form.cleaned_data['search_text']
+        search_method = form.cleaned_data['search_method']
+        membership_type = form.cleaned_data.get('membership_type', None)
+        member_only = form.cleaned_data.get('member_only', False)
+    else:
+        first_name = None
+        last_name = None
+        email = None
+        search_criteria = None
+        search_text = None
+        search_method = None
+        membership_type = None
+        member_only = False
+
     filters = get_query_filters(request.user, 'profiles.view_profile')
 
-    profiles = Profile.objects.filter(Q(status=True), Q(status_detail="active"), Q(filters)).distinct()
+    profiles = Profile.objects.filter(Q(status=True),
+                                      Q(status_detail="active"),
+                                      Q(filters)).distinct()
+    if first_name:
+        profiles = profiles.filter(user__first_name=first_name)
+    if last_name:
+        profiles = profiles.filter(user__last_name=last_name)
+    if email:
+        profiles = profiles.filter(user__email=email)
 
-    if query:
-        db_filters = (
-            Q(user__first_name__icontains=query) |
-            Q(user__last_name__icontains=query) |
-            Q(user__email__icontains=query) |
-            Q(user__username__icontains=query) |
-            Q(display_name__icontains=query) |
-            Q(company__icontains=query))
+    if member_only:
+        profiles = profiles.exclude(member_number='')
 
-        full_name_filter = Q()
+    if search_criteria and search_text:
+        search_type = ''
+        if search_method == 'starts_with':
+            search_type = '__startswith'
+        elif search_method == 'contains':
+            search_type = '__contains'
+        if search_criteria == 'username':
+            search_filter = {'user__username%s' % search_type: search_text}
+        else:
+            search_filter = {'%s%s' % (search_criteria,
+                                         search_type): search_text}
 
-        if " " in query:
-            full_name_filter = (Q(user__first_name__icontains=query.split(' ', 1)[0]) & Q(user__last_name__icontains=query.split(' ', 1)[1]))
-
-        profiles = profiles.filter(db_filters | full_name_filter)
-
-    # if non-superuser
-        # if is member
-        # if is user
-        # if only_members
-            # exclude non-members
+        profiles = profiles.filter(**search_filter)
 
     if not request.user.profile.is_superuser:
         if request.user.profile.is_member:
 
             if membership_view_perms == 'private':
-                profiles = profiles.exclude(~Q(member_number=''))  # exclude all members
+                # show non-members only
+                profiles = profiles.filter(member_number='')  # exclude all members
             elif membership_view_perms == 'member-type':
-                profiles = profiles.exclude(  # exclude specific members
-                    ~Q(user__membershipdefault__membership_type__in=request.user.membershipdefault_set.values_list('membership_type', flat=True))
-                )
+                filter_or = Q(member_number='')
+                if mt_ids_list:
+                    filter_or = filter_or | Q(
+                    user__membershipdefault__membership_type_id__in=mt_ids_list)
+                profiles = profiles.filter(filter_or)
+
             elif membership_view_perms == 'all-members':
                 pass  # exclude nothing
 
             if not allow_user_search:
-                profiles = profiles.exclude(member_number='')  # exclude non-members
+                # exclude non-members
+                profiles = profiles.exclude(member_number='')
 
         else:
             if membership_view_perms != 'public':
-                profiles = profiles.exclude(~Q(member_number=''))  # exclude all members
+                # show non-members only
+                profiles = profiles.filter(member_number='')
 
         profiles = profiles.exclude(hide_in_search=True)
 
-    if only_members:
-        profiles = profiles.exclude(member_number='')  # exclude non-members
-
-    if not request.user.profile.is_superuser:
-        profiles = profiles.exclude(hide_in_search=True)
+    if membership_type:
+        profiles = profiles.filter(
+            user__membershipdefault__membership_type_id=membership_type)
 
     profiles = profiles.order_by('user__last_name', 'user__first_name')
 
     EventLog.objects.log()
-    return render_to_response(template_name, {'profiles': profiles, 'show_checkbox': show_checkbox, 'user_this': None},
+    return render_to_response(template_name, {
+            'profiles': profiles,
+            'user_this': None,
+            'search_form': form,
+            'show_member_option': show_member_option},
         context_instance=RequestContext(request))
 
 

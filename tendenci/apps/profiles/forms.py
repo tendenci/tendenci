@@ -14,6 +14,7 @@ from tendenci.core.perms.forms import TendenciBaseForm
 from tendenci.core.site_settings.utils import get_setting
 from tendenci.apps.user_groups.models import Group, GroupMembership
 from tendenci.addons.memberships.models import App, Membership
+from tendenci.addons.memberships.models import MembershipType
 from tendenci.core.event_logs.models import EventLog
 from tendenci.apps.profiles.models import Profile
 from tendenci.apps.profiles.utils import get_groups, get_memberships, group_choices, update_user
@@ -26,6 +27,52 @@ APPS = ('profiles', 'user_groups', 'articles',
         'stories', 'actions', 'photos', 'entities',
         'locations', 'files', 'directories', 'resumes',
         'memberships', 'corporate_memberships')
+
+
+class ProfileSearchForm(forms.Form):
+    SEARCH_CRITERIA_CHOICES = (
+                        ('', _('SELECT ONE')),
+                        ('username', _('Username')),
+                        ('member_number', _('Member Number')),
+                        ('company', _('Company')),
+                        ('position_title', _('Position Title')),
+                        ('phone', _('Phone')),
+                        ('city', _('City')),
+                        ('state', _('State')),
+                        ('zipcode', _('Zip Code')),
+                        ('country', _('Country'))
+                               )
+    SEARCH_METHOD_CHOICES = (
+                             ('starts_with', _('Starts With')),
+                             ('contains', _('Contains')),
+                             ('exact', _('Exact')),
+                             )
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    email = forms.CharField(required=False)
+    member_only = forms.BooleanField(label=_('Show Member Only'),
+                                     widget=forms.CheckboxInput(),
+                                     initial=True, required=False)
+    membership_type = forms.IntegerField(required=False)
+    search_criteria = forms.ChoiceField(choices=SEARCH_CRITERIA_CHOICES,
+                                        required=False)
+    search_text = forms.CharField(max_length=100, required=False)
+    search_method = forms.ChoiceField(choices=SEARCH_METHOD_CHOICES,
+                                        required=False)
+
+    def __init__(self, *args, **kwargs):
+        mts = kwargs.pop('mts')
+        super(ProfileSearchForm, self).__init__(*args, **kwargs)
+
+        if not mts:
+            del self.fields['membership_type']
+            del self.fields['member_only']
+        else:
+            choices = [(0, 'SELECT ONE')]
+            choices += [(mt.id, mt.name) for mt in mts]
+            self.fields['membership_type'].widget = forms.widgets.Select(
+                                    choices=choices)
+
 
 class ProfileForm(TendenciBaseForm):
 
