@@ -500,6 +500,44 @@ class MembershipDefault(TendenciBaseModel):
             if hasattr(self.user, 'demographics'):
                 return self.user.demographics
 
+    def demographic_sort_key(self, field_name):
+        """
+        Returns the key to sort on when
+        using the list.sort method.
+        """
+        digit = field_name.replace('ud', u'')
+        return int(digit) if digit.isdigit() else 0
+
+    def get_demographics(self):
+        """
+        Returns a list of 2-tuples (field name, field value)
+        """
+        if not self.demographics:
+            return []  # empty list
+
+        demographic = self.demographics
+
+        field_names = demographic._meta.get_all_field_names()
+        field_names.sort(key=self.demographic_sort_key)  # sort by ud number
+
+        field_dict = {}
+
+        if self.app:
+            for field in self.app.fields.all():
+                field_dict[field.field_name] = field.label
+
+        field_list = []
+        for field_name in field_names:
+            if field_name.startswith('ud'):
+                field_label = field_dict.get(field_name, field_name)
+                if hasattr(demographic, field_name):  # catches broken db relationships
+                    field_list.append((
+                        field_label,
+                        getattr(demographic, field_name)
+                    ))
+
+        return field_list
+
     @classmethod
     def refresh_groups(cls):
         """
@@ -583,9 +621,6 @@ class MembershipDefault(TendenciBaseModel):
             pk=self.corp_profile_id) or [None]
 
         return corporate_membership
-
-
-
 
     def send_email(self, request, notice_type):
         """
