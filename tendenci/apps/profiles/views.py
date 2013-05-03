@@ -239,21 +239,21 @@ def search(request, template_name="profiles/search.html"):
                                       Q(status_detail="active"),
                                       Q(filters)).distinct()
     if first_name:
-        profiles = profiles.filter(user__first_name=first_name)
+        profiles = profiles.filter(user__first_name__iexact=first_name)
     if last_name:
-        profiles = profiles.filter(user__last_name=last_name)
+        profiles = profiles.filter(user__last_name__iexact=last_name)
     if email:
-        profiles = profiles.filter(user__email=email)
+        profiles = profiles.filter(user__email__iexact=email)
 
     if member_only:
         profiles = profiles.exclude(member_number='')
 
     if search_criteria and search_text:
-        search_type = ''
+        search_type = '__iexact'
         if search_method == 'starts_with':
-            search_type = '__startswith'
+            search_type = '__istartswith'
         elif search_method == 'contains':
-            search_type = '__contains'
+            search_type = '__icontains'
         if search_criteria == 'username':
             search_filter = {'user__username%s' % search_type: search_text}
         else:
