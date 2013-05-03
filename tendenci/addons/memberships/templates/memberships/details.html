@@ -299,22 +299,15 @@
             </div>
             {% endif %}
 
-            {% if membership.get_corporate_profile %}
-            <div class="field">
-                <div class="label">Corporate Profile</div>
-                <div class="value">{{ membership.get_corporate_profile.name }}</div>
-            </div>
-            {% endif %}
-
             {% if membership.get_corporate_membership %}
             <div class="field">
                 <div class="label">Corporate Membership</div>
                 {% if request.user.profile.is_superuser %}
                 <div class="value"><a href="{{ membership.get_corporate_membership.get_absolute_url }}">
-                    {{ membership.get_corporate_membership.corporate_membership_type.name }}</a></div>
+                    {{ membership.get_corporate_profile.name }} - {{ membership.get_corporate_membership.corporate_membership_type.name }}</a></div>
                 {% else %}
                 <div class="value">
-                    {{ membership.get_corporate_membership.corporate_membership_type.name }}</div>
+                    {{ membership.get_corporate_profile.name }} - {{ membership.get_corporate_membership.corporate_membership_type.name }}</div>
                 {% endif %}
             </div>
             {% endif %}
