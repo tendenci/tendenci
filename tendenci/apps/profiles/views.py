@@ -254,8 +254,9 @@ def search(request, template_name="profiles/search.html"):
             search_type = '__istartswith'
         elif search_method == 'contains':
             search_type = '__icontains'
-        if search_criteria == 'username':
-            search_filter = {'user__username%s' % search_type: search_text}
+        if search_criteria in ['username', 'first_name', 'last_name', 'email']:
+            search_filter = {'user__%s%s' % (search_criteria,
+                                             search_type): search_text}
         else:
             search_filter = {'%s%s' % (search_criteria,
                                          search_type): search_text}

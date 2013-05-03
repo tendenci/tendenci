@@ -32,6 +32,9 @@ APPS = ('profiles', 'user_groups', 'articles',
 class ProfileSearchForm(forms.Form):
     SEARCH_CRITERIA_CHOICES = (
                         ('', _('SELECT ONE')),
+                        ('first_name', _('First Name')),
+                        ('last_name', _('Last Name')),
+                        ('email', _('Email')),
                         ('username', _('Username')),
                         ('member_number', _('Member Number')),
                         ('company', _('Company')),
