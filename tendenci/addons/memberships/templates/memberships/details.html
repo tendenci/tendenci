@@ -49,7 +49,7 @@
                 <div class="membership-details-info">
                     <p>Member <strong>{{ membership.member_number }}</strong></p>
 
-                    <p><strong>{{ membership.membership_type }}</strong></p>
+                    <p>Group <strong>{{ membership.membership_type }}</strong></p>
 
                     <p title="{{ membership.get_since_dt|timesince }} ago">
                         Since <strong>{{ membership.get_since_dt|date:"N j, Y" }}</strong></p>
@@ -233,13 +233,6 @@
             <div class="field">
                 <div class="label">Application Approved Date &amp; Time</div>
                 <div class="value">{{ membership.application_approved_dt }}</div>
-            </div>
-            {% endif %}
-
-            {% if membership.membership_type.group %}
-            <div class="field">
-                <div class="label">Group</div>
-                <div class="value">{{ membership.membership_type.group.label }}</div>
             </div>
             {% endif %}
 
