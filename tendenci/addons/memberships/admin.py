@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.conf.urls.defaults import patterns, url
 from django.template.defaultfilters import slugify
@@ -395,6 +396,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             # notify corp reps
             m.email_corp_reps(request)
 
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Approved'
+        )
+
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
             args=[pk],
@@ -408,6 +415,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.renew(request_user=request.user)
         m.send_email(request, 'renewal')
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Renewed'
+        )
 
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
@@ -423,6 +436,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         m.disapprove(request_user=request.user)
         m.send_email(request, 'disapprove')
 
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Disapproved'
+        )
+
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
             args=[pk],
@@ -435,6 +454,12 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         m = get_object_or_404(MembershipDefault, pk=pk)
         m.expire(request_user=request.user)
+
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            'Successfully Expired'
+        )
 
         return redirect(reverse(
             'admin:memberships_membershipdefault_change',
