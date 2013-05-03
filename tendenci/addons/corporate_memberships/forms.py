@@ -450,6 +450,7 @@ class CorpMembershipRenewForm(forms.ModelForm):
 
 class RosterSearchAdvancedForm(forms.Form):
     SEARCH_CRITERIA_CHOICES = (
+                        ('', _('SELECT ONE')),
                         ('username', _('Username')),
                         ('member_number', _('Member Number')),
                         ('phone', _('Phone')),
