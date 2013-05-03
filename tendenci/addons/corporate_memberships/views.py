@@ -949,18 +949,18 @@ def roster_search(request,
     # check form fields - first_name, last_name and email
     filter_and = {}
     if first_name:
-        filter_and.update({'user__first_name': first_name})
+        filter_and.update({'user__first_name__iexact': first_name})
     if last_name:
-        filter_and.update({'user__last_name': last_name})
+        filter_and.update({'user__last_name__iexact': last_name})
     if email:
-        filter_and.update({'user__email': email})
+        filter_and.update({'user__email__iexact': email})
     if active_only:
         filter_and.update({'status_detail': 'active'})
-    search_type = ''
+    search_type = '__iexact'
     if search_method == 'starts_with':
-        search_type = '__startswith'
+        search_type = '__istartswith'
     elif search_method == 'contains':
-        search_type = '__contains'
+        search_type = '__icontains'
 
     # check search criteria
     if search_criteria and search_text:
