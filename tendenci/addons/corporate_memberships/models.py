@@ -17,6 +17,7 @@ from django.contrib.contenttypes import generic
 from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_delete
 
 #from django.contrib.contenttypes.models import ContentType
 from tinymce import models as tinymce_models
@@ -44,6 +45,7 @@ from tendenci.core.base.fields import DictField
 
 from tendenci.apps.notifications import models as notification
 from tendenci.core.base.utils import send_email_notification, day_validate, fieldify
+from tendenci.core.event_logs.models import EventLog
 from tendenci.addons.corporate_memberships.settings import use_search_index
 from tendenci.addons.corporate_memberships.utils import (
                                             corp_membership_update_perms,
@@ -2622,3 +2624,28 @@ class NoticeLogRecord(models.Model):
     action_taken = models.BooleanField(default=0)
     action_taken_dt = models.DateTimeField(blank=True, null=True)
     create_dt = models.DateTimeField(auto_now_add=True)
+
+
+def delete_corp_profile(sender, **kwargs):
+    corp_membership = kwargs['instance']
+    corp_profile = corp_membership.corp_profile
+
+    if not corp_profile.corp_memberships.exists():
+        # delete auth domains
+        for auth_domain in corp_profile.authorized_domains.all():
+            auth_domain.delete()
+
+        # delete reps
+        for rep in corp_profile.reps.all():
+            rep.delete()
+        # delete email verifications
+        for email_veri in corp_profile.indivemailverification_set.all():
+            email_veri.delete()
+
+        description = 'Corp profile - %s (id=%d) - deleted' % (
+                                            corp_profile.name,
+                                            corp_profile.id)
+        corp_profile.delete()
+        EventLog.objects.log(description=description)
+
+post_delete.connect(delete_corp_profile, sender=CorpMembership, weak=False)
