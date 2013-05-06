@@ -481,7 +481,8 @@ class MembershipDefault(TendenciBaseModel):
         """
         Returns admin change_form page.
         """
-        return ('admin:memberships_membershipdefault_change', [self.pk])
+        return ('membership_details', [self.pk])
+        # return ('admin:memberships_membershipdefault_change', [self.pk])
 
     def save(self, *args, **kwargs):
         """
@@ -1242,9 +1243,9 @@ class MembershipDefault(TendenciBaseModel):
             self.user.username,
             self.membership_type.pk)
 
-        approve_link = reverse('admin:membership.admin_approve', args=[self.pk])
-        disapprove_link = reverse('admin:membership.admin_disapprove', args=[self.pk])
-        expire_link = reverse('admin:membership.admin_expire', args=[self.pk])
+        approve_link = '%s?approve=' % reverse('membership.details', args=[self.pk])
+        disapprove_link = '%s?disapprove' % reverse('membership.details', args=[self.pk])
+        expire_link = '%s?expire' % reverse('membership.details', args=[self.pk])
 
         if self.user.profile.can_renew():
             renew = {form_link: u'Renew Membership'}
@@ -1259,9 +1260,10 @@ class MembershipDefault(TendenciBaseModel):
                 # '?action=pend': u'Make Pending',
                 expire_link: u'Expire Membership'})
         elif status == 'disapproved':
-            actions.update({
+            pass
+            # actions.update({
                 # '?action=pend': u'Make Pending',
-                expire_link: u'Expire Membership'})
+                # expire_link: u'Expire Membership'})
         elif status == 'pending':
             actions.update({
                 approve_link: u'Approve',

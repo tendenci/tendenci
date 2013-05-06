@@ -125,6 +125,20 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
     if not any(super_user_or_owner):
         raise Http403
 
+    if request.user.profile.is_superuser:
+
+        if 'approve' in request.GET.keys():
+            membership.approve(request_user=request.user)
+            messages.add_message(request, messages.SUCCESS, 'Successfully Approved')
+
+        if 'disapprove' in request.GET.keys():
+            membership.disapprove(request_user=request.user)
+            messages.add_message(request, messages.SUCCESS, 'Successfully Disapproved')
+
+        if 'expire' in request.GET.keys():
+            membership.expire(request_user=request.user)
+            messages.add_message(request, messages.SUCCESS, 'Successfully Expired')
+
     EventLog.objects.log(instance=membership)
 
     return render_to_response(
