@@ -320,6 +320,10 @@ class CorpMembershipAdmin(admin.ModelAdmin):
         return HttpResponseRedirect(reverse('corpmembership.view',
                                             args=[object_id]))
 
+    def log_deletion(self, request, object, object_repr):
+        EventLog.objects.log(instance=object)
+        super(CorpMembershipAdmin, self).log_deletion(request, object, object_repr)
+
 
 class NoticeAdmin(admin.ModelAdmin):
     def notice_log(self):
