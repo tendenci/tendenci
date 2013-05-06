@@ -20,7 +20,7 @@ class Invoice(models.Model):
     object_id = models.IntegerField(default=0, blank=True, null=True)
     _object = generic.GenericForeignKey('object_type', 'object_id')
 
-    title = models.CharField(max_length=150, blank=True, null=True)
+    title = models.CharField(max_length=200, blank=True, null=True)
     #user
     creator = models.ForeignKey(User, related_name="invoice_creator",
                                 null=True,
