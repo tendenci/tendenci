@@ -40,7 +40,7 @@
                         {% endif %}
 
                         {% if user.is_superuser %}
-                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">
+                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">
                             {% trans "Edit Membership" %}</a>
                         {% endif %}
                     </div>

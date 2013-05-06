@@ -11,6 +11,7 @@ from django.conf.urls.defaults import patterns, url
 from django.template.defaultfilters import slugify
 from django.http import HttpResponse
 from django.utils.html import escape
+from django.utils.encoding import iri_to_uri
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
@@ -354,6 +355,25 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(
                 reverse('admin:memberships_membershipapp_changelist')
             )
+
+    def response_change(self, request, obj):
+        """
+        When the change page is submitted we can redirect
+        to a URL specified in the next parameter.
+        """
+        POST_KEYS = request.POST.keys()
+        GET_KEYS = request.GET.keys()
+        NEXT_URL = iri_to_uri('%s') % request.GET.get('next')
+
+        do_next_url = (
+            not '_addanother' in POST_KEYS,
+            not '_continue' in POST_KEYS,
+            'next' in GET_KEYS)
+
+        if all(do_next_url):
+            return HttpResponseRedirect(NEXT_URL)
+
+        return super(MembershipDefaultAdmin, self).response_change(request, obj)
 
     def queryset(self, request):
         qs = super(MembershipDefaultAdmin, self).queryset(request)
