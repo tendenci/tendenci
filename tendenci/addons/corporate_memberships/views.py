@@ -597,13 +597,15 @@ def corpmembership_delete(request, id,
 #                }
 #                send_email_notification('corp_memb_deleted', recipients,
 #                                        extra_context)
-            EventLog.objects.log()
-            corp_profile = corp_memb.corp_profile
+            description = 'Corporate membership - %s (id=%d, corp_profile_id=%d) - deleted' % (
+                                            corp_memb.corp_profile.name,
+                                            corp_memb.id,
+                                            corp_memb.corp_profile.id)
+            EventLog.objects.log(instance=corp_memb,
+                                 request=request,
+                                 description=description)
             corp_memb.delete()
-            # delete the corp profile if none of the corp memberships
-            # associating with it.
-            if not corp_profile.corp_memberships.all():
-                corp_profile.delete()
+            # the corp_profile deletion will be handled in post_delete signal
 
             return HttpResponseRedirect(reverse('corpmembership.search'))
 

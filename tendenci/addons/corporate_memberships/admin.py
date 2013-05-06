@@ -321,7 +321,11 @@ class CorpMembershipAdmin(admin.ModelAdmin):
                                             args=[object_id]))
 
     def log_deletion(self, request, object, object_repr):
-        EventLog.objects.log(instance=object)
+        description = 'Corporate membership - %s (id=%d, corp_profile_id=%d) - deleted' % (
+                                            object.corp_profile.name,
+                                            object.id,
+                                            object.corp_profile.id)
+        EventLog.objects.log(instance=object, description=description)
         super(CorpMembershipAdmin, self).log_deletion(request, object, object_repr)
 
 
