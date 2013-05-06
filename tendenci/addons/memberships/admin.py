@@ -336,10 +336,9 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         Intercept add page and redirect to form.
         """
         apps = MembershipApp.objects.filter(
-                                status=True,
-                                status_detail__in=['published',
-                                                   'active']
-                                            )
+            status=True,
+            status_detail__in=['published', 'active'])
+
         count = apps.count()
         if count == 1:
             app = apps[0]
@@ -366,7 +365,8 @@ class MembershipDefaultAdmin(admin.ModelAdmin):
         """
         urls = super(MembershipDefaultAdmin, self).get_urls()
 
-        extra_urls = patterns('',
+        extra_urls = patterns(
+            u'',
             url("^approve/(?P<pk>\d+)/$",
                 self.admin_site.admin_view(self.approve),
                 name='membership.admin_approve'),
