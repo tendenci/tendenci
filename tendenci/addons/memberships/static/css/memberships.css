@@ -246,13 +246,13 @@ div.pending-entries {
     background-color: #FAFAFA;
     padding: 10px;
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
-.t .membership-detail-wrap fieldset label {
+.t .membership-detail-wrap fieldset .fieldset-label {
     font-size: 20px;
-    display: block;
-    margin-bottom: 10px;
+    float: left;
+    margin-bottom: 7px;
 }
 
 .t .membership-detail-wrap #member-number {
@@ -297,6 +297,17 @@ div.pending-entries {
     padding-bottom: 5px;
 }
 
+.t .membership-details-balance {
+    font-size: 1.4em;
+    position: absolute;
+    top: 5px;
+    right: 1px;
+}
+
+.t .membership-details-balance a {
+    color: inherit;
+}
+
 .t .go-to-profile {
     position: absolute;
     top: 5px;
@@ -304,15 +315,13 @@ div.pending-entries {
 }
 
 .t .membership-detail-nav {
-    position: absolute;
-    top: 5px;
-    right: 1px;
+    float: right;
+    margin-top: 7px;
 }
 
 .t .membership-detail-nav a {
     margin: 0 2px;
 }
-
 
 .t .membership-details-info {
     position: relative;

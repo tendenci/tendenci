@@ -22,31 +22,37 @@
     <div class="membership-detail-wrap">
 
         <fieldset>
-            <label>Membership Details</label>
+            <div class="fieldset-label">Membership Details</div>
+            <div class="membership-detail-nav">
+                {% if request.user.is_authenticated %}
+                <a href="{% url profile membership.user.username %}">
+                    {% trans "View Profile" %}</a>
+                {% endif %}
+
+                <a href="{% url membership.details membership.pk %}?print">
+                    {% trans "Print Page" %}</a>
+
+                {% if user.is_superuser %}
+                <a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">
+                    {% trans "Edit Membership" %}</a>
+                {% endif %}
+            </div>
+            <div style="clear:both;"></div>
+
             <div class="membership-details-inner-wrap">
+
                 <div class="membership-details-name">
                     <h1>{% blocktrans with membership.user.get_full_name as memname %}
                     {{ memname }}{% endblocktrans %}</h1>
 
-                    <div class="membership-detail-nav">
-                        {% if request.user.is_authenticated %}
-                        <a href="{% url profile membership.user.username %}">
-                            {% trans "Profile" %}</a>
-                        {% endif %}
+                    {% if membership.get_invoice %}
+                        <div class="membership-details-balance"><a href="{% url invoice.view membership.get_invoice.pk membership.get_invoice.guid %}">Balance Due: ${{ membership.get_invoice.balance|floatformat:"2" }}</a></div>
+                    {% endif %}
 
-                        {% if membership.get_invoice %}
-                        <a href="{% url invoice.view membership.get_invoice.pk membership.get_invoice.guid %}">
-                            {% trans "Invoice" %}</a>
-                        {% endif %}
-
-                        {% if user.is_superuser %}
-                        <a href="{% url admin:memberships_membershipdefault_change membership.pk %}?next={{ request.path }}">
-                            {% trans "Edit Membership" %}</a>
-                        {% endif %}
-                    </div>
                 </div>
 
                 <div class="membership-details-info">
+
                     <p>Member <strong>{{ membership.member_number }}</strong></p>
 
                     <p>Group <strong>{{ membership.membership_type }}</strong></p>
@@ -122,7 +128,8 @@
         </fieldset>
 
         <fieldset>
-            <label>More Details</label>
+            <div class="fieldset-label">More Details</div>
+            <div style="clear:both;"></div>
 
             {% if membership.certifications %}
             <div class="field">
@@ -400,7 +407,9 @@
 
         {% if membership.get_demographics %}
         <fieldset>
-            <label>Even More Details (custom fields)</label>
+            <div class="fieldset-label">Even More Details (custom fields)</div>
+            <div style="clear:both;"></div>
+
             {% for label, value in membership.get_demographics %}
                 {% if value %}
                 <div class="field">
