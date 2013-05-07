@@ -90,7 +90,7 @@ class CorpMembershipAppFieldAdmin(admin.TabularInline):
 class CorpMembershipAppAdmin(admin.ModelAdmin):
     inlines = (CorpMembershipAppFieldAdmin, )
     prepopulated_fields = {'slug': ['name']}
-    list_display = ('name', 'status', 'status_detail')
+    list_display = ('name', 'application_form_link', 'status', 'status_detail')
     search_fields = ('name', 'status', 'status_detail')
     fieldsets = (
         (None, {'fields': ('name', 'slug', 'authentication_method',
@@ -436,7 +436,7 @@ class AppListFilter(SimpleListFilter):
 
 class CorpMembershipAppField2Admin(admin.ModelAdmin):
     model = CorpMembershipAppField
-    list_display = ['label', 'field_name', 'display',
+    list_display = ['label', 'app_link', 'field_name', 'display',
               'required', 'admin_only', 'position',
               ]
 

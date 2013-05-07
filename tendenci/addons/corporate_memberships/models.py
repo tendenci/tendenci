@@ -1279,6 +1279,14 @@ class CorpMembershipApp(TendenciBaseModel):
             self.memb_app.use_for_corp = True
             self.memb_app.save()
 
+    def application_form_link(self):
+        if self.is_current():
+            return '<a href="%s">%s</a>' % (reverse('corpmembership.add'),
+                                            self.slug)
+        return '--'
+
+    application_form_link.allow_tags = True
+
 
 class CorpMembershipAppField(OrderingBaseModel):
     corp_app = models.ForeignKey("CorpMembershipApp", related_name="fields")
@@ -1325,6 +1333,14 @@ class CorpMembershipAppField(OrderingBaseModel):
         if self.field_name:
             return '%s (field name: %s)' % (self.label, self.field_name)
         return '%s' % self.label
+
+    def app_link(self):
+        return '<a href="%s">%s</a>' % (
+                reverse('admin:corporate_memberships_corpmembershipapp_change',
+                        args=[self.corp_app.id]),
+                self.corp_app.id)
+
+    app_link.allow_tags = True
 
     def get_field_class(self, initial=None):
         """
