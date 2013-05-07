@@ -126,18 +126,22 @@ def membership_details(request, id=0, template_name="memberships/details.html"):
         raise Http403
 
     if request.user.profile.is_superuser:
+        GET_KEYS = request.GET.keys()
 
-        if 'approve' in request.GET.keys():
+        if 'approve' in GET_KEYS:
             membership.approve(request_user=request.user)
             messages.add_message(request, messages.SUCCESS, 'Successfully Approved')
 
-        if 'disapprove' in request.GET.keys():
+        if 'disapprove' in GET_KEYS:
             membership.disapprove(request_user=request.user)
             messages.add_message(request, messages.SUCCESS, 'Successfully Disapproved')
 
-        if 'expire' in request.GET.keys():
+        if 'expire' in GET_KEYS:
             membership.expire(request_user=request.user)
             messages.add_message(request, messages.SUCCESS, 'Successfully Expired')
+
+        if 'print' in GET_KEYS:
+            template_name = 'memberships/details_print.html'
 
     EventLog.objects.log(instance=membership)
 
