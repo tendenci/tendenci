@@ -330,7 +330,7 @@ class CorpProfileForm(forms.ModelForm):
         for field_key in self.fields.keys():
             if self.fields[field_key].widget.needs_multipart_form:
                 value = self.cleaned_data[field_key]
-                if value:
+                if value and hasattr(value, 'name'):
                     value = default_storage.save(join("corporate_memberships",
                                                       str(uuid4()),
                                                       value.name),

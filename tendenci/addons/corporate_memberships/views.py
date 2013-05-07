@@ -354,11 +354,13 @@ def corpmembership_edit(request, id,
 
     corpprofile_form = CorpProfileForm(app_fields,
                                      request.POST or None,
+                                     request.FILES or None,
                                      instance=corp_profile,
                                      request_user=request.user,
                                      corpmembership_app=app)
     corpmembership_form = CorpMembershipForm(app_fields,
                                              request.POST or None,
+                                             request.FILES or None,
                                              instance=corp_membership,
                                              request_user=request.user,
                                              corpmembership_app=app)
