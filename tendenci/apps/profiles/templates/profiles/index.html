@@ -151,7 +151,7 @@
         		<tr>
         			<td>
                         {% if request.user.profile.is_superuser %}
-        				{% trans "Member of" %} <a href="{% url admin:memberships_membershipdefault_change membership.pk %}">{{ membership.membership_type }}
+        				 <a href="{% url membership.details membership.pk %}">{% trans "Member of" %} {{ membership.membership_type }}
         				</a>
                         {% else %}
                         {{ membership.member_number }} {{ membership.membership_type }}
