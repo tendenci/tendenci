@@ -405,29 +405,29 @@ class MembershipDefault(TendenciBaseModel):
     # workflow fields ------------------------------------------
     application_abandoned = models.BooleanField(default=False)
     application_abandoned_dt = models.DateTimeField(null=True, default=None)
-    application_abandoned_user = models.ForeignKey(User,
-        related_name='application_abandond_set', null=True)
+    application_abandoned_user = models.ForeignKey(
+        User, related_name='application_abandond_set', null=True)
 
     application_complete = models.BooleanField(default=True)
     application_complete_dt = models.DateTimeField(null=True, default=None)
-    application_complete_user = models.ForeignKey(User,
-        related_name='application_complete_set', null=True)
+    application_complete_user = models.ForeignKey(
+        User, related_name='application_complete_set', null=True)
 
     application_approved = models.BooleanField(default=False)
     application_approved_dt = models.DateTimeField(null=True, default=None)
-    application_approved_user = models.ForeignKey(User,
-        related_name='application_approved_set', null=True)
+    application_approved_user = models.ForeignKey(
+        User, related_name='application_approved_set', null=True)
 
     application_approved_denied_dt = models.DateTimeField(null=True, default=None)
-    application_approved_denied_user = models.ForeignKey(User,
-        related_name='application_approved_denied_set', null=True)
+    application_approved_denied_user = models.ForeignKey(
+        User, related_name='application_approved_denied_set', null=True)
 
     application_denied = models.BooleanField(default=False)
 
     action_taken = models.CharField(max_length=500, blank=True)
     action_taken_dt = models.DateTimeField(null=True, default=None)
-    action_taken_user = models.ForeignKey(User,
-        related_name='action_taken_set', null=True)
+    action_taken_user = models.ForeignKey(
+        User, related_name='action_taken_set', null=True)
     # workflow fields -----------------------------------------
 
     bod_dt = models.DateTimeField(null=True)
