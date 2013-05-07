@@ -125,7 +125,7 @@ def app_preview(request, slug,
     app_fields = app.fields.filter(display=True)
     if not is_superuser:
         app_fields = app_fields.filter(admin_only=False)
-    app_fields = app_fields.order_by('order')
+    app_fields = app_fields.order_by('position')
 
     corpprofile_form = CorpProfileForm(app_fields,
                                      request_user=request.user,
