@@ -6,6 +6,7 @@ import operator
 from hashlib import md5
 from sets import Set
 import subprocess
+import mimetypes
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template import RequestContext
@@ -205,10 +206,12 @@ def corpmembership_add(request, slug='',
 
     corpprofile_form = CorpProfileForm(app_fields,
                                      request.POST or None,
+                                     request.FILES or None,
                                      request_user=request.user,
                                      corpmembership_app=app)
     corpmembership_form = CorpMembershipForm(app_fields,
                                              request.POST or None,
+                                             request.FILES or None,
                                              request_user=request.user,
                                              corpmembership_app=app)
     if request.method == 'POST':
@@ -507,6 +510,38 @@ def corpmembership_view(request, id,
                'app_fields': app_fields,
                'app': app}
     return render_to_response(template, context, RequestContext(request))
+
+
+@login_required
+def download_file(request, cm_id, field_id):
+    """
+    Download a user uploaded file.
+    """
+    corp_membership = get_object_or_404(CorpMembership, id=cm_id)
+    app_field = get_object_or_404(CorpMembershipAppField, id=field_id)
+    corp_profile = corp_membership.corp_profile
+
+    if not has_perm(request.user,
+                    'corporate_memberships.view_corpmembership',
+                    corp_membership):
+        if not corp_membership.allow_view_by(request.user):
+            raise Http403
+    if app_field.field_type == 'FileField':
+        value = ''
+        if hasattr(corp_profile, app_field.field_name):
+            value = getattr(corp_profile, app_field.field_name)
+
+            if default_storage.exists(value):
+                file_name = os.path.split(value)[1]
+                mimetype = mimetypes.guess_type(file_name)[0]
+                if not mimetype:
+                    mimetype = 'application/octet-stream'
+                response = HttpResponse(default_storage.open(value).read(),
+                                        mimetype=mimetype)
+                response['Content-Disposition'] = 'attachment; filename=%s' % file_name
+                return response
+
+    raise Http404
 
 
 def corpmembership_search(request, my_corps_only=False,

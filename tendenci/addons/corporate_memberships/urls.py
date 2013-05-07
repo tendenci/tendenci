@@ -48,6 +48,9 @@ urlpatterns = patterns('tendenci.addons.corporate_memberships.views',
         name="corpmembership.renew_conf"),
     url(r'^roster/$', 'roster_search',
         name="corpmembership.roster_search"),
+    url(r"^download/(?P<cm_id>\d+)/(?P<field_id>\d+)/$",
+        "download_file",
+        name="corpmembership.download_file"),
 
     # import to CorpMembership
     url(r"^import/$", "import_upload",
