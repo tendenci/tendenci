@@ -9,6 +9,7 @@ from django.forms.fields import ChoiceField
 #from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.core.files.storage import default_storage
 
 from captcha.fields import CaptchaField
 from tinymce.widgets import TinyMCE
@@ -309,6 +310,13 @@ class CorpProfileForm(forms.ModelForm):
             )
         return self.cleaned_data['secret_code']
 
+    def clean_number_employees(self):
+        number_employees = self.cleaned_data['number_employees']
+        if not number_employees:
+            number_employees = 0
+
+        return number_employees
+
     def save(self, *args, **kwargs):
         if not self.instance.id:
             if not self.request_user.is_anonymous():
@@ -319,6 +327,15 @@ class CorpProfileForm(forms.ModelForm):
         if not self.request_user.is_anonymous():
             self.instance.owner = self.request_user
             self.instance.owner_username = self.request_user.username
+        for field_key in self.fields.keys():
+            if self.fields[field_key].widget.needs_multipart_form:
+                value = self.cleaned_data[field_key]
+                if value:
+                    value = default_storage.save(join("corporate_memberships",
+                                                      str(uuid4()),
+                                                      value.name),
+                                                 value)
+                    setattr(self.instance, field_key, value)
 
         super(CorpProfileForm, self).save(*args, **kwargs)
 

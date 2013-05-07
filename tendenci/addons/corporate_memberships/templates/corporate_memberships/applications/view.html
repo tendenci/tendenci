@@ -133,7 +133,11 @@
                                 {% if field_obj.field_name == 'url' %}
                                 {{ field_obj.value|safe|urlize }}
                                 {% else %}
-                                {{ field_obj.value }}
+                                    {% if field_obj.field_type == 'FileField' %}
+                                    <a href="{% url corpmembership.download_file corporate_membership.id  field_obj.id %}">{{ field_obj.value|basename }}</a>
+                                    {% else %}
+                                    {{ field_obj.value }}
+                                    {% endif %}
                                 {% endif %}
                                 {% if field_obj.field_name == 'payment_method' %}
                                     {% if corporate_membership.invoice %}
