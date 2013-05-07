@@ -322,11 +322,14 @@ class CorpProfile(TendenciBaseModel):
     referral_source_member_number = models.CharField(max_length=50,
                              blank=True, default='')
 
-    ud1 = models.CharField(max_length=100, blank=True, default='')
-    ud2 = models.CharField(max_length=100, blank=True, default='')
-    ud3 = models.CharField(max_length=100, blank=True, default='')
-    ud4 = models.CharField(max_length=100, blank=True, default='')
-    ud5 = models.CharField(max_length=100, blank=True, default='')
+    ud1 = models.TextField(blank=True, default='', null=True)
+    ud2 = models.TextField(blank=True, default='', null=True)
+    ud3 = models.TextField(blank=True, default='', null=True)
+    ud4 = models.TextField(blank=True, default='', null=True)
+    ud5 = models.TextField(blank=True, default='', null=True)
+    ud6 = models.TextField(blank=True, default='', null=True)
+    ud7 = models.TextField(blank=True, default='', null=True)
+    ud8 = models.TextField(blank=True, default='', null=True)
 
     perms = generic.GenericRelation(ObjectPermission,
                                       object_id_field="object_id",
@@ -1351,6 +1354,8 @@ class CorpMembershipAppField(OrderingBaseModel):
                 field_class, field_widget = self.field_type.split("/")
             else:
                 field_class, field_widget = self.field_type, None
+            if field_class == 'TextField':
+                field_class = 'CharField'
             field_class = getattr(forms, field_class)
             field_args = {"label": self.label,
                           "required": self.required,
