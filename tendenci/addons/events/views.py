@@ -2917,7 +2917,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         for registrant_dict in non_custom_registrants:
 
             is_paid = False
-            primary_registrant = u''
+            primary_registrant = u'-- N/A ---'
 
             # update registrant values
             if not registrant_dict['is_primary']:
@@ -2926,11 +2926,7 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
                 primary_registrant = Registrant.objects.get(pk=registrant_dict['pk'])
 
                 registrant = Registrant.objects.get(pk=registrant_dict['pk'])
-
-                [primary_registrant] = registrant.registration.registrant_set.filter(is_primary=True) or [None]
-
-                if not primary_registrant:
-                    [primary_registrant] = registrant.registration.registrant_set.order_by('pk') or [None]
+                primary_registrant = registrant.registration.registrant
 
                 if primary_registrant:
                     primary_registrant = '%s %s' % (primary_registrant.first_name, primary_registrant.last_name)
