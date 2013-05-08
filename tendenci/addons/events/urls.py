@@ -78,7 +78,9 @@ urlpatterns = patterns(
     url(r'^registrants/search/$', 'views.global_registrant_search', name="event.global.registrant.search"),
     url(r'^(?P<event_id>\d+)/registrants/search/$', 'views.registrant_search', name="event.registrant.search"),
 
-    url(r'^(?P<event_id>\d+)/registrants/roster/$', 'views.registrant_roster', name="event.registrant.roster"),
+    url(r'^(?P<event_id>\d+)/registrants/roster/$',
+        'views.registrant_roster',
+        name="event.registrant.roster"),
 
     url(r'^(?P<event_id>\d+)/registrants/roster/paid',
         'views.registrant_roster',
