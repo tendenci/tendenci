@@ -2873,50 +2873,6 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     from collections import namedtuple
 
-    # RegistrantTuple = namedtuple('Registrant', [
-    #     'first_name',
-    #     'last_name',
-    #     'phone',
-    #     'email',
-    #     'position',
-    #     'company',
-    #     'address',
-    #     'city',
-    #     'state',
-    #     'zip',
-    #     'country',
-    #     'date',
-    #     'registration_id',
-    #     'is_primary',
-    #     'amount',
-    #     'price_type',
-    #     'invoice_id',
-    #     'registration_price',
-    #     'payment_method',
-    #     'balance'])
-
-    RegistrantTuple = namedtuple('Registrant', [
-        'first_name',
-        'last_name',
-        'phone',
-        'email',
-        'position_title',
-        'company_name',
-        'address',
-        'city',
-        'state',
-        'zip',
-        'country',
-        'create_dt',
-        'registration__pk',
-        'is_primary',
-        'amount',
-        'registration__reg_conf_price__title',
-        'registration__invoice__pk',
-        'registration__invoice__total',
-        'registration__payment_method__machine_name',
-        'registration__invoice__balance'])
-
     # the key is what the column will be in the
     # excel sheet. the value is the database lookup
     # Used OrderedDict to maintain the column order
@@ -2943,6 +2899,8 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
         ('balance', 'registration__invoice__balance'),
     ])
 
+    RegistrantTuple = namedtuple('Registrant', registrant_mappings.values())
+
     registrant_lookups = registrant_mappings.values()
 
     # Append the heading to the list of values that will
@@ -2951,22 +2909,41 @@ def registrant_export_with_custom(request, event_id, roster_view=''):
 
     # registrants with regular reg form
     non_custom_registrants = registrants.filter(custom_reg_form_entry=None)
-    non_custom_registrants = non_custom_registrants.values(*registrant_lookups)
+    non_custom_registrants = non_custom_registrants.values('pk', *registrant_lookups)
 
     if non_custom_registrants:
-        values_list.insert(0, registrant_mappings.keys())
+        values_list.insert(0, registrant_mappings.keys() + ['is_paid', 'primary_registrant'])
 
         for registrant_dict in non_custom_registrants:
 
+            is_paid = False
+            primary_registrant = u''
+
             # update registrant values
             if not registrant_dict['is_primary']:
+
+                is_paid = (registrant_dict['registration__invoice__balance'] == 0)
+                primary_registrant = Registrant.objects.get(pk=registrant_dict['pk'])
+
+                registrant = Registrant.objects.get(pk=registrant_dict['pk'])
+
+                [primary_registrant] = registrant.registration.registrant_set.filter(is_primary=True) or [None]
+
+                if not primary_registrant:
+                    [primary_registrant] = registrant.registration.registrant_set.order_by('pk') or [None]
+
+                if primary_registrant:
+                    primary_registrant = '%s %s' % (primary_registrant.first_name, primary_registrant.last_name)
+
                 registrant_dict['registration__invoice__total'] = 0
                 registrant_dict['registration__invoice__balance'] = 0
+
+            del registrant_dict['pk']
 
             # keeps order of values
             registrant_tuple = RegistrantTuple(**registrant_dict)
 
-            values_list.append(registrant_tuple)
+            values_list.append(tuple(registrant_tuple) + (is_paid, primary_registrant))
 
         values_list.append(['\n'])
 
